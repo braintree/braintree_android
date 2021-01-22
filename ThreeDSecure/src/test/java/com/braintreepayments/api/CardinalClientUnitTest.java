@@ -6,8 +6,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
@@ -60,7 +58,7 @@ public class CardinalClientUnitTest {
     @Test
     public void initialize_configuresDefaultCardinalConfigurationParameters() {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
-        CardinalClient sut = CardinalClient.newInstance();
+        CardinalClient sut = new CardinalClient();
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
@@ -81,7 +79,7 @@ public class CardinalClientUnitTest {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getEnvironment()).thenReturn("production");
 
-        CardinalClient sut = CardinalClient.newInstance();
+        CardinalClient sut = new CardinalClient();
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
@@ -97,7 +95,7 @@ public class CardinalClientUnitTest {
     public void initialize_returnsConsumerSessionIdToListener() {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
-        CardinalClient sut = CardinalClient.newInstance();
+        CardinalClient sut = new CardinalClient();
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
@@ -116,7 +114,7 @@ public class CardinalClientUnitTest {
     public void initialize_whenConsumerSessionIdIsNull_returnsBraintreeExceptionToListener() {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
-        CardinalClient sut = CardinalClient.newInstance();
+        CardinalClient sut = new CardinalClient();
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
@@ -135,7 +133,7 @@ public class CardinalClientUnitTest {
     @Test
     public void continueLookup_continuesCardinalLookup() {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
-        CardinalClient sut = CardinalClient.newInstance();
+        CardinalClient sut = new CardinalClient();
 
         ThreeDSecureLookup threeDSecureLookup = mock(ThreeDSecureLookup.class);
         when(threeDSecureLookup.getTransactionId()).thenReturn("sample-transaction-id");

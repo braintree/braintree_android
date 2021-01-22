@@ -1,18 +1,14 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.ThreeDSecureV1UiCustomization;
-
-public class ThreeDSecureV1BrowserSwitchHelper {
+class ThreeDSecureV1BrowserSwitchHelper {
 
     private static final String MOBILE_HOSTED_ASSETS_PATH = "mobile/three-d-secure-redirect/0.2.0";
 
-    public ThreeDSecureV1BrowserSwitchHelper() {}
+    ThreeDSecureV1BrowserSwitchHelper() {}
 
-    public String getUrl(String appReturnUrlScheme,
+    String getUrl(String appReturnUrlScheme,
                                 String assetsUrl,
                                 ThreeDSecureRequest threeDSecureRequest,
                                 ThreeDSecureLookup threeDSecureLookup) {

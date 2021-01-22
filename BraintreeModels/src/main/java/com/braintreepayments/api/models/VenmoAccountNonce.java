@@ -40,7 +40,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         return venmoAccountNonce;
     }
 
-    protected void fromJson(JSONObject json) throws JSONException {
+    // TODO: Make protected when package is flattened
+    public void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);

@@ -1,8 +1,4 @@
-package com.braintreepayments.api.internal;
-
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.ThreeDSecureV1UiCustomization;
+package com.braintreepayments.api;
 
 import org.junit.Before;
 import org.junit.Test;

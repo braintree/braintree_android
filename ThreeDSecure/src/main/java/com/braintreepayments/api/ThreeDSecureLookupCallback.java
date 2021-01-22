@@ -1,7 +1,6 @@
-package com.braintreepayments.api.interfaces;
+package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Interface for ThreeDSecure callbacks.
@@ -12,7 +11,7 @@ public interface ThreeDSecureLookupCallback {
      * Called when the 3DS Lookup result is ready.
      *
      * 3DS can be continued by invoking:
-     * {@link com.braintreepayments.api.ThreeDSecure#continuePerformVerification(BraintreeFragment, ThreeDSecureRequest, ThreeDSecureLookup)}
+     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureLookup, ThreeDSecureResultCallback)}
      *
      * @param error Exception (if applicable)
      * @param request the {@link ThreeDSecureRequest} used to generate the lookup.

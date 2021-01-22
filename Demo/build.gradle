@@ -79,6 +79,7 @@ dependencies {
     implementation project(':Card')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
+    implementation project(':ThreeDSecure')
     implementation project(':UnionPay')
     implementation project(':Venmo')
     implementation project(':BraintreeExtensions')

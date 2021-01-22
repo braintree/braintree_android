@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
@@ -17,21 +17,22 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
 
-    private CardinalClient cardinalClient;
+    private final CardinalClient cardinalClient = new CardinalClient();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        onCreateInternal(cardinalClient);
+    }
 
+    @VisibleForTesting
+    void onCreateInternal(CardinalClient cardinalClient) {
         Bundle extras = getIntent().getExtras();
-
         if (extras == null) {
             extras = new Bundle();
         }
 
         ThreeDSecureLookup threeDSecureLookup = extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP);
-
-        cardinalClient = CardinalClient.newInstance();
         cardinalClient.continueLookup(this, threeDSecureLookup, this);
     }
 

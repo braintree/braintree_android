@@ -9,12 +9,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.visa.checkout.VisaPaymentSummary;
 
 // TODO: unit test when API is finalized
@@ -24,7 +21,6 @@ class BraintreeFullClient {
     DeviceInspector deviceInspector;
     GooglePaymentClient googlePaymentClient;
     PreferredPaymentMethods preferredPaymentMethods;
-    ThreeDSecure threeDSecure;
     TokenizationClient tokenizationClient;
     VisaCheckoutClient visaCheckoutClient;
 
@@ -35,7 +31,6 @@ class BraintreeFullClient {
         this.deviceInspector = new DeviceInspector();
         this.googlePaymentClient = new GooglePaymentClient(braintreeClient);
         this.preferredPaymentMethods = new PreferredPaymentMethods(braintreeClient);
-        this.threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme, tokenizationClient);
         this.visaCheckoutClient = new VisaCheckoutClient(braintreeClient, tokenizationClient);
     }
 
@@ -43,24 +38,8 @@ class BraintreeFullClient {
         braintreeClient.getConfiguration(callback);
     }
 
-    public void performThreeDSecureVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {
-        threeDSecure.performVerification(activity, request, callback);
-    }
-
-    public void continuePerformVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookup threeDSecureLookup, ThreeDSecureVerificationCallback callback) {
-        threeDSecure.continuePerformVerification(activity, request, threeDSecureLookup, callback);
-    }
-
     public void fetchPreferredPaymentMethods(Context context, PreferredPaymentMethodsCallback callback) {
         preferredPaymentMethods.fetchPreferredPaymentMethods(context, callback);
-    }
-
-    public void onThreeDSecureBrowserSwitchResult(Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, ThreeDSecureResultCallback callback) {
-        threeDSecure.onBrowserSwitchResult(context, browserSwitchResult, uri, callback);
-    }
-
-    public void onThreeDSecureActivityResult(Context context, int resultCode, Intent data, ThreeDSecureResultCallback callback) {
-        threeDSecure.onActivityResult(context, resultCode, data, callback);
     }
 
     public void onVisaCheckoutActivityResult(Context context, int resultCode, Intent data, VisaCheckoutOnActivityResultCallback callback) {

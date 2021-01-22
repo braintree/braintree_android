@@ -1,9 +1,11 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Json;
+import androidx.fragment.app.FragmentActivity;
+
+import com.braintreepayments.api.models.CardNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +36,7 @@ public class ThreeDSecureLookup implements Parcelable {
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure lookup route.
-     * @return The {@link com.braintreepayments.api.models.ThreeDSecureLookup} to use when
+     * @return The {@link ThreeDSecureLookup} to use when
      *         performing 3D Secure authentication.
      * @throws JSONException when parsing fails.
      */
@@ -119,7 +121,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return {@code boolean}
      * When `true`, the user will be presented with a 3D Secure challenge when calling
-     * {@link com.braintreepayments.api.ThreeDSecure#continuePerformVerification(BraintreeFragment, ThreeDSecureRequest, ThreeDSecureLookup)}
+     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureLookup, ThreeDSecureResultCallback)}
      */
     public boolean requiresUserAuthentication() {
         return mAcsUrl != null;

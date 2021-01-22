@@ -85,7 +85,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      * @param json {@link JSONObject} that holds properties for {@link PayPalAccountNonce}.
      * @throws JSONException
      */
-    protected void fromJson(JSONObject json) throws JSONException {
+    // TODO: Make protected when package is flattened
+    public void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);

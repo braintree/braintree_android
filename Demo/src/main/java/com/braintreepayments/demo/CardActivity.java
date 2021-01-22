@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,29 +17,32 @@ import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.DataCollectorCallback;
+import com.braintreepayments.api.BrowserSwitchCallback;
+import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardTokenizeCallback;
 import com.braintreepayments.api.ConfigurationCallback;
-import com.braintreepayments.api.ThreeDSecureVerificationCallback;
+import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorCallback;
+import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.ThreeDSecureClient;
+import com.braintreepayments.api.ThreeDSecureLookup;
+import com.braintreepayments.api.ThreeDSecureLookupCallback;
+import com.braintreepayments.api.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.ThreeDSecureRequest;
+import com.braintreepayments.api.ThreeDSecureResultCallback;
+import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.UnionPayClient;
 import com.braintreepayments.api.UnionPayEnrollCallback;
 import com.braintreepayments.api.UnionPayEnrollment;
 import com.braintreepayments.api.UnionPayFetchCapabilitiesCallback;
 import com.braintreepayments.api.UnionPayTokenizeCallback;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
@@ -53,7 +57,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CardActivity extends BaseActivity implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener {
+public class CardActivity extends BaseActivity implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchCallback {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
@@ -77,6 +81,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
     private BraintreeClient braintreeClient;
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
+    private ThreeDSecureClient threeDSecureClient;
     private UnionPayClient unionPayClient;
     private DataCollector dataCollector;
 
@@ -135,6 +140,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
             americanExpressClient = new AmericanExpressClient(braintreeClient);
             cardClient = new CardClient(braintreeClient);
+            threeDSecureClient = new ThreeDSecureClient(braintreeClient, RETURN_URL_SCHEME);
             unionPayClient = new UnionPayClient(braintreeClient);
             dataCollector = new DataCollector(braintreeClient);
 
@@ -335,8 +341,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
         }
     }
 
-    @Override
-    protected void onThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+    private void handleThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
         if (paymentMethodNonce != null) {
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
@@ -351,11 +356,11 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
 
-            performThreeDSecureVerification(threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupCallback() {
+            threeDSecureClient.performVerification(this, threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupCallback() {
                 @Override
                 public void onResult(ThreeDSecureRequest request, ThreeDSecureLookup lookup, Exception error) {
                     if (request != null && lookup != null) {
-                        continuePerformVerification(request, lookup, new ThreeDSecureVerificationCallback() {
+                        threeDSecureClient.continuePerformVerification(CardActivity.this, request, lookup, new ThreeDSecureResultCallback() {
                             @Override
                             public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
                                 if (paymentMethodNonce != null) {
@@ -392,6 +397,27 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             setResult(RESULT_OK, intent);
             finish();
         }
+    }
+
+    @Override
+    public void onResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
+        threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, uri, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                handleThreeDSecureResult(paymentMethodNonce, error);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        threeDSecureClient.onActivityResult(resultCode, data, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                handleThreeDSecureResult(paymentMethodNonce, error);
+            }
+        });
     }
 
     private void safelyCloseLoadingView() {

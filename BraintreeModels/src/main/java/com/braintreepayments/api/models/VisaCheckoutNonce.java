@@ -49,8 +49,9 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return visaCheckoutNonce;
     }
 
+    // TODO: Make protected when package is flattened
     @Override
-    protected void fromJson(JSONObject json) throws JSONException {
+    public void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);

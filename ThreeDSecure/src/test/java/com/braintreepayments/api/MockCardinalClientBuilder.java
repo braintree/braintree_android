@@ -1,11 +1,8 @@
-package com.braintreepayments.api.helpers;
+package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.CardinalClient;
-import com.braintreepayments.api.CardinalInitializeCallback;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

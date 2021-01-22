@@ -185,7 +185,6 @@ public class CardClientTest {
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
-                CardNonce cardNonce = (CardNonce) cardNonce;
 
                 assertNotNull(cardNonce.getBinData());
                 assertEquals("Unknown", cardNonce.getCardType());
@@ -323,7 +322,6 @@ public class CardClientTest {
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
-                CardNonce cardNonce = (CardNonce) cardNonce;
 
                 assertNotNull(cardNonce.getNonce());
                 assertEquals("Visa", cardNonce.getCardType());

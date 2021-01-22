@@ -61,7 +61,8 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
      * @param json {@link JSONObject} that holds properties for {@link LocalPaymentNonce}.
      * @throws JSONException if object could not be constructed from JSON.
      */
-    protected void fromJson(JSONObject json) throws JSONException {
+    // TODO: Make protected when package is flattened
+    public void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);

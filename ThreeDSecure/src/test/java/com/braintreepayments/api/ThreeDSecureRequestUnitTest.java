@@ -1,4 +1,4 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 
@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_1;
-import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_2;
+import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_1;
+import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

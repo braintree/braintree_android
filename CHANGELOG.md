@@ -8,6 +8,7 @@
   * `DataCollector`
   * `LocalPaymentClient`
   * `PayPalClient`
+  * `ThreeDSecureClient`
   * `UnionPayClient`
   * `VenmoClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
@@ -26,11 +27,9 @@
   * `PayPalBrowserSwitchResultCallback`
   * `PayPalRequestCallback`
   * `PreferredPaymentMethodsCallback`
-  * `ThreeDSecureInitializeChallengeCallback`
   * `ThreeDSecureLookupCallback`
   * `ThreeDSecurePrepareLookupCallback`
   * `ThreeDSecureResultCallback`
-  * `ThreeDSecureVerificationCallback`
   * `UnionPayEnrollCallback`
   * `UnionPayFetchCapabilitiesCallback`
   * `UnionPayTokenizeCallback`
@@ -57,6 +56,7 @@
   * Remove `PayPalDataCollector`
   * Remove `PayPalDataCollectorRequest`
   * Remove `InstallationIdentifier`
+  * Remove deprecated 3DS `performVerification` methods
 
 ## 3.17.0
 

@@ -1,7 +1,9 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
-public interface ThreeDSecureInitializeChallengeCallback {
-    void onResult(PaymentMethodNonce nonce, Exception error);
+interface ThreeDSecureInitializeChallengeCallback {
+    void onResult(@Nullable PaymentMethodNonce nonce, @Nullable Exception error);
 }

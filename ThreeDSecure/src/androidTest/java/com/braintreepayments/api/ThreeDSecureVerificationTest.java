@@ -6,6 +6,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureVerificationTest {
@@ -59,25 +61,40 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException, InvalidArgumentException {
 
-        CardBuilder cardBuilder = new CardBuilder()
+        final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED)
                 .expirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        ThreeDSecure threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
 
-        threeDSecure.performVerification(mActivity, cardBuilder, TEST_AMOUNT, new ThreeDSecureVerificationCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                ThreeDSecureRequest request = new ThreeDSecureRequest()
+                        .nonce(paymentMethodNonce.getNonce())
+                        .amount(TEST_AMOUNT);
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertEquals("51", cardNonce.getLastTwo());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getNonce());
+                        assertEquals("51", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                mCountDownLatch.countDown();
+                        mCountDownLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Tokenization should succeed");
             }
         });
 
@@ -94,21 +111,35 @@ public class ThreeDSecureVerificationTest {
                 .expirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        ThreeDSecure threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
 
-        threeDSecure.performVerification(mActivity, cardBuilder, TEST_AMOUNT, new ThreeDSecureVerificationCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                assertNotNull(paymentMethodNonce);
-                assertIsANonce(paymentMethodNonce.getNonce());
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                ThreeDSecureRequest request = new ThreeDSecureRequest()
+                        .nonce(paymentMethodNonce.getNonce())
+                        .amount(TEST_AMOUNT);
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getNonce());
 
-                assertEquals("69", cardNonce.getLastTwo());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                        assertEquals("69", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                mCountDownLatch.countDown();
+                        mCountDownLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Tokenization should succeed");
             }
         });
 
@@ -118,21 +149,35 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException, InvalidArgumentException {
 
-        CardBuilder cardBuilder = new CardBuilder()
+        final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
                 .expirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
-        ThreeDSecure threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
 
-        threeDSecure.performVerification(mActivity, cardBuilder, TEST_AMOUNT, new ThreeDSecureVerificationCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                assertTrue(error instanceof AuthorizationException);
-                assertEquals(
-                        "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
-                        error.getMessage());
-                mCountDownLatch.countDown();
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                ThreeDSecureRequest request = new ThreeDSecureRequest()
+                        .nonce(paymentMethodNonce.getNonce())
+                        .amount(TEST_AMOUNT);
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                        assertTrue(error instanceof AuthorizationException);
+                        assertEquals(
+                                "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                                error.getMessage());
+                        mCountDownLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Tokenization should succeed");
             }
         });
 
@@ -141,26 +186,43 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
-
-        CardBuilder cardBuilder = new CardBuilder()
+        final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_LOOKUP_ERROR)
                 .expirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        ThreeDSecure threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
 
-        threeDSecure.performVerification(mActivity, cardBuilder, TEST_AMOUNT, new ThreeDSecureVerificationCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                ThreeDSecureRequest request = new ThreeDSecureRequest()
+                        .nonce(paymentMethodNonce.getNonce())
+                        .amount(TEST_AMOUNT);
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertEquals("77", cardNonce.getLastTwo());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getNonce());
 
-                mCountDownLatch.countDown();
+                        assertEquals("77", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+
+                        assertEquals("lookup_error", cardNonce.getThreeDSecureInfo().getStatus());
+
+                        mCountDownLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Tokenization should succeed");
             }
         });
 
@@ -169,26 +231,41 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
-
-        CardBuilder cardBuilder = new CardBuilder()
+        final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR)
                 .expirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        ThreeDSecure threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
 
-        threeDSecure.performVerification(mActivity, cardBuilder, TEST_AMOUNT, new ThreeDSecureVerificationCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                ThreeDSecureRequest request = new ThreeDSecureRequest()
+                        .nonce(paymentMethodNonce.getNonce())
+                        .amount(TEST_AMOUNT);
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertEquals("85", cardNonce.getLastTwo());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getNonce());
 
-                mCountDownLatch.countDown();
+                        assertEquals("85", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+
+                        mCountDownLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Tokenization should succeed");
             }
         });
 

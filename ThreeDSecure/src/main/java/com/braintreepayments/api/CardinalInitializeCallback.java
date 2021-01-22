@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
-public interface CardinalInitializeCallback {
-    void onResult(String consumerSessionId, Exception error);
+import androidx.annotation.Nullable;
+
+interface CardinalInitializeCallback {
+    void onResult(@Nullable String consumerSessionId, @Nullable Exception error);
 }

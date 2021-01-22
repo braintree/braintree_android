@@ -27,7 +27,6 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 dependencies {
     api project(':BraintreeCore')
     api project(':BraintreeModels')
-    api project(':ThreeDSecure')
     api project(':Venmo')
 
     api 'com.braintreepayments.api:visa-checkout:4.0.0-SNAPSHOT'
