@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.test.Fixtures;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -17,7 +18,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -164,7 +164,7 @@ public class GooglePaymentRequestUnitTest {
     @Test
     public void generatesToJsonRequest() throws JSONException {
         GooglePaymentRequest request = new GooglePaymentRequest();
-        String expected = stringFromFixture("payment_methods/google_payment_request.json");
+        String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAYMENT_REQUEST;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
         ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()

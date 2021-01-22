@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
+    id 'kotlin-android'
     id 'signing'
 }
 
@@ -31,18 +32,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    api 'com.google.android.gms:play-services-wallet:16.0.1'
 
-    compileOnly("com.braintreepayments.api:braintree:$rootProject.braintreeVersion") {
-        exclude module: 'google-payment'
-        because 'Use this development version'
-    }
-
-    testImplementation("com.braintreepayments.api:braintree:$rootProject.braintreeVersion") {
-        exclude module: 'google-payment'
-        because 'Use this development version'
-    }
+    implementation "com.braintreepayments.api:braintree-core:4.0.0-SNAPSHOT"
 
     testImplementation 'androidx.test:rules:1.2.0'
     testImplementation 'androidx.test:runner:1.2.0'
@@ -54,6 +47,8 @@ dependencies {
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.robolectric:robolectric:4.3'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation "androidx.core:core-ktx:1.3.2"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 // region signing and publishing
@@ -106,7 +101,7 @@ afterEvaluate {
 
                 pom {
                     name = 'google-payment'
-                    packaging = 'jar'
+                    packaging = 'aar'
                     description = 'Google Pay Module for Braintree\'s Android SDK.'
                     url = 'https://github.com/braintree/braintree-android-google-payment'
 

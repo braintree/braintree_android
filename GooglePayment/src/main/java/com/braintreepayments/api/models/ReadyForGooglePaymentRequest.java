@@ -1,7 +1,5 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 
 /**

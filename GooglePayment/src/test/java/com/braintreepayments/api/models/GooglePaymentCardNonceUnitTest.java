@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 
 import com.braintreepayments.api.Json;
+import com.braintreepayments.api.test.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,9 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.test.Assertions.assertBinDataEqual;
-import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -21,7 +20,7 @@ public class GooglePaymentCardNonceUnitTest {
 
     @Test
     public void fromJson_createsGooglePaymentCardNonce() throws Exception {
-        String response = stringFromFixture("payment_methods/google_pay_card_response.json");
+        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
         JSONObject billing = new JSONObject(response).getJSONObject("paymentMethodData")
             .getJSONObject("info")
             .getJSONObject("billingAddress");
@@ -46,7 +45,7 @@ public class GooglePaymentCardNonceUnitTest {
 
     @Test
     public void fromJson_withoutBillingAddress_createsGooglePayCardNonce() throws Exception {
-        String response = stringFromFixture("payment_methods/google_pay_card_response.json");
+        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
         JSONObject json = new JSONObject(response);
         json.getJSONObject("paymentMethodData").getJSONObject("info").remove("billingAddress");
         response = json.toString();
@@ -61,8 +60,7 @@ public class GooglePaymentCardNonceUnitTest {
 
     @Test
     public void fromJson_withoutShippingAddress_createsGooglePayCardNonce() throws Exception {
-
-        String response = stringFromFixture("payment_methods/google_pay_card_response.json");
+        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
         JSONObject json = new JSONObject(response);
         json.remove("shippingAddress");
         response = json.toString();
@@ -77,7 +75,7 @@ public class GooglePaymentCardNonceUnitTest {
 
     @Test
     public void fromJson_withoutEmail_createsGooglePayCardNonce() throws JSONException {
-        String response = stringFromFixture("payment_methods/google_pay_card_response.json");
+        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
 
         JSONObject json = new JSONObject(response);
         json.remove("email");
@@ -90,7 +88,7 @@ public class GooglePaymentCardNonceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws Exception {
-        String response = stringFromFixture("payment_methods/google_pay_card_response.json");
+        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
         JSONObject billing = new JSONObject(response).getJSONObject("paymentMethodData")
                 .getJSONObject("info")
                 .getJSONObject("billingAddress");
