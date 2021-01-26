@@ -10,8 +10,6 @@ import android.os.AsyncTask;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

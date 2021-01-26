@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.models.CardNonce;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

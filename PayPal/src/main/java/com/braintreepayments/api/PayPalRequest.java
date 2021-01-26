@@ -3,8 +3,6 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
-import com.braintreepayments.api.models.PostalAddress;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;

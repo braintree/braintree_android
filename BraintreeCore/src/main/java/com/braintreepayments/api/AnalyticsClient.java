@@ -9,12 +9,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.UUIDHelper;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.Configuration;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

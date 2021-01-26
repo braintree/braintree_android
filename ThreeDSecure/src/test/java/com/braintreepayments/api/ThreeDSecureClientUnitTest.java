@@ -6,15 +6,6 @@ import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -23,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
+import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;

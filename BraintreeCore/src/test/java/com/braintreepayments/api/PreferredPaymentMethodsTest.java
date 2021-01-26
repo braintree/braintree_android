@@ -2,13 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;

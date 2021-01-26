@@ -8,17 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.HttpNoResponse;
-import com.braintreepayments.api.internal.IntegrationType;
-import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.internal.UUIDHelper;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.Configuration;
-
 public class BraintreeClient {
 
     private final Authorization authorization;

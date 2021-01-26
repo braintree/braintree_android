@@ -9,13 +9,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.GooglePaymentCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
-import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.models.VisaCheckoutNonce;
+import com.braintreepayments.api.PayPalAccountNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.VenmoAccountNonce;
+import com.braintreepayments.api.VisaCheckoutNonce;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

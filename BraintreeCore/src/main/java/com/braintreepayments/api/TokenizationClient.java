@@ -3,21 +3,13 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.internal.GraphQLConstants.Features;
-import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
-import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.GraphQLConstants.Features;
 
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 
-import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
+import static com.braintreepayments.api.PaymentMethodNonce.parsePaymentMethodNonces;
 
 class TokenizationClient {
 
@@ -39,11 +31,11 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
-     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
+     * If creation fails validation, {@link BraintreeErrorListener#onError(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} (Throwable)}
+     * BraintreeErrorListener#onError(Exception)} (Throwable)}
      * will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}

@@ -9,7 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
-import com.braintreepayments.testutils.CardNumber;
+import com.braintreepayments.api.CardNumber;
 
 import org.junit.Before;
 import org.junit.Ignore;

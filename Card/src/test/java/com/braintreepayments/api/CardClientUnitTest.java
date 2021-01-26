@@ -2,11 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

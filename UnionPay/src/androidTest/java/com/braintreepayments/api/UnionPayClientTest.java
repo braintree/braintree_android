@@ -6,16 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.UnionPayCardBuilder;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
-import com.braintreepayments.testutils.CardNumber;
-import com.braintreepayments.testutils.ExpirationDateHelper;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,14 +13,14 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_DEBIT;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_INTEGRATION_CREDIT;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_INTEGRATION_DEBIT;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_NOT_ACCEPTED;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SINGLE_STEP_SALE;
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
+import static com.braintreepayments.api.Assertions.assertIsANonce;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_CREDIT;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_DEBIT;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_INTEGRATION_CREDIT;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_INTEGRATION_DEBIT;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_NOT_ACCEPTED;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_SINGLE_STEP_SALE;
+import static com.braintreepayments.api.CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

@@ -4,15 +4,6 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalCreditFinancing;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

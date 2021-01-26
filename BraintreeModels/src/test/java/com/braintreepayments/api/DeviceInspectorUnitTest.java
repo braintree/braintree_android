@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
-import com.braintreepayments.api.internal.AppHelper;
-import com.braintreepayments.api.internal.ManifestValidator;
-
 import org.junit.Before;
 import org.junit.Test;
 

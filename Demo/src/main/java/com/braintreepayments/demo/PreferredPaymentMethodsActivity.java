@@ -13,11 +13,11 @@ import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalFlowStartedCallback;
 import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
 import com.braintreepayments.api.VenmoClient;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
+import com.braintreepayments.api.InvalidArgumentException;
+import com.braintreepayments.api.PreferredPaymentMethodsCallback;
+import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.PostalAddress;
+import com.braintreepayments.api.PreferredPaymentMethodsResult;
 
 public class PreferredPaymentMethodsActivity extends BaseActivity {
 

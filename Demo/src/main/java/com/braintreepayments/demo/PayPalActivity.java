@@ -18,21 +18,18 @@ import com.braintreepayments.api.PayPalBrowserSwitchResultCallback;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalFlowStartedCallback;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.InvalidArgumentException;
+import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.BraintreeRequestCodes;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.PayPalAccountNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.PostalAddress;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class PayPalActivity extends BaseActivity implements
-    BrowserSwitchCallback,
-    PaymentMethodNonceCreatedListener {
+public class PayPalActivity extends BaseActivity implements BrowserSwitchCallback {
 
     private String mDeviceData;
     private PayPalClient payPalClient;

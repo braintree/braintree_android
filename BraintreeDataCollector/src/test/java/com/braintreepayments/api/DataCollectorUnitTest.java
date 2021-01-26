@@ -2,14 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
+import com.braintreepayments.api.TestConfigurationBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +14,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.Map;
 
-import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
+import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;

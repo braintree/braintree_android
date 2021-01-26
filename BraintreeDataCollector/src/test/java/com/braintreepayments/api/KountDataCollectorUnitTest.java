@@ -2,9 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
 import com.kount.api.DataCollector;
 
 import org.json.JSONException;

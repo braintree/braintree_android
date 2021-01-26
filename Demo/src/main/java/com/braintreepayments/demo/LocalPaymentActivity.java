@@ -8,27 +8,24 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.Authorization;
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchCallback;
 import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.BrowserSwitchResult;
+import com.braintreepayments.api.InvalidArgumentException;
 import com.braintreepayments.api.LocalPaymentBrowserSwitchResultCallback;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.LocalPaymentStartCallback;
 import com.braintreepayments.api.LocalPaymentTransaction;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.PostalAddress;
 
 import org.json.JSONException;
 
-public class LocalPaymentActivity extends BaseActivity implements
-    BrowserSwitchCallback,
-    PaymentMethodNonceCreatedListener {
+public class LocalPaymentActivity extends BaseActivity implements BrowserSwitchCallback {
 
     private Button mIdealButton;
     private LocalPaymentClient localPaymentClient;

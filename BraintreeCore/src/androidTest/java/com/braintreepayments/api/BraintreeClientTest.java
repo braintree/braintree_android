@@ -3,15 +3,6 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
-import com.braintreepayments.api.test.TestPayPalUATBuilder;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;

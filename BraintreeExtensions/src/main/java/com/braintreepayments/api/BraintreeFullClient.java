@@ -2,16 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.visa.checkout.VisaPaymentSummary;
 
 // TODO: unit test when API is finalized

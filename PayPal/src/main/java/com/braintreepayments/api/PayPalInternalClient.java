@@ -6,13 +6,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.models.PostalAddressParser;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

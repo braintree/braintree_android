@@ -4,19 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
-import com.braintreepayments.testutils.ExpirationDateHelper;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,12 +11,12 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_LOOKUP_ERROR;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
+import static com.braintreepayments.api.Assertions.assertIsANonce;
+import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
+import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
+import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_MPI_LOOKUP_ERROR;
+import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_VERIFICATON;
+import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

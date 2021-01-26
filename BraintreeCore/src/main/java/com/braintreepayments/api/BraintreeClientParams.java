@@ -2,11 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.models.Authorization;
-
 class BraintreeClientParams {
 
     private Authorization authorization;

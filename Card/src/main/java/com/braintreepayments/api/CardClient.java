@@ -4,11 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-
 /**
  * Used to tokenize credit or debit cards using a {@link CardBuilder}. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
@@ -31,7 +26,7 @@ public class CardClient {
     }
 
     /**
-     * Create a {@link com.braintreepayments.api.models.CardNonce}.
+     * Create a {@link CardNonce}.
      * <p>
      * The tokenization result is returned via a {@link CardTokenizeCallback} callback.
      *
@@ -41,7 +36,7 @@ public class CardClient {
      *
      * <p>
      * If creation fails validation, the callback's {@link PaymentMethodNonceCallback#failure}
-     * method will be invoked with an {@link com.braintreepayments.api.exceptions.ErrorWithResponse} exception.
+     * method will be invoked with an {@link ErrorWithResponse} exception.
      *
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, the callback's

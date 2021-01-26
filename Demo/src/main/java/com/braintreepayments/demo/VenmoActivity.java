@@ -13,10 +13,10 @@ import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoOnActivityResultCallback;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.VenmoAccountNonce;
+import com.braintreepayments.api.InvalidArgumentException;
+import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.VenmoAccountNonce;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

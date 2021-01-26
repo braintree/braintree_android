@@ -4,13 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Base64;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.HttpClient;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-
 import org.json.JSONException;
 
 // TODO: Re-name to ConfigurationLoader

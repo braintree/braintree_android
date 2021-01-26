@@ -8,8 +8,6 @@ import android.net.NetworkInfo;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.internal.ClassHelper;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

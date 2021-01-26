@@ -11,16 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.MetadataBuilder;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.models.VenmoConfiguration;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

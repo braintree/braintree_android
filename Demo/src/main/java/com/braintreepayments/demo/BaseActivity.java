@@ -20,14 +20,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
 
+import com.braintreepayments.api.BinData;
 import com.braintreepayments.api.BraintreeActivity;
-import com.braintreepayments.api.interfaces.BraintreeCancelListener;
-import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.internal.SignatureVerificationOverrides;
-import com.braintreepayments.api.models.BinData;
-import com.braintreepayments.api.models.BraintreePaymentResult;
-import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.BraintreeCancelListener;
+import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.SignatureVerificationOverrides;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +33,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("deprecation")
 public abstract class BaseActivity extends BraintreeActivity implements OnRequestPermissionsResultCallback,
-        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreePaymentResultListener,
+        BraintreeCancelListener,
         ActionBar.OnNavigationListener {
 
     public static final String RETURN_URL_SCHEME = "com.braintreepayments.demo.braintree";
@@ -111,19 +108,10 @@ public abstract class BaseActivity extends BraintreeActivity implements OnReques
     }
 
     @CallSuper
-    @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         setProgressBarIndeterminateVisibility(true);
 
         Log.d(getClass().getSimpleName(), "Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
-    }
-
-    @CallSuper
-    @Override
-    public void onBraintreePaymentResult(BraintreePaymentResult result) {
-        setProgressBarIndeterminateVisibility(true);
-
-        Log.d(getClass().getSimpleName(), "Braintree Payment Result received: " + result.getClass().getSimpleName());
     }
 
     @CallSuper

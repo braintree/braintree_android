@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.models.Configuration;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;

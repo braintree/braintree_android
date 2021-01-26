@@ -3,7 +3,7 @@ package com.braintreepayments.demo.test;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
-import com.braintreepayments.testutils.ExpirationDateHelper;
+import com.braintreepayments.api.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,7 +17,7 @@ import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 

@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.testutils.Fixtures;
 import com.cardinalcommerce.cardinalmobilesdk.a.a.c;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;

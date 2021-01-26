@@ -7,18 +7,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
-import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -34,7 +22,7 @@ import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_PAYMENT_METHOD_NONCE;
 import static com.braintreepayments.api.VenmoClient.EXTRA_USERNAME;
-import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
+import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;

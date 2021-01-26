@@ -4,16 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
-import com.braintreepayments.api.internal.GraphQLConstants;
-import com.braintreepayments.api.internal.GraphQLQueryHelper;
-import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.MetadataBuilder;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +20,7 @@ public class PaymentMethodClient {
     protected static final String INPUT = "input";
     protected static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
 
-    private BraintreeClient braintreeClient;
+    private final BraintreeClient braintreeClient;
 
     PaymentMethodClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
@@ -90,9 +80,9 @@ public class PaymentMethodClient {
      * used to create the {@link BraintreeFragment}.
      * <p>
      * Note: This method only works with Android Lollipop (>= 21) and above.
-     * This will invoke {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} when
+     * This will invoke {@link BraintreeErrorListener#onError(Exception)} when
      * <ul>
-     *      <li>A {@link com.braintreepayments.api.models.TokenizationKey} is used.</li>
+     *      <li>A {@link TokenizationKey} is used.</li>
      *      <li>The device is below Lollipop.</li>
      *      <li>If the request fails.</li>
      * <ul/>

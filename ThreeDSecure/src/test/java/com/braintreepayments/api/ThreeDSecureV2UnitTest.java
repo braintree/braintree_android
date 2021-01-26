@@ -4,15 +4,6 @@ import android.content.Intent;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
@@ -27,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
 import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SECURE;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

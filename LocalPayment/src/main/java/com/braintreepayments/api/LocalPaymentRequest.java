@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.PostalAddress;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

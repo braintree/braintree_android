@@ -4,12 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

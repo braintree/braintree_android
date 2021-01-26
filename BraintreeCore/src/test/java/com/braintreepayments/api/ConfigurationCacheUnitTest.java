@@ -4,9 +4,6 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
+import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 

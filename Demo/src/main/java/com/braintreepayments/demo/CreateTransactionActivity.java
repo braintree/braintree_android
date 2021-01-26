@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.demo.models.Transaction;
 
 import retrofit.Callback;

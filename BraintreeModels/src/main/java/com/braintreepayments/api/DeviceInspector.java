@@ -9,10 +9,6 @@ import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.internal.AppHelper;
-import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.internal.SignatureVerification;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;

@@ -3,13 +3,6 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.util.Base64;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.HttpClient;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;

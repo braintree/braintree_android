@@ -4,20 +4,6 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
-import com.braintreepayments.api.exceptions.UnexpectedException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.GraphQLConstants;
-import com.braintreepayments.api.internal.GraphQLQueryHelper;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +13,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
-import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
+import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;

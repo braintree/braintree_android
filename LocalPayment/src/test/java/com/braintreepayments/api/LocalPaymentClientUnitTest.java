@@ -4,15 +4,6 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

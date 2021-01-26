@@ -11,13 +11,6 @@ import androidx.work.WorkManager;
 import androidx.work.impl.model.WorkSpec;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.UUIDHelper;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

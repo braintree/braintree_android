@@ -7,14 +7,6 @@ import android.net.Uri;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;

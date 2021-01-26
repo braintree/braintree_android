@@ -10,12 +10,6 @@ import androidx.work.testing.SynchronousExecutor;
 import androidx.work.testing.TestDriver;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

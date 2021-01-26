@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.models.Configuration;
-
 
 import java.util.concurrent.TimeUnit;
 

@@ -3,10 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.models.PostalAddressParser;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

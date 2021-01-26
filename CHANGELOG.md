@@ -57,6 +57,20 @@
   * Remove `PayPalDataCollectorRequest`
   * Remove `InstallationIdentifier`
   * Remove deprecated 3DS `performVerification` methods
+  * Remove `Beta` interface
+  * Remove `BrowserSwitchException` constructor
+  * Remove `PaymentMethodNotAvailableException`
+  * Remove `VisaCheckoutNotAvailableException`
+  * Remove `BraintreeErrorListener` 
+  * Remove `BraintreePaymentResultListener`
+  * Remove `PaymentMethodNonceCreatedListener`
+  * Remove `PaymentMethodNonceDeletedListener`
+  * Remove `PaymentMethodNonceUpdatedListener`
+  * Remove `QueuedCallback`
+  * Remove `VisaCheckoutConstants`
+  * Remove `BraintreePaymentResult`
+  * Remove `BraintreeListener`
+  * Remove `UnionPayListener`
 
 ## 3.17.0
 

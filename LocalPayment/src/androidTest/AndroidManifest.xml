@@ -6,6 +6,6 @@
     <application android:usesCleartextTraffic="true">
 
         <!--suppress AndroidDomInspection -->
-        <activity android:name=".test.TestActivity" />
+        <activity android:name=".TestActivity" />
     </application>
 </manifest>

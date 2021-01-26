@@ -5,16 +5,6 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.UnionPayCardBuilder;
-import com.braintreepayments.api.models.UnionPayConfiguration;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,10 +41,10 @@ public class UnionPayClient {
      * UnionPayClient#enroll(UnionPayCardBuilder, UnionPayEnrollCallback)}.
      * <p>
      * On completion, returns the {@link UnionPayCapabilities} to
-     * {@link com.braintreepayments.api.interfaces.UnionPayListener#onCapabilitiesFetched(UnionPayCapabilities)}
+     * {@link UnionPayListener#onCapabilitiesFetched(UnionPayCapabilities)}
      * <p>
      * On error, an exception will be passed back to
-     * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
+     * {@link BraintreeErrorListener#onError(Exception)}
      * @param cardNumber The card number to check for Union Pay capabilities.
      * @param callback {@link UnionPayFetchCapabilitiesCallback}
      */
@@ -94,12 +84,12 @@ public class UnionPayClient {
      * UnionPayClient#fetchCapabilities(String, UnionPayFetchCapabilitiesCallback)} if your card needs to be enrolled.
      * <p>
      * On completion, returns a enrollmentId to
-     * {@link com.braintreepayments.api.interfaces.UnionPayListener#onSmsCodeSent(String, boolean)}
+     * {@link UnionPayListener#onSmsCodeSent(String, boolean)}
      * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
      * collected from the merchant before invoking {@link UnionPayClient#tokenize(UnionPayCardBuilder, UnionPayTokenizeCallback)}
      * <p>
      * On error, an exception will be passed back to
-     * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
+     * {@link BraintreeErrorListener#onError(Exception)}
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
      * @param callback {@link UnionPayEnrollCallback}
      */
@@ -143,18 +133,18 @@ public class UnionPayClient {
     }
 
     /**
-     * Create a {@link com.braintreepayments.api.models.CardNonce}. Note that if the card is a UnionPay card,
+     * Create a {@link CardNonce}. Note that if the card is a UnionPay card,
      * {@link UnionPayCardBuilder#enrollmentId(String)} and {@link UnionPayCardBuilder#smsCode(String)}
      * need to be set for tokenization to succeed.
      * <p>
-     * On completion, returns the {@link com.braintreepayments.api.models.PaymentMethodNonce} to {@link
-     * com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener}.
+     * On completion, returns the {@link PaymentMethodNonce} to {@link
+     * PaymentMethodNonceCreatedListener}.
      * <p>
-     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
-     * will be called with the resulting {@link com.braintreepayments.api.exceptions.ErrorWithResponse}.
+     * If creation fails validation, {@link BraintreeErrorListener#onError(Exception)}
+     * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} will be called with the {@link
+     * BraintreeErrorListener#onError(Exception)} will be called with the {@link
      * Exception} that occurred.
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
      * @param callback {@link UnionPayTokenizeCallback}

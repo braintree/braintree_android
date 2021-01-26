@@ -4,20 +4,6 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.BinData;
-import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
-import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.SharedPreferencesHelper;
-
 import org.json.JSONException;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -29,8 +15,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.CardNumber.VISA;
-import static com.braintreepayments.testutils.Fixtures.TOKENIZATION_KEY;
+import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.api.Fixtures.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

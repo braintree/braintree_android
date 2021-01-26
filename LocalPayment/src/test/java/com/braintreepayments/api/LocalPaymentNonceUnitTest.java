@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

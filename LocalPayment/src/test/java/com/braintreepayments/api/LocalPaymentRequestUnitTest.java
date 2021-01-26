@@ -2,9 +2,6 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.LocalPaymentRequest;
-import com.braintreepayments.api.models.PostalAddress;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

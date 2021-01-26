@@ -1,10 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -2,19 +2,6 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
-import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.UnionPayCardBuilder;
-import com.braintreepayments.testutils.CardNumber;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

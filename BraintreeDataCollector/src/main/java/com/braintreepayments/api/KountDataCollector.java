@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.models.Configuration;
 import com.kount.api.DataCollector;
 
 class KountDataCollector {

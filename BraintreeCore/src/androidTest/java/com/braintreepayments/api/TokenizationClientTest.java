@@ -3,14 +3,6 @@ package com.braintreepayments.api;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.Fixtures;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -20,7 +12,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
+import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 

@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-
 class VenmoSharedPrefsWriter {
 
     private static final String VAULT_VENMO_KEY = "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY";

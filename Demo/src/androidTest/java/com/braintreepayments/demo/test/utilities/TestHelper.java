@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.DeviceAutomator;
-import com.braintreepayments.testutils.ExpirationDateHelper;
+import com.braintreepayments.api.ExpirationDateHelper;
 
 import static com.braintreepayments.AutomatorAction.click;
 import static com.braintreepayments.AutomatorAssertion.text;

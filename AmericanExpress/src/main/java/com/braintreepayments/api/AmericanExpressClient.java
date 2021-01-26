@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-
 import org.json.JSONException;
 
 /**

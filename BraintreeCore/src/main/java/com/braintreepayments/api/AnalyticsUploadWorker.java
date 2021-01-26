@@ -7,10 +7,6 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
-
 import org.json.JSONException;
 
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY;

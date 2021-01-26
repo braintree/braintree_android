@@ -5,11 +5,6 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
-
 /**
  * Fetches information about which payment methods are preferred on the device.
  * Used to determine which payment methods are given preference in your UI,

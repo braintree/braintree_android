@@ -5,7 +5,7 @@
 
     <application android:usesCleartextTraffic="true">
         <!--suppress AndroidDomInspection -->
-        <activity android:name=".test.TestActivity" />
+        <activity android:name=".TestActivity" />
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>

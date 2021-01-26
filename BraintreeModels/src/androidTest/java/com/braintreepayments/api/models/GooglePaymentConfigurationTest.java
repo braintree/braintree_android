@@ -3,7 +3,9 @@ package com.braintreepayments.api.models;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.testutils.Fixtures;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.GooglePaymentConfiguration;
+import com.braintreepayments.api.Fixtures;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 

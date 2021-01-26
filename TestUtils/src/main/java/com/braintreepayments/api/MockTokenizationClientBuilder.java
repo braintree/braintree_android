@@ -1,9 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

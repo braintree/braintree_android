@@ -1,21 +1,16 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.visa.checkout.VisaPaymentSummary;
 
 // TODO: unit test when API is finalized
-public abstract class BraintreeActivity extends AppCompatActivity {
+public abstract class BraintreeActivity extends AppCompatActivity implements BrowserSwitchCallback {
 
     private static final String EXTRA_WAS_BROWSER_SWITCH_RESULT = "com.braintreepayments.api.WAS_BROWSER_SWITCH_RESULT";
 
@@ -85,6 +80,11 @@ public abstract class BraintreeActivity extends AppCompatActivity {
                 });
                 break;
         }
+    }
+
+    @Override
+    public void onResult(int i, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
+        return;
     }
 
     // optional methods

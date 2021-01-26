@@ -3,8 +3,6 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import com.braintreepayments.api.PayPalRequest.PayPalPaymentIntent;
-import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
