@@ -1,6 +1,4 @@
-package com.braintreepayments.api.models;
-
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
+package com.braintreepayments.api;
 
 /**
  * Optional parameters to use when checking whether Google Pay is supported and set up on the customer's device.

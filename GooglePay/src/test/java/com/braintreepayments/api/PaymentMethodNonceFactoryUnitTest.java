@@ -1,11 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.GooglePaymentCardNonce;
-import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PaymentMethodNonceFactory;
-import com.braintreepayments.api.test.Fixtures;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

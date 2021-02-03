@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.test.TestConfigurationBuilder;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.wallet.Wallet;

@@ -1,16 +1,14 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.braintreepayments.api.Json;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.Nullable;
 
-import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
+import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 import static java.lang.Boolean.FALSE;
 
 /**
@@ -50,7 +48,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         return googlePaymentCardNonce;
     }
 
-    protected void fromJson(JSONObject json) throws JSONException {
+    public void fromJson(JSONObject json) throws JSONException {
 
         JSONObject billingAddressJson = new JSONObject();
         JSONObject shippingAddressJson = new JSONObject();

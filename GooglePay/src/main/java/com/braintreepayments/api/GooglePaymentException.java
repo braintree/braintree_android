@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
 import com.google.android.gms.common.api.Status;
 
 /**

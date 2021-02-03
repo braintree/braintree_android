@@ -1,8 +1,7 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.test.Fixtures;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;

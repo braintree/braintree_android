@@ -1,6 +1,4 @@
-package com.braintreepayments.api.test;
-
-import com.braintreepayments.api.models.BinData;
+package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 

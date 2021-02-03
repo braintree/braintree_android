@@ -1,38 +1,136 @@
 plugins {
     id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'kotlin-android'
+    id 'signing'
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        consumerProguardFiles 'proguard.pro'
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    lintOptions {
+        abortOnError false
+    }
+
+    testOptions.unitTests {
+        all {
+            jvmArgs '-noverify'
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        returnDefaultValues true
+        includeAndroidResources true
     }
 }
 
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    api 'com.google.android.gms:play-services-wallet:16.0.1'
+
+    implementation project(':BraintreeCore')
+
+    testImplementation 'androidx.test:rules:1.2.0'
+    testImplementation 'androidx.test:runner:1.2.0'
+    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation "androidx.core:core-ktx:1.3.2"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
+// region signing and publishing
+
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    repositories {
+        sonatype()
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.braintreepayments.api'
+                artifactId = 'google-payment'
+                version = rootProject.versionName
+
+                pom {
+                    name = 'google-payment'
+                    packaging = 'aar'
+                    description = 'Google Pay Module for Braintree\'s Android SDK.'
+                    url = 'https://github.com/braintree/braintree-android-google-payment'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                        connection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// endregion
