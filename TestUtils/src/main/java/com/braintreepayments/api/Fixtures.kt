@@ -1806,6 +1806,7 @@ object Fixtures {
     """
     // endregion
 
+    // region Google Pay
     // language=JSON
     const val PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE = """
         {
@@ -2011,4 +2012,5 @@ object Fixtures {
           ]
         }
     """
+    //endregion
 }
