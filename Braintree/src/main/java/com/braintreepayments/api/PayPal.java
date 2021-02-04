@@ -69,6 +69,7 @@ public class PayPal {
     private static final String TOKENIZATION_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
     private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
+    private static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
@@ -138,6 +139,10 @@ public class PayPal {
             fragment.sendAnalyticsEvent("paypal.single-payment.selected");
             if (request.shouldOfferCredit()) {
                 fragment.sendAnalyticsEvent("paypal.single-payment.credit.offered");
+            }
+
+            if (request.shouldOfferPayLater()) {
+                fragment.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
             }
 
             requestOneTimePayment(fragment, request, false, handler);
@@ -232,7 +237,8 @@ public class PayPal {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, checkoutRequest.getSuccessUrl())
                 .put(CANCEL_URL_KEY, checkoutRequest.getCancelUrl())
-                .put(OFFER_CREDIT_KEY, request.shouldOfferCredit());
+                .put(OFFER_CREDIT_KEY, request.shouldOfferCredit())
+                .put(OFFER_PAY_LATER_KEY, request.shouldOfferPayLater());
 
         if (fragment.getAuthorization() instanceof ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, fragment.getAuthorization().getBearer());

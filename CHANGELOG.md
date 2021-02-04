@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add `accountType` to `ThreeDSecureRequest`
+* Add `offerPayLater` to `PayPalRequest`
 
 ## 3.15.0
 

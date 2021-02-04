@@ -206,7 +206,8 @@ public class PayPalUnitTest {
                         .put("address_override", false)
                         .put("brand_name", "displayName")
                         .put("no_shipping", true))
-                .put("offer_paypal_credit", false);
+                .put("offer_paypal_credit", false)
+                .put("offer_pay_later", false);
         JSONObject actual = new JSONObject(dataCaptor.getValue());
         JSONAssert.assertEquals(expected, actual, true);
     }
@@ -662,6 +663,15 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_sendsPayPalPayLaterOfferedAnalyticsEvent() {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerPayLater(true));
+
+        verify(fragment).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+    }
+
+    @Test
     public void requestOneTimePayment_defaultPostParamsIncludeCorrectValues() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
@@ -684,7 +694,8 @@ public class PayPalUnitTest {
                         .put("brand_name", "displayName")
                         .put("no_shipping", true))
                 .put("intent", "authorize")
-                .put("offer_paypal_credit", false);
+                .put("offer_paypal_credit", false)
+                .put("offer_pay_later", false);
 
         JSONAssert.assertEquals(expected, actual, true);
     }

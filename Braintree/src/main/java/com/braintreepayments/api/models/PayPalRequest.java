@@ -72,6 +72,7 @@ public class PayPalRequest implements Parcelable {
     private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
     private boolean mOfferCredit;
+    private boolean mOfferPayLater;
     private String mMerchantAccountId;
     private PayPalProductAttributes mProductAttributes;
     private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
@@ -92,6 +93,7 @@ public class PayPalRequest implements Parcelable {
         mAmount = amount;
         mShippingAddressRequired = false;
         mOfferCredit = false;
+        mOfferPayLater = false;
     }
 
     /**
@@ -101,6 +103,7 @@ public class PayPalRequest implements Parcelable {
         mAmount = null;
         mShippingAddressRequired = false;
         mOfferCredit = false;
+        mOfferPayLater = false;
     }
 
     /**
@@ -276,6 +279,16 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
+     * Offers PayPal Pay Later prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
+     *
+     * @param offerPayLater Whether to offer PayPal Pay Later.
+     */
+    public PayPalRequest offerPayLater(boolean offerPayLater) {
+        mOfferPayLater = offerPayLater;
+        return this;
+    }
+
+    /**
      * Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -337,6 +350,10 @@ public class PayPalRequest implements Parcelable {
         return mOfferCredit;
     }
 
+    public boolean shouldOfferPayLater() {
+        return mOfferPayLater;
+    }
+
     public String getMerchantAccountId() {
         return mMerchantAccountId;
     }
@@ -383,6 +400,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mUserAction);
         parcel.writeString(mDisplayName);
         parcel.writeByte(mOfferCredit ? (byte) 1:0);
+        parcel.writeByte(mOfferPayLater ? (byte) 1:0);
         parcel.writeString(mMerchantAccountId);
         parcel.writeList(mLineItems);
         parcel.writeParcelable(mProductAttributes, i);
@@ -401,6 +419,7 @@ public class PayPalRequest implements Parcelable {
         mUserAction = in.readString();
         mDisplayName = in.readString();
         mOfferCredit = in.readByte() > 0;
+        mOfferPayLater = in.readByte() > 0;
         mMerchantAccountId = in.readString();
         mLineItems = in.readArrayList(PayPalLineItem.class.getClassLoader());
         mProductAttributes = in.readParcelable(PayPalProductAttributes.class.getClassLoader());
