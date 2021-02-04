@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.16.0
 
 * Add `accountType` to `ThreeDSecureRequest`
 * Add `offerPayLater` to `PayPalRequest`
