@@ -111,6 +111,8 @@ public class GooglePaymentClientUnitTest {
         when(activityInfo.getThemeResource()).thenReturn(R.style.bt_transparent_activity);
     }
 
+    // region isReadyToPay
+
     @Test
     public void isReadyToPay_sendsReadyToPayRequest() throws JSONException {
         PaymentsClient mockPaymentsClient = mock(PaymentsClient.class);
@@ -205,6 +207,10 @@ public class GooglePaymentClientUnitTest {
         assertEquals(GoogleApiClientException.ErrorType.NotAttachedToActivity, ((GoogleApiClientException) exception).getErrorType());
         assertEquals(1, ((GoogleApiClientException) exception).getErrorCode());
     }
+
+    // endregion
+
+    // region requestPayment
 
     @Test
     public void requestPayment_startsActivity() throws InvalidArgumentException {
@@ -837,70 +843,6 @@ public class GooglePaymentClientUnitTest {
     }
 
     @Test
-    public void tokenize_withCardToken_returnsGooglePaymentNonce() throws InvalidArgumentException {
-        String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAYMENT_CARD;
-
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        PaymentData pd = PaymentData.fromJson(paymentDataJson);
-
-        GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
-
-        sut.tokenize(activity, pd, activityResultCallback);
-
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
-
-        assertTrue(captor.getValue() instanceof GooglePaymentCardNonce);
-    }
-
-    @Test
-    public void tokenize_withPayPalToken_returnsPayPalAccountNonce() throws InvalidArgumentException {
-        String paymentDataJson = Fixtures.REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT;
-
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        PaymentData pd = PaymentData.fromJson(paymentDataJson);
-
-        GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
-
-        sut.tokenize(activity, pd, activityResultCallback);
-
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
-
-        assertTrue(captor.getValue() instanceof PayPalAccountNonce);
-    }
-
-    @Test
     public void requestPayment_whenRequestIsNull_fowardsExceptionToCallback() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
@@ -964,6 +906,78 @@ public class GooglePaymentClientUnitTest {
         assertEquals("GooglePaymentActivity was not found in the Android " +
                 "manifest, or did not have a theme of R.style.bt_transparent_activity", exception.getMessage());
     }
+
+    // endregion
+
+    // region tokenize
+
+    @Test
+    public void tokenize_withCardToken_returnsGooglePaymentNonce() throws InvalidArgumentException {
+        String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAYMENT_CARD;
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .paypalClientId("paypal-client-id-for-google-payment")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
+                .withAnalytics()
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .activityInfo(activityInfo)
+                .build();
+
+        PaymentData pd = PaymentData.fromJson(paymentDataJson);
+
+        GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
+
+        sut.tokenize(activity, pd, activityResultCallback);
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
+
+        assertTrue(captor.getValue() instanceof GooglePaymentCardNonce);
+    }
+
+    @Test
+    public void tokenize_withPayPalToken_returnsPayPalAccountNonce() throws InvalidArgumentException {
+        String paymentDataJson = Fixtures.REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT;
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .paypalClientId("paypal-client-id-for-google-payment")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
+                .withAnalytics()
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .activityInfo(activityInfo)
+                .build();
+
+        PaymentData pd = PaymentData.fromJson(paymentDataJson);
+
+        GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
+
+        sut.tokenize(activity, pd, activityResultCallback);
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
+
+        assertTrue(captor.getValue() instanceof PayPalAccountNonce);
+    }
+
+    // endregion
+
+    // region onActivityResult
 
     @Test
     public void onActivityResult_sendsAnalyticsEventOnCancel() throws InvalidArgumentException {
@@ -1040,6 +1054,9 @@ public class GooglePaymentClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
     }
 
+    // endregion
+
+    // region getAllowedCardNetworks
     @Test
     public void getAllowedCardNetworks_returnsSupportedNetworks() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
@@ -1064,6 +1081,10 @@ public class GooglePaymentClientUnitTest {
         assertTrue(allowedCardNetworks.contains(WalletConstants.CARD_NETWORK_AMEX));
         assertTrue(allowedCardNetworks.contains(WalletConstants.CARD_NETWORK_DISCOVER));
     }
+
+    // endregion
+
+    // region getTokenizationParameters
 
     @Test
     public void getTokenizationParameters_returnsCorrectParameters() throws Exception {
@@ -1156,6 +1177,8 @@ public class GooglePaymentClientUnitTest {
 
         verify(getTokenizationParametersCallback).onResult(any(PaymentMethodTokenizationParameters.class), eq(sut.getAllowedCardNetworks(configuration)) );
     }
+
+    // endregion
 
     private JSONObject getPaymentDataRequestJsonSentToGooglePayment(FragmentActivity activity) {
         JSONObject result = new JSONObject();
