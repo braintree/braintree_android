@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.pm.ActivityInfo;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -27,6 +29,8 @@ public class MockBraintreeClientBuilder {
 
     private String sessionId;
     private String integration;
+
+    private ActivityInfo activityInfo;
 
     private boolean urlSchemeInAndroidManifest = true;
 
@@ -89,12 +93,18 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
+    public MockBraintreeClientBuilder activityInfo(ActivityInfo activityInfo) {
+        this.activityInfo = activityInfo;
+        return this;
+    }
+
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
         when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
+        when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
 
         doAnswer(new Answer<Void>() {
             @Override
