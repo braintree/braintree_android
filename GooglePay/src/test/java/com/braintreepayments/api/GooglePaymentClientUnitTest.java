@@ -870,7 +870,7 @@ public class GooglePaymentClientUnitTest {
 
     @Test
     public void tokenize_withPayPalToken_returnsPayPalAccountNonce() throws InvalidArgumentException {
-        String paymentDataJson = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
+        String paymentDataJson = Fixtures.REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT;
 
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()

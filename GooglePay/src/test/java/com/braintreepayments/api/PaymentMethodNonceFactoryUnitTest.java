@@ -21,7 +21,7 @@ public class PaymentMethodNonceFactoryUnitTest {
 
     @Test
     public void getPaymentMethodNonce_returnsPayPalAccountNonce() throws JSONException {
-        String jsonString = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
+        String jsonString = Fixtures.REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT;
 
         PaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
 
