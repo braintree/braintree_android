@@ -93,10 +93,12 @@ public class GooglePaymentClient {
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
                 if (!configuration.getGooglePayment().isEnabled()) {
                     callback.onResult(false, null);
+                    return;
                 }
 
                 if (activity == null) {
                     callback.onResult(false, new GoogleApiClientException(GoogleApiClientException.ErrorType.NotAttachedToActivity, 1));
+                    return;
                 }
 
                 PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,

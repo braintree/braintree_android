@@ -59,14 +59,13 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(RobolectricTestRunner.class)
 @PrepareForTest({GoogleApiAvailability.class, Wallet.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
 public class GooglePaymentClientUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
     private FragmentActivity activity;
-    private BraintreeClient braintreeClient;
 
     private GooglePaymentRequest baseRequest;
 
@@ -79,7 +78,6 @@ public class GooglePaymentClientUnitTest {
     @Before
     public void beforeEach() {
         activity = mock(FragmentActivity.class);
-        braintreeClient = mock(BraintreeClient.class);
         readyToPayCallback = mock(GooglePaymentIsReadyToPayCallback.class);
         requestPaymentCallback = mock(GooglePaymentRequestPaymentCallback.class);
         activityResultCallback = mock(GooglePaymentOnActivityResultCallback.class);
@@ -91,16 +89,6 @@ public class GooglePaymentClientUnitTest {
                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                         .setCurrencyCode("USD")
                         .build());
-
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
-                        .supportedNetworks(new String[]{"amex", "visa"})
-                        .enabled(true))
-                .buildConfiguration();
-
-        braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .build();
 
         GoogleApiAvailability mockGoogleApiAvailability = mock(GoogleApiAvailability.class);
         when(mockGoogleApiAvailability.isGooglePlayServicesAvailable(any(Context.class))).thenReturn(ConnectionResult.SUCCESS);
@@ -120,6 +108,16 @@ public class GooglePaymentClientUnitTest {
 
         mockStatic(Wallet.class);
         when(Wallet.getPaymentsClient(any(Activity.class), any(Wallet.WalletOptions.class))).thenReturn(mockPaymentsClient);
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                        .supportedNetworks(new String[]{"amex", "visa"})
+                        .enabled(true))
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .build();
 
         GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
         sut.isReadyToPay(activity, null, readyToPayCallback);
@@ -141,6 +139,16 @@ public class GooglePaymentClientUnitTest {
         when(Wallet.getPaymentsClient(any(Activity.class), any(Wallet.WalletOptions.class))).thenReturn(mockPaymentsClient);
 
         ReadyForGooglePaymentRequest readyForGooglePaymentRequest = new ReadyForGooglePaymentRequest().existingPaymentMethodRequired(true);
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                        .supportedNetworks(new String[]{"amex", "visa"})
+                        .enabled(true))
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .build();
 
         GooglePaymentClient sut = new GooglePaymentClient(braintreeClient);
         sut.isReadyToPay(activity, readyForGooglePaymentRequest, readyToPayCallback);

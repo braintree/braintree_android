@@ -134,8 +134,11 @@ public class BraintreeClient {
     }
 
     String getReturnUrlScheme() {
-        return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree";
+        if (applicationContext != null) {
+            return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
+                    .replace("_", "") + ".braintree";
+        }
+        return null;
     }
 
     public boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {

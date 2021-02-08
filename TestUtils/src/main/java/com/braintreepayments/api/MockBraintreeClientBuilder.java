@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
+import android.content.pm.ActivityInfo;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -28,6 +28,7 @@ public class MockBraintreeClientBuilder {
     private Configuration configuration;
     private Exception configurationError;
 
+    private ActivityInfo activityInfo;
     private Authorization authorization;
 
     private String sessionId;
@@ -51,6 +52,11 @@ public class MockBraintreeClientBuilder {
 
     public MockBraintreeClientBuilder authorization(Authorization authorization) {
         this.authorization = authorization;
+        return this;
+    }
+
+    public MockBraintreeClientBuilder activityInfo(ActivityInfo activityInfo) {
+        this.activityInfo = activityInfo;
         return this;
     }
 
@@ -118,9 +124,16 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
-        when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
+
+        // HACK: some google pay tests fail when getReturnUrlScheme is stubbed but not invoked
+        // TODO: create a wrapper around google wallet api to avoid having to use Powermock and Robolectric at the same time, which seems to be causing this issue
+        if (returnUrlScheme != null) {
+            when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
+        }
+
         when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
         when(braintreeClient.canPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
+        when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
 
         doAnswer(new Answer<Void>() {
             @Override
