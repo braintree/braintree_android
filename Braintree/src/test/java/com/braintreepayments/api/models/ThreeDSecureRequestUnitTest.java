@@ -71,6 +71,7 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
+                .dataOnlyRequested(true)
                 .exemptionRequested(true)
                 .uiCustomization(uiCustomization)
                 .v1UiCustomization(v1UiCustomization)
@@ -101,6 +102,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getBillingAddress().getPostalCode(), actual.getBillingAddress().getPostalCode());
         assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
+        assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
 
         assertEquals(expected.getUiCustomization().getLabelCustomization().getHeadingTextColor(),
@@ -139,6 +141,7 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
+                .dataOnlyRequested(true)
                 .exemptionRequested(true)
                 .accountType(ThreeDSecureRequest.CREDIT);
 
@@ -150,6 +153,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("credit", json.get("account_type"));
         assertTrue(json.getBoolean("challenge_requested"));
         assertTrue(json.getBoolean("exemption_requested"));
+        assertTrue(json.getBoolean("data_only_requested"));
 
         assertEquals("billing-given-name", additionalInfoJson.get("billing_given_name"));
         assertEquals("billing-surname", additionalInfoJson.get("billing_surname"));
@@ -175,6 +179,14 @@ public class ThreeDSecureRequestUnitTest {
                 .build("df-reference-id"));
 
         assertFalse(json.has("account_type"));
+    }
+
+    @Test
+    public void toJson_whenDataOnlyRequestedNotSet_defaultsToFalse() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .build("df-reference-id"));
+
+        assertFalse(json.getBoolean("data_only_requested"));
     }
 
     @Test

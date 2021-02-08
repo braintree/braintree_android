@@ -39,6 +39,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private @ThreeDSecureAccountType String mAccountType;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
+    private boolean mDataOnlyRequested = false;
     private boolean mExemptionRequested = false;
     private UiCustomization mUiCustomization;
     private ThreeDSecureV1UiCustomization mV1UiCustomization;
@@ -159,6 +160,11 @@ public class ThreeDSecureRequest implements Parcelable {
         return this;
     }
 
+    public ThreeDSecureRequest dataOnlyRequested(boolean dataOnlyRequested) {
+        mDataOnlyRequested = dataOnlyRequested;
+        return this;
+    }
+
     /**
      * Optional If set to true, an exemption to the authentication challenge will be requested
      *
@@ -262,6 +268,10 @@ public class ThreeDSecureRequest implements Parcelable {
         return mChallengeRequested;
     }
 
+    public boolean isDataOnlyRequested() {
+        return mDataOnlyRequested;
+    }
+
     /**
      * @return If a exemption has been requested
      */
@@ -304,6 +314,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
         dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
+        dest.writeByte(mDataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
         dest.writeSerializable(mUiCustomization);
         dest.writeParcelable(mV1UiCustomization, flags);
@@ -320,6 +331,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         mChallengeRequested = in.readByte() > 0;
+        mDataOnlyRequested = in.readByte() > 0;
         mExemptionRequested = in.readByte() > 0;
         mUiCustomization = (UiCustomization) in.readSerializable();
         mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
@@ -377,6 +389,7 @@ public class ThreeDSecureRequest implements Parcelable {
             }
 
             base.put("challenge_requested", mChallengeRequested);
+            base.put("data_only_requested", mDataOnlyRequested);
             base.put("exemption_requested", mExemptionRequested);
         } catch (JSONException ignored) {
         }
