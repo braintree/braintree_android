@@ -29,7 +29,7 @@ public class LocalPaymentClientTest {
         mCountDownLatch = new CountDownLatch(1);
 
         Authorization authorization = Authorization.fromString("sandbox_f252zhq7_hh4cpc39zq4rgjcg");
-        braintreeClient = new BraintreeClient(authorization, ApplicationProvider.getApplicationContext(), null);
+        braintreeClient = new BraintreeClient(authorization, ApplicationProvider.getApplicationContext());
     }
 
     @Test(timeout = 10000)

@@ -54,7 +54,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -99,7 +99,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -142,7 +142,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -179,7 +179,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -224,7 +224,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -266,6 +266,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     private BraintreeClient getBraintreeClient(String authorization) throws InvalidArgumentException {
-        return new BraintreeClient(Authorization.fromString(authorization), mActivity, returnUrlScheme);
+        return new BraintreeClient(Authorization.fromString(authorization), mActivity);
     }
 }

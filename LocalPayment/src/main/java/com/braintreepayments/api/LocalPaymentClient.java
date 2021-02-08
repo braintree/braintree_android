@@ -111,6 +111,7 @@ public class LocalPaymentClient {
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .url(Uri.parse(transaction.getApprovalUrl()));
 
         String paymentType = transaction.getRequest().getPaymentType();
@@ -123,7 +124,7 @@ public class LocalPaymentClient {
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
-    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, final LocalPaymentBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, final LocalPaymentBrowserSwitchResultCallback callback) {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
 
         final String paymentType = Json.optString(metadata, "payment-type", null);
@@ -131,19 +132,20 @@ public class LocalPaymentClient {
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
-            case BrowserSwitchResult.STATUS_CANCELED:
+            case BrowserSwitchStatus.CANCELED:
                 sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
                 callback.onResult(null, new BraintreeException("system canceled"));
                 return;
-            case BrowserSwitchResult.STATUS_OK:
-                if (uri == null) {
+            case BrowserSwitchStatus.SUCCESS:
+                Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+                if (deepLinkUri == null) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch-response.invalid");
                     callback.onResult(null, new BraintreeException("LocalPayment encountered an error, " +
                             "return URL is invalid."));
                     return;
                 }
 
-                String responseString = uri.toString();
+                String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
                     callback.onResult(null, new BraintreeException("user canceled"));

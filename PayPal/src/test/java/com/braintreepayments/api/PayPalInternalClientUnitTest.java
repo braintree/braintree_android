@@ -53,10 +53,11 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
+                .returnUrlScheme("sample-scheme")
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PostalAddress shippingAddressOverride = new PostalAddress()
                 .recipientName("Brianna Tree")
@@ -116,10 +117,11 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
+                .returnUrlScheme("sample-scheme")
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PostalAddress shippingAddressOverride = new PostalAddress()
                 .recipientName("Brianna Tree")
@@ -202,7 +204,7 @@ public class PayPalInternalClientUnitTest {
                 .build();
         when(tokenizationKey.getBearer()).thenReturn("tokenization-key-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -224,7 +226,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().displayName("");
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -245,7 +247,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().localeCode(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -266,7 +268,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().merchantAccountId(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -287,7 +289,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().shippingAddressOverride(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -309,7 +311,7 @@ public class PayPalInternalClientUnitTest {
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest()
                 .shippingAddressEditable(false)
@@ -333,7 +335,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().billingAgreementDescription("");
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
@@ -354,7 +356,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
@@ -375,7 +377,7 @@ public class PayPalInternalClientUnitTest {
                 .authorization(tokenizationKey)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest().lineItems(new ArrayList<PayPalLineItem>());
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
@@ -396,10 +398,11 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
+                .returnUrlScheme("sample-scheme")
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest()
                 .intent("authorize")
@@ -432,9 +435,10 @@ public class PayPalInternalClientUnitTest {
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .returnUrlScheme("sample-scheme")
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest()
                 .intent("authorize")
@@ -467,7 +471,7 @@ public class PayPalInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest()
                 .intent("authorize")
@@ -494,7 +498,7 @@ public class PayPalInternalClientUnitTest {
                 .sendPOSTErrorResponse(httpError)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
@@ -510,7 +514,7 @@ public class PayPalInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse("{bad:")
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
@@ -526,7 +530,7 @@ public class PayPalInternalClientUnitTest {
                 .configurationError(configurationError)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, "sample-scheme", payPalDataCollector);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);

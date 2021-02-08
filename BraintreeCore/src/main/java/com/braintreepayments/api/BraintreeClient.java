@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
+import java.util.Locale;
+
 public class BraintreeClient {
 
     private final Authorization authorization;
@@ -22,7 +24,7 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
 
-    private static BraintreeClientParams createDefaultParams(Authorization authorization, Context context, String returnUrlScheme) {
+    private static BraintreeClientParams createDefaultParams(Authorization authorization, Context context) {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
@@ -32,13 +34,13 @@ public class BraintreeClient {
                 .httpClient(httpClient)
                 .graphQLHttpClient(new BraintreeGraphQLHttpClient(authorization))
                 .analyticsClient(new AnalyticsClient(authorization))
-                .browserSwitchClient(BrowserSwitchClient.newInstance(returnUrlScheme))
+                .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .configurationManager(new ConfigurationManager(httpClient));
     }
 
-    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
-        this(createDefaultParams(authorization, context, returnUrlScheme));
+    public BraintreeClient(Authorization authorization, Context context) {
+        this(createDefaultParams(authorization, context));
     }
 
     @VisibleForTesting
@@ -127,16 +129,22 @@ public class BraintreeClient {
         }
     }
 
-    void deliverBrowserSwitchResult(FragmentActivity activity) {
-        if (browserSwitchClient != null) {
-            browserSwitchClient.deliverResult(activity);
-        }
+    public BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return browserSwitchClient.deliverResult(activity);
+    }
+
+    String getReturnUrlScheme() {
+        return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
     }
 
     public boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {
-        String url = String.format("%s://test", browserSwitchClient.getReturnUrlScheme());
+        // url used to see if the application is able to open an https url e.g. web browser
+        Uri url = Uri.parse("https://braintreepayments.com");
+        String returnUrlScheme = getReturnUrlScheme();
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .url(Uri.parse(url))
+                .url(url)
+                .returnUrlScheme(returnUrlScheme)
                 .requestCode(requestCode);
         boolean result = true;
         try {
@@ -162,10 +170,6 @@ public class BraintreeClient {
             final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
             httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
         }
-    }
-
-    String getReturnUrlScheme() {
-        return browserSwitchClient.getReturnUrlScheme();
     }
 
     private static boolean isAnalyticsEnabled(Configuration configuration) {

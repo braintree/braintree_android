@@ -35,7 +35,7 @@ public class TokenizationClientTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, null);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
 
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 

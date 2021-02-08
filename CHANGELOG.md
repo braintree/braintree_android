@@ -71,6 +71,7 @@
   * Remove `VisaCheckoutConstants`
   * Remove `BraintreePaymentResult`
   * Remove `BraintreeListener`
+  * Remove `BraintreeBrowserSwitchActivity`
   * Remove `UnionPayListener`
 
 ## 3.17.0

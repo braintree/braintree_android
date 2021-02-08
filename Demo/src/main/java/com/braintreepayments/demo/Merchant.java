@@ -82,6 +82,8 @@ public class Merchant {
                                     "Unable to get a client token. Response Code: %d Response body: %s";
                             String errorMessage = String.format(
                                     Locale.US, errorFormat, responseStatus, responseBody);
+
+                            listener.onResult(null, new Exception(errorMessage));
                         }
                     }
                 });

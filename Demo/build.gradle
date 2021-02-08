@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'androidx.navigation.safeargs'
 }
 
 android {
@@ -64,6 +65,11 @@ android {
     buildFeatures {
         dataBinding = true
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 
@@ -77,12 +83,15 @@ dependencies {
     implementation project(':AmericanExpress')
     implementation project(':BraintreeDataCollector')
     implementation project(':Card')
+    implementation project(':BraintreeCore')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':ThreeDSecure')
     implementation project(':UnionPay')
     implementation project(':Venmo')
-    implementation project(':BraintreeExtensions')
+
+    api 'com.braintreepayments.api:visa-checkout:4.0.0-SNAPSHOT'
+    api 'com.braintreepayments.api:google-payment:4.0.0-SNAPSHOT'
 
     implementation 'com.visa.checkout:visacheckout-android-sdk:6.6.1@aar'
     implementation 'com.squareup.okio:okio:1.13.0'
@@ -97,6 +106,12 @@ dependencies {
 
     implementation 'io.card:android-sdk:5.5.1'
     implementation 'com.braintreepayments:card-form:4.0.0'
+
+    implementation 'androidx.fragment:fragment:1.2.5'
+    implementation 'androidx.navigation:navigation-fragment:2.3.2'
+    implementation 'androidx.navigation:navigation-ui:2.3.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'

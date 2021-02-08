@@ -1,5 +1,4 @@
 include ':GooglePay'
-include ':BraintreeExtensions'
 include ':BraintreeModels'
 include ':Venmo'
 include ':UnionPay'

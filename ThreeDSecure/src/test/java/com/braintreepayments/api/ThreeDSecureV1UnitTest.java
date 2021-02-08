@@ -73,7 +73,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, "sample-scheme", cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
@@ -90,7 +90,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, "sample-scheme", cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient, never()).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
@@ -98,22 +98,22 @@ public class ThreeDSecureV1UnitTest {
 
     @Test
     public void continuePerformVerification_whenV1Flow_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+        String urlScheme = "sample-scheme";
+        String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme(urlScheme)
                 .build();
-
-        String urlScheme = "sample-scheme";
-        String assetsUrl = "https://www.some-assets.com";
 
         when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, mThreeDSecureRequest, mThreeDSecureLookup))
                 .thenReturn("https://browser.switch.url.com");
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, "sample-scheme", cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.continuePerformVerification(activity, mThreeDSecureRequest, mThreeDSecureLookup, mock(ThreeDSecureResultCallback.class));
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
@@ -126,22 +126,22 @@ public class ThreeDSecureV1UnitTest {
 
     @Test
     public void initializeChallengeWithLookupResponse_whenV1Flow_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+        String urlScheme = "sample-scheme";
+        String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme(urlScheme)
                 .build();
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
-        String urlScheme = "sample-scheme";
-        String assetsUrl = "https://www.some-assets.com";
-
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), isNull(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, "sample-scheme", cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.initializeChallengeWithLookupResponse(activity, mThreeDSecureLookupResponse, threeDSecureInitializeChallengeCallback);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
@@ -154,22 +154,22 @@ public class ThreeDSecureV1UnitTest {
 
     @Test
     public void initializeChallengeWithLookupResponse_whenV1Flow_and3DSecureRequestIsProvided_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+        String urlScheme = "sample-scheme";
+        String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme(urlScheme)
                 .build();
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
-        String urlScheme = "sample-scheme";
-        String assetsUrl = "https://www.some-assets.com";
-
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), eq(mThreeDSecureRequest), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, "sample-scheme", cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.initializeChallengeWithLookupResponse(activity, mThreeDSecureRequest, mThreeDSecureLookupResponse, threeDSecureInitializeChallengeCallback);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);

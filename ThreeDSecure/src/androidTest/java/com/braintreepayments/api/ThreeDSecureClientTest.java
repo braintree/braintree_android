@@ -27,15 +27,12 @@ public class ThreeDSecureClientTest {
     private AppCompatActivity mActivity;
     private CountDownLatch mCountDownLatch;
 
-    private String returnUrlScheme;
     private ThreeDSecureClient threeDSecureClient;
 
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
-
-        returnUrlScheme = "com.braintreepayments.api.test.braintree";
     }
 
     @Test(timeout = 10000)
@@ -44,9 +41,9 @@ public class ThreeDSecureClientTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, returnUrlScheme);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient, returnUrlScheme);
+        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("4000000000000051")

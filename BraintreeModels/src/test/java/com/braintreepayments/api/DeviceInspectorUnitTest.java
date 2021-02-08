@@ -47,15 +47,6 @@ public class DeviceInspectorUnitTest {
     }
 
     @Test
-    public void canBrowserSwitch_forwardsResultFromManifestValidator() {
-        String returnUrlScheme = "sample.scheme";
-        when(manifestValidator.isUrlSchemeDeclaredInAndroidManifest(context, returnUrlScheme, BraintreeBrowserSwitchActivity.class)).thenReturn(true);
-
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
-        assertTrue(sut.canBrowserSwitch(context, returnUrlScheme));
-    }
-
-    @Test
     public void detectEmulator_defaultsToFalse() {
         DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
         assertFalse(sut.isDeviceEmulator("randomBuildProduct", "randomBuildManufacturer", "randomBuildFingerprint"));

@@ -28,20 +28,17 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
  */
 public class ThreeDSecureClient {
 
-    private final String returnUrlScheme;
-
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
 
-    public ThreeDSecureClient(BraintreeClient braintreeClient, String returnUrlScheme) {
-        this(braintreeClient, returnUrlScheme, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+    public ThreeDSecureClient(BraintreeClient braintreeClient) {
+        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, String returnUrlScheme, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
+    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
         this.cardinalClient = cardinalClient;
-        this.returnUrlScheme = returnUrlScheme;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
     }
@@ -106,10 +103,9 @@ public class ThreeDSecureClient {
                 boolean supportsBrowserSwitch = braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE);
                 if (!supportsBrowserSwitch) {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
-                    callback.onResult(null, null, new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
-                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
-                            "switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                    callback.onResult(null, null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
+                            "defines the same browser switch url as this app. See " +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
                             "for the correct configuration"));
                     return;
                 }
@@ -175,12 +171,13 @@ public class ThreeDSecureClient {
 
                 if (!threeDSecureVersion.startsWith("2.")) {
                     String browserSwitchUrl = browserSwitchHelper.getUrl(
-                            returnUrlScheme,
+                            braintreeClient.getReturnUrlScheme(),
                             configuration.getAssetsUrl(),
                             request,
                             threeDSecureLookup);
                     BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                             .requestCode(THREE_D_SECURE)
+                            .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                             .url(Uri.parse(browserSwitchUrl));
                     try {
                         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
@@ -278,13 +275,14 @@ public class ThreeDSecureClient {
 
                         if (!threeDSecureVersion.startsWith("2.")) {
                             String browserSwitchUrl = browserSwitchHelper.getUrl(
-                                    returnUrlScheme,
+                                    braintreeClient.getReturnUrlScheme(),
                                     configuration.getAssetsUrl(),
                                     threeDSecureRequest,
                                     threeDSecureLookup);
 
                             BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                                     .requestCode(THREE_D_SECURE)
+                                    .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                                     .url(Uri.parse(browserSwitchUrl));
                             try {
                                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
@@ -365,17 +363,18 @@ public class ThreeDSecureClient {
         });
     }
 
-    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, final ThreeDSecureResultCallback callback) {
+    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final ThreeDSecureResultCallback callback) {
         // V1 flow
         int status = browserSwitchResult.getStatus();
         switch (status) {
-            case BrowserSwitchResult.STATUS_CANCELED:
+            case BrowserSwitchStatus.CANCELED:
                 callback.onResult(null, new BraintreeException("user canceled"));
                 break;
-            case BrowserSwitchResult.STATUS_OK:
+            case BrowserSwitchStatus.SUCCESS:
             default:
-                if (uri != null) {
-                    String authResponse = uri.getQueryParameter("auth_response");
+                Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
+                if (deepLinkUrl != null) {
+                    String authResponse = deepLinkUrl.getQueryParameter("auth_response");
                     ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(authResponse);
 
                     // NEXT_MAJOR_VERSION Make isSuccess package-private so that we have access to it, but merchants do not

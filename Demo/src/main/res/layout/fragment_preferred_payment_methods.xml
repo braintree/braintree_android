@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PreferredPaymentMethodsFragment">
+
+    <Button
+        android:id="@+id/preferred_payment_methods_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/fetch_preferred_payment_methods_button" />
+
+    <Button
+        android:id="@+id/paypal_single_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/paypal_billing_agreement_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:enabled="false"
+        android:text="@string/paypal_single_payment" />
+
+    <Button
+        android:id="@+id/paypal_billing_agreement_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/venmo_text_view"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:enabled="false"
+        android:text="@string/paypal_billing_agreement" />
+
+    <Button
+        android:id="@+id/venmo_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="40dp"
+        android:enabled="false"
+        android:text="@string/venmo" />
+
+    <TextView
+        android:id="@+id/paypal_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/paypal_single_payment_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/paypal"
+        android:textAlignment="viewStart"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/preferred_payment_methods_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/preferred_payment_methods_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="40dp"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/venmo_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/venmo_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/venmo"
+        android:textAlignment="viewStart"
+        android:textStyle="bold" />
+
+</RelativeLayout>

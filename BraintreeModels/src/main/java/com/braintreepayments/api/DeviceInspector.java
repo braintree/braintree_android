@@ -59,11 +59,6 @@ public class DeviceInspector {
         return new Intent().setComponent(new ComponentName(VENMO_APP_PACKAGE, VENMO_APP_PACKAGE + "." + VENMO_APP_SWITCH_ACTIVITY));
     }
 
-    public boolean canBrowserSwitch(Context context, String returnUrlScheme) {
-        return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(context,
-                returnUrlScheme, BraintreeBrowserSwitchActivity.class);
-    }
-
     public boolean isDeviceEmulator() {
         return isDeviceEmulator(Build.PRODUCT, Build.MANUFACTURER, Build.FINGERPRINT);
     }

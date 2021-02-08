@@ -15,41 +15,14 @@
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".DemoActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/options" />
-        <activity
-            android:name=".GooglePaymentActivity"
-            android:label="@string/buy" />
-        <activity
-            android:name=".CardActivity"
-            android:label="@string/buy" />
-        <activity android:name=".CreateTransactionActivity" />
-        <activity
-            android:name=".PayPalActivity"
-            android:label="@string/paypal" />
-        <activity
-            android:name=".VenmoActivity"
-            android:label="@string/venmo" />
-        <activity
-            android:name=".VisaCheckoutActivity"
-            android:label="@string/visa_checkout_button" />
-        <activity
-            android:name=".LocalPaymentActivity"
-            android:label="@string/ideal_button" />
-        <activity
-            android:name=".PreferredPaymentMethodsActivity"
-            android:label="Pref Payment Methods" />
-        <activity
-            android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
-            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -60,5 +33,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

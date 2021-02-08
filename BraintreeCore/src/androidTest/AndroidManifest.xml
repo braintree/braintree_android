@@ -9,15 +9,5 @@
         <!--suppress AndroidDomInspection -->
         <activity android:name=".TestActivity" />
 
-        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="com.braintreepayments.api.test.braintree" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-        </activity>
-
     </application>
 </manifest>

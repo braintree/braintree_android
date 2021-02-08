@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-// TODO: Complete unit tests
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeClientUnitTest {
 
@@ -269,8 +268,6 @@ public class BraintreeClientUnitTest {
 
     @Test
     public void canPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
-        when(browserSwitchClient.getReturnUrlScheme()).thenReturn("sample-url-scheme");
-
         BraintreeClientParams params = createDefaultParams(configurationManager, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
@@ -282,13 +279,12 @@ public class BraintreeClientUnitTest {
 
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(123, browserSwitchOptions.getRequestCode());
-        assertEquals(Uri.parse("sample-url-scheme://test"), browserSwitchOptions.getUrl());
+        assertEquals(Uri.parse("https://braintreepayments.com"), browserSwitchOptions.getUrl());
     }
 
     @Test
     public void canPerformBrowserSwitch_onSuccess_returnsTrue() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
-        when(browserSwitchClient.getReturnUrlScheme()).thenReturn("sample-url-scheme");
         doNothing().when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
         BraintreeClientParams params = createDefaultParams(configurationManager, "sessionId", "integrationType");
@@ -300,7 +296,6 @@ public class BraintreeClientUnitTest {
     @Test
     public void canPerformBrowserSwitch_onError_returnsFalse() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
-        when(browserSwitchClient.getReturnUrlScheme()).thenReturn("sample-url-scheme");
         doThrow(new BrowserSwitchException("error")).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
         BraintreeClientParams params = createDefaultParams(configurationManager, "sessionId", "integrationType");
@@ -329,6 +324,15 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(params);
 
         assertSame(activityInfo, sut.getManifestActivityInfo(FragmentActivity.class));
+    }
+
+    @Test
+    public void getReturnUrlScheme_returnsUrlScheme() {
+        BraintreeClientParams params = createDefaultParams(configurationManager, "sessionId", "integrationType");
+        BraintreeClient sut = new BraintreeClient(params);
+
+        String returnUrlScheme = sut.getReturnUrlScheme();
+        assertEquals("com.braintreepayments.api.test.braintree", returnUrlScheme);
     }
 
     private BraintreeClientParams createDefaultParams(ConfigurationManager configurationManager, String sessionId, String integrationType) {

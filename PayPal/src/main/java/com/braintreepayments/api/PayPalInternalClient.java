@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,16 +43,17 @@ class PayPalInternalClient {
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
 
-    PayPalInternalClient(BraintreeClient braintreeClient, String returnUrlScheme) {
-        this(braintreeClient, returnUrlScheme, new PayPalDataCollector());
+    PayPalInternalClient(BraintreeClient braintreeClient) {
+        this(braintreeClient, new PayPalDataCollector());
     }
 
-    PayPalInternalClient(BraintreeClient braintreeClient, String returnUrlScheme, PayPalDataCollector payPalDataCollector) {
+    @VisibleForTesting
+    PayPalInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
 
-        this.cancelUrl = String.format("%s://onetouch/v1/cancel", returnUrlScheme);
-        this.successUrl = String.format("%s://onetouch/v1/success", returnUrlScheme);
+        this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+        this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
     }
 
     void sendRequest(final Context context, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalInternalClientCallback callback) {

@@ -1,11 +1,14 @@
 package com.braintreepayments.api;
 
-import android.content.pm.ActivityInfo;
+import android.app.Activity;
+
+import androidx.fragment.app.FragmentActivity;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -29,10 +32,12 @@ public class MockBraintreeClientBuilder {
 
     private String sessionId;
     private String integration;
+    private String returnUrlScheme;
 
     private ActivityInfo activityInfo;
 
     private boolean urlSchemeInAndroidManifest = true;
+    private boolean canPerformBrowserSwitch = true;
 
     public MockBraintreeClientBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -88,6 +93,11 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
+    public MockBraintreeClientBuilder returnUrlScheme(String returnUrlScheme) {
+        this.returnUrlScheme = returnUrlScheme;
+         return this;
+    }
+
     public MockBraintreeClientBuilder urlSchemeDeclaredInManifest(boolean urlSchemeInAndroidManifest) {
         this.urlSchemeInAndroidManifest = urlSchemeInAndroidManifest;
         return this;
@@ -98,13 +108,19 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
+    public MockBraintreeClientBuilder canPerformBrowserSwitch(boolean canPerformBrowserSwitch) {
+        this.canPerformBrowserSwitch = canPerformBrowserSwitch;
+        return this;
+    }
+
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
+        when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
         when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
-        when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
+        when(braintreeClient.canPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
 
         doAnswer(new Answer<Void>() {
             @Override

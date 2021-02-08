@@ -15,7 +15,7 @@
     <string name="visa_checkout_button">Visa Checkout</string>
     <string name="ideal_button">Pay with iDEAL</string>
     <string name="ideal_bank_icon">iDEAL bank icon</string>
-    <string name="local_payments_button">Local Payments</string>
+    <string name="local_payment_button">Local Payment</string>
     <string name="preferred_payment_methods_button">Pref Payment Methods</string>
     <string name="cards">Credit or Debit Cards</string>
     <string name="create_transaction">Create a Transaction</string>
