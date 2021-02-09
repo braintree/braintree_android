@@ -92,6 +92,7 @@ public class PayPalInternalClientUnitTest {
                 .put("return_url", "sample-scheme://onetouch/v1/success")
                 .put("cancel_url", "sample-scheme://onetouch/v1/cancel")
                 .put("offer_paypal_credit", true)
+                .put("offer_pay_later", false)
                 .put("description", "Billing Agreement Description")
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
@@ -149,6 +150,7 @@ public class PayPalInternalClientUnitTest {
                 .shippingAddressRequired(true)
                 .shippingAddressEditable(true)
                 .offerCredit(true)
+                .offerPayLater(true)
                 .lineItems(Collections.singletonList(item))
                 .shippingAddressOverride(shippingAddressOverride);
 
@@ -168,6 +170,7 @@ public class PayPalInternalClientUnitTest {
                 .put("return_url", "sample-scheme://onetouch/v1/success")
                 .put("cancel_url", "sample-scheme://onetouch/v1/cancel")
                 .put("offer_paypal_credit", true)
+                .put("offer_pay_later", true)
                 .put("line_items", new JSONArray()
                         .put(new JSONObject()
                                 .put("kind", "debit")

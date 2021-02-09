@@ -291,6 +291,18 @@ public class PayPalClientUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_sendsPayPalPayLaterOfferedAnalyticsEvent() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
+        sut.requestOneTimePayment(context, new PayPalRequest().amount("1").offerPayLater(true), payPalFlowStartedCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+    }
+
+    @Test
     public void requestBillingAgreement_sendsPayPalRequestViaInternalClient() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();

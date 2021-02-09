@@ -25,6 +25,7 @@ public class PayPalRequestUnitTest {
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
         assertFalse(request.shouldOfferCredit());
+        assertFalse(request.shouldOfferPayLater());
     }
 
     @Test
@@ -41,7 +42,8 @@ public class PayPalRequestUnitTest {
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
                 .displayName("Display Name")
                 .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
-                .offerCredit(true);
+                .offerCredit(true)
+                .offerPayLater(true);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -54,5 +56,6 @@ public class PayPalRequestUnitTest {
         assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.shouldOfferCredit());
+        assertTrue(request.shouldOfferPayLater());
     }
 }

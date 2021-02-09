@@ -35,8 +35,6 @@ public class MockBraintreeClientBuilder {
     private String integration;
     private String returnUrlScheme;
 
-    private ActivityInfo activityInfo;
-
     private boolean urlSchemeInAndroidManifest = true;
     private boolean canPerformBrowserSwitch = true;
 
@@ -106,11 +104,6 @@ public class MockBraintreeClientBuilder {
 
     public MockBraintreeClientBuilder urlSchemeDeclaredInManifest(boolean urlSchemeInAndroidManifest) {
         this.urlSchemeInAndroidManifest = urlSchemeInAndroidManifest;
-        return this;
-    }
-
-    public MockBraintreeClientBuilder activityInfo(ActivityInfo activityInfo) {
-        this.activityInfo = activityInfo;
         return this;
     }
 

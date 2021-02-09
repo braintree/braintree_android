@@ -21,6 +21,7 @@ class PayPalInternalClient {
     private static final String TOKENIZATION_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
     private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
+    private static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
@@ -126,7 +127,8 @@ class PayPalInternalClient {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
-                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit());
+                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit())
+                .put(OFFER_PAY_LATER_KEY, payPalRequest.shouldOfferPayLater());
 
         Authorization authorization = braintreeClient.getAuthorization();
         if (authorization instanceof ClientToken) {
