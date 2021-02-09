@@ -618,6 +618,14 @@
   * Fix BraintreeDataCollector as an optional dependency
   * Fix `PaymentRequest` crash when Google Play Services is not present
 
+## unreleased
+
+* Add `VisaCheckoutTokenizeCallback`
+* Add `VisaCheckoutOnActivityResultCallback`
+* Add `VisaCheckoutCreateProfileBuilderCallback`
+* Breaking Changes
+  * Remove `BraintreeFragment` from `VisaCheckout`
+
 ## 3.0.0
 
 * Convert to AndroidX

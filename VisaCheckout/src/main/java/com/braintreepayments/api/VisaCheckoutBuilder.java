@@ -1,6 +1,4 @@
-package com.braintreepayments.api.models;
-
-import android.content.Context;
+package com.braintreepayments.api;
 
 import com.visa.checkout.VisaPaymentSummary;
 
@@ -42,7 +40,7 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilde
     }
 
     @Override
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject input) {}
+    protected void buildGraphQL(JSONObject base, JSONObject input) {}
 
     @Override
     public String getApiPath() {

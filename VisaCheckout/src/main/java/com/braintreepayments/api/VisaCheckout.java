@@ -1,17 +1,12 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VisaCheckoutBuilder;
-import com.braintreepayments.api.models.VisaCheckoutConfiguration;
+import android.content.Context;
+import android.content.Intent;
+
+import androidx.annotation.Nullable;
+
 import com.visa.checkout.Environment;
-import com.visa.checkout.Profile.DataLevel;
-import com.visa.checkout.Profile.ProfileBuilder;
-import com.visa.checkout.VisaCheckoutSdk;
+import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;
 
 import java.util.List;
@@ -21,6 +16,15 @@ import java.util.List;
  * <a href="https://developers.braintreepayments.com/guides/visa-checkout/overview">documentation</a>
  */
 public class VisaCheckout {
+
+    private BraintreeClient braintreeClient;
+    private TokenizationClient tokenizationClient;
+
+    VisaCheckout(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+        this.braintreeClient = braintreeClient;
+        this.tokenizationClient = tokenizationClient;
+    }
+
     /**
      * Creates a {@link ProfileBuilder} with the merchant API key, environment, and other properties to be used with
      * Visa Checkout.
@@ -42,21 +46,19 @@ public class VisaCheckout {
      *     </li>
      * </ul>
      *
-     * @param fragment - {@link BraintreeFragment}
-     * @param profileBuilderResponseListener {@link BraintreeResponseListener<ProfileBuilder>} - listens for the
+     * @param callback {@link VisaCheckoutCreateProfileBuilderCallback} - listens for the
      * Braintree flavored {@link ProfileBuilder}.
      */
-    public static void createProfileBuilder(final BraintreeFragment fragment, final BraintreeResponseListener<ProfileBuilder>
-            profileBuilderResponseListener) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
+    public void createProfileBuilder(final VisaCheckoutCreateProfileBuilderCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onConfigurationFetched(Configuration configuration) {
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
                 boolean enabledAndSdkAvailable = isVisaCheckoutSDKAvailable() && configuration
                         .getVisaCheckout().isEnabled();
 
                 if (!enabledAndSdkAvailable) {
-                    fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
+                    callback.onResult(null, new ConfigurationException("Visa Checkout is not enabled."));
                     return;
                 }
 
@@ -68,12 +70,12 @@ public class VisaCheckout {
                     environment = Environment.PRODUCTION;
                 }
 
-                ProfileBuilder profileBuilder = new ProfileBuilder(merchantApiKey, environment);
+                Profile.ProfileBuilder profileBuilder = new Profile.ProfileBuilder(merchantApiKey, environment);
                 profileBuilder.setCardBrands(acceptedCardBrands.toArray(new String[acceptedCardBrands.size()]));
-                profileBuilder.setDataLevel(DataLevel.FULL);
+                profileBuilder.setDataLevel(Profile.DataLevel.FULL);
                 profileBuilder.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
 
-                profileBuilderResponseListener.onResponse(profileBuilder);
+                callback.onResult(profileBuilder, null);
             }
         });
     }
@@ -89,23 +91,26 @@ public class VisaCheckout {
 
     /**
      * Tokenizes the payment summary of the Visa Checkout flow.
-     * @param fragment {@link BraintreeFragment}
      * @param visaPaymentSummary {@link VisaPaymentSummary} The Visa payment to tokenize.
+     * @param callback {@link VisaCheckoutTokenizeCallback}
      */
-    public static void tokenize(final BraintreeFragment fragment, final VisaPaymentSummary visaPaymentSummary) {
-        TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(visaPaymentSummary),
-                new PaymentMethodNonceCallback() {
-                    @Override
-                    public void success(PaymentMethodNonce paymentMethodNonce) {
-                        fragment.postCallback(paymentMethodNonce);
-                        fragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
-                    }
+    public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
+        tokenizationClient.tokenize(new VisaCheckoutBuilder(visaPaymentSummary), new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                callback.onResult(paymentMethodNonce, null);
+                braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+            }
 
-                    @Override
-                    public void failure(Exception exception) {
-                        fragment.postCallback(exception);
-                        fragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
-                    }
-                });
+            @Override
+            public void failure(Exception e) {
+                callback.onResult(null, e);
+                braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
+            }
+        });
+    }
+
+    void onActivityResult(Context context, int resultCode, Intent data, VisaCheckoutOnActivityResultCallback listener) {
+
     }
 }

@@ -1,18 +1,18 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
 
 android {
-    buildToolsVersion '28.0.3'
-    compileSdkVersion 28
-
-    dataBinding.enabled = true
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode = rootProject.ext.versionCode
-        versionName = rootProject.ext.versionName
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
         consumerProguardFiles 'proguard.pro'
     }
@@ -31,8 +31,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.0.1'
-    implementation 'com.braintreepayments.api:braintree:3.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.braintreepayments.api:braintree-core:4.0.0-SNAPSHOT'
 
     implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
 
@@ -40,11 +40,11 @@ dependencies {
     testImplementation 'androidx.test:core:1.1.0'
     testImplementation 'androidx.test:runner:1.1.1'
     testImplementation 'androidx.test:rules:1.1.1'
+    testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testImplementation 'org.robolectric:robolectric:4.0'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
     testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
 }
@@ -72,67 +72,57 @@ artifacts {
 }
 
 signing {
-    required { !android.defaultConfig.versionName.endsWith("SNAPSHOT") }
-    sign configurations.archives
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
 }
 
-def sonatypeUsername = System.env['SONATYPE_USERNAME']
-def sonatypePassword = System.env['SONATYPE_PASSWORD']
-
-nexusStaging {
-    packageGroup = "com.braintreepayments"
-    delayBetweenRetriesInMillis = 10000
-    username = sonatypeUsername
-    password = sonatypePassword
-}
-
-uploadArchives {
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        sonatype()
+    }
+}
 
-            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
 
-            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            pom.setArtifactId 'visa-checkout'
-
-            pom.project {
-                name 'visa-checkout'
                 groupId = 'com.braintreepayments.api'
-                version = "${android.defaultConfig.versionName}"
-                packaging 'jar'
-                description 'Visa Checkout Module for Braintree\'s Android SDK.'
-                url 'https://github.com/braintree/braintree-android-visa-checkout'
+                artifactId = 'visa-checkout'
+                version = rootProject.versionName
 
-                scm {
-                    url 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
-                    connection 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
-                    developerConnection 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
-                }
+                pom {
+                    name = 'visa-checkout'
+                    packaging = 'aar'
+                    description = 'Visa Checkout Module for Braintree\'s Android SDK.'
+                    url = 'https://github.com/braintree/braintree-android-visa-checkout'
 
-                developers {
-                    developer {
-                        id 'devs'
-                        name 'Braintree Payments'
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                        connection = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
                     }
                 }
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
-                    }
-                }
-            }
-
-            pom.whenConfigured {
-                it.dependencies.removeAll { true }
             }
         }
     }

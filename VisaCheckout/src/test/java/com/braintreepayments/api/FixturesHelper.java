@@ -1,12 +1,8 @@
-package com.braintreepayments.api.test;
-
-import com.braintreepayments.api.internal.StreamHelper;
+package com.braintreepayments.api;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 
 public class FixturesHelper {
 

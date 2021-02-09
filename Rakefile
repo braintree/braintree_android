@@ -117,6 +117,11 @@ task :create_demo_apk do
   sh "./gradlew clean :Demo:assembleRelease"
 end
 
+desc "Interactive release to publish new version to maven local"
+task :release_local do
+  sh "./gradlew clean publishToMavenLocal"
+end
+
 def prompt_for_sonatype_username_and_password
   puts "Enter Sonatype username:"
   ENV["SONATYPE_USERNAME"] = $stdin.gets.chomp
