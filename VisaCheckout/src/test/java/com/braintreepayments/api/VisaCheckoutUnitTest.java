@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.isNull;
@@ -45,8 +44,7 @@ public class VisaCheckoutUnitTest {
 
     @Before
     public void setup() throws Exception {
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-        mConfigurationWithVisaCheckout = Configuration.fromJson(visaConfiguration.toString());
+        mConfigurationWithVisaCheckout = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT);
 
         visaPaymentSummary = PowerMockito.mock(VisaPaymentSummary.class);
         when(visaPaymentSummary.getCallId()).thenReturn("stubbedCallId");
@@ -144,7 +142,7 @@ public class VisaCheckoutUnitTest {
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws Exception {
         VisaCheckoutNonce visaCheckoutNonce =
-            VisaCheckoutNonce.fromJson(stringFromFixture("payment_methods/visa_checkout_response.json"));
+                VisaCheckoutNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
 
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
                 .successNonce(visaCheckoutNonce)
@@ -164,7 +162,7 @@ public class VisaCheckoutUnitTest {
     @Test
     public void tokenize_whenSuccessful_sendsAnalyticEvent() throws Exception {
         VisaCheckoutNonce visaCheckoutNonce =
-                VisaCheckoutNonce.fromJson(stringFromFixture("payment_methods/visa_checkout_response.json"));
+                VisaCheckoutNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
 
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
                 .successNonce(visaCheckoutNonce)

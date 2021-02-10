@@ -1,3 +1,4 @@
+include ':VisaCheckout'
 include ':GooglePay'
 include ':BraintreeModels'
 include ':Venmo'
