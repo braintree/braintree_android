@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to `2.2.5-1`
+
 ## 3.16.0
 
 * Add `accountType` to `ThreeDSecureRequest`
