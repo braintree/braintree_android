@@ -36,6 +36,7 @@
   * `VenmoAuthorizeAccountCallback`
   * `VenmoOnActivityResultCallback`
 * Migrate `braintree-android-google-payment` into `braintree-android`
+* Migrate `braintree-android-visa-checkout` into `braintree-android`
 * Breaking Changes
   * Remove `BraintreeFragment`
   * Remove `AnalyticsIntentService`
