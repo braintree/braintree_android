@@ -12,7 +12,7 @@ Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:braintree:3.16.0'
+  implementation 'com.braintreepayments.api:braintree:3.16.1'
 }
 ```
 
