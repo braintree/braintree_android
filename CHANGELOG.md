@@ -35,8 +35,8 @@
   * `UnionPayTokenizeCallback`
   * `VenmoAuthorizeAccountCallback`
   * `VenmoOnActivityResultCallback`
-* Migrate `braintree-android-google-payment` into `braintree-android`
-* Migrate `braintree-android-visa-checkout` into `braintree-android`
+* Migrate `braintree-android-google-payment` into `braintree_android`
+* Migrate `braintree-android-visa-checkout` into `braintree_android`
 * Breaking Changes
   * Remove `BraintreeFragment`
   * Remove `AnalyticsIntentService`
