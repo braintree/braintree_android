@@ -11,11 +11,21 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.VisaCheckoutButton;
+import com.braintreepayments.api.VisaCheckoutCreateProfileBuilderCallback;
+import com.braintreepayments.api.VisaCheckoutTokenizeCallback;
+import com.visa.checkout.Profile;
+import com.visa.checkout.PurchaseInfo;
+import com.visa.checkout.VisaCheckoutSdk;
+import com.visa.checkout.VisaPaymentSummary;
+
+import java.math.BigDecimal;
 
 public class VisaCheckoutFragment extends BaseFragment {
 
     private VisaCheckoutButton mVisaPaymentButton;
+    private VisaCheckout visaCheckout;
 
 
     @Nullable
@@ -33,33 +43,32 @@ public class VisaCheckoutFragment extends BaseFragment {
             @Override
             public void onResult(@Nullable BraintreeClient braintreeClient) {
 
-                // TODO: fix when visa client is integrated with new flattened core module
-//        createVisaCheckoutProfile(new VisaCheckoutCreateProfileBuilderCallback() {
-//            @Override
-//            public void onResult(ProfileBuilder profileBuilder, Exception e) {
-//                PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-//                        .setDescription("Description");
-//
-//                mVisaPaymentButton.init(VisaCheckoutActivity.this, profileBuilder,
-//                        purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
-//                            @Override
-//                            public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-//                                launchReadyHandler.launch();
-//                            }
-//
-//                            @Override
-//                            public void onResult(VisaPaymentSummary visaPaymentSummary) {
-//                                tokenizeVisaCheckout(visaPaymentSummary, new VisaCheckoutTokenizeCallback() {
-//                                    @Override
-//                                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception e) {
-//                                        handlePaymentMethodNonceCreated(paymentMethodNonce);
-//                                    }
-//                                });
-//                            }
-//                        });
-//            }
-//        });
-//    }
+                visaCheckout = new VisaCheckout(braintreeClient);
+
+                visaCheckout.createProfileBuilder(new VisaCheckoutCreateProfileBuilderCallback() {
+                    @Override
+                    public void onResult(Profile.ProfileBuilder profileBuilder, Exception e) {
+                        PurchaseInfo.PurchaseInfoBuilder purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
+                                .setDescription("Description");
+
+                        mVisaPaymentButton.init(getActivity(), profileBuilder, purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
+                            @Override
+                            public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
+                                launchReadyHandler.launch();
+                            }
+
+                            @Override
+                            public void onResult(VisaPaymentSummary visaPaymentSummary) {
+                                visaCheckout.tokenize(visaPaymentSummary, new VisaCheckoutTokenizeCallback() {
+                                    @Override
+                                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception e) {
+                                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         });
     }

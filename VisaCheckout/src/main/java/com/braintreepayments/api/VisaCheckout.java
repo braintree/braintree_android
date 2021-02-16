@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.visa.checkout.Environment;
 import com.visa.checkout.Profile;
@@ -20,6 +21,11 @@ public class VisaCheckout {
     private BraintreeClient braintreeClient;
     private TokenizationClient tokenizationClient;
 
+    public VisaCheckout(BraintreeClient braintreeClient) {
+        this(braintreeClient, new TokenizationClient(braintreeClient));
+    }
+
+    @VisibleForTesting
     VisaCheckout(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
         this.braintreeClient = braintreeClient;
         this.tokenizationClient = tokenizationClient;

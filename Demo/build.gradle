@@ -84,16 +84,14 @@ dependencies {
     implementation project(':BraintreeDataCollector')
     implementation project(':Card')
     implementation project(':BraintreeCore')
+    implementation project(':GooglePay')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':ThreeDSecure')
     implementation project(':UnionPay')
     implementation project(':Venmo')
+    implementation project(':VisaCheckout')
 
-    api 'com.braintreepayments.api:visa-checkout:4.0.0-SNAPSHOT'
-    api 'com.braintreepayments.api:google-payment:4.0.0-SNAPSHOT'
-
-    implementation 'com.visa.checkout:visacheckout-android-sdk:6.6.1@aar'
     implementation 'com.squareup.okio:okio:1.13.0'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.1'

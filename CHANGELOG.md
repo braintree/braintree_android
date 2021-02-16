@@ -74,6 +74,7 @@
   * Remove `BraintreeListener`
   * Remove `BraintreeBrowserSwitchActivity`
   * Remove `UnionPayListener`
+  * Bump `browser-switch` to `2.0.0-beta1` 
 
 ## 3.17.0
 
