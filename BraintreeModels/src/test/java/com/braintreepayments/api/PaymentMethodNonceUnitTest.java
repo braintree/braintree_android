@@ -54,9 +54,9 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
-    public void parsePaymentMethods_doesNotParseGooglePaymentCardNonces() throws JSONException {
+    public void parsePaymentMethods_doesNotParseGooglePayCardNonces() throws JSONException {
         List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_ANDROID_PAY_RESPONSE);
+                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE);
 
         assertEquals(0, paymentMethodNonces.size());
     }

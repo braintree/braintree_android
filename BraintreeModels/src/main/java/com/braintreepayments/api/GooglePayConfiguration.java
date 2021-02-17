@@ -5,9 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Contains the remote Google Payment configuration for the Braintree SDK.
+ * Contains the remote Google Pay configuration for the Braintree SDK.
  */
-public class GooglePaymentConfiguration {
+public class GooglePayConfiguration {
     private static final String ENABLED_KEY = "enabled";
     private static final String GOOGLE_AUTHORIZATION_FINGERPRINT_KEY = "googleAuthorizationFingerprint";
     private static final String ENVIRONMENT_KEY = "environment";
@@ -23,59 +23,57 @@ public class GooglePaymentConfiguration {
     String mPayPalClientId;
 
     /**
-     * Parse an {@link GooglePaymentConfiguration} from json.
+     * Parse an {@link GooglePayConfiguration} from json.
      *
      * @param json The {@link JSONObject} to parse.
-     * @return An {@link GooglePaymentConfiguration} instance with data that was able to be parsed from
+     * @return An {@link GooglePayConfiguration} instance with data that was able to be parsed from
      *         the {@link JSONObject}.
      */
-    public static GooglePaymentConfiguration fromJson(JSONObject json) {
+    public static GooglePayConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
 
-        GooglePaymentConfiguration googlePaymentConfiguration = new GooglePaymentConfiguration();
-        googlePaymentConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
-        googlePaymentConfiguration.mGoogleAuthorizationFingerprint = Json.optString(json,
+        GooglePayConfiguration googlePayConfiguration = new GooglePayConfiguration();
+        googlePayConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
+        googlePayConfiguration.mGoogleAuthorizationFingerprint = Json.optString(json,
                 GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
-        googlePaymentConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
-        googlePaymentConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
-        googlePaymentConfiguration.mPayPalClientId = Json.optString(json, PAYPAL_CLIENT_ID_KEY, "");
+        googlePayConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
+        googlePayConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
+        googlePayConfiguration.mPayPalClientId = Json.optString(json, PAYPAL_CLIENT_ID_KEY, "");
 
         JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
         if (supportedNetworks != null) {
-            googlePaymentConfiguration.mSupportedNetworks = new String[supportedNetworks.length()];
+            googlePayConfiguration.mSupportedNetworks = new String[supportedNetworks.length()];
             for (int i = 0; i < supportedNetworks.length(); i++) {
                 try {
-                    googlePaymentConfiguration.mSupportedNetworks[i] = supportedNetworks.getString(i);
+                    googlePayConfiguration.mSupportedNetworks[i] = supportedNetworks.getString(i);
                 } catch (JSONException ignored) {}
             }
         } else {
-            googlePaymentConfiguration.mSupportedNetworks = new String[0];
+            googlePayConfiguration.mSupportedNetworks = new String[0];
         }
 
-        return googlePaymentConfiguration;
+        return googlePayConfiguration;
     }
 
     /**
-     * @return {@code true} if Google Payment is enabled and supported in the current environment,
-     *         {@code false} otherwise. Note: this value only pertains to the Braintree configuration, to check if
-     *         the user has Google Payment setup use
-     *         {@link com.braintreepayments.api.GooglePayment#isReadyToPay(BraintreeFragment, BraintreeResponseListener)}
+     * @return {@code true} if Google Pay is enabled and supported in the current environment,
+     *         {@code false} otherwise.
      */
     public boolean isEnabled() {
         return mEnabled;
     }
 
     /**
-     * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
+     * @return the authorization fingerprint to use for Google Pay, only allows tokenizing Google Pay cards.
      */
     public String getGoogleAuthorizationFingerprint() {
         return mGoogleAuthorizationFingerprint;
     }
 
     /**
-     * @return the current Google Payment environment.
+     * @return the current Google Pay environment.
      */
     public String getEnvironment() {
         return mEnvironment;
@@ -89,7 +87,7 @@ public class GooglePaymentConfiguration {
     }
 
     /**
-     * @return a string array of supported card networks for Google Payment.
+     * @return a string array of supported card networks for Google Pay.
      */
     public String[] getSupportedNetworks() {
         return mSupportedNetworks;

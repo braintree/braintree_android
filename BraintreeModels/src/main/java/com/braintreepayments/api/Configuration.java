@@ -26,7 +26,7 @@ public class Configuration {
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
     private static final String KOUNT_KEY = "kount";
-    private static final String GOOGLE_PAYMENT_KEY = "androidPay";
+    private static final String GOOGLE_PAY_KEY = "androidPay";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
     private static final String UNIONPAY_KEY = "unionPay";
@@ -48,7 +48,7 @@ public class Configuration {
     private CardConfiguration mCardConfiguration;
     private boolean mPaypalEnabled;
     private PayPalConfiguration mPayPalConfiguration;
-    private GooglePaymentConfiguration mGooglePaymentConfiguration;
+    private GooglePayConfiguration mGooglePayConfiguration;
     private boolean mThreeDSecureEnabled;
     private VenmoConfiguration mVenmoConfiguration;
     private KountConfiguration mKountConfiguration;
@@ -87,7 +87,7 @@ public class Configuration {
         mCardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
         mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
-        mGooglePaymentConfiguration = GooglePaymentConfiguration.fromJson(json.optJSONObject(GOOGLE_PAYMENT_KEY));
+        mGooglePayConfiguration = GooglePayConfiguration.fromJson(json.optJSONObject(GOOGLE_PAY_KEY));
         mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
         mVenmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
         mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
@@ -167,10 +167,10 @@ public class Configuration {
     }
 
     /**
-     * @return instance of {@link GooglePaymentConfiguration}.
+     * @return instance of {@link GooglePayConfiguration}.
      */
-    public GooglePaymentConfiguration getGooglePayment() {
-        return mGooglePaymentConfiguration;
+    public GooglePayConfiguration getGooglePay() {
+        return mGooglePayConfiguration;
     }
 
     /**

@@ -37,7 +37,7 @@ public class GooglePayCapabilitiesUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .enabled(true))
                 .buildConfiguration();
 
@@ -47,7 +47,7 @@ public class GooglePayCapabilitiesUnitTest {
         mockStatic(GoogleApiAvailability.class);
         when(GoogleApiAvailability.getInstance()).thenReturn(mockGoogleApiAvailability);
 
-        assertTrue(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePayment()));
+        assertTrue(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePay()));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class GooglePayCapabilitiesUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .enabled(false))
                 .buildConfiguration();
 
@@ -65,7 +65,7 @@ public class GooglePayCapabilitiesUnitTest {
         mockStatic(GoogleApiAvailability.class);
         when(GoogleApiAvailability.getInstance()).thenReturn(mockGoogleApiAvailability);
 
-        assertFalse(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePayment()));
+        assertFalse(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePay()));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class GooglePayCapabilitiesUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()
-                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .enabled(true))
                 .buildConfiguration();
 
@@ -83,6 +83,6 @@ public class GooglePayCapabilitiesUnitTest {
         mockStatic(GoogleApiAvailability.class);
         when(GoogleApiAvailability.getInstance()).thenReturn(mockGoogleApiAvailability);
 
-        assertFalse(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePayment()));
+        assertFalse(GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePay()));
     }
 }

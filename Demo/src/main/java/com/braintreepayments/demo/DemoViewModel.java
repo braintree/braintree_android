@@ -2,7 +2,6 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -17,7 +16,7 @@ public class DemoViewModel extends ViewModel {
     private final MutableLiveData<BrowserSwitchResult> localPaymentBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<BrowserSwitchResult> payPalBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> threeDSecureActivityResult = new MutableLiveData<>();
-    private final MutableLiveData<ActivityResult> googlePaymentActivityResult = new MutableLiveData<>();
+    private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> visaCheckoutActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
 
@@ -44,8 +43,8 @@ public class DemoViewModel extends ViewModel {
             case BraintreeRequestCodes.THREE_D_SECURE:
                 threeDSecureActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
-            case BraintreeRequestCodes.GOOGLE_PAYMENT:
-                googlePaymentActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
+            case BraintreeRequestCodes.GOOGLE_PAY:
+                googlePayActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 visaCheckoutActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
@@ -60,8 +59,8 @@ public class DemoViewModel extends ViewModel {
         return threeDSecureActivityResult;
     }
 
-    public MutableLiveData<ActivityResult> getGooglePaymentActivityResult() {
-        return googlePaymentActivityResult;
+    public MutableLiveData<ActivityResult> getGooglePayActivityResult() {
+        return googlePayActivityResult;
     }
 
     public MutableLiveData<ActivityResult> getVisaCheckoutActivityResult() {

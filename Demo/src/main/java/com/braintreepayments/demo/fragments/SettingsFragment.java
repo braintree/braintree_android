@@ -23,8 +23,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         onSharedPreferenceChanged(preferences, "paypal_intent_type");
         onSharedPreferenceChanged(preferences, "paypal_landing_page_type");
         onSharedPreferenceChanged(preferences, "paypal_payment_type");
-        onSharedPreferenceChanged(preferences, "android_pay_currency");
-        onSharedPreferenceChanged(preferences, "android_pay_allowed_countries_for_shipping");
+        onSharedPreferenceChanged(preferences, "google_pay_currency");
+        onSharedPreferenceChanged(preferences, "google_pay_allowed_countries_for_shipping");
         onSharedPreferenceChanged(preferences, "tokenization_key_type");
         preferences.registerOnSharedPreferenceChangeListener(this);
     }

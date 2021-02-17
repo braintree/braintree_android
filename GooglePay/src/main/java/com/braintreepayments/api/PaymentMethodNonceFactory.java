@@ -21,8 +21,8 @@ public class PaymentMethodNonceFactory {
             String key = keys.next();
 
             switch (key) {
-                case GooglePaymentCardNonce.API_RESOURCE_KEY:
-                    return GooglePaymentCardNonce.fromJson(paymentDataString);
+                case GooglePayCardNonce.API_RESOURCE_KEY:
+                    return GooglePayCardNonce.fromJson(paymentDataString);
 
                 case PayPalAccountNonce.API_RESOURCE_KEY:
                     return PayPalAccountNonce.fromJson(paymentDataString);

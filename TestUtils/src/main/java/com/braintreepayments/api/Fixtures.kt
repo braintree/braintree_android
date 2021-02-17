@@ -428,7 +428,7 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITH_ANDROID_PAY = """
+    const val CONFIGURATION_WITH_GOOGLE_PAY = """
         {
           "clientApiUrl": "client_api_url",
           "environment": "test",
@@ -436,7 +436,7 @@ object Fixtures {
           "merchantAccountId": "integration_merchant_account_id",
           "androidPay": {
             "enabled": true,
-            "displayName": "Android Pay Merchant",
+            "displayName": "Google Pay Merchant",
             "environment": "sandbox",
             "googleAuthorizationFingerprint": "google-auth-fingerprint",
             "supportedNetworks": [
@@ -899,7 +899,7 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITHOUT_ANDROID_PAY = """
+    const val CONFIGURATION_WITHOUT_GOOGLE_PAY = """
         {
             "clientApiUrl": "client_api_url",
             "environment": "test",
@@ -1341,8 +1341,8 @@ object Fixtures {
             },
             {
               "type": "AndroidPayCard",
-              "nonce": "fake-android-pay-nonce",
-              "description": "Android Pay",
+              "nonce": "fake-google-pay-nonce",
+              "description": "Google Pay",
               "details": {
                 "cardType": "Visa",
                 "lastTwo": "11",
@@ -1363,13 +1363,13 @@ object Fixtures {
     """
 
     // language=JSON
-    const val PAYMENT_METHODS_GET_PAYMENT_METHODS_ANDROID_PAY_RESPONSE = """
+    const val PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE = """
         {
           "paymentMethods": [
             {
               "type": "AndroidPayCard",
-              "nonce": "fake-android-pay-nonce",
-              "description": "Android Pay",
+              "nonce": "fake-google-pay-nonce",
+              "description": "Google Pay",
               "details": {
                 "cardType": "Visa",
                 "lastTwo": "11"
@@ -1844,14 +1844,14 @@ object Fixtures {
             },
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-android-pay-nonce\",\"description\":\"Android Pay\",\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-google-pay-nonce\",\"description\":\"Google Pay\",\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
             }
           }
         }
     """
 
     // language=JSON
-    const val PAYMENT_METHODS_GOOGLE_PAYMENT_REQUEST = """
+    const val PAYMENT_METHODS_GOOGLE_PAY_REQUEST = """
         {
           "apiVersion": 2,
           "apiVersionMinor": 0,
@@ -1931,7 +1931,7 @@ object Fixtures {
 
 
     // language=JSON
-    const val RESPONSE_GOOGLE_PAYMENT_CARD = """
+    const val RESPONSE_GOOGLE_PAY_CARD = """
         {
           "apiVersionMinor": 0,
           "apiVersion": 2,
@@ -1939,7 +1939,7 @@ object Fixtures {
             "description": "Visa •••• 1234",
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Android Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Google Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
             },
             "type": "CARD",
             "info": {
@@ -1951,7 +1951,7 @@ object Fixtures {
     """
 
     // language=JSON
-    const val REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT = """
+    const val REPSONSE_GOOGLE_PAY_PAYPAL_ACCOUNT = """
         {
           "apiVersionMinor": 0,
           "apiVersion": 2,

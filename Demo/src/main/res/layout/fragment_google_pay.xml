@@ -6,10 +6,10 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".GooglePaymentFragment">
+    tools:context=".GooglePayFragment">
 
     <ImageButton
-        android:id="@+id/google_payment_button"
+        android:id="@+id/google_pay_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -18,7 +18,7 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/google_pay"
         android:scaleType="fitCenter"
-        android:src="@drawable/button_google_payment"
+        android:src="@drawable/button_google_pay"
         android:visibility="gone" />
 
 </LinearLayout>

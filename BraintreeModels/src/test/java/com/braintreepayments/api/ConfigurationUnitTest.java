@@ -140,13 +140,13 @@ public class ConfigurationUnitTest {
     }
 
     @Test
-    public void returnsNewGooglePaymentConfigurationWhenGooglePaymentIsNull() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANDROID_PAY);
+    public void returnsNewGooglePayConfigurationWhenGooglePayIsNull() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_GOOGLE_PAY);
 
-        assertNotNull(configuration.getGooglePayment());
-        assertFalse(configuration.getGooglePayment().isEnabled());
-        assertEquals("", configuration.getGooglePayment().getDisplayName());
-        assertNull(configuration.getGooglePayment().getEnvironment());
+        assertNotNull(configuration.getGooglePay());
+        assertFalse(configuration.getGooglePay().isEnabled());
+        assertEquals("", configuration.getGooglePay().getDisplayName());
+        assertNull(configuration.getGooglePay().getEnvironment());
     }
 
     @Test

@@ -11,18 +11,18 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-public class GooglePaymentExceptionTest {
+public class GooglePayExceptionTest {
 
     @Test
-    public void testGooglePaymentException_isSerializable() {
+    public void testGooglePayException_isSerializable() {
         Status status = new Status(1, "Some status message");
-        GooglePaymentException exception = new GooglePaymentException("Some message", status);
+        GooglePayException exception = new GooglePayException("Some message", status);
 
         Parcel parcel = Parcel.obtain();
         exception.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        GooglePaymentException actual = GooglePaymentException.CREATOR.createFromParcel(parcel);
+        GooglePayException actual = GooglePayException.CREATOR.createFromParcel(parcel);
 
         assertEquals("Some message", actual.getMessage());
         assertEquals("Some status message", actual.getStatus().getStatusMessage());

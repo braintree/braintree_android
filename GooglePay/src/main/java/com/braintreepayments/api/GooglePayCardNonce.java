@@ -12,11 +12,11 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 import static java.lang.Boolean.FALSE;
 
 /**
- * {@link PaymentMethodNonce} representing a Google Payments card.
+ * {@link PaymentMethodNonce} representing a Google Pay card.
  *
  * @see PaymentMethodNonce
  */
-public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcelable {
+public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable {
 
     protected static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";
@@ -35,17 +35,17 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     private BinData mBinData;
 
     /**
-     * Convert an API response to a {@link GooglePaymentCardNonce}.
+     * Convert an API response to a {@link GooglePayCardNonce}.
      *
-     * @param json Raw JSON response from Braintree of a {@link GooglePaymentCardNonce}.
-     * @return {@link GooglePaymentCardNonce}.
+     * @param json Raw JSON response from Braintree of a {@link GooglePayCardNonce}.
+     * @return {@link GooglePayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static GooglePaymentCardNonce fromJson(String json) throws JSONException {
-        GooglePaymentCardNonce googlePaymentCardNonce = new GooglePaymentCardNonce();
-        googlePaymentCardNonce.fromJson(new JSONObject(json));
+    public static GooglePayCardNonce fromJson(String json) throws JSONException {
+        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce();
+        googlePayCardNonce.fromJson(new JSONObject(json));
 
-        return googlePaymentCardNonce;
+        return googlePayCardNonce;
     }
 
     public void fromJson(JSONObject json) throws JSONException {
@@ -134,7 +134,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     }
 
     /**
-     * @return The user's email address associated the Google Payments account.
+     * @return The user's email address associated the Google Pay account.
      */
     @Nullable
     public String getEmail() {
@@ -165,7 +165,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     }
 
     /**
-     * @return The BIN data for the card number associated with {@link GooglePaymentCardNonce}
+     * @return The BIN data for the card number associated with {@link GooglePayCardNonce}
      */
     public BinData getBinData() {
         return mBinData;
@@ -176,7 +176,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         return "Google Pay";
     }
 
-    public GooglePaymentCardNonce() {
+    public GooglePayCardNonce() {
     }
 
     @Override
@@ -191,7 +191,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         dest.writeParcelable(mBinData, flags);
     }
 
-    private GooglePaymentCardNonce(Parcel in) {
+    private GooglePayCardNonce(Parcel in) {
         super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
@@ -202,13 +202,13 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         mBinData = in.readParcelable(BinData.class.getClassLoader());
     }
 
-    public static final Creator<GooglePaymentCardNonce> CREATOR = new Creator<GooglePaymentCardNonce>() {
-        public GooglePaymentCardNonce createFromParcel(Parcel source) {
-            return new GooglePaymentCardNonce(source);
+    public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {
+        public GooglePayCardNonce createFromParcel(Parcel source) {
+            return new GooglePayCardNonce(source);
         }
 
-        public GooglePaymentCardNonce[] newArray(int size) {
-            return new GooglePaymentCardNonce[size];
+        public GooglePayCardNonce[] newArray(int size) {
+            return new GooglePayCardNonce[size];
         }
     };
 }

@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class GooglePaymentRequestUnitTest {
+public class GooglePayRequestUnitTest {
 
     @Test
     public void returnsAllValues() {
@@ -32,7 +32,7 @@ public class GooglePaymentRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN)
                 .build();
 
-        GooglePaymentRequest request = new GooglePaymentRequest()
+        GooglePayRequest request = new GooglePayRequest()
                 .allowPrepaidCards(true)
                 .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
                 .billingAddressRequired(true)
@@ -60,7 +60,7 @@ public class GooglePaymentRequestUnitTest {
 
     @Test
     public void returnsNullForAllValuesWhenNotSet() {
-        GooglePaymentRequest request = new GooglePaymentRequest();
+        GooglePayRequest request = new GooglePayRequest();
 
         assertNull(request.getAllowPrepaidCards());
         assertNull(request.getBillingAddressFormat());
@@ -78,7 +78,7 @@ public class GooglePaymentRequestUnitTest {
 
     @Test
     public void parcelsCorrectly() {
-        GooglePaymentRequest request = new GooglePaymentRequest();
+        GooglePayRequest request = new GooglePayRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()
                 .setCurrencyCode("USD")
@@ -105,7 +105,7 @@ public class GooglePaymentRequestUnitTest {
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        GooglePaymentRequest parceled = GooglePaymentRequest.CREATOR.createFromParcel(parcel);
+        GooglePayRequest parceled = GooglePayRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
         assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
@@ -122,7 +122,7 @@ public class GooglePaymentRequestUnitTest {
 
     @Test
     public void parcelsCorrectly_allFieldsPopulated_null() throws NoSuchFieldException{
-        GooglePaymentRequest request = new GooglePaymentRequest();
+        GooglePayRequest request = new GooglePayRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()
                 .setCurrencyCode("USD")
@@ -143,7 +143,7 @@ public class GooglePaymentRequestUnitTest {
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        GooglePaymentRequest parceled = GooglePaymentRequest.CREATOR.createFromParcel(parcel);
+        GooglePayRequest parceled = GooglePayRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
         assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
@@ -162,8 +162,8 @@ public class GooglePaymentRequestUnitTest {
 
     @Test
     public void generatesToJsonRequest() throws JSONException {
-        GooglePaymentRequest request = new GooglePaymentRequest();
-        String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAYMENT_REQUEST;
+        GooglePayRequest request = new GooglePayRequest();
+        String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
         ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
@@ -228,7 +228,7 @@ public class GooglePaymentRequestUnitTest {
 
     @Test
     public void allowsNullyOptionalParameters() throws JSONException {
-        GooglePaymentRequest request = new GooglePaymentRequest();
+        GooglePayRequest request = new GooglePayRequest();
         String expected = "{\"apiVersion\":2,\"apiVersionMinor\":0,\"allowedPaymentMethods\":[],\"shippingAddressRequired\":true,\"merchantInfo\":{},\"transactionInfo\":{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\",\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}";
 
         ShippingAddressRequirements nullyShippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();

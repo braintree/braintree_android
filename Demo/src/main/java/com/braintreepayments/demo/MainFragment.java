@@ -23,7 +23,7 @@ public class MainFragment extends BaseFragment {
 
     private PaymentMethodNonce mNonce;
 
-    private Button mGooglePaymentButton;
+    private Button mGooglePayButton;
     private Button mCardsButton;
     private Button mPayPalButton;
     private Button mVenmoButton;
@@ -36,7 +36,7 @@ public class MainFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mGooglePaymentButton = view.findViewById(R.id.google_payment);
+        mGooglePayButton = view.findViewById(R.id.google_pay);
         mCardsButton = view.findViewById(R.id.card);
         mPayPalButton = view.findViewById(R.id.paypal);
         mVenmoButton = view.findViewById(R.id.venmo);
@@ -47,7 +47,7 @@ public class MainFragment extends BaseFragment {
         mCardsButton.setOnClickListener(this::launchCards);
         mPayPalButton.setOnClickListener(this::launchPayPal);
         mLocalPaymentsButton.setOnClickListener(this::launchLocalPayment);
-        mGooglePaymentButton.setOnClickListener(this::launchGooglePayment);
+        mGooglePayButton.setOnClickListener(this::launchGooglePay);
         mVisaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
         mVenmoButton.setOnClickListener(this::launchVenmo);
         mPreferredPaymentMethods.setOnClickListener(this::launchPreferredPaymentMethods);
@@ -74,9 +74,9 @@ public class MainFragment extends BaseFragment {
         }
     }
 
-    public void launchGooglePayment(View v) {
+    public void launchGooglePay(View v) {
         NavDirections action =
-                MainFragmentDirections.actionMainFragmentToGooglePaymentFragment();
+                MainFragmentDirections.actionMainFragmentToGooglePayFragment();
         Navigation.findNavController(v).navigate(action);
     }
 

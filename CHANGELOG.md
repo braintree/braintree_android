@@ -44,6 +44,8 @@
   * Rename `core` module to `shared-utils`
   * Rename `LocalPaymentResult` to `LocalPaymentNonce`
   * Rename `braintree` module to `braintree-core`
+  * Rename `GooglePayment` classes to `GooglePay`
+  * Rename `BraintreeRequestCodes.GOOGLE_PAYMENT` to `BraintreeRequestCodes.GOOGLE_PAY`
   * Create `american-express` module
   * Create `card` module
   * Create `local-payment` module

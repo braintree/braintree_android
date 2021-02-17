@@ -42,77 +42,48 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/android_pay">
-
-        <CheckBoxPreference
-            android:key="android_pay_require_shipping_address"
-            android:title="@string/android_pay_require_shipping_address"
-            android:summary="@string/android_pay_require_shipping_address_summary"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
-            android:key="android_pay_require_phone_number"
-            android:title="@string/android_pay_require_phone_number"
-            android:summary="@string/android_pay_require_phone_number_summary"
-            android:defaultValue="false" />
-
-        <com.braintreepayments.demo.views.SummaryEditTestPreference
-            android:key="android_pay_currency"
-            android:title="@string/android_pay_currency_title"
-            android:summary="@string/android_pay_currency_summary"
-            android:defaultValue="@string/usd" />
-
-        <com.braintreepayments.demo.views.SummaryEditTestPreference
-            android:key="android_pay_allowed_countries_for_shipping"
-            android:title="@string/android_pay_allowed_countries_for_shipping_title"
-            android:summary="@string/android_pay_allowed_countries_for_shipping_summary"
-            android:defaultValue="@string/us" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/google_pay">
 
         <CheckBoxPreference
-            android:key="google_payment_allow_prepaid_cards"
-            android:title="@string/google_payment_allow_prepaid_cards"
-            android:summary="@string/google_payment_allow_prepaid_cards_summary"
+            android:key="google_pay_allow_prepaid_cards"
+            android:title="@string/google_pay_allow_prepaid_cards"
+            android:summary="@string/google_pay_allow_prepaid_cards_summary"
             android:defaultValue="true" />
 
         <CheckBoxPreference
-            android:key="google_payment_require_shipping_address"
-            android:title="@string/android_pay_require_shipping_address"
-            android:summary="@string/android_pay_require_shipping_address_summary"
+            android:key="google_pay_require_shipping_address"
+            android:title="@string/google_pay_require_shipping_address"
+            android:summary="@string/google_pay_require_shipping_address_summary"
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="google_payment_require_billing_address"
-            android:title="@string/google_payment_require_billing_address"
-            android:summary="@string/google_payment_require_billing_address_summary"
+            android:key="google_pay_require_billing_address"
+            android:title="@string/google_pay_require_billing_address"
+            android:summary="@string/google_pay_require_billing_address_summary"
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="google_payment_require_phone_number"
-            android:title="@string/android_pay_require_phone_number"
-            android:summary="@string/android_pay_require_phone_number_summary"
+            android:key="google_pay_require_phone_number"
+            android:title="@string/google_pay_require_phone_number"
+            android:summary="@string/google_pay_require_phone_number_summary"
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="google_payment_require_email"
-            android:title="@string/google_payment_require_email"
-            android:summary="@string/google_payment_require_email_summary"
+            android:key="google_pay_require_email"
+            android:title="@string/google_pay_require_email"
+            android:summary="@string/google_pay_require_email_summary"
             android:defaultValue="false" />
 
         <com.braintreepayments.demo.views.SummaryEditTestPreference
-            android:key="google_payment_currency"
-            android:title="@string/android_pay_currency_title"
-            android:summary="@string/android_pay_currency_summary"
+            android:key="google_pay_currency"
+            android:title="@string/google_pay_currency_title"
+            android:summary="@string/google_pay_currency_summary"
             android:defaultValue="@string/usd" />
 
         <com.braintreepayments.demo.views.SummaryEditTestPreference
-            android:key="google_payment_allowed_countries_for_shipping"
-            android:title="@string/android_pay_allowed_countries_for_shipping_title"
-            android:summary="@string/android_pay_allowed_countries_for_shipping_summary"
+            android:key="google_pay_allowed_countries_for_shipping"
+            android:title="@string/google_pay_allowed_countries_for_shipping_title"
+            android:summary="@string/google_pay_allowed_countries_for_shipping_summary"
             android:defaultValue="@string/us" />
 
     </PreferenceCategory>

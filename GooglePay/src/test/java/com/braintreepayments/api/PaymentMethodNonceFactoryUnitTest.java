@@ -11,17 +11,17 @@ import static org.junit.Assert.assertTrue;
 public class PaymentMethodNonceFactoryUnitTest {
 
     @Test
-    public void getPaymentMethodNonce_returnsGooglePayment() throws JSONException {
+    public void getPaymentMethodNonce_returnsGooglePay() throws JSONException {
         String jsonString = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
 
         PaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
 
-        assertTrue(nonce instanceof GooglePaymentCardNonce);
+        assertTrue(nonce instanceof GooglePayCardNonce);
     }
 
     @Test
     public void getPaymentMethodNonce_returnsPayPalAccountNonce() throws JSONException {
-        String jsonString = Fixtures.REPSONSE_GOOGLE_PAYMENT_PAYPAL_ACCOUNT;
+        String jsonString = Fixtures.REPSONSE_GOOGLE_PAY_PAYPAL_ACCOUNT;
 
         PaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
 

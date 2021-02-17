@@ -2,7 +2,7 @@ package com.braintreepayments.demo;
 
 import com.braintreepayments.api.BinData;
 import com.braintreepayments.api.CardNonce;
-import com.braintreepayments.api.GooglePaymentCardNonce;
+import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PaymentMethodNonce;
@@ -21,8 +21,8 @@ public class PaymentMethodNonceFormatter {
             return convertCardNonceToString((CardNonce) nonce);
         } else if (nonce instanceof PayPalAccountNonce) {
             return convertPayPalNonceToString((PayPalAccountNonce) nonce);
-        } else if (nonce instanceof GooglePaymentCardNonce) {
-            return convertGooglePaymentNonceToString((GooglePaymentCardNonce) nonce);
+        } else if (nonce instanceof GooglePayCardNonce) {
+            return convertGooglePayNonceToString((GooglePayCardNonce) nonce);
         } else if (nonce instanceof VisaCheckoutNonce) {
             return convertVisaCheckoutNonceToString((VisaCheckoutNonce) nonce);
         } else if (nonce instanceof VenmoAccountNonce) {
@@ -53,12 +53,12 @@ public class PaymentMethodNonceFormatter {
                 "Shipping Address: " + formatPayPalAddress(nonce.getShippingAddress());
     }
 
-    private static String convertGooglePaymentNonceToString(GooglePaymentCardNonce nonce) {
+    private static String convertGooglePayNonceToString(GooglePayCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
                 "Card Description: " + nonce.getDescription() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
-                "Billing Address: " + formatGooglePaymentAddress(nonce.getBillingAddress()) + "\n" +
-                "Shipping Address: " + formatGooglePaymentAddress(nonce.getShippingAddress()) + "\n" +
+                "Billing Address: " + formatGooglePayAddress(nonce.getBillingAddress()) + "\n" +
+                "Shipping Address: " + formatGooglePayAddress(nonce.getShippingAddress()) + "\n" +
                 convertBinDataToString(nonce.getBinData());
     }
 
@@ -102,7 +102,7 @@ public class PaymentMethodNonceFormatter {
         return addressString;
     }
 
-    private static String formatGooglePaymentAddress(PostalAddress address) {
+    private static String formatGooglePayAddress(PostalAddress address) {
         if (address == null) {
             return "null";
         }

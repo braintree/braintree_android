@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.BraintreeRequestCodes;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -37,8 +35,8 @@ public class BraintreeRequestCodesUnitTest {
     }
 
     @Test
-    public void googlePayment() {
-        assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAYMENT);
+    public void googlePay() {
+        assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAY);
     }
 
     @Test

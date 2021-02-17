@@ -11,16 +11,16 @@ import com.google.android.gms.wallet.Wallet;
 public class GooglePayCapabilities {
 
     /**
-     * @return {@code true} if Google Payment is enabled and supported in the current environment,
+     * @return {@code true} if Google Pay is enabled and supported in the current environment,
      *         {@code false} otherwise. Note: this value only pertains to the Braintree configuration, to check if
-     *         the user has Google Payment setup use
-     *         {@link com.braintreepayments.api.GooglePaymentClient#isReadyToPay(FragmentActivity, ReadyForGooglePaymentRequest, GooglePaymentIsReadyToPayCallback)}
+     *         the user has Google Pay setup use
+     *         {@link GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)}
      */
-    public static boolean isGooglePayEnabled(Context context, GooglePaymentConfiguration googlePaymentConfiguration) {
+    public static boolean isGooglePayEnabled(Context context, GooglePayConfiguration googlePayConfiguration) {
         try {
             Class.forName(Wallet.class.getName());
 
-            return googlePaymentConfiguration.isEnabled() && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
+            return googlePayConfiguration.isEnabled() && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
                     ConnectionResult.SUCCESS;
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;

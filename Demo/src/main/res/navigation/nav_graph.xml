@@ -20,8 +20,8 @@
             android:id="@+id/action_mainFragment_to_payPalFragment"
             app:destination="@id/payPalFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_googlePaymentFragment"
-            app:destination="@id/googlePaymentFragment" />
+            android:id="@+id/action_mainFragment_to_googlePayFragment"
+            app:destination="@id/googlePayFragment" />
         <action
             android:id="@+id/action_mainFragment_to_visaCheckoutFragment"
             app:destination="@id/visaCheckoutFragment" />
@@ -105,11 +105,11 @@
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
-        android:id="@+id/googlePaymentFragment"
-        android:name="com.braintreepayments.demo.GooglePaymentFragment"
-        tools:layout="@layout/fragment_google_payment">
+        android:id="@+id/googlePayFragment"
+        android:name="com.braintreepayments.demo.GooglePayFragment"
+        tools:layout="@layout/fragment_google_pay">
         <action
-            android:id="@+id/action_googlePaymentFragment_to_displayNonceFragment"
+            android:id="@+id/action_googlePayFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />

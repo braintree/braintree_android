@@ -6,13 +6,13 @@ import android.os.Parcelable;
 import com.google.android.gms.common.api.Status;
 
 /**
- * Error class thrown when a Google Payment exception is encountered.
+ * Error class thrown when a Google Pay exception is encountered.
  */
-public class GooglePaymentException extends BraintreeException implements Parcelable {
+public class GooglePayException extends BraintreeException implements Parcelable {
 
     private Status mStatus;
 
-    public GooglePaymentException(String message, Status status) {
+    public GooglePayException(String message, Status status) {
         super(message);
         mStatus = status;
     }
@@ -37,20 +37,20 @@ public class GooglePaymentException extends BraintreeException implements Parcel
         dest.writeParcelable(mStatus, 0);
     }
 
-    protected GooglePaymentException(Parcel in) {
+    protected GooglePayException(Parcel in) {
         super(in.readString());
         mStatus = in.readParcelable(Status.class.getClassLoader());
     }
 
-    public static final Creator<GooglePaymentException> CREATOR = new Creator<GooglePaymentException>() {
+    public static final Creator<GooglePayException> CREATOR = new Creator<GooglePayException>() {
         @Override
-        public GooglePaymentException createFromParcel(Parcel in) {
-            return new GooglePaymentException(in);
+        public GooglePayException createFromParcel(Parcel in) {
+            return new GooglePayException(in);
         }
 
         @Override
-        public GooglePaymentException[] newArray(int size) {
-            return new GooglePaymentException[size];
+        public GooglePayException[] newArray(int size) {
+            return new GooglePayException[size];
         }
     };
 }

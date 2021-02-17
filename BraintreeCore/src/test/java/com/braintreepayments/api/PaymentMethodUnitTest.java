@@ -116,9 +116,9 @@ public class PaymentMethodUnitTest {
     }
 
     @Test
-    public void getPaymentMethodNonces_doesNotParseGooglePaymentMethods() {
+    public void getPaymentMethodNonces_doesNotParseGooglePayMethods() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_ANDROID_PAY_RESPONSE)
+                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE)
                 .build();
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 

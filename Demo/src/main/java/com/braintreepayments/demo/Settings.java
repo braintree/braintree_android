@@ -126,36 +126,36 @@ public class Settings {
         }
     }
 
-    public static boolean areGooglePaymentPrepaidCardsAllowed(Context context) {
-        return getPreferences(context).getBoolean("google_payment_allow_prepaid_cards", true);
+    public static boolean areGooglePayPrepaidCardsAllowed(Context context) {
+        return getPreferences(context).getBoolean("google_pay_allow_prepaid_cards", true);
     }
 
-    public static boolean isGooglePaymentShippingAddressRequired(Context context) {
-        return getPreferences(context).getBoolean("google_payment_require_shipping_address", false);
+    public static boolean isGooglePayShippingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("google_pay_require_shipping_address", false);
     }
 
-    public static boolean isGooglePaymentBillingAddressRequired(Context context) {
-        return getPreferences(context).getBoolean("google_payment_require_billing_address", false);
+    public static boolean isGooglePayBillingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("google_pay_require_billing_address", false);
     }
 
-    public static boolean isGooglePaymentPhoneNumberRequired(Context context) {
-        return getPreferences(context).getBoolean("google_payment_require_phone_number", false);
+    public static boolean isGooglePayPhoneNumberRequired(Context context) {
+        return getPreferences(context).getBoolean("google_pay_require_phone_number", false);
     }
 
-    public static boolean isGooglePaymentEmailRequired(Context context) {
-        return getPreferences(context).getBoolean("google_payment_require_email", false);
+    public static boolean isGooglePayEmailRequired(Context context) {
+        return getPreferences(context).getBoolean("google_pay_require_email", false);
     }
 
-    public static String getGooglePaymentCurrency(Context context) {
-        return getPreferences(context).getString("google_payment_currency", "USD");
+    public static String getGooglePayCurrency(Context context) {
+        return getPreferences(context).getString("google_pay_currency", "USD");
     }
 
-    public static String getGooglePaymentMerchantId(Context context) {
-        return getPreferences(context).getString("google_payment_merchant_id", "18278000977346790994");
+    public static String getGooglePayMerchantId(Context context) {
+        return getPreferences(context).getString("google_pay_merchant_id", "18278000977346790994");
     }
 
-    public static List<String> getGooglePaymentAllowedCountriesForShipping(Context context) {
-        String[] preference = getPreferences(context).getString("google_payment_allowed_countries_for_shipping", "US")
+    public static List<String> getGooglePayAllowedCountriesForShipping(Context context) {
+        String[] preference = getPreferences(context).getString("google_pay_allowed_countries_for_shipping", "US")
                 .split(",");
         List<String> countries = new ArrayList<>();
         for(String country : preference) {

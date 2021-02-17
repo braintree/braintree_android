@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public interface GooglePaymentRequestPaymentCallback {
+public interface GooglePayRequestPaymentCallback {
 
     void onResult(boolean paymentRequested, Exception error);
 }
