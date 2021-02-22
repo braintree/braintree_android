@@ -17,7 +17,7 @@ public class BraintreeClient {
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLHttpClient graphQLHttpClient;
     private final BrowserSwitchClient browserSwitchClient;
-    private final ConfigurationManager configurationManager;
+    private final ConfigurationLoader configurationLoader;
     private final Context applicationContext;
     private final CrashReporter crashReporter;
     private final ManifestValidator manifestValidator;
@@ -36,7 +36,7 @@ public class BraintreeClient {
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
-                .configurationManager(new ConfigurationManager(httpClient));
+                .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
     public BraintreeClient(Authorization authorization, Context context) {
@@ -49,7 +49,7 @@ public class BraintreeClient {
         this.applicationContext = params.getContext().getApplicationContext();
         this.authorization = params.getAuthorization();
         this.browserSwitchClient = params.getBrowserSwitchClient();
-        this.configurationManager = params.getConfigurationManager();
+        this.configurationLoader = params.getConfigurationLoader();
         this.graphQLHttpClient = params.getGraphQLHttpClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
@@ -61,7 +61,7 @@ public class BraintreeClient {
     }
 
     public void getConfiguration(ConfigurationCallback callback) {
-        configurationManager.loadConfiguration(applicationContext, authorization, callback);
+        configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
     public void sendAnalyticsEvent(final String eventFragment) {
@@ -176,7 +176,7 @@ public class BraintreeClient {
     }
 
     private static boolean isAnalyticsEnabled(Configuration configuration) {
-        return configuration != null && configuration.getAnalytics() != null && configuration.getAnalytics().isEnabled();
+        return configuration != null && configuration.isAnalyticsEnabled();
     }
 
     public Authorization getAuthorization() {

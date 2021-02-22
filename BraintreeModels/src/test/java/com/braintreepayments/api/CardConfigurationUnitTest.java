@@ -1,43 +1,51 @@
 package com.braintreepayments.api;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class CardConfigurationUnitTest {
 
     @Test
-    public void parsesCardConfiguration() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SUPPORTED_CARD_TYPES);
-        CardConfiguration cardConfiguration = configuration.getCardConfiguration();
+    public void fromJson_parsesFullInput() throws JSONException {
+        JSONObject input = new JSONObject()
+                .put("collectDeviceData", true)
+                .put("supportedCardTypes", new JSONArray()
+                        .put("American Express")
+                        .put("Discover")
+                        .put("JCB")
+                        .put("MasterCard")
+                        .put("Visa"));
+        CardConfiguration sut = CardConfiguration.fromJson(input);
 
-        assertEquals(5, cardConfiguration.getSupportedCardTypes().size());
-        assertTrue(cardConfiguration.getSupportedCardTypes().contains("American Express"));
-        assertTrue(cardConfiguration.getSupportedCardTypes().contains("Discover"));
-        assertTrue(cardConfiguration.getSupportedCardTypes().contains("JCB"));
-        assertTrue(cardConfiguration.getSupportedCardTypes().contains("MasterCard"));
-        assertTrue(cardConfiguration.getSupportedCardTypes().contains("Visa"));
-        assertFalse(cardConfiguration.isFraudDataCollectionEnabled());
+        assertTrue(sut.isFraudDataCollectionEnabled());
+        assertEquals(5, sut.getSupportedCardTypes().size());
+        assertEquals("American Express", sut.getSupportedCardTypes().get(0));
+        assertEquals("Discover", sut.getSupportedCardTypes().get(1));
+        assertEquals("JCB", sut.getSupportedCardTypes().get(2));
+        assertEquals("MasterCard", sut.getSupportedCardTypes().get(3));
+        assertEquals("Visa", sut.getSupportedCardTypes().get(4));
     }
 
     @Test
-    public void handlesNull() {
-        CardConfiguration cardConfiguration = CardConfiguration.fromJson(null);
-
-        assertEquals(0, cardConfiguration.getSupportedCardTypes().size());
+    public void fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+        CardConfiguration sut = CardConfiguration.fromJson(null);
+        assertFalse(sut.isFraudDataCollectionEnabled());
+        assertEquals(0, sut.getSupportedCardTypes().size());
     }
 
     @Test
-    public void isFraudDataCollectionEnabled_isTrueWhenEnabled() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARD_COLLECT_DEVICE_DATA);
-        CardConfiguration cardConfiguration = configuration.getCardConfiguration();
-
-        assertTrue(cardConfiguration.isFraudDataCollectionEnabled());
+    public void fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+        CardConfiguration sut = CardConfiguration.fromJson(new JSONObject());
+        assertFalse(sut.isFraudDataCollectionEnabled());
+        assertEquals(0, sut.getSupportedCardTypes().size());
     }
 }

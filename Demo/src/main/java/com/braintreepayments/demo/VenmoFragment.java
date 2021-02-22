@@ -84,7 +84,7 @@ public class VenmoFragment extends BaseFragment {
                                        }
                                    }
                                });
-                           } else if (configuration.getPayWithVenmo().isAccessTokenValid()) {
+                           } else if (configuration.isVenmoEnabled()) {
                                showDialog("Please install the Venmo app first.");
                            } else {
                                showDialog("Venmo is not enabled for the current merchant.");

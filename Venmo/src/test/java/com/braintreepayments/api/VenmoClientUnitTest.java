@@ -60,7 +60,7 @@ public class VenmoClientUnitTest {
         deviceInspector = mock(DeviceInspector.class);
 
         venmoEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        venmoDisabledConfiguration = new TestConfigurationBuilder().buildConfiguration();
+        venmoDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         venmoAuthorizeAccountCallback = mock(VenmoAuthorizeAccountCallback.class);
         sharedPrefsWriter = mock(VenmoSharedPrefsWriter.class);
 
@@ -139,24 +139,6 @@ public class VenmoClientUnitTest {
                 ArgumentCaptor.forClass(Exception.class);
         verify(venmoAuthorizeAccountCallback).onResult(captor.capture());
         assertEquals("Configuration fetching error", captor.getValue().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-    }
-
-    @Test
-    public void authorizeAccount_whenVenmoConfigurationIsNull_postsException() {
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getPayWithVenmo()).thenReturn(null);
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .build();
-
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
-        sut.authorizeAccount(activity, false, null, venmoAuthorizeAccountCallback);
-
-        ArgumentCaptor<AppSwitchNotAvailableException> captor =
-                ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
-        verify(venmoAuthorizeAccountCallback).onResult(captor.capture());
-        assertEquals("Venmo is not enabled", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
 

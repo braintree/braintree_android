@@ -6,12 +6,11 @@ import android.util.Base64;
 
 import org.json.JSONException;
 
-// TODO: Re-name to ConfigurationLoader
-public class ConfigurationManager {
+class ConfigurationLoader {
 
     private final BraintreeHttpClient httpClient;
 
-    ConfigurationManager(BraintreeHttpClient httpClient) {
+    ConfigurationLoader(BraintreeHttpClient httpClient) {
         this.httpClient = httpClient;
     }
 

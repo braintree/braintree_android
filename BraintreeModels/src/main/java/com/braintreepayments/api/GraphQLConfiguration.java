@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Contains the remote GraphQL configuration for the Braintree SDK.
  */
-public class GraphQLConfiguration {
+class GraphQLConfiguration {
 
     private String mUrl;
     private Set<String> mFeatures;
@@ -25,7 +25,7 @@ public class GraphQLConfiguration {
      * @return a {@link GraphQLConfiguration} instance with the data that was able to be parsed from the {@link
      * JSONObject}.
      */
-    public static GraphQLConfiguration fromJson(JSONObject json) {
+    static GraphQLConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
@@ -40,14 +40,14 @@ public class GraphQLConfiguration {
     /**
      * @return {@code true} if GraphQL is enabled, {@code false} otherwise.
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return !TextUtils.isEmpty(mUrl);
     }
 
     /**
      * @return the GraphQL url.
      */
-    public String getUrl() {
+    String getUrl() {
         return mUrl;
     }
 
@@ -57,7 +57,7 @@ public class GraphQLConfiguration {
      * @param feature The feature to check.
      * @return {@code true} if GraphQL is enabled and the feature is enabled, {@code false} otherwise.
      */
-    public boolean isFeatureEnabled(String feature) {
+    boolean isFeatureEnabled(String feature) {
         return isEnabled() && mFeatures.contains(feature);
     }
 

@@ -37,6 +37,15 @@
   * `VenmoOnActivityResultCallback`
 * Migrate `braintree-android-google-payment` into `braintree_android`
 * Migrate `braintree-android-visa-checkout` into `braintree_android`
+* Add `Configuration#getEnvironment()`
+* Add `Configuration#getPayPalPrivacyUrl()` 
+* Add `Configuration#getPayPalUserAgreementUrl()` 
+* Add `Configuration#isGooglePayEnabled()`
+* Add `Configuration#isLocalPaymentEnabled()`
+* Add `Configuration#isSamsungPayEnabled()`
+* Add `Configuration#isUnionPayEnabled()`
+* Add `Configuration#isVenmoEnabled()`
+* Add `Configuration#isVisaCheckoutEnabled()`
 * Breaking Changes
   * Remove `BraintreeFragment`
   * Remove `AnalyticsIntentService`
@@ -62,6 +71,24 @@
   * Remove `InstallationIdentifier`
   * Remove deprecated 3DS `performVerification` methods
   * Remove `Beta` interface
+  * Remove `AnalyticsConfiguration`
+  * Remove `CardConfiguration`
+  * Remove `GraphQLConfiguration`
+  * Remove `GooglePaymentConfiguration`
+  * Remove `KountConfiguration`
+  * Remove `BraintreeApiConfiguration`
+  * Remove `PayPalConfiguration`
+  * Remove `SamsungPayConfiguration`
+  * Remove `UnionPayConfiguration`
+  * Remove `VenmoConfiguration`
+  * Remove `VisaCheckoutConfiguration`
+  * Remove `Configuration#getCardConfiguration()`
+  * Remove `Configuration#getGraphQL()`
+  * Remove `Configuration#getGooglePayment()`
+  * Remove `Configuration#getKount()`
+  * Remove `ConfigurationException` constructor
+  * Remove `ConfigurationManager`
+  * Change `GooglePayCapabilities#isGooglePayEnabled()` parameters
   * Remove `BrowserSwitchException` constructor
   * Remove `PaymentMethodNotAvailableException`
   * Remove `VisaCheckoutNotAvailableException`

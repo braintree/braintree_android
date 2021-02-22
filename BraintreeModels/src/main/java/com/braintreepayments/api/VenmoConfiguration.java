@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Contains the remote Venmo configuration for the Braintree SDK.
  */
-public class VenmoConfiguration {
+class VenmoConfiguration {
 
     private static final String ACCESS_TOKEN_KEY = "accessToken";
     private static final String ENVIRONMENT_KEY = "environment";
@@ -40,25 +40,25 @@ public class VenmoConfiguration {
     /**
      * @return The access token to use with Venmo.
      */
-    public String getAccessToken() {
+    String getAccessToken() {
         return mAccessToken;
     }
 
     /**
      * @return The merchant Id associated with this merchant's Venmo integration.
      */
-    public String getMerchantId() {
+    String getMerchantId() {
         return mMerchantId;
     }
 
     /**
      * @return The Venmo environment the merchant is running in.
      */
-    public String getEnvironment() {
+    String getEnvironment() {
         return mEnvironment;
     }
 
-    public boolean isAccessTokenValid() {
+    boolean isAccessTokenValid() {
         return !TextUtils.isEmpty(mAccessToken);
     }
 }

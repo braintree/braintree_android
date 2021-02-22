@@ -41,8 +41,11 @@ public class GooglePayFragment extends BaseFragment {
             googlePayClient = new GooglePayClient(braintreeClient);
 
             braintreeClient.getConfiguration((configuration, error) -> {
+                if (configuration == null) {
+                    return;
+                }
 
-                if (GooglePayCapabilities.isGooglePayEnabled(getActivity(), configuration.getGooglePay())) {
+                if (GooglePayCapabilities.isGooglePayEnabled(getActivity(), configuration)) {
 
                     googlePayClient.isReadyToPay(getActivity(), (isReadyToPay, e) -> {
                         if (isReadyToPay) {

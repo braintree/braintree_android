@@ -91,7 +91,7 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                if (!configuration.getGooglePay().isEnabled()) {
+                if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(false, null);
                     return;
                 }
@@ -103,7 +103,7 @@ public class GooglePayClient {
 
                 PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
                         new Wallet.WalletOptions.Builder()
-                                .setEnvironment(getEnvironment(configuration.getGooglePay()))
+                                .setEnvironment(getGooglePayEnvironment(configuration))
                                 .build());
 
                 JSONObject json = new JSONObject();
@@ -200,7 +200,7 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                if (!configuration.getGooglePay().isEnabled()) {
+                if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(false, new BraintreeException("Google Pay is not enabled for your Braintree account," +
                             " or Google Play Services are not configured correctly."));
                     return;
@@ -212,7 +212,7 @@ public class GooglePayClient {
 
                 PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
                 Intent intent = new Intent(activity, GooglePayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getGooglePay()))
+                        .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
                         .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
 
                 activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
@@ -264,8 +264,8 @@ public class GooglePayClient {
         }
     }
 
-    int getEnvironment(GooglePayConfiguration configuration) {
-        if ("production".equals(configuration.getEnvironment())) {
+    int getGooglePayEnvironment(Configuration configuration) {
+        if ("production".equals(configuration.getGooglePayEnvironment())) {
             return WalletConstants.ENVIRONMENT_PRODUCTION;
         } else {
             return WalletConstants.ENVIRONMENT_TEST;
@@ -291,7 +291,7 @@ public class GooglePayClient {
                 .setPaymentMethodTokenizationType(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
                 .addParameter("gateway", "braintree")
                 .addParameter("braintree:merchantId", configuration.getMerchantId())
-                .addParameter("braintree:authorizationFingerprint", configuration.getGooglePay().getGoogleAuthorizationFingerprint())
+                .addParameter("braintree:authorizationFingerprint", configuration.getGooglePayAuthorizationFingerprint())
                 .addParameter("braintree:apiVersion", "v1")
                 .addParameter("braintree:sdkVersion", version)
                 .addParameter("braintree:metadata", metadata.toString());
@@ -305,7 +305,7 @@ public class GooglePayClient {
 
     ArrayList<Integer> getAllowedCardNetworks(Configuration configuration) {
         ArrayList<Integer> allowedNetworks = new ArrayList<>();
-        for (String network : configuration.getGooglePay().getSupportedNetworks()) {
+        for (String network : configuration.getGooglePaySupportedNetworks()) {
             switch (network) {
                 case VISA_NETWORK:
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_VISA);
@@ -399,7 +399,7 @@ public class GooglePayClient {
                     .put("purchase_units", new JSONArray()
                             .put(new JSONObject()
                                     .put("payee", new JSONObject()
-                                            .put("client_id", configuration.getGooglePay().getPaypalClientId())
+                                            .put("client_id", configuration.getGooglePayPayPalClientId())
                                     )
                                     .put("recurring_payment", "true")
                             )
@@ -435,10 +435,9 @@ public class GooglePayClient {
                 parameters
                         .put("braintree:clientKey", braintreeClient.getAuthorization().toString());
             } else {
+                String googlePayAuthFingerprint = configuration.getGooglePayAuthorizationFingerprint();
                 parameters
-                        .put("braintree:authorizationFingerprint", configuration
-                                .getGooglePay()
-                                .getGoogleAuthorizationFingerprint());
+                        .put("braintree:authorizationFingerprint", googlePayAuthFingerprint);
             }
         } catch (JSONException ignored) {
         }
@@ -464,7 +463,7 @@ public class GooglePayClient {
                             .put("braintree:apiVersion", "v1")
                             .put("braintree:sdkVersion", googlePayVersion)
                             .put("braintree:merchantId", configuration.getMerchantId())
-                            .put("braintree:paypalClientId", configuration.getGooglePay().getPaypalClientId())
+                            .put("braintree:paypalClientId", configuration.getGooglePayPayPalClientId())
                             .put("braintree:metadata", (new JSONObject()
                                     .put("source", "client")
                                     .put("integration", braintreeClient.getIntegrationType())
@@ -515,7 +514,7 @@ public class GooglePayClient {
         }
 
         boolean googlePayCanProcessPayPal = request.isPayPalEnabled() &&
-                !TextUtils.isEmpty(configuration.getGooglePay().getPaypalClientId());
+                !TextUtils.isEmpty(configuration.getGooglePayPayPalClientId());
 
         if (googlePayCanProcessPayPal) {
             if (request.getAllowedPaymentMethod("PAYPAL") == null) {
@@ -530,7 +529,7 @@ public class GooglePayClient {
             }
         }
 
-        request.environment(configuration.getGooglePay().getEnvironment());
+        request.environment(configuration.getGooglePayEnvironment());
     }
 
     private boolean validateManifest(Context context) {

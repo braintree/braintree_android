@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Contains the remote Braintree API Configuration for the Braintree SDK.
  */
-public class BraintreeApiConfiguration {
+class BraintreeApiConfiguration {
 
     private static final String ACCESS_TOKEN_KEY = "accessToken";
     private static final String URL_KEY = "url";
@@ -30,21 +30,21 @@ public class BraintreeApiConfiguration {
     /**
      * @return The Access Token for Braintree API.
      */
-    public String getAccessToken() {
+    String getAccessToken() {
         return mAccessToken;
     }
 
     /**
      * @return the base url for accessing Braintree API.
      */
-    public String getUrl() {
+    String getUrl() {
         return mUrl;
     }
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return !TextUtils.isEmpty(mAccessToken);
     }
 }

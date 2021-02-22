@@ -30,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
 @PrepareForTest({Configuration.class, ConfigurationCache.class})
-public class ConfigurationManagerUnitTest {
+public class ConfigurationLoaderUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
@@ -59,7 +59,7 @@ public class ConfigurationManagerUnitTest {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(Configuration.fromJson("{}")).thenReturn(configuration);
 
-        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient);
         sut.loadConfiguration(context, authorization, callback);
 
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
@@ -79,7 +79,7 @@ public class ConfigurationManagerUnitTest {
         when(authorization.getBearer()).thenReturn("bearer");
         when(Configuration.fromJson("{}")).thenReturn(configuration);
 
-        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient);
         sut.loadConfiguration(context, authorization, callback);
 
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
@@ -102,7 +102,7 @@ public class ConfigurationManagerUnitTest {
         JSONException jsonException = new JSONException("json message");
         when(Configuration.fromJson("not json")).thenThrow(jsonException);
 
-        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient);
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
@@ -118,7 +118,7 @@ public class ConfigurationManagerUnitTest {
     public void loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient);
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> httpResponseCaptor = ArgumentCaptor.forClass(HttpResponseCallback.class);
@@ -146,7 +146,7 @@ public class ConfigurationManagerUnitTest {
         when(ConfigurationCache.getConfiguration(context, cacheKey)).thenReturn("{}");
         when(Configuration.fromJson("{}")).thenReturn(configuration);
 
-        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient);
         sut.loadConfiguration(context, authorization, callback);
 
         verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), anyInt(), any(HttpResponseCallback.class));

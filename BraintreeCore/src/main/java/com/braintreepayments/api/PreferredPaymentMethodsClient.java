@@ -53,7 +53,7 @@ public class PreferredPaymentMethodsClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                boolean isGraphQLDisabled = (configuration == null || configuration.getGraphQL() == null || !configuration.getGraphQL().isEnabled());
+                boolean isGraphQLDisabled = (configuration == null || !configuration.isGraphQLEnabled());
                 if (isGraphQLDisabled) {
                     braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-disabled");
                     callback.onResult(new PreferredPaymentMethodsResult()

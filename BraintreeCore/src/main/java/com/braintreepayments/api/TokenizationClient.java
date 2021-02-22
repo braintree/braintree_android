@@ -53,7 +53,7 @@ class TokenizationClient {
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     if (paymentMethodBuilder instanceof CardBuilder &&
-                            configuration.getGraphQL().isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
+                            configuration.isGraphQLFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
                         tokenizeGraphQL(braintreeClient, (CardBuilder) paymentMethodBuilder, callback);
                     } else {
                         tokenizeRest(braintreeClient, paymentMethodBuilder, callback);

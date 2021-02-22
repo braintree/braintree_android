@@ -6,13 +6,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Contains the remote Samsung Pay configuration for the Braintree SDK.
  */
-public class SamsungPayConfiguration {
+class SamsungPayConfiguration {
 
     private static final String SAMSUNG_PAY_CLASSNAME = "com.braintreepayments.api.SamsungPay";
     private static final String DISPLAY_NAME_KEY = "displayName";
@@ -21,7 +22,7 @@ public class SamsungPayConfiguration {
     private static final String SAMSUNG_AUTHORIZATION_KEY = "samsungAuthorization";
     private static final String ENVIRONMENT = "environment";
 
-    private Set<String> mSupportedCardBrands = new HashSet<>();
+    private final List<String> mSupportedCardBrands = new ArrayList<>();
     private String mMerchantDisplayName;
     private String mServiceId;
     private String mSamsungAuthorization;
@@ -53,7 +54,7 @@ public class SamsungPayConfiguration {
     /**
      * @return {@code true} if Samsung Pay is enabled, {@code false} otherwise.
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return !"".equals(mSamsungAuthorization) &&
                 ClassHelper.isClassAvailable(SAMSUNG_PAY_CLASSNAME);
     }
@@ -62,7 +63,7 @@ public class SamsungPayConfiguration {
      * @return the merchant display name for Samsung Pay.
      */
     @NonNull
-    public String getMerchantDisplayName() {
+    String getMerchantDisplayName() {
         return mMerchantDisplayName;
     }
 
@@ -70,7 +71,7 @@ public class SamsungPayConfiguration {
      * @return the service id associated with the merchant.
      */
     @NonNull
-    public String getServiceId() {
+    String getServiceId() {
         return mServiceId;
     }
 
@@ -78,22 +79,22 @@ public class SamsungPayConfiguration {
      * @return a list of card brands supported by Samsung Pay.
      */
     @NonNull
-    public Set<String> getSupportedCardBrands() {
-        return mSupportedCardBrands;
+    List<String> getSupportedCardBrands() {
+        return Collections.unmodifiableList(mSupportedCardBrands);
     }
 
     /**
      * @return the authorization to use with Samsung Pay.
      */
     @NonNull
-    public String getSamsungAuthorization() {
+    String getSamsungAuthorization() {
         return mSamsungAuthorization;
     }
 
     /**
      * @return the Braintree environment Samsung Pay should interact with.
      */
-    public String getEnvironment() {
+    String getEnvironment() {
         return mEnvironment;
     }
 }

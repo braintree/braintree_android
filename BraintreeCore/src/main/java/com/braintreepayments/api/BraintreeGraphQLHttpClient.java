@@ -35,7 +35,7 @@ public class BraintreeGraphQLHttpClient {
                 .method("POST")
                 .path(path)
                 .data(data)
-                .baseUrl(configuration.getGraphQL().getUrl())
+                .baseUrl(configuration.getGraphQLUrl())
                 .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
                 .addHeader("Authorization", String.format("Bearer %s", authorization.getBearer()))
                 .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION);
@@ -47,7 +47,7 @@ public class BraintreeGraphQLHttpClient {
                 .method("POST")
                 .path("")
                 .data(data)
-                .baseUrl(configuration.getGraphQL().getUrl())
+                .baseUrl(configuration.getGraphQLUrl())
                 .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
                 .addHeader("Authorization", String.format("Bearer %s", authorization.getBearer()))
                 .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION);
@@ -59,7 +59,7 @@ public class BraintreeGraphQLHttpClient {
                 .method("POST")
                 .path(path)
                 .data(data)
-                .baseUrl(configuration.getGraphQL().getUrl())
+                .baseUrl(configuration.getGraphQLUrl())
                 .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
                 .addHeader("Authorization", String.format("Bearer %s", authorization.getBearer()))
                 .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION);

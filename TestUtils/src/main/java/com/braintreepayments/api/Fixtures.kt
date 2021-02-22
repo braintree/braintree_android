@@ -439,6 +439,7 @@ object Fixtures {
             "displayName": "Google Pay Merchant",
             "environment": "sandbox",
             "googleAuthorizationFingerprint": "google-auth-fingerprint",
+            "paypalClientId": "pay-pal-client-id",
             "supportedNetworks": [
               "visa",
               "mastercard",
@@ -580,6 +581,19 @@ object Fixtures {
     """
 
     // language=JSON
+    const val CONFIGURATION_WITH_GRAPHQL_WITHOUT_FEATURES = """
+        {
+          "clientApiUrl": "client_api_url",
+          "environment": "test",
+          "merchantId": "integration_merchant_id",
+          "merchantAccountId": "integration_merchant_account_id",
+          "graphQL": {
+            "url": "https://example-graphql.com/graphql"
+          }
+        }
+    """
+
+    // language=JSON
     const val CONFIGURATION_WITH_KOUNT = """
         {
             "clientApiUrl": "client_api_url",
@@ -605,7 +619,9 @@ object Fixtures {
             "userAgreementUrl": "http://www.example.com/user_agreement",
             "baseUrl": "http://localhost:9000",
             "directBaseUrl": "https://www.paypal.com",
-            "environment": "live"
+            "environment": "live",
+            "touchDisabled": true,
+            "currencyIsoCode": "USD"
           },
           "merchantId": "merchant-id"
         }

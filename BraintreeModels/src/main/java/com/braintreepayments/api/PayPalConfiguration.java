@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Contains the remote PayPal configuration for the Braintree SDK.
  */
-public class PayPalConfiguration {
+class PayPalConfiguration {
 
     private static final String DISPLAY_NAME_KEY = "displayName";
     private static final String CLIENT_ID_KEY = "clientId";
@@ -34,7 +34,7 @@ public class PayPalConfiguration {
      * @return An {@link PayPalConfiguration} instance with data that was able to be parsed from
      *         the {@link JSONObject}.
      */
-    public static PayPalConfiguration fromJson(JSONObject json) {
+    static PayPalConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
@@ -53,74 +53,58 @@ public class PayPalConfiguration {
     }
 
     /**
-     * @return {@code true} if PayPal is enabled, {@code false} otherwise.
-     * @deprecated Use {@link Configuration#isPayPalEnabled()} for more reliable determination of feature availability.
-     */
-    @Deprecated
-    public boolean isEnabled() {
-        boolean enabled = !TextUtils.isEmpty(mEnvironment) && !TextUtils.isEmpty(mDisplayName) &&
-                !TextUtils.isEmpty(mPrivacyUrl) && !TextUtils.isEmpty(mUserAgreementUrl);
-
-        if (!"offline".equals(mEnvironment)) {
-            enabled = enabled && !TextUtils.isEmpty(mClientId);
-        }
-
-        return enabled;
-    }
-
-    /**
      * @return the PayPal app display name.
      */
-    public String getDisplayName() {
+    String getDisplayName() {
         return mDisplayName;
     }
 
     /**
      * @return the PayPal app client id.
      */
-    public String getClientId() {
+    String getClientId() {
         return mClientId;
     }
 
     /**
      * @return the PayPal app privacy url.
      */
-    public String getPrivacyUrl() {
+    String getPrivacyUrl() {
         return mPrivacyUrl;
     }
 
     /**
      * @return the PayPal app user agreement url.
      */
-    public String getUserAgreementUrl() {
+    String getUserAgreementUrl() {
         return mUserAgreementUrl;
     }
 
     /**
      * @return the url for custom PayPal environments.
      */
-    public String getDirectBaseUrl() {
+    String getDirectBaseUrl() {
         return (TextUtils.isEmpty(mDirectBaseUrl) ? null : mDirectBaseUrl + "/v1/");
     }
 
     /**
      * @return the current environment for PayPal.
      */
-    public String getEnvironment() {
+    String getEnvironment() {
         return mEnvironment;
     }
 
     /**
      * @return {@code true} if PayPal touch is currently disabled, {@code false} otherwise.
      */
-    public boolean isTouchDisabled() {
+    boolean isTouchDisabled() {
         return mTouchDisabled;
     }
 
     /**
      * @return the PayPal currency code.
      */
-    public String getCurrencyIsoCode() {
+    String getCurrencyIsoCode() {
         return mCurrencyIsoCode;
     }
 }

@@ -13,7 +13,7 @@ class BraintreeClientParams {
     private String integrationType;
     private BraintreeGraphQLHttpClient graphQLHttpClient;
 
-    private ConfigurationManager configurationManager;
+    private ConfigurationLoader configurationLoader;
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
 
@@ -71,12 +71,12 @@ class BraintreeClientParams {
         return this;
     }
 
-    ConfigurationManager getConfigurationManager() {
-        return configurationManager;
+    ConfigurationLoader getConfigurationLoader() {
+        return configurationLoader;
     }
 
-    BraintreeClientParams configurationManager(ConfigurationManager configurationManager) {
-        this.configurationManager = configurationManager;
+    BraintreeClientParams configurationLoader(ConfigurationLoader configurationLoader) {
+        this.configurationLoader = configurationLoader;
         return this;
     }
 

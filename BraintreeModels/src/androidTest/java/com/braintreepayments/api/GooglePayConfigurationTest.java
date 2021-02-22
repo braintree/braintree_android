@@ -1,11 +1,8 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Configuration;
-import com.braintreepayments.api.GooglePayConfiguration;
-import com.braintreepayments.api.Fixtures;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -28,16 +25,15 @@ public class GooglePayConfigurationTest {
         assumeTrue("Not using a Google Play Services device", hasGooglePlayServices());
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY);
-        GooglePayConfiguration googlePayConfiguration = configuration.getGooglePay();
 
-        assertTrue(googlePayConfiguration.isEnabled());
-        assertEquals("google-auth-fingerprint", googlePayConfiguration.getGoogleAuthorizationFingerprint());
-        assertEquals("Google Pay Merchant", googlePayConfiguration.getDisplayName());
-        assertEquals("sandbox", googlePayConfiguration.getEnvironment());
-        assertEquals("visa", googlePayConfiguration.getSupportedNetworks()[0]);
-        assertEquals("mastercard", googlePayConfiguration.getSupportedNetworks()[1]);
-        assertEquals("amex", googlePayConfiguration.getSupportedNetworks()[2]);
-        assertEquals("discover", googlePayConfiguration.getSupportedNetworks()[3]);
+        assertTrue(configuration.isGooglePayEnabled());
+        assertEquals("google-auth-fingerprint", configuration.getGooglePayAuthorizationFingerprint());
+        assertEquals("Google Pay Merchant", configuration.getGooglePayDisplayName());
+        assertEquals("sandbox", configuration.getGooglePayEnvironment());
+        assertEquals("visa", configuration.getGooglePaySupportedNetworks().get(0));
+        assertEquals("mastercard", configuration.getGooglePaySupportedNetworks().get(1));
+        assertEquals("amex", configuration.getGooglePaySupportedNetworks().get(2));
+        assertEquals("discover", configuration.getGooglePaySupportedNetworks().get(3));
     }
 
     @Test(timeout = 1000)
@@ -53,10 +49,10 @@ public class GooglePayConfigurationTest {
         assertEquals("google-auth-fingerprint", googlePayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Google Pay Merchant", googlePayConfiguration.getDisplayName());
         assertEquals("sandbox", googlePayConfiguration.getEnvironment());
-        assertEquals("visa", googlePayConfiguration.getSupportedNetworks()[0]);
-        assertEquals("mastercard", googlePayConfiguration.getSupportedNetworks()[1]);
-        assertEquals("amex", googlePayConfiguration.getSupportedNetworks()[2]);
-        assertEquals("discover", googlePayConfiguration.getSupportedNetworks()[3]);
+        assertEquals("visa", googlePayConfiguration.getSupportedNetworks().get(0));
+        assertEquals("mastercard", googlePayConfiguration.getSupportedNetworks().get(1));
+        assertEquals("amex", googlePayConfiguration.getSupportedNetworks().get(2));
+        assertEquals("discover", googlePayConfiguration.getSupportedNetworks().get(3));
     }
 
     @Test(timeout = 1000)
@@ -67,7 +63,7 @@ public class GooglePayConfigurationTest {
         assertNull(googlePayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePayConfiguration.getDisplayName());
         assertNull(googlePayConfiguration.getEnvironment());
-        assertEquals(0, googlePayConfiguration.getSupportedNetworks().length);
+        assertEquals(0, googlePayConfiguration.getSupportedNetworks().size());
     }
 
     @Test(timeout = 1000)
@@ -78,7 +74,7 @@ public class GooglePayConfigurationTest {
         assertNull(googlePayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePayConfiguration.getDisplayName());
         assertNull(googlePayConfiguration.getEnvironment());
-        assertEquals(0, googlePayConfiguration.getSupportedNetworks().length);
+        assertEquals(0, googlePayConfiguration.getSupportedNetworks().size());
     }
 
     private static boolean hasGooglePlayServices() {

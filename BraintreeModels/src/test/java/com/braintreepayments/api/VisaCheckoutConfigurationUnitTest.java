@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -21,120 +19,41 @@ import static junit.framework.Assert.assertTrue;
 @PrepareForTest({ VisaCheckoutConfiguration.class, ClassHelper.class })
 public class VisaCheckoutConfigurationUnitTest {
 
-    private JSONObject mVisaCheckoutConfigurationJson;
+    @Test
+    public void fromJson_parsesFullInput() throws JSONException {
+        JSONObject input = new JSONObject()
+                .put("apikey", "sample-api-key")
+                .put("externalClientId", "sample-external-client-id")
+                .put("supportedCardTypes", new JSONArray()
+                        .put("American Express")
+                        .put("Visa")
+                        .put("Discover")
+                        .put("MasterCard"));
 
-    @Before
-    public void setup() throws JSONException {
-        JSONObject configuration = new JSONObject(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT);
-        mVisaCheckoutConfigurationJson = configuration.getJSONObject("visaCheckout");
+        VisaCheckoutConfiguration sut = VisaCheckoutConfiguration.fromJson(input);
+        assertTrue(sut.isEnabled());
+        assertEquals("sample-api-key", sut.getApiKey());
+        assertEquals("sample-external-client-id", sut.getExternalClientId());
+
+        List<String> expectedCardBrands = Arrays.asList("AMEX", "VISA", "DISCOVER", "MASTERCARD");
+        assertEquals(expectedCardBrands, sut.getAcceptedCardBrands());
     }
 
     @Test
-    public void isEnabled_returnsFalseWhenConfigurationApiKeyDoesntExist() throws JSONException {
-        JSONObject blankVisaCheckoutJson = new JSONObject("{\"visaCheckout\":{}}");
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(blankVisaCheckoutJson);
-
-        assertFalse(visaCheckoutConfiguration.isEnabled());
+    public void fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+        VisaCheckoutConfiguration sut = VisaCheckoutConfiguration.fromJson(null);
+        assertFalse(sut.isEnabled());
+        assertEquals("", sut.getApiKey());
+        assertEquals("", sut.getExternalClientId());
+        assertTrue(sut.getAcceptedCardBrands().isEmpty());
     }
 
     @Test
-    public void isEnabled_returnsTrueWhenConfigurationApiKeyExists() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                mVisaCheckoutConfigurationJson);
-
-        assertTrue(visaCheckoutConfiguration.isEnabled());
-    }
-
-    @Test
-    public void getApiKey_returnsApiKeyWhenConfigurationExists() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                mVisaCheckoutConfigurationJson);
-
-        assertEquals("gwApikey", visaCheckoutConfiguration.getApiKey());
-    }
-
-    @Test
-    public void getExternalClientId_returnsExternalClientIdWhenConfigurationExists() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                mVisaCheckoutConfigurationJson);
-
-        assertEquals("gwExternalClientId", visaCheckoutConfiguration.getExternalClientId());
-    }
-
-    @Test
-    public void getApiKey_returnsEmptyStringWhenConfigurationDoesntExist() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(null);
-
-        assertTrue(visaCheckoutConfiguration.getApiKey().isEmpty());
-    }
-
-    @Test
-    public void getExternalClientId_returnsEmptyStringWhenConfigurationDoesntExist() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(null);
-
-        assertTrue(visaCheckoutConfiguration.getExternalClientId().isEmpty());
-    }
-
-    @Test
-    public void getAcceptedCardBrands_whenVisa_returnsElectronAndVisa() throws JSONException {
-        List<String> expected = Arrays.asList("VISA");
-        String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
-                .supportedCardTypes("Visa")
-                .build();
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                new JSONObject(visaCheckoutConfigurationJson));
-
-        assertEquals(expected, visaCheckoutConfiguration.getAcceptedCardBrands());
-    }
-
-    @Test
-    public void getAcceptedCardBrands_whenMastercard_returnsMastercard() throws JSONException {
-        List<String> expected = Arrays.asList("MASTERCARD");
-        String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
-                .supportedCardTypes("MasterCard")
-                .build();
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                new JSONObject(visaCheckoutConfigurationJson));
-
-        assertEquals(expected, visaCheckoutConfiguration.getAcceptedCardBrands());
-    }
-
-    @Test
-    public void getAcceptedCardBrands_whenDiscover_returnsDiscover() throws JSONException {
-        List<String> expected = Arrays.asList("DISCOVER");
-        String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
-                .supportedCardTypes("Discover")
-                .build();
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                new JSONObject(visaCheckoutConfigurationJson));
-
-        assertEquals(expected, visaCheckoutConfiguration.getAcceptedCardBrands());
-    }
-
-    @Test
-    public void getAcceptedCardBrands_whenAmericanExpress_returnsAmex() throws JSONException {
-        List<String> expected = Arrays.asList("AMEX");
-        String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
-                .supportedCardTypes("American Express")
-                .build();
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                new JSONObject(visaCheckoutConfigurationJson));
-
-        assertEquals(expected, visaCheckoutConfiguration.getAcceptedCardBrands());
-    }
-
-    @Test
-    public void getAcceptedCardBrands_whenEmpty_returnsEmpty() throws JSONException {
-        String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
-                .build();
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                new JSONObject(visaCheckoutConfigurationJson));
-
-        assertTrue(visaCheckoutConfiguration.getAcceptedCardBrands().isEmpty());
+    public void fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+        VisaCheckoutConfiguration sut = VisaCheckoutConfiguration.fromJson(new JSONObject());
+        assertFalse(sut.isEnabled());
+        assertEquals("", sut.getApiKey());
+        assertEquals("", sut.getExternalClientId());
+        assertTrue(sut.getAcceptedCardBrands().isEmpty());
     }
 }

@@ -85,7 +85,7 @@ public class VenmoClient {
                 }
 
                 String exceptionMessage = null;
-                if (configuration.getPayWithVenmo() == null || !configuration.getPayWithVenmo().isAccessTokenValid()) {
+                if (!configuration.isVenmoEnabled()) {
                     exceptionMessage = "Venmo is not enabled";
                 } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
                     exceptionMessage = "Venmo is not installed";
@@ -101,9 +101,9 @@ public class VenmoClient {
 
                 String venmoProfileId = profileId;
                 if (TextUtils.isEmpty(venmoProfileId)) {
-                    venmoProfileId = configuration.getPayWithVenmo().getMerchantId();
+                    venmoProfileId = configuration.getVenmoMerchantId();
                 }
-                activity.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), venmoProfileId),
+                activity.startActivityForResult(getLaunchIntent(configuration, venmoProfileId),
                         BraintreeRequestCodes.VENMO);
                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
             }
@@ -148,11 +148,11 @@ public class VenmoClient {
         return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    private Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, String profileId) {
+    private Intent getLaunchIntent(Configuration configuration, String profileId) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, profileId)
-                .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
-                .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
+                .putExtra(EXTRA_ACCESS_TOKEN, configuration.getVenmoAccessToken())
+                .putExtra(EXTRA_ENVIRONMENT, configuration.getVenmoEnvironment());
 
         try {
             JSONObject braintreeData = new JSONObject();

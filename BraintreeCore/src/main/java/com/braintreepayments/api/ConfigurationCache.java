@@ -8,9 +8,9 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.concurrent.TimeUnit;
 
-public class ConfigurationCache {
+class ConfigurationCache {
 
-    static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5);
+    private static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5);
 
     private ConfigurationCache() {}
 

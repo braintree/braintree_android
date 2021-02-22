@@ -60,7 +60,7 @@ public class AnalyticsClient {
 
     @VisibleForTesting
     UUID sendEventAndReturnId(AnalyticsEvent event, Configuration configuration, Context context) {
-        lastKnownAnalyticsUrl = configuration.getAnalytics().getUrl();
+        lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         Context applicationContext = context.getApplicationContext();
         AnalyticsDatabase db = AnalyticsDatabase.getInstance(applicationContext);
@@ -93,7 +93,7 @@ public class AnalyticsClient {
     }
 
     void uploadAnalytics(Context context, Configuration configuration) throws Exception {
-        String analyticsUrl = configuration.getAnalytics().getUrl();
+        String analyticsUrl = configuration.getAnalyticsUrl();
 
         final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
         List<List<AnalyticsEvent>> events = db.getPendingRequests();

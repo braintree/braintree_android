@@ -52,7 +52,7 @@ public class UnionPayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (!configuration.getUnionPay().isEnabled()) {
+                if (!configuration.isUnionPayEnabled()) {
                     callback.onResult(null, new ConfigurationException("UnionPay is not enabled"));
                     return;
                 }
@@ -97,8 +97,7 @@ public class UnionPayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                UnionPayConfiguration unionPayConfiguration = configuration.getUnionPay();
-                if (!unionPayConfiguration.isEnabled()) {
+                if (!configuration.isUnionPayEnabled()) {
                     callback.onResult(null, new ConfigurationException("UnionPay is not enabled"));
                     return;
                 }

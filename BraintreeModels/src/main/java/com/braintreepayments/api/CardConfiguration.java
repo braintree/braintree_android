@@ -3,19 +3,20 @@ package com.braintreepayments.api;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Contains the remote card configuration for the Braintree SDK.
  */
-public class CardConfiguration {
+class CardConfiguration {
 
     private static final String SUPPORTED_CARD_TYPES_KEY = "supportedCardTypes";
     private static final String COLLECT_DEVICE_DATA_KEY = "collectDeviceData";
 
-    private final Set<String> mSupportedCardTypes = new HashSet<>();
+    private final List<String> mSupportedCardTypes = new ArrayList<>();
     private boolean mCollectFraudData = false;
 
     /**
@@ -24,7 +25,7 @@ public class CardConfiguration {
      * @param json The {@link JSONObject} to parse.
      * @return a {@link CardConfiguration} instance with the data that was able to be parsed from the {@link JSONObject}.
      */
-    public static CardConfiguration fromJson(JSONObject json) {
+    static CardConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
@@ -44,14 +45,14 @@ public class CardConfiguration {
     /**
      * @return a {@link Set<String>} of card types supported by the merchant.
      */
-    public Set<String> getSupportedCardTypes() {
-        return Collections.unmodifiableSet(mSupportedCardTypes);
+    List<String> getSupportedCardTypes() {
+        return Collections.unmodifiableList(mSupportedCardTypes);
     }
 
     /**
      * @return if fraud data collection should occur.
      */
-    public boolean isFraudDataCollectionEnabled() {
+    boolean isFraudDataCollectionEnabled() {
         return mCollectFraudData;
     }
 }

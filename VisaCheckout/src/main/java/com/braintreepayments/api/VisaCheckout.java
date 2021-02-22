@@ -59,17 +59,16 @@ public class VisaCheckout {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
-                boolean enabledAndSdkAvailable = isVisaCheckoutSDKAvailable() && configuration
-                        .getVisaCheckout().isEnabled();
+                boolean enabledAndSdkAvailable =
+                    isVisaCheckoutSDKAvailable() && configuration.isVisaCheckoutEnabled();
 
                 if (!enabledAndSdkAvailable) {
                     callback.onResult(null, new ConfigurationException("Visa Checkout is not enabled."));
                     return;
                 }
 
-                String merchantApiKey = visaCheckoutConfiguration.getApiKey();
-                List<String> acceptedCardBrands = visaCheckoutConfiguration.getAcceptedCardBrands();
+                String merchantApiKey = configuration.getVisaCheckoutApiKey();
+                List<String> acceptedCardBrands = configuration.getVisaCheckoutSupportedNetworks();
                 String environment = Environment.SANDBOX;
 
                 if ("production".equals(configuration.getEnvironment())) {
@@ -79,7 +78,7 @@ public class VisaCheckout {
                 Profile.ProfileBuilder profileBuilder = new Profile.ProfileBuilder(merchantApiKey, environment);
                 profileBuilder.setCardBrands(acceptedCardBrands.toArray(new String[acceptedCardBrands.size()]));
                 profileBuilder.setDataLevel(Profile.DataLevel.FULL);
-                profileBuilder.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
+                profileBuilder.setExternalClientId(configuration.getVisaCheckoutExternalClientId());
 
                 callback.onResult(profileBuilder, null);
             }

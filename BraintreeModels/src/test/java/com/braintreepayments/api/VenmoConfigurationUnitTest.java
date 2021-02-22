@@ -1,38 +1,47 @@
 package com.braintreepayments.api;
 
-import android.text.TextUtils;
-
 import org.json.JSONException;
-import org.junit.Before;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoConfigurationUnitTest {
 
-    private Configuration mConfiguration;
+    @Test
+    public void fromJson_parsesFullInput() throws JSONException {
+        JSONObject input = new JSONObject()
+                .put("accessToken", "sample-access-token")
+                .put("environment", "sample-environment")
+                .put("merchantId", "sample-merchant-id");
 
-    @Before
-    public void setup() throws JSONException {
-        mConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
+        VenmoConfiguration sut = VenmoConfiguration.fromJson(input);
+        assertEquals("sample-access-token", sut.getAccessToken());
+        assertEquals("sample-environment", sut.getEnvironment());
+        assertEquals("sample-merchant-id", sut.getMerchantId());
+        assertTrue(sut.isAccessTokenValid());
     }
 
     @Test
-    public void fromJson_parsesPayWithVenmoConfiguration() {
-        assertEquals("access-token", mConfiguration.getPayWithVenmo().getAccessToken());
-        assertEquals("environment", mConfiguration.getPayWithVenmo().getEnvironment());
-        assertEquals("merchant-id", mConfiguration.getPayWithVenmo().getMerchantId());
+    public void fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+        VenmoConfiguration sut = VenmoConfiguration.fromJson(null);
+        assertEquals("", sut.getAccessToken());
+        assertEquals("", sut.getEnvironment());
+        assertEquals("", sut.getMerchantId());
+        assertFalse(sut.isAccessTokenValid());
     }
 
     @Test
-    public void fromJson_parsesEmptyVenmoConfigurationWhenConfigurationDoesntHavePayWithVenmo() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
-
-        assertEquals("", configuration.getPayWithVenmo().getAccessToken());
-        assertTrue(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));
+    public void fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+        VenmoConfiguration sut = VenmoConfiguration.fromJson(new JSONObject());
+        assertEquals("", sut.getAccessToken());
+        assertEquals("", sut.getEnvironment());
+        assertEquals("", sut.getMerchantId());
+        assertFalse(sut.isAccessTokenValid());
     }
 }

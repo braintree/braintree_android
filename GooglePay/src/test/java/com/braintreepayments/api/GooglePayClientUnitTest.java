@@ -1115,7 +1115,7 @@ public class GooglePayClientUnitTest {
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
-        assertEquals(configuration.getGooglePay().getGoogleAuthorizationFingerprint(),
+        assertEquals(configuration.getGooglePayAuthorizationFingerprint(),
                 tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
         assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));

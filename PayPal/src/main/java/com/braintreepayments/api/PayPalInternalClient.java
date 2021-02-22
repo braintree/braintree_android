@@ -145,7 +145,7 @@ class PayPalInternalClient {
         } else {
             String currencyCode = payPalRequest.getCurrencyCode();
             if (currencyCode == null) {
-                currencyCode = configuration.getPayPal().getCurrencyIsoCode();
+                currencyCode = configuration.getPayPalCurrencyIsoCode();
             }
 
             parameters
@@ -167,7 +167,7 @@ class PayPalInternalClient {
         experienceProfile.put(LANDING_PAGE_TYPE_KEY, payPalRequest.getLandingPageType());
         String displayName = payPalRequest.getDisplayName();
         if (TextUtils.isEmpty(displayName)) {
-            displayName = configuration.getPayPal().getDisplayName();
+            displayName = configuration.getPayPalDisplayName();
         }
         experienceProfile.put(DISPLAY_NAME_KEY, displayName);
 

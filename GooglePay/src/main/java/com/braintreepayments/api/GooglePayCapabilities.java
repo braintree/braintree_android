@@ -16,11 +16,11 @@ public class GooglePayCapabilities {
      *         the user has Google Pay setup use
      *         {@link GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)}
      */
-    public static boolean isGooglePayEnabled(Context context, GooglePayConfiguration googlePayConfiguration) {
+    public static boolean isGooglePayEnabled(Context context, Configuration configuration) {
         try {
             Class.forName(Wallet.class.getName());
 
-            return googlePayConfiguration.isEnabled() && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
+            return configuration.isGooglePayEnabled() && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
                     ConnectionResult.SUCCESS;
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;

@@ -9,23 +9,23 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-public class MockConfigurationManagerBuilder {
+public class MockConfigurationLoaderBuilder {
 
     private Configuration configuration;
     private Exception configurationError;
 
-    public MockConfigurationManagerBuilder configuration(Configuration configuration) {
+    public MockConfigurationLoaderBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
         return this;
     }
 
-    public MockConfigurationManagerBuilder configurationError(Exception configurationError) {
+    public MockConfigurationLoaderBuilder configurationError(Exception configurationError) {
         this.configurationError = configurationError;
         return this;
     }
 
-    public ConfigurationManager build() {
-        ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    public ConfigurationLoader build() {
+        ConfigurationLoader configurationLoader = mock(ConfigurationLoader.class);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -38,9 +38,9 @@ public class MockConfigurationManagerBuilder {
                 }
                 return null;
             }
-        }).when(configurationManager).loadConfiguration(any(Context.class), any(Authorization.class), any(ConfigurationCallback.class));
+        }).when(configurationLoader).loadConfiguration(any(Context.class), any(Authorization.class), any(ConfigurationCallback.class));
 
-        return configurationManager;
+        return configurationLoader;
     }
 
 }

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Contains the remote Kount configuration for the Braintree SDK.
  */
-public class KountConfiguration {
+class KountConfiguration {
 
     private final static String KOUNT_MERCHANT_ID_KEY = "kountMerchantId";
 
@@ -20,7 +20,7 @@ public class KountConfiguration {
      * @return a {@link KountConfiguration} instance with the data that was able to be parsed from
      * the {@link JSONObject}.
      */
-    public static KountConfiguration fromJson(JSONObject json) {
+    static KountConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
@@ -34,14 +34,14 @@ public class KountConfiguration {
     /**
      * @return {@code true} if Kount is enabled, {@code false} otherwise.
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return !TextUtils.isEmpty(mKountMerchantId);
     }
 
     /**
      * @return the Kount Merchant Id.
      */
-    public String getKountMerchantId() {
+    String getKountMerchantId() {
         return mKountMerchantId;
     }
 }

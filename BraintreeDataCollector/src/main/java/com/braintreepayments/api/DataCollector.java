@@ -69,12 +69,12 @@ public class DataCollector {
                     } catch (JSONException ignored) {
                     }
 
-                    if (configuration.getKount().isEnabled()) {
+                    if (configuration.isKountEnabled()) {
                         final String id;
                         if (merchantId != null) {
                             id = merchantId;
                         } else {
-                            id = configuration.getKount().getKountMerchantId();
+                            id = configuration.getKountMerchantId();
                         }
 
                         final String deviceSessionId = UUIDHelper.getFormattedUUID();
@@ -138,7 +138,7 @@ public class DataCollector {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    if (configuration.getCardConfiguration().isFraudDataCollectionEnabled()) {
+                    if (configuration.isFraudDataCollectionEnabled()) {
                         HashMap<String, String> additionalProperties = new HashMap<>();
                         additionalProperties.put("rda_tenant", "bt_card");
                         additionalProperties.put("mid", configuration.getMerchantId());

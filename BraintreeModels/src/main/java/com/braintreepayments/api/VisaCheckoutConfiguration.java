@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Contains the remote Visa Checkout configuration for the Braintree SDK.
  */
-public class VisaCheckoutConfiguration {
+class VisaCheckoutConfiguration {
 
     private boolean mIsEnabled;
     private String mApiKey;
@@ -39,32 +39,32 @@ public class VisaCheckoutConfiguration {
      *
      * @return boolean if Visa Checkout SDK is available, and configuration is enabled.
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return mIsEnabled;
     }
 
     /**
      * @return The Visa Checkout External Client Id associated with this merchant's Visa Checkout configuration.
      */
-    public String getExternalClientId() {
+    String getExternalClientId() {
         return mExternalClientId;
     }
 
     /**
      * @return The Visa Checkout API Key associated with this merchant's Visa Checkout configuration.
      */
-    public String getApiKey() {
+    String getApiKey() {
         return mApiKey;
     }
 
     /**
      * @return The accepted card brands for Visa Checkout.
      */
-    public List<String> getAcceptedCardBrands() {
+    List<String> getAcceptedCardBrands() {
         return mCardBrands;
     }
 
-    private static List<String> supportedCardTypesToAcceptedCardBrands(Set<String> supportedCardTypes) {
+    private static List<String> supportedCardTypesToAcceptedCardBrands(List<String> supportedCardTypes) {
         List<String> acceptedCardBrands = new ArrayList<>();
 
         for (String supportedCardType : supportedCardTypes) {

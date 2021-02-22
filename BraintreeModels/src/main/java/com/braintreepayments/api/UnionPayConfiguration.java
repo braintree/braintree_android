@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 
 import org.json.JSONObject;
 
-public class UnionPayConfiguration {
+class UnionPayConfiguration {
 
     private static final String ENABLED = "enabled";
 
@@ -25,7 +25,7 @@ public class UnionPayConfiguration {
      *
      * @return boolean if UnionPay is enabled, and available to be used
      */
-    public boolean isEnabled() {
+    boolean isEnabled() {
         return mEnabled;
     }
 }
