@@ -17,7 +17,6 @@ public class DemoViewModel extends ViewModel {
     private final MutableLiveData<BrowserSwitchResult> payPalBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> threeDSecureActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
-    private final MutableLiveData<ActivityResult> visaCheckoutActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
 
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
@@ -37,7 +36,6 @@ public class DemoViewModel extends ViewModel {
         }
     }
 
-    // TODO: Finish onActivityResult implementation for VisaCheckout
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case BraintreeRequestCodes.THREE_D_SECURE:
@@ -45,9 +43,6 @@ public class DemoViewModel extends ViewModel {
                 break;
             case BraintreeRequestCodes.GOOGLE_PAY:
                 googlePayActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
-                break;
-            case BraintreeRequestCodes.VISA_CHECKOUT:
-                visaCheckoutActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
             case BraintreeRequestCodes.VENMO:
                 venmoActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
@@ -61,10 +56,6 @@ public class DemoViewModel extends ViewModel {
 
     public MutableLiveData<ActivityResult> getGooglePayActivityResult() {
         return googlePayActivityResult;
-    }
-
-    public MutableLiveData<ActivityResult> getVisaCheckoutActivityResult() {
-        return visaCheckoutActivityResult;
     }
 
     public MutableLiveData<ActivityResult> getVenmoActivityResult() {

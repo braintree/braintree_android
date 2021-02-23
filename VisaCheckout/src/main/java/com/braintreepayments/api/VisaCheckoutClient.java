@@ -16,17 +16,17 @@ import java.util.List;
  * Used to create and tokenize Visa Checkout. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/visa-checkout/overview">documentation</a>
  */
-public class VisaCheckout {
+public class VisaCheckoutClient {
 
     private BraintreeClient braintreeClient;
     private TokenizationClient tokenizationClient;
 
-    public VisaCheckout(BraintreeClient braintreeClient) {
+    public VisaCheckoutClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient));
     }
 
     @VisibleForTesting
-    VisaCheckout(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+    VisaCheckoutClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
         this.braintreeClient = braintreeClient;
         this.tokenizationClient = tokenizationClient;
     }
@@ -113,9 +113,5 @@ public class VisaCheckout {
                 braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
             }
         });
-    }
-
-    void onActivityResult(Context context, int resultCode, Intent data, VisaCheckoutOnActivityResultCallback listener) {
-
     }
 }

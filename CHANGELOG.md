@@ -12,6 +12,7 @@
   * `ThreeDSecureClient`
   * `UnionPayClient`
   * `VenmoClient`
+  * `VisaCheckoutClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
 * Add `LocalPaymentTransaction` to represent Local Payment transactions
 * Add `amount` setter to `PayPalRequest`

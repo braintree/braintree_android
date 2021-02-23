@@ -9,12 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.VisaCheckout;
-import com.braintreepayments.api.VisaCheckoutButton;
-import com.braintreepayments.api.VisaCheckoutCreateProfileBuilderCallback;
-import com.braintreepayments.api.VisaCheckoutTokenizeCallback;
+import com.braintreepayments.api.VisaCheckoutClient;
+import com.visa.checkout.CheckoutButton;
 import com.visa.checkout.Profile;
 import com.visa.checkout.PurchaseInfo;
 import com.visa.checkout.VisaCheckoutSdk;
@@ -24,49 +21,46 @@ import java.math.BigDecimal;
 
 public class VisaCheckoutFragment extends BaseFragment {
 
-    private VisaCheckoutButton mVisaPaymentButton;
-    private VisaCheckout visaCheckout;
-
+    private CheckoutButton checkoutButton;
+    private VisaCheckoutClient visaCheckoutClient;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_visa_checkout, container, false);
-        mVisaPaymentButton = view.findViewById(R.id.visa_checkout_button);
+        checkoutButton = view.findViewById(R.id.visa_checkout_button);
+
+        getBraintreeClient(braintreeClient -> {
+            visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
+            visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
+                if (profileBuilder != null) {
+                    setupVisaCheckoutButton(profileBuilder);
+                } else {
+                    handleError(error);
+                }
+            });
+        });
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getBraintreeClient(new BraintreeClientCallback() {
+    private void setupVisaCheckoutButton(Profile.ProfileBuilder profileBuilder) {
+        PurchaseInfo purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
+                .setDescription("Description")
+                .build();
+
+        checkoutButton.init(getActivity(), profileBuilder.build(), purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
             @Override
-            public void onResult(@Nullable BraintreeClient braintreeClient) {
+            public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
+                launchReadyHandler.launch();
+            }
 
-                visaCheckout = new VisaCheckout(braintreeClient);
-
-                visaCheckout.createProfileBuilder(new VisaCheckoutCreateProfileBuilderCallback() {
-                    @Override
-                    public void onResult(Profile.ProfileBuilder profileBuilder, Exception e) {
-                        PurchaseInfo.PurchaseInfoBuilder purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-                                .setDescription("Description");
-
-                        mVisaPaymentButton.init(getActivity(), profileBuilder, purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
-                            @Override
-                            public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-                                launchReadyHandler.launch();
-                            }
-
-                            @Override
-                            public void onResult(VisaPaymentSummary visaPaymentSummary) {
-                                visaCheckout.tokenize(visaPaymentSummary, new VisaCheckoutTokenizeCallback() {
-                                    @Override
-                                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception e) {
-                                        handlePaymentMethodNonceCreated(paymentMethodNonce);
-                                    }
-                                });
-                            }
-                        });
+            @Override
+            public void onResult(VisaPaymentSummary visaPaymentSummary) {
+                visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
+                    if (paymentMethodNonce != null) {
+                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                    } else {
+                        handleError(error);
                     }
                 });
             }
