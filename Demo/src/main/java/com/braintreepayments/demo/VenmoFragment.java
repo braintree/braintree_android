@@ -95,5 +95,4 @@ public class VenmoFragment extends BaseFragment {
             }
         });
     }
-
 }

@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.GooglePayCapabilities;
@@ -30,6 +33,10 @@ public class GooglePayFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_google_pay, container, false);
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
+
+        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
+        viewModel.getGooglePayActivityResult().observe(getViewLifecycleOwner(), this::handleGooglePayActivityResult);
+
         return view;
     }
 
@@ -102,5 +109,21 @@ public class GooglePayFragment extends BaseFragment {
                 }
             });
         });
+    }
+
+    private void handleGooglePayActivityResult(ActivityResult activityResult) {
+        int resultCode = activityResult.getResultCode();
+        Intent data = activityResult.getData();
+        googlePayClient.onActivityResult(getActivity(), resultCode, data, (paymentMethodNonce, error) -> {
+            handleGooglePayActivityResult(paymentMethodNonce);
+        });
+    }
+
+    private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
+        super.onPaymentMethodNonceCreated(paymentMethodNonce);
+
+        NavDirections action =
+                GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }

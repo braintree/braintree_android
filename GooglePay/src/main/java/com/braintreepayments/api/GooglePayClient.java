@@ -249,7 +249,7 @@ public class GooglePayClient {
         }
     }
 
-    void onActivityResult(FragmentActivity activity, int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
+    public void onActivityResult(FragmentActivity activity, int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
             tokenize(activity, PaymentData.getFromIntent(data), callback);

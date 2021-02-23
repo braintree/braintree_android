@@ -6,6 +6,7 @@
   * `AmericanExpressClient`
   * `CardClient`
   * `DataCollector`
+  * `GooglePayClient`
   * `LocalPaymentClient`
   * `PayPalClient`
   * `ThreeDSecureClient`

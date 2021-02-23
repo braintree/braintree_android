@@ -37,7 +37,7 @@ public class DemoViewModel extends ViewModel {
         }
     }
 
-    // TODO: Finish onActivityResult implementation for GooglePayment and VisaCheckout
+    // TODO: Finish onActivityResult implementation for VisaCheckout
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case BraintreeRequestCodes.THREE_D_SECURE:
