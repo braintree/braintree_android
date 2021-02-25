@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.googlepay.R;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
@@ -21,7 +18,6 @@ import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentsClient;
-import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONArray;
@@ -49,9 +45,16 @@ public class GooglePayClient {
     private static final String PAYPAL_PAYMENT_TYPE = "PAYPAL";
 
     private BraintreeClient braintreeClient;
+    private GooglePayInternalClient internalGooglePayClient;
 
     public GooglePayClient(BraintreeClient braintreeClient) {
+        this(braintreeClient, new GooglePayInternalClient());
+    }
+
+    @VisibleForTesting
+    GooglePayClient(BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
+        this.internalGooglePayClient = internalGooglePayClient;
     }
 
     /**
@@ -101,11 +104,6 @@ public class GooglePayClient {
                     return;
                 }
 
-                PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
-                        new Wallet.WalletOptions.Builder()
-                                .setEnvironment(getGooglePayEnvironment(configuration))
-                                .build());
-
                 JSONObject json = new JSONObject();
                 JSONArray allowedCardNetworks = buildCardNetworks(configuration);
 
@@ -129,17 +127,7 @@ public class GooglePayClient {
                 } catch (JSONException ignored) {
                 }
                 IsReadyToPayRequest request = IsReadyToPayRequest.fromJson(json.toString());
-
-                paymentsClient.isReadyToPay(request).addOnCompleteListener(new OnCompleteListener<Boolean>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Boolean> task) {
-                        try {
-                            callback.onResult(task.getResult(ApiException.class), null);
-                        } catch (ApiException e) {
-                            callback.onResult(false, e);
-                        }
-                    }
-                });
+                internalGooglePayClient.isReadyToPay(activity, configuration, request, callback);
             }
         });
     }

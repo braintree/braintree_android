@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AnalyticsDatabase extends SQLiteOpenHelper {
+class AnalyticsDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "braintree-analytics.db";
     private static final int DATABASE_VERSION = 1;
@@ -31,7 +31,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
 
     private static volatile AnalyticsDatabase INSTANCE;
 
-    public static AnalyticsDatabase getInstance(Context context) {
+    static AnalyticsDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (AnalyticsDatabase.class) {
                 // double check that instance was not created in another thread
@@ -65,7 +65,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addEvent(AnalyticsEvent request) {
+    void addEvent(AnalyticsEvent request) {
         final ContentValues values = new ContentValues();
         values.put(EVENT, request.event);
         values.put(TIMESTAMP, request.timestamp);
@@ -90,7 +90,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         queueTask(task);
     }
 
-    public void removeEvents(List<AnalyticsEvent> events) {
+    void removeEvents(List<AnalyticsEvent> events) {
         final StringBuilder where = new StringBuilder(ID).append(" in (");
         final String[] whereArgs = new String[events.size()];
 
@@ -124,7 +124,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         queueTask(task);
     }
 
-    public List<List<AnalyticsEvent>> getPendingRequests() {
+    List<List<AnalyticsEvent>> getPendingRequests() {
         SQLiteDatabase db = null;
         List<List<AnalyticsEvent>> analyticsRequests = new ArrayList<>();
 
@@ -192,7 +192,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         private Runnable mDatabaseAction;
         private BraintreeResponseListener<Void> mFinishedCallback;
 
-        public DatabaseTask(Runnable action) {
+        DatabaseTask(Runnable action) {
             mDatabaseAction = action;
         }
 

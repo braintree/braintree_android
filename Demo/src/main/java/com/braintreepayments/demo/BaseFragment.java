@@ -6,10 +6,9 @@ import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.BraintreeCancelListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-public abstract class BaseFragment extends Fragment implements BraintreeCancelListener {
+public abstract class BaseFragment extends Fragment {
 
     @CallSuper
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -18,7 +17,6 @@ public abstract class BaseFragment extends Fragment implements BraintreeCancelLi
     }
 
     @CallSuper
-    @Override
     public void onCancel(int requestCode) {
         getActivity().setProgressBarIndeterminateVisibility(false);
         Log.d(getClass().getSimpleName(), "Cancel received: " + requestCode);

@@ -2,9 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-public class IntegrationType {
+class IntegrationType {
 
-    public static String get(Context context) {
+    static String get(Context context) {
         try {
             if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(context)) {
                 return "dropin";

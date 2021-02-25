@@ -19,7 +19,7 @@ import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 /**
  * Class that handles parsing http responses for {@link SynchronousHttpClient}.
  */
-public class BaseHttpResponseParser implements HttpResponseParser {
+class BaseHttpResponseParser implements HttpResponseParser {
 
     private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
     private static final int HTTP_UPGRADE_REQUIRED = 426;

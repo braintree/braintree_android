@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class AuthorizationException extends Exception {
 
-    public AuthorizationException(String message) {
+    AuthorizationException(String message) {
         super(message);
     }
 }

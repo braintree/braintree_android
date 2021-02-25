@@ -4,14 +4,23 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.json.JSONException;
 
 class ConfigurationLoader {
 
     private final BraintreeHttpClient httpClient;
+    private final ConfigurationCache configurationCache;
 
     ConfigurationLoader(BraintreeHttpClient httpClient) {
+        this(httpClient, ConfigurationCache.getInstance());
+    }
+
+    @VisibleForTesting
+    ConfigurationLoader(BraintreeHttpClient httpClient, ConfigurationCache configurationCache) {
         this.httpClient = httpClient;
+        this.configurationCache = configurationCache;
     }
 
     void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationCallback callback) {
@@ -50,14 +59,14 @@ class ConfigurationLoader {
         }
     }
 
-    private static void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) {
+    private void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) {
         String cacheKey = createCacheKey(authorization, configUrl);
-        ConfigurationCache.saveConfiguration(context, configuration, cacheKey);
+        configurationCache.saveConfiguration(context, configuration, cacheKey);
     }
 
-    private static Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) {
+    private Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) {
         String cacheKey = createCacheKey(authorization, configUrl);
-        String cachedConfigResponse = ConfigurationCache.getConfiguration(context, cacheKey);
+        String cachedConfigResponse = configurationCache.getConfiguration(context, cacheKey);
         try {
             return Configuration.fromJson(cachedConfigResponse);
         } catch (JSONException e) {

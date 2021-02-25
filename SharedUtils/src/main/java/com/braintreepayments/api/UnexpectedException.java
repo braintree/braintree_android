@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class UnexpectedException extends Exception {
 
-    public UnexpectedException(String message) {
+    UnexpectedException(String message) {
         super(message);
     }
 }

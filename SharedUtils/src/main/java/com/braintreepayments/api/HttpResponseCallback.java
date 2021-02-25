@@ -6,7 +6,7 @@ import androidx.annotation.MainThread;
  * Communicates responses from a HTTP request on the main thread.
  * One and only one method will be invoked in response to a request.
  */
-public interface HttpResponseCallback {
+interface HttpResponseCallback {
 
     /**
      * @param responseBody response to the successful HTTP request.

@@ -32,11 +32,11 @@ class SynchronousHttpClient {
         }
     }
 
-    public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    void setSSLSocketFactory(SSLSocketFactory socketFactory) {
         this.socketFactory = socketFactory;
     }
 
-    public String request(HttpRequest httpRequest) throws Exception {
+    String request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }

@@ -49,6 +49,7 @@
 * Add `Configuration#isVenmoEnabled()`
 * Add `Configuration#isVisaCheckoutEnabled()`
 * Breaking Changes
+  * Bump `browser-switch` to `2.0.0-beta1`
   * Remove `BraintreeFragment`
   * Remove `AnalyticsIntentService`
   * Remove `AnalyticsSender`
@@ -105,7 +106,46 @@
   * Remove `BraintreeListener`
   * Remove `BraintreeBrowserSwitchActivity`
   * Remove `UnionPayListener`
-  * Bump `browser-switch` to `2.0.0-beta1` 
+  * Remove `BraintreeApiError`
+  * Remove `BraintreeApiErrorResponse`
+  * Remove `BraintreeCancelListener`
+  * Make `AnalyticsDatabase` package-private
+  * Make `AnalyticsEvent` package-private
+  * Make `AppSwitchNotAvailableException` constructor package-private
+  * Make `BraintreeError` constructors package-private
+  * Make `BraintreeGraphQLHttpClient` package-private
+  * Make `BraintreeHttpClient` package-private
+  * Make `ErrorWithResponse` constructors package-private
+  * Make `GraphQLQueryHelper` package-private
+  * Make `IntegrationType` package-private
+  * Make `PaymentMethodDeleteException` constructor package-private
+  * Make `PreferredPaymentMethodsResult` constructor package-private
+  * Make `StreamHelper` package-private
+  * Make `UUIDHelper` package-private
+  * Make `BraintreeException` package-private
+  * Make `BraintreeResponseListener` package-private
+  * Make `DeviceInspector` package-private
+  * Make `GraphQLConstants` package-private
+  * Make `InvalidArgumentException` package-private
+  * Make `MetadataBuilder` package-private
+  * Make `PostalAddressParser` package-private
+  * Make `AppHelper` package-private
+  * Make `AuthenticationException` constructor package-private
+  * Make `AuthorizationException` package-private
+  * Make `BraintreeSharedPreferences` package-private
+  * Make `ClassHelper` package-private
+  * Make `DownForMaintenanceException` constructor package-private
+  * Make `HttpClient` package-private
+  * Make `HttpResponseCallback` package-private
+  * Make `Json` package-private
+  * Make `ManifestValidator` package-private
+  * Make `RateLimitException` constructor package-private
+  * Make `ServerException` constructor package-private
+  * Make `SignatureVerification` package-private
+  * Make `TLSSocketFactory` package-private
+  * Make `UnexpectedException` constructor package-private
+  * Make `UnprocessableEntityException` constructor package-private
+  * Make `UpgradeRequiredException` constructor package-private
 
 ## 3.17.0
 

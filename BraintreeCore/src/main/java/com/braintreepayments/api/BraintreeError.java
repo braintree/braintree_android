@@ -25,7 +25,7 @@ public class BraintreeError implements Parcelable {
     private String mMessage;
     private List<BraintreeError> mFieldErrors;
 
-    public static List<BraintreeError> fromJsonArray(JSONArray json) {
+    static List<BraintreeError> fromJsonArray(JSONArray json) {
         if (json == null) {
             json = new JSONArray();
         }
@@ -70,7 +70,7 @@ public class BraintreeError implements Parcelable {
         return errors;
     }
 
-    public static BraintreeError fromJson(JSONObject json) {
+    static BraintreeError fromJson(JSONObject json) {
         BraintreeError error = new BraintreeError();
         error.mField = Json.optString(json, FIELD_KEY, null);
         error.mMessage = Json.optString(json, MESSAGE_KEY, null);
@@ -163,7 +163,7 @@ public class BraintreeError implements Parcelable {
                 (mFieldErrors != null ? mFieldErrors.toString() : "");
     }
 
-    public BraintreeError() {}
+    BraintreeError() {}
 
     @Override
     public int describeContents() {

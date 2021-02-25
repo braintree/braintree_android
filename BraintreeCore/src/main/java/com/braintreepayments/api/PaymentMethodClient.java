@@ -22,7 +22,7 @@ public class PaymentMethodClient {
 
     private final BraintreeClient braintreeClient;
 
-    PaymentMethodClient(BraintreeClient braintreeClient) {
+    public PaymentMethodClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

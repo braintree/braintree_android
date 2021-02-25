@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class DownForMaintenanceException extends Exception {
 
-    public DownForMaintenanceException(String message) {
+    DownForMaintenanceException(String message) {
         super(message);
     }
 }

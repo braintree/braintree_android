@@ -28,16 +28,15 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.powermock.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ ClassHelper.class })
 public class AnalyticsEventUnitTest {
 
-    @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    private ClassHelper classHelper;
+    private DeviceInspector deviceInspector;
 
     @Before
     public void beforeEach() {
-        mockStatic(ClassHelper.class);
+        classHelper = mock(ClassHelper.class);
+        deviceInspector = mock(DeviceInspector.class);
     }
 
     @Test
@@ -47,7 +46,6 @@ public class AnalyticsEventUnitTest {
         // 4.3 to return null for version name. Version name is correctly returned in the emulator
         Context context = spy(RuntimeEnvironment.application);
         PackageManager packageManager = mock(PackageManager.class);
-        DeviceInspector deviceInspector = mock(DeviceInspector.class);
 
         when(context.getPackageManager()).thenReturn(packageManager);
         when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
@@ -60,7 +58,7 @@ public class AnalyticsEventUnitTest {
         ApplicationInfo paypalAppInfo = mock(ApplicationInfo.class);
         when(packageManager.getApplicationInfo("com.paypal.android.p2pmobile", 0)).thenReturn(paypalAppInfo);
 
-        AnalyticsEvent analyticsEvent = new AnalyticsEvent(context, "sessionId", "custom", "card.nonce-received", deviceInspector);
+        AnalyticsEvent analyticsEvent = new AnalyticsEvent(context, "sessionId", "custom", "card.nonce-received", deviceInspector, classHelper);
 
         assertEquals("android.card.nonce-received", analyticsEvent.event);
         assertTrue(analyticsEvent.timestamp > 0);
@@ -78,14 +76,11 @@ public class AnalyticsEventUnitTest {
 
     @Test
     public void createAnalyticsRequest_whenDropInAvailable_setsdropinVersion() throws JSONException {
-        doReturn("expected-drop-in-version").when(ClassHelper.class);
-        ClassHelper.getFieldValue(
-                eq("com.braintreepayments.api.dropin.BuildConfig"),
-                eq("VERSION_NAME")
-        );
+        when(classHelper.getFieldValue(
+                "com.braintreepayments.api.dropin.BuildConfig","VERSION_NAME")).thenReturn("expected-drop-in-version");
 
         Context context = RuntimeEnvironment.application;
-        AnalyticsEvent analyticsEvent = new AnalyticsEvent(context, "sessionId", "custom", "card.nonce-received");
+        AnalyticsEvent analyticsEvent = new AnalyticsEvent(context, "sessionId", "custom", "card.nonce-received", deviceInspector, classHelper);
         assertEquals("expected-drop-in-version", analyticsEvent.metadata.getString("dropinVersion"));
     }
 }

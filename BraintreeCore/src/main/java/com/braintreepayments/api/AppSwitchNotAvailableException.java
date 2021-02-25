@@ -5,7 +5,7 @@ package com.braintreepayments.api;
  */
 public class AppSwitchNotAvailableException extends BraintreeException {
 
-    public AppSwitchNotAvailableException(String message) {
+    AppSwitchNotAvailableException(String message) {
         super(message);
     }
 }

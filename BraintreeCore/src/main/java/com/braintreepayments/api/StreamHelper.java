@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-public class StreamHelper {
+class StreamHelper {
 
-    public static String getString(InputStream inputStream) throws IOException {
+    static String getString(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
         try {
             StringBuilder data = new StringBuilder();

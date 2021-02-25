@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class UnprocessableEntityException extends Exception {
 
-    public UnprocessableEntityException(String message) {
+    UnprocessableEntityException(String message) {
         super(message);
     }
 }

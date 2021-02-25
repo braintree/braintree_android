@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import org.json.JSONObject;
 
-public class Json {
+class Json {
 
     /**
      * Returns the value mapped by name if it exists, coercing it if necessary, or fallback if no such mapping exists.
@@ -15,7 +15,7 @@ public class Json {
      * @param fallback
      * @return {@link String}
      */
-    public static String optString(JSONObject json, String name, String fallback) {
+    static String optString(JSONObject json, String name, String fallback) {
         if (json.isNull(name)) {
             return fallback;
         } else {

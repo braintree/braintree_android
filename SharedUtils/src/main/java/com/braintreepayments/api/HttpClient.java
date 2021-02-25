@@ -13,17 +13,17 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
-public class HttpClient {
+class HttpClient {
 
     @IntDef({ NO_RETRY, RETRY_MAX_3_TIMES })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface RetryStrategy {
+    @interface RetryStrategy {
     }
 
-    public static final int NO_RETRY = 0;
-    public static final int RETRY_MAX_3_TIMES = 1;
+    static final int NO_RETRY = 0;
+    static final int RETRY_MAX_3_TIMES = 1;
 
-    public static final int MAX_RETRY_ATTEMPTS = 3;
+    static final int MAX_RETRY_ATTEMPTS = 3;
 
     private final Scheduler scheduler;
     private final SynchronousHttpClient syncHttpClient;
@@ -41,15 +41,15 @@ public class HttpClient {
         this.retryCountMap = new HashMap<>();
     }
 
-    public String sendRequest(HttpRequest request) throws Exception {
+    String sendRequest(HttpRequest request) throws Exception {
         return syncHttpClient.request(request);
     }
 
-    public void sendRequest(HttpRequest request, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, HttpResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    public void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 

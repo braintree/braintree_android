@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 import static android.content.res.Configuration.ORIENTATION_UNDEFINED;
 
-public class AnalyticsEvent {
+class AnalyticsEvent {
 
     private static final String SESSION_ID_KEY = "sessionId";
     private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
@@ -29,18 +29,20 @@ public class AnalyticsEvent {
     long timestamp;
     JSONObject metadata = new JSONObject();
     DeviceInspector deviceInspector;
+    ClassHelper classHelper;
 
-    public AnalyticsEvent() {}
+    AnalyticsEvent() {}
 
-    public AnalyticsEvent(Context context, String sessionId, String integration, String event) {
-        this(context, sessionId, integration, event, new DeviceInspector());
+    AnalyticsEvent(Context context, String sessionId, String integration, String event) {
+        this(context, sessionId, integration, event, new DeviceInspector(), new ClassHelper());
     }
 
     @VisibleForTesting
-    AnalyticsEvent(Context context, String sessionId, String integration, String event, DeviceInspector deviceInspector) {
+    AnalyticsEvent(Context context, String sessionId, String integration, String event, DeviceInspector deviceInspector, ClassHelper classHelper) {
         this.event = "android." + event;
         this.timestamp = System.currentTimeMillis();
         this.deviceInspector = deviceInspector;
+        this.classHelper = classHelper;
         try {
             metadata.put(SESSION_ID_KEY, sessionId)
                     .put(INTEGRATION_TYPE_KEY, integration)
@@ -109,8 +111,8 @@ public class AnalyticsEvent {
      * @return string representation of the current Drop-in version, or null if
      * Drop-in is unavailable
      */
-    private static String getDropInVersion() {
-        return ClassHelper.getFieldValue(
+    private String getDropInVersion() {
+        return classHelper.getFieldValue(
                 "com.braintreepayments.api.dropin.BuildConfig",
                 "VERSION_NAME"
         );

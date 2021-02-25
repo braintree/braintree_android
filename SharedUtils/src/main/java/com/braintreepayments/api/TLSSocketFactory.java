@@ -21,7 +21,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-public class TLSSocketFactory extends SSLSocketFactory {
+class TLSSocketFactory extends SSLSocketFactory {
 
     private SSLSocketFactory mInternalSSLSocketFactory;
 
@@ -29,7 +29,7 @@ public class TLSSocketFactory extends SSLSocketFactory {
         return new TLSSocketFactory();
     }
 
-    public TLSSocketFactory() throws SSLException {
+    TLSSocketFactory() throws SSLException {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, null, null); // use system security providers
@@ -42,7 +42,7 @@ public class TLSSocketFactory extends SSLSocketFactory {
     /**
      * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
      */
-    public TLSSocketFactory(InputStream certificateStream) throws SSLException {
+    TLSSocketFactory(InputStream certificateStream) throws SSLException {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);

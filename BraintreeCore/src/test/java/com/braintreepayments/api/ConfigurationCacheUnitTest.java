@@ -23,7 +23,8 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         Context context = ApplicationProvider.getApplicationContext();
 
-        ConfigurationCache.saveConfiguration(context, configuration, "cacheKey", 123);
+        ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(context, configuration, "cacheKey", 123);
 
         assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, getSharedPreferences(context).getString("cacheKey", ""));
         assertEquals(123L, getSharedPreferences(context).getLong("cacheKey_timestamp", 0));
@@ -34,9 +35,10 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         Context context = ApplicationProvider.getApplicationContext();
 
-        ConfigurationCache.saveConfiguration(context, configuration, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(context, configuration, "cacheKey", 0);
 
-        assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, ConfigurationCache.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
+        assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, ConfigurationCache.getInstance().getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
     }
 
     @Test
@@ -44,8 +46,9 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         Context context = ApplicationProvider.getApplicationContext();
 
-        ConfigurationCache.saveConfiguration(context, configuration, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(context, configuration, "cacheKey", 0);
 
-        assertNull(ConfigurationCache.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)));
+        assertNull(ConfigurationCache.getInstance().getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)));
     }
 }

@@ -48,6 +48,7 @@ public class AnalyticsClientUnitTest {
 
     private BraintreeHttpClient httpClient;
     private DeviceInspector deviceInspector;
+    private ClassHelper classHelper;
 
     private long mCurrentTime;
 
@@ -60,6 +61,7 @@ public class AnalyticsClientUnitTest {
 
         httpClient = mock(BraintreeHttpClient.class);
         deviceInspector = mock(DeviceInspector.class);
+        classHelper = mock(ClassHelper.class);
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -86,7 +88,7 @@ public class AnalyticsClientUnitTest {
     public void sendEvent_addsEventToAnalyticsDatabase() throws JSONException, InterruptedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector);
+                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
@@ -106,7 +108,7 @@ public class AnalyticsClientUnitTest {
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector);
+                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.sendEvent(event, configuration, context);
@@ -118,7 +120,7 @@ public class AnalyticsClientUnitTest {
     public void sendEventAndReturnId_enqueuesAnalyticsWorker() throws ExecutionException, InterruptedException, JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector);
+                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
@@ -146,7 +148,7 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
         when(deviceInspector.isVenmoInstalled(context)).thenReturn(true);
 
-        AnalyticsEvent event = new AnalyticsEvent(context, "sessionId", "custom", "event.started", deviceInspector);
+        AnalyticsEvent event = new AnalyticsEvent(context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
         database.addEvent(event);
 

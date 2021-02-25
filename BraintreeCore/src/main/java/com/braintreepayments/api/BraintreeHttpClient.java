@@ -4,7 +4,6 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.HttpClient.RetryStrategy;
 
 import org.json.JSONException;
@@ -16,7 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 /**
  * Network request class that handles Braintree request specifics and threading.
  */
-public class BraintreeHttpClient {
+class BraintreeHttpClient {
 
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -25,7 +24,7 @@ public class BraintreeHttpClient {
     private final HttpClient httpClient;
     private final Authorization authorization;
 
-    public BraintreeHttpClient(Authorization authorization) {
+    BraintreeHttpClient(Authorization authorization) {
         this(authorization, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
     }
 
@@ -43,7 +42,7 @@ public class BraintreeHttpClient {
         }
     }
 
-    public Authorization getAuthorization() {
+    Authorization getAuthorization() {
         return authorization;
     }
 
@@ -55,7 +54,7 @@ public class BraintreeHttpClient {
      * @param configuration configuration for the Braintree Android SDK.
      * @param callback The {@link HttpResponseCallback} to receive the response or error.
      */
-    public void get(String path, Configuration configuration, HttpResponseCallback callback) {
+    void get(String path, Configuration configuration, HttpResponseCallback callback) {
         get(path, configuration, HttpClient.NO_RETRY, callback);
     }
 
@@ -68,7 +67,7 @@ public class BraintreeHttpClient {
      * @param callback The {@link HttpResponseCallback} to receive the response or error.
      * @param retryStrategy retry strategy
      */
-    public void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         boolean isRelativeURL = !path.startsWith("http");
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
@@ -112,7 +111,7 @@ public class BraintreeHttpClient {
      * @param callback The {@link HttpResponseCallback} to receive the response or error.
      * @param configuration configuration for the Braintree Android SDK.
      */
-    public void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         boolean isRelativeURL = !path.startsWith("http");
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
@@ -158,7 +157,7 @@ public class BraintreeHttpClient {
      * @param configuration configuration for the Braintree Android SDK.
      * @return the HTTP response body
      */
-    public String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration) throws Exception {
         boolean isRelativeURL = !path.startsWith("http");
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";

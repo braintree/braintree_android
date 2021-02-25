@@ -2,17 +2,15 @@ package com.braintreepayments.api;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.BuildConfig;
-
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
-public class BraintreeGraphQLHttpClient {
+class BraintreeGraphQLHttpClient {
 
     private final HttpClient httpClient;
     private final Authorization authorization;
 
-    public BraintreeGraphQLHttpClient(Authorization authorization) {
+    BraintreeGraphQLHttpClient(Authorization authorization) {
         this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLHttpResponseParser()));
     }
 
@@ -30,7 +28,7 @@ public class BraintreeGraphQLHttpClient {
         }
     }
 
-    public void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
@@ -42,7 +40,7 @@ public class BraintreeGraphQLHttpClient {
         httpClient.sendRequest(request, callback);
     }
 
-    public void post(String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String data, Configuration configuration, HttpResponseCallback callback) {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path("")
@@ -54,7 +52,7 @@ public class BraintreeGraphQLHttpClient {
         httpClient.sendRequest(request, callback);
     }
 
-    public String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration) throws Exception {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)

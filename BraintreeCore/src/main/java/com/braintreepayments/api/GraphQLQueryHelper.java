@@ -6,9 +6,9 @@ import android.content.res.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class GraphQLQueryHelper {
+class GraphQLQueryHelper {
 
-    public static String getQuery(Context context, int queryResource) throws Resources.NotFoundException, IOException {
+    static String getQuery(Context context, int queryResource) throws Resources.NotFoundException, IOException {
         InputStream inputStream = null;
         try {
             inputStream = context.getResources().openRawResource(queryResource);

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class HttpRequest {
+class HttpRequest {
 
     private static final int THIRTY_SECONDS_MS = 30000;
 

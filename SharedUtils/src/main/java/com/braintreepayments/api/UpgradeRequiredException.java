@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class UpgradeRequiredException extends Exception {
 
-    public UpgradeRequiredException(String message) {
+    UpgradeRequiredException(String message) {
         super(message);
     }
 }

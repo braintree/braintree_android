@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class RateLimitException extends Exception {
 
-    public RateLimitException(String message) {
+    RateLimitException(String message) {
         super(message);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class AnalyticsClient {
+class AnalyticsClient {
 
     private static final String ANALYTICS_KEY = "analytics";
     private static final String KIND_KEY = "kind";
@@ -107,7 +107,7 @@ public class AnalyticsClient {
         } catch (JSONException ignored) {}
     }
 
-    public String getLastKnownAnalyticsUrl() {
+    String getLastKnownAnalyticsUrl() {
         return lastKnownAnalyticsUrl;
     }
 

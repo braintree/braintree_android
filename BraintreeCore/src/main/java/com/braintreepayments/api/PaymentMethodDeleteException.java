@@ -8,7 +8,7 @@ public class PaymentMethodDeleteException extends Exception {
 
     private final PaymentMethodNonce mPaymentMethodNonce;
 
-    public PaymentMethodDeleteException(PaymentMethodNonce paymentMethodNonce, Exception exception) {
+    PaymentMethodDeleteException(PaymentMethodNonce paymentMethodNonce, Exception exception) {
         super(exception);
         mPaymentMethodNonce = paymentMethodNonce;
     }

@@ -451,6 +451,29 @@ object Fixtures {
     """
 
     // language=JSON
+    const val CONFIGURATION_WITH_GOOGLE_PAY_PRODUCTION = """
+        {
+          "clientApiUrl": "client_api_url",
+          "environment": "production",
+          "merchantId": "integration_merchant_id",
+          "merchantAccountId": "integration_merchant_account_id",
+          "androidPay": {
+            "enabled": true,
+            "displayName": "Google Pay Merchant",
+            "environment": "production",
+            "googleAuthorizationFingerprint": "google-auth-fingerprint",
+            "paypalClientId": "pay-pal-client-id",
+            "supportedNetworks": [
+              "visa",
+              "mastercard",
+              "amex",
+              "discover"
+            ]
+          }
+        }
+    """
+
+    // language=JSON
     const val CONFIGURATION_WITH_ASSETS_URL = """
         {
             "assetsUrl": "https://assets.braintreegateway.com",

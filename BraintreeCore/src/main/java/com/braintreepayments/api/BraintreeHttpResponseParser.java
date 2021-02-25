@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 /**
  * Class that handles parsing http responses for {@link BraintreeHttpClient}.
  */
-public class BraintreeHttpResponseParser implements HttpResponseParser {
+class BraintreeHttpResponseParser implements HttpResponseParser {
 
     final private HttpResponseParser baseParser;
 

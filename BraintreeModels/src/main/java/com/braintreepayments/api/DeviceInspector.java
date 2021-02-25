@@ -13,7 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 
-public class DeviceInspector {
+class DeviceInspector {
 
     private static final String PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile";
     private static final String VENMO_APP_PACKAGE = "com.venmo";
@@ -27,7 +27,7 @@ public class DeviceInspector {
     private final AppHelper appHelper;
     private final ManifestValidator manifestValidator;
 
-    public DeviceInspector() {
+    DeviceInspector() {
         this(new AppHelper(), new ManifestValidator());
     }
 
@@ -37,11 +37,11 @@ public class DeviceInspector {
         this.manifestValidator = manifestValidator;
     }
 
-    public boolean isPayPalInstalled(Context context) {
+    boolean isPayPalInstalled(Context context) {
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE);
     }
 
-    public boolean isVenmoInstalled(Context context) {
+    boolean isVenmoInstalled(Context context) {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE);
     }
 
@@ -49,7 +49,7 @@ public class DeviceInspector {
      * @param context A context to access the installed packages.
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
-    public boolean isVenmoAppSwitchAvailable(Context context) {
+    boolean isVenmoAppSwitchAvailable(Context context) {
         return appHelper.isIntentAvailable(context, getVenmoIntent()) &&
                 SignatureVerification.isSignatureValid(context, VENMO_APP_PACKAGE, VENMO_CERTIFICATE_SUBJECT, VENMO_CERTIFICATE_ISSUER,
                         VENMO_PUBLIC_KEY_HASH_CODE);
@@ -59,7 +59,7 @@ public class DeviceInspector {
         return new Intent().setComponent(new ComponentName(VENMO_APP_PACKAGE, VENMO_APP_PACKAGE + "." + VENMO_APP_SWITCH_ACTIVITY));
     }
 
-    public boolean isDeviceEmulator() {
+    boolean isDeviceEmulator() {
         return isDeviceEmulator(Build.PRODUCT, Build.MANUFACTURER, Build.FINGERPRINT);
     }
 
@@ -75,7 +75,7 @@ public class DeviceInspector {
         }
     }
 
-    public String getAppName(Context context) {
+    String getAppName(Context context) {
         ApplicationInfo applicationInfo;
         String packageName = context.getPackageName();
         PackageManager packageManager = context.getPackageManager();
@@ -96,7 +96,7 @@ public class DeviceInspector {
         return appName;
     }
 
-    public boolean isDeviceRooted() {
+    boolean isDeviceRooted() {
         return isDeviceRooted(
                 android.os.Build.TAGS, new File("/system/app/Superuser.apk"), Runtime.getRuntime());
     }

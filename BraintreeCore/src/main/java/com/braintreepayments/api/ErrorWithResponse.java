@@ -31,7 +31,7 @@ public class ErrorWithResponse extends Exception implements Parcelable {
     private String mOriginalResponse;
     private List<BraintreeError> mFieldErrors;
 
-    public ErrorWithResponse(int statusCode, String jsonString) {
+    ErrorWithResponse(int statusCode, String jsonString) {
         mStatusCode = statusCode;
         mOriginalResponse = jsonString;
 
@@ -45,7 +45,7 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     private ErrorWithResponse() {}
 
-    public static ErrorWithResponse fromJson(String json) throws JSONException {
+    static ErrorWithResponse fromJson(String json) throws JSONException {
         ErrorWithResponse errorWithResponse = new ErrorWithResponse();
         errorWithResponse.mOriginalResponse = json;
         errorWithResponse.parseJson(json);
@@ -53,7 +53,7 @@ public class ErrorWithResponse extends Exception implements Parcelable {
         return errorWithResponse;
     }
 
-    public static ErrorWithResponse fromGraphQLJson(String json) {
+    static ErrorWithResponse fromGraphQLJson(String json) {
         ErrorWithResponse errorWithResponse = new ErrorWithResponse();
         errorWithResponse.mOriginalResponse = json;
         errorWithResponse.mStatusCode = 422;

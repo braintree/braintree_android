@@ -6,7 +6,7 @@ package com.braintreepayments.api;
  */
 public class ServerException extends Exception {
 
-    public ServerException(String message) {
+    ServerException(String message) {
         super(message);
     }
 }

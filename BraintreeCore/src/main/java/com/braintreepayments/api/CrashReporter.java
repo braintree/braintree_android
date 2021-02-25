@@ -16,10 +16,10 @@ class CrashReporter implements Thread.UncaughtExceptionHandler {
 
     @Retention(SOURCE)
     @IntDef({CAUSE_UNKNOWN, CAUSE_RELATED_TO_PAYPAL, CAUSE_RELATED_TO_BRAINTREE})
-    public @interface Cause {}
-    public static final int CAUSE_UNKNOWN = 0;
-    public static final int CAUSE_RELATED_TO_PAYPAL = 1;
-    public static final int CAUSE_RELATED_TO_BRAINTREE = 2;
+    @interface Cause {}
+    static final int CAUSE_UNKNOWN = 0;
+    static final int CAUSE_RELATED_TO_PAYPAL = 1;
+    static final int CAUSE_RELATED_TO_BRAINTREE = 2;
 
     private Thread.UncaughtExceptionHandler defaultExceptionHandler;
 
@@ -66,7 +66,7 @@ class CrashReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    public void start() {
+    void start() {
         registerExceptionHandler(this);
     }
 

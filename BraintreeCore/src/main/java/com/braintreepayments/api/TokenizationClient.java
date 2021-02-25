@@ -41,7 +41,7 @@ class TokenizationClient {
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}
      *        to be created.
      */
-    public <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();
         if (braintreeClient == null) {
             return;

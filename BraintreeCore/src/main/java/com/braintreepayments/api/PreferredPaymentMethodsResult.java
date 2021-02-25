@@ -11,9 +11,9 @@ public class PreferredPaymentMethodsResult {
     private boolean mPayPalPreferred;
     private boolean mVenmoPreferred;
 
-    public PreferredPaymentMethodsResult() {}
+    PreferredPaymentMethodsResult() {}
 
-    public static PreferredPaymentMethodsResult fromJSON(String responseBody, boolean venmoInstalled) {
+    static PreferredPaymentMethodsResult fromJSON(String responseBody, boolean venmoInstalled) {
         boolean payPalPreferred = false;
 
         try {

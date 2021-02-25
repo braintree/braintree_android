@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import java.util.UUID;
 
-public class UUIDHelper {
+class UUIDHelper {
 
     private static final String BRAINTREE_UUID_KEY = "braintreeUUID";
 
@@ -13,7 +13,7 @@ public class UUIDHelper {
      * @param context
      * @return A persistent UUID for this application install.
      */
-    public static String getPersistentUUID(Context context) {
+    static String getPersistentUUID(Context context) {
         SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
 
         String uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
@@ -25,7 +25,7 @@ public class UUIDHelper {
         return uuid;
     }
 
-    public static String getFormattedUUID() {
+    static String getFormattedUUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }

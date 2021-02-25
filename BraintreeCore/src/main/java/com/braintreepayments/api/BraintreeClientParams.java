@@ -98,11 +98,11 @@ class BraintreeClientParams {
         return this;
     }
 
-    public String getIntegrationType() {
+    String getIntegrationType() {
         return integrationType;
     }
 
-    public BraintreeClientParams setIntegrationType(String integrationType) {
+    BraintreeClientParams setIntegrationType(String integrationType) {
         this.integrationType = integrationType;
         return this;
     }

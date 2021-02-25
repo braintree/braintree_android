@@ -12,14 +12,29 @@ class ConfigurationCache {
 
     private static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5);
 
-    private ConfigurationCache() {}
+    private static volatile ConfigurationCache INSTANCE;
 
-    static String getConfiguration(Context context, String cacheKey) {
+    static ConfigurationCache getInstance() {
+        if (INSTANCE == null) {
+            synchronized (ConfigurationCache.class) {
+                // double check that instance was not created in another thread
+                if (INSTANCE == null) {
+                    INSTANCE = new ConfigurationCache();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
+    @VisibleForTesting
+    ConfigurationCache() {}
+
+    String getConfiguration(Context context, String cacheKey) {
         return getConfiguration(context, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    static String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
+    String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
         SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
 
         String timestampKey = cacheKey + "_timestamp";
@@ -32,12 +47,12 @@ class ConfigurationCache {
         return null;
     }
 
-    static void saveConfiguration(Context context, Configuration configuration, String cacheKey) {
+    void saveConfiguration(Context context, Configuration configuration, String cacheKey) {
         saveConfiguration(context, configuration, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    static void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
+    void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         BraintreeSharedPreferences.getSharedPreferences(context).edit()
                 .putString(cacheKey, configuration.toJson())

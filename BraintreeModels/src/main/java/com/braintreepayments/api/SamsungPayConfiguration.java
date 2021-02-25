@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +28,17 @@ class SamsungPayConfiguration {
     private String mServiceId;
     private String mSamsungAuthorization;
     private String mEnvironment;
+
+    private final ClassHelper classHelper;
+
+    SamsungPayConfiguration() {
+        this(new ClassHelper());
+    }
+
+    @VisibleForTesting
+    SamsungPayConfiguration(ClassHelper classHelper) {
+        this.classHelper = classHelper;
+    }
 
     static SamsungPayConfiguration fromJson(JSONObject json) {
         SamsungPayConfiguration configuration = new SamsungPayConfiguration();
@@ -56,7 +68,7 @@ class SamsungPayConfiguration {
      */
     boolean isEnabled() {
         return !"".equals(mSamsungAuthorization) &&
-                ClassHelper.isClassAvailable(SAMSUNG_PAY_CLASSNAME);
+                classHelper.isClassAvailable(SAMSUNG_PAY_CLASSNAME);
     }
 
     /**

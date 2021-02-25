@@ -5,9 +5,9 @@ import com.braintreepayments.api.models.BuildConfig;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MetadataBuilder {
+class MetadataBuilder {
 
-    public static final String META_KEY = "_meta";
+    static final String META_KEY = "_meta";
 
     private static final String SOURCE_KEY = "source";
     private static final String INTEGRATION_KEY = "integration";
@@ -17,14 +17,14 @@ public class MetadataBuilder {
 
     private JSONObject mJson;
 
-    public MetadataBuilder() {
+    MetadataBuilder() {
         mJson = new JSONObject();
         try {
             mJson.put(PLATFORM_KEY, "android");
         } catch (JSONException ignored) {}
     }
 
-    public MetadataBuilder source(String source) {
+    MetadataBuilder source(String source) {
         try {
             mJson.put(SOURCE_KEY, source);
         } catch (JSONException ignored) {}
@@ -32,7 +32,7 @@ public class MetadataBuilder {
         return this;
     }
 
-    public MetadataBuilder integration(String integration) {
+    MetadataBuilder integration(String integration) {
         try {
             mJson.put(INTEGRATION_KEY, integration);
         } catch (JSONException ignored) {}
@@ -40,7 +40,7 @@ public class MetadataBuilder {
         return this;
     }
 
-    public MetadataBuilder sessionId(String sessionId) {
+    MetadataBuilder sessionId(String sessionId) {
         try {
             mJson.put(SESSION_ID_KEY, sessionId);
         } catch (JSONException ignored) {}
@@ -48,7 +48,7 @@ public class MetadataBuilder {
         return this;
     }
 
-    public MetadataBuilder version() {
+    MetadataBuilder version() {
         try {
             mJson.put(VERSION_KEY, BuildConfig.VERSION_NAME);
         } catch (JSONException ignored) {}
@@ -56,7 +56,7 @@ public class MetadataBuilder {
         return this;
     }
 
-    public JSONObject build() {
+    JSONObject build() {
         return mJson;
     }
 

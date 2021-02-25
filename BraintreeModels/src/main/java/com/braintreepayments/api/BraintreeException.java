@@ -7,15 +7,15 @@ import java.io.IOException;
  */
 public class BraintreeException extends IOException {
 
-    public BraintreeException(String message, Throwable cause) {
+    BraintreeException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public BraintreeException(String message) {
+    BraintreeException(String message) {
         super(message);
     }
 
-    public BraintreeException() {
+    BraintreeException() {
         super();
     }
 }

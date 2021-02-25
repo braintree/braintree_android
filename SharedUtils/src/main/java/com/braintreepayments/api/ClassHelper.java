@@ -2,9 +2,11 @@ package com.braintreepayments.api;
 
 import java.lang.reflect.Field;
 
-public class ClassHelper {
+class ClassHelper {
 
-    public static boolean isClassAvailable(String className) {
+    ClassHelper() {}
+
+    boolean isClassAvailable(String className) {
         try {
             Class.forName(className);
             return true;
@@ -19,7 +21,7 @@ public class ClassHelper {
      * @param <FIELD_TYPE> The type of the field value
      * @return the value of a field on a class, or null.
      */
-    public static <FIELD_TYPE> FIELD_TYPE getFieldValue(String className, String fieldName) {
+    <FIELD_TYPE> FIELD_TYPE getFieldValue(String className, String fieldName) {
         FIELD_TYPE value = null;
 
         try {

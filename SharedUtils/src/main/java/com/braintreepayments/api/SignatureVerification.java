@@ -13,7 +13,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-public class SignatureVerification {
+class SignatureVerification {
 
     /**
      * Used to disable signature verification for development and test.
@@ -32,7 +32,7 @@ public class SignatureVerification {
      * @return true is signature is valid or signature verification has been disabled.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public static boolean isSignatureValid(Context context, String packageName,
+    static boolean isSignatureValid(Context context, String packageName,
             String certificateSubject, String certificateIssuer, int publicKeyHashCode) {
         if (!sEnableSignatureVerification) {
             return true;
