@@ -27,8 +27,9 @@ android {
 }
 
 dependencies {
-    implementation project(':BraintreeCore')
+    api project(':BraintreeCore')
     implementation project(':BraintreeDataCollector')
+
     implementation 'androidx.annotation:annotation:1.1.0'
 
     testImplementation 'org.robolectric:robolectric:4.1'

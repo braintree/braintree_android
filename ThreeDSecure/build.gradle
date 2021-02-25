@@ -29,11 +29,10 @@ android {
 }
 
 dependencies {
+    api project(':BraintreeCore')
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-1'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-
-    implementation project(':BraintreeCore')
 
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'androidx.test:rules:1.1.1'

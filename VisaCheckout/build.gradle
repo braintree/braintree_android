@@ -31,10 +31,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation project(':BraintreeCore')
-
+    api project(':BraintreeCore')
     api(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 
     testImplementation project(':TestUtils')
     testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
