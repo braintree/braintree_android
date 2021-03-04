@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add `bic` (Bank Identification Code) to `LocalPaymentRequest`
+
 ## 3.16.1
 
 * Bump Cardinal version to `2.2.5-1`

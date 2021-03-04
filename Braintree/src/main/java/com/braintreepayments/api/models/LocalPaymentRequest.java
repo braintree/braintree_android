@@ -26,7 +26,8 @@ public class LocalPaymentRequest {
     private static final String POSTAL_CODE_KEY = "postalCode";
     private static final String COUNTRY_CODE_KEY = "countryCode";
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
-    private static final String PAYMENT_TYPE_COUNTRY_CODE = "paymentTypeCountryCode";
+    private static final String PAYMENT_TYPE_COUNTRY_CODE_KEY = "paymentTypeCountryCode";
+    private static final String BIC_KEY = "bic";
 
     private PostalAddress mAddress;
     private String mAmount;
@@ -41,6 +42,7 @@ public class LocalPaymentRequest {
     private String mPhone;
     private boolean mShippingAddressRequired;
     private String mSurname;
+    private String mBankIdentificationCode;
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
@@ -70,6 +72,16 @@ public class LocalPaymentRequest {
         }
         return this;
     }
+
+    /**
+     * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
+     * @return {@link LocalPaymentRequest}
+     */
+    public LocalPaymentRequest bic(String bankIdentificationCode) {
+        mBankIdentificationCode = bankIdentificationCode;
+        return this;
+    }
+
 
     /**
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
@@ -181,6 +193,10 @@ public class LocalPaymentRequest {
         return mApprovalUrl;
     }
 
+    public String getBic() {
+        return mBankIdentificationCode;
+    }
+
     public String getCurrencyCode() {
         return mCurrencyCode;
     }
@@ -235,7 +251,8 @@ public class LocalPaymentRequest {
                     .put(EMAIL_KEY, mEmail)
                     .put(PHONE_KEY, mPhone)
                     .put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId)
-                    .putOpt(PAYMENT_TYPE_COUNTRY_CODE, mPaymentTypeCountryCode);
+                    .putOpt(PAYMENT_TYPE_COUNTRY_CODE_KEY, mPaymentTypeCountryCode)
+                    .putOpt(BIC_KEY, mBankIdentificationCode);
 
             if (mAddress != null) {
                 payload.put(STREET_ADDRESS_KEY, mAddress.getStreetAddress())
