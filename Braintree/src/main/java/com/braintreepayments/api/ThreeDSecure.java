@@ -293,7 +293,7 @@ public class ThreeDSecure {
                     .put("nonce", request.getNonce())
                     .put("clientMetadata", new JSONObject()
                             .put("requestedThreeDSecureVersion", "2")
-                            .put("sdkVersion", BuildConfig.VERSION_NAME));
+                            .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
         } catch (JSONException ignored) {}
 
         fragment.waitForConfiguration(new ConfigurationListener() {

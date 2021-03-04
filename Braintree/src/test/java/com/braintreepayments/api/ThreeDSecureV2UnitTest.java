@@ -106,7 +106,7 @@ public class ThreeDSecureV2UnitTest {
 
                     JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
                     assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-                    assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+                    assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
                 } catch (JSONException e) {
                     fail();
                 }
@@ -131,7 +131,7 @@ public class ThreeDSecureV2UnitTest {
 
                     JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
                     assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-                    assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+                    assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
                 } catch (JSONException e) {}
             }
         });
