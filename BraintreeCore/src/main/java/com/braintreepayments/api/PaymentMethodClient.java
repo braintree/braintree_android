@@ -30,11 +30,12 @@ public class PaymentMethodClient {
      * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
      * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
-     * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
+     * GetPaymentMethodNoncesCallback}
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android Context
      * @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
      *        payment methods will be ordered my most recently used.
+     * @param callback {@link GetPaymentMethodNoncesCallback}
      */
     public void getPaymentMethodNonces(final Context context, boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
         final Uri uri = Uri.parse(TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT))
@@ -67,28 +68,22 @@ public class PaymentMethodClient {
      * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
      * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
-     * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
+     * GetPaymentMethodNoncesCallback}
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android Context
+     * @param callback {@link GetPaymentMethodNoncesCallback}
      */
     public void getPaymentMethodNonces(Context context, GetPaymentMethodNoncesCallback callback) {
         getPaymentMethodNonces(context, false, callback);
     }
 
     /**
-     * Deletes a payment method owned by the customer whose id was used to generate the {@link ClientToken}
-     * used to create the {@link BraintreeFragment}.
-     * <p>
-     * Note: This method only works with Android Lollipop (>= 21) and above.
-     * This will invoke {@link BraintreeErrorListener#onError(Exception)} when
-     * <ul>
-     *      <li>A {@link TokenizationKey} is used.</li>
-     *      <li>The device is below Lollipop.</li>
-     *      <li>If the request fails.</li>
-     * <ul/>
+     * Deletes a payment method that belongs to the current customer.
+     * used to instantiate the {@link BraintreeClient}.
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android Context
      * @param paymentMethodNonce The payment method nonce that references a vaulted payment method.
+     * @param callback {@link DeletePaymentMethodNonceCallback}
      */
     // TODO: Investigate if this feature should be removed from Android or added to iOS for feature parity
     public void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {

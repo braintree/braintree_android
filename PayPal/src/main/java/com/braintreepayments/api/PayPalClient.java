@@ -10,6 +10,10 @@ import androidx.fragment.app.FragmentActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Used to create and tokenize PayPal accounts. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/">documentation</a>
+ */
 public class PayPalClient {
 
     private final BraintreeClient braintreeClient;
@@ -49,6 +53,13 @@ public class PayPalClient {
                 "for the correct configuration");
     }
 
+    /**
+     * Starts the One-Time Payment flow for PayPal.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalRequest a {@link PayPalRequest} used to customize the request. An amount MUST be specified.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         if (payPalRequest.getAmount() != null) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
@@ -84,6 +95,13 @@ public class PayPalClient {
         }
     }
 
+    /**
+     * Starts the Billing Agreement flow for PayPal.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         if (payPalRequest.getAmount() == null) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
@@ -162,6 +180,10 @@ public class PayPalClient {
         return isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
+    /**
+     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
+     * @param callback {@link PayPalBrowserSwitchResultCallback}
+     */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final PayPalBrowserSwitchResultCallback callback) {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);

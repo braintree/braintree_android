@@ -22,7 +22,7 @@ public class AmericanExpressClient {
      * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
      * @param nonce A nonce representing a card that will be used to look up the rewards balance
      * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
-     * @param callback {@link AmericanExpressGetRewardsBalanceCallback} used to notify result
+     * @param callback {@link AmericanExpressGetRewardsBalanceCallback}
      */
     public void getRewardsBalance(String nonce, String currencyIsoCode, final AmericanExpressGetRewardsBalanceCallback callback) {
         String getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)

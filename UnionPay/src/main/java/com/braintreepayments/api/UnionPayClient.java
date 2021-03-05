@@ -41,10 +41,11 @@ public class UnionPayClient {
      * UnionPayClient#enroll(UnionPayCardBuilder, UnionPayEnrollCallback)}.
      * <p>
      * On completion, returns the {@link UnionPayCapabilities} to
-     * {@link UnionPayListener#onCapabilitiesFetched(UnionPayCapabilities)}
+     * {@link UnionPayFetchCapabilitiesCallback#onResult(UnionPayCapabilities, Exception)}
      * <p>
      * On error, an exception will be passed back to
-     * {@link BraintreeErrorListener#onError(Exception)}
+     * {@link UnionPayFetchCapabilitiesCallback#onResult(UnionPayCapabilities, Exception)}
+     *
      * @param cardNumber The card number to check for Union Pay capabilities.
      * @param callback {@link UnionPayFetchCapabilitiesCallback}
      */
@@ -83,13 +84,12 @@ public class UnionPayClient {
      * Enrolls a Union Pay card. Only call this method if the card needs to be enrolled. Check {@link
      * UnionPayClient#fetchCapabilities(String, UnionPayFetchCapabilitiesCallback)} if your card needs to be enrolled.
      * <p>
-     * On completion, returns a enrollmentId to
-     * {@link UnionPayListener#onSmsCodeSent(String, boolean)}
+     * On completion, returns an enrollmentId to {@link UnionPayEnrollCallback#onResult(UnionPayEnrollment, Exception)}
      * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
      * collected from the merchant before invoking {@link UnionPayClient#tokenize(UnionPayCardBuilder, UnionPayTokenizeCallback)}
      * <p>
-     * On error, an exception will be passed back to
-     * {@link BraintreeErrorListener#onError(Exception)}
+     * On error, an exception will be passed back to {@link UnionPayEnrollCallback#onResult(UnionPayEnrollment, Exception)}
+     *
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
      * @param callback {@link UnionPayEnrollCallback}
      */
@@ -136,15 +136,15 @@ public class UnionPayClient {
      * {@link UnionPayCardBuilder#enrollmentId(String)} and {@link UnionPayCardBuilder#smsCode(String)}
      * need to be set for tokenization to succeed.
      * <p>
-     * On completion, returns the {@link PaymentMethodNonce} to {@link
-     * PaymentMethodNonceCreatedListener}.
+     * On completion, returns the {@link CardNonce} to {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)}
      * <p>
-     * If creation fails validation, {@link BraintreeErrorListener#onError(Exception)}
+     * If creation fails validation, {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
-     * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * BraintreeErrorListener#onError(Exception)} will be called with the {@link
+     * If an error not due to validation (server error, network issue, etc.) occurs,
+     * {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)} will be called with the {@link
      * Exception} that occurred.
+     *
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
      * @param callback {@link UnionPayTokenizeCallback}
      */

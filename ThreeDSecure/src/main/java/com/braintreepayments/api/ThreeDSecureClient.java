@@ -53,9 +53,9 @@ public class ThreeDSecureClient {
      * which points to the original payment method, as well as the 3D Secure verification.
      * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
      * liability shift if authentication is successful or fail with a 3D Secure failure.
-     *  @param activity the {@link FragmentActivity} backing the http request.
+     * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param callback the {@link ThreeDSecureResultCallback} to invoke on completion.
+     * @param callback {@link ThreeDSecureResultCallback}
      */
     public void performVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
         performVerification(activity, request, new ThreeDSecureLookupCallback() {
@@ -82,7 +82,7 @@ public class ThreeDSecureClient {
      * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
      * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
-     * @param activity the {@link FragmentActivity} backing the http request.
+     * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      */
     public void performVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookupCallback callback) {
@@ -140,12 +140,12 @@ public class ThreeDSecureClient {
 
     /**
      * Continues the 3DS verification. Should be called from {@link ThreeDSecureLookupCallback#onResult(ThreeDSecureRequest, ThreeDSecureLookup, Exception)}
-     * @param activity           the {@link FragmentActivity} backing the http request.
+     * @param activity           Android FragmentActivity
      * @param request            the {@link ThreeDSecureRequest} with information used for authentication.
      * @param threeDSecureLookup the {@link ThreeDSecureLookup} returned for this request.
  *                           Contains information about the 3DS verification request that will
  *                           be invoked in this method.
-     * @param callback           the {@link ThreeDSecureResultCallback} to handle the result.
+     * @param callback           {@link ThreeDSecureResultCallback}
      */
     public void continuePerformVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookup threeDSecureLookup, final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -204,9 +204,9 @@ public class ThreeDSecureClient {
     /**
      * Creates a stringified JSON object containing the information necessary to perform a lookup
      *
-     * @param context the {@link Context} backing the http request.
+     * @param context Android Context
      * @param request  the {@link ThreeDSecureRequest} that has a nonce and an optional UI customization.
-     * @param callback the {@link ThreeDSecurePrepareLookupCallback} that will receive the JSON string to send to the server for lookup.
+     * @param callback {@link ThreeDSecurePrepareLookupCallback}
      */
     public void prepareLookup(final Context context, final ThreeDSecureRequest request, final ThreeDSecurePrepareLookupCallback callback) {
         final JSONObject lookupJSON = new JSONObject();
@@ -363,6 +363,10 @@ public class ThreeDSecureClient {
         });
     }
 
+    /**
+     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
+     * @param callback {@link ThreeDSecureResultCallback}
+     */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final ThreeDSecureResultCallback callback) {
         // V1 flow
         int status = browserSwitchResult.getStatus();
@@ -388,6 +392,11 @@ public class ThreeDSecureClient {
         }
     }
 
+    /**
+     * @param resultCode a code associated with the Activity result
+     * @param data Android Intent
+     * @param callback {@link ThreeDSecureResultCallback}
+     */
     public void onActivityResult(int resultCode, Intent data, ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {

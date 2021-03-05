@@ -11,8 +11,8 @@ import org.json.JSONObject;
 /**
  * {@link PaymentMethodNonce} representing a PayPal account.
  *
- * @see {@link CardNonce}
- * @see {@link PaymentMethodNonce}
+ * @see CardNonce
+ * @see PaymentMethodNonce
  */
 public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable {
 
@@ -81,7 +81,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      * Generates a {@link PayPalAccountNonce} from the {@link JSONObject}.
      *
      * @param json {@link JSONObject} that holds properties for {@link PayPalAccountNonce}.
-     * @throws JSONException
+     * @throws JSONException if parsing fails
      */
     // TODO: Make protected when package is flattened
     public void fromJson(JSONObject json) throws JSONException {

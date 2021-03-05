@@ -31,15 +31,15 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
-     * If creation fails validation, {@link BraintreeErrorListener#onError(Exception)}
+     * If creation fails validation, {@link PaymentMethodNonceCallback#failure(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * BraintreeErrorListener#onError(Exception)} (Throwable)}
-     * will be called with the {@link Exception} that occurred.
+     * PaymentMethodNonceCallback#failure(Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}
      *        to be created.
+     * @param callback {@link PaymentMethodNonceCallback}
      */
     <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();

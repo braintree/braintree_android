@@ -47,7 +47,7 @@ public class AuthenticationInsight implements Parcelable {
      * @return The regulation environment for the associated nonce to help determine the need
      * for 3D Secure.
      *
-     * @see <a href=https://developers.braintreepayments.com/guides/3d-secure/advanced-options/android/v3#authentication-insight">Documentation</a>
+     * @see <a href="https://developers.braintreepayments.com/guides/3d-secure/advanced-options/android#authentication-insight">Documentation</a>
      * for possible values.
      */
     public String getRegulationEnvironment() {

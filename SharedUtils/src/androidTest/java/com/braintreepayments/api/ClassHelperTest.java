@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.ClassHelper;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,11 +13,13 @@ public class ClassHelperTest {
 
     @Test
     public void isClassAvailable_returnsTrueWhenClassOnClasspath() {
-        assertTrue(ClassHelper.isClassAvailable("java.lang.String"));
+        ClassHelper sut = new ClassHelper();
+        assertTrue(sut.isClassAvailable("java.lang.String"));
     }
 
     @Test
     public void isClassAvailable_returnsFalseWhenClassNotOnClasspath() {
-        assertFalse(ClassHelper.isClassAvailable("java.lang.NotAClass"));
+        ClassHelper sut = new ClassHelper();
+        assertFalse(sut.isClassAvailable("java.lang.NotAClass"));
     }
 }

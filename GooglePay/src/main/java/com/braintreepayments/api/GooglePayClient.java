@@ -63,9 +63,8 @@ public class GooglePayClient {
      * {@code true}, show the Google Pay button. When it is called with {@code false}, display other
      * checkout options.
      *
-     * @param activity {@link FragmentActivity}
-     * @param callback Instance of {@link GooglePayIsReadyToPayCallback} to receive the
-     *                 isReadyToPay result.
+     * @param activity Android FragmentActivity
+     * @param callback {@link GooglePayIsReadyToPayCallback}
      */
     public void isReadyToPay(final FragmentActivity activity, final GooglePayIsReadyToPayCallback callback) {
         isReadyToPay(activity, null, callback);
@@ -77,10 +76,9 @@ public class GooglePayClient {
      * {@code true}, show the Google Pay button. When it is called with {@code false}, display other
      * checkout options.
      *
-     * @param activity {@link FragmentActivity}
+     * @param activity Android FragmentActivity
      * @param request  {@link ReadyForGooglePayRequest}
-     * @param callback Instance of {@link GooglePayIsReadyToPayCallback} to receive the
-     *                 isReadyToPay result.
+     * @param callback {@link GooglePayIsReadyToPayCallback}
      */
     public void isReadyToPay(final FragmentActivity activity, final ReadyForGooglePayRequest request, final GooglePayIsReadyToPayCallback callback) {
 
@@ -136,16 +134,13 @@ public class GooglePayClient {
      * Get Braintree specific tokenization parameters for a Google Pay. Useful for when full control over the
      * {@link PaymentDataRequest} is required.
      * <p>
-     * {@link PaymentMethodTokenizationParameters} should be supplied to the
-     * {@link PaymentDataRequest} via
+     * {@link PaymentMethodTokenizationParameters} should be supplied to the {@link PaymentDataRequest} via
      * {@link PaymentDataRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}
-     * and {@link Collection <Integer>} allowedCardNetworks should be supplied to the
-     * {@link CardRequirements} via
+     * and {@link Collection <Integer>} allowedCardNetworks should be supplied to the {@link CardRequirements} via
      * {@link CardRequirements.Builder#addAllowedCardNetworks(Collection)}}.
      *
-     * @param activity {@link FragmentActivity}
-     * @param callback Instance of {@link GooglePayGetTokenizationParametersCallback} to receive the
-     *                 {@link PaymentMethodTokenizationParameters}.
+     * @param activity Android FragmentActivity
+     * @param callback {@link GooglePayGetTokenizationParametersCallback}
      */
     public void getTokenizationParameters(final FragmentActivity activity, final GooglePayGetTokenizationParametersCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -159,9 +154,9 @@ public class GooglePayClient {
     /**
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
      *
-     * @param activity {@link FragmentActivity}
-     * @param request  The {@link GooglePayRequest} containing options for the transaction.
-     * @param callback Instance of {@link GooglePayRequestPaymentCallback} to receive the result.
+     * @param activity Android FragmentActivity
+     * @param request The {@link GooglePayRequest} containing options for the transaction.
+     * @param callback {@link GooglePayRequestPaymentCallback}
      */
     public void requestPayment(final FragmentActivity activity, final GooglePayRequest request, final GooglePayRequestPaymentCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
@@ -214,9 +209,9 @@ public class GooglePayClient {
      * activity or fragment's {@code onActivityResult} method to get a {@link GooglePayCardNonce}
      * or {@link PayPalAccountNonce}.
      *
-     * @param activity    {@link FragmentActivity}
+     * @param activity Android FragmentActivity
      * @param paymentData {@link PaymentData} from the Intent in {@code onActivityResult} method.
-     * @param callback    Instance of {@link GooglePayOnActivityResultCallback} to receive the result.
+     * @param callback {@link GooglePayOnActivityResultCallback}
      */
     public void tokenize(FragmentActivity activity, PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
         try {
@@ -237,6 +232,12 @@ public class GooglePayClient {
         }
     }
 
+    /**
+     * @param activity Android Activity
+     * @param resultCode a code associated with the Activity result
+     * @param data Android Intent
+     * @param callback {@link GooglePayOnActivityResultCallback}
+     */
     public void onActivityResult(FragmentActivity activity, int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");

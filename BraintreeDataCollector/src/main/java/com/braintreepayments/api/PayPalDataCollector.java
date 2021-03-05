@@ -40,7 +40,7 @@ class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context {@link Context}
+     * @param context Android Context
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
@@ -59,7 +59,7 @@ class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context An Android context.
+     * @param context Android Context.
      * @param request configures what data to collect.
      * @return clientMetadataId Your server will send this to PayPal
      */

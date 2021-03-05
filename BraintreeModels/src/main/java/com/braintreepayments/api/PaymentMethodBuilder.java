@@ -28,27 +28,24 @@ public abstract class PaymentMethodBuilder<T> {
     public PaymentMethodBuilder() {}
 
     /**
-     * Sets the integration method associated with the
-     * {@link com.braintreepayments.api.TokenizationClient#tokenize(BraintreeFragment, PaymentMethodBuilder, PaymentMethodNonceCallback)}
-     * call for analytics use. Defaults to custom and does not need to ever be set.
+     * Sets the integration method associated with the tokenization call for analytics use.
+     * Defaults to custom and does not need to ever be set.
      *
      * @param integration the current integration style.
      */
     @SuppressWarnings("unchecked")
-    public T integration(String integration) {
+    T integration(String integration) {
         mIntegration = integration;
         return (T) this;
     }
 
     /**
-     * Sets the source associated with the
-     * {@link com.braintreepayments.api.TokenizationClient#tokenize(BraintreeFragment, PaymentMethodBuilder, PaymentMethodNonceCallback)}
-     * call for analytics use. Set automatically.
+     * Sets the source associated with the tokenization call for analytics use. Set automatically.
      *
      * @param source the source of the payment method.
      */
     @SuppressWarnings("unchecked")
-    public T source(String source) {
+    T source(String source) {
         mSource = source;
         return (T) this;
     }
@@ -67,12 +64,12 @@ public abstract class PaymentMethodBuilder<T> {
     }
 
     /**
-     * @param sessionId sets the session id associated with this request. The session is a uuid tied to the lifetime of
-     * a {@link BraintreeFragment}. This field is automatically set at the point of tokenization, and any previous
+     * @param sessionId sets the session id associated with this request. The session is a uuid.
+     * This field is automatically set at the point of tokenization, and any previous
      * values ignored.
      */
     @SuppressWarnings("unchecked")
-    public T setSessionId(String sessionId) {
+    T setSessionId(String sessionId) {
         mSessionId = sessionId;
         return (T) this;
     }

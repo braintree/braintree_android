@@ -4,22 +4,21 @@
 
 * Add a `client` for each feature:
   * `AmericanExpressClient`
+  * `BraintreeClient`
   * `CardClient`
   * `DataCollector`
   * `GooglePayClient`
   * `LocalPaymentClient`
   * `PayPalClient`
+  * `PaymentMethodClient`
+  * `PreferredPaymentMethodsClient`
   * `ThreeDSecureClient`
   * `UnionPayClient`
   * `VenmoClient`
   * `VisaCheckoutClient`
-* Update Visa Checkout aar dependency to version `6.6.1`
-* Add `LocalPaymentTransaction` to represent Local Payment transactions
-* Add `amount` setter to `PayPalRequest`
 * Create callback interfaces to enforce callback pattern:
   * `AmericanExpressGetRewardsBalanceCallback`
   * `CardTokenizeCallback`
-  * `CardinalInitializeCallback`
   * `ConfigurationCallback`
   * `DataCollectorCallback`
   * `DeletePaymentMethodNonceCallback`
@@ -27,7 +26,7 @@
   * `LocalPaymentBrowserSwitchResultCallback`
   * `LocalPaymentStartCallback`
   * `PayPalBrowserSwitchResultCallback`
-  * `PayPalRequestCallback`
+  * `PayPalFlowStartedCallback`
   * `PreferredPaymentMethodsCallback`
   * `ThreeDSecureLookupCallback`
   * `ThreeDSecurePrepareLookupCallback`
@@ -48,104 +47,137 @@
 * Add `Configuration#isUnionPayEnabled()`
 * Add `Configuration#isVenmoEnabled()`
 * Add `Configuration#isVisaCheckoutEnabled()`
+* Update Visa Checkout aar dependency to version `6.6.1`
+* Add `LocalPaymentTransaction` to represent Local Payment transactions
+* Add `amount` setter to `PayPalRequest`
 * Breaking Changes
   * Bump `browser-switch` to `2.0.0-beta1`
-  * Remove `BraintreeFragment`
-  * Remove `AnalyticsIntentService`
-  * Remove `AnalyticsSender`
-  * Rename `core` module to `shared-utils`
-  * Rename `LocalPaymentResult` to `LocalPaymentNonce`
-  * Rename `braintree` module to `braintree-core`
-  * Rename `GooglePayment` classes to `GooglePay`
-  * Rename `BraintreeRequestCodes.GOOGLE_PAYMENT` to `BraintreeRequestCodes.GOOGLE_PAY`
+  * Change `GooglePayCapabilities#isGooglePayEnabled()` parameters
   * Create `american-express` module
   * Create `card` module
   * Create `local-payment` module
   * Create `pay-pal` module
   * Create `union-pay` module
   * Create `venmo` module
-  * Delete PayPal `data-collector` module
-  * Delete PayPal `paypal-one-touch` module
+  * Remove PayPal `data-collector` module
+  * Remove PayPal `paypal-one-touch` module
+  * Remove `AmericanExpressListener`
+  * Remove `AnalyticsIntentService`
+  * Remove `AnalyticsSender`
   * Remove `AmericanExpressRewardsBalance` default constructor
-  * Remove `approvalUrl` and `paymentId` properties from `LocalPaymentRequest`
   * Remove `amount` parameter from `PayPalRequest` constructor
-  * Remove `PayPalDataCollector`
-  * Remove `PayPalDataCollectorRequest`
-  * Remove `InstallationIdentifier`
-  * Remove deprecated 3DS `performVerification` methods
+  * Remove `approvalUrl` and `paymentId` properties from `LocalPaymentRequest`
   * Remove `Beta` interface
-  * Remove `AnalyticsConfiguration`
-  * Remove `CardConfiguration`
-  * Remove `GraphQLConfiguration`
-  * Remove `GooglePaymentConfiguration`
-  * Remove `KountConfiguration`
-  * Remove `BraintreeApiConfiguration`
-  * Remove `PayPalConfiguration`
-  * Remove `SamsungPayConfiguration`
-  * Remove `UnionPayConfiguration`
-  * Remove `VenmoConfiguration`
-  * Remove `VisaCheckoutConfiguration`
+  * Remove `BraintreeApiError`
+  * Remove `BraintreeApiErrorResponse`
+  * Remove `BraintreeApiHttpClient`
+  * Remove `BraintreeBrowserSwitchActivity`
+  * Remove `BraintreeCancelListener`
+  * Remove `BraintreeErrorListener` 
+  * Remove `BraintreeFragment`
+  * Remove `BraintreeListener`
+  * Remove `BraintreePaymentResult`
+  * Remove `BraintreePaymentResultListener`
+  * Remove `BrowserSwitchException` constructor
+  * Remove `ConfigurationListener`
+  * Remove `ConfigurationManager`
   * Remove `Configuration#getCardConfiguration()`
   * Remove `Configuration#getGraphQL()`
   * Remove `Configuration#getGooglePayment()`
   * Remove `Configuration#getKount()`
-  * Remove `ConfigurationException` constructor
-  * Remove `ConfigurationManager`
-  * Change `GooglePayCapabilities#isGooglePayEnabled()` parameters
-  * Remove `BrowserSwitchException` constructor
-  * Remove `PaymentMethodNotAvailableException`
-  * Remove `VisaCheckoutNotAvailableException`
-  * Remove `BraintreeErrorListener` 
-  * Remove `BraintreePaymentResultListener`
+  * Remove deprecated 3DS `performVerification` methods
+  * Remove `InstallationIdentifier`
+  * Remove `LocalPaymentResult`
   * Remove `PaymentMethodNonceCreatedListener`
   * Remove `PaymentMethodNonceDeletedListener`
-  * Remove `PaymentMethodNonceUpdatedListener`
+  * Remove `PaymentMethodNoncesUpdatedListener`
+  * Remove `PaymentMethodNotAvailableException`
+  * Remove `PayPalApprovalCallback`
+  * Remove `PayPalApprovalHandler`
+  * Remove `PayPalProductAttributes`
+  * Remove `PayPalTwoFactorAuth`
+  * Remove `PayPalTwoFactorAuthCallback`
+  * Remove `PayPalTwoFactorAuthRequest`
+  * Remove `PayPalTwoFactorAuthResponse`
+  * Remove `PreferredPaymentMethodsListener`
   * Remove `QueuedCallback`
-  * Remove `VisaCheckoutConstants`
-  * Remove `BraintreePaymentResult`
-  * Remove `BraintreeListener`
-  * Remove `BraintreeBrowserSwitchActivity`
+  * Remove `ThreeDSecureLookupListener`
+  * Remove `ThreeDSecurePrepareLookupListener`
+  * Remove `TokenizationParametersListener`
   * Remove `UnionPayListener`
-  * Remove `BraintreeApiError`
-  * Remove `BraintreeApiErrorResponse`
-  * Remove `BraintreeCancelListener`
+  * Remove `VisaCheckoutConstants`
+  * Remove `VisaCheckoutNotAvailableException`
+  * Rename `AmericanExpress` to `AmericanExpressClient`
+  * Rename `Card` to `CardClient`
+  * Rename `GooglePayment` to `GooglePayClient`
+  * Rename `LocalPayment` to `LocalPaymentClient`
+  * Rename `PayPal` to `PayPalClient`
+  * Rename `PaymentMethod` to `PaymentMethodClient`
+  * Rename `PreferredPaymentMethods` to `PreferredPaymentMethodsClient`
+  * Rename `ThreeDSecure` to `ThreeDSecureClient`
+  * Rename `UnionPay` to `UnionPayClient`
+  * Rename `Venmo` to `VenmoClient`
+  * Rename `VisaCheckout` to `VisaCheckoutClient`
+  * Rename `core` module to `shared-utils`
+  * Rename `LocalPaymentResult` to `LocalPaymentNonce`
+  * Rename `braintree` module to `braintree-core`
+  * Rename `GooglePayment` classes to `GooglePay`
+  * Rename `BraintreeRequestCodes.GOOGLE_PAYMENT` to `BraintreeRequestCodes.GOOGLE_PAY`
+  * Make `AnalyticsConfiguration` package-private
   * Make `AnalyticsDatabase` package-private
   * Make `AnalyticsEvent` package-private
-  * Make `AppSwitchNotAvailableException` constructor package-private
-  * Make `BraintreeError` constructors package-private
-  * Make `BraintreeGraphQLHttpClient` package-private
-  * Make `BraintreeHttpClient` package-private
-  * Make `ErrorWithResponse` constructors package-private
-  * Make `GraphQLQueryHelper` package-private
-  * Make `IntegrationType` package-private
-  * Make `PaymentMethodDeleteException` constructor package-private
-  * Make `PreferredPaymentMethodsResult` constructor package-private
-  * Make `StreamHelper` package-private
-  * Make `UUIDHelper` package-private
-  * Make `BraintreeException` package-private
-  * Make `BraintreeResponseListener` package-private
-  * Make `DeviceInspector` package-private
-  * Make `GraphQLConstants` package-private
-  * Make `InvalidArgumentException` package-private
-  * Make `MetadataBuilder` package-private
-  * Make `PostalAddressParser` package-private
   * Make `AppHelper` package-private
+  * Make `AppSwitchNotAvailableException` constructor package-private
   * Make `AuthenticationException` constructor package-private
   * Make `AuthorizationException` package-private
+  * Make `BraintreeApiConfiguration` package-private
+  * Make `BraintreeError` constructors package-private
+  * Make `BraintreeException` package-private
+  * Make `BraintreeGraphQLHttpClient` package-private
+  * Make `BraintreeHttpClient` package-private
   * Make `BraintreeSharedPreferences` package-private
+  * Make `BraintreeResponseListener` package-private
+  * Make `CardConfiguration` package-private
   * Make `ClassHelper` package-private
+  * Make `ConfigurationException` constructor package-private
+  * Make `DeviceInspector` package-private
   * Make `DownForMaintenanceException` constructor package-private
+  * Make `ErrorWithResponse` constructors package-private
+  * Make `GraphQLConfiguration` package-private
+  * Make `GraphQLConstants` package-private
+  * Make `GraphQLQueryHelper` package-private
+  * Make `GooglePaymentConfiguration` package-private
   * Make `HttpClient` package-private
   * Make `HttpResponseCallback` package-private
+  * Make `IntegrationType` package-private
+  * Make `InvalidArgumentException` package-private
   * Make `Json` package-private
+  * Make `KountConfiguration` package-private
   * Make `ManifestValidator` package-private
+  * Make `MetadataBuilder` package-private
+  * Make `PaymentMethodDeleteException` constructor package-private
+  * Make `PayPalConfiguration` package-private
+  * Make `PayPalDataCollector` package-private
+  * Make `PayPalDataCollectorRequest` package-private
+  * Make `PayPalPaymentResource` package-private
+  * Make `PostalAddressParser` package-private
+  * Make `PreferredPaymentMethodsResult` constructor package-private
   * Make `RateLimitException` constructor package-private
+  * Make `SamsungPayConfiguration` package-private
   * Make `ServerException` constructor package-private
   * Make `SignatureVerification` package-private
+  * Make `StreamHelper` package-private
+  * Make `ThreeDSecureV1BrowserSwitchHelper` package-private
   * Make `TLSSocketFactory` package-private
   * Make `UnexpectedException` constructor package-private
+  * Make `UnionPayConfiguration` package-private
   * Make `UnprocessableEntityException` constructor package-private
   * Make `UpgradeRequiredException` constructor package-private
+  * Make `UUIDHelper` package-private
+  * Make `VenmoConfiguration` package-private
+  * Make `VisaCheckoutConfiguration` package-private
+  * Move all classes to `com.braintreepayments.api` package
+  
 
 ## 3.17.0
 

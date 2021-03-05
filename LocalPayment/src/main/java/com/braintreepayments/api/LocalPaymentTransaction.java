@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+/**
+ * Local payment transaction information.
+ */
 public class LocalPaymentTransaction {
 
     private final LocalPaymentRequest request;

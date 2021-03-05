@@ -6,8 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Request codes that Braintree uses when communicating between {@link android.app.Activity}s, and
- * {@link android.app.Fragment}s.
+ * Request codes that Braintree uses when communicating between Android Activities and Fragments.
  */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({

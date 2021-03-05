@@ -12,6 +12,10 @@ import org.json.JSONException;
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY;
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_CONFIGURATION_KEY;
 
+/**
+ * Class to upload analytics events.
+ * This class is used internally by the SDK and should not be used directly.
+ */
 public class AnalyticsUploadWorker extends Worker {
 
     public AnalyticsUploadWorker(@NonNull Context context, @NonNull WorkerParameters params) {

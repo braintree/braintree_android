@@ -10,6 +10,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.util.Locale;
 
+/**
+ * Core Braintree class that handles network requests.
+ */
 public class BraintreeClient {
 
     private final Authorization authorization;
@@ -60,11 +63,15 @@ public class BraintreeClient {
         this.crashReporter.start();
     }
 
+    /**
+     * Retrieve Braintree configuration.
+     * @param callback {@link ConfigurationCallback}
+     */
     public void getConfiguration(ConfigurationCallback callback) {
         configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
-    public void sendAnalyticsEvent(final String eventFragment) {
+    void sendAnalyticsEvent(final String eventFragment) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -76,7 +83,7 @@ public class BraintreeClient {
         });
     }
 
-    public void sendGET(final String url, final HttpResponseCallback responseCallback) {
+    void sendGET(final String url, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -89,7 +96,7 @@ public class BraintreeClient {
         });
     }
 
-    public void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
+    void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -102,15 +109,15 @@ public class BraintreeClient {
         });
     }
 
-    public String getSessionId() {
+    String getSessionId() {
         return sessionId;
     }
 
-    public String getIntegrationType() {
+    String getIntegrationType() {
         return integrationType;
     }
 
-    public void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
+    void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -141,7 +148,7 @@ public class BraintreeClient {
         return null;
     }
 
-    public boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {
+    boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {
         // url used to see if the application is able to open an https url e.g. web browser
         Uri url = Uri.parse("https://braintreepayments.com");
         String returnUrlScheme = getReturnUrlScheme();
@@ -158,11 +165,11 @@ public class BraintreeClient {
         return result;
     }
 
-    public <T> boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class<T> klass) {
+    <T> boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class<T> klass) {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, urlScheme, klass);
     }
 
-    public ActivityInfo getManifestActivityInfo(Class klass) {
+    ActivityInfo getManifestActivityInfo(Class klass) {
         return manifestValidator.getActivityInfo(applicationContext, klass);
     }
 
@@ -175,11 +182,11 @@ public class BraintreeClient {
         }
     }
 
-    private static boolean isAnalyticsEnabled(Configuration configuration) {
+    static boolean isAnalyticsEnabled(Configuration configuration) {
         return configuration != null && configuration.isAnalyticsEnabled();
     }
 
-    public Authorization getAuthorization() {
+    Authorization getAuthorization() {
         return authorization;
     }
 }

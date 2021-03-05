@@ -29,8 +29,8 @@ public class PreferredPaymentMethodsClient {
     /**
      * Fetches information about which payment methods should be given preference in your UI.
      *
-     * @param context Android context
-     * @param callback A callback that is invoked when preferred payment methods have been fetched.
+     * @param context Android Context
+     * @param callback {@link PreferredPaymentMethodsCallback}
      */
     public void fetchPreferredPaymentMethods(final Context context, final PreferredPaymentMethodsCallback callback) {
 

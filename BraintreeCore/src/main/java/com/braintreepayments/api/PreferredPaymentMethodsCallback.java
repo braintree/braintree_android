@@ -1,15 +1,15 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 /**
- * Interface for PreferredPaymentMethods callbacks.
+ * Callback for receiving result of {@link PreferredPaymentMethodsClient#fetchPreferredPaymentMethods(Context, PreferredPaymentMethodsCallback)}.
  * This interface is currently in beta and may change in future releases.
  */
 public interface PreferredPaymentMethodsCallback {
 
     /**
-     * Called when the preferred payment methods result is available.
-     *
-     * @param preferredPaymentMethodsResult Information about which payment methods should be preferred in your UI.
+     * @param preferredPaymentMethodsResult {@link PreferredPaymentMethodsResult}
      */
     void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult);
 }

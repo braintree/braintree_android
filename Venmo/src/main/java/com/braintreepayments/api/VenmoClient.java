@@ -47,7 +47,7 @@ public class VenmoClient {
     }
 
     /**
-     * Launches an {@link Intent} pointing to the Venmo app on the Google Play Store
+     * Launches an Android Intent pointing to the Venmo app on the Google Play Store
      *
      * @param activity used to open the Venmo's Google Play Store
      */
@@ -64,7 +64,7 @@ public class VenmoClient {
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoAuthorizeAccountCallback#onResult(Exception)}
      *
-     * @param activity {@link FragmentActivity}
+     * @param activity Android FragmentActivity
      * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
      * be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our
      * docs on client authorization</a> for more info.
@@ -110,6 +110,12 @@ public class VenmoClient {
         });
     }
 
+    /**
+     * @param context Android Context
+     * @param resultCode a code associated with the Activity result
+     * @param data Android Intent
+     * @param callback {@link VenmoOnActivityResultCallback}
+     */
     public void onActivityResult(final Context context, int resultCode, Intent data, final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
@@ -172,7 +178,8 @@ public class VenmoClient {
 
     /**
      * Check if Venmo app switch is available.
-     * @param context Application context
+     *
+     * @param context Application Context
      * @return true if the Venmo app is installed, false otherwise
      */
     public boolean isVenmoAppSwitchAvailable(Context context) {

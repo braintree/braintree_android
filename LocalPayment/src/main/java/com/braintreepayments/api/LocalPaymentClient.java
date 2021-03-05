@@ -11,6 +11,9 @@ import androidx.fragment.app.FragmentActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Used to integrate with local payments.
+ */
 public class LocalPaymentClient {
 
     private static final String LOCAL_PAYMENT_CANCEL = "local-payment-cancel";
@@ -31,9 +34,8 @@ public class LocalPaymentClient {
 
     /**
      * Prepares the payment flow for a specific type of local payment.
-     *  @param request  {@link LocalPaymentRequest} with the payment details.
-     * @param callback {@link LocalPaymentStartCallback} the callback to which the {@link LocalPaymentTransaction} will be sent
-     *                 with a payment ID for preprocessing and an approval URL. Once ready, use {@link #approveTransaction(FragmentActivity, LocalPaymentTransaction)}
+     * @param request  {@link LocalPaymentRequest} with the payment details.
+     * @param callback {@link LocalPaymentStartCallback}
      */
     public void startPayment(@NonNull final LocalPaymentRequest request, @NonNull final LocalPaymentStartCallback callback) {
         Exception exception = null;
@@ -98,7 +100,7 @@ public class LocalPaymentClient {
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
-     * @param activity    {@link FragmentActivity}
+     * @param activity    Android FragmentActivity
      * @param transaction {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
      *                    and now has an approvalUrl and paymentId.
      */
@@ -124,6 +126,11 @@ public class LocalPaymentClient {
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
+    /**
+     * @param context Android Contex
+     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
+     * @param callback {@link LocalPaymentBrowserSwitchResultCallback}
+     */
     public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, final LocalPaymentBrowserSwitchResultCallback callback) {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
 

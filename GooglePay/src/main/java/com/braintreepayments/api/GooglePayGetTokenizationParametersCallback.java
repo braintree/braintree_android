@@ -5,8 +5,8 @@ import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import java.util.Collection;
 
 /**
- * Interface for receiving {@link PaymentMethodTokenizationParameters} and
- * {@link Collection<Integer>} allowedCardNetworks.
+ * Callback for receiving result of
+ * {@link com.braintreepayments.api.GooglePayClient#tokenize(androidx.fragment.app.FragmentActivity, com.google.android.gms.wallet.PaymentData, com.braintreepayments.api.GooglePayOnActivityResultCallback)}
  */
 public interface GooglePayGetTokenizationParametersCallback {
 

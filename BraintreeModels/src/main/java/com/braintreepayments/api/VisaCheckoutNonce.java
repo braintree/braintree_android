@@ -98,7 +98,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     }
 
     /**
-     * @return The Call ID from the {@link com.visa.checkout.VisaPaymentSummary}.
+     * @return The Call ID from the VisaPaymentSummary.
      */
     public String getCallId() {
         return mCallId;

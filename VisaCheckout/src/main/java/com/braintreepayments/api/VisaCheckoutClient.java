@@ -1,8 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.Intent;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -32,28 +29,27 @@ public class VisaCheckoutClient {
     }
 
     /**
-     * Creates a {@link ProfileBuilder} with the merchant API key, environment, and other properties to be used with
+     * Creates a {@link Profile.ProfileBuilder} with the merchant API key, environment, and other properties to be used with
      * Visa Checkout.
      *
      * In addition to setting the `merchantApiKey` and `environment` the other properties that Braintree will fill in
      * on the ProfileBuilder are:
      * <ul>
      *     <li>
-     *         {@link ProfileBuilder#setCardBrands(String[])} A list of Card brands that your merchant account can
+     *         {@link Profile.ProfileBuilder#setCardBrands(String[])} A list of Card brands that your merchant account can
      *         transact.
      *     </li>
      *     <li>
-     *         {@link ProfileBuilder#setDataLevel(String)} - Required to be {@link DataLevel#FULL} for Braintree to
+     *         {@link Profile.ProfileBuilder#setDataLevel(String)} - Required to be {@link Profile.DataLevel#FULL} for Braintree to
      *     access card details
      *     </li>
      *     <li>
-     *         {@link ProfileBuilder#setExternalClientId(String)} -  Allows the encrypted payload to be processable
+     *         {@link Profile.ProfileBuilder#setExternalClientId(String)} -  Allows the encrypted payload to be processable
      *         by Braintree.
      *     </li>
      * </ul>
      *
-     * @param callback {@link VisaCheckoutCreateProfileBuilderCallback} - listens for the
-     * Braintree flavored {@link ProfileBuilder}.
+     * @param callback {@link VisaCheckoutCreateProfileBuilderCallback}
      */
     public void createProfileBuilder(final VisaCheckoutCreateProfileBuilderCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -96,6 +92,7 @@ public class VisaCheckoutClient {
 
     /**
      * Tokenizes the payment summary of the Visa Checkout flow.
+     *
      * @param visaPaymentSummary {@link VisaPaymentSummary} The Visa payment to tokenize.
      * @param callback {@link VisaCheckoutTokenizeCallback}
      */

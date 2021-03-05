@@ -78,7 +78,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      *
      * @param jsonBody Json-formatted String containing a list of {@link PaymentMethodNonce}s
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
-     * @throws JSONException
+     * @throws JSONException if parsing fails
      */
     public static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
             throws JSONException {
@@ -110,7 +110,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @param json {@link String} representation of a {@link PaymentMethodNonce}.
      * @param type The {@link String} type of the {@link PaymentMethodNonce}.
      * @return {@link PaymentMethodNonce}
-     * @throws JSONException
+     * @throws JSONException if parsing fails
      */
     @Nullable
     public static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
@@ -123,7 +123,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @param json {@link JSONObject} representation of a {@link PaymentMethodNonce}.
      * @param type The {@link String} type of the {@link PaymentMethodNonce}.
      * @return {@link PaymentMethodNonce}
-     * @throws JSONException
+     * @throws JSONException if parsing fails
      */
     @Nullable
     public static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {

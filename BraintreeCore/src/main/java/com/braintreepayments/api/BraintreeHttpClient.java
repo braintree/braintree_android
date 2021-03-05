@@ -52,7 +52,7 @@ class BraintreeHttpClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback The {@link HttpResponseCallback} to receive the response or error.
+     * @param callback {@link HttpResponseCallback}
      */
     void get(String path, Configuration configuration, HttpResponseCallback callback) {
         get(path, configuration, HttpClient.NO_RETRY, callback);
@@ -64,7 +64,7 @@ class BraintreeHttpClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback The {@link HttpResponseCallback} to receive the response or error.
+     * @param callback {@link HttpResponseCallback}
      * @param retryStrategy retry strategy
      */
     void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
@@ -103,12 +103,12 @@ class BraintreeHttpClient {
     }
 
     /**
-     * Make a HTTP POST request to Braintree using the base url, path and authorization provided.
+     * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
      *
      * @param path The path or url to request from the server via HTTP POST
      * @param data The body of the POST request
-     * @param callback The {@link HttpResponseCallback} to receive the response or error.
+     * @param callback {@link HttpResponseCallback}
      * @param configuration configuration for the Braintree Android SDK.
      */
     void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
@@ -149,8 +149,7 @@ class BraintreeHttpClient {
     }
 
     /**
-     * Makes a synchronous HTTP POST request to Braintree using the base url, path, and authorization provided.
-     * @see BraintreeHttpClient#post(String, String, HttpResponseCallback)
+     * Makes a synchronous HTTP POST request to Braintree.
      *
      * @param path the path or url to request from the server via HTTP POST
      * @param data the body of the post request

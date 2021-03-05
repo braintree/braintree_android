@@ -12,6 +12,9 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+/**
+ * DataCollector is used to collect device information to aid in fraud detection and prevention.
+ */
 public class DataCollector {
 
     private static final String DEVICE_SESSION_ID_KEY = "device_session_id";
@@ -36,8 +39,8 @@ public class DataCollector {
     /**
      * Collect device information for fraud identification purposes.
      *
-     * @param context  Android context
-     * @param callback to be called with the device data String to send to Braintree.
+     * @param context  Android Context
+     * @param callback {@link DataCollectorCallback}
      */
     public void collectDeviceData(Context context, DataCollectorCallback callback) {
         collectDeviceData(context, null, callback);
@@ -51,9 +54,9 @@ public class DataCollector {
      * <p>
      * Use the return value on your server, e.g. with `Transaction.sale`.
      *
-     * @param context    Android context
+     * @param context    Android Context
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
-     * @param callback   callback called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
+     * @param callback   {@link DataCollectorCallback}
      */
     public void collectDeviceData(final Context context, final String merchantId, final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -103,8 +106,8 @@ public class DataCollector {
     /**
      * Collect PayPal device information for fraud identification purposes.
      *
-     * @param context  Android context
-     * @param callback callback to be called with the device data String to send to Braintree.
+     * @param context  Android Context
+     * @param callback {@link DataCollectorCallback}
      */
     public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
         final JSONObject deviceData = new JSONObject();
@@ -122,7 +125,7 @@ public class DataCollector {
     /**
      * Collect device information for fraud identification purposes from PayPal only.
      *
-     * @param context A valid {@link Context}
+     * @param context Android Context
      * @return The client metadata id associated with the collected data.
      */
     public String getPayPalClientMetadataId(Context context) {

@@ -31,19 +31,19 @@ public class CardClient {
      * The tokenization result is returned via a {@link CardTokenizeCallback} callback.
      *
      * <p>
-     * On success, the callback's {@link PaymentMethodNonceCallback#success} method will
+     * On success, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will
      * be invoked with a nonce.
      *
      * <p>
-     * If creation fails validation, the callback's {@link PaymentMethodNonceCallback#failure}
+     * If creation fails validation, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)}
      * method will be invoked with an {@link ErrorWithResponse} exception.
      *
      * <p>
-     * If an error not due to validation (server error, network issue, etc.) occurs, the callback's
-     * {@link PaymentMethodNonceCallback#failure} method will be invoked with
+     * If an error not due to validation (server error, network issue, etc.) occurs, the
+     * {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be invoked with
      * an {@link Exception} describing the error.
      *
-     * @param context Android context
+     * @param context Android Context
      * @param cardBuilder {@link CardBuilder}
      * @param callback {@link CardTokenizeCallback}
      */

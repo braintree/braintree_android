@@ -1,7 +1,9 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 /**
- * Error class thrown when a {@link PaymentMethodClient#deletePaymentMethod(BraintreeFragment, PaymentMethodNonce)}
+ * Error class thrown when a {@link PaymentMethodClient#deletePaymentMethod(Context, PaymentMethodNonce, DeletePaymentMethodNonceCallback)}
  * fails to delete a payment method.
  */
 public class PaymentMethodDeleteException extends Exception {

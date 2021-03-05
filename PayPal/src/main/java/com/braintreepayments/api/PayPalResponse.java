@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public class PayPalResponse {
+class PayPalResponse {
 
     private String approvalUrl;
     private String clientMetadataId;

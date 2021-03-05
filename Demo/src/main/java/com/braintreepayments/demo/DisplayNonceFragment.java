@@ -14,7 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple Android Fragment subclass.
  * create an instance of this fragment.
  */
 public class DisplayNonceFragment extends Fragment {

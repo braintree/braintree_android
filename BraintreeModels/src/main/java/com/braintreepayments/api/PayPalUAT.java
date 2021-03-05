@@ -31,7 +31,6 @@ public class PayPalUAT extends Authorization {
      * Create a new {@link PayPalUAT} instance from a PayPal universal access token
      *
      * @param uatString A PayPal UAT from PayPal's oauth service
-     * @return {@link PayPalUAT} instance
      */
     PayPalUAT(String uatString) throws InvalidArgumentException {
         super(uatString);
