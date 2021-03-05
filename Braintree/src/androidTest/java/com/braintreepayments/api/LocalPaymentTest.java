@@ -59,8 +59,6 @@ public class LocalPaymentTest {
             public void onResponse(LocalPaymentRequest localPaymentRequest) {
                 assertNotNull(localPaymentRequest.getApprovalUrl());
                 assertNotNull(localPaymentRequest.getPaymentId());
-                assertTrue(localPaymentRequest.getApprovalUrl().contains("integrationType=standalone"));
-                assertTrue(localPaymentRequest.getApprovalUrl().contains("fundingSource=ideal"));
                 mCountDownLatch.countDown();
             }
         });
