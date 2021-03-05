@@ -59,11 +59,6 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-artifacts {
-    archives javadocsJar
-    archives sourcesJar
-}
-
 signing {
     required {
         !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
@@ -84,6 +79,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
+
+                artifact sourcesJar
+                artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'paypal'
