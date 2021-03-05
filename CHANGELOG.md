@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.17.0
 
 * Add `bic` (Bank Identification Code) to `LocalPaymentRequest`
 
