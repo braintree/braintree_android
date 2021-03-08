@@ -14,8 +14,8 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String TYPE = "VisaCheckoutCard";
-    protected static final String API_RESOURCE_KEY = "visaCheckoutCards";
+    static final String TYPE = "VisaCheckoutCard";
+    static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -40,16 +40,15 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
      * @return {@link VisaCheckoutNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static VisaCheckoutNonce fromJson(String json) throws JSONException {
+    static VisaCheckoutNonce fromJson(String json) throws JSONException {
         VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
         visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
 
         return visaCheckoutNonce;
     }
 
-    // TODO: Make protected when package is flattened
     @Override
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);

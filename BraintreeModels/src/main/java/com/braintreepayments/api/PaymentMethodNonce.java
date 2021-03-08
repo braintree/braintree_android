@@ -36,9 +36,8 @@ public abstract class PaymentMethodNonce implements Parcelable {
         return json.getJSONArray(apiResourceKey).getJSONObject(0);
     }
 
-    // TODO: Make protected when package is flattened
     @CallSuper
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = json.getString(DESCRIPTION_KEY);
         mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);

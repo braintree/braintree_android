@@ -16,12 +16,11 @@ import org.json.JSONObject;
  */
 public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    // TODO: make this package-private once PaymentMethodNonce is moved to flattened com.braintreepayments.api package
-    public static final String TYPE = "PayPalAccount";
-    protected static final String API_RESOURCE_KEY = "paypalAccounts";
-    protected static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
-    protected static final String TOKENIZATION_DATA_KEY = "tokenizationData";
-    protected static final String TOKEN_KEY = "token";
+    static final String TYPE = "PayPalAccount";
+    static final String API_RESOURCE_KEY = "paypalAccounts";
+    static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
+    static final String TOKENIZATION_DATA_KEY = "tokenizationData";
+    static final String TOKEN_KEY = "token";
 
     private static final String CREDIT_FINANCING_KEY = "creditFinancingOffered";
     private static final String DETAILS_KEY = "details";
@@ -53,7 +52,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      * @param jsonString Raw JSON representation of a {@link PayPalAccountNonce}.
      * @return {@link PayPalAccountNonce} for use in payment method selection UIs.
      */
-    public static PayPalAccountNonce fromJson(String jsonString) throws JSONException {
+    static PayPalAccountNonce fromJson(String jsonString) throws JSONException {
         JSONObject jsonObj = new JSONObject(jsonString);
         PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
 
@@ -83,8 +82,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      * @param json {@link JSONObject} that holds properties for {@link PayPalAccountNonce}.
      * @throws JSONException if parsing fails
      */
-    // TODO: Make protected when package is flattened
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);

@@ -69,8 +69,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
      * @param json {@link JSONObject}
      * @throws JSONException when parsing fails.
      */
-    // TODO: Make protected when package is flattened
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
