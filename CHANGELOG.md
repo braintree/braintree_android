@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.0.0-beta1
 
 * Add a `client` for each feature:
   * `AmericanExpressClient`
