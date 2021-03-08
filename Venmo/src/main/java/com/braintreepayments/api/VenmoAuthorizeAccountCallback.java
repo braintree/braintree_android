@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link VenmoClient#authorizeAccount(FragmentActivity, boolean, String, VenmoAuthorizeAccountCallback)}.
+ * {@link VenmoClient#authorizeAccount(FragmentActivity, VenmoRequest, VenmoAuthorizeAccountCallback)}.
  */
 public interface VenmoAuthorizeAccountCallback {
 

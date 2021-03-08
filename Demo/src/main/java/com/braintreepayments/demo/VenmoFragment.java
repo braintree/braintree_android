@@ -76,7 +76,7 @@ public class VenmoFragment extends BaseFragment {
                        @Override
                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                            if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                               venmoClient.authorizeAccount(activity, shouldVault, null, new VenmoAuthorizeAccountCallback() {
+                               venmoClient.authorizeAccount(activity, , shouldVault, new VenmoAuthorizeAccountCallback() {
                                    @Override
                                    public void onResult(Exception error) {
                                        if (error != null) {

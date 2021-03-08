@@ -100,7 +100,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         initializeFeatureClients(initError -> {
-            venmoClient.authorizeAccount(getActivity(), false, null, requestError -> {
+            venmoClient.authorizeAccount(getActivity(), , false, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
                 }
