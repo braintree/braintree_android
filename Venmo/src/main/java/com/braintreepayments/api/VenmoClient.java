@@ -67,7 +67,7 @@ public class VenmoClient {
      * @param request {@link VenmoRequest}
      * @param callback {@link VenmoAuthorizeAccountCallback}
      */
-    public void authorizeAccount(final FragmentActivity activity, final VenmoRequest request, final VenmoAuthorizeAccountCallback callback) {
+    public void tokenizeVenmoAccount(final FragmentActivity activity, final VenmoRequest request, final VenmoAuthorizeAccountCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override

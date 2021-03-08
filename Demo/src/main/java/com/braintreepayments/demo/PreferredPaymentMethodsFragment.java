@@ -104,7 +104,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
             VenmoRequest venmoRequest = new VenmoRequest()
                     .profileID(null)
                     .shouldVault(false);
-            venmoClient.authorizeAccount(getActivity(), venmoRequest, requestError -> {
+            venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
                 }

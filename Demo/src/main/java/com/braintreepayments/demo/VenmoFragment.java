@@ -80,7 +80,7 @@ public class VenmoFragment extends BaseFragment {
                                VenmoRequest venmoRequest = new VenmoRequest()
                                        .profileID(null)
                                        .shouldVault(shouldVault);
-                               venmoClient.authorizeAccount(activity, venmoRequest, new VenmoAuthorizeAccountCallback() {
+                               venmoClient.tokenizeVenmoAccount(activity, venmoRequest, new VenmoAuthorizeAccountCallback() {
                                    @Override
                                    public void onResult(Exception error) {
                                        if (error != null) {
