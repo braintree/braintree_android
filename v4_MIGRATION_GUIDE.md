@@ -617,10 +617,12 @@ public class VenmoActivity extends AppCompatActivity {
     }
   }
 
-  private void authorizeVenmoAccount() {
-    boolean shouldVault = false; 
-    String profileId = "your-profile-id"; 
-    venmoClient.authorizeAccount(this, shouldVault, profileId, (error) -> {
+  private void tokenizeVenmoAccount() {
+    VenmoRequest request = new VenmoRequest()
+            .profileId("your-profile-id")
+            .shouldVault(false);
+          
+    venmoClient.tokenizeVenmoAccount(this, request, (error) -> {
       if (error != null) {
         // handle error
       }

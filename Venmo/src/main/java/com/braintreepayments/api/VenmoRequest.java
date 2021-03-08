@@ -6,7 +6,7 @@ package com.braintreepayments.api;
 public class VenmoRequest {
 
     private boolean shouldVault;
-    private String profileID;
+    private String profileId;
 
     /**
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
@@ -20,15 +20,15 @@ public class VenmoRequest {
     }
 
     /**
-     * @param profileID Optional - The Venmo profile ID to be used during payment authorization.
+     * @param profileId Optional - The Venmo profile ID to be used during payment authorization.
      *                  Customers will see the business name and logo associated with this Venmo
      *                  profile, and it will show up in the Venmo app as a "Connected Merchant".
      *                  Venmo profile IDs can be found in the Braintree Control Panel.
      *                  Leaving this `null` will use the default Venmo profile.
      * @return {@link VenmoRequest}
      */
-    public VenmoRequest profileID(String profileID) {
-        this.profileID = profileID;
+    public VenmoRequest profileId(String profileId) {
+        this.profileId = profileId;
         return this;
     }
 
@@ -42,8 +42,8 @@ public class VenmoRequest {
     /**
      * @return The Venmo profile ID to be used during payment authorization.
      */
-    public String getProfileID() {
-        return profileID;
+    public String getProfileId() {
+        return profileId;
     }
 }
 
