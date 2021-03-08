@@ -79,7 +79,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    public static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
+    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
             throws JSONException {
         JSONArray paymentMethods = new JSONObject(jsonBody).getJSONArray(
                 PAYMENT_METHOD_NONCE_COLLECTION_KEY);
@@ -112,7 +112,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    public static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
+    static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
         return parsePaymentMethodNonces(new JSONObject(json), type);
     }
 
@@ -125,7 +125,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    public static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
+    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
         switch (type) {
             case CardNonce.TYPE:
                 if (json.has(CardNonce.API_RESOURCE_KEY) || json.has(CardNonce.DATA_KEY)) {

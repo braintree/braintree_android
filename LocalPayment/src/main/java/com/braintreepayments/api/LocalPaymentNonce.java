@@ -166,7 +166,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
         return mPayerId;
     }
 
-    public LocalPaymentNonce() {}
+    LocalPaymentNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

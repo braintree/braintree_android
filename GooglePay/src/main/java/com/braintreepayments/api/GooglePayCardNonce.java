@@ -176,7 +176,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
         return "Google Pay";
     }
 
-    public GooglePayCardNonce() {
+    GooglePayCardNonce() {
     }
 
     @Override

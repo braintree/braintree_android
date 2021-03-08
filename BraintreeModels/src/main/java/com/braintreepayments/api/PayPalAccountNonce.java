@@ -215,7 +215,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         return mAuthenticateUrl;
     }
 
-    public PayPalAccountNonce() {}
+    PayPalAccountNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

@@ -115,7 +115,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return mBinData;
     }
 
-    public VisaCheckoutNonce() {}
+    VisaCheckoutNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

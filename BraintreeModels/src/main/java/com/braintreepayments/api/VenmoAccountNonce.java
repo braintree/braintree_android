@@ -19,7 +19,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
 
     private String mUsername;
 
-    public VenmoAccountNonce(String nonce, String description, String username) {
+    VenmoAccountNonce(String nonce, String description, String username) {
         mNonce = nonce;
         mDescription = description;
         mUsername = username;
@@ -65,9 +65,9 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         dest.writeString(mUsername);
     }
 
-    public VenmoAccountNonce() {}
+    VenmoAccountNonce() {}
 
-    protected VenmoAccountNonce(Parcel in) {
+    private VenmoAccountNonce(Parcel in) {
         super(in);
         mUsername = in.readString();
     }

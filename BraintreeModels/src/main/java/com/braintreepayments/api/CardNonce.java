@@ -192,7 +192,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         return mAuthenticationInsight;
     }
 
-    public CardNonce() {}
+    CardNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
