@@ -10,7 +10,7 @@ public class VenmoRequest {
 
     /**
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
-     *                    Vaulting will only occur if a client token with a customer_id is being used.
+     *                    Vaulting will only occur if a client token with a customer ID is being used.
      *                    Defaults to false.
      * @return {@link VenmoRequest}
      */
