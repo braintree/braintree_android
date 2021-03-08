@@ -92,7 +92,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
+    public void tokenizeVenmoAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -131,7 +131,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_whenConfigurationException_forwardsExceptionToCallback() {
+    public void tokenizeVenmoAccount_whenConfigurationException_forwardsExceptionToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configurationError(new Exception("Configuration fetching error"))
                 .build();
@@ -151,7 +151,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_whenVenmoNotEnabled_postsException() {
+    public void tokenizeVenmoAccount_whenVenmoNotEnabled_postsException() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoDisabledConfiguration)
                 .build();
@@ -171,7 +171,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_whenVenmoNotInstalled_postsException() {
+    public void tokenizeVenmoAccount_whenVenmoNotInstalled_postsException() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .build();
@@ -195,7 +195,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_whenProfileIdIsNull_appSwitchesWithMerchantId() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_whenProfileIdIsNull_appSwitchesWithMerchantId() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -222,7 +222,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -281,7 +281,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_sendsAnalyticsEvent() {
+    public void tokenizeVenmoAccount_sendsAnalyticsEvent() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .build();
@@ -297,7 +297,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_sendsAnalyticsEventWhenStarted() {
+    public void tokenizeVenmoAccount_sendsAnalyticsEventWhenStarted() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .build();
@@ -316,7 +316,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_persistsIfVaultTrue() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_persistsIfVaultTrue() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -335,7 +335,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_persistsIfVaultFalse() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_persistsIfVaultFalse() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -354,7 +354,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_persistsFalseIfTokenizationKeyUsed() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_persistsFalseIfTokenizationKeyUsed() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -374,7 +374,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void authorizeAccount_sendsAnalyticsEventWhenUnavailableAndPostException() {
+    public void tokenizeVenmoAccount_sendsAnalyticsEventWhenUnavailableAndPostException() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .build();
