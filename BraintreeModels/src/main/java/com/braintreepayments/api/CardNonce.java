@@ -14,8 +14,8 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String TYPE = "CreditCard";
-    protected static final String API_RESOURCE_KEY = "creditCards";
+    static final String TYPE = "CreditCard";
+    static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
@@ -50,7 +50,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
      * @return {@link CardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static CardNonce fromJson(String json) throws JSONException {
+    static CardNonce fromJson(String json) throws JSONException {
         CardNonce cardNonce = new CardNonce();
         JSONObject jsonObject = new JSONObject(json);
 

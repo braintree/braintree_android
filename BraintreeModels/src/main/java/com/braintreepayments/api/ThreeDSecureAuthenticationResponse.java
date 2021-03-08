@@ -29,7 +29,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      * @return The {@link ThreeDSecureAuthenticationResponse} to use when performing 3D Secure
      * authentication.
      */
-    public static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
+    static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
 
         try {
@@ -142,7 +142,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return mException;
     }
 
-    public ThreeDSecureAuthenticationResponse() {
+    ThreeDSecureAuthenticationResponse() {
     }
 
     @Override

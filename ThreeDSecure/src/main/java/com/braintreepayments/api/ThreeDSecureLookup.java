@@ -38,7 +38,7 @@ public class ThreeDSecureLookup implements Parcelable {
      *         performing 3D Secure authentication.
      * @throws JSONException when parsing fails.
      */
-    public static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
+    static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
         ThreeDSecureLookup lookup = new ThreeDSecureLookup();
