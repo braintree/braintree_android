@@ -50,7 +50,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private String mLookupTransactionStatusReason;
     private String mErrorMessage;
 
-    protected static ThreeDSecureInfo fromJson(JSONObject json) {
+    static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
@@ -86,7 +86,7 @@ public class ThreeDSecureInfo implements Parcelable {
         return threeDSecureInfo;
     }
 
-    protected void setThreeDSecureAuthenticationResponse(ThreeDSecureAuthenticationResponse authResponse) {
+    void setThreeDSecureAuthenticationResponse(ThreeDSecureAuthenticationResponse authResponse) {
         mThreeDSecureAuthenticationResponse = authResponse;
     }
 
