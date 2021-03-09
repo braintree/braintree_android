@@ -33,6 +33,13 @@
   * Make `API_RESOURCE_KEY` in `LocalPaymentNonce` package-private
   * Make `LocalPaymentNonce#fromJson()` methods package-private
   * Make `LocalPaymentNonce` constructor package-private
+  * The `shippingMethod` property on `ThreeDSecureRequest` is now an enum rather than a string. Possible values:
+    * `SAME_DAY`
+    * `EXPEDITED`
+    * `PRIORITY`
+    * `GROUND`
+    * `ELECTRONIC_DELIVERY`
+    * `SHIP_TO_STORE`
 
 ## 4.0.0-beta1
 

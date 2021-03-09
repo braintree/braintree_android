@@ -411,7 +411,6 @@ public class ThreeDSecureRequest implements Parcelable {
                 return "05";
             case ThreeDSecureShippingMethod.SHIP_TO_STORE:
                 return "06";
-            case ThreeDSecureShippingMethod.UNSPECIFIED:
             default:
                 return null;
         }

@@ -262,16 +262,7 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void build_whenShippingMethodIsUnspecified_returnsNull() throws JSONException {
-        JSONObject json = new JSONObject(new ThreeDSecureRequest()
-                .shippingMethod(ThreeDSecureShippingMethod.UNSPECIFIED)
-                .build("df-reference-id"));
-
-        assertFalse(json.getJSONObject("additional_info").has("shipping_method"));
-    }
-
-    @Test
-    public void build_whenShippingMethodIsNotSet_returnsNull() throws JSONException {
+    public void build_whenShippingMethodIsNotSet_doesNotSetShippingMethod() throws JSONException {
         JSONObject json = new JSONObject(new ThreeDSecureRequest()
                 .build("df-reference-id"));
 
