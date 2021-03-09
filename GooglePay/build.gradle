@@ -97,19 +97,19 @@ afterEvaluate {
                 artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
-                artifactId = 'google-payment'
+                artifactId = 'google-pay'
                 version = rootProject.versionName
 
                 pom {
-                    name = 'google-payment'
+                    name = 'google-pay'
                     packaging = 'aar'
                     description = 'Google Pay Module for Braintree\'s Android SDK.'
-                    url = 'https://github.com/braintree/braintree-android-google-payment'
+                    url = 'https://github.com/braintree/braintree_android'
 
                     scm {
-                        url = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
-                        connection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
                     }
 
                     developers {
