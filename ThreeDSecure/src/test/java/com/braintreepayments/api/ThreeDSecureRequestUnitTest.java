@@ -32,7 +32,7 @@ public class ThreeDSecureRequestUnitTest {
     @Test
     public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        assertNotNull(request.getUiCustomization());
+        assertNotNull(request.getV2UiCustomization());
     }
 
     @Test
@@ -106,8 +106,8 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
 
-        assertEquals(expected.getUiCustomization().getLabelCustomization().getHeadingTextColor(),
-                actual.getUiCustomization().getLabelCustomization().getHeadingTextColor());
+        assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
+                actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
 
         assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
                 actual.getV1UiCustomization().getRedirectButtonText());

@@ -282,7 +282,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI customization for 3DS2 challenge views.
      */
-    public UiCustomization getUiCustomization() {
+    public UiCustomization getV2UiCustomization() {
         return mv2UiCustomization;
     }
 
