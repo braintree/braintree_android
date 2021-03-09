@@ -368,7 +368,7 @@ public class ThreeDSecureRequest implements Parcelable {
             base.putOpt("account_type", mAccountType);
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
-            additionalInfo.putOpt("shipping_method", getShippingMethod());
+            additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
             additionalInfo.putOpt("email", getEmail());
 
             if (billing != null) {
@@ -395,5 +395,25 @@ public class ThreeDSecureRequest implements Parcelable {
         }
 
         return base.toString();
+    }
+
+    private String getShippingMethodAsString() {
+        switch (mShippingMethod) {
+            case ThreeDSecureShippingMethod.SAME_DAY:
+                return "01";
+            case ThreeDSecureShippingMethod.EXPEDITED:
+                return "02";
+            case ThreeDSecureShippingMethod.PRIORITY:
+                return "03";
+            case ThreeDSecureShippingMethod.GROUND:
+                return "04";
+            case ThreeDSecureShippingMethod.ELECTRONIC_DELIVERY:
+                return "05";
+            case ThreeDSecureShippingMethod.SHIP_TO_STORE:
+                return "06";
+            case ThreeDSecureShippingMethod.UNSPECIFIED:
+            default:
+                return null;
+        }
     }
 }
