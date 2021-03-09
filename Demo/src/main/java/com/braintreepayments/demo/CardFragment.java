@@ -410,7 +410,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .nonce(cardNonce.getNonce())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation)
-                .uiCustomization(uiCustomization)
+                .v2UiCustomization(uiCustomization)
                 .v1UiCustomization(v1UiCustomization);
     }
 }

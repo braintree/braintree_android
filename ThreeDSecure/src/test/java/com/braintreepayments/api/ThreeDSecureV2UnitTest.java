@@ -62,7 +62,7 @@ public class ThreeDSecureV2UnitTest {
                 .nonce("a-nonce")
                 .amount("1.00")
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .uiCustomization(uiCustomization);
+                .v2UiCustomization(uiCustomization);
     }
 
     @Test

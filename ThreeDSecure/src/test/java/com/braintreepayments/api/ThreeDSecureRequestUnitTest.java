@@ -74,7 +74,7 @@ public class ThreeDSecureRequestUnitTest {
                 .challengeRequested(true)
                 .dataOnlyRequested(true)
                 .exemptionRequested(true)
-                .uiCustomization(uiCustomization)
+                .v2UiCustomization(uiCustomization)
                 .v1UiCustomization(v1UiCustomization)
                 .accountType(ThreeDSecureRequest.CREDIT);
 
