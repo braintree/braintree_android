@@ -33,7 +33,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mAmount;
     private String mMobilePhoneNumber;
     private String mEmail;
-    private String mShippingMethod;
+    private @ThreeDSecureShippingMethod int mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
     private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
     private @ThreeDSecureAccountType String mAccountType;
@@ -96,7 +96,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
-    public ThreeDSecureRequest shippingMethod(String shippingMethod) {
+    public ThreeDSecureRequest shippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
         mShippingMethod = shippingMethod;
         return this;
     }
@@ -227,7 +227,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The shipping method to use for 3D Secure verification
      */
-    public String getShippingMethod() {
+    public @ThreeDSecureShippingMethod int getShippingMethod() {
         return mShippingMethod;
     }
 
@@ -309,7 +309,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mAmount);
         dest.writeString(mMobilePhoneNumber);
         dest.writeString(mEmail);
-        dest.writeString(mShippingMethod);
+        dest.writeInt(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
@@ -326,7 +326,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mAmount = in.readString();
         mMobilePhoneNumber = in.readString();
         mEmail = in.readString();
-        mShippingMethod = in.readString();
+        mShippingMethod = in.readInt();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());

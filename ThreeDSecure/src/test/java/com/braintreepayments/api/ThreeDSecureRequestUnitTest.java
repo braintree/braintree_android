@@ -17,6 +17,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
@@ -66,7 +67,7 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("1.00")
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
-                .shippingMethod("03")
+                .shippingMethod(ThreeDSecureShippingMethod.PRIORITY)
                 .versionRequested(VERSION_2)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
@@ -137,7 +138,7 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("amount")
                 .mobilePhoneNumber("mobile-phone-number")
                 .email("email")
-                .shippingMethod("shipping-method")
+                .shippingMethod(ThreeDSecureShippingMethod.SAME_DAY)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
@@ -168,7 +169,7 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals("mobile-phone-number", additionalInfoJson.get("mobile_phone_number"));
         assertEquals("email", additionalInfoJson.get("email"));
-        assertEquals("shipping-method", additionalInfoJson.get("shipping_method"));
+        assertEquals("01", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
     }
@@ -221,7 +222,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.EXPEDITED)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertEquals("02", json.getString("shipping_method"));
     }
 
     @Test
@@ -230,7 +231,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.PRIORITY)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertEquals("02", json.getString("shipping_method"));
     }
 
     @Test
@@ -239,7 +240,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.GROUND)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertEquals("03", json.getString("shipping_method"));
     }
 
     @Test
@@ -248,7 +249,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.ELECTRONIC_DELIVERY)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertEquals("05", json.getString("shipping_method"));
     }
 
     @Test
@@ -257,7 +258,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.SHIP_TO_STORE)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertEquals("06", json.getString("shipping_method"));
     }
 
     @Test
@@ -266,7 +267,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod(ThreeDSecureShippingMethod.UNSPECIFIED)
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertNull(json.getString("shipping_method"));
     }
 
     @Test
@@ -274,6 +275,6 @@ public class ThreeDSecureRequestUnitTest {
         JSONObject json = new JSONObject(new ThreeDSecureRequest()
                 .build("df-reference-id"));
 
-        assertEquals("01", json.getString("shipping_method"));
+        assertNull(json.getString("shipping_method"));
     }
 }
