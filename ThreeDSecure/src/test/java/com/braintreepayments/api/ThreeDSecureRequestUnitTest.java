@@ -23,10 +23,10 @@ import static org.junit.Assert.assertNull;
 public class ThreeDSecureRequestUnitTest {
 
     @Test
-    public void constructor_noVersionRequested_defaultsToVersion1() {
+    public void constructor_noVersionRequested_defaultsToVersion2() {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
 
-        assertEquals(VERSION_1, request.getVersionRequested());
+        assertEquals(VERSION_2, request.getVersionRequested());
     }
 
     @Test
@@ -193,6 +193,7 @@ public class ThreeDSecureRequestUnitTest {
     @Test
     public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
         JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .versionRequested(VERSION_1)
                 .build("df-reference-id"));
 
         assertFalse(json.has("df_reference_id"));

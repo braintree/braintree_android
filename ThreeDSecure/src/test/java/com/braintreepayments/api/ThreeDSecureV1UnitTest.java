@@ -53,6 +53,7 @@ public class ThreeDSecureV1UnitTest {
                 .buildConfiguration();
 
         mThreeDSecureRequest = new ThreeDSecureRequest()
+                .versionRequested(ThreeDSecureRequest.VERSION_1)
                 .nonce("a-nonce")
                 .amount("amount")
                 .billingAddress(new ThreeDSecurePostalAddress()

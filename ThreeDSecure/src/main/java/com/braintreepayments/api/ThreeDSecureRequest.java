@@ -35,7 +35,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mEmail;
     private @ThreeDSecureShippingMethod int mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
-    private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
+    private @ThreeDSecureVersion String mVersionRequested = VERSION_2;
     private @ThreeDSecureAccountType String mAccountType;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
@@ -115,11 +115,11 @@ public class ThreeDSecureRequest implements Parcelable {
      * Optional. Set the desired ThreeDSecure version.
      * Possible Values defined at {@link ThreeDSecureVersion}.
      * <ul>
-     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible.</li>
-     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired. Default value.</li>
+     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible. Default value.</li>
+     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired.</li>
      * </ul>
      * <p>
-     * Will default to {@link #VERSION_1}.
+     * Will default to {@link #VERSION_2}.
      *
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
