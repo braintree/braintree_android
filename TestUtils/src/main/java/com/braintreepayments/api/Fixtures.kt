@@ -1963,7 +1963,8 @@ object Fixtures {
           "transactionInfo": {
             "totalPriceStatus": "FINAL",
             "totalPrice": "12.24",
-            "currencyCode": "USD"
+            "currencyCode": "USD",
+            "countryCode": "US"
           }
         } 
     """

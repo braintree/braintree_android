@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Add `setCountryCode` to `GooglePayRequest`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private

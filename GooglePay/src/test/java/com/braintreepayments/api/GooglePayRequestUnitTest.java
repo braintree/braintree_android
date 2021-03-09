@@ -206,6 +206,7 @@ public class GooglePayRequestUnitTest {
                 .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
 
         request.transactionInfo(info)
+                .setCountryCode("US")
                 .phoneNumberRequired(true)
                 .emailRequired(true)
                 .shippingAddressRequired(true)
