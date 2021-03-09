@@ -40,6 +40,7 @@
     * `GROUND`
     * `ELECTRONIC_DELIVERY`
     * `SHIP_TO_STORE`
+  * Change default `versionRequested` on `ThreeDSecureRequest` to `ThreeDSecureVersion.VERSION_2`
 
 ## 4.0.0-beta1
 
