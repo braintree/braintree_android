@@ -830,6 +830,42 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
+    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() throws JSONException, InvalidArgumentException {
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .supportedNetworks(new String[]{"elo"})
+                        .enabled(true))
+                .withAnalytics()
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .activityInfo(activityInfo)
+                .build();
+
+        GooglePayRequest googlePayRequest = baseRequest
+                .googleMerchantName("google-merchant-name-override");
+
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
+
+        JSONArray allowedCardNetworks = getPaymentDataRequestJsonSentToGooglePay(activity)
+                .getJSONArray("allowedPaymentMethods")
+                .getJSONObject(0)
+                .getJSONObject("parameters")
+                .getJSONArray("allowedCardNetworks");
+
+        assertEquals(2, allowedCardNetworks.length());
+        assertEquals("ELO", allowedCardNetworks.getString(0));
+        assertEquals("ELO_DEBIT", allowedCardNetworks.getString(1));
+    }
+
+    @Test
     public void requestPayment_whenRequestIsNull_fowardsExceptionToCallback() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()

@@ -217,6 +217,9 @@ public class GooglePayRequest implements Parcelable {
     /**
      * ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for
      * merchants based in European Economic Area (EEA) countries.
+     *
+     * NOTE: to support Elo cards, country code must be set to "BR"
+     *
      * @param countryCode
      * @return {@link GooglePayRequest}
      */

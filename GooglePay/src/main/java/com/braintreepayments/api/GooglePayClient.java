@@ -40,6 +40,7 @@ public class GooglePayClient {
     private static final String MASTERCARD_NETWORK = "mastercard";
     private static final String AMEX_NETWORK = "amex";
     private static final String DISCOVER_NETWORK = "discover";
+    private static final String ELO_NETWORK = "elo";
 
     private static final String CARD_PAYMENT_TYPE = "CARD";
     private static final String PAYPAL_PAYMENT_TYPE = "PAYPAL";
@@ -308,6 +309,9 @@ public class GooglePayClient {
                 case DISCOVER_NETWORK:
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_DISCOVER);
                     break;
+                case ELO_NETWORK:
+                    allowedNetworks.add(BraintreeWalletConstants.CARD_NETWORK_ELO);
+                    break;
                 default:
                     break;
             }
@@ -335,6 +339,10 @@ public class GooglePayClient {
                     break;
                 case WalletConstants.CARD_NETWORK_VISA:
                     cardNetworkStrings.put("VISA");
+                    break;
+                case BraintreeWalletConstants.CARD_NETWORK_ELO:
+                    cardNetworkStrings.put("ELO");
+                    cardNetworkStrings.put("ELO_DEBIT");
                     break;
             }
         }
