@@ -41,6 +41,7 @@
     * `ELECTRONIC_DELIVERY`
     * `SHIP_TO_STORE`
   * Change default `versionRequested` on `ThreeDSecureRequest` to `ThreeDSecureVersion.VERSION_2`
+  * Rename `ThreeDSecureRequest#uiCustomization()` to `ThreeDSecureRequest#v2UiCustomization()`
 
 ## 4.0.0-beta1
 
