@@ -775,12 +775,12 @@ Previously, the `versionRequested` property on `ThreeDSecureRequest` defaulted t
 #### Shipping Method
 
 The `shippingMethod` property on `ThreeDSecureRequest` is now an enum rather than a string. Possible values:
-    * `SAME_DAY`
-    * `EXPEDITED`
-    * `PRIORITY`
-    * `GROUND`
-    * `ELECTRONIC_DELIVERY`
-    * `SHIP_TO_STORE`
+- `SAME_DAY`
+- `EXPEDITED`
+- `PRIORITY`
+- `GROUND`
+- `ELECTRONIC_DELIVERY`
+- `SHIP_TO_STORE`
 
 ## Integrating Multiple Payment Methods
 
