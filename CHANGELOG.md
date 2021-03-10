@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Add `setCountryCode` to `GooglePayRequest`
+* Add Google Pay support for Elo cards. 
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
