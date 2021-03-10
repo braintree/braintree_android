@@ -207,7 +207,7 @@ public class GooglePayClient {
      * Call this method when you've received a successful {@link PaymentData} response in your
      * activity or fragment's {@code onActivityResult} method to get a {@link GooglePayCardNonce}
      * or {@link PayPalAccountNonce}.
-     *  @param paymentData {@link PaymentData} from the Intent in {@code onActivityResult} method.
+     * @param paymentData {@link PaymentData} from the Intent in {@code onActivityResult} method.
      * @param callback {@link GooglePayOnActivityResultCallback}
      */
     void tokenize(PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
