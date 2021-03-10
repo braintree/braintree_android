@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ThreeDSecureV2BaseCustomization implements Parcelable {
+public class ThreeDSecureV2BaseCustomization<T> implements Parcelable {
 
     private String textFontName;
     private String textColor;

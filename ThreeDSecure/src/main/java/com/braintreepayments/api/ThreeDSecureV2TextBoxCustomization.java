@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ThreeDSecureV2TextBoxCustomization implements Parcelable {
+public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization<ThreeDSecureV2TextBoxCustomization> implements Parcelable {
 
     private int borderWidth;
     private String borderColor;

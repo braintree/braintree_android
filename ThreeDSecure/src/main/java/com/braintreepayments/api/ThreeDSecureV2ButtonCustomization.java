@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ThreeDSecureV2ButtonCustomization implements Parcelable {
+public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization<ThreeDSecureV2ButtonCustomization> implements Parcelable {
 
     private String backgroundColor;
     private int cornerRadius;
