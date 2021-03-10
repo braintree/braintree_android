@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
@@ -161,7 +160,7 @@ public class GooglePayClient {
     public void requestPayment(final FragmentActivity activity, final GooglePayRequest request, final GooglePayRequestPaymentCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
-        if (!validateManifest(activity)) {
+        if (!validateManifest()) {
             callback.onResult(false, new BraintreeException("GooglePayActivity was not found in the Android " +
                     "manifest, or did not have a theme of R.style.bt_transparent_activity"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -189,7 +188,7 @@ public class GooglePayClient {
                     return;
                 }
 
-                setGooglePayRequestDefaults(activity, configuration, request);
+                setGooglePayRequestDefaults(configuration, request);
 
                 braintreeClient.sendAnalyticsEvent("google-payment.started");
 
@@ -406,7 +405,7 @@ public class GooglePayClient {
 
     }
 
-    private JSONObject buildCardTokenizationSpecification(FragmentActivity activity, Configuration configuration) {
+    private JSONObject buildCardTokenizationSpecification(Configuration configuration) {
         JSONObject cardJson = new JSONObject();
         JSONObject parameters = new JSONObject();
         String googlePayVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
@@ -445,7 +444,7 @@ public class GooglePayClient {
         return cardJson;
     }
 
-    private JSONObject buildPayPalTokenizationSpecification(FragmentActivity activity, Configuration configuration) {
+    private JSONObject buildPayPalTokenizationSpecification(Configuration configuration) {
         JSONObject json = new JSONObject();
         String googlePayVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
 
@@ -469,7 +468,7 @@ public class GooglePayClient {
         return json;
     }
 
-    private void setGooglePayRequestDefaults(FragmentActivity activity, Configuration configuration,
+    private void setGooglePayRequestDefaults(Configuration configuration,
                                              GooglePayRequest request) {
         if (request.isEmailRequired() == null) {
             request.emailRequired(false);
@@ -503,7 +502,7 @@ public class GooglePayClient {
 
         if (request.getTokenizationSpecificationForType(CARD_PAYMENT_TYPE) == null) {
             request.setTokenizationSpecificationForType("CARD",
-                    buildCardTokenizationSpecification(activity, configuration));
+                    buildCardTokenizationSpecification(configuration));
         }
 
         boolean googlePayCanProcessPayPal = request.isPayPalEnabled() &&
@@ -518,14 +517,14 @@ public class GooglePayClient {
 
             if (request.getTokenizationSpecificationForType(PAYPAL_PAYMENT_TYPE) == null) {
                 request.setTokenizationSpecificationForType("PAYPAL",
-                        buildPayPalTokenizationSpecification(activity, configuration));
+                        buildPayPalTokenizationSpecification(configuration));
             }
         }
 
         request.environment(configuration.getGooglePayEnvironment());
     }
 
-    private boolean validateManifest(Context context) {
+    private boolean validateManifest() {
         ActivityInfo activityInfo = braintreeClient.getManifestActivityInfo(GooglePayActivity.class);
         return activityInfo != null && activityInfo.getThemeResource() == R.style.bt_transparent_activity;
     }
