@@ -738,7 +738,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
         .email("test@email.com")
         .billingAddress(billingAddress)
         .nonce(cardNonce.getNonce())
-        .versionRequested(ThreeDSecureRequest.VERSION_2)
+        .shippingMethod(ThreeDSecureShippingMethod.GROUND) 
         .additionalInformation(additionalInformation);
 
     threeDSecureClient.performVerification(this, threeDSecureRequest, this::handleThreeDSecureLookup);
@@ -763,6 +763,24 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
 }
 ```
+
+#### 3DS2 UI Customization
+
+On `ThreeDSecureRequest` the `uiCustomization` property was replaced with `v2UiCustomization`.
+
+#### Default 3DS Version
+
+Previously, the `versionRequested` property on `ThreeDSecureRequest` defaulted to `VERSION_1`. It now defaults to `VERSION_2`.
+
+#### Shipping Method
+
+The `shippingMethod` property on `ThreeDSecureRequest` is now an enum rather than a string. Possible values:
+- `SAME_DAY`
+- `EXPEDITED`
+- `PRIORITY`
+- `GROUND`
+- `ELECTRONIC_DELIVERY`
+- `SHIP_TO_STORE`
 
 ## Integrating Multiple Payment Methods
 

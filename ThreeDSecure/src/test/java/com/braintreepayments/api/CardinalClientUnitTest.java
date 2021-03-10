@@ -69,7 +69,7 @@ public class CardinalClientUnitTest {
         assertEquals(8000, parameters.getRequestTimeout());
         assertFalse(parameters.isEnableQuickAuth());
         assertTrue(parameters.isEnableDFSync());
-        assertEquals(request.getUiCustomization(), parameters.getUICustomization());
+        assertEquals(request.getV2UiCustomization(), parameters.getUICustomization());
     }
 
     @Test

@@ -17,21 +17,22 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
 
     @Test
-    public void constructor_noVersionRequested_defaultsToVersion1() {
+    public void constructor_noVersionRequested_defaultsToVersion2() {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
 
-        assertEquals(VERSION_1, request.getVersionRequested());
+        assertEquals(VERSION_2, request.getVersionRequested());
     }
 
     @Test
     public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        assertNotNull(request.getUiCustomization());
+        assertNotNull(request.getV2UiCustomization());
     }
 
     @Test
@@ -66,14 +67,14 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("1.00")
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
-                .shippingMethod("03")
+                .shippingMethod(ThreeDSecureShippingMethod.PRIORITY)
                 .versionRequested(VERSION_2)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
                 .dataOnlyRequested(true)
                 .exemptionRequested(true)
-                .uiCustomization(uiCustomization)
+                .v2UiCustomization(uiCustomization)
                 .v1UiCustomization(v1UiCustomization)
                 .accountType(ThreeDSecureRequest.CREDIT);
 
@@ -105,8 +106,8 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
 
-        assertEquals(expected.getUiCustomization().getLabelCustomization().getHeadingTextColor(),
-                actual.getUiCustomization().getLabelCustomization().getHeadingTextColor());
+        assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
+                actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
 
         assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
                 actual.getV1UiCustomization().getRedirectButtonText());
@@ -137,7 +138,7 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("amount")
                 .mobilePhoneNumber("mobile-phone-number")
                 .email("email")
-                .shippingMethod("shipping-method")
+                .shippingMethod(ThreeDSecureShippingMethod.SAME_DAY)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
@@ -168,7 +169,7 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals("mobile-phone-number", additionalInfoJson.get("mobile_phone_number"));
         assertEquals("email", additionalInfoJson.get("email"));
-        assertEquals("shipping-method", additionalInfoJson.get("shipping_method"));
+        assertEquals("01", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
     }
@@ -192,6 +193,7 @@ public class ThreeDSecureRequestUnitTest {
     @Test
     public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
         JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .versionRequested(VERSION_1)
                 .build("df-reference-id"));
 
         assertFalse(json.has("df_reference_id"));
@@ -204,5 +206,67 @@ public class ThreeDSecureRequestUnitTest {
                 .build("df-reference-id"));
 
         assertEquals("df-reference-id", json.getString("df_reference_id"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsSameDay_returns01() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.SAME_DAY)
+                .build("df-reference-id"));
+
+        assertEquals("01", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsExpedited_returns02() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.EXPEDITED)
+                .build("df-reference-id"));
+
+        assertEquals("02", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsPriority_returns03() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.PRIORITY)
+                .build("df-reference-id"));
+
+        assertEquals("03", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsGround_returns04() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.GROUND)
+                .build("df-reference-id"));
+
+        assertEquals("04", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsElectronicDelivery_returns05() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.ELECTRONIC_DELIVERY)
+                .build("df-reference-id"));
+
+        assertEquals("05", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsShipToStore_returns06() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .shippingMethod(ThreeDSecureShippingMethod.SHIP_TO_STORE)
+                .build("df-reference-id"));
+
+        assertEquals("06", json.getJSONObject("additional_info").getString("shipping_method"));
+    }
+
+    @Test
+    public void build_whenShippingMethodIsNotSet_doesNotSetShippingMethod() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .build("df-reference-id"));
+
+        assertFalse(json.getJSONObject("additional_info").has("shipping_method"));
     }
 }

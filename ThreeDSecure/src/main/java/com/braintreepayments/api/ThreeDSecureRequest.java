@@ -33,15 +33,15 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mAmount;
     private String mMobilePhoneNumber;
     private String mEmail;
-    private String mShippingMethod;
+    private @ThreeDSecureShippingMethod int mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
-    private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
+    private @ThreeDSecureVersion String mVersionRequested = VERSION_2;
     private @ThreeDSecureAccountType String mAccountType;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
     private boolean mDataOnlyRequested = false;
     private boolean mExemptionRequested = false;
-    private UiCustomization mUiCustomization;
+    private UiCustomization mV2UiCustomization;
     private ThreeDSecureV1UiCustomization mV1UiCustomization;
 
     /**
@@ -96,7 +96,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
-    public ThreeDSecureRequest shippingMethod(String shippingMethod) {
+    public ThreeDSecureRequest shippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
         mShippingMethod = shippingMethod;
         return this;
     }
@@ -115,11 +115,11 @@ public class ThreeDSecureRequest implements Parcelable {
      * Optional. Set the desired ThreeDSecure version.
      * Possible Values defined at {@link ThreeDSecureVersion}.
      * <ul>
-     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible.</li>
-     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired. Default value.</li>
+     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible. Default value.</li>
+     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired.</li>
      * </ul>
      * <p>
-     * Will default to {@link #VERSION_1}.
+     * Will default to {@link #VERSION_2}.
      *
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
@@ -179,10 +179,10 @@ public class ThreeDSecureRequest implements Parcelable {
      * Optional UI Customization for the 3DS2 challenge views.
      * See <a href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization documentation</a>.
      *
-     * @param uiCustomization specifies how 3DS2 challenge views should be customized.
+     * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
-    public ThreeDSecureRequest uiCustomization(UiCustomization uiCustomization) {
-        mUiCustomization = uiCustomization;
+    public ThreeDSecureRequest v2UiCustomization(UiCustomization v2UiCustomization) {
+        mV2UiCustomization = v2UiCustomization;
         return this;
     }
 
@@ -227,7 +227,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The shipping method to use for 3D Secure verification
      */
-    public String getShippingMethod() {
+    public @ThreeDSecureShippingMethod int getShippingMethod() {
         return mShippingMethod;
     }
 
@@ -282,8 +282,8 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI customization for 3DS2 challenge views.
      */
-    public UiCustomization getUiCustomization() {
-        return mUiCustomization;
+    public UiCustomization getV2UiCustomization() {
+        return mV2UiCustomization;
     }
 
     /**
@@ -295,7 +295,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     public ThreeDSecureRequest() {
         // NOTE: this is a temporary fix for a null-pointer bug introduced by Cardinal 2.2.3-2
-        mUiCustomization = new UiCustomization();
+        mV2UiCustomization = new UiCustomization();
     }
 
     @Override
@@ -309,14 +309,14 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mAmount);
         dest.writeString(mMobilePhoneNumber);
         dest.writeString(mEmail);
-        dest.writeString(mShippingMethod);
+        dest.writeInt(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
         dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
         dest.writeByte(mDataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
-        dest.writeSerializable(mUiCustomization);
+        dest.writeSerializable(mV2UiCustomization);
         dest.writeParcelable(mV1UiCustomization, flags);
         dest.writeString(mAccountType);
     }
@@ -326,14 +326,14 @@ public class ThreeDSecureRequest implements Parcelable {
         mAmount = in.readString();
         mMobilePhoneNumber = in.readString();
         mEmail = in.readString();
-        mShippingMethod = in.readString();
+        mShippingMethod = in.readInt();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         mChallengeRequested = in.readByte() > 0;
         mDataOnlyRequested = in.readByte() > 0;
         mExemptionRequested = in.readByte() > 0;
-        mUiCustomization = (UiCustomization) in.readSerializable();
+        mV2UiCustomization = (UiCustomization) in.readSerializable();
         mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         mAccountType = in.readString();
     }
@@ -368,7 +368,7 @@ public class ThreeDSecureRequest implements Parcelable {
             base.putOpt("account_type", mAccountType);
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
-            additionalInfo.putOpt("shipping_method", getShippingMethod());
+            additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
             additionalInfo.putOpt("email", getEmail());
 
             if (billing != null) {
@@ -395,5 +395,24 @@ public class ThreeDSecureRequest implements Parcelable {
         }
 
         return base.toString();
+    }
+
+    private String getShippingMethodAsString() {
+        switch (mShippingMethod) {
+            case ThreeDSecureShippingMethod.SAME_DAY:
+                return "01";
+            case ThreeDSecureShippingMethod.EXPEDITED:
+                return "02";
+            case ThreeDSecureShippingMethod.PRIORITY:
+                return "03";
+            case ThreeDSecureShippingMethod.GROUND:
+                return "04";
+            case ThreeDSecureShippingMethod.ELECTRONIC_DELIVERY:
+                return "05";
+            case ThreeDSecureShippingMethod.SHIP_TO_STORE:
+                return "06";
+            default:
+                return null;
+        }
     }
 }
