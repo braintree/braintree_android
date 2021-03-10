@@ -1,5 +1,39 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Breaking Changes
+  * Make `AmericanExpressRewardsBalance#fromJson()` package-private
+  * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
+  * Make `CardNonce#fromJson()` methods package-private
+  * Make `CardNonce` constructor package-private
+  * Make `TYPE`, `API_RESOURCE_KEY`, `PAYMENT_METHOD_DATA_KEY`, `TOKENIZATION_DATA_KEY` and `TOKEN_KEY` in `PayPalAccountNonce` package-private
+  * Make `PayPalAccountNonce#fromJson()` methods package-private 
+  * Make `PayPalAccountNonce` constructor package-private
+  * Make `DATA_KEY` and `TOKEN_KEY` in `PaymentMethodNonce` package-private
+  * Make `PaymentMethodNonce#fromJson()` package-private
+  * Make `PaymentMethodNonce#parsePayentMethodNonces()` methods package-private
+  * Make `PaymentMethodNonces` constructor package-private
+  * Make `ThreeDSecureAuthenticationResponse#fromJson()` package-private
+  * Make `ThreeDSecureAuthenticationResponse` constructor package-private
+  * Make `ThreeDSecureInfo#fromJson()` package-private
+  * Make `ThreeDSecureInfo#setThreeDSecureAuthenticationResponse()` package-private
+  * Make `ThreeDSecureLookup#fromJson()` package-private
+  * Make `TYPE` and `API_RESOURCE_KEY` in `VenmoAccountNonce` package-private
+  * Make `VenmoAccountNonce#fromJson()` methods package-private
+  * Make `VenmoAccountNonce` constructor package-private
+  * Make `VenmoAccountNonce` parcelable constructor private
+  * Make `TYPE` and `API_RESOURCE_KEY` in `VisaCheckoutNonce` package-private
+  * Make `VisaCheckoutNonce#fromJson()` methods package-private
+  * Make `VisaCheckoutNonce` constructor package-private
+  * Make `API_RESOURCE_KEY` in `GooglePayCardNonce` package-private
+  * Make `GooglePayCardNonce#fromJson()` methods package-private
+  * Make `GooglePayCardNonce#postalAddressFromJson()` package-private
+  * Make `GooglePayCardNonce` constructor package-private
+  * Make `API_RESOURCE_KEY` in `LocalPaymentNonce` package-private
+  * Make `LocalPaymentNonce#fromJson()` methods package-private
+  * Make `LocalPaymentNonce` constructor package-private
+
 ## 4.0.0-beta1
 
 * Add a `client` for each feature:
@@ -177,7 +211,6 @@
   * Make `VenmoConfiguration` package-private
   * Make `VisaCheckoutConfiguration` package-private
   * Move all classes to `com.braintreepayments.api` package
-  
 
 ## 3.17.0
 

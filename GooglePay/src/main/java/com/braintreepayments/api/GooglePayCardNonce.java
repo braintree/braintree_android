@@ -18,7 +18,7 @@ import static java.lang.Boolean.FALSE;
  */
 public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String API_RESOURCE_KEY = "androidPayCards";
+    static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
@@ -41,14 +41,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
      * @return {@link GooglePayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static GooglePayCardNonce fromJson(String json) throws JSONException {
+    static GooglePayCardNonce fromJson(String json) throws JSONException {
         GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce();
         googlePayCardNonce.fromJson(new JSONObject(json));
 
         return googlePayCardNonce;
     }
 
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
 
         JSONObject billingAddressJson = new JSONObject();
         JSONObject shippingAddressJson = new JSONObject();
@@ -85,7 +85,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
         mIsNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
     }
 
-    public static PostalAddress postalAddressFromJson(JSONObject json) {
+    static PostalAddress postalAddressFromJson(JSONObject json) {
         PostalAddress address = new PostalAddress();
 
         address
@@ -176,7 +176,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
         return "Google Pay";
     }
 
-    public GooglePayCardNonce() {
+    GooglePayCardNonce() {
     }
 
     @Override

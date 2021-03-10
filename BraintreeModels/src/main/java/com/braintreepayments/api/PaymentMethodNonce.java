@@ -25,20 +25,19 @@ public abstract class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
 
-    protected static final String DATA_KEY = "data";
-    protected static final String TOKEN_KEY = "token";
+    static final String DATA_KEY = "data";
+    static final String TOKEN_KEY = "token";
 
     protected String mNonce;
     protected String mDescription;
     protected boolean mDefault;
 
-    protected static JSONObject getJsonObjectForType(String apiResourceKey, JSONObject json) throws JSONException {
+    static JSONObject getJsonObjectForType(String apiResourceKey, JSONObject json) throws JSONException {
         return json.getJSONArray(apiResourceKey).getJSONObject(0);
     }
 
-    // TODO: Make protected when package is flattened
     @CallSuper
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = json.getString(DESCRIPTION_KEY);
         mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
@@ -80,7 +79,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    public static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
+    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
             throws JSONException {
         JSONArray paymentMethods = new JSONObject(jsonBody).getJSONArray(
                 PAYMENT_METHOD_NONCE_COLLECTION_KEY);
@@ -113,7 +112,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    public static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
+    static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
         return parsePaymentMethodNonces(new JSONObject(json), type);
     }
 
@@ -126,7 +125,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    public static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
+    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
         switch (type) {
             case CardNonce.TYPE:
                 if (json.has(CardNonce.API_RESOURCE_KEY) || json.has(CardNonce.DATA_KEY)) {
@@ -165,7 +164,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
         }
     }
 
-    public PaymentMethodNonce() {}
+    PaymentMethodNonce() {}
 
     @Override
     public int describeContents() {

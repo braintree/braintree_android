@@ -13,7 +13,7 @@ import org.json.JSONObject;
  */
 public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String API_RESOURCE_KEY = "paypalAccounts";
+    static final String API_RESOURCE_KEY = "paypalAccounts";
 
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
@@ -44,7 +44,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
      * @param json Raw JSON representation of a {@link LocalPaymentNonce}.
      * @return {@link LocalPaymentNonce} for use in payment method selection UIs.
      */
-    public static LocalPaymentNonce fromJson(String json) throws JSONException {
+    static LocalPaymentNonce fromJson(String json) throws JSONException {
         LocalPaymentNonce localPaymentNonce = new LocalPaymentNonce();
         localPaymentNonce.fromJson(LocalPaymentNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
 
@@ -57,8 +57,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
      * @param json {@link JSONObject} that holds properties for {@link LocalPaymentNonce}.
      * @throws JSONException if object could not be constructed from JSON.
      */
-    // TODO: Make protected when package is flattened
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
@@ -167,7 +166,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
         return mPayerId;
     }
 
-    public LocalPaymentNonce() {}
+    LocalPaymentNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

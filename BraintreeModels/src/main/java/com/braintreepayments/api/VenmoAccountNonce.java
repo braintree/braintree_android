@@ -12,15 +12,14 @@ import org.json.JSONObject;
  */
 public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    // TODO: Make package-private after PaymentMethodNonce is moved to com.braintreepayments.api
-    public static final String TYPE = "VenmoAccount";
-    protected static final String API_RESOURCE_KEY = "venmoAccounts";
+    static final String TYPE = "VenmoAccount";
+    static final String API_RESOURCE_KEY = "venmoAccounts";
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";
 
     private String mUsername;
 
-    public VenmoAccountNonce(String nonce, String description, String username) {
+    VenmoAccountNonce(String nonce, String description, String username) {
         mNonce = nonce;
         mDescription = description;
         mUsername = username;
@@ -33,15 +32,14 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
      * @return {@link VenmoAccountNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static VenmoAccountNonce fromJson(String json) throws JSONException {
+    static VenmoAccountNonce fromJson(String json) throws JSONException {
         VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
         venmoAccountNonce.fromJson(VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
 
         return venmoAccountNonce;
     }
 
-    // TODO: Make protected when package is flattened
-    public void fromJson(JSONObject json) throws JSONException {
+    void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
@@ -67,9 +65,9 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         dest.writeString(mUsername);
     }
 
-    public VenmoAccountNonce() {}
+    VenmoAccountNonce() {}
 
-    protected VenmoAccountNonce(Parcel in) {
+    private VenmoAccountNonce(Parcel in) {
         super(in);
         mUsername = in.readString();
     }

@@ -38,7 +38,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      * @return The {@link AmericanExpressRewardsBalance} with rewards balance data.
      * @throws JSONException when parsing fails.
      */
-    public static AmericanExpressRewardsBalance fromJson(String jsonString) throws JSONException {
+    static AmericanExpressRewardsBalance fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
         AmericanExpressRewardsBalance rewardsBalance = new AmericanExpressRewardsBalance();
