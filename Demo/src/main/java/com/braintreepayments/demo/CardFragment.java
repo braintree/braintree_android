@@ -31,6 +31,8 @@ import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
+import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
+import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
 import com.braintreepayments.api.UnionPayCardBuilder;
 import com.braintreepayments.api.UnionPayClient;
@@ -389,15 +391,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");
 
-        ToolbarCustomization toolbarCustomization = new ToolbarCustomization();
-        toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
-        toolbarCustomization.setBackgroundColor("#FF5A5F");
-        toolbarCustomization.setButtonText("Close");
-        toolbarCustomization.setTextColor("#222222");
-        toolbarCustomization.setTextFontSize(18);
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization()
+                .headerText("Braintree 3DS Checkout")
+                .backgroundColor("#FF5A5F")
+                .buttonText("Close");
+//                .textColor("#222222")
+//                .fontSize(18);
 
-        UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setToolbarCustomization(toolbarCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
+                .toolbarCustomization(toolbarCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
                 .redirectButtonText("Return to Demo App")
@@ -410,7 +412,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .nonce(cardNonce.getNonce())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation)
-                .v2UiCustomization(uiCustomization)
+                .v2UiCustomization(v2UiCustomization)
                 .v1UiCustomization(v1UiCustomization);
     }
 }

@@ -1,13 +1,20 @@
 package com.braintreepayments.api;
 
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.IntDef;
 
+import com.cardinalcommerce.shared.models.enums.ButtonType;
+import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
+import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class ThreeDSecureV2UiCustomization {
+public class ThreeDSecureV2UiCustomization implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({VERIFY, CONTINUE, NEXT, CANCEL, RESEND})
@@ -22,15 +29,32 @@ public class ThreeDSecureV2UiCustomization {
     private ThreeDSecureV2LabelCustomization labelCustomization;
     private ThreeDSecureV2TextBoxCustomization textBoxCustomization;
     private ThreeDSecureV2ToolbarCustomization toolbarCustomization;
+    private @ThreeDSecureV2ButtonType int buttonType;
     private UiCustomization uiCustomization = new UiCustomization();
 
-    public ThreeDSecureV2UiCustomization buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization) {
+    public ThreeDSecureV2UiCustomization() {}
+
+    public ThreeDSecureV2UiCustomization buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
+        this.buttonType = buttonType;
+
+        ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
+        cardinalButtonCustomization.setBackgroundColor(buttonCustomization.getBackgroundColor());
+        cardinalButtonCustomization.setCornerRadius(buttonCustomization.getCornerRadius());
+        uiCustomization.setButtonCustomization(cardinalButtonCustomization, getCardinalButtonType(buttonType));
+
         return this;
     }
 
     public ThreeDSecureV2UiCustomization labelCustomization(ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
+
+        LabelCustomization cardinalLabelCustomization = new LabelCustomization();
+        cardinalLabelCustomization.setHeadingTextColor(labelCustomization.getHeadingTextColor());
+        cardinalLabelCustomization.setHeadingTextFontName(labelCustomization.getHeadingTextFontName());
+        cardinalLabelCustomization.setHeadingTextFontSize(labelCustomization.getHeadingTextFontSize());
+        uiCustomization.setLabelCustomization(cardinalLabelCustomization);
+
         return this;
     }
 
@@ -59,4 +83,59 @@ public class ThreeDSecureV2UiCustomization {
     public ThreeDSecureV2ToolbarCustomization getToolbarCustomization() {
         return toolbarCustomization;
     }
+
+    UiCustomization getUiCustomization() {
+        return uiCustomization;
+    }
+
+    private ButtonType getCardinalButtonType(@ThreeDSecureV2ButtonType int buttonType) {
+        switch (buttonType) {
+            case VERIFY:
+                return ButtonType.VERIFY;
+            case CONTINUE:
+                return ButtonType.CONTINUE;
+            case NEXT:
+                return ButtonType.NEXT;
+            case CANCEL:
+                return ButtonType.CANCEL;
+            case RESEND:
+                return ButtonType.RESEND;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(buttonCustomization, i);
+        parcel.writeParcelable(labelCustomization, i);
+        parcel.writeParcelable(textBoxCustomization, i);
+        parcel.writeParcelable(toolbarCustomization, i);
+        parcel.writeInt(buttonType);
+    }
+
+    private ThreeDSecureV2UiCustomization(Parcel in) {
+        buttonCustomization = in.readParcelable(ThreeDSecureV2ButtonCustomization.class.getClassLoader());
+        labelCustomization = in.readParcelable(ThreeDSecureV2LabelCustomization.class.getClassLoader());
+        textBoxCustomization = in.readParcelable(ThreeDSecureV2TextBoxCustomization.class.getClassLoader());
+        toolbarCustomization = in.readParcelable(ThreeDSecureV2ToolbarCustomization.class.getClassLoader());
+        buttonType = in.readInt();
+    }
+
+    public static final Creator<ThreeDSecureV2UiCustomization> CREATOR = new Creator<ThreeDSecureV2UiCustomization>() {
+        @Override
+        public ThreeDSecureV2UiCustomization createFromParcel(Parcel in) {
+            return new ThreeDSecureV2UiCustomization(in);
+        }
+
+        @Override
+        public ThreeDSecureV2UiCustomization[] newArray(int size) {
+            return new ThreeDSecureV2UiCustomization[size];
+        }
+    };
 }

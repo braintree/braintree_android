@@ -1,10 +1,15 @@
 package com.braintreepayments.api;
 
-public class ThreeDSecureV2ToolbarCustomization {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ThreeDSecureV2ToolbarCustomization implements Parcelable {
 
     private String backgroundColor;
     private String headerText;
     private String buttonText;
+
+    public ThreeDSecureV2ToolbarCustomization() {}
 
     public ThreeDSecureV2ToolbarCustomization backgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
@@ -32,4 +37,34 @@ public class ThreeDSecureV2ToolbarCustomization {
     public String getButtonText() {
         return buttonText;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(backgroundColor);
+        parcel.writeString(headerText);
+        parcel.writeString(buttonText);
+    }
+
+    private ThreeDSecureV2ToolbarCustomization(Parcel in) {
+        backgroundColor = in.readString();
+        headerText = in.readString();
+        buttonText = in.readString();
+    }
+
+    public static final Creator<ThreeDSecureV2ToolbarCustomization> CREATOR = new Creator<ThreeDSecureV2ToolbarCustomization>() {
+        @Override
+        public ThreeDSecureV2ToolbarCustomization createFromParcel(Parcel in) {
+            return new ThreeDSecureV2ToolbarCustomization(in);
+        }
+
+        @Override
+        public ThreeDSecureV2ToolbarCustomization[] newArray(int size) {
+            return new ThreeDSecureV2ToolbarCustomization[size];
+        }
+    };
 }

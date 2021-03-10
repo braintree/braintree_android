@@ -55,7 +55,7 @@ public class ThreeDSecureV2UnitTest {
         TextBoxCustomization textBoxCustomization = new TextBoxCustomization();
         textBoxCustomization.setBorderWidth(12);
 
-        UiCustomization uiCustomization = new UiCustomization();
+        ThreeDSecureV2UiCustomization uiCustomization = new UiCustomization();
         uiCustomization.setTextBoxCustomization(textBoxCustomization);
 
         mBasicRequest = new ThreeDSecureRequest()

@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.StringDef;
 
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,7 +39,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean mChallengeRequested = false;
     private boolean mDataOnlyRequested = false;
     private boolean mExemptionRequested = false;
-    private UiCustomization mV2UiCustomization;
+    private ThreeDSecureV2UiCustomization mV2UiCustomization;
     private ThreeDSecureV1UiCustomization mV1UiCustomization;
 
     /**
@@ -181,7 +179,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
-    public ThreeDSecureRequest v2UiCustomization(UiCustomization v2UiCustomization) {
+    public ThreeDSecureRequest v2UiCustomization(ThreeDSecureV2UiCustomization v2UiCustomization) {
         mV2UiCustomization = v2UiCustomization;
         return this;
     }
@@ -282,7 +280,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI customization for 3DS2 challenge views.
      */
-    public UiCustomization getV2UiCustomization() {
+    public ThreeDSecureV2UiCustomization getV2UiCustomization() {
         return mV2UiCustomization;
     }
 
@@ -295,7 +293,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     public ThreeDSecureRequest() {
         // NOTE: this is a temporary fix for a null-pointer bug introduced by Cardinal 2.2.3-2
-        mV2UiCustomization = new UiCustomization();
+//        mV2UiCustomization = new UiCustomization();
     }
 
     @Override
@@ -316,7 +314,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
         dest.writeByte(mDataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
-        dest.writeSerializable(mV2UiCustomization);
+        dest.writeParcelable(mV2UiCustomization, flags);
         dest.writeParcelable(mV1UiCustomization, flags);
         dest.writeString(mAccountType);
     }
@@ -333,7 +331,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mChallengeRequested = in.readByte() > 0;
         mDataOnlyRequested = in.readByte() > 0;
         mExemptionRequested = in.readByte() > 0;
-        mV2UiCustomization = (UiCustomization) in.readSerializable();
+        mV2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         mAccountType = in.readString();
     }

@@ -55,7 +55,7 @@ public class ThreeDSecureRequestUnitTest {
         LabelCustomization labelCustomization = new LabelCustomization();
         labelCustomization.setHeadingTextColor("#FF5A5F");
 
-        UiCustomization uiCustomization = new UiCustomization();
+        ThreeDSecureV2UiCustomization uiCustomization = new UiCustomization();
         uiCustomization.setLabelCustomization(labelCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
