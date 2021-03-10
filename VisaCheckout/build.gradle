@@ -99,12 +99,12 @@ afterEvaluate {
                     name = 'visa-checkout'
                     packaging = 'aar'
                     description = 'Visa Checkout Module for Braintree\'s Android SDK.'
-                    url = 'https://github.com/braintree/braintree-android-visa-checkout'
+                    url = 'https://github.com/braintree/braintree_android'
 
                     scm {
-                        url = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
-                        connection = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
                     }
 
                     developers {
