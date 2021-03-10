@@ -44,8 +44,8 @@ public class GooglePayClient {
     private static final String CARD_PAYMENT_TYPE = "CARD";
     private static final String PAYPAL_PAYMENT_TYPE = "PAYPAL";
 
-    private BraintreeClient braintreeClient;
-    private GooglePayInternalClient internalGooglePayClient;
+    private final BraintreeClient braintreeClient;
+    private final GooglePayInternalClient internalGooglePayClient;
 
     public GooglePayClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new GooglePayInternalClient());
