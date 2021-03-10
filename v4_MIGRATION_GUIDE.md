@@ -617,6 +617,7 @@ public class VenmoActivity extends AppCompatActivity {
     }
   }
 
+  // The authorizeAccount() method has been replaced with tokenizeVenmoAccount()
   private void tokenizeVenmoAccount() {
     VenmoRequest request = new VenmoRequest()
             .profileId("your-profile-id")
