@@ -2,11 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 
-import androidx.fragment.app.FragmentActivity;
-
 /**
  * Callback for receiving result of
- * {@link GooglePayClient#onActivityResult(FragmentActivity, int, Intent, GooglePayOnActivityResultCallback)}.
+ * {@link GooglePayClient#onActivityResult(int, Intent, GooglePayOnActivityResultCallback)}.
  */
 public interface GooglePayOnActivityResultCallback {
 

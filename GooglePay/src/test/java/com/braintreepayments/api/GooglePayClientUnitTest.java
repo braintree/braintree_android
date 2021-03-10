@@ -1028,7 +1028,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(activity, RESULT_CANCELED, new Intent(), activityResultCallback);
+        sut.onActivityResult(RESULT_CANCELED, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
     }
@@ -1054,7 +1054,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(activity, RESULT_FIRST_USER, new Intent(), activityResultCallback);
+        sut.onActivityResult(RESULT_FIRST_USER, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
     }
@@ -1080,7 +1080,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(activity, RESULT_OK, new Intent(), activityResultCallback);
+        sut.onActivityResult(RESULT_OK, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
     }

@@ -232,12 +232,11 @@ public class GooglePayClient {
     }
 
     /**
-     * @param activity Android Activity
      * @param resultCode a code associated with the Activity result
      * @param data Android Intent
      * @param callback {@link GooglePayOnActivityResultCallback}
      */
-    public void onActivityResult(FragmentActivity activity, int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
+    public void onActivityResult(int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
             tokenize(PaymentData.getFromIntent(data), callback);
