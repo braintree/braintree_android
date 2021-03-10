@@ -9,6 +9,8 @@ import androidx.annotation.IntDef;
 import com.cardinalcommerce.shared.models.enums.ButtonType;
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
+import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
+import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 import java.lang.annotation.Retention;
@@ -41,6 +43,9 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
         cardinalButtonCustomization.setBackgroundColor(buttonCustomization.getBackgroundColor());
         cardinalButtonCustomization.setCornerRadius(buttonCustomization.getCornerRadius());
+        cardinalButtonCustomization.setTextColor(buttonCustomization.getTextColor());
+        cardinalButtonCustomization.setTextFontName(buttonCustomization.getTextFontName());
+        cardinalButtonCustomization.setTextFontSize(buttonCustomization.getTextFontSize());
         uiCustomization.setButtonCustomization(cardinalButtonCustomization, getCardinalButtonType(buttonType));
 
         return this;
@@ -53,6 +58,9 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         cardinalLabelCustomization.setHeadingTextColor(labelCustomization.getHeadingTextColor());
         cardinalLabelCustomization.setHeadingTextFontName(labelCustomization.getHeadingTextFontName());
         cardinalLabelCustomization.setHeadingTextFontSize(labelCustomization.getHeadingTextFontSize());
+        cardinalLabelCustomization.setTextColor(labelCustomization.getTextColor());
+        cardinalLabelCustomization.setTextFontName(labelCustomization.getTextFontName());
+        cardinalLabelCustomization.setTextFontSize(labelCustomization.getTextFontSize());
         uiCustomization.setLabelCustomization(cardinalLabelCustomization);
 
         return this;
@@ -60,11 +68,34 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
 
     public ThreeDSecureV2UiCustomization textBoxCustomization(ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
+
+        TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
+        cardinalTextBoxCustomization.setBorderColor(textBoxCustomization.getBorderColor());
+        cardinalTextBoxCustomization.setBorderWidth(textBoxCustomization.getBorderWidth());
+        cardinalTextBoxCustomization.setCornerRadius(textBoxCustomization.getCornerRadius());
+        cardinalTextBoxCustomization.setTextColor(textBoxCustomization.getTextColor());
+        cardinalTextBoxCustomization.setTextFontName(textBoxCustomization.getTextFontName());
+        cardinalTextBoxCustomization.setTextFontSize(textBoxCustomization.getTextFontSize());
+        uiCustomization.setTextBoxCustomization(cardinalTextBoxCustomization);
+
         return this;
     }
 
     public ThreeDSecureV2UiCustomization toolbarCustomization(ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
+
+        ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
+        cardinalToolbarCustomization.setBackgroundColor(toolbarCustomization.getBackgroundColor());
+        cardinalToolbarCustomization.setButtonText(toolbarCustomization.getButtonText());
+        cardinalToolbarCustomization.setHeaderText(toolbarCustomization.getHeaderText());
+        if (toolbarCustomization.getTextColor() != null) {
+            cardinalToolbarCustomization.setTextColor(toolbarCustomization.getTextColor());
+        }
+        if (toolbarCustomization.getTextFontName() != null) {
+            cardinalToolbarCustomization.setTextFontName(toolbarCustomization.getTextFontName());
+            cardinalToolbarCustomization.setTextFontSize(toolbarCustomization.getTextFontSize());
+        }
+
         return this;
     }
 
