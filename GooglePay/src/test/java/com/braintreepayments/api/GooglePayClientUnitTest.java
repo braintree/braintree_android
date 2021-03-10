@@ -1137,7 +1137,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(activity, configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
@@ -1165,7 +1165,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(activity, configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
     }
 
@@ -1187,7 +1187,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(activity, configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"));
     }
 
@@ -1210,7 +1210,7 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
         GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback = mock(GooglePayGetTokenizationParametersCallback.class);
-        sut.getTokenizationParameters(activity, getTokenizationParametersCallback);
+        sut.getTokenizationParameters(getTokenizationParametersCallback);
 
         verify(getTokenizationParametersCallback).onResult(any(PaymentMethodTokenizationParameters.class), eq(sut.getAllowedCardNetworks(configuration)) );
     }

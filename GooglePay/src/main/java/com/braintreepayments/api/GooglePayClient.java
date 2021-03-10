@@ -140,14 +140,13 @@ public class GooglePayClient {
      * and {@link Collection <Integer>} allowedCardNetworks should be supplied to the {@link CardRequirements} via
      * {@link CardRequirements.Builder#addAllowedCardNetworks(Collection)}}.
      *
-     * @param activity Android FragmentActivity
      * @param callback {@link GooglePayGetTokenizationParametersCallback}
      */
-    public void getTokenizationParameters(final FragmentActivity activity, final GooglePayGetTokenizationParametersCallback callback) {
+    public void getTokenizationParameters(final GooglePayGetTokenizationParametersCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                callback.onResult(getTokenizationParameters(activity, configuration), getAllowedCardNetworks(configuration));
+                callback.onResult(getTokenizationParameters(configuration), getAllowedCardNetworks(configuration));
             }
         });
     }
@@ -259,7 +258,7 @@ public class GooglePayClient {
         }
     }
 
-    PaymentMethodTokenizationParameters getTokenizationParameters(FragmentActivity activity, Configuration configuration) {
+    PaymentMethodTokenizationParameters getTokenizationParameters(Configuration configuration) {
         String version;
 
         JSONObject metadata = new MetadataBuilder()

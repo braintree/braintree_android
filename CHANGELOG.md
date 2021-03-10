@@ -58,6 +58,7 @@
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
   * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization`
   * Remove `activity` parameter from `GooglePayClient#onActivityResult()`
+  * Remove `activity` parameter from `GooglePayClient#getTokenizationParameters()`
 
 ## 4.0.0-beta1
 
