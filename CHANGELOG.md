@@ -6,7 +6,6 @@
 * Add Google Pay support for Elo cards. 
 * Add `VenmoRequest` 
 * Breaking Changes
-  * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
   * Make `CardNonce#fromJson()` methods package-private
@@ -46,6 +45,8 @@
     * `SHIP_TO_STORE`
   * Change default `versionRequested` on `ThreeDSecureRequest` to `ThreeDSecureVersion.VERSION_2`
   * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization`
+  * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
+  * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
 
 ## 4.0.0-beta1
 
