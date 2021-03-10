@@ -733,12 +733,15 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
         .accountId("account-id");
 
+    // ThreeDSecureRequest default version requested is now VERSION_2
+    // uiCustomization() for 3DS v2 has been renamed to v2UiCustomization()
+    // shippingMethod property is now an enum 
     ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
         .amount("10")
         .email("test@email.com")
         .billingAddress(billingAddress)
         .nonce(cardNonce.getNonce())
-        .versionRequested(ThreeDSecureRequest.VERSION_2)
+        .shippingMethod(ThreeDSecureShippingMethod.GROUND) 
         .additionalInformation(additionalInformation);
 
     threeDSecureClient.performVerification(this, threeDSecureRequest, this::handleThreeDSecureLookup);
