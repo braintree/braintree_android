@@ -41,7 +41,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean mChallengeRequested = false;
     private boolean mDataOnlyRequested = false;
     private boolean mExemptionRequested = false;
-    private UiCustomization mv2UiCustomization;
+    private UiCustomization mV2UiCustomization;
     private ThreeDSecureV1UiCustomization mV1UiCustomization;
 
     /**
@@ -182,7 +182,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
     public ThreeDSecureRequest v2UiCustomization(UiCustomization v2UiCustomization) {
-        mv2UiCustomization = v2UiCustomization;
+        mV2UiCustomization = v2UiCustomization;
         return this;
     }
 
@@ -283,7 +283,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return The UI customization for 3DS2 challenge views.
      */
     public UiCustomization getV2UiCustomization() {
-        return mv2UiCustomization;
+        return mV2UiCustomization;
     }
 
     /**
@@ -295,7 +295,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     public ThreeDSecureRequest() {
         // NOTE: this is a temporary fix for a null-pointer bug introduced by Cardinal 2.2.3-2
-        mv2UiCustomization = new UiCustomization();
+        mV2UiCustomization = new UiCustomization();
     }
 
     @Override
@@ -316,7 +316,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
         dest.writeByte(mDataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
-        dest.writeSerializable(mv2UiCustomization);
+        dest.writeSerializable(mV2UiCustomization);
         dest.writeParcelable(mV1UiCustomization, flags);
         dest.writeString(mAccountType);
     }
@@ -333,7 +333,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mChallengeRequested = in.readByte() > 0;
         mDataOnlyRequested = in.readByte() > 0;
         mExemptionRequested = in.readByte() > 0;
-        mv2UiCustomization = (UiCustomization) in.readSerializable();
+        mV2UiCustomization = (UiCustomization) in.readSerializable();
         mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         mAccountType = in.readString();
     }
