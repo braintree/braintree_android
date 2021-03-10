@@ -52,11 +52,11 @@ public class ThreeDSecureRequestUnitTest {
                 .countryCodeAlpha2("US")
                 .postalCode("54321");
 
-        LabelCustomization labelCustomization = new LabelCustomization();
-        labelCustomization.setHeadingTextColor("#FF5A5F");
+        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization()
+                .headingTextColor("#FFA5F");
 
-        ThreeDSecureV2UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setLabelCustomization(labelCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
+                .labelCustomization(labelCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
                 .redirectButtonText("return-button-text")
@@ -74,7 +74,7 @@ public class ThreeDSecureRequestUnitTest {
                 .challengeRequested(true)
                 .dataOnlyRequested(true)
                 .exemptionRequested(true)
-                .v2UiCustomization(uiCustomization)
+                .v2UiCustomization(v2UiCustomization)
                 .v1UiCustomization(v1UiCustomization)
                 .accountType(ThreeDSecureRequest.CREDIT);
 

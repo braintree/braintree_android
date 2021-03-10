@@ -52,17 +52,17 @@ public class ThreeDSecureV2UnitTest {
                 .cardinalAuthenticationJWT("cardinal_authentication_jwt")
                 .buildConfiguration();
 
-        TextBoxCustomization textBoxCustomization = new TextBoxCustomization();
-        textBoxCustomization.setBorderWidth(12);
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization()
+                .borderWidth(12);
 
-        ThreeDSecureV2UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setTextBoxCustomization(textBoxCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.textBoxCustomization(textBoxCustomization);
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .v2UiCustomization(uiCustomization);
+                .v2UiCustomization(v2UiCustomization);
     }
 
     @Test
