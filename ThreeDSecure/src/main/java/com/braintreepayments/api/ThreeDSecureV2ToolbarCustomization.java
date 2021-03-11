@@ -3,11 +3,14 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
+
 public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String backgroundColor;
     private String headerText;
     private String buttonText;
+    private ToolbarCustomization cardinalValue;
 
     public ThreeDSecureV2ToolbarCustomization() {}
 
@@ -36,6 +39,10 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
 
     public String getButtonText() {
         return buttonText;
+    }
+
+    ToolbarCustomization getCardinalToolbarCustomization() {
+        return cardinalValue;
     }
 
     @Override
