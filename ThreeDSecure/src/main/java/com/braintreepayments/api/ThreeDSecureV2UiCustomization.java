@@ -19,13 +19,13 @@ import java.lang.annotation.RetentionPolicy;
 public class ThreeDSecureV2UiCustomization implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({VERIFY, CONTINUE, NEXT, CANCEL, RESEND})
+    @IntDef({BUTTON_TYPE_VERIFY, BUTTON_TYPE_CONTINUE, BUTTON_TYPE_NEXT, BUTTON_TYPE_CANCEL, BUTTON_TYPE_RESEND})
     @interface ThreeDSecureV2ButtonType {}
-    public static final int VERIFY = 0;
-    public static final int CONTINUE = 1;
-    public static final int NEXT = 2;
-    public static final int CANCEL = 3;
-    public static final int RESEND = 4;
+    public static final int BUTTON_TYPE_VERIFY = 0;
+    public static final int BUTTON_TYPE_CONTINUE = 1;
+    public static final int BUTTON_TYPE_NEXT = 2;
+    public static final int BUTTON_TYPE_CANCEL = 3;
+    public static final int BUTTON_TYPE_RESEND = 4;
 
     private ThreeDSecureV2ButtonCustomization buttonCustomization;
     private ThreeDSecureV2LabelCustomization labelCustomization;
@@ -121,15 +121,15 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
 
     private ButtonType getCardinalButtonType(@ThreeDSecureV2ButtonType int buttonType) {
         switch (buttonType) {
-            case VERIFY:
+            case BUTTON_TYPE_VERIFY:
                 return ButtonType.VERIFY;
-            case CONTINUE:
+            case BUTTON_TYPE_CONTINUE:
                 return ButtonType.CONTINUE;
-            case NEXT:
+            case BUTTON_TYPE_NEXT:
                 return ButtonType.NEXT;
-            case CANCEL:
+            case BUTTON_TYPE_CANCEL:
                 return ButtonType.CANCEL;
-            case RESEND:
+            case BUTTON_TYPE_RESEND:
                 return ButtonType.RESEND;
             default:
                 return null;
