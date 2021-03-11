@@ -80,18 +80,18 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     private ThreeDSecureV2LabelCustomization(Parcel in) {
+        super(in);
         headingTextColor = in.readString();
         headingTextFontName = in.readString();
         headingTextFontSize = in.readInt();
-        cardinalValue = (LabelCustomization) in.readSerializable();
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
         parcel.writeString(headingTextColor);
         parcel.writeString(headingTextFontName);
         parcel.writeInt(headingTextFontSize);
-        parcel.writeSerializable(cardinalValue);
     }
 
     public static final Creator<ThreeDSecureV2LabelCustomization> CREATOR = new Creator<ThreeDSecureV2LabelCustomization>() {

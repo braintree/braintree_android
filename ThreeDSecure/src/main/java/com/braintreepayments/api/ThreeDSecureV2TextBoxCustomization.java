@@ -81,12 +81,14 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
         parcel.writeInt(borderWidth);
         parcel.writeString(borderColor);
         parcel.writeInt(cornerRadius);
     }
 
     private ThreeDSecureV2TextBoxCustomization(Parcel in) {
+        super(in);
         borderWidth = in.readInt();
         borderColor = in.readString();
         cornerRadius = in.readInt();

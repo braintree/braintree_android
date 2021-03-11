@@ -81,12 +81,14 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
         parcel.writeString(backgroundColor);
         parcel.writeString(headerText);
         parcel.writeString(buttonText);
     }
 
     private ThreeDSecureV2ToolbarCustomization(Parcel in) {
+        super(in);
         backgroundColor = in.readString();
         headerText = in.readString();
         buttonText = in.readString();
