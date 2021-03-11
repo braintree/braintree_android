@@ -53,7 +53,7 @@ public class ThreeDSecureRequestUnitTest {
                 .postalCode("54321");
 
         ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization()
-                .headingTextColor("#FFA5F");
+                .headingTextColor("#FFA5FF");
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
                 .labelCustomization(labelCustomization);
