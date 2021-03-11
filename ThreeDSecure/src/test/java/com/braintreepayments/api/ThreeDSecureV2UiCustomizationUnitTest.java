@@ -20,7 +20,7 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
                 .textBoxCustomization(new ThreeDSecureV2TextBoxCustomization())
                 .toolbarCustomization(new ThreeDSecureV2ToolbarCustomization());
 
-        UiCustomization cardinalUiCustomization = sut.getUiCustomization();
+        UiCustomization cardinalUiCustomization = sut.getCardinalUiCustomization();
         assertNotNull(cardinalUiCustomization.getLabelCustomization());
         assertNotNull(cardinalUiCustomization.getButtonCustomization(ButtonType.NEXT));
         assertNotNull(cardinalUiCustomization.getTextBoxCustomization());

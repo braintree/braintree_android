@@ -32,70 +32,32 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     private ThreeDSecureV2TextBoxCustomization textBoxCustomization;
     private ThreeDSecureV2ToolbarCustomization toolbarCustomization;
     private @ThreeDSecureV2ButtonType int buttonType;
-    private UiCustomization uiCustomization = new UiCustomization();
+    private UiCustomization cardinalValue = new UiCustomization();
 
     public ThreeDSecureV2UiCustomization() {}
 
     public ThreeDSecureV2UiCustomization buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
         this.buttonType = buttonType;
-
-        ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
-        cardinalButtonCustomization.setBackgroundColor(buttonCustomization.getBackgroundColor());
-        cardinalButtonCustomization.setCornerRadius(buttonCustomization.getCornerRadius());
-        cardinalButtonCustomization.setTextColor(buttonCustomization.getTextColor());
-        cardinalButtonCustomization.setTextFontName(buttonCustomization.getTextFontName());
-        cardinalButtonCustomization.setTextFontSize(buttonCustomization.getTextFontSize());
-        uiCustomization.setButtonCustomization(cardinalButtonCustomization, getCardinalButtonType(buttonType));
-
+        cardinalValue.setButtonCustomization(buttonCustomization.getCardinalButtonCustomization(), getCardinalButtonType(buttonType));
         return this;
     }
 
     public ThreeDSecureV2UiCustomization labelCustomization(ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
-
-        LabelCustomization cardinalLabelCustomization = new LabelCustomization();
-        cardinalLabelCustomization.setHeadingTextColor(labelCustomization.getHeadingTextColor());
-        cardinalLabelCustomization.setHeadingTextFontName(labelCustomization.getHeadingTextFontName());
-        cardinalLabelCustomization.setHeadingTextFontSize(labelCustomization.getHeadingTextFontSize());
-        cardinalLabelCustomization.setTextColor(labelCustomization.getTextColor());
-        cardinalLabelCustomization.setTextFontName(labelCustomization.getTextFontName());
-        cardinalLabelCustomization.setTextFontSize(labelCustomization.getTextFontSize());
-        uiCustomization.setLabelCustomization(cardinalLabelCustomization);
-
+        cardinalValue.setLabelCustomization(labelCustomization.getCardinalLabelCustomization());
         return this;
     }
 
     public ThreeDSecureV2UiCustomization textBoxCustomization(ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
-
-        TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
-        cardinalTextBoxCustomization.setBorderColor(textBoxCustomization.getBorderColor());
-        cardinalTextBoxCustomization.setBorderWidth(textBoxCustomization.getBorderWidth());
-        cardinalTextBoxCustomization.setCornerRadius(textBoxCustomization.getCornerRadius());
-        cardinalTextBoxCustomization.setTextColor(textBoxCustomization.getTextColor());
-        cardinalTextBoxCustomization.setTextFontName(textBoxCustomization.getTextFontName());
-        cardinalTextBoxCustomization.setTextFontSize(textBoxCustomization.getTextFontSize());
-        uiCustomization.setTextBoxCustomization(cardinalTextBoxCustomization);
-
+        cardinalValue.setTextBoxCustomization(textBoxCustomization.getCardinalTextBoxCustomization());
         return this;
     }
 
     public ThreeDSecureV2UiCustomization toolbarCustomization(ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
-
-        ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
-        cardinalToolbarCustomization.setBackgroundColor(toolbarCustomization.getBackgroundColor());
-        cardinalToolbarCustomization.setButtonText(toolbarCustomization.getButtonText());
-        cardinalToolbarCustomization.setHeaderText(toolbarCustomization.getHeaderText());
-        if (toolbarCustomization.getTextColor() != null) {
-            cardinalToolbarCustomization.setTextColor(toolbarCustomization.getTextColor());
-        }
-        if (toolbarCustomization.getTextFontName() != null) {
-            cardinalToolbarCustomization.setTextFontName(toolbarCustomization.getTextFontName());
-            cardinalToolbarCustomization.setTextFontSize(toolbarCustomization.getTextFontSize());
-        }
-
+        cardinalValue.setToolbarCustomization(toolbarCustomization.getCardinalToolbarCustomization());
         return this;
     }
 
@@ -115,8 +77,8 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         return toolbarCustomization;
     }
 
-    UiCustomization getUiCustomization() {
-        return uiCustomization;
+    UiCustomization getCardinalUiCustomization() {
+        return cardinalValue;
     }
 
     private ButtonType getCardinalButtonType(@ThreeDSecureV2ButtonType int buttonType) {
@@ -148,6 +110,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         parcel.writeParcelable(textBoxCustomization, i);
         parcel.writeParcelable(toolbarCustomization, i);
         parcel.writeInt(buttonType);
+        parcel.writeSerializable(cardinalValue);
     }
 
     private ThreeDSecureV2UiCustomization(Parcel in) {
@@ -156,6 +119,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         textBoxCustomization = in.readParcelable(ThreeDSecureV2TextBoxCustomization.class.getClassLoader());
         toolbarCustomization = in.readParcelable(ThreeDSecureV2ToolbarCustomization.class.getClassLoader());
         buttonType = in.readInt();
+        cardinalValue = (UiCustomization) in.readSerializable();
     }
 
     public static final Creator<ThreeDSecureV2UiCustomization> CREATOR = new Creator<ThreeDSecureV2UiCustomization>() {
