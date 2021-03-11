@@ -2,10 +2,7 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.cardinalcommerce.shared.userinterfaces.Customization;
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

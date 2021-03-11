@@ -5,8 +5,6 @@ import android.os.Parcel;
 import com.cardinalcommerce.shared.models.enums.ButtonType;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

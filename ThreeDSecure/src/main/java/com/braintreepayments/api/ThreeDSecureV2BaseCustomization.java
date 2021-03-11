@@ -3,9 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 import com.cardinalcommerce.shared.userinterfaces.Customization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 /**
  * Base customization options for 3D Secure 2 flows.

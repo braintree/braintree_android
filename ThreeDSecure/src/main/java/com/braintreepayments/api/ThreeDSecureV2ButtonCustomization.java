@@ -12,7 +12,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
 
     private String backgroundColor;
     private int cornerRadius;
-    private ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
+    private final ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
 
     public ThreeDSecureV2ButtonCustomization() {
         super.cardinalValue = cardinalButtonCustomization;

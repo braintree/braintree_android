@@ -6,8 +6,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 import org.json.JSONException;
 import org.json.JSONObject;

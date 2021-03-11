@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
-import com.cardinalcommerce.shared.userinterfaces.Customization;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
