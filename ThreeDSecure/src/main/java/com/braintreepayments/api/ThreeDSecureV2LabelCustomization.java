@@ -3,26 +3,32 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
+
 public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String headingTextColor;
     private String headingTextFontName;
     private int headingTextFontSize;
+    private LabelCustomization cardinalValue = new LabelCustomization();
 
     public ThreeDSecureV2LabelCustomization() {}
 
     public ThreeDSecureV2LabelCustomization headingTextColor(String headingTextColor) {
         this.headingTextColor = headingTextColor;
+        cardinalValue.setHeadingTextColor(headingTextColor);
         return this;
     }
 
     public ThreeDSecureV2LabelCustomization headingTextFontName(String headingTextFontName) {
         this.headingTextFontName = headingTextFontName;
+        cardinalValue.setHeadingTextFontName(headingTextFontName);
         return this;
     }
 
     public ThreeDSecureV2LabelCustomization headingTextFontSize(int headingTextFontSize) {
         this.headingTextFontSize = headingTextFontSize;
+        cardinalValue.setHeadingTextFontSize(headingTextFontSize);
         return this;
     }
 
@@ -38,6 +44,10 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         return headingTextFontSize;
     }
 
+    LabelCustomization getCardinalLabelCustomization() {
+        return cardinalValue;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -47,6 +57,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         headingTextColor = in.readString();
         headingTextFontName = in.readString();
         headingTextFontSize = in.readInt();
+        cardinalValue = (LabelCustomization) in.readSerializable();
     }
 
     @Override
@@ -54,6 +65,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         parcel.writeString(headingTextColor);
         parcel.writeString(headingTextFontName);
         parcel.writeInt(headingTextFontSize);
+        parcel.writeSerializable(cardinalValue);
     }
 
     public static final Creator<ThreeDSecureV2LabelCustomization> CREATOR = new Creator<ThreeDSecureV2LabelCustomization>() {
