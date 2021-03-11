@@ -3,11 +3,14 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
+
 public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private int borderWidth;
     private String borderColor;
     private int cornerRadius;
+    private TextBoxCustomization cardinalValue;
 
     public ThreeDSecureV2TextBoxCustomization() {}
 
@@ -36,6 +39,10 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
 
     public int getCornerRadius() {
         return cornerRadius;
+    }
+
+    TextBoxCustomization getCardinalTextBoxCustomization() {
+        return cardinalValue;
     }
 
     @Override
