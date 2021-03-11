@@ -31,7 +31,6 @@ import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
-import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
@@ -42,8 +41,6 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import com.google.android.material.textfield.TextInputLayout;
 
 import static android.view.View.GONE;
