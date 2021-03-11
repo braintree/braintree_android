@@ -31,6 +31,7 @@ import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
+import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
@@ -395,11 +396,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .headerText("Braintree 3DS Checkout")
                 .backgroundColor("#FF5A5F")
                 .buttonText("Close")
-//                .textColor("#222222")
-                .textColor("#ffff00")
-                .textFontName("Comic Sans")
-                .textFontSize(6);
-//                .textFontSize(18);
+                .textColor("#222222")
+                .textFontSize(18);
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
                 .toolbarCustomization(toolbarCustomization);
