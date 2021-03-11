@@ -69,10 +69,6 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
         return textFontSize;
     }
 
-    Customization getCardinalCustomization() {
-        return cardinalValue;
-    }
-
     @Override
     public int describeContents() {
         return 0;

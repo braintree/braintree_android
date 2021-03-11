@@ -87,12 +87,25 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
         assertEquals("Comic Sans", actual.getButtonCustomization().getTextFontName());
         assertEquals(20, actual.getButtonCustomization().getTextFontSize());
 
+        assertEquals("#FF0000", actual.getCardinalUiCustomization().getButtonCustomization(ButtonType.CONTINUE).getBackgroundColor());
+        assertEquals(5, actual.getCardinalUiCustomization().getButtonCustomization(ButtonType.CONTINUE).getCornerRadius());
+        assertEquals("#000000", actual.getCardinalUiCustomization().getButtonCustomization(ButtonType.CONTINUE).getTextColor());
+        assertEquals("Comic Sans", actual.getCardinalUiCustomization().getButtonCustomization(ButtonType.CONTINUE).getTextFontName());
+        assertEquals(20, actual.getCardinalUiCustomization().getButtonCustomization(ButtonType.CONTINUE).getTextFontSize());
+
         assertEquals("#FFFFFF", actual.getLabelCustomization().getHeadingTextColor());
         assertEquals("Times New Roman", actual.getLabelCustomization().getHeadingTextFontName());
         assertEquals(30, actual.getLabelCustomization().getHeadingTextFontSize());
         assertEquals("#121212", actual.getLabelCustomization().getTextColor());
         assertEquals("Helvetica", actual.getLabelCustomization().getTextFontName());
         assertEquals(15, actual.getLabelCustomization().getTextFontSize());
+
+        assertEquals("#FFFFFF", actual.getCardinalUiCustomization().getLabelCustomization().getHeadingTextColor());
+        assertEquals("Times New Roman", actual.getCardinalUiCustomization().getLabelCustomization().getHeadingTextFontName());
+        assertEquals(30, actual.getCardinalUiCustomization().getLabelCustomization().getHeadingTextFontSize());
+        assertEquals("#121212", actual.getCardinalUiCustomization().getLabelCustomization().getTextColor());
+        assertEquals("Helvetica", actual.getCardinalUiCustomization().getLabelCustomization().getTextFontName());
+        assertEquals(15, actual.getCardinalUiCustomization().getLabelCustomization().getTextFontSize());
 
         assertEquals("#FFFFFF", actual.getTextBoxCustomization().getBorderColor());
         assertEquals(10, actual.getTextBoxCustomization().getBorderWidth());
@@ -101,11 +114,25 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
         assertEquals("Helvetica", actual.getTextBoxCustomization().getTextFontName());
         assertEquals(15, actual.getTextBoxCustomization().getTextFontSize());
 
+        assertEquals("#FFFFFF", actual.getCardinalUiCustomization().getTextBoxCustomization().getBorderColor());
+        assertEquals(10, actual.getCardinalUiCustomization().getTextBoxCustomization().getBorderWidth());
+        assertEquals(5, actual.getCardinalUiCustomization().getTextBoxCustomization().getCornerRadius());
+        assertEquals("#121212", actual.getCardinalUiCustomization().getTextBoxCustomization().getTextColor());
+        assertEquals("Helvetica", actual.getCardinalUiCustomization().getTextBoxCustomization().getTextFontName());
+        assertEquals(15, actual.getCardinalUiCustomization().getTextBoxCustomization().getTextFontSize());
+
         assertEquals("#FFFFFF", actual.getToolbarCustomization().getBackgroundColor());
         assertEquals("Button", actual.getToolbarCustomization().getButtonText());
         assertEquals("Header", actual.getToolbarCustomization().getHeaderText());
         assertEquals("#121212", actual.getToolbarCustomization().getTextColor());
         assertEquals("Helvetica", actual.getToolbarCustomization().getTextFontName());
         assertEquals(15, actual.getToolbarCustomization().getTextFontSize());
+
+        assertEquals("#FFFFFF", actual.getCardinalUiCustomization().getToolbarCustomization().getBackgroundColor());
+        assertEquals("Button", actual.getCardinalUiCustomization().getToolbarCustomization().getButtonText());
+        assertEquals("Header", actual.getCardinalUiCustomization().getToolbarCustomization().getHeaderText());
+        assertEquals("#121212", actual.getCardinalUiCustomization().getToolbarCustomization().getTextColor());
+        assertEquals("Helvetica", actual.getCardinalUiCustomization().getToolbarCustomization().getTextFontName());
+        assertEquals(15, actual.getCardinalUiCustomization().getToolbarCustomization().getTextFontSize());
     }
 }
