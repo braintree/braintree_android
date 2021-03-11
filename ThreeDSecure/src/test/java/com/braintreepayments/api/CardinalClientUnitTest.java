@@ -69,7 +69,24 @@ public class CardinalClientUnitTest {
         assertEquals(8000, parameters.getRequestTimeout());
         assertFalse(parameters.isEnableQuickAuth());
         assertTrue(parameters.isEnableDFSync());
-        assertEquals(request.getV2UiCustomization(), parameters.getUICustomization());
+    }
+
+    @Test
+    public void initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        CardinalClient sut = new CardinalClient();
+
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .v2UiCustomization(v2UiCustomization);
+        sut.initialize(context, configuration, request, cardinalInitializeCallback);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(cardinalInstance).configure(same(context), captor.capture());
+
+        CardinalConfigurationParameters parameters = captor.getValue();
+        assertEquals(request.getV2UiCustomization().getCardinalUiCustomization(), parameters.getUICustomization());
     }
 
     @Test

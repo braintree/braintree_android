@@ -30,12 +30,6 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
-        ThreeDSecureRequest request = new ThreeDSecureRequest();
-        assertNotNull(request.getV2UiCustomization());
-    }
-
-    @Test
     public void writeToParcel() {
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");

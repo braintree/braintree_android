@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import com.cardinalcommerce.shared.models.enums.ButtonType;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -25,5 +27,11 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
         assertNotNull(cardinalUiCustomization.getButtonCustomization(ButtonType.NEXT));
         assertNotNull(cardinalUiCustomization.getTextBoxCustomization());
         assertNotNull(cardinalUiCustomization.getToolbarCustomization());
+    }
+
+    @Test
+    public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
+        ThreeDSecureV2UiCustomization sut = new ThreeDSecureV2UiCustomization();
+        assertNotNull(sut.getCardinalUiCustomization());
     }
 }
