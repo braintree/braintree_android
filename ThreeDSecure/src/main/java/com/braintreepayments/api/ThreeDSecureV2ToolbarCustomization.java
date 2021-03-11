@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization<ThreeDSecureV2ToolbarCustomization> implements Parcelable {
+public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String backgroundColor;
     private String headerText;

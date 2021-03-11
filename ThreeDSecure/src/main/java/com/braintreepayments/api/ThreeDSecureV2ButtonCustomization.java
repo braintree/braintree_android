@@ -5,23 +5,23 @@ import android.os.Parcelable;
 
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 
-public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization<ThreeDSecureV2ButtonCustomization> implements Parcelable {
+public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String backgroundColor;
     private int cornerRadius;
-    private ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
+    private ButtonCustomization cardinalValue = new ButtonCustomization();
 
     public ThreeDSecureV2ButtonCustomization() {}
 
     public ThreeDSecureV2ButtonCustomization backgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
-        cardinalButtonCustomization.setBackgroundColor(backgroundColor);
+        cardinalValue.setBackgroundColor(backgroundColor);
         return this;
     }
 
     public ThreeDSecureV2ButtonCustomization cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
-        cardinalButtonCustomization.setCornerRadius(cornerRadius);
+        cardinalValue.setCornerRadius(cornerRadius);
         return this;
     }
 
@@ -34,7 +34,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     }
 
     ButtonCustomization getCardinalButtonCustomization() {
-        return cardinalButtonCustomization;
+        return cardinalValue;
     }
 
     @Override
@@ -46,12 +46,12 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(backgroundColor);
         dest.writeInt(cornerRadius);
-        dest.writeSerializable(cardinalButtonCustomization);
+        dest.writeSerializable(cardinalValue);
     }
 
     private ThreeDSecureV2ButtonCustomization(Parcel in) {
         backgroundColor = in.readString();
         cornerRadius = in.readInt();
-        cardinalButtonCustomization = (ButtonCustomization) in.readSerializable();
+        cardinalValue = (ButtonCustomization) in.readSerializable();
     }
 }

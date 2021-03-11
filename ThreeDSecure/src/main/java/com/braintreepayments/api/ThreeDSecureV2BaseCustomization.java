@@ -4,28 +4,33 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
+import com.cardinalcommerce.shared.userinterfaces.Customization;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
-public class ThreeDSecureV2BaseCustomization<T> implements Parcelable {
+public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String textFontName;
     private String textColor;
     private int textFontSize;
+    protected Customization cardinalValue = new Customization();
 
     public ThreeDSecureV2BaseCustomization() {}
 
     public ThreeDSecureV2BaseCustomization textFontName(String textFontName) {
         this.textFontName = textFontName;
+        cardinalValue.setTextFontName(textFontName);
         return this;
     }
 
     public ThreeDSecureV2BaseCustomization textColor(String textColor) {
         this.textColor = textColor;
+        cardinalValue.setTextColor(textColor);
         return this;
     }
 
     public ThreeDSecureV2BaseCustomization textFontSize(int textFontSize) {
         this.textFontSize = textFontSize;
+        cardinalValue.setTextFontSize(textFontSize);
         return this;
     }
 
@@ -41,6 +46,10 @@ public class ThreeDSecureV2BaseCustomization<T> implements Parcelable {
         return textFontSize;
     }
 
+    Customization getCardinalCustomization() {
+        return cardinalValue;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -51,12 +60,14 @@ public class ThreeDSecureV2BaseCustomization<T> implements Parcelable {
         parcel.writeString(textFontName);
         parcel.writeString(textColor);
         parcel.writeInt(textFontSize);
+        parcel.writeSerializable(cardinalValue);
     }
 
     private ThreeDSecureV2BaseCustomization(Parcel in) {
         textFontName = in.readString();
         textColor = in.readString();
         textFontSize = in.readInt();
+        cardinalValue = (Customization) in.readSerializable();
     }
 
     public static final Creator<ThreeDSecureV2BaseCustomization> CREATOR = new Creator<ThreeDSecureV2BaseCustomization>() {
