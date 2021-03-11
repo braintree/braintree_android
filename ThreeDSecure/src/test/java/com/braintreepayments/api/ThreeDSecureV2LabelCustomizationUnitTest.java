@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+
 import com.cardinalcommerce.shared.userinterfaces.Customization;
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 
@@ -31,5 +33,29 @@ public class ThreeDSecureV2LabelCustomizationUnitTest {
         assertEquals("#ff0000", cardinalLabelCustomization.getTextColor());
         assertEquals(19, cardinalLabelCustomization.getTextFontSize());
         assertEquals("Arial", cardinalLabelCustomization.getTextFontName());
+    }
+
+    @Test
+    public void writeToParcel() {
+        ThreeDSecureV2LabelCustomization customization = (ThreeDSecureV2LabelCustomization) new ThreeDSecureV2LabelCustomization()
+                .headingTextColor("#FFFFFF")
+                .headingTextFontName("Times New Roman")
+                .headingTextFontSize(30)
+                .textColor("#121212")
+                .textFontName("Helvetica")
+                .textFontSize(15);
+
+        Parcel parcel = Parcel.obtain();
+        customization.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        ThreeDSecureV2LabelCustomization actual = (ThreeDSecureV2LabelCustomization) ThreeDSecureV2LabelCustomization.CREATOR.createFromParcel(parcel);
+
+        assertEquals("#FFFFFF", actual.getHeadingTextColor());
+        assertEquals("Times New Roman", actual.getHeadingTextFontName());
+        assertEquals(30, actual.getHeadingTextFontSize());
+        assertEquals("#121212", actual.getTextColor());
+        assertEquals("Helvetica", actual.getTextFontName());
+        assertEquals(15, actual.getTextFontSize());
     }
 }
