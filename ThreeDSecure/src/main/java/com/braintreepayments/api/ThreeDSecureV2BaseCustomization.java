@@ -3,6 +3,9 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
+import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
+
 public class ThreeDSecureV2BaseCustomization<T> implements Parcelable {
 
     private String textFontName;
