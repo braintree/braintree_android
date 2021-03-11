@@ -15,8 +15,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     private int textFontSize;
     protected Customization cardinalValue;
 
-    public ThreeDSecureV2BaseCustomization() {}
-
+    ThreeDSecureV2BaseCustomization() {}
 
     /**
      * @param textFontName Font type for the UI element.

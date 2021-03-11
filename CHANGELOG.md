@@ -5,6 +5,12 @@
 * Add `setCountryCode` to `GooglePayRequest`
 * Add Google Pay support for Elo cards. 
 * Add `VenmoRequest` 
+* Add new classes for 3DS2 UI Customization:
+  * `ThreeDSecureV2UiCustomization`
+  * `ThreeDSecureV2ButtonCustomization`
+  * `ThreeDSecureV2LabelCustomization`
+  * `ThreeDSecureV2TextBoxCustomization`
+  * `ThreeDSecureV2ToolbarCustomization`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
@@ -44,7 +50,7 @@
     * `ELECTRONIC_DELIVERY`
     * `SHIP_TO_STORE`
   * Change default `versionRequested` on `ThreeDSecureRequest` to `ThreeDSecureVersion.VERSION_2`
-  * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization`
+  * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization` and change parameter to `ThreeDSecureV2UiCustomization`
   * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
 
