@@ -24,12 +24,12 @@ public class ThreeDSecureV2ToolbarCustomizationUnitTest {
                 .textFontName("Helvetica");
 
         ToolbarCustomization cardinalToolbarCustomization = sut.getCardinalToolbarCustomization();
-        assertEquals("0000ff", cardinalToolbarCustomization.getBackgroundColor());
+        assertEquals("#0000ff", cardinalToolbarCustomization.getBackgroundColor());
         assertEquals("Header Text", cardinalToolbarCustomization.getHeaderText());
         assertEquals("Button", cardinalToolbarCustomization.getButtonText());
 
         Customization cardinalCustomization = sut.getCardinalCustomization();
-        assertEquals("FF0000", cardinalCustomization.getTextColor());
+        assertEquals("#FF0000", cardinalCustomization.getTextColor());
         assertEquals(12, cardinalCustomization.getTextFontSize());
         assertEquals("Helvetica", cardinalCustomization.getTextFontName());
     }
