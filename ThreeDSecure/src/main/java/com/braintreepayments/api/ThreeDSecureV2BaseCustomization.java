@@ -19,6 +19,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     public ThreeDSecureV2BaseCustomization() {}
 
+
     /**
      * @param textFontName Font type for the UI element.
      * @return {@link ThreeDSecureV2BaseCustomization}
@@ -84,14 +85,12 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
         parcel.writeString(textFontName);
         parcel.writeString(textColor);
         parcel.writeInt(textFontSize);
-        parcel.writeSerializable(cardinalValue);
     }
 
-    private ThreeDSecureV2BaseCustomization(Parcel in) {
+    protected ThreeDSecureV2BaseCustomization(Parcel in) {
         textFontName = in.readString();
         textColor = in.readString();
         textFontSize = in.readInt();
-        cardinalValue = (Customization) in.readSerializable();
     }
 
     public static final Creator<ThreeDSecureV2BaseCustomization> CREATOR = new Creator<ThreeDSecureV2BaseCustomization>() {

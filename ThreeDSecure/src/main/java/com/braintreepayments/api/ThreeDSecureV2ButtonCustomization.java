@@ -62,15 +62,27 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(backgroundColor);
-        dest.writeInt(cornerRadius);
-        dest.writeSerializable(cardinalButtonCustomization);
+    public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
+        parcel.writeString(backgroundColor);
+        parcel.writeInt(cornerRadius);
     }
 
-    private ThreeDSecureV2ButtonCustomization(Parcel in) {
+    protected ThreeDSecureV2ButtonCustomization(Parcel in) {
+        super(in);
         backgroundColor = in.readString();
         cornerRadius = in.readInt();
-        cardinalButtonCustomization = (ButtonCustomization) in.readSerializable();
     }
+
+    public static final Creator<ThreeDSecureV2ButtonCustomization> CREATOR = new Creator<ThreeDSecureV2ButtonCustomization>() {
+        @Override
+        public ThreeDSecureV2ButtonCustomization createFromParcel(Parcel in) {
+            return new ThreeDSecureV2ButtonCustomization(in);
+        }
+
+        @Override
+        public ThreeDSecureV2ButtonCustomization[] newArray(int size) {
+            return new ThreeDSecureV2ButtonCustomization[size];
+        }
+    };
 }
