@@ -9,19 +9,21 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
 
     private String backgroundColor;
     private int cornerRadius;
-    private ButtonCustomization cardinalValue = new ButtonCustomization();
+    private ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
 
-    public ThreeDSecureV2ButtonCustomization() {}
+    public ThreeDSecureV2ButtonCustomization() {
+        super.cardinalValue = cardinalButtonCustomization;
+    }
 
     public ThreeDSecureV2ButtonCustomization backgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
-        cardinalValue.setBackgroundColor(backgroundColor);
+        cardinalButtonCustomization.setBackgroundColor(backgroundColor);
         return this;
     }
 
     public ThreeDSecureV2ButtonCustomization cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
-        cardinalValue.setCornerRadius(cornerRadius);
+        cardinalButtonCustomization.setCornerRadius(cornerRadius);
         return this;
     }
 
@@ -34,7 +36,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     }
 
     ButtonCustomization getCardinalButtonCustomization() {
-        return cardinalValue;
+        return cardinalButtonCustomization;
     }
 
     @Override
@@ -46,12 +48,12 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(backgroundColor);
         dest.writeInt(cornerRadius);
-        dest.writeSerializable(cardinalValue);
+        dest.writeSerializable(cardinalButtonCustomization);
     }
 
     private ThreeDSecureV2ButtonCustomization(Parcel in) {
         backgroundColor = in.readString();
         cornerRadius = in.readInt();
-        cardinalValue = (ButtonCustomization) in.readSerializable();
+        cardinalButtonCustomization = (ButtonCustomization) in.readSerializable();
     }
 }

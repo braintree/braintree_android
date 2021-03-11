@@ -10,25 +10,27 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     private String headingTextColor;
     private String headingTextFontName;
     private int headingTextFontSize;
-    private LabelCustomization cardinalValue = new LabelCustomization();
+    private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
-    public ThreeDSecureV2LabelCustomization() {}
+    public ThreeDSecureV2LabelCustomization() {
+        super.cardinalValue = cardinalLabelCustomization;
+    }
 
     public ThreeDSecureV2LabelCustomization headingTextColor(String headingTextColor) {
         this.headingTextColor = headingTextColor;
-        cardinalValue.setHeadingTextColor(headingTextColor);
+        cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
         return this;
     }
 
     public ThreeDSecureV2LabelCustomization headingTextFontName(String headingTextFontName) {
         this.headingTextFontName = headingTextFontName;
-        cardinalValue.setHeadingTextFontName(headingTextFontName);
+        cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
         return this;
     }
 
     public ThreeDSecureV2LabelCustomization headingTextFontSize(int headingTextFontSize) {
         this.headingTextFontSize = headingTextFontSize;
-        cardinalValue.setHeadingTextFontSize(headingTextFontSize);
+        cardinalLabelCustomization.setHeadingTextFontSize(headingTextFontSize);
         return this;
     }
 
@@ -45,7 +47,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     LabelCustomization getCardinalLabelCustomization() {
-        return cardinalValue;
+        return cardinalLabelCustomization;
     }
 
     @Override

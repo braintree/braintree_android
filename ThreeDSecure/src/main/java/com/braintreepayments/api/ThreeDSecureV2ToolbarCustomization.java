@@ -10,25 +10,27 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     private String backgroundColor;
     private String headerText;
     private String buttonText;
-    private ToolbarCustomization cardinalValue = new ToolbarCustomization();
+    private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
-    public ThreeDSecureV2ToolbarCustomization() {}
+    public ThreeDSecureV2ToolbarCustomization() {
+        super.cardinalValue = cardinalToolbarCustomization;
+    }
 
     public ThreeDSecureV2ToolbarCustomization backgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
-        cardinalValue.setBackgroundColor(backgroundColor);
+        cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
         return this;
     }
 
     public ThreeDSecureV2ToolbarCustomization headerText(String headerText) {
         this.headerText = headerText;
-        cardinalValue.setHeaderText(headerText);
+        cardinalToolbarCustomization.setHeaderText(headerText);
         return this;
     }
 
     public ThreeDSecureV2ToolbarCustomization buttonText(String buttonText) {
         this.buttonText = buttonText;
-        cardinalValue.setButtonText(buttonText);
+        cardinalToolbarCustomization.setButtonText(buttonText);
         return this;
     }
 
@@ -45,7 +47,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     }
 
     ToolbarCustomization getCardinalToolbarCustomization() {
-        return cardinalValue;
+        return cardinalToolbarCustomization;
     }
 
     @Override

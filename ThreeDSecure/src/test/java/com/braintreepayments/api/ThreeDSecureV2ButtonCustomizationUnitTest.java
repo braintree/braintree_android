@@ -22,12 +22,11 @@ public class ThreeDSecureV2ButtonCustomizationUnitTest {
                 .textFontName("Times New Roman");
 
         ButtonCustomization cardinalButtonCustomization = sut.getCardinalButtonCustomization();
-        Customization cardinalCustomization = sut.getCardinalCustomization();
         assertEquals("#00FF00", cardinalButtonCustomization.getBackgroundColor());
         assertEquals(5, cardinalButtonCustomization.getCornerRadius());
-        assertEquals("#ff0000", cardinalCustomization.getTextColor());
-        assertEquals(11, cardinalCustomization.getTextFontSize());
-        assertEquals("Times New Roman", cardinalCustomization.getTextFontName());
+        assertEquals("#ff0000", cardinalButtonCustomization.getTextColor());
+        assertEquals(11, cardinalButtonCustomization.getTextFontSize());
+        assertEquals("Times New Roman", cardinalButtonCustomization.getTextFontName());
     }
 
 }

@@ -26,10 +26,8 @@ public class ThreeDSecureV2TextBoxCustomizationUnitTest {
         assertEquals("#FFA500", cardinalTextBoxCustomization.getBorderColor());
         assertEquals(1, cardinalTextBoxCustomization.getBorderWidth());
         assertEquals(7, cardinalTextBoxCustomization.getCornerRadius());
-
-        Customization cardinalCustomization = sut.getCardinalCustomization();
-        assertEquals("#0000ff", cardinalCustomization.getTextColor());
-        assertEquals(5, cardinalCustomization.getTextFontSize());
-        assertEquals("Arial", cardinalCustomization.getTextFontName());
+        assertEquals("#0000ff", cardinalTextBoxCustomization.getTextColor());
+        assertEquals(5, cardinalTextBoxCustomization.getTextFontSize());
+        assertEquals("Arial", cardinalTextBoxCustomization.getTextFontName());
     }
 }

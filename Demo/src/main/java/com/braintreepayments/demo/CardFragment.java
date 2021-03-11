@@ -395,8 +395,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .headerText("Braintree 3DS Checkout")
                 .backgroundColor("#FF5A5F")
                 .buttonText("Close")
-                .textColor("#222222")
-                .textFontSize(18);
+//                .textColor("#222222")
+                .textColor("#ffff00")
+                .textFontName("Comic Sans")
+                .textFontSize(6);
+//                .textFontSize(18);
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
                 .toolbarCustomization(toolbarCustomization);

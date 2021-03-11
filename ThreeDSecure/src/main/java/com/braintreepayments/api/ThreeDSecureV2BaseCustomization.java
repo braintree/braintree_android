@@ -12,7 +12,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     private String textFontName;
     private String textColor;
     private int textFontSize;
-    protected Customization cardinalValue = new Customization();
+    protected Customization cardinalValue;
 
     public ThreeDSecureV2BaseCustomization() {}
 

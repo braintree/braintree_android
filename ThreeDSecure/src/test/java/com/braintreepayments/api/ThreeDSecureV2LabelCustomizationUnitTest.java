@@ -28,10 +28,8 @@ public class ThreeDSecureV2LabelCustomizationUnitTest {
         assertEquals("#00FF00", cardinalLabelCustomization.getHeadingTextColor());
         assertEquals("Comic Sans", cardinalLabelCustomization.getHeadingTextFontName());
         assertEquals(12, cardinalLabelCustomization.getHeadingTextFontSize());
-
-        Customization cardinalCustomization = sut.getCardinalCustomization();
-        assertEquals("#ff0000", cardinalCustomization.getTextColor());
-        assertEquals(19, cardinalCustomization.getTextFontSize());
-        assertEquals("Arial", cardinalCustomization.getTextFontName());
+        assertEquals("#ff0000", cardinalLabelCustomization.getTextColor());
+        assertEquals(19, cardinalLabelCustomization.getTextFontSize());
+        assertEquals("Arial", cardinalLabelCustomization.getTextFontName());
     }
 }
