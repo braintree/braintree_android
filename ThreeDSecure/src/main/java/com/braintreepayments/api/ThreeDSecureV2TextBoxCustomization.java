@@ -10,22 +10,25 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     private int borderWidth;
     private String borderColor;
     private int cornerRadius;
-    private TextBoxCustomization cardinalValue;
+    private TextBoxCustomization cardinalValue = new TextBoxCustomization();
 
     public ThreeDSecureV2TextBoxCustomization() {}
 
     public ThreeDSecureV2TextBoxCustomization borderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
+        cardinalValue.setBorderWidth(borderWidth);
         return this;
     }
 
     public ThreeDSecureV2TextBoxCustomization borderColor(String borderColor) {
         this.borderColor = borderColor;
+        cardinalValue.setBorderColor(borderColor);
         return this;
     }
 
     public ThreeDSecureV2TextBoxCustomization cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
+        cardinalValue.setCornerRadius(cornerRadius);
         return this;
     }
 
