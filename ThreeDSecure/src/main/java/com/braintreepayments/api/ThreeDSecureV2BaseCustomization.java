@@ -7,6 +7,9 @@ import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 import com.cardinalcommerce.shared.userinterfaces.Customization;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
+/**
+ * Base customization options for 3D Secure 2 flows.
+ */
 public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String textFontName;
@@ -16,32 +19,53 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     public ThreeDSecureV2BaseCustomization() {}
 
+    /**
+     * @param textFontName Font type for the UI element.
+     * @return {@link ThreeDSecureV2BaseCustomization}
+     */
     public ThreeDSecureV2BaseCustomization textFontName(String textFontName) {
         this.textFontName = textFontName;
         cardinalValue.setTextFontName(textFontName);
         return this;
     }
 
+    /**
+     * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @return {@link ThreeDSecureV2BaseCustomization}
+     */
     public ThreeDSecureV2BaseCustomization textColor(String textColor) {
         this.textColor = textColor;
         cardinalValue.setTextColor(textColor);
         return this;
     }
 
+    /**
+     * @param textFontSize Font size for the UI element.
+     * @return {@link ThreeDSecureV2BaseCustomization}
+     */
     public ThreeDSecureV2BaseCustomization textFontSize(int textFontSize) {
         this.textFontSize = textFontSize;
         cardinalValue.setTextFontSize(textFontSize);
         return this;
     }
 
+    /**
+     * @return Font type for the UI element.
+     */
     public String getTextFontName() {
         return textFontName;
     }
 
+    /**
+     * @return Color code in Hex format.
+     */
     public String getTextColor() {
         return textColor;
     }
 
+    /**
+     * @return Font size for the UI element.
+     */
     public int getTextFontSize() {
         return textFontSize;
     }

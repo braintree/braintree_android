@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 
+/**
+ * Text box customization options for 3D Secure 2 flows.
+ */
 public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private int borderWidth;
@@ -16,32 +19,53 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
         super.cardinalValue = cardinalTextBoxCustomization;
     }
 
+    /**
+     * @param borderWidth Width (integer value) of the text box border.
+     * @return {@link ThreeDSecureV2TextBoxCustomization}
+     */
     public ThreeDSecureV2TextBoxCustomization borderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
         cardinalTextBoxCustomization.setBorderWidth(borderWidth);
         return this;
     }
 
+    /**
+     * @param borderColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @return {@link ThreeDSecureV2TextBoxCustomization}
+     */
     public ThreeDSecureV2TextBoxCustomization borderColor(String borderColor) {
         this.borderColor = borderColor;
         cardinalTextBoxCustomization.setBorderColor(borderColor);
         return this;
     }
 
+    /**
+     * @param cornerRadius Radius (integer value) for the text box corners.
+     * @return {@link ThreeDSecureV2TextBoxCustomization}
+     */
     public ThreeDSecureV2TextBoxCustomization cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
         cardinalTextBoxCustomization.setCornerRadius(cornerRadius);
         return this;
     }
 
+    /**
+     * @return Width (integer value) of the text box border.
+     */
     public int getBorderWidth() {
         return borderWidth;
     }
 
+    /**
+     * @return Color code in Hex format.
+     */
     public String getBorderColor() {
         return borderColor;
     }
 
+    /**
+     * @return Radius (integer value) for the text box corners.
+     */
     public int getCornerRadius() {
         return cornerRadius;
     }

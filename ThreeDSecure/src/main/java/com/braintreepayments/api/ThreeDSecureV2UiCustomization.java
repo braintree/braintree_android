@@ -16,8 +16,14 @@ import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * UI customization options for 3D Secure 2 flows.
+ */
 public class ThreeDSecureV2UiCustomization implements Parcelable {
 
+    /**
+     * Button types that can be customized in 3D Secure 2 flows.
+     */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({BUTTON_TYPE_VERIFY, BUTTON_TYPE_CONTINUE, BUTTON_TYPE_NEXT, BUTTON_TYPE_CANCEL, BUTTON_TYPE_RESEND})
     @interface ThreeDSecureV2ButtonType {}
@@ -36,6 +42,12 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
 
     public ThreeDSecureV2UiCustomization() {}
 
+    /**
+     * Set button customization options for 3D Secure 2 flows.
+     * @param buttonCustomization {@link ThreeDSecureV2ButtonCustomization}
+     * @param buttonType Button type
+     * @return
+     */
     public ThreeDSecureV2UiCustomization buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
         this.buttonType = buttonType;
@@ -43,36 +55,63 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
         return this;
     }
 
+    /**
+     * Label customization options for 3D Secure 2 flows.
+     * @param labelCustomization {@link ThreeDSecureV2LabelCustomization}
+     * @return
+     */
     public ThreeDSecureV2UiCustomization labelCustomization(ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
         cardinalValue.setLabelCustomization(labelCustomization.getCardinalLabelCustomization());
         return this;
     }
 
+    /**
+     * Text box customization options for 3D Secure 2 flows.
+     * @param textBoxCustomization {@link ThreeDSecureV2TextBoxCustomization}
+     * @return
+     */
     public ThreeDSecureV2UiCustomization textBoxCustomization(ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
         cardinalValue.setTextBoxCustomization(textBoxCustomization.getCardinalTextBoxCustomization());
         return this;
     }
 
+    /**
+     * Toolbar customization options for 3D Secure 2 flows.
+     * @param toolbarCustomization {@link ThreeDSecureV2ToolbarCustomization}
+     * @return
+     */
     public ThreeDSecureV2UiCustomization toolbarCustomization(ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
         cardinalValue.setToolbarCustomization(toolbarCustomization.getCardinalToolbarCustomization());
         return this;
     }
 
+    /**
+     * @return {@link ThreeDSecureV2ButtonCustomization}
+     */
     public ThreeDSecureV2ButtonCustomization getButtonCustomization() {
         return buttonCustomization;
     }
 
+    /**
+     * @return {@link ThreeDSecureV2LabelCustomization}
+     */
     public ThreeDSecureV2LabelCustomization getLabelCustomization() {
         return labelCustomization;
     }
 
+    /**
+     * @return {@link ThreeDSecureV2TextBoxCustomization}
+     */
     public ThreeDSecureV2TextBoxCustomization getTextBoxCustomization() {
         return textBoxCustomization;
     }
 
+    /**
+     * @return {@link ThreeDSecureV2ToolbarCustomization}
+     */
     public ThreeDSecureV2ToolbarCustomization getToolbarCustomization() {
         return toolbarCustomization;
     }

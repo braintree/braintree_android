@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 
+/**
+ * Button customization options for 3D Secure 2 flows.
+ */
 public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String backgroundColor;
@@ -15,22 +18,36 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
         super.cardinalValue = cardinalButtonCustomization;
     }
 
+    /**
+     * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @return {@link ThreeDSecureV2ButtonCustomization}
+     */
     public ThreeDSecureV2ButtonCustomization backgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
         return this;
     }
 
+    /**
+     * @param cornerRadius Radius (integer value) for the button corners.
+     * @return {@link ThreeDSecureV2ButtonCustomization}
+     */
     public ThreeDSecureV2ButtonCustomization cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
         cardinalButtonCustomization.setCornerRadius(cornerRadius);
         return this;
     }
 
+    /**
+     * @return Color code in Hex format.
+     */
     public String getBackgroundColor() {
         return backgroundColor;
     }
 
+    /**
+     * @return Radius (integer value) for the button corners.
+     */
     public int getCornerRadius() {
         return cornerRadius;
     }

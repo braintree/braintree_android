@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 
+/**
+ * Label customization options for 3D Secure 2 flows.
+ */
 public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String headingTextColor;
@@ -16,32 +19,53 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         super.cardinalValue = cardinalLabelCustomization;
     }
 
+    /**
+     * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @return {@link ThreeDSecureV2LabelCustomization}
+     */
     public ThreeDSecureV2LabelCustomization headingTextColor(String headingTextColor) {
         this.headingTextColor = headingTextColor;
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
         return this;
     }
 
+    /**
+     * @param headingTextFontName Font type for the heading label text.
+     * @return {@link ThreeDSecureV2LabelCustomization}
+     */
     public ThreeDSecureV2LabelCustomization headingTextFontName(String headingTextFontName) {
         this.headingTextFontName = headingTextFontName;
         cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
         return this;
     }
 
+    /**
+     * @param headingTextFontSize Font size for the heading label text.
+     * @return {@link ThreeDSecureV2LabelCustomization}
+     */
     public ThreeDSecureV2LabelCustomization headingTextFontSize(int headingTextFontSize) {
         this.headingTextFontSize = headingTextFontSize;
         cardinalLabelCustomization.setHeadingTextFontSize(headingTextFontSize);
         return this;
     }
 
+    /**
+     * @return Color code in Hex format.
+     */
     public String getHeadingTextColor() {
         return headingTextColor;
     }
 
+    /**
+     * @return Font type for the heading label text.
+     */
     public String getHeadingTextFontName() {
         return headingTextFontName;
     }
 
+    /**
+     * @return Font size for the heading label text.
+     */
     public int getHeadingTextFontSize() {
         return headingTextFontSize;
     }
