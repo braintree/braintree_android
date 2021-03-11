@@ -51,6 +51,7 @@
     * `SHIP_TO_STORE`
   * Change default `versionRequested` on `ThreeDSecureRequest` to `ThreeDSecureVersion.VERSION_2`
   * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization` and change parameter to `ThreeDSecureV2UiCustomization`
+  * Change Cardinal dependency from `api` to `implementation`
   * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
 
