@@ -75,9 +75,8 @@ public class PayPalRequest {
      *
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
-    public PayPalRequest shippingAddressRequired(boolean shippingAddressRequired) {
+    public void shippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
-        return this;
     }
 
     /**
@@ -87,9 +86,8 @@ public class PayPalRequest {
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
-    public PayPalRequest shippingAddressEditable(boolean shippingAddressEditable) {
+    public void shippingAddressEditable(boolean shippingAddressEditable) {
         mShippingAddressEditable = shippingAddressEditable;
-        return this;
     }
 
     /**
@@ -127,9 +125,8 @@ public class PayPalRequest {
      *
      * @param localeCode Whether to use a custom locale code.
      */
-    public PayPalRequest localeCode(String localeCode) {
+    public void localeCode(String localeCode) {
         mLocaleCode = localeCode;
-        return this;
     }
 
     /**
@@ -137,9 +134,8 @@ public class PayPalRequest {
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
-    public PayPalRequest displayName(String displayName) {
+    public void displayName(String displayName) {
         mDisplayName = displayName;
-        return this;
     }
 
     /**
@@ -147,9 +143,8 @@ public class PayPalRequest {
      *
      * @param description The description to display.
      */
-    public PayPalRequest billingAgreementDescription(String description) {
+    public void billingAgreementDescription(String description) {
         mBillingAgreementDescription = description;
-        return this;
     }
 
     /**
@@ -157,9 +152,8 @@ public class PayPalRequest {
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public PayPalRequest shippingAddressOverride(PostalAddress shippingAddressOverride) {
+    public void shippingAddressOverride(PostalAddress shippingAddressOverride) {
         mShippingAddressOverride = shippingAddressOverride;
-        return this;
     }
 
     /**
@@ -172,9 +166,8 @@ public class PayPalRequest {
      *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
-    public PayPalRequest landingPageType(@PayPalLandingPageType String landingPageType) {
+    public void landingPageType(@PayPalLandingPageType String landingPageType) {
         mLandingPageType = landingPageType;
-        return this;
     }
 
     /**
@@ -188,9 +181,8 @@ public class PayPalRequest {
      *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
-    public PayPalRequest userAction(@PayPalPaymentUserAction String userAction) {
+    public void userAction(@PayPalPaymentUserAction String userAction) {
         mUserAction = userAction;
-        return this;
     }
 
     /**
@@ -199,9 +191,8 @@ public class PayPalRequest {
      *
      * @param offerCredit Whether to offer PayPal Credit.
      */
-    public PayPalRequest offerCredit(boolean offerCredit) {
+    public void offerCredit(boolean offerCredit) {
         mOfferCredit = offerCredit;
-        return this;
     }
 
     /**
@@ -209,9 +200,8 @@ public class PayPalRequest {
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
-    public PayPalRequest merchantAccountId(String merchantAccountId) {
+    public void merchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
-        return this;
     }
 
     /**
@@ -219,10 +209,9 @@ public class PayPalRequest {
      *
      * @param lineItems a collection of {@link PayPalLineItem}
      */
-    public PayPalRequest lineItems(Collection<PayPalLineItem> lineItems) {
+    public void lineItems(Collection<PayPalLineItem> lineItems) {
         mLineItems.clear();
         mLineItems.addAll(lineItems);
-        return this;
     }
 
     public String getLocaleCode() {

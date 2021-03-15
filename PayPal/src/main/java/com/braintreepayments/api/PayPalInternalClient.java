@@ -77,7 +77,7 @@ class PayPalInternalClient {
                         public void success(String responseBody) {
                             try {
                                 PayPalResponse payPalResponse = new PayPalResponse()
-                                        .intent(payPalRequest.getIntent())
+//                                        .intent(payPalRequest.getIntent())
                                         .isBillingAgreement(isBillingAgreement)
                                         .merchantAccountId(payPalRequest.getMerchantAccountId())
                                         .successUrl(successUrl);
@@ -127,8 +127,8 @@ class PayPalInternalClient {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
-                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit())
-                .put(OFFER_PAY_LATER_KEY, payPalRequest.shouldOfferPayLater());
+                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit());
+//                .put(OFFER_PAY_LATER_KEY, payPalRequest.shouldOfferPayLater());
 
         Authorization authorization = braintreeClient.getAuthorization();
         if (authorization instanceof ClientToken) {
@@ -143,15 +143,15 @@ class PayPalInternalClient {
                 parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
             }
         } else {
-            String currencyCode = payPalRequest.getCurrencyCode();
-            if (currencyCode == null) {
-                currencyCode = configuration.getPayPalCurrencyIsoCode();
-            }
-
-            parameters
-                    .put(AMOUNT_KEY, payPalRequest.getAmount())
-                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
-                    .put(INTENT_KEY, payPalRequest.getIntent());
+//            String currencyCode = payPalRequest.getCurrencyCode();
+//            if (currencyCode == null) {
+//                currencyCode = configuration.getPayPalCurrencyIsoCode();
+//            }
+//
+//            parameters
+//                    .put(AMOUNT_KEY, payPalRequest.getAmount())
+//                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
+//                    .put(INTENT_KEY, payPalRequest.getIntent());
 
             if (!payPalRequest.getLineItems().isEmpty()) {
                 JSONArray lineItems = new JSONArray();

@@ -52,7 +52,7 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-        sut.requestBillingAgreement(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
+//        sut.requestBillingAgreement(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(payPalFlowStartedCallback).onResult(errorCaptor.capture());
@@ -196,8 +196,8 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+//        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
+//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
         verify(payPalFlowStartedCallback).onResult(null);
 
@@ -229,7 +229,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-        sut.requestOneTimePayment(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
+//        sut.requestOneTimePayment(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(payPalFlowStartedCallback).onResult(errorCaptor.capture());
@@ -250,7 +250,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-        sut.requestOneTimePayment(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
+//        sut.requestOneTimePayment(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(payPalFlowStartedCallback).onResult(errorCaptor.capture());
@@ -283,8 +283,8 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+//        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
+//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");
@@ -297,7 +297,7 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-        sut.requestOneTimePayment(context, new PayPalRequest().amount("1").offerPayLater(true), payPalFlowStartedCallback);
+//        sut.requestOneTimePayment(context, new PayPalRequest().amount("1").offerPayLater(true), payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
     }
@@ -328,12 +328,12 @@ public class PayPalClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
-        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
+//        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
-        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
+//        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -342,10 +342,10 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        PayPalRequest payPalRequest = new PayPalRequest().offerCredit(true);
+//        PayPalRequest payPalRequest = new PayPalRequest().offerCredit(true);
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
+//        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
     }
@@ -617,8 +617,8 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00").offerCredit(true);
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+//        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00").offerCredit(true);
+//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.credit.offered");
     }

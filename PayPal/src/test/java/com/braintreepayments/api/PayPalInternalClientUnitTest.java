@@ -68,16 +68,16 @@ public class PayPalInternalClientUnitTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .billingAgreementDescription("Billing Agreement Description")
-                .merchantAccountId("sample-merchant-account-id")
-                .landingPageType("sample-landing-page-type")
-                .displayName("sample-display-name")
-                .localeCode("US")
-                .shippingAddressRequired(true)
-                .shippingAddressEditable(true)
-                .offerCredit(true)
-                .shippingAddressOverride(shippingAddressOverride);
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.billingAgreementDescription("Billing Agreement Description");
+        payPalRequest.merchantAccountId("sample-merchant-account-id");
+        payPalRequest.landingPageType("sample-landing-page-type");
+        payPalRequest.displayName("sample-display-name");
+        payPalRequest.localeCode("US");
+        payPalRequest.shippingAddressRequired(true);
+        payPalRequest.shippingAddressEditable(true);
+        payPalRequest.offerCredit(true);
+        payPalRequest.shippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
@@ -139,20 +139,19 @@ public class PayPalInternalClientUnitTest {
         item.setUnitTaxAmount("1.50");
         item.setUrl("http://example.com");
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .amount("1.00")
-                .currencyCode("USD")
-                .intent("authorize")
-                .merchantAccountId("sample-merchant-account-id")
-                .landingPageType("sample-landing-page-type")
-                .displayName("sample-display-name")
-                .localeCode("US")
-                .shippingAddressRequired(true)
-                .shippingAddressEditable(true)
-                .offerCredit(true)
-                .offerPayLater(true)
-                .lineItems(Collections.singletonList(item))
-                .shippingAddressOverride(shippingAddressOverride);
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+        payPalRequest.setCurrencyCode("USD");
+        payPalRequest.setIntent("authorize");
+        payPalRequest.merchantAccountId("sample-merchant-account-id");
+        payPalRequest.landingPageType("sample-landing-page-type");
+        payPalRequest.displayName("sample-display-name");
+        payPalRequest.localeCode("US");
+        payPalRequest.shippingAddressRequired(true);
+        payPalRequest.shippingAddressEditable(true);
+        payPalRequest.offerCredit(true);
+        payPalRequest.setOfferPayLater(true);
+        payPalRequest.lineItems(Collections.singletonList(item));
+        payPalRequest.shippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
 
@@ -231,7 +230,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().displayName("");
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.displayName("");
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -252,7 +252,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().localeCode(null);
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.localeCode(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -273,7 +274,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().merchantAccountId(null);
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.merchantAccountId(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -294,7 +296,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().shippingAddressOverride(null);
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.shippingAddressOverride(null);
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -316,9 +319,9 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .shippingAddressEditable(false)
-                .shippingAddressOverride(new PostalAddress());
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.shippingAddressEditable(false);
+        payPalRequest.shippingAddressOverride(new PostalAddress());
 
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
@@ -340,7 +343,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().billingAgreementDescription("");
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.billingAgreementDescription("");
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -382,7 +386,8 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest().lineItems(new ArrayList<PayPalLineItem>());
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.lineItems(new ArrayList<PayPalLineItem>());
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -407,10 +412,10 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .intent("authorize")
-                .merchantAccountId("sample-merchant-account-id")
-                .userAction(PayPalRequest.USER_ACTION_COMMIT);
+        PayPalRequest payPalRequest = new PayPalRequest();
+//                payPalRequest.intent("authorize");
+        payPalRequest.merchantAccountId("sample-merchant-account-id");
+        payPalRequest.userAction(PayPalRequest.USER_ACTION_COMMIT);
 
         sut.sendRequest(context, payPalRequest, true, payPalInternalClientCallback);
 
@@ -443,10 +448,10 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .intent("authorize")
-                .merchantAccountId("sample-merchant-account-id")
-                .userAction(PayPalRequest.USER_ACTION_COMMIT);
+        PayPalRequest payPalRequest = new PayPalRequest();
+//                .intent("authorize")
+        payPalRequest.merchantAccountId("sample-merchant-account-id");
+        payPalRequest.userAction(PayPalRequest.USER_ACTION_COMMIT);
 
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
 
@@ -476,9 +481,9 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PayPalRequest payPalRequest = new PayPalRequest()
-                .intent("authorize")
-                .merchantAccountId("sample-merchant-account-id");
+        PayPalRequest payPalRequest = new PayPalRequest();
+//                .intent("authorize")
+        payPalRequest.merchantAccountId("sample-merchant-account-id");
 
         sut.sendRequest(context, payPalRequest, false, payPalInternalClientCallback);
 

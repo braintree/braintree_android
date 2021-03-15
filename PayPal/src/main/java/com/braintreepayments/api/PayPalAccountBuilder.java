@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.PayPalRequest.PayPalPaymentIntent;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,10 +57,10 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     * @param intent Can be either {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} or {@link PayPalCheckoutRequest#INTENT_SALE}.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder intent(@PayPalPaymentIntent String intent) {
+    public PayPalAccountBuilder intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
         mIntent = intent;
         return this;
     }

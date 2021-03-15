@@ -5,7 +5,7 @@ import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class PayPalCheckoutRequest {
+public class PayPalCheckoutRequest extends PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalCheckoutRequest.INTENT_ORDER, PayPalCheckoutRequest.INTENT_SALE, PayPalCheckoutRequest.INTENT_AUTHORIZE})
