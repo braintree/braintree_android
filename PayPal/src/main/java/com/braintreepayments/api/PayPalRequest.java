@@ -20,13 +20,6 @@ import java.util.Collection;
 public class PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalRequest.INTENT_ORDER, PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
-    @interface PayPalPaymentIntent {}
-    public static final String INTENT_ORDER = "order";
-    public static final String INTENT_SALE = "sale";
-    public static final String INTENT_AUTHORIZE = "authorize";
-
-    @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {}
 
@@ -57,19 +50,15 @@ public class PayPalRequest {
      */
     public static final String USER_ACTION_COMMIT = "commit";
 
-    private String mAmount;
-    private String mCurrencyCode;
     private String mLocaleCode;
     private String mBillingAgreementDescription;
     private boolean mShippingAddressRequired;
     private boolean mShippingAddressEditable = false;
     private PostalAddress mShippingAddressOverride;
-    private String mIntent = INTENT_AUTHORIZE;
     private String mLandingPageType;
     private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
     private boolean mOfferCredit;
-    private boolean mOfferPayLater;
     private String mMerchantAccountId;
     private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
@@ -79,38 +68,6 @@ public class PayPalRequest {
     public PayPalRequest() {
         mShippingAddressRequired = false;
         mOfferCredit = false;
-        mOfferPayLater = false;
-    }
-
-    /**
-     * This amount may differ slightly from the transaction amount. The exact decline rules
-     * for mismatches between this client-side amount and the final amount in the Transaction
-     * are determined by the gateway.
-     *
-     * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
-     * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
-     * number, may optionally contain exactly 2 decimal places separated by '.', optional
-     * thousands separator ',', limited to 7 digits before the decimal point.
-     *
-     * This value must be null for Billing Agreements.
-     */
-    public PayPalRequest amount(@Nullable String amount) {
-        mAmount = amount;
-        return this;
-    }
-
-    /**
-     * Optional: A valid ISO currency code to use for the transaction. Defaults to merchant currency
-     * code if not set.
-     *
-     * If unspecified, the currency code will be chosen based on the active merchant account in the
-     * client token.
-     *
-     * @param currencyCode A currency code, such as "USD"
-     */
-    public PayPalRequest currencyCode(String currencyCode) {
-        mCurrencyCode = currencyCode;
-        return this;
     }
 
     /**
@@ -206,30 +163,6 @@ public class PayPalRequest {
     }
 
     /**
-     * Payment intent. Must be set to {@link #INTENT_SALE} for immediate payment,
-     * {@link #INTENT_AUTHORIZE} to authorize a payment for capture later, or
-     * {@link #INTENT_ORDER} to create an order.
-     *
-     * Defaults to authorize. Only works in the Single Payment flow.
-     *
-     * @param intent Must be a {@link PayPalPaymentIntent} value:
-     * <ul>
-     * <li>{@link PayPalRequest#INTENT_AUTHORIZE} to authorize a payment for capture later </li>
-     * <li>{@link PayPalRequest#INTENT_ORDER} to create an order </li>
-     * <li>{@link PayPalRequest#INTENT_SALE} for immediate payment </li>
-     * </ul>
-     *
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent" under the "payment" definition</a>
-     * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
-     * for more information
-     *
-     */
-    public PayPalRequest intent(@PayPalPaymentIntent String intent) {
-        mIntent = intent;
-        return this;
-    }
-
-    /**
      * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
      *
      * @param landingPageType Must be a {@link PayPalLandingPageType} value:
@@ -272,16 +205,6 @@ public class PayPalRequest {
     }
 
     /**
-     * Offers PayPal Pay Later prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
-     *
-     * @param offerPayLater Whether to offer PayPal Pay Later.
-     */
-    public PayPalRequest offerPayLater(boolean offerPayLater) {
-        mOfferPayLater = offerPayLater;
-        return this;
-    }
-
-    /**
      * Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -300,14 +223,6 @@ public class PayPalRequest {
         mLineItems.clear();
         mLineItems.addAll(lineItems);
         return this;
-    }
-
-    public String getAmount() {
-        return mAmount;
-    }
-
-    public String getCurrencyCode() {
-        return mCurrencyCode;
     }
 
     public String getLocaleCode() {
@@ -338,21 +253,12 @@ public class PayPalRequest {
         return mOfferCredit;
     }
 
-    public boolean shouldOfferPayLater() {
-        return mOfferPayLater;
-    }
-
     public String getMerchantAccountId() {
         return mMerchantAccountId;
     }
 
     public ArrayList<PayPalLineItem> getLineItems() {
         return mLineItems;
-    }
-
-    @PayPalPaymentIntent
-    public String getIntent() {
-        return mIntent;
     }
 
     @PayPalLandingPageType
