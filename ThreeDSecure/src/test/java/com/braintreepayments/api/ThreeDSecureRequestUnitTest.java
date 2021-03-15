@@ -2,9 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -47,14 +44,14 @@ public class ThreeDSecureRequestUnitTest {
                 .postalCode("54321");
 
         ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
-        labelCustomization.headingTextColor("#FFA5FF");
+        labelCustomization.setHeadingTextColor("#FFA5FF");
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
-        v2UiCustomization.labelCustomization(labelCustomization);
+        v2UiCustomization.setLabelCustomization(labelCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
-        v1UiCustomization.redirectButtonText("return-button-text");
-        v1UiCustomization.redirectDescription("return-label-text");
+        v1UiCustomization.setRedirectButtonText("return-button-text");
+        v1UiCustomization.setRedirectDescription("return-label-text");
 
         ThreeDSecureRequest expected = new ThreeDSecureRequest()
                 .nonce("a-nonce")

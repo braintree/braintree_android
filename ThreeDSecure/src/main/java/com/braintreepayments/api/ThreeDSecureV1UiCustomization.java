@@ -18,7 +18,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display in the button.
      */
-    public void redirectButtonText(String text) {
+    public void setRedirectButtonText(String text) {
         mRedirectButtonText = text;
     }
 
@@ -27,7 +27,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display below the button.
      */
-    public void redirectDescription(String text) {
+    public void setRedirectDescription(String text) {
         mRedirectDescription = text;
     }
 

@@ -21,7 +21,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void backgroundColor(String backgroundColor) {
+    public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
     }
@@ -29,7 +29,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     /**
      * @param cornerRadius Radius (integer value) for the button corners.
      */
-    public void cornerRadius(int cornerRadius) {
+    public void setCornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
         cardinalButtonCustomization.setCornerRadius(cornerRadius);
     }

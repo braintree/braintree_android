@@ -16,12 +16,12 @@ public class ThreeDSecureV2LabelCustomizationUnitTest {
     @Test
     public void setsAllCardinalClassProperties() {
         ThreeDSecureV2LabelCustomization sut = new ThreeDSecureV2LabelCustomization();
-        sut.headingTextColor("#00FF00");
-        sut.headingTextFontName("Comic Sans");
-        sut.headingTextFontSize(12);
-        sut.textColor("#ff0000");
-        sut.textFontSize(19);
-        sut.textFontName("Arial");
+        sut.setHeadingTextColor("#00FF00");
+        sut.setHeadingTextFontName("Comic Sans");
+        sut.setHeadingTextFontSize(12);
+        sut.setTextColor("#ff0000");
+        sut.setTextFontSize(19);
+        sut.setTextFontName("Arial");
 
         LabelCustomization cardinalLabelCustomization = sut.getCardinalLabelCustomization();
         assertEquals("#00FF00", cardinalLabelCustomization.getHeadingTextColor());
@@ -35,12 +35,12 @@ public class ThreeDSecureV2LabelCustomizationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecureV2LabelCustomization customization = new ThreeDSecureV2LabelCustomization();
-        customization.headingTextColor("#FFFFFF");
-        customization.headingTextFontName("Times New Roman");
-        customization.headingTextFontSize(30);
-        customization.textColor("#121212");
-        customization.textFontName("Helvetica");
-        customization.textFontSize(15);
+        customization.setHeadingTextColor("#FFFFFF");
+        customization.setHeadingTextFontName("Times New Roman");
+        customization.setHeadingTextFontSize(30);
+        customization.setTextColor("#121212");
+        customization.setTextFontName("Helvetica");
+        customization.setTextFontSize(15);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

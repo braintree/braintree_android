@@ -14,8 +14,8 @@ public class ThreeDSecureV1UiCustomizationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecureV1UiCustomization customization = new ThreeDSecureV1UiCustomization();
-        customization.redirectButtonText("some-button-text");
-        customization.redirectDescription("some-label-text");
+        customization.setRedirectButtonText("some-button-text");
+        customization.setRedirectDescription("some-label-text");
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

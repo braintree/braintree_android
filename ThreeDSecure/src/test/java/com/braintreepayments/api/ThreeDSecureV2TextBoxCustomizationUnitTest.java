@@ -16,12 +16,12 @@ public class ThreeDSecureV2TextBoxCustomizationUnitTest {
     @Test
     public void setsAllCardinalClassProperties() {
         ThreeDSecureV2TextBoxCustomization sut = new ThreeDSecureV2TextBoxCustomization();
-        sut.borderColor("#FFA500");
-        sut.borderWidth(1);
-        sut.cornerRadius(7);
-        sut.textColor("#0000ff");
-        sut.textFontSize(5);
-        sut.textFontName("Arial");
+        sut.setBorderColor("#FFA500");
+        sut.setBorderWidth(1);
+        sut.setCornerRadius(7);
+        sut.setTextColor("#0000ff");
+        sut.setTextFontSize(5);
+        sut.setTextFontName("Arial");
 
         TextBoxCustomization cardinalTextBoxCustomization = sut.getCardinalTextBoxCustomization();
         assertEquals("#FFA500", cardinalTextBoxCustomization.getBorderColor());
@@ -35,12 +35,12 @@ public class ThreeDSecureV2TextBoxCustomizationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecureV2TextBoxCustomization customization = new ThreeDSecureV2TextBoxCustomization();
-        customization.borderColor("#FFFFFF");
-        customization.borderWidth(10);
-        customization.cornerRadius(5);
-        customization.textColor("#121212");
-        customization.textFontName("Helvetica");
-        customization.textFontSize(15);
+        customization.setBorderColor("#FFFFFF");
+        customization.setBorderWidth(10);
+        customization.setCornerRadius(5);
+        customization.setTextColor("#121212");
+        customization.setTextFontName("Helvetica");
+        customization.setTextFontSize(15);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

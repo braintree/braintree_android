@@ -17,12 +17,12 @@ public class ThreeDSecureV2ToolbarCustomizationUnitTest {
     @Test
     public void setsAllCardinalClassProperties() {
         ThreeDSecureV2ToolbarCustomization sut = new ThreeDSecureV2ToolbarCustomization();
-        sut.backgroundColor("#0000ff");
-        sut.headerText("Header Text");
-        sut.buttonText("Button");
-        sut.textColor("#FF0000");
-        sut.textFontSize(12);
-        sut.textFontName("Helvetica");
+        sut.setBackgroundColor("#0000ff");
+        sut.setHeaderText("Header Text");
+        sut.setButtonText("Button");
+        sut.setTextColor("#FF0000");
+        sut.setTextFontSize(12);
+        sut.setTextFontName("Helvetica");
 
         ToolbarCustomization cardinalToolbarCustomization = sut.getCardinalToolbarCustomization();
         assertEquals("#0000ff", cardinalToolbarCustomization.getBackgroundColor());
@@ -36,12 +36,12 @@ public class ThreeDSecureV2ToolbarCustomizationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecureV2ToolbarCustomization customization = new ThreeDSecureV2ToolbarCustomization();
-        customization.backgroundColor("#FFFFFF");
-        customization.buttonText("Button");
-        customization.headerText("Header");
-        customization.textColor("#121212");
-        customization.textFontName("Helvetica");
-        customization.textFontSize(15);
+        customization.setBackgroundColor("#FFFFFF");
+        customization.setButtonText("Button");
+        customization.setHeaderText("Header");
+        customization.setTextColor("#121212");
+        customization.setTextFontName("Helvetica");
+        customization.setTextFontSize(15);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

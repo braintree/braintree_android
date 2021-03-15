@@ -60,8 +60,8 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         String assetsUrl = "https://assets.com";
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
-        v1UiCustomization.redirectButtonText("button text");
-        v1UiCustomization.redirectDescription("description text");
+        v1UiCustomization.setRedirectButtonText("button text");
+        v1UiCustomization.setRedirectDescription("description text");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .v1UiCustomization(v1UiCustomization);

@@ -20,7 +20,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @param textFontName Font type for the UI element.
      */
-    public void textFontName(String textFontName) {
+    public void setTextFontName(String textFontName) {
         this.textFontName = textFontName;
         cardinalValue.setTextFontName(textFontName);
     }
@@ -28,7 +28,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void textColor(String textColor) {
+    public void setTextColor(String textColor) {
         this.textColor = textColor;
         cardinalValue.setTextColor(textColor);
     }
@@ -36,7 +36,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @param textFontSize Font size for the UI element.
      */
-    public void textFontSize(int textFontSize) {
+    public void setTextFontSize(int textFontSize) {
         this.textFontSize = textFontSize;
         cardinalValue.setTextFontSize(textFontSize);
     }

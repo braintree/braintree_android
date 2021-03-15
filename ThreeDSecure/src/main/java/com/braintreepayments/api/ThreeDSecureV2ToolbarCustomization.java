@@ -22,7 +22,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void backgroundColor(String backgroundColor) {
+    public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
         cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
     }
@@ -30,7 +30,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param headerText Text for the header.
      */
-    public void headerText(String headerText) {
+    public void setHeaderText(String headerText) {
         this.headerText = headerText;
         cardinalToolbarCustomization.setHeaderText(headerText);
     }
@@ -38,7 +38,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param buttonText Text for the button. For example, “Cancel”.
      */
-    public void buttonText(String buttonText) {
+    public void setButtonText(String buttonText) {
         this.buttonText = buttonText;
         cardinalToolbarCustomization.setButtonText(buttonText);
     }

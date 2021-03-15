@@ -16,11 +16,11 @@ public class ThreeDSecureV2ButtonCustomizationUnitTest {
     @Test
     public void setsAllCardinalClassProperties() {
         ThreeDSecureV2ButtonCustomization sut = new ThreeDSecureV2ButtonCustomization();
-        sut.backgroundColor("#00FF00");
-        sut.cornerRadius(5);
-        sut.textColor("#ff0000");
-        sut.textFontSize(11);
-        sut.textFontName("Times New Roman");
+        sut.setBackgroundColor("#00FF00");
+        sut.setCornerRadius(5);
+        sut.setTextColor("#ff0000");
+        sut.setTextFontSize(11);
+        sut.setTextFontName("Times New Roman");
 
         ButtonCustomization cardinalButtonCustomization = sut.getCardinalButtonCustomization();
         assertEquals("#00FF00", cardinalButtonCustomization.getBackgroundColor());
@@ -33,11 +33,11 @@ public class ThreeDSecureV2ButtonCustomizationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecureV2ButtonCustomization customization = new ThreeDSecureV2ButtonCustomization();
-        customization.backgroundColor("#FFFFFF");
-        customization.cornerRadius(5);
-        customization.textColor("#121212");
-        customization.textFontName("Helvetica");
-        customization.textFontSize(15);
+        customization.setBackgroundColor("#FFFFFF");
+        customization.setCornerRadius(5);
+        customization.setTextColor("#121212");
+        customization.setTextFontName("Helvetica");
+        customization.setTextFontSize(15);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

@@ -390,18 +390,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .accountId("account-id");
 
         ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
-        toolbarCustomization.headerText("Braintree 3DS Checkout");
-        toolbarCustomization.backgroundColor("#FF5A5F");
-        toolbarCustomization.buttonText("Close");
-        toolbarCustomization.textColor("#222222");
-        toolbarCustomization.textFontSize(18);
+        toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
+        toolbarCustomization.setBackgroundColor("#FF5A5F");
+        toolbarCustomization.setButtonText("Close");
+        toolbarCustomization.setTextColor("#222222");
+        toolbarCustomization.setTextFontSize(18);
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
-        v2UiCustomization.toolbarCustomization(toolbarCustomization);
+        v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
-        v1UiCustomization.redirectButtonText("Return to Demo App");
-        v1UiCustomization.redirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
+        v1UiCustomization.setRedirectButtonText("Return to Demo App");
+        v1UiCustomization.setRedirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         return new ThreeDSecureRequest()
                 .amount("10")

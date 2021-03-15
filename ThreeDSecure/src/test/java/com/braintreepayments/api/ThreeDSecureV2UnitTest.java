@@ -51,10 +51,10 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
-        textBoxCustomization.borderWidth(12);
+        textBoxCustomization.setBorderWidth(12);
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
-        v2UiCustomization.textBoxCustomization(textBoxCustomization);
+        v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
