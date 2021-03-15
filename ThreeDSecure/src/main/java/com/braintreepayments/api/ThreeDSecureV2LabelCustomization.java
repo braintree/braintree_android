@@ -21,32 +21,26 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
 
     /**
      * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
-     * @return {@link ThreeDSecureV2LabelCustomization}
      */
-    public ThreeDSecureV2LabelCustomization headingTextColor(String headingTextColor) {
+    public void headingTextColor(String headingTextColor) {
         this.headingTextColor = headingTextColor;
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
-        return this;
     }
 
     /**
      * @param headingTextFontName Font type for the heading label text.
-     * @return {@link ThreeDSecureV2LabelCustomization}
      */
-    public ThreeDSecureV2LabelCustomization headingTextFontName(String headingTextFontName) {
+    public void headingTextFontName(String headingTextFontName) {
         this.headingTextFontName = headingTextFontName;
         cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
-        return this;
     }
 
     /**
      * @param headingTextFontSize Font size for the heading label text.
-     * @return {@link ThreeDSecureV2LabelCustomization}
      */
-    public ThreeDSecureV2LabelCustomization headingTextFontSize(int headingTextFontSize) {
+    public void headingTextFontSize(int headingTextFontSize) {
         this.headingTextFontSize = headingTextFontSize;
         cardinalLabelCustomization.setHeadingTextFontSize(headingTextFontSize);
-        return this;
     }
 
     /**

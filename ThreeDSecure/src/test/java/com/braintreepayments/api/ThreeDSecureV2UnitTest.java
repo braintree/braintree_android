@@ -50,8 +50,8 @@ public class ThreeDSecureV2UnitTest {
                 .cardinalAuthenticationJWT("cardinal_authentication_jwt")
                 .buildConfiguration();
 
-        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization()
-                .borderWidth(12);
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        textBoxCustomization.borderWidth(12);
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.textBoxCustomization(textBoxCustomization);

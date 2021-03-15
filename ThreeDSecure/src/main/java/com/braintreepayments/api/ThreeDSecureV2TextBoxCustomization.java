@@ -21,32 +21,26 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
 
     /**
      * @param borderWidth Width (integer value) of the text box border.
-     * @return {@link ThreeDSecureV2TextBoxCustomization}
      */
-    public ThreeDSecureV2TextBoxCustomization borderWidth(int borderWidth) {
+    public void borderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
         cardinalTextBoxCustomization.setBorderWidth(borderWidth);
-        return this;
     }
 
     /**
      * @param borderColor Color code in Hex format. For example, the color code can be “#999999”.
-     * @return {@link ThreeDSecureV2TextBoxCustomization}
      */
-    public ThreeDSecureV2TextBoxCustomization borderColor(String borderColor) {
+    public void borderColor(String borderColor) {
         this.borderColor = borderColor;
         cardinalTextBoxCustomization.setBorderColor(borderColor);
-        return this;
     }
 
     /**
      * @param cornerRadius Radius (integer value) for the text box corners.
-     * @return {@link ThreeDSecureV2TextBoxCustomization}
      */
-    public ThreeDSecureV2TextBoxCustomization cornerRadius(int cornerRadius) {
+    public void cornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
         cardinalTextBoxCustomization.setCornerRadius(cornerRadius);
-        return this;
     }
 
     /**

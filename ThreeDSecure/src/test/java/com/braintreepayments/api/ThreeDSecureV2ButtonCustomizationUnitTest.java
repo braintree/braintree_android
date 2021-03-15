@@ -15,12 +15,12 @@ public class ThreeDSecureV2ButtonCustomizationUnitTest {
 
     @Test
     public void setsAllCardinalClassProperties() {
-        ThreeDSecureV2ButtonCustomization sut = (ThreeDSecureV2ButtonCustomization) new ThreeDSecureV2ButtonCustomization()
-                .backgroundColor("#00FF00")
-                .cornerRadius(5)
-                .textColor("#ff0000")
-                .textFontSize(11)
-                .textFontName("Times New Roman");
+        ThreeDSecureV2ButtonCustomization sut = new ThreeDSecureV2ButtonCustomization();
+        sut.backgroundColor("#00FF00");
+        sut.cornerRadius(5);
+        sut.textColor("#ff0000");
+        sut.textFontSize(11);
+        sut.textFontName("Times New Roman");
 
         ButtonCustomization cardinalButtonCustomization = sut.getCardinalButtonCustomization();
         assertEquals("#00FF00", cardinalButtonCustomization.getBackgroundColor());
@@ -32,18 +32,18 @@ public class ThreeDSecureV2ButtonCustomizationUnitTest {
 
     @Test
     public void writeToParcel() {
-        ThreeDSecureV2ButtonCustomization customization = (ThreeDSecureV2ButtonCustomization) new ThreeDSecureV2ButtonCustomization()
-                .backgroundColor("#FFFFFF")
-                .cornerRadius(5)
-                .textColor("#121212")
-                .textFontName("Helvetica")
-                .textFontSize(15);
+        ThreeDSecureV2ButtonCustomization customization = new ThreeDSecureV2ButtonCustomization();
+        customization.backgroundColor("#FFFFFF");
+        customization.cornerRadius(5);
+        customization.textColor("#121212");
+        customization.textFontName("Helvetica");
+        customization.textFontSize(15);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV2ButtonCustomization actual = (ThreeDSecureV2ButtonCustomization) ThreeDSecureV2ButtonCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV2ButtonCustomization actual = ThreeDSecureV2ButtonCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("#FFFFFF", actual.getBackgroundColor());
         assertEquals(5, actual.getCornerRadius());

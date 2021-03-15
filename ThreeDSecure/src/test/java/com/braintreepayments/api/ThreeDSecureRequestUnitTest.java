@@ -46,11 +46,11 @@ public class ThreeDSecureRequestUnitTest {
                 .countryCodeAlpha2("US")
                 .postalCode("54321");
 
-        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization()
-                .headingTextColor("#FFA5FF");
+        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        labelCustomization.headingTextColor("#FFA5FF");
 
-        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
-                .labelCustomization(labelCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.labelCustomization(labelCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
                 .redirectButtonText("return-button-text")

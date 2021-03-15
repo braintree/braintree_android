@@ -17,11 +17,11 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
 
     @Test
     public void setsAllCardinalClassProperties() {
-        ThreeDSecureV2UiCustomization sut = new ThreeDSecureV2UiCustomization()
-                .labelCustomization(new ThreeDSecureV2LabelCustomization())
-                .buttonCustomization(new ThreeDSecureV2ButtonCustomization(), ThreeDSecureV2UiCustomization.BUTTON_TYPE_NEXT)
-                .textBoxCustomization(new ThreeDSecureV2TextBoxCustomization())
-                .toolbarCustomization(new ThreeDSecureV2ToolbarCustomization());
+        ThreeDSecureV2UiCustomization sut = new ThreeDSecureV2UiCustomization();
+        sut.labelCustomization(new ThreeDSecureV2LabelCustomization());
+        sut.buttonCustomization(new ThreeDSecureV2ButtonCustomization(), ThreeDSecureV2UiCustomization.BUTTON_TYPE_NEXT);
+        sut.textBoxCustomization(new ThreeDSecureV2TextBoxCustomization());
+        sut.toolbarCustomization(new ThreeDSecureV2ToolbarCustomization());
 
         UiCustomization cardinalUiCustomization = sut.getCardinalUiCustomization();
         assertNotNull(cardinalUiCustomization.getLabelCustomization());
@@ -38,42 +38,42 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
 
     @Test
     public void writeToParcel() {
-        ThreeDSecureV2ButtonCustomization buttonCustomization = (ThreeDSecureV2ButtonCustomization) new ThreeDSecureV2ButtonCustomization()
-                .backgroundColor("#FF0000")
-                .cornerRadius(5)
-                .textColor("#000000")
-                .textFontName("Comic Sans")
-                .textFontSize(20);
+        ThreeDSecureV2ButtonCustomization buttonCustomization = new ThreeDSecureV2ButtonCustomization();
+        buttonCustomization.backgroundColor("#FF0000");
+        buttonCustomization.cornerRadius(5);
+        buttonCustomization.textColor("#000000");
+        buttonCustomization.textFontName("Comic Sans");
+        buttonCustomization.textFontSize(20);
 
-        ThreeDSecureV2LabelCustomization labelCustomization = (ThreeDSecureV2LabelCustomization) new ThreeDSecureV2LabelCustomization()
-                .headingTextColor("#FFFFFF")
-                .headingTextFontName("Times New Roman")
-                .headingTextFontSize(30)
-                .textColor("#121212")
-                .textFontName("Helvetica")
-                .textFontSize(15);
+        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        labelCustomization.headingTextColor("#FFFFFF");
+        labelCustomization.headingTextFontName("Times New Roman");
+        labelCustomization.headingTextFontSize(30);
+        labelCustomization.textColor("#121212");
+        labelCustomization.textFontName("Helvetica");
+        labelCustomization.textFontSize(15);
 
-        ThreeDSecureV2TextBoxCustomization textBoxCustomization = (ThreeDSecureV2TextBoxCustomization) new ThreeDSecureV2TextBoxCustomization()
-                .borderColor("#FFFFFF")
-                .borderWidth(10)
-                .cornerRadius(5)
-                .textColor("#121212")
-                .textFontName("Helvetica")
-                .textFontSize(15);
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        textBoxCustomization.borderColor("#FFFFFF");
+        textBoxCustomization.borderWidth(10);
+        textBoxCustomization.cornerRadius(5);
+        textBoxCustomization.textColor("#121212");
+        textBoxCustomization.textFontName("Helvetica");
+        textBoxCustomization.textFontSize(15);
 
-        ThreeDSecureV2ToolbarCustomization toolbarCustomization = (ThreeDSecureV2ToolbarCustomization) new ThreeDSecureV2ToolbarCustomization()
-                .backgroundColor("#FFFFFF")
-                .buttonText("Button")
-                .headerText("Header")
-                .textColor("#121212")
-                .textFontName("Helvetica")
-                .textFontSize(15);
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
+        toolbarCustomization.backgroundColor("#FFFFFF");
+        toolbarCustomization.buttonText("Button");
+        toolbarCustomization.headerText("Header");
+        toolbarCustomization.textColor("#121212");
+        toolbarCustomization.textFontName("Helvetica");
+        toolbarCustomization.textFontSize(15);
 
-        ThreeDSecureV2UiCustomization customization = new ThreeDSecureV2UiCustomization()
-                .buttonCustomization(buttonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_CONTINUE)
-                .labelCustomization(labelCustomization)
-                .textBoxCustomization(textBoxCustomization)
-                .toolbarCustomization(toolbarCustomization);
+        ThreeDSecureV2UiCustomization customization = new ThreeDSecureV2UiCustomization();
+        customization.buttonCustomization(buttonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_CONTINUE);
+        customization.labelCustomization(labelCustomization);
+        customization.textBoxCustomization(textBoxCustomization);
+        customization.toolbarCustomization(toolbarCustomization);
 
         Parcel parcel = Parcel.obtain();
         customization.writeToParcel(parcel, 0);

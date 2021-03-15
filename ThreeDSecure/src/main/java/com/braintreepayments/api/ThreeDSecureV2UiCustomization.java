@@ -42,46 +42,38 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * Set button customization options for 3D Secure 2 flows.
      * @param buttonCustomization {@link ThreeDSecureV2ButtonCustomization}
      * @param buttonType Button type
-     * @return {@link ThreeDSecureV2UiCustomization}
      */
-    public ThreeDSecureV2UiCustomization buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
+    public void buttonCustomization(ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
         this.buttonType = buttonType;
         cardinalValue.setButtonCustomization(buttonCustomization.getCardinalButtonCustomization(), getCardinalButtonType(buttonType));
-        return this;
     }
 
     /**
      * Label customization options for 3D Secure 2 flows.
      * @param labelCustomization {@link ThreeDSecureV2LabelCustomization}
-     * @return {@link ThreeDSecureV2UiCustomization}
      */
-    public ThreeDSecureV2UiCustomization labelCustomization(ThreeDSecureV2LabelCustomization labelCustomization) {
+    public void labelCustomization(ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
         cardinalValue.setLabelCustomization(labelCustomization.getCardinalLabelCustomization());
-        return this;
     }
 
     /**
      * Text box customization options for 3D Secure 2 flows.
      * @param textBoxCustomization {@link ThreeDSecureV2TextBoxCustomization}
-     * @return {@link ThreeDSecureV2UiCustomization}
      */
-    public ThreeDSecureV2UiCustomization textBoxCustomization(ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
+    public void textBoxCustomization(ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
         cardinalValue.setTextBoxCustomization(textBoxCustomization.getCardinalTextBoxCustomization());
-        return this;
     }
 
     /**
      * Toolbar customization options for 3D Secure 2 flows.
      * @param toolbarCustomization {@link ThreeDSecureV2ToolbarCustomization}
-     * @return {@link ThreeDSecureV2UiCustomization}
      */
-    public ThreeDSecureV2UiCustomization toolbarCustomization(ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
+    public void toolbarCustomization(ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
         cardinalValue.setToolbarCustomization(toolbarCustomization.getCardinalToolbarCustomization());
-        return this;
     }
 
     /**

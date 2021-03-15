@@ -389,15 +389,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");
 
-        ThreeDSecureV2ToolbarCustomization toolbarCustomization = (ThreeDSecureV2ToolbarCustomization) new ThreeDSecureV2ToolbarCustomization()
-                .headerText("Braintree 3DS Checkout")
-                .backgroundColor("#FF5A5F")
-                .buttonText("Close")
-                .textColor("#222222")
-                .textFontSize(18);
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
+        toolbarCustomization.headerText("Braintree 3DS Checkout");
+        toolbarCustomization.backgroundColor("#FF5A5F");
+        toolbarCustomization.buttonText("Close");
+        toolbarCustomization.textColor("#222222");
+        toolbarCustomization.textFontSize(18);
 
-        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization()
-                .toolbarCustomization(toolbarCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.toolbarCustomization(toolbarCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
                 .redirectButtonText("Return to Demo App")
