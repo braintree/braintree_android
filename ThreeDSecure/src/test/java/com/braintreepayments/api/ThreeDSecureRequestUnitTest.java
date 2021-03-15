@@ -52,9 +52,9 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.labelCustomization(labelCustomization);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
-                .redirectButtonText("return-button-text")
-                .redirectDescription("return-label-text");
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
+        v1UiCustomization.redirectButtonText("return-button-text");
+        v1UiCustomization.redirectDescription("return-label-text");
 
         ThreeDSecureRequest expected = new ThreeDSecureRequest()
                 .nonce("a-nonce")

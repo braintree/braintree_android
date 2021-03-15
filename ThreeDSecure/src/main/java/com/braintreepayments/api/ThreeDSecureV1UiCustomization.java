@@ -17,22 +17,18 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      * Optional. Text displayed in the Redirect button after a 3DS1 challenge is completed in the browser.
      *
      * @param text The text to display in the button.
-     * @return The instance of {@link ThreeDSecureV1UiCustomization}
      */
-    public ThreeDSecureV1UiCustomization redirectButtonText(String text) {
+    public void redirectButtonText(String text) {
         mRedirectButtonText = text;
-        return this;
     }
 
     /**
      * Optional. Text displayed below the Redirect button after a 3DS1 challenge is completed in the browser.
      *
      * @param text The text to display below the button.
-     * @return The instance of {@link ThreeDSecureV1UiCustomization}
      */
-    public ThreeDSecureV1UiCustomization redirectDescription(String text) {
+    public void redirectDescription(String text) {
         mRedirectDescription = text;
-        return this;
     }
 
     /**

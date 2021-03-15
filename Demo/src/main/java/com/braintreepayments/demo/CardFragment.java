@@ -399,9 +399,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.toolbarCustomization(toolbarCustomization);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
-                .redirectButtonText("Return to Demo App")
-                .redirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
+        v1UiCustomization.redirectButtonText("Return to Demo App");
+        v1UiCustomization.redirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         return new ThreeDSecureRequest()
                 .amount("10")
