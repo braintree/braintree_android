@@ -766,10 +766,19 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
 }
 ```
+#### 3DS1 UI Customization
+
+The `ThreeDSecureV1UiCustomization` class setters have been updated to remove method chaining and follow standard Java getter/setter pattern.
 
 #### 3DS2 UI Customization
 
-On `ThreeDSecureRequest` the `uiCustomization` property was replaced with `v2UiCustomization`.
+On `ThreeDSecureRequest` the `uiCustomization` property was replaced with `v2UiCustomization` of type `ThreeDSecureV2UiCustomization`.
+For 3DS2 UI customization, use the following new classes:
+- `ThreeDSecureV2UiCustomization`
+- `ThreeDSecureV2ButtonCustomization`
+- `ThreeDSecureV2LabelCustomization`
+- `ThreeDSecureV2TextBoxCustomization`
+- `ThreeDSecureV2ToolbarCustomization`
 
 #### Default 3DS Version
 
