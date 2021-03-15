@@ -62,18 +62,12 @@ public class VenmoClient {
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoAuthorizeAccountCallback#onResult(Exception)}
-     *
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoTokenizeAccountCallback#onResult(Exception)}
      * @param activity Android FragmentActivity
-     * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
-     * be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our
-     * docs on client authorization</a> for more info.
-     * @param profileId The Venmo profile ID to be used during payment authorization. Customers will see the business
-     * name and logo associated with this Venmo profile, and it will show up in the Venmo app as a "Connected Merchant".
-     * Venmo profile IDs can be found in the Braintree Control Panel. Passing `null` will use the default Venmo profile.
-     * @param callback {@link VenmoAuthorizeAccountCallback}
+     * @param request {@link VenmoRequest}
+     * @param callback {@link VenmoTokenizeAccountCallback}
      */
-    public void authorizeAccount(final FragmentActivity activity, final boolean vault, final String profileId, final VenmoAuthorizeAccountCallback callback) {
+    public void tokenizeVenmoAccount(final FragmentActivity activity, final VenmoRequest request, final VenmoTokenizeAccountCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -97,9 +91,9 @@ public class VenmoClient {
                     return;
                 }
 
-                sharedPrefsWriter.persistVenmoVaultOption(activity, vault && braintreeClient.getAuthorization() instanceof ClientToken);
+                sharedPrefsWriter.persistVenmoVaultOption(activity, request.shouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
 
-                String venmoProfileId = profileId;
+                String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
                     venmoProfileId = configuration.getVenmoMerchantId();
                 }

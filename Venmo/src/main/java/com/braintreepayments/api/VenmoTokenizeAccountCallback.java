@@ -5,9 +5,9 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link VenmoClient#authorizeAccount(FragmentActivity, boolean, String, VenmoAuthorizeAccountCallback)}.
+ * {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest, VenmoTokenizeAccountCallback)}.
  */
-public interface VenmoAuthorizeAccountCallback {
+public interface VenmoTokenizeAccountCallback {
 
     /**
      * @param error an exception that occurred while authorizing a Venmo account

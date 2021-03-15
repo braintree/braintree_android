@@ -17,6 +17,7 @@ import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.PreferredPaymentMethodsClient;
 import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.VenmoRequest;
 
 public class PreferredPaymentMethodsFragment extends BaseFragment {
 
@@ -100,7 +101,10 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         initializeFeatureClients(initError -> {
-            venmoClient.authorizeAccount(getActivity(), false, null, requestError -> {
+            VenmoRequest venmoRequest = new VenmoRequest()
+                    .profileId(null)
+                    .shouldVault(false);
+            venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
                 }
