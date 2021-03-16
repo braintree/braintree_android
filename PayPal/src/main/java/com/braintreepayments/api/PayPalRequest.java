@@ -1,12 +1,8 @@
 package com.braintreepayments.api;
 
-import android.text.TextUtils;
-
 import androidx.annotation.StringDef;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,7 +19,6 @@ import java.util.Collection;
  * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
 public abstract class PayPalRequest {
-
 
     static final String NO_SHIPPING_KEY = "no_shipping";
     static final String ADDRESS_OVERRIDE_KEY = "address_override";
@@ -44,11 +39,6 @@ public abstract class PayPalRequest {
     static final String SHIPPING_ADDRESS_KEY = "shipping_address";
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String LINE_ITEMS_KEY = "line_items";
-
-    static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
-    static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
-
-    static final String USER_ACTION_KEY = "useraction";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})

@@ -21,7 +21,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     public static final String INTENT_AUTHORIZE = "authorize";
 
     private String intent = INTENT_AUTHORIZE;
-    private String amount;
+    private final String amount;
     private String currencyCode;
     private boolean offerPayLater;
 

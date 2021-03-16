@@ -5,7 +5,7 @@ class PayPalResponse {
     private String approvalUrl;
     private String clientMetadataId;
     private String pairingId;
-    private PayPalRequest payPalRequest;
+    private final PayPalRequest payPalRequest;
 
     private String successUrl;
 
