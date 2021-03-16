@@ -6,7 +6,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
@@ -31,7 +30,7 @@ public class MockPayPalInternalClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalInternalClientCallback callback = (PayPalInternalClientCallback) invocation.getArguments()[3];
+                PayPalInternalClientCallback callback = (PayPalInternalClientCallback) invocation.getArguments()[2];
                 if (successResponse != null) {
                     callback.onResult(successResponse, null);
                 } else if (error != null) {
@@ -39,7 +38,7 @@ public class MockPayPalInternalClientBuilder {
                 }
                 return null;
             }
-        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalRequest.class), anyBoolean(), any(PayPalInternalClientCallback.class));
+        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalRequest.class), any(PayPalInternalClientCallback.class));
 
         return payPalInternalClient;
     }

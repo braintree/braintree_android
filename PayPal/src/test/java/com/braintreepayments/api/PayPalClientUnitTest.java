@@ -303,7 +303,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
 
-        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(true), any(PayPalInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -320,7 +320,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
-        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), any(PayPalInternalClientCallback.class));
     }
 
     @Test

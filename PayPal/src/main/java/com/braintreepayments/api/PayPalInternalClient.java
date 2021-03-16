@@ -57,7 +57,7 @@ class PayPalInternalClient {
         this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
     }
 
-    void sendRequest(final Context context, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalInternalClientCallback callback) {
+    void sendRequest(final Context context, final PayPalRequest payPalRequest, final PayPalInternalClientCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -66,6 +66,7 @@ class PayPalInternalClient {
                     return;
                 }
                 try {
+                    final boolean isBillingAgreement = payPalRequest instanceof PayPalVaultRequest;
                     String endpoint = isBillingAgreement
                             ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                     String url = String.format("/v1/%s", endpoint);

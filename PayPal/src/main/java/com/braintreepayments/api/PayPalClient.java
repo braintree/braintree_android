@@ -80,7 +80,7 @@ public class PayPalClient {
                     callback.onResult(manifestInvalidError);
                     return;
                 }
-                sendCheckoutRequest(activity, payPalCheckoutRequest, false, callback);
+                sendCheckoutRequest(activity, payPalCheckoutRequest, callback);
             }
         });
     }
@@ -113,17 +113,17 @@ public class PayPalClient {
                     return;
                 }
 
-                sendCheckoutRequest(activity, payPalVaultRequest, true, callback);
+                sendCheckoutRequest(activity, payPalVaultRequest, callback);
             }
         });
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalFlowStartedCallback callback) {
-        internalPayPalClient.sendRequest(activity, payPalRequest, isBillingAgreement, new PayPalInternalClientCallback() {
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+        internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
             public void onResult(PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
-                    String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
 
                     try {
@@ -161,8 +161,8 @@ public class PayPalClient {
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 
-    private static String getAnalyticsEventPrefix(boolean isBillingAgreement) {
-        return isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
+    private static String getAnalyticsEventPrefix(PayPalRequest request) {
+        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
     /**
@@ -180,7 +180,7 @@ public class PayPalClient {
 
         boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
-        String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+        String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
