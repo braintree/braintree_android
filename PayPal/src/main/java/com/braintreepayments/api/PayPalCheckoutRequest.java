@@ -79,7 +79,6 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         this.offerPayLater = offerPayLater;
     }
 
-
     public String getAmount() {
         return amount;
     }
@@ -95,5 +94,9 @@ public class PayPalCheckoutRequest extends PayPalRequest {
 
     public boolean shouldOfferPayLater() {
         return offerPayLater;
+    }
+
+    String createRequestBody(Configuration configuration) {
+       return "";
     }
 }

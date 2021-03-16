@@ -138,12 +138,12 @@ class PayPalInternalClient {
             parameters.put(TOKENIZATION_KEY, authorization.getBearer());
         }
 
-        if (isBillingAgreement) {
-            String billingAgreementDescription = payPalRequest.getBillingAgreementDescription();
-            if (!TextUtils.isEmpty(billingAgreementDescription)) {
-                parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
-            }
-        } else {
+//        if (isBillingAgreement) {
+//            String billingAgreementDescription = payPalRequest.getBillingAgreementDescription();
+//            if (!TextUtils.isEmpty(billingAgreementDescription)) {
+//                parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
+//            }
+//        } else {
 //            String currencyCode = payPalRequest.getCurrencyCode();
 //            if (currencyCode == null) {
 //                currencyCode = configuration.getPayPalCurrencyIsoCode();
@@ -153,16 +153,16 @@ class PayPalInternalClient {
 //                    .put(AMOUNT_KEY, payPalRequest.getAmount())
 //                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
 //                    .put(INTENT_KEY, payPalRequest.getIntent());
-
-            if (!payPalRequest.getLineItems().isEmpty()) {
-                JSONArray lineItems = new JSONArray();
-                for (PayPalLineItem lineItem : payPalRequest.getLineItems()) {
-                    lineItems.put(lineItem.toJson());
-                }
-                parameters.put(LINE_ITEMS_KEY, lineItems);
-            }
-        }
-
+//
+//            if (!payPalRequest.getLineItems().isEmpty()) {
+//                JSONArray lineItems = new JSONArray();
+//                for (PayPalLineItem lineItem : payPalRequest.getLineItems()) {
+//                    lineItems.put(lineItem.toJson());
+//                }
+//                parameters.put(LINE_ITEMS_KEY, lineItems);
+//            }
+//        }
+//
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !payPalRequest.isShippingAddressRequired());
         experienceProfile.put(LANDING_PAGE_TYPE_KEY, payPalRequest.getLandingPageType());
