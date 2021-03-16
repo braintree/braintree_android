@@ -10,11 +10,11 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalRequestUnitTest {
+public class PayPalVaultRequestUnitTest {
 
     @Test
     public void newPayPalRequest_setsDefaultValues() {
-        PayPalRequest request = new PayPalRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest();
 
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
@@ -27,7 +27,7 @@ public class PayPalRequestUnitTest {
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalRequest request = new PayPalRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest();
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);

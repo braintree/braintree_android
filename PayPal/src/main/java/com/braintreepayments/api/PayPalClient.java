@@ -61,10 +61,6 @@ public class PayPalClient {
      */
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-        if (payPalCheckoutRequest.shouldOfferCredit()) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
-        }
-
         if (payPalCheckoutRequest.shouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
         }
@@ -91,14 +87,13 @@ public class PayPalClient {
 
     /**
      * Starts the Billing Agreement flow for PayPal.
-     *
      * @param activity Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
+     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
      */
-    public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+    public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-        if (payPalRequest.shouldOfferCredit()) {
+        if (payPalVaultRequest.shouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
         }
 
@@ -118,7 +113,7 @@ public class PayPalClient {
                     return;
                 }
 
-                sendCheckoutRequest(activity, payPalRequest, true, callback);
+                sendCheckoutRequest(activity, payPalVaultRequest, true, callback);
             }
         });
     }

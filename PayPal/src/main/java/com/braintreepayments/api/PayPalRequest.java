@@ -16,7 +16,7 @@ import java.util.Collection;
  *
  * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
-public class PayPalRequest {
+public abstract class PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
@@ -57,7 +57,6 @@ public class PayPalRequest {
     private String mLandingPageType;
     private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
-    private boolean mOfferCredit;
     private String mMerchantAccountId;
     private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
@@ -66,7 +65,6 @@ public class PayPalRequest {
      */
     public PayPalRequest() {
         mShippingAddressRequired = false;
-        mOfferCredit = false;
     }
 
     /**
@@ -185,16 +183,6 @@ public class PayPalRequest {
     }
 
     /**
-     * Offers PayPal Credit prominently in the payment flow. Defaults to false. Only available with Billing Agreements
-     * and PayPal Checkout.
-     *
-     * @param offerCredit Whether to offer PayPal Credit.
-     */
-    public void setOfferCredit(boolean offerCredit) {
-        mOfferCredit = offerCredit;
-    }
-
-    /**
      * Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -235,10 +223,6 @@ public class PayPalRequest {
 
     public String getDisplayName() {
         return mDisplayName;
-    }
-
-    public boolean shouldOfferCredit() {
-        return mOfferCredit;
     }
 
     public String getMerchantAccountId() {

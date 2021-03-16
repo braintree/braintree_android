@@ -126,8 +126,8 @@ class PayPalInternalClient {
 
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
-                .put(CANCEL_URL_KEY, cancelUrl)
-                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit());
+                .put(CANCEL_URL_KEY, cancelUrl);
+//                .put(OFFER_CREDIT_KEY, payPalRequest.shouldOfferCredit());
 //                .put(OFFER_PAY_LATER_KEY, payPalRequest.shouldOfferPayLater());
 
         Authorization authorization = braintreeClient.getAuthorization();
