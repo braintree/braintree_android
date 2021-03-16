@@ -344,10 +344,11 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-//        PayPalRequest payPalRequest = new PayPalRequest().offerCredit(true);
+        PayPalRequest payPalRequest = new PayPalRequest();
+        payPalRequest.setOfferCredit(true);
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-//        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
     }

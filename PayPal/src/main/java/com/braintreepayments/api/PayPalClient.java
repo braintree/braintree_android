@@ -102,34 +102,30 @@ public class PayPalClient {
      * @param callback {@link PayPalFlowStartedCallback}
      */
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-//        if (payPalRequest.getAmount() == null) {
-//            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-//            if (payPalRequest.shouldOfferCredit()) {
-//                braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
-//            }
-//
-//            braintreeClient.getConfiguration(new ConfigurationCallback() {
-//                @Override
-//                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-//                    if (payPalConfigInvalid(configuration)) {
-//                        Exception configInvalidError = createPayPalError();
-//                        callback.onResult(configInvalidError);
-//                        return;
-//                    }
-//
-//                    if (browserSwitchNotPossible(activity)) {
-//                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-//                        Exception manifestInvalidError = createBrowserSwitchError();
-//                        callback.onResult(manifestInvalidError);
-//                        return;
-//                    }
-//
-//                    sendCheckoutRequest(activity, payPalRequest, true, callback);
-//                }
-//            });
-//        } else {
-//            callback.onResult(new BraintreeException("There must be no amount specified for the Billing Agreement flow"));
-//        }
+        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
+        if (payPalRequest.shouldOfferCredit()) {
+            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+        }
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (payPalConfigInvalid(configuration)) {
+                    Exception configInvalidError = createPayPalError();
+                    callback.onResult(configInvalidError);
+                    return;
+                }
+
+                if (browserSwitchNotPossible(activity)) {
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    Exception manifestInvalidError = createBrowserSwitchError();
+                    callback.onResult(manifestInvalidError);
+                    return;
+                }
+
+                sendCheckoutRequest(activity, payPalRequest, true, callback);
+            }
+        });
     }
 
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalFlowStartedCallback callback) {
