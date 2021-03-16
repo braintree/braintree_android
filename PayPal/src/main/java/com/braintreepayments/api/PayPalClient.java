@@ -55,44 +55,43 @@ public class PayPalClient {
 
     /**
      * Starts the One-Time Payment flow for PayPal.
-     *
      * @param activity Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request. An amount MUST be specified.
+     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request. An amount MUST be specified.
      * @param callback {@link PayPalFlowStartedCallback}
      */
-    public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-//        if (payPalRequest.getAmount() != null) {
-//            braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-//            if (payPalRequest.shouldOfferCredit()) {
-//                braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
-//            }
-//
-//            if (payPalRequest.shouldOfferPayLater()) {
-//                braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-//            }
-//
-//            braintreeClient.getConfiguration(new ConfigurationCallback() {
-//                @Override
-//                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-//                    if (payPalConfigInvalid(configuration)) {
-//                        Exception configInvalidError = createPayPalError();
-//                        callback.onResult(configInvalidError);
-//                        return;
-//                    }
-//
-//                    if (browserSwitchNotPossible(activity)) {
-//                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-//                        Exception manifestInvalidError = createBrowserSwitchError();
-//                        callback.onResult(manifestInvalidError);
-//                        return;
-//                    }
-//                    sendCheckoutRequest(activity, payPalRequest, false, callback);
-//                }
-//            });
-//
-//        } else {
-//            callback.onResult(new BraintreeException("An amount must be specified for the Single Payment flow."));
-//        }
+    public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+        if (payPalCheckoutRequest.getAmount() != null) {
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
+            if (payPalCheckoutRequest.shouldOfferCredit()) {
+                braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
+            }
+
+            if (payPalCheckoutRequest.shouldOfferPayLater()) {
+                braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+            }
+
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
+                @Override
+                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                    if (payPalConfigInvalid(configuration)) {
+                        Exception configInvalidError = createPayPalError();
+                        callback.onResult(configInvalidError);
+                        return;
+                    }
+
+                    if (browserSwitchNotPossible(activity)) {
+                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                        Exception manifestInvalidError = createBrowserSwitchError();
+                        callback.onResult(manifestInvalidError);
+                        return;
+                    }
+                    sendCheckoutRequest(activity, payPalCheckoutRequest, false, callback);
+                }
+            });
+
+        } else {
+            callback.onResult(new BraintreeException("An amount must be specified for the Single Payment flow."));
+        }
     }
 
     /**

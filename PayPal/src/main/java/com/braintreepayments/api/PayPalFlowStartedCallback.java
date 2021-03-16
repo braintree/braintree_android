@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#requestOneTimePayment(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} and
+ * {@link PayPalClient#requestOneTimePayment(FragmentActivity, PayPalCheckoutRequest, PayPalFlowStartedCallback)} and
  * {@link PayPalClient#requestBillingAgreement(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)}.
  */
 public interface PayPalFlowStartedCallback {
