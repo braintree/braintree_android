@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
@@ -75,18 +74,18 @@ public class PayPalRequest {
      *
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
-    public void shippingAddressRequired(boolean shippingAddressRequired) {
+    public void setShippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
     }
 
     /**
      * Defaults to false. Set to true to enable user editing of the shipping address.
-     * Only applies when {@link PayPalRequest#shippingAddressOverride(PostalAddress)} is set
+     * Only applies when {@link PayPalRequest#setShippingAddressOverride(PostalAddress)} is set
      * with a {@link PostalAddress}.
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
-    public void shippingAddressEditable(boolean shippingAddressEditable) {
+    public void setShippingAddressEditable(boolean shippingAddressEditable) {
         mShippingAddressEditable = shippingAddressEditable;
     }
 
@@ -125,7 +124,7 @@ public class PayPalRequest {
      *
      * @param localeCode Whether to use a custom locale code.
      */
-    public void localeCode(String localeCode) {
+    public void setLocaleCode(String localeCode) {
         mLocaleCode = localeCode;
     }
 
@@ -134,7 +133,7 @@ public class PayPalRequest {
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
-    public void displayName(String displayName) {
+    public void setDisplayName(String displayName) {
         mDisplayName = displayName;
     }
 
@@ -143,7 +142,7 @@ public class PayPalRequest {
      *
      * @param description The description to display.
      */
-    public void billingAgreementDescription(String description) {
+    public void setBillingAgreementDescription(String description) {
         mBillingAgreementDescription = description;
     }
 
@@ -152,7 +151,7 @@ public class PayPalRequest {
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public void shippingAddressOverride(PostalAddress shippingAddressOverride) {
+    public void setShippingAddressOverride(PostalAddress shippingAddressOverride) {
         mShippingAddressOverride = shippingAddressOverride;
     }
 
@@ -166,7 +165,7 @@ public class PayPalRequest {
      *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
-    public void landingPageType(@PayPalLandingPageType String landingPageType) {
+    public void setLandingPageType(@PayPalLandingPageType String landingPageType) {
         mLandingPageType = landingPageType;
     }
 
@@ -181,7 +180,7 @@ public class PayPalRequest {
      *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
-    public void userAction(@PayPalPaymentUserAction String userAction) {
+    public void setUserAction(@PayPalPaymentUserAction String userAction) {
         mUserAction = userAction;
     }
 
@@ -191,7 +190,7 @@ public class PayPalRequest {
      *
      * @param offerCredit Whether to offer PayPal Credit.
      */
-    public void offerCredit(boolean offerCredit) {
+    public void setOfferCredit(boolean offerCredit) {
         mOfferCredit = offerCredit;
     }
 
@@ -200,7 +199,7 @@ public class PayPalRequest {
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
-    public void merchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
     }
 
@@ -209,7 +208,7 @@ public class PayPalRequest {
      *
      * @param lineItems a collection of {@link PayPalLineItem}
      */
-    public void lineItems(Collection<PayPalLineItem> lineItems) {
+    public void setLineItems(Collection<PayPalLineItem> lineItems) {
         mLineItems.clear();
         mLineItems.addAll(lineItems);
     }

@@ -8,15 +8,16 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalCheckoutRequestUnitTest {
 
     @Test
-    public void newPayPalRequest_setsDefaultValues() {
+    public void newPayPalCheckoutRequest_setsDefaultValues() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
 
-        assertNull(request.getAmount());
+        assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
@@ -36,14 +37,14 @@ public class PayPalCheckoutRequestUnitTest {
         request.setOfferPayLater(true);
         request.setIntent(PayPalCheckoutRequest.INTENT_SALE);
 
-        request.localeCode("US");
-        request.billingAgreementDescription("Billing Agreement Description");
-        request.shippingAddressRequired(true);
-        request.shippingAddressOverride(postalAddress);
-        request.userAction(PayPalRequest.USER_ACTION_COMMIT);
-        request.displayName("Display Name");
-        request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
-        request.offerCredit(true);
+        request.setLocaleCode("US");
+        request.setBillingAgreementDescription("Billing Agreement Description");
+        request.setShippingAddressRequired(true);
+        request.setShippingAddressOverride(postalAddress);
+        request.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
+        request.setDisplayName("Display Name");
+        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setOfferCredit(true);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());

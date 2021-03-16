@@ -119,13 +119,13 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
                 .amount(amount);
 
         FragmentActivity activity = getActivity();
-        request.displayName(Settings.getPayPalDisplayName(activity));
+        request.setDisplayName(Settings.getPayPalDisplayName(activity));
 
         String landingPageType = Settings.getPayPalLandingPageType(activity);
         if (getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
         } else if (getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         }
 
         String intentType = Settings.getPayPalIntentType(activity);
@@ -138,15 +138,15 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(activity)) {
-            request.userAction(PayPalRequest.USER_ACTION_COMMIT);
+            request.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
         }
 
         if (Settings.isPayPalCreditOffered(activity)) {
-            request.offerCredit(true);
+            request.setOfferCredit(true);
         }
 
         if (Settings.usePayPalAddressOverride(activity)) {
-            request.shippingAddressOverride(new PostalAddress()
+            request.setShippingAddressOverride(new PostalAddress()
                     .recipientName("Brian Tree")
                     .streetAddress("123 Fake Street")
                     .extendedAddress("Floor A")

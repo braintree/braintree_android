@@ -28,14 +28,14 @@ public class PayPalRequestUnitTest {
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalRequest request = new PayPalRequest();
-        request.localeCode("US");
-        request.billingAgreementDescription("Billing Agreement Description");
-        request.shippingAddressRequired(true);
-        request.shippingAddressOverride(postalAddress);
-        request.userAction(PayPalRequest.USER_ACTION_COMMIT);
-        request.displayName("Display Name");
-        request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
-        request.offerCredit(true);
+        request.setLocaleCode("US");
+        request.setBillingAgreementDescription("Billing Agreement Description");
+        request.setShippingAddressRequired(true);
+        request.setShippingAddressOverride(postalAddress);
+        request.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
+        request.setDisplayName("Display Name");
+        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setOfferCredit(true);
 
         assertEquals("US", request.getLocaleCode());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
