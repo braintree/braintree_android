@@ -4,13 +4,14 @@ class PayPalResponse {
 
     private String approvalUrl;
     private String clientMetadataId;
-    private String intent;
-
-    private boolean isBillingAgreement;
-    private String merchantAccountId;
     private String pairingId;
+    private PayPalRequest payPalRequest;
 
     private String successUrl;
+
+    PayPalResponse(PayPalRequest payPalRequest) {
+        this.payPalRequest = payPalRequest;
+    }
 
     String getApprovalUrl() {
         return approvalUrl;
@@ -31,30 +32,18 @@ class PayPalResponse {
     }
 
     String getIntent() {
-        return intent;
-    }
-
-    PayPalResponse intent(String value) {
-        intent = value;
-        return this;
+        if (payPalRequest instanceof PayPalCheckoutRequest) {
+            return ((PayPalCheckoutRequest) payPalRequest).getIntent();
+        }
+        return null;
     }
 
     boolean isBillingAgreement() {
-        return isBillingAgreement;
-    }
-
-    PayPalResponse isBillingAgreement(boolean value) {
-        isBillingAgreement = value;
-        return this;
+        return payPalRequest instanceof PayPalVaultRequest;
     }
 
     String getMerchantAccountId() {
-        return merchantAccountId;
-    }
-
-    PayPalResponse merchantAccountId(String value) {
-        merchantAccountId = value;
-        return this;
+        return payPalRequest.getMerchantAccountId();
     }
 
     String getPairingId() {

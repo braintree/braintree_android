@@ -91,13 +91,13 @@ public class PayPalClientUnitTest {
     public void requestBillingAgreement_startsBrowser() throws JSONException, BrowserSwitchException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
-        PayPalResponse payPalResponse = new PayPalResponse()
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
+        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        PayPalResponse payPalResponse = new PayPalResponse(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
-                .isBillingAgreement(true)
-                .clientMetadataId("sample-client-metadata-id")
-                .merchantAccountId("sample-merchant-account-id")
-                .intent("authorize");
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .success(payPalResponse)
                 .build();
@@ -108,8 +108,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
-        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestBillingAgreement(context, payPalVaultRequest, payPalFlowStartedCallback);
 
         verify(payPalFlowStartedCallback).onResult(null);
 
@@ -128,20 +127,19 @@ public class PayPalClientUnitTest {
         assertEquals("sample-client-metadata-id", metadata.get("client-metadata-id"));
         assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"));
         assertEquals("paypal-browser", metadata.get("source"));
-        assertEquals("authorize", metadata.get("intent"));
     }
 
     @Test
     public void requestBillingAgreement_sendsAnalyticsEvents() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
-        PayPalResponse payPalResponse = new PayPalResponse()
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
+        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        PayPalResponse payPalResponse = new PayPalResponse(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
-                .isBillingAgreement(true)
-                .clientMetadataId("sample-client-metadata-id")
-                .merchantAccountId("sample-merchant-account-id")
-                .intent("authorize");
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .success(payPalResponse)
                 .build();
@@ -153,8 +151,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
-        sut.requestBillingAgreement(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestBillingAgreement(context, payPalVaultRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started");
@@ -164,13 +161,14 @@ public class PayPalClientUnitTest {
     public void requestOneTimePayment_startsBrowser() throws JSONException, BrowserSwitchException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
-        PayPalResponse payPalResponse = new PayPalResponse()
+        PayPalCheckoutRequest payPalCheckoutRequest = new PayPalCheckoutRequest("1.00");
+        payPalCheckoutRequest.setIntent("authorize");
+        payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        PayPalResponse payPalResponse = new PayPalResponse(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
-                .isBillingAgreement(false)
-                .clientMetadataId("sample-client-metadata-id")
-                .merchantAccountId("sample-merchant-account-id")
-                .intent("authorize");
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .success(payPalResponse)
                 .build();
@@ -181,8 +179,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestOneTimePayment(context, payPalCheckoutRequest, payPalFlowStartedCallback);
 
         verify(payPalFlowStartedCallback).onResult(null);
 
@@ -251,13 +248,14 @@ public class PayPalClientUnitTest {
     public void requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
-        PayPalResponse payPalResponse = new PayPalResponse()
+        PayPalCheckoutRequest payPalCheckoutRequest = new PayPalCheckoutRequest("1.00");
+        payPalCheckoutRequest.setIntent("authorize");
+        payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        PayPalResponse payPalResponse = new PayPalResponse(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
-                .isBillingAgreement(false)
-                .clientMetadataId("sample-client-metadata-id")
-                .merchantAccountId("sample-merchant-account-id")
-                .intent("authorize");
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .success(payPalResponse)
                 .build();
@@ -268,8 +266,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
 
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
-        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestOneTimePayment(context, payPalCheckoutRequest, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");

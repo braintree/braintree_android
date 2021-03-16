@@ -77,10 +77,7 @@ class PayPalInternalClient {
                         @Override
                         public void success(String responseBody) {
                             try {
-                                PayPalResponse payPalResponse = new PayPalResponse()
-//                                        .intent(payPalRequest.getIntent())
-                                        .isBillingAgreement(isBillingAgreement)
-                                        .merchantAccountId(payPalRequest.getMerchantAccountId())
+                                PayPalResponse payPalResponse = new PayPalResponse(payPalRequest)
                                         .successUrl(successUrl);
 
                                 PayPalPaymentResource paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);

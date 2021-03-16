@@ -410,7 +410,6 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
-//                payPalRequest.intent("authorize");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
 
@@ -424,7 +423,6 @@ public class PayPalInternalClientUnitTest {
 
         PayPalResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());
-        assertEquals("authorize", payPalResponse.getIntent());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
         assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
         assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
