@@ -1,6 +1,12 @@
 package com.braintreepayments.api;
 
+import android.text.TextUtils;
+
 import androidx.annotation.StringDef;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -96,7 +102,69 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         return offerPayLater;
     }
 
-    String createRequestBody(Configuration configuration) {
-       return "";
+    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+        JSONObject parameters = new JSONObject()
+                .put(RETURN_URL_KEY, successUrl)
+                .put(CANCEL_URL_KEY, cancelUrl)
+                .put(OFFER_PAY_LATER_KEY, offerPayLater);
+
+        if (authorization instanceof ClientToken) {
+            parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
+        } else {
+            parameters.put(TOKENIZATION_KEY, authorization.getBearer());
+        }
+
+        String currencyCode = getCurrencyCode();
+        if (currencyCode == null) {
+            currencyCode = configuration.getPayPalCurrencyIsoCode();
+        }
+
+        parameters
+                .put(AMOUNT_KEY, amount)
+                .put(CURRENCY_ISO_CODE_KEY, currencyCode)
+                .put(INTENT_KEY, intent);
+
+        if (!getLineItems().isEmpty()) {
+            JSONArray lineItems = new JSONArray();
+            for (PayPalLineItem lineItem : getLineItems()) {
+                lineItems.put(lineItem.toJson());
+            }
+            parameters.put(LINE_ITEMS_KEY, lineItems);
+        }
+
+        JSONObject experienceProfile = new JSONObject();
+        experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());
+        experienceProfile.put(LANDING_PAGE_TYPE_KEY, getLandingPageType());
+        String displayName = getDisplayName();
+        if (TextUtils.isEmpty(displayName)) {
+            displayName = configuration.getPayPalDisplayName();
+        }
+        experienceProfile.put(DISPLAY_NAME_KEY, displayName);
+
+        if (getLocaleCode() != null) {
+            experienceProfile.put(LOCALE_CODE_KEY, getLocaleCode());
+        }
+
+        if (getShippingAddressOverride() != null) {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !isShippingAddressEditable());
+
+            PostalAddress shippingAddress = getShippingAddressOverride();
+            parameters.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
+            parameters.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            parameters.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
+            parameters.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
+            parameters.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            parameters.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
+            parameters.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+        } else {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
+        }
+
+        if (getMerchantAccountId() != null) {
+            parameters.put(MERCHANT_ACCOUNT_ID, getMerchantAccountId());
+        }
+
+        parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
+        return parameters.toString();
     }
 }

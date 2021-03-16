@@ -25,30 +25,30 @@ import java.util.Collection;
 public abstract class PayPalRequest {
 
 
-    private static final String NO_SHIPPING_KEY = "no_shipping";
-    private static final String ADDRESS_OVERRIDE_KEY = "address_override";
-    private static final String LOCALE_CODE_KEY = "locale_code";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String TOKENIZATION_KEY = "client_key";
-    private static final String RETURN_URL_KEY = "return_url";
-    private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
-    private static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
-    private static final String CANCEL_URL_KEY = "cancel_url";
-    private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
-    private static final String AMOUNT_KEY = "amount";
-    private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
-    private static final String INTENT_KEY = "intent";
-    private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
-    private static final String DISPLAY_NAME_KEY = "brand_name";
-    private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
-    private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
-    private static final String LINE_ITEMS_KEY = "line_items";
+    static final String NO_SHIPPING_KEY = "no_shipping";
+    static final String ADDRESS_OVERRIDE_KEY = "address_override";
+    static final String LOCALE_CODE_KEY = "locale_code";
+    static final String DESCRIPTION_KEY = "description";
+    static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
+    static final String TOKENIZATION_KEY = "client_key";
+    static final String RETURN_URL_KEY = "return_url";
+    static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
+    static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
+    static final String CANCEL_URL_KEY = "cancel_url";
+    static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
+    static final String AMOUNT_KEY = "amount";
+    static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
+    static final String INTENT_KEY = "intent";
+    static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
+    static final String DISPLAY_NAME_KEY = "brand_name";
+    static final String SHIPPING_ADDRESS_KEY = "shipping_address";
+    static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
+    static final String LINE_ITEMS_KEY = "line_items";
 
-    private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
-    private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
+    static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
+    static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
 
-    private static final String USER_ACTION_KEY = "useraction";
+    static final String USER_ACTION_KEY = "useraction";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
@@ -275,83 +275,5 @@ public abstract class PayPalRequest {
         return mUserAction;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
-        JSONObject parameters = new JSONObject()
-                .put(RETURN_URL_KEY, successUrl)
-                .put(CANCEL_URL_KEY, cancelUrl);
-
-        if (authorization instanceof ClientToken) {
-            parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
-        } else {
-            parameters.put(TOKENIZATION_KEY, authorization.getBearer());
-        }
-
-//        if (isBillingAgreement) {
-//            String billingAgreementDescription = payPalRequest.getBillingAgreementDescription();
-//            if (!TextUtils.isEmpty(billingAgreementDescription)) {
-//                parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
-//            }
-//        } else {
-//            String currencyCode = payPalRequest.getCurrencyCode();
-//            if (currencyCode == null) {
-//                currencyCode = configuration.getPayPalCurrencyIsoCode();
-//            }
-//
-//            parameters
-//                    .put(AMOUNT_KEY, payPalRequest.getAmount())
-//                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
-//                    .put(INTENT_KEY, payPalRequest.getIntent());
-//
-//            if (!payPalRequest.getLineItems().isEmpty()) {
-//                JSONArray lineItems = new JSONArray();
-//                for (PayPalLineItem lineItem : payPalRequest.getLineItems()) {
-//                    lineItems.put(lineItem.toJson());
-//                }
-//                parameters.put(LINE_ITEMS_KEY, lineItems);
-//            }
-//        }
-//
-        JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !mShippingAddressRequired);
-        experienceProfile.put(LANDING_PAGE_TYPE_KEY, mLandingPageType);
-        String displayName = mDisplayName;
-        if (TextUtils.isEmpty(displayName)) {
-            displayName = configuration.getPayPalDisplayName();
-        }
-        experienceProfile.put(DISPLAY_NAME_KEY, displayName);
-
-        if (mLocaleCode != null) {
-            experienceProfile.put(LOCALE_CODE_KEY, mLocaleCode);
-        }
-
-//        if (mShippingAddressOverride != null) {
-//            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !mShippingAddressEditable);
-//
-//            JSONObject shippingAddressJson;
-//            if (isBillingAgreement) {
-//                shippingAddressJson = new JSONObject();
-//                parameters.put(SHIPPING_ADDRESS_KEY, shippingAddressJson);
-//            } else {
-//                shippingAddressJson = parameters;
-//            }
-//
-//            PostalAddress shippingAddress = mShippingAddressOverride;
-//            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
-//            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
-//            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
-//            shippingAddressJson.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
-//            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-//            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-//            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
-//        } else {
-//            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
-//        }
-
-        if (mMerchantAccountId != null) {
-            parameters.put(MERCHANT_ACCOUNT_ID, mMerchantAccountId);
-        }
-
-        parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
-        return parameters.toString();
-    }
+    abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 }
