@@ -45,21 +45,6 @@ public class PayPalClientUnitTest {
         payPalFlowStartedCallback = mock(PayPalFlowStartedCallback.class);
     }
 
-//    @Test
-//    public void requestBillingAgreement_throwsExceptionWhenAmountIsIncluded() {
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-//        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-//        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-//
-//        PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-//        sut.requestBillingAgreement(context, new PayPalRequest().amount("1.00"), payPalFlowStartedCallback);
-//
-//        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-//        verify(payPalFlowStartedCallback).onResult(errorCaptor.capture());
-//        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-//        assertEquals("There must be no amount specified for the Billing Agreement flow", errorCaptor.getValue().getMessage());
-//    }
-
     @Test
     public void requestBillingAgreement_whenPayPalNotEnabled_throwsError() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
@@ -596,21 +581,6 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
-
-//    @Test
-//    public void requestOneTimePayment_throwsExceptionWhenNoAmountSet() {
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-//        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-//        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-//
-//        PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-//        sut.requestOneTimePayment(context, new PayPalCheckoutRequest(), payPalFlowStartedCallback);
-//
-//        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-//        verify(payPalFlowStartedCallback).onResult(errorCaptor.capture());
-//        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-//        assertEquals("An amount must be specified for the Single Payment flow.", errorCaptor.getValue().getMessage());
-//    }
 
     @Test
     public void requestOneTimePayment_sendsPayPalCreditOfferedAnalyticsEvent() {

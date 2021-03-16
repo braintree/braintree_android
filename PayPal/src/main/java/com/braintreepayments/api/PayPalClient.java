@@ -60,38 +60,33 @@ public class PayPalClient {
      * @param callback {@link PayPalFlowStartedCallback}
      */
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
-        if (payPalCheckoutRequest.getAmount() != null) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-            if (payPalCheckoutRequest.shouldOfferCredit()) {
-                braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
-            }
-
-            if (payPalCheckoutRequest.shouldOfferPayLater()) {
-                braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-            }
-
-            braintreeClient.getConfiguration(new ConfigurationCallback() {
-                @Override
-                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-                    if (payPalConfigInvalid(configuration)) {
-                        Exception configInvalidError = createPayPalError();
-                        callback.onResult(configInvalidError);
-                        return;
-                    }
-
-                    if (browserSwitchNotPossible(activity)) {
-                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                        Exception manifestInvalidError = createBrowserSwitchError();
-                        callback.onResult(manifestInvalidError);
-                        return;
-                    }
-                    sendCheckoutRequest(activity, payPalCheckoutRequest, false, callback);
-                }
-            });
-
-        } else {
-            callback.onResult(new BraintreeException("An amount must be specified for the Single Payment flow."));
+        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
+        if (payPalCheckoutRequest.shouldOfferCredit()) {
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
         }
+
+        if (payPalCheckoutRequest.shouldOfferPayLater()) {
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+        }
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (payPalConfigInvalid(configuration)) {
+                    Exception configInvalidError = createPayPalError();
+                    callback.onResult(configInvalidError);
+                    return;
+                }
+
+                if (browserSwitchNotPossible(activity)) {
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    Exception manifestInvalidError = createBrowserSwitchError();
+                    callback.onResult(manifestInvalidError);
+                    return;
+                }
+                sendCheckoutRequest(activity, payPalCheckoutRequest, false, callback);
+            }
+        });
     }
 
     /**
