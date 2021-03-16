@@ -53,6 +53,14 @@ public class PayPalClient {
                 "for the correct configuration");
     }
 
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+       if (payPalRequest instanceof PayPalCheckoutRequest) {
+           requestOneTimePayment(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+       } else if (payPalRequest instanceof PayPalVaultRequest) {
+           requestBillingAgreement(activity, (PayPalVaultRequest) payPalRequest, callback);
+       }
+    }
+
     /**
      * Starts the One-Time Payment flow for PayPal.
      * @param activity Android FragmentActivity
