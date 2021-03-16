@@ -330,12 +330,12 @@ public class PayPalClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
-//        PayPalRequest payPalRequest = new PayPalRequest().amount("1.00");
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
+        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
 
-//        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
     }
 
     @Test
