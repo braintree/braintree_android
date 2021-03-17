@@ -23,6 +23,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     private String intent = INTENT_AUTHORIZE;
     private final String amount;
     private String currencyCode;
+    private boolean requestBillingAgreement;
     private boolean offerPayLater;
 
     /**
@@ -85,6 +86,13 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         this.offerPayLater = offerPayLater;
     }
 
+    /**
+     Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be prompted to consent to a billing agreement during checkout.
+     */
+    public void setRequestBillingAgreement(boolean requestBillingAgreement) {
+        this.requestBillingAgreement = requestBillingAgreement;
+    }
+
     public String getAmount() {
         return amount;
     }
@@ -102,6 +110,10 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         return offerPayLater;
     }
 
+    public boolean shouldRequestBillingAgreement() {
+        return requestBillingAgreement;
+    }
+
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
@@ -112,6 +124,15 @@ public class PayPalCheckoutRequest extends PayPalRequest {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
         } else {
             parameters.put(TOKENIZATION_KEY, authorization.getBearer());
+        }
+
+        if (requestBillingAgreement) {
+            parameters.put(REQUEST_BILLING_AGREEMENT_KEY, requestBillingAgreement);
+        }
+
+        String billingAgreementDescription = getBillingAgreementDescription();
+        if (requestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
+            parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
 
         String currencyCode = getCurrencyCode();

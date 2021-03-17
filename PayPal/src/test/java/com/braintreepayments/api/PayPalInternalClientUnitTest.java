@@ -141,6 +141,8 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         payPalRequest.setCurrencyCode("USD");
         payPalRequest.setIntent("authorize");
+        payPalRequest.setRequestBillingAgreement(true);
+        payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setLandingPageType("sample-landing-page-type");
         payPalRequest.setDisplayName("sample-display-name");
@@ -167,6 +169,8 @@ public class PayPalInternalClientUnitTest {
                 .put("return_url", "sample-scheme://onetouch/v1/success")
                 .put("cancel_url", "sample-scheme://onetouch/v1/cancel")
                 .put("offer_pay_later", true)
+                .put("request_billing_agreement", true)
+                .put("description", "Billing Agreement Description")
                 .put("line_items", new JSONArray()
                         .put(new JSONObject()
                                 .put("kind", "debit")
@@ -394,6 +398,30 @@ public class PayPalInternalClientUnitTest {
         JSONObject actual = new JSONObject(result);
 
         assertFalse(actual.has("line_items"));
+    }
+
+    @Test
+    public void sendRequest_withOneTimePayment_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
+                .authorization(tokenizationKey)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+        payPalRequest.setRequestBillingAgreement(false);
+        payPalRequest.setBillingAgreementDescription("Billing agreement description");
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+
+        String result = captor.getValue();
+        JSONObject actual = new JSONObject(result);
+
+        assertFalse(actual.has("request_billing_agreement"));
+        assertFalse(actual.has("description"));
     }
 
     @Test

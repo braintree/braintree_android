@@ -14,6 +14,7 @@
 * Add `PayPalCheckoutRequest`
 * Add `PayPalVaultRequest`
 * Add `tokenizePayPalAccount` method to `PayPalClient`
+* Add `requestBillingAgreement` to `PayPalCheckoutRequest`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private

@@ -25,6 +25,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertNull(request.getDisplayName());
         assertEquals(PayPalCheckoutRequest.INTENT_AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
+        assertNull(request.getBillingAgreementDescription());
         assertFalse(request.shouldOfferPayLater());
     }
 
@@ -37,6 +38,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setIntent(PayPalCheckoutRequest.INTENT_SALE);
 
         request.setLocaleCode("US");
+        request.setRequestBillingAgreement(true);
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
         request.setShippingAddressOverride(postalAddress);
@@ -47,6 +49,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
+        assertTrue(request.shouldRequestBillingAgreement());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
