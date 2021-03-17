@@ -56,7 +56,6 @@
   * Change Cardinal dependency from `api` to `implementation`
   * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
-  * Rename `uiCustomization` on `ThreeDSecureRequest` to `v2UiCustomization`
   * Remove `activity` parameter from `GooglePayClient#onActivityResult()`
   * Remove `activity` parameter from `GooglePayClient#getTokenizationParameters()`
 
