@@ -69,12 +69,14 @@ public class PayPalClient {
     }
 
     /**
+     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the One-Time Payment flow for PayPal.
      *
      * @param activity Android FragmentActivity
      * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
      */
+    @Deprecated
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.shouldOfferPayLater()) {
@@ -102,12 +104,14 @@ public class PayPalClient {
     }
 
     /**
+     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the Billing Agreement flow for PayPal.
      *
      * @param activity Android FragmentActivity
      * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
      */
+    @Deprecated
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
         if (payPalVaultRequest.shouldOfferCredit()) {

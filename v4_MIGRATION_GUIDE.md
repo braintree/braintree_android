@@ -439,7 +439,7 @@ public class PayPalActivity extends AppCompatActivity {
 
 v4 introduces two subclasses of `PayPalRequest`: 
 - `PayPalCheckoutRequest`, for checkout flows
-- `PayPalVaultRequest`, for vault flows. 
+- `PayPalVaultRequest`, for vault flows
 
 The setters on the request classes have been updated to remove method chaining.
 
