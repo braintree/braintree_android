@@ -411,9 +411,8 @@ public class PayPalActivity extends AppCompatActivity {
   }
 
   private void myRequestBillingAgreementMethod() {
-    PayPalRequest request = new PayPalRequest()
-        .localeCode("US")
-        .billingAgreementDescription("Your agreement description");
+    PayPalVaultRequest request = new PayPalVaultRequest();
+    request.setBillingAgreementDescription("Your agreement description");
 
     payPalClient.requestBillingAgreement(this, request, (error) -> {
       if (error != null) {
@@ -423,10 +422,9 @@ public class PayPalActivity extends AppCompatActivity {
   }
 
   private void myRequestOneTimePaymentMethod() {
-    PayPalRequest request = new PayPalRequest()
-        .amount("1")
-        .currencyCode("USD")
-        .intent(PayPalRequest.INTENT_AUTHORIZE);
+    PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+    request.setCurrencyCode("USD");
+    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
 
     payPalClient.requestOneTimePayment(this, request, (error) -> {
       if (error != null) {
@@ -436,6 +434,37 @@ public class PayPalActivity extends AppCompatActivity {
   }
 }
 ```
+
+#### PayPal Request
+
+v4 introduces two subclasses of `PayPalRequest`: 
+- `PayPalCheckoutRequest`, for checkout flows
+- `PayPalVaultRequest`, for vault flows. 
+
+The setters on the request classes have been updated to remove method chaining.
+
+The `requestOneTimePayment` and `requestBillingAgreement` methods on `PayPalClient` have been updated to expect instances of `PayPalCheckoutRequest` and `PayPalVaultRequest`, respectively.
+
+However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`:
+
+```java
+public class PayPalActivity extends AppCompatActivity {
+  ...
+
+  private void myTokenizePayPalAccountMethod() {
+    PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+    request.setCurrencyCode("USD");
+    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
+
+    payPalClient.tokenizePayPalAccount(this, request, (error) -> {
+      if (error != null) {
+        // Handle error
+      }
+    });
+  }
+}
+```
+
 
 ## Visa Checkout
 
