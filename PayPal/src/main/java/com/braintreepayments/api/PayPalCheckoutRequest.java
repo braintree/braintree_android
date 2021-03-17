@@ -174,7 +174,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         }
 
         if (requestBillingAgreement) {
-            parameters.put(REQUEST_BILLING_AGREEMENT_KEY, requestBillingAgreement);
+            parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true);
         }
 
         String billingAgreementDescription = getBillingAgreementDescription();

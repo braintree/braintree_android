@@ -20,6 +20,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -579,18 +580,38 @@ public class PayPalClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
 
-//    @Test
-//    public void requestOneTimePayment_sendsPayPalCreditOfferedAnalyticsEvent() {
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-//        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-//        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-//
-//        PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
-//
-//        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
-//        payPalRequest.setOfferCredit(true);
-//        sut.requestOneTimePayment(context, payPalRequest, payPalFlowStartedCallback);
-//
-//        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.credit.offered");
-//    }
+
+    @Test
+    public void tokenizePayPalAccount_withPayPalCheckoutRequest_forwardsRequestToRequestOneTimePayment() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+
+        PayPalClient sut = spy(new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient));
+        sut.tokenizePayPalAccount(context, payPalRequest, payPalFlowStartedCallback);
+
+        verify(sut).requestOneTimePayment(same(context), same(payPalRequest), same(payPalFlowStartedCallback));
+    }
+
+    @Test
+    public void tokenizePayPalAccount_withPayPalVaultRequest_forwardsRequestToRequestBillingAgreement() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
+
+        PayPalClient sut = spy(new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient));
+        sut.tokenizePayPalAccount(context, payPalRequest, payPalFlowStartedCallback);
+
+        verify(sut).requestBillingAgreement(same(context), same(payPalRequest), same(payPalFlowStartedCallback));
+    }
 }

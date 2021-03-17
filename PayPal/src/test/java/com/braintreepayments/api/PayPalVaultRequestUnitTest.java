@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertTrue;
 public class PayPalVaultRequestUnitTest {
 
     @Test
-    public void newPayPalRequest_setsDefaultValues() {
+    public void newPayPalVaultRequest_setsDefaultValues() {
         PayPalVaultRequest request = new PayPalVaultRequest();
 
         assertNull(request.getLocaleCode());

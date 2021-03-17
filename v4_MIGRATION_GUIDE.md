@@ -465,7 +465,6 @@ public class PayPalActivity extends AppCompatActivity {
 }
 ```
 
-
 ## Visa Checkout
 
 The Visa Checkout feature is now supported in a single dependency:
