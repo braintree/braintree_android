@@ -54,11 +54,11 @@ public class PayPalCheckoutRequest extends PayPalRequest {
 
 
     /**
-     * Payment intent. Must be set to {@link #INTENT_SALE} for immediate payment,
-     * {@link #INTENT_AUTHORIZE} to authorize a payment for capture later, or
-     * {@link #INTENT_ORDER} to create an order.
+     * Payment intent. Must be set to {@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment,
+     * {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} to authorize a payment for capture later, or
+     * {@link PayPalCheckoutRequest#INTENT_ORDER} to create an order.
      *
-     * Defaults to authorize. Only works in the Single Payment flow.
+     * Defaults to authorize.
      *
      * @param intent Must be a {@link PayPalPaymentIntent} value:
      * <ul>

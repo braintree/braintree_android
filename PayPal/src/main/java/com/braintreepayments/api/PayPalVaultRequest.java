@@ -12,8 +12,7 @@ public class PayPalVaultRequest extends PayPalRequest {
     public PayPalVaultRequest() {}
 
     /**
-     * Offers PayPal Credit prominently in the payment flow. Defaults to false. Only available with Billing Agreements
-     * and PayPal Checkout.
+     * Offers PayPal Credit prominently in the payment flow. Defaults to false.
      *
      * @param offerCredit Whether to offer PayPal Credit.
      */

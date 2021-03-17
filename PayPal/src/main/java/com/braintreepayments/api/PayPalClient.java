@@ -53,6 +53,13 @@ public class PayPalClient {
                 "for the correct configuration");
     }
 
+    /**
+     * Tokenize a PayPal account for vault or checkout.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
        if (payPalRequest instanceof PayPalCheckoutRequest) {
            requestOneTimePayment(activity, (PayPalCheckoutRequest) payPalRequest, callback);
@@ -63,8 +70,9 @@ public class PayPalClient {
 
     /**
      * Starts the One-Time Payment flow for PayPal.
+     *
      * @param activity Android FragmentActivity
-     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request. An amount MUST be specified.
+     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
      */
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
@@ -95,6 +103,7 @@ public class PayPalClient {
 
     /**
      * Starts the Billing Agreement flow for PayPal.
+     *
      * @param activity Android FragmentActivity
      * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
