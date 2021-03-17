@@ -8,6 +8,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 
+import static com.braintreepayments.api.PayPalCheckoutRequest.USER_ACTION_DEFAULT;
+
 class PayPalInternalClient {
 
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
@@ -73,7 +75,7 @@ class PayPalInternalClient {
 
                                     String approvalUrl = parsedRedirectUri
                                             .buildUpon()
-                                            .appendQueryParameter(USER_ACTION_KEY, payPalRequest.getUserAction())
+                                            .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
                                             .toString();
                                     payPalResponse.approvalUrl(approvalUrl);
                                 }

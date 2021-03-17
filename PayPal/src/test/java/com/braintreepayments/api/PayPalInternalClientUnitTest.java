@@ -439,7 +439,6 @@ public class PayPalInternalClientUnitTest {
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -447,7 +446,7 @@ public class PayPalInternalClientUnitTest {
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
-            "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=commit";
+            "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
 
         PayPalResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());
@@ -474,7 +473,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         payPalRequest.setIntent("authorize");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
+        payPalRequest.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -495,7 +494,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
@@ -515,6 +514,30 @@ public class PayPalInternalClientUnitTest {
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
+
+        PayPalResponse payPalResponse = captor.getValue();
+        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
+    }
+
+    @Test
+    public void sendRequest_withPayPalVaultRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
+                .authorization(clientToken)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        String expectedUrl =
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
 
         PayPalResponse payPalResponse = captor.getValue();
         assertEquals(expectedUrl, payPalResponse.getApprovalUrl());

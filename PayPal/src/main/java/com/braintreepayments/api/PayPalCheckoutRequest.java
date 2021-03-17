@@ -20,7 +20,26 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PayPalCheckoutRequest.USER_ACTION_DEFAULT, PayPalCheckoutRequest.USER_ACTION_COMMIT})
+    @interface PayPalPaymentUserAction {}
+
+    /**
+     * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
+     * confirmation will be shown on the merchant checkout site before the user's payment method is charged.
+     */
+    public static final String USER_ACTION_DEFAULT = "";
+
+    /**
+     * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
+     * when they click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
+     * be shown on the merchant's checkout page. This option works for both checkout and vault flows.
+     */
+    public static final String USER_ACTION_COMMIT = "commit";
+
+
     private String intent = INTENT_AUTHORIZE;
+    private String userAction = USER_ACTION_DEFAULT;
     private final String amount;
     private String currencyCode;
     private boolean requestBillingAgreement;
@@ -78,6 +97,21 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     }
 
     /**
+     * Set the checkout user action which determines the button text.
+     *
+     * @param userAction Must be a be {@link PayPalPaymentUserAction} value:
+     * <ul>
+     * <li>{@link PayPalCheckoutRequest#USER_ACTION_COMMIT}</li>
+     * <li>{@link PayPalCheckoutRequest#USER_ACTION_DEFAULT}</li>
+     * </ul>
+     *
+     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
+     */
+    public void setUserAction(@PayPalPaymentUserAction String userAction) {
+        this.userAction = userAction;
+    }
+
+    /**
      * Offers PayPal Pay Later prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
      *
      * @param offerPayLater Whether to offer PayPal Pay Later.
@@ -104,6 +138,11 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     @PayPalPaymentIntent
     public String getIntent() {
         return intent;
+    }
+
+    @PayPalPaymentUserAction
+    public String getUserAction() {
+        return userAction;
     }
 
     public boolean shouldOfferPayLater() {

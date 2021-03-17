@@ -55,30 +55,12 @@ public abstract class PayPalRequest {
      */
     public static final String LANDING_PAGE_TYPE_LOGIN = "login";
 
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalRequest.USER_ACTION_DEFAULT, PayPalRequest.USER_ACTION_COMMIT})
-    @interface PayPalPaymentUserAction {}
-
-    /**
-     * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
-     * confirmation will be shown on the merchant checkout site before the user's payment method is charged.
-     */
-    public static final String USER_ACTION_DEFAULT = "";
-
-    /**
-     * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
-     * when they click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
-     * be shown on the merchant's checkout page. This option works for both checkout and vault flows.
-     */
-    public static final String USER_ACTION_COMMIT = "commit";
-
     private String mLocaleCode;
     private String mBillingAgreementDescription;
     private boolean mShippingAddressRequired;
     private boolean mShippingAddressEditable = false;
     private PostalAddress mShippingAddressOverride;
     private String mLandingPageType;
-    private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
     private String mMerchantAccountId;
     private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
@@ -191,21 +173,6 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Set the checkout user action which determines the button text.
-     *
-     * @param userAction Must be a be {@link PayPalPaymentUserAction} value:
-     * <ul>
-     * <li>{@link #USER_ACTION_COMMIT}</li>
-     * <li>{@link #USER_ACTION_DEFAULT}</li>
-     * </ul>
-     *
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
-     */
-    public void setUserAction(@PayPalPaymentUserAction String userAction) {
-        mUserAction = userAction;
-    }
-
-    /**
      * Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -259,11 +226,6 @@ public abstract class PayPalRequest {
     @PayPalLandingPageType
     public String getLandingPageType() {
         return mLandingPageType;
-    }
-
-    @PayPalPaymentUserAction
-    public String getUserAction() {
-        return mUserAction;
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;

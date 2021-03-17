@@ -22,10 +22,6 @@ public class PayPalRequestFactory {
             request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         }
 
-        if (Settings.isPayPalUseractionCommitEnabled(context)) {
-            request.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
-        }
-
         if (Settings.isPayPalCreditOffered(context)) {
             request.setOfferCredit(true);
         }
@@ -66,7 +62,7 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
-            request.setUserAction(PayPalRequest.USER_ACTION_COMMIT);
+            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
