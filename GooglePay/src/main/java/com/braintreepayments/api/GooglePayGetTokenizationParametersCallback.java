@@ -6,7 +6,7 @@ import java.util.Collection;
 
 /**
  * Callback for receiving result of
- * {@link GooglePayClient#tokenize(com.google.android.gms.wallet.PaymentData, GooglePayOnActivityResultCallback)}
+ * {@link GooglePayClient#getTokenizationParameters(GooglePayGetTokenizationParametersCallback)}
  */
 public interface GooglePayGetTokenizationParametersCallback {
 
