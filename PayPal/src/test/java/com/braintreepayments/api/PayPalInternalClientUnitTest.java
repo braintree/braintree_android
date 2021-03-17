@@ -49,7 +49,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withBillingAgreement_sendsAllParameters() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
@@ -113,7 +113,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withOneTimePayment_sendsAllParameters() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
@@ -336,7 +336,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withBillingAgreement_omitsEmptyBillingAgreementDescription() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(tokenizationKey)
@@ -358,7 +358,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withOneTimePayment_fallsBackToPayPalConfigurationCurrencyCode() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_INR))
                 .authorization(tokenizationKey)
@@ -379,7 +379,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withOneTimePayment_omitsEmptyLineItems() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_omitsEmptyLineItems() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(tokenizationKey)
@@ -401,7 +401,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withOneTimePayment_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(tokenizationKey)
@@ -425,7 +425,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withBillingAgreement_callsBackPayPalResponseOnSuccess() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
         when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -459,7 +459,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withOneTimePayment_callsBackPayPalResponseOnSuccess() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
         when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
