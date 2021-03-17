@@ -33,7 +33,7 @@ import org.json.JSONObject;
  * stored in the vault. It is only possible to create one Braintree transaction with this form of user
  * approval.
  *
- * Upon successful completion, you will receive a `PayPalAccountNonce`, which includes user-facing
+ * Upon successful completion, you will receive a PayPalAccountNonce, which includes user-facing
  * details and a payment method nonce, which you must pass to your server in order to create a transaction
  * or save the authorization in the Braintree vault (not possible with Checkout).
  */

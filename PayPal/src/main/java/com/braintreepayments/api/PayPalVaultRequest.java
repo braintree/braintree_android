@@ -12,7 +12,7 @@ public class PayPalVaultRequest extends PayPalRequest {
     public PayPalVaultRequest() {}
 
     /**
-     * Offers PayPal Credit prominently in the payment flow. Defaults to false.
+     * Optional: Offers PayPal Credit if the customer qualifies. Defaults to false.
      *
      * @param offerCredit Whether to offer PayPal Credit.
      */

@@ -74,7 +74,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
 
 
     /**
-     * Payment intent. Must be set to {@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment,
+     * Optional: Payment intent. Must be set to {@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment,
      * {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} to authorize a payment for capture later, or
      * {@link PayPalCheckoutRequest#INTENT_ORDER} to create an order.
      *
@@ -97,7 +97,12 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     }
 
     /**
-     * Set the checkout user action which determines the button text.
+     * Optional: The call-to-action in the PayPal Checkout flow.
+     *
+     * By default the final button will show the localized word for "Continue" and implies that the
+     * final amount billed is not yet known. Setting the PayPalCheckoutRequest's userAction to
+     * {@link PayPalCheckoutRequest#USER_ACTION_COMMIT} changes the button text to "Pay Now",
+     * conveying to the user that billing will take place immediately.
      *
      * @param userAction Must be a be {@link PayPalPaymentUserAction} value:
      * <ul>
@@ -112,7 +117,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     }
 
     /**
-     * Offers PayPal Pay Later prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
+     * Optional: Offers PayPal Pay Later if the customer qualifies. Defaults to false.
      *
      * @param offerPayLater Whether to offer PayPal Pay Later.
      */
@@ -121,7 +126,10 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     }
 
     /**
-     Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be prompted to consent to a billing agreement during checkout.
+     * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be
+     * prompted to consent to a billing agreement during checkout.
+     *
+     * @param requestBillingAgreement Whether to request billing agreement during checkout.
      */
     public void setRequestBillingAgreement(boolean requestBillingAgreement) {
         this.requestBillingAgreement = requestBillingAgreement;

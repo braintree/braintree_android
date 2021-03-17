@@ -66,7 +66,7 @@ public abstract class PayPalRequest {
     private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
-     * Constructs a request for PayPal Single Payment and Billing Agreement flows.
+     * Constructs a request for PayPal Checkout and Vault flows.
      */
     public PayPalRequest() {
         mShippingAddressRequired = false;
@@ -93,7 +93,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Whether to use a custom locale code.
+     * Optional: A locale code to use for the transaction.
      * <br>
      * Supported locales are:
      * <br>
@@ -125,14 +125,14 @@ public abstract class PayPalRequest {
      * <code>zh_TW</code>,
      * <code>zh_XC</code>.
      *
-     * @param localeCode Whether to use a custom locale code.
+     * @param localeCode A locale code to use for the transaction.
      */
     public void setLocaleCode(String localeCode) {
         mLocaleCode = localeCode;
     }
 
     /**
-     * The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
+     * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
@@ -141,7 +141,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Display a custom description to the user for a billing agreement.
+     * Optional: Display a custom description to the user for a billing agreement.
      *
      * @param description The description to display.
      */
@@ -150,7 +150,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * A custom shipping address to be used for the checkout flow.
+     * Optional: A custom shipping address to be used for the checkout flow.
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
@@ -159,7 +159,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
+     * Optional: Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
      *
      * @param landingPageType Must be a {@link PayPalLandingPageType} value:
      * <ul>
@@ -173,7 +173,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Specify a merchant account Id other than the default to use during tokenization.
+     * Optional: Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
@@ -182,7 +182,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * The line items for this transaction. It can include up to 249 line items.
+     * Optional: The line items for this transaction. It can include up to 249 line items.
      *
      * @param lineItems a collection of {@link PayPalLineItem}
      */

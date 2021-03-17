@@ -66,6 +66,7 @@
   * Update `PayPalClient#requestBillingAgreement()` to expect a `PayPalVaultRequest` and deprecate method
   * Make `PayPalRequest` abstract
   * Update `PayPalRequest` setter method names and remove method chaining
+  * Make `PayPalAccountBuilder` package-private
 
 ## 4.0.0-beta1
 
