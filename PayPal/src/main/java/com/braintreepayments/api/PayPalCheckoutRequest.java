@@ -37,7 +37,6 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      */
     public static final String USER_ACTION_COMMIT = "commit";
 
-
     private String intent = INTENT_AUTHORIZE;
     private String userAction = USER_ACTION_DEFAULT;
     private final String amount;
@@ -71,7 +70,6 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     public void setCurrencyCode(String currencyCode) {
         this.currencyCode = currencyCode;
     }
-
 
     /**
      * Optional: Payment intent. Must be set to {@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment,
