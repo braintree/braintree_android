@@ -42,6 +42,7 @@
   * Make `API_RESOURCE_KEY` in `LocalPaymentNonce` package-private
   * Make `LocalPaymentNonce#fromJson()` methods package-private
   * Make `LocalPaymentNonce` constructor package-private
+  * Make `GooglePayClient#tokenize()` package-private
   * The `shippingMethod` property on `ThreeDSecureRequest` is now an enum rather than a string. Possible values:
     * `SAME_DAY`
     * `EXPEDITED`
@@ -55,6 +56,8 @@
   * Change Cardinal dependency from `api` to `implementation`
   * Replace `VenmoClient#authorizeAccount()` with `VenmoClient#tokenizeVenmoAccount()`
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
+  * Remove `activity` parameter from `GooglePayClient#onActivityResult()`
+  * Remove `activity` parameter from `GooglePayClient#getTokenizationParameters()`
 
 ## 4.0.0-beta1
 

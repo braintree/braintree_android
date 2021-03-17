@@ -342,7 +342,7 @@ public class GooglePayActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == BraintreeRequestCodes.GOOGLE_PAY) {
-      googlePayClient.onActivityResult(this, resultCode, data, (paymentMethodNonce, error) -> {
+      googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
         if (paymentMethodNonce != null) {
           // send this nonce to your server
           String nonce = paymentMethodNonce.getNonce();

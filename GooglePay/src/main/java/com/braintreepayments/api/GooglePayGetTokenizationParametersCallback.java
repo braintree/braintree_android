@@ -6,7 +6,7 @@ import java.util.Collection;
 
 /**
  * Callback for receiving result of
- * {@link com.braintreepayments.api.GooglePayClient#tokenize(androidx.fragment.app.FragmentActivity, com.google.android.gms.wallet.PaymentData, com.braintreepayments.api.GooglePayOnActivityResultCallback)}
+ * {@link GooglePayClient#getTokenizationParameters(GooglePayGetTokenizationParametersCallback)}
  */
 public interface GooglePayGetTokenizationParametersCallback {
 
