@@ -2,9 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -30,12 +27,6 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
-        ThreeDSecureRequest request = new ThreeDSecureRequest();
-        assertNotNull(request.getV2UiCustomization());
-    }
-
-    @Test
     public void writeToParcel() {
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");
@@ -52,15 +43,15 @@ public class ThreeDSecureRequestUnitTest {
                 .countryCodeAlpha2("US")
                 .postalCode("54321");
 
-        LabelCustomization labelCustomization = new LabelCustomization();
-        labelCustomization.setHeadingTextColor("#FF5A5F");
+        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        labelCustomization.setHeadingTextColor("#FFA5FF");
 
-        UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setLabelCustomization(labelCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.setLabelCustomization(labelCustomization);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
-                .redirectButtonText("return-button-text")
-                .redirectDescription("return-label-text");
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
+        v1UiCustomization.setRedirectButtonText("return-button-text");
+        v1UiCustomization.setRedirectDescription("return-label-text");
 
         ThreeDSecureRequest expected = new ThreeDSecureRequest()
                 .nonce("a-nonce")
@@ -74,7 +65,7 @@ public class ThreeDSecureRequestUnitTest {
                 .challengeRequested(true)
                 .dataOnlyRequested(true)
                 .exemptionRequested(true)
-                .v2UiCustomization(uiCustomization)
+                .v2UiCustomization(v2UiCustomization)
                 .v1UiCustomization(v1UiCustomization)
                 .accountType(ThreeDSecureRequest.CREDIT);
 

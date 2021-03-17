@@ -6,8 +6,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,17 +50,17 @@ public class ThreeDSecureV2UnitTest {
                 .cardinalAuthenticationJWT("cardinal_authentication_jwt")
                 .buildConfiguration();
 
-        TextBoxCustomization textBoxCustomization = new TextBoxCustomization();
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
         textBoxCustomization.setBorderWidth(12);
 
-        UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setTextBoxCustomization(textBoxCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .v2UiCustomization(uiCustomization);
+                .v2UiCustomization(v2UiCustomization);
     }
 
     @Test

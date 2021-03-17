@@ -59,9 +59,9 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         String urlScheme = "com.braintreepayments.Demo.payments";
         String assetsUrl = "https://assets.com";
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
-                .redirectButtonText("button text")
-                .redirectDescription("description text");
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
+        v1UiCustomization.setRedirectButtonText("button text");
+        v1UiCustomization.setRedirectDescription("description text");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .v1UiCustomization(v1UiCustomization);

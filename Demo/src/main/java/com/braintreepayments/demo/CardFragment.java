@@ -31,6 +31,8 @@ import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
+import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
+import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
 import com.braintreepayments.api.UnionPayCardBuilder;
 import com.braintreepayments.api.UnionPayClient;
@@ -39,8 +41,6 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
-import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 import com.google.android.material.textfield.TextInputLayout;
 
 import static android.view.View.GONE;
@@ -389,19 +389,19 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");
 
-        ToolbarCustomization toolbarCustomization = new ToolbarCustomization();
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
         toolbarCustomization.setBackgroundColor("#FF5A5F");
         toolbarCustomization.setButtonText("Close");
         toolbarCustomization.setTextColor("#222222");
         toolbarCustomization.setTextFontSize(18);
 
-        UiCustomization uiCustomization = new UiCustomization();
-        uiCustomization.setToolbarCustomization(toolbarCustomization);
+        ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
-                .redirectButtonText("Return to Demo App")
-                .redirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
+        v1UiCustomization.setRedirectButtonText("Return to Demo App");
+        v1UiCustomization.setRedirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         return new ThreeDSecureRequest()
                 .amount("10")
@@ -410,7 +410,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .nonce(cardNonce.getNonce())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation)
-                .v2UiCustomization(uiCustomization)
+                .v2UiCustomization(v2UiCustomization)
                 .v1UiCustomization(v1UiCustomization);
     }
 }
