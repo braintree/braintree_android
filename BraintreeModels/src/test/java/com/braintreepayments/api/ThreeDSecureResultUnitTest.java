@@ -14,11 +14,11 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureAuthenticationResponseUnitTest {
+public class ThreeDSecureResultUnitTest {
 
     @Test
     public void fromJson_parsesCorrectly_v1() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+        ThreeDSecureResult authResponse = ThreeDSecureResult.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
 
         assertEquals("11", authResponse.getCardNonce().getLastTwo());
@@ -31,7 +31,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void fromJson_parsesCorrectly_v2() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+        ThreeDSecureResult authResponse = ThreeDSecureResult.fromJson(
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE);
 
         assertEquals("91", authResponse.getCardNonce().getLastTwo());
@@ -44,7 +44,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v1() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+        ThreeDSecureResult authResponse = ThreeDSecureResult.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getCardNonce());
@@ -55,7 +55,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v2() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+        ThreeDSecureResult authResponse = ThreeDSecureResult.fromJson(
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getCardNonce());
@@ -67,7 +67,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
     @Test
     public void getNonceWithAuthenticationDetails_returnsNewNonce_whenAuthenticationSuccessful() throws JSONException {
         CardNonce lookupNonce = CardNonce.fromJson(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
-        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+        CardNonce authenticationNonce = ThreeDSecureResult.getNonceWithAuthenticationDetails(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE, lookupNonce);
 
         assertFalse(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
@@ -80,7 +80,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
     @Test
     public void getNonceWithAuthenticationDetails_returnsLookupNonce_whenAuthenticationUnsuccessful_WithError() throws JSONException {
         CardNonce lookupNonce = CardNonce.fromJson(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
-        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+        CardNonce authenticationNonce = ThreeDSecureResult.getNonceWithAuthenticationDetails(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR, lookupNonce);
 
         assertTrue(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
@@ -92,7 +92,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
     @Test
     public void getNonceWithAuthenticationDetails_returnsLookupNonce_whenAuthenticationUnsuccessful_WithException() throws JSONException {
         CardNonce lookupNonce = CardNonce.fromJson(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
-        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+        CardNonce authenticationNonce = ThreeDSecureResult.getNonceWithAuthenticationDetails(
                 "{'bad'}", lookupNonce);
 
         assertTrue(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
@@ -105,7 +105,7 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void fromException_parsesCorrectly() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
+        ThreeDSecureResult authResponse = ThreeDSecureResult
                 .fromException("Error!");
 
         assertFalse(authResponse.isSuccess());
@@ -114,13 +114,13 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void isParcelable() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+        ThreeDSecureResult authResponse = ThreeDSecureResult.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         Parcel parcel = Parcel.obtain();
         authResponse.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureAuthenticationResponse parceled = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
+        ThreeDSecureResult parceled = ThreeDSecureResult.CREATOR.createFromParcel(parcel);
 
         assertEquals(authResponse.getCardNonce().getLastTwo(), parceled.getCardNonce().getLastTwo());
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(),
@@ -136,13 +136,13 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
     public void exceptionsAreParcelable() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
+        ThreeDSecureResult authResponse = ThreeDSecureResult
                 .fromException("Error!");
         Parcel parcel = Parcel.obtain();
         authResponse.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureAuthenticationResponse parceled = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
+        ThreeDSecureResult parceled = ThreeDSecureResult.CREATOR.createFromParcel(parcel);
 
         assertEquals(authResponse.isSuccess(), parceled.isSuccess());
         assertEquals(authResponse.getException(), parceled.getException());

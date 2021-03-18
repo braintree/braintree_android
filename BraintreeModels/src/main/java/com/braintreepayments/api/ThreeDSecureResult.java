@@ -9,7 +9,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
-public class ThreeDSecureAuthenticationResponse implements Parcelable {
+public class ThreeDSecureResult implements Parcelable {
 
     private static final String ERRORS_KEY = "errors";
     private static final String ERROR_KEY = "error";
@@ -26,11 +26,11 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication route.
-     * @return The {@link ThreeDSecureAuthenticationResponse} to use when performing 3D Secure
+     * @return The {@link ThreeDSecureResult} to use when performing 3D Secure
      * authentication.
      */
-    static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
-        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+    static ThreeDSecureResult fromJson(String jsonString) {
+        ThreeDSecureResult authenticationResponse = new ThreeDSecureResult();
 
         try {
             JSONObject json = new JSONObject(jsonString);
@@ -63,7 +63,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     @Deprecated
     public static CardNonce getNonceWithAuthenticationDetails(String jsonString, CardNonce lookupCardNonce) {
-        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+        ThreeDSecureResult authenticationResponse = new ThreeDSecureResult();
         CardNonce nonceToReturn = lookupCardNonce;
 
         try {
@@ -98,8 +98,8 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      * {@see https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v2}
      */
     @Deprecated
-    public static ThreeDSecureAuthenticationResponse fromException(String exception) {
-        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+    public static ThreeDSecureResult fromException(String exception) {
+        ThreeDSecureResult authenticationResponse = new ThreeDSecureResult();
 
         authenticationResponse.mSuccess = false;
         authenticationResponse.mException = exception;
@@ -142,7 +142,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return mException;
     }
 
-    ThreeDSecureAuthenticationResponse() {
+    ThreeDSecureResult() {
     }
 
     @Override
@@ -158,21 +158,21 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         dest.writeString(mException);
     }
 
-    private ThreeDSecureAuthenticationResponse(Parcel in) {
+    private ThreeDSecureResult(Parcel in) {
         mSuccess = in.readByte() != 0;
         mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mErrors = in.readString();
         mException = in.readString();
     }
 
-    public static final Creator<ThreeDSecureAuthenticationResponse> CREATOR =
-            new Creator<ThreeDSecureAuthenticationResponse>() {
-                public ThreeDSecureAuthenticationResponse createFromParcel(Parcel source) {
-                    return new ThreeDSecureAuthenticationResponse(source);
+    public static final Creator<ThreeDSecureResult> CREATOR =
+            new Creator<ThreeDSecureResult>() {
+                public ThreeDSecureResult createFromParcel(Parcel source) {
+                    return new ThreeDSecureResult(source);
                 }
 
-                public ThreeDSecureAuthenticationResponse[] newArray(int size) {
-                    return new ThreeDSecureAuthenticationResponse[size];
+                public ThreeDSecureResult[] newArray(int size) {
+                    return new ThreeDSecureResult[size];
                 }
             };
 }

@@ -271,12 +271,12 @@ public class ThreeDSecureClient {
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
+                ThreeDSecureResult authenticationResponse = ThreeDSecureResult.fromJson(responseBody);
 
                 // NEXT_MAJOR_VERSION
                 // Remove this line. Pass back lookupCardNonce + error message if there are errors.
                 // Otherwise pass back authenticationResponse.getCardNonce().
-                CardNonce nonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(responseBody, lookupCardNonce);
+                CardNonce nonce = ThreeDSecureResult.getNonceWithAuthenticationDetails(responseBody, lookupCardNonce);
 
                 if (authenticationResponse.getErrors() != null) {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
@@ -316,7 +316,7 @@ public class ThreeDSecureClient {
                 Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUrl != null) {
                     String authResponse = deepLinkUrl.getQueryParameter("auth_response");
-                    ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(authResponse);
+                    ThreeDSecureResult authenticationResponse = ThreeDSecureResult.fromJson(authResponse);
 
                     // NEXT_MAJOR_VERSION Make isSuccess package-private so that we have access to it, but merchants do not
                     if (authenticationResponse.isSuccess()) {

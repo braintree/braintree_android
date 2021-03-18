@@ -36,7 +36,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private boolean mLiabilityShifted;
     private boolean mLiabilityShiftPossible;
     private String mStatus;
-    private ThreeDSecureAuthenticationResponse mThreeDSecureAuthenticationResponse;
+    private ThreeDSecureResult mThreeDSecureResult;
     private String mThreeDSecureVersion;
     private boolean mWasVerified;
     private String mXid;
@@ -86,8 +86,8 @@ public class ThreeDSecureInfo implements Parcelable {
         return threeDSecureInfo;
     }
 
-    void setThreeDSecureAuthenticationResponse(ThreeDSecureAuthenticationResponse authResponse) {
-        mThreeDSecureAuthenticationResponse = authResponse;
+    void setThreeDSecureAuthenticationResponse(ThreeDSecureResult authResponse) {
+        mThreeDSecureResult = authResponse;
     }
 
     public void setErrorMessage(String errorMessage) {
@@ -207,10 +207,10 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @deprecated Use {@link #getErrorMessage()},  {@link #isLiabilityShifted()}, and {@link #isLiabilityShiftPossible()}
      * to determine the result of the challenge authentication
-     * @return The {@link ThreeDSecureAuthenticationResponse} if one is associated with a nonce.
+     * @return The {@link ThreeDSecureResult} if one is associated with a nonce.
      */
-    public ThreeDSecureAuthenticationResponse getThreeDSecureAuthenticationResponse() {
-        return mThreeDSecureAuthenticationResponse;
+    public ThreeDSecureResult getThreeDSecureAuthenticationResponse() {
+        return mThreeDSecureResult;
     }
 
     /**
