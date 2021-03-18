@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -111,27 +110,35 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Continues the 3DS verification. Should be called from {@link ThreeDSecureLookupCallback#onResult(ThreeDSecureRequest, ThreeDSecureLookup, Exception)}
-     * @param activity           Android FragmentActivity
-     * @param request            the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param threeDSecureLookup the {@link ThreeDSecureLookup} returned for this request.
- *                           Contains information about the 3DS verification request that will
- *                           be invoked in this method.
-     * @param callback           {@link ThreeDSecureResultCallback}
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureLookupCallback#onResult(ThreeDSecureRequest, String, Exception)}
+     *
+     * @param activity   Android FragmentActivity
+     * @param request    the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param lookupData the {@link ThreeDSecureLookup} returned for this request.
+     *                   Contains information about the 3DS verification request that will
+     *                   be invoked in this method.
+     * @param callback   {@link ThreeDSecureResultCallback}
      */
-    public void initiateChallengeWithLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookup threeDSecureLookup, final ThreeDSecureResultCallback callback) {
+    public void initiateChallengeWithLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final String lookupData, final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                ThreeDSecureLookup lookup;
+                try {
+                    lookup = ThreeDSecureLookup.fromJson(lookupData);
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
+                    return;
+                }
 
-                boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
-                String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
+                boolean showChallenge = lookup.getAcsUrl() != null;
+                String threeDSecureVersion = lookup.getThreeDSecureVersion();
 
                 braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
                 braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                 if (!showChallenge) {
-                    CardNonce cardNonce = threeDSecureLookup.getCardNonce();
+                    CardNonce cardNonce = lookup.getCardNonce();
                     ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
 
                     braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
@@ -146,7 +153,7 @@ public class ThreeDSecureClient {
                             braintreeClient.getReturnUrlScheme(),
                             configuration.getAssetsUrl(),
                             request,
-                            threeDSecureLookup);
+                            lookup);
                     BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                             .requestCode(THREE_D_SECURE)
                             .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -163,7 +170,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
                 Bundle extras = new Bundle();
-                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, lookup);
 
                 Intent intent = new Intent(activity, ThreeDSecureActivity.class);
                 intent.putExtras(extras);
@@ -291,7 +298,7 @@ public class ThreeDSecureClient {
 
     /**
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback {@link ThreeDSecureResultCallback}
+     * @param callback            {@link ThreeDSecureResultCallback}
      */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final ThreeDSecureResultCallback callback) {
         // V1 flow
@@ -324,8 +331,8 @@ public class ThreeDSecureClient {
 
     /**
      * @param resultCode a code associated with the Activity result
-     * @param data Android Intent
-     * @param callback {@link ThreeDSecureResultCallback}
+     * @param data       Android Intent
+     * @param callback   {@link ThreeDSecureResultCallback}
      */
     public void onActivityResult(int resultCode, Intent data, ThreeDSecureResultCallback callback) {
         // V2 flow
@@ -367,12 +374,7 @@ public class ThreeDSecureClient {
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                try {
-                    ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                    callback.onResult(request, threeDSecureLookup, null);
-                } catch (JSONException exception) {
-                    callback.onResult( null, null, exception);
-                }
+                callback.onResult(request, responseBody, null);
             }
 
             @Override

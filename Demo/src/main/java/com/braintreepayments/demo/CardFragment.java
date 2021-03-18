@@ -330,9 +330,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
 
-            threeDSecureClient.performLookup(activity, threeDSecureRequest(paymentMethodNonce), (request, lookup, error) -> {
-                if (request != null && lookup != null) {
-                    threeDSecureClient.initiateChallengeWithLookup(activity, request, lookup, this::handleThreeDSecureResult);
+            threeDSecureClient.performLookup(activity, threeDSecureRequest(paymentMethodNonce), (request, lookupData, error) -> {
+                if (request != null && lookupData != null) {
+                    threeDSecureClient.initiateChallengeWithLookup(activity, request, lookupData, this::handleThreeDSecureResult);
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();
