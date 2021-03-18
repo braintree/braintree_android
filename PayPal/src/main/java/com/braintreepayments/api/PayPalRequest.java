@@ -145,7 +145,7 @@ public abstract class PayPalRequest {
     }
 
     /**
-     * Optional: A custom shipping address to be used for the checkout flow.
+     * Optional: A valid shipping address to be displayed in the transaction flow. An error will occur if this address is not valid
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
