@@ -85,9 +85,9 @@ public class PayPalClient {
      */
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
        if (payPalRequest instanceof PayPalCheckoutRequest) {
-           requestOneTimePayment(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+           sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
        } else if (payPalRequest instanceof PayPalVaultRequest) {
-           requestBillingAgreement(activity, (PayPalVaultRequest) payPalRequest, callback);
+           sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
        }
     }
 
@@ -101,6 +101,23 @@ public class PayPalClient {
      */
     @Deprecated
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+        tokenizePayPalAccount(activity, payPalCheckoutRequest, callback);
+    }
+
+    /**
+     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
+     * Starts the Billing Agreement (Vault) flow for PayPal.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
+    @Deprecated
+    public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+        tokenizePayPalAccount(activity, payPalVaultRequest, callback);
+    }
+
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.shouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
@@ -121,21 +138,13 @@ public class PayPalClient {
                     callback.onResult(manifestInvalidError);
                     return;
                 }
-                sendCheckoutRequest(activity, payPalCheckoutRequest, callback);
+                sendPayPalRequest(activity, payPalCheckoutRequest, callback);
             }
         });
+
     }
 
-    /**
-     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
-     * Starts the Billing Agreement (Vault) flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
-     */
-    @Deprecated
-    public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+    private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
         if (payPalVaultRequest.shouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
@@ -157,12 +166,12 @@ public class PayPalClient {
                     return;
                 }
 
-                sendCheckoutRequest(activity, payPalVaultRequest, callback);
+                sendPayPalRequest(activity, payPalVaultRequest, callback);
             }
         });
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+    private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
             public void onResult(PayPalResponse payPalResponse, Exception error) {
