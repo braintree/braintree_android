@@ -53,34 +53,6 @@ public class ThreeDSecureClient {
      * which points to the original payment method, as well as the 3D Secure verification.
      * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
      * liability shift if authentication is successful or fail with a 3D Secure failure.
-     * @param activity Android FragmentActivity
-     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param callback {@link ThreeDSecureResultCallback}
-     */
-    public void performVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
-        performVerification(activity, request, new ThreeDSecureLookupCallback() {
-            @Override
-            public void onResult(ThreeDSecureRequest request, ThreeDSecureLookup lookup, Exception error) {
-                braintreeClient.sendAnalyticsEvent("three-d-secure.perform-verification.default-lookup-listener");
-                if (error != null) {
-                    callback.onResult(null, error);
-                } else {
-                    continuePerformVerification(activity, request, lookup, callback);
-                }
-            }
-        });
-    }
-
-    /**
-     * Verification is associated with a transaction amount and your merchant account. To specify a
-     * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
-     * generating a client token</a>
-     * <p>
-     * During lookup the original payment method nonce is consumed and a new one is returned,
-     * which points to the original payment method, as well as the 3D Secure verification.
-     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
-     * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
      * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.

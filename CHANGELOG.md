@@ -68,6 +68,7 @@
   * Make `PayPalRequest` abstract
   * Update `PayPalRequest` setter method names and remove method chaining
   * Make `PayPalAccountBuilder` package-private
+  * Remove `ThreeDSecureClient#performVerification()` convenience overload
 
 ## 4.0.0-beta1
 
