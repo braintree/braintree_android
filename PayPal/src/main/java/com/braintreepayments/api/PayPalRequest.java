@@ -10,13 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Represents the parameters that are needed to start a Checkout with PayPal
- *
- * In the checkout flow, the user is presented with details about the order and only agrees to a
- * single payment. The result is not eligible for being saved in the Vault; however, you will receive
- * shipping information and the user will not be able to revoke the consent.
- *
- * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
+ * Represents the parameters that are needed to tokenize a PayPal account.
+ * See {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
  */
 public abstract class PayPalRequest {
 

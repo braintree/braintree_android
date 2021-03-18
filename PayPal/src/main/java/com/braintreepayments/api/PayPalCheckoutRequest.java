@@ -11,6 +11,9 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Represents the parameters that are needed to start the PayPal Checkout flow
+ */
 public class PayPalCheckoutRequest extends PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)

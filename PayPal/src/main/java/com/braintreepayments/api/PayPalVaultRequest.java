@@ -5,6 +5,9 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Represents the parameters that are needed to start the PayPal Vault flow
+ */
 public class PayPalVaultRequest extends PayPalRequest {
 
     private boolean offerCredit;
