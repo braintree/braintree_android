@@ -18,6 +18,7 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String SUCCESS_KEY = "success";
 
     private CardNonce mCardNonce;
+    private ThreeDSecureLookup mLookup;
     private boolean mSuccess;
     private String mErrors;
     private String mException;
@@ -54,6 +55,8 @@ public class ThreeDSecureResult implements Parcelable {
                 }
                 authenticationResponse.mSuccess = authenticationResponse.mErrors == null;
             }
+            authenticationResponse.mLookup = ThreeDSecureLookup.fromJson(jsonString);
+
         } catch (JSONException e) {
             authenticationResponse.mSuccess = false;
         }
@@ -108,12 +111,9 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @deprecated Use {@link ThreeDSecureInfo#isLiabilityShifted()} and
-     * {@link ThreeDSecureInfo#isLiabilityShiftPossible()} to determine state of 3D Secure authentication
      * @return If the authentication was completed
      */
-    @Deprecated
-    public boolean isSuccess() {
+    boolean isSuccess() {
         return mSuccess;
     }
 
@@ -125,6 +125,10 @@ public class ThreeDSecureResult implements Parcelable {
         return mCardNonce;
     }
 
+    void setCardNonce(CardNonce cardNonce) {
+        mCardNonce = cardNonce;
+    }
+
     /**
      * @deprecated Use {@link ThreeDSecureInfo#getErrorMessage()}
      * @return Possible errors that occurred during the authentication
@@ -133,6 +137,10 @@ public class ThreeDSecureResult implements Parcelable {
     public String getErrors() {
         // NEXT_MAJOR_VERSION make this a private method
         return mErrors;
+    }
+
+    boolean hasErrors() {
+        return (mErrors != null && mErrors.length() > 0);
     }
 
     /**

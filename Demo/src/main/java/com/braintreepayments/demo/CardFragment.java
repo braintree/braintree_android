@@ -30,6 +30,7 @@ import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
+import com.braintreepayments.api.ThreeDSecureResult;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
@@ -303,8 +304,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         }
     }
 
-    private void handleThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
+        PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getCardNonce();
         if (paymentMethodNonce != null) {
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
@@ -332,7 +334,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
             threeDSecureClient.performLookup(activity, threeDSecureRequest(paymentMethodNonce), (request, lookupData, error) -> {
                 if (request != null && lookupData != null) {
-                    threeDSecureClient.initiateChallengeWithLookup(activity, request, lookupData, this::handleThreeDSecureResult);
+                    threeDSecureClient.initiateChallengeWithLookup(activity, request, lookupData, (paymentMethodNonce1, error1) -> handleThreeDSecureResult(paymentMethodNonce1, error1));
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();

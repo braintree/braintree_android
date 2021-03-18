@@ -138,13 +138,16 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                 if (!showChallenge) {
-                    CardNonce cardNonce = lookup.getCardNonce();
+                    // TODO: determine if this result should be parsed twice
+                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(lookupData);
+
+                    CardNonce cardNonce = result.getCardNonce();
                     ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
 
                     braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
                     braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
-                    callback.onResult(cardNonce, null);
+                    callback.onResult(result, null);
                     return;
                 }
 
@@ -243,13 +246,13 @@ public class ThreeDSecureClient {
         });
     }
 
-    private void notify3DSComplete(CardNonce cardNonce, ThreeDSecureResultCallback callback) {
-        ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
+    private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
+        ThreeDSecureInfo info = result.getCardNonce().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
-        callback.onResult(cardNonce, null);
+        callback.onResult(result, null);
     }
 
     void authenticateCardinalJWT(final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
@@ -271,21 +274,16 @@ public class ThreeDSecureClient {
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                ThreeDSecureResult authenticationResponse = ThreeDSecureResult.fromJson(responseBody);
+                ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
 
-                // NEXT_MAJOR_VERSION
-                // Remove this line. Pass back lookupCardNonce + error message if there are errors.
-                // Otherwise pass back authenticationResponse.getCardNonce().
-                CardNonce nonce = ThreeDSecureResult.getNonceWithAuthenticationDetails(responseBody, lookupCardNonce);
-
-                if (authenticationResponse.getErrors() != null) {
+                if (result.hasErrors()) {
+                    result.setCardNonce(lookupCardNonce);
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-                    nonce.getThreeDSecureInfo().setErrorMessage(authenticationResponse.getErrors());
                 } else {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                 }
 
-                notify3DSComplete(nonce, callback);
+                notify3DSComplete(result, callback);
             }
 
             @Override
@@ -316,11 +314,10 @@ public class ThreeDSecureClient {
                 Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUrl != null) {
                     String authResponse = deepLinkUrl.getQueryParameter("auth_response");
-                    ThreeDSecureResult authenticationResponse = ThreeDSecureResult.fromJson(authResponse);
+                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
 
-                    // NEXT_MAJOR_VERSION Make isSuccess package-private so that we have access to it, but merchants do not
-                    if (authenticationResponse.isSuccess()) {
-                        notify3DSComplete(authenticationResponse.getCardNonce(), callback);
+                    if (result.isSuccess()) {
+                        notify3DSComplete(result, callback);
                     } else {
                         callback.onResult(null, new ErrorWithResponse(422, authResponse));
                     }
