@@ -75,7 +75,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
     }
@@ -92,7 +92,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient, never()).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
     }
@@ -115,7 +115,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.continuePerformVerification(activity, mThreeDSecureRequest, mThreeDSecureLookup, mock(ThreeDSecureResultCallback.class));
+        sut.initiateChallengeWithLookup(activity, mThreeDSecureRequest, mThreeDSecureLookup, mock(ThreeDSecureResultCallback.class));
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());

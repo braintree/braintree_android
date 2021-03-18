@@ -69,7 +69,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
+        sut.performLookup(activity, basicRequest, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.initialized");
     }
@@ -93,7 +93,7 @@ public class ThreeDSecureClientUnitTest {
                         .givenName("billing-given-name"));
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.performLookup(activity, request, threeDSecureResultCallback);
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -124,7 +124,7 @@ public class ThreeDSecureClientUnitTest {
                         .givenName("billing-given-name"));
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.performLookup(activity, request, threeDSecureResultCallback);
 
         // TODO: consider refining this assertion to be more precise than the original
         verify(braintreeClient).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
@@ -153,7 +153,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureLookupCallback lookupListener = mock(ThreeDSecureLookupCallback.class);
-        sut.performVerification(activity, request, lookupListener);
+        sut.performLookup(activity, request, lookupListener);
 
         verify(lookupListener).onResult(same(request), any(ThreeDSecureLookup.class), any(Exception.class));
     }
@@ -168,7 +168,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest().amount("5");
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.performLookup(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
@@ -186,7 +186,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
+        sut.performLookup(activity, basicRequest, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
@@ -207,7 +207,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
+        sut.performLookup(activity, basicRequest, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.invalid-manifest");
     }

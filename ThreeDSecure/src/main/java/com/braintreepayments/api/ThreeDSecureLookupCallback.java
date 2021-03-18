@@ -4,7 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link ThreeDSecureClient#performVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureLookupCallback)}.
+ * {@link ThreeDSecureClient#performLookup(FragmentActivity, ThreeDSecureRequest, ThreeDSecureLookupCallback)}.
  */
 public interface ThreeDSecureLookupCallback {
 

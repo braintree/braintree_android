@@ -56,7 +56,7 @@ public class ThreeDSecureClientTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest()
                         .nonce(nonce)
                         .amount("5");
-                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
                         CardNonce cardNonce = (CardNonce) paymentMethodNonce;

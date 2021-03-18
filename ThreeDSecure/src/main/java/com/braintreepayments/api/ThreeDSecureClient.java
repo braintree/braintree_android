@@ -57,7 +57,7 @@ public class ThreeDSecureClient {
      * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      */
-    public void performVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookupCallback callback) {
+    public void performLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookupCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
             callback.onResult(null, null, new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
@@ -119,7 +119,7 @@ public class ThreeDSecureClient {
  *                           be invoked in this method.
      * @param callback           {@link ThreeDSecureResultCallback}
      */
-    public void continuePerformVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookup threeDSecureLookup, final ThreeDSecureResultCallback callback) {
+    public void initiateChallengeWithLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookup threeDSecureLookup, final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

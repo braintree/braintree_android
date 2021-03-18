@@ -79,7 +79,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
-        sut.prepareLookup(activity, mBasicRequest, callback);
+        sut.performLookup(activity, mBasicRequest, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(callback).onResult(same(mBasicRequest), captor.capture(), (Exception) isNull());
@@ -112,7 +112,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
-        sut.prepareLookup(activity, mBasicRequest, callback);
+        sut.performLookup(activity, mBasicRequest, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(callback).onResult(same(mBasicRequest), captor.capture(), (Exception) isNull());
@@ -144,7 +144,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
-        sut.prepareLookup(activity, mBasicRequest, callback);
+        sut.performLookup(activity, mBasicRequest, callback);
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig), same(mBasicRequest), any(CardinalInitializeCallback.class));
     }
@@ -165,7 +165,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
-        sut.prepareLookup(activity, mBasicRequest, callback);
+        sut.performLookup(activity, mBasicRequest, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((ThreeDSecureRequest) isNull(), (String) isNull(), captor.capture());
@@ -188,7 +188,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig), same(mBasicRequest), any(CardinalInitializeCallback.class));
     }
@@ -206,7 +206,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
     }
@@ -224,7 +224,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
     }
@@ -243,7 +243,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
@@ -263,7 +263,7 @@ public class ThreeDSecureV2UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.true");
     }
@@ -282,7 +282,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.false");
     }
@@ -301,7 +301,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.2.1.0");
     }
@@ -323,7 +323,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.performVerification(activity, mBasicRequest, callback);
+        sut.performLookup(activity, mBasicRequest, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((CardNonce) isNull(), captor.capture());
