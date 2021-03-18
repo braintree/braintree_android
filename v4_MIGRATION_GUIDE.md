@@ -410,23 +410,23 @@ public class PayPalActivity extends AppCompatActivity {
     setIntent(newIntent);
   }
 
-  private void myRequestBillingAgreementMethod() {
-    PayPalVaultRequest request = new PayPalVaultRequest();
-    request.setBillingAgreementDescription("Your agreement description");
+  private void myTokenizePayPalAccountWithCheckoutMethod() {
+    PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+    request.setCurrencyCode("USD");
+    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
 
-    payPalClient.requestBillingAgreement(this, request, (error) -> {
+    payPalClient.tokenizePayPalAccount(this, request, (error) -> {
       if (error != null) {
         // Handle error
       }
     });
   }
 
-  private void myRequestOneTimePaymentMethod() {
-    PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
-    request.setCurrencyCode("USD");
-    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
+  private void myTokenizePayPalAccountWithVaultMethod() {
+    PayPalVaultRequest request = new PayPalVaultRequest();
+    request.setBillingAgreementDescription("Your agreement description");
 
-    payPalClient.requestOneTimePayment(this, request, (error) -> {
+    payPalClient.tokenizePayPalAccount(this, request, (error) -> {
       if (error != null) {
         // Handle error
       }
@@ -445,25 +445,7 @@ The setters on the request classes have been updated to remove method chaining.
 
 The `requestOneTimePayment` and `requestBillingAgreement` methods on `PayPalClient` have been updated to expect instances of `PayPalCheckoutRequest` and `PayPalVaultRequest`, respectively.
 
-However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`:
-
-```java
-public class PayPalActivity extends AppCompatActivity {
-  ...
-
-  private void myTokenizePayPalAccountMethod() {
-    PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
-    request.setCurrencyCode("USD");
-    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
-
-    payPalClient.tokenizePayPalAccount(this, request, (error) -> {
-      if (error != null) {
-        // Handle error
-      }
-    });
-  }
-}
-```
+However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`.
 
 ## Visa Checkout
 
