@@ -82,7 +82,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
         initializeFeatureClients(initError -> {
             PayPalCheckoutRequest payPalRequest = createPayPalCheckoutRequest(getActivity(), "1.00");
-            payPalClient.requestOneTimePayment(getActivity(), payPalRequest, requestError -> {
+            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
                 }
@@ -95,7 +95,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
         initializeFeatureClients(initError -> {
             PayPalVaultRequest payPalRequest = createPayPalVaultRequest(getActivity());
-            payPalClient.requestBillingAgreement(getActivity(), payPalRequest, requestError -> {
+            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
                 }

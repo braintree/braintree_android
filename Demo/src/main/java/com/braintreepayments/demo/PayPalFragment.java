@@ -14,12 +14,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PayPalRequest;
-import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.PostalAddress;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
@@ -74,13 +70,13 @@ public class PayPalFragment extends BaseFragment {
                     dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> mDeviceData = deviceData);
                 }
                 if (isBillingAgreement) {
-                    payPalClient.requestBillingAgreement(activity, createPayPalVaultRequest(activity), payPalError -> {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
                         if (payPalError != null) {
                             handleError(payPalError);
                         }
                     });
                 } else {
-                    payPalClient.requestOneTimePayment(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
                         if (payPalError != null) {
                             handleError(payPalError);
                         }
@@ -101,8 +97,6 @@ public class PayPalFragment extends BaseFragment {
             NavHostFragment.findNavController(this).navigate(action);
         }
     }
-
-
 
     public void handlePayPalBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
         if (browserSwitchResult != null) {
