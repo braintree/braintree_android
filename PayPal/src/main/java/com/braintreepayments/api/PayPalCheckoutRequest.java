@@ -16,8 +16,20 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalCheckoutRequest.INTENT_ORDER, PayPalCheckoutRequest.INTENT_SALE, PayPalCheckoutRequest.INTENT_AUTHORIZE})
     @interface PayPalPaymentIntent {}
+
+    /**
+     * Payment intent to create an order
+     */
     public static final String INTENT_ORDER = "order";
+
+    /**
+     * Payment intent for immediate payment
+     */
     public static final String INTENT_SALE = "sale";
+
+    /**
+     * Payment intent to authorize a payment for capture later
+     */
     public static final String INTENT_AUTHORIZE = "authorize";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -78,12 +90,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      *
      * Defaults to authorize.
      *
-     * @param intent Must be a {@link PayPalPaymentIntent} value:
-     * <ul>
-     * <li>{@link PayPalCheckoutRequest#INTENT_AUTHORIZE} to authorize a payment for capture later </li>
-     * <li>{@link PayPalCheckoutRequest#INTENT_ORDER} to create an order </li>
-     * <li>{@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment </li>
-     * </ul>
+     * @param intent {@link PayPalPaymentIntent}
      *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent" under the "payment" definition</a>
      * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
