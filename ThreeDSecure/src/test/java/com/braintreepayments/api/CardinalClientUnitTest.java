@@ -154,7 +154,10 @@ public class CardinalClientUnitTest {
         when(threeDSecureLookup.getTransactionId()).thenReturn("sample-transaction-id");
         when(threeDSecureLookup.getPareq()).thenReturn("sample-payer-authentication-request");
 
-        sut.continueLookup(activity, threeDSecureLookup, cardinalValidateReceiver);
+        ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
+        when(threeDSecureResult.getLookup()).thenReturn(threeDSecureLookup);
+
+        sut.continueLookup(activity, threeDSecureResult, cardinalValidateReceiver);
 
         verify(cardinalInstance).cca_continue(
                 "sample-transaction-id",

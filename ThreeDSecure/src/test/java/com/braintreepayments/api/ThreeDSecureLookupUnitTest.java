@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +24,17 @@ public class ThreeDSecureLookupUnitTest {
 
     @Before
     public void setUp() throws JSONException {
-        mLookupWithoutVersion = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE); // Lookup doesn't contain a 3DS version number
-        mLookupWithVersion1 = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
-        mLookupWithVersion2 = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
+        JSONObject lookupWithoutVersionJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE).getJSONObject("lookup");
+        mLookupWithoutVersion = ThreeDSecureLookup.fromJson(lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
+
+        JSONObject lookupVersionOneJSON = new JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE).getJSONObject("lookup");
+        mLookupWithVersion1 = ThreeDSecureLookup.fromJson(lookupVersionOneJSON.toString());
+
+        JSONObject lookupVersionTwoJSON = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE).getJSONObject("lookup");
+        mLookupWithVersion2 = ThreeDSecureLookup.fromJson(lookupVersionTwoJSON.toString());
+
+        JSONObject lookupWithoutAcsURLJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL).getJSONObject("lookup");
+        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(lookupWithoutAcsURLJSON.toString());
     }
 
     @Test
@@ -35,13 +43,8 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("merchant-descriptor", mLookupWithoutVersion.getMd());
         assertEquals("https://term-url/", mLookupWithoutVersion.getTermUrl());
         assertEquals("sample-pareq", mLookupWithoutVersion.getPareq());
-        assertEquals("11", mLookupWithoutVersion.getCardNonce().getLastTwo());
-        assertEquals("123456-12345-12345-a-adfa", mLookupWithoutVersion.getCardNonce().getNonce());
         assertEquals("", mLookupWithoutVersion.getThreeDSecureVersion());
         assertEquals("sample-transaction-id", mLookupWithoutVersion.getTransactionId());
-        assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().wasVerified());
         assertTrue(mLookupWithoutVersion.requiresUserAuthentication());
     }
 
@@ -51,13 +54,8 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("merchant-descriptor", mLookupWithVersion1.getMd());
         assertEquals("https://term-url/", mLookupWithVersion1.getTermUrl());
         assertEquals("pareq", mLookupWithVersion1.getPareq());
-        assertEquals("11", mLookupWithVersion1.getCardNonce().getLastTwo());
-        assertEquals("123456-12345-12345-a-adfa", mLookupWithVersion1.getCardNonce().getNonce());
         assertEquals("1.0.2", mLookupWithVersion1.getThreeDSecureVersion());
         assertEquals("some-transaction-id", mLookupWithVersion1.getTransactionId());
-        assertTrue(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertTrue(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().wasVerified());
     }
 
     @Test
@@ -66,13 +64,8 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("merchant-descriptor", mLookupWithVersion2.getMd());
         assertEquals("https://term-url/", mLookupWithVersion2.getTermUrl());
         assertEquals("pareq", mLookupWithVersion2.getPareq());
-        assertEquals("11", mLookupWithVersion2.getCardNonce().getLastTwo());
-        assertEquals("123456-12345-12345-a-adfa", mLookupWithVersion2.getCardNonce().getNonce());
         assertEquals("2.1.0", mLookupWithVersion2.getThreeDSecureVersion());
         assertEquals("some-transaction-id", mLookupWithVersion2.getTransactionId());
-        assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().wasVerified());
     }
 
     @Test
@@ -81,11 +74,6 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("merchant-descriptor", mLookupWithoutAcsURL.getMd());
         assertEquals("https://term-url/", mLookupWithoutAcsURL.getTermUrl());
         assertEquals("pareq", mLookupWithoutAcsURL.getPareq());
-        assertEquals("11", mLookupWithoutAcsURL.getCardNonce().getLastTwo());
-        assertEquals("123456-12345-12345-a-adfa", mLookupWithoutAcsURL.getCardNonce().getNonce());
-        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().wasVerified());
         assertFalse(mLookupWithoutAcsURL.requiresUserAuthentication());
     }
 
@@ -101,14 +89,6 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals(mLookupWithVersion1.getMd(), parceled.getMd());
         assertEquals(mLookupWithVersion1.getTermUrl(), parceled.getTermUrl());
         assertEquals(mLookupWithVersion1.getPareq(), parceled.getPareq());
-        assertEquals(mLookupWithVersion1.getCardNonce().getLastTwo(), parceled.getCardNonce().getLastTwo());
-        assertEquals(mLookupWithVersion1.getCardNonce().getNonce(), parceled.getCardNonce().getNonce());
-        assertEquals(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(),
-                parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals(mLookupWithVersion1.getCardNonce().getThreeDSecureInfo().wasVerified(),
-                parceled.getCardNonce().getThreeDSecureInfo().wasVerified());
         assertEquals(mLookupWithVersion1.getThreeDSecureVersion(), parceled.getThreeDSecureVersion());
         assertEquals(mLookupWithVersion1.getTransactionId(), parceled.getTransactionId());
     }
