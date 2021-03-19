@@ -16,8 +16,6 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -34,17 +32,13 @@ public class ThreeDSecureV1UnitTest {
 
     private ThreeDSecureRequest mThreeDSecureRequest;
     private ThreeDSecureResult mThreeDSecureResult;
-    private String mThreeDSecureLookupResponse;
-
-    private ThreeDSecureInitializeChallengeCallback threeDSecureInitializeChallengeCallback;
 
     private Configuration threeDSecureEnabledConfig;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         activity = mock(FragmentActivity.class);
         cardinalClient = mock(CardinalClient.class);
-        threeDSecureInitializeChallengeCallback = mock(ThreeDSecureInitializeChallengeCallback.class);
         browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
@@ -59,15 +53,13 @@ public class ThreeDSecureV1UnitTest {
                 .billingAddress(new ThreeDSecurePostalAddress()
                         .givenName("billing-given-name"));
 
-        mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
-        mThreeDSecureResult = ThreeDSecureResult.fromJson(mThreeDSecureLookupResponse);
+        mThreeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
     }
 
     @Test
-    public void performLookup_sendsAnalyticsEvent() throws InvalidArgumentException {
+    public void initiateChallengeWithLookup_sendsAnalyticsEvent() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
@@ -75,7 +67,9 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performLookup(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
+        sut.initiateChallengeWithLookup(activity, mThreeDSecureRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
     }
