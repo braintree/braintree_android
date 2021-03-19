@@ -37,30 +37,12 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     public ThreeDSecurePostalAddress() {}
 
     /**
-     * @deprecated Use {@link #givenName(String)}.
-     */
-    @Deprecated
-    public ThreeDSecurePostalAddress firstName(String firstName) {
-        givenName(firstName);
-        return this;
-    }
-
-    /**
      * Optional. Set the given name
      *
      * @param givenName Given name associated with the address.
      */
     public ThreeDSecurePostalAddress givenName(String givenName) {
         mGivenName = givenName;
-        return this;
-    }
-
-    /**
-     * @deprecated Use {@link #surname(String)}.
-     */
-    @Deprecated
-    public ThreeDSecurePostalAddress lastName(String lastName) {
-        surname(lastName);
         return this;
     }
 
@@ -156,26 +138,10 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     }
 
     /**
-     * @deprecated Use {@link #getGivenName()}.
-     */
-    @Deprecated
-    public String getFirstName() {
-        return mGivenName;
-    }
-
-    /**
      * @return Given name associated with the address.
      */
     public String getGivenName() {
         return mGivenName;
-    }
-
-    /**
-     * @deprecated Use {@link #getSurname()}.
-     */
-    @Deprecated
-    public String getLastName() {
-        return mSurname;
     }
 
     /**
