@@ -316,7 +316,7 @@ public class ThreeDSecureV2UnitTest {
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
-        assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrors());
+        assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
     }
 
     @Test

@@ -112,12 +112,12 @@ public class ThreeDSecureClient {
     /**
      * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
      *
-     * @param activity           Android FragmentActivity
-     * @param request            the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param result the {@link ThreeDSecureResult} returned for this request.
-     *                           Contains information about the 3DS verification request that will
-     *                           be invoked in this method.
-     * @param callback           {@link ThreeDSecureResultCallback}
+     * @param activity Android FragmentActivity
+     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param result   the {@link ThreeDSecureResult} returned for this request.
+     *                 Contains information about the 3DS verification request that will
+     *                 be invoked in this method.
+     * @param callback {@link ThreeDSecureResultCallback}
      */
     public void initiateChallengeWithLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResult result, final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -204,7 +204,7 @@ public class ThreeDSecureClient {
             public void success(String responseBody) {
                 ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
 
-                if (result.hasErrors()) {
+                if (result.hasError()) {
                     result.setCardNonce(lookupCardNonce);
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
                 } else {

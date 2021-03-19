@@ -23,7 +23,7 @@ public class ThreeDSecureResultUnitTest {
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
-        assertNull(authResponse.getErrors());
+        assertNull(authResponse.getErrorMessage());
         assertNull(authResponse.getException());
     }
 
@@ -36,7 +36,7 @@ public class ThreeDSecureResultUnitTest {
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
-        assertNull(authResponse.getErrors());
+        assertNull(authResponse.getErrorMessage());
         assertNull(authResponse.getException());
     }
 
@@ -47,7 +47,7 @@ public class ThreeDSecureResultUnitTest {
 
         assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
-        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrors());
+        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
         assertNull(authResponse.getException());
     }
 
@@ -58,7 +58,7 @@ public class ThreeDSecureResultUnitTest {
 
         assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
-        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrors());
+        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
         assertNull(authResponse.getException());
     }
 

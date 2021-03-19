@@ -20,7 +20,7 @@ public class ThreeDSecureResult implements Parcelable {
 
     private CardNonce mCardNonce;
     private boolean mSuccess;
-    private String mErrors;
+    private String mErrorMessage;
     private String mException;
 
     private ThreeDSecureLookup mLookup;
@@ -48,14 +48,14 @@ public class ThreeDSecureResult implements Parcelable {
             // 3DS 1.0 has a "success" key, but 3DS 2.0 responses do not.
             if (json.has(SUCCESS_KEY)) {
                 if (json.has(ERROR_KEY)) {
-                    authenticationResponse.mErrors = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
+                    authenticationResponse.mErrorMessage = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
                 }
                 authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
             } else {
                 if (json.has(ERRORS_KEY)) {
-                    authenticationResponse.mErrors = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
+                    authenticationResponse.mErrorMessage = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
                 }
-                authenticationResponse.mSuccess = authenticationResponse.mErrors == null;
+                authenticationResponse.mSuccess = authenticationResponse.mErrorMessage == null;
             }
 
             if (json.has(LOOKUP_KEY)) {
@@ -104,17 +104,14 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @deprecated Use {@link ThreeDSecureInfo#getErrorMessage()}
-     * @return Possible errors that occurred during the authentication
+     * @return Message describing potential errors that occurred during the authentication
      */
-    @Deprecated
-    public String getErrors() {
-        // NEXT_MAJOR_VERSION make this a private method
-        return mErrors;
+    public String getErrorMessage() {
+        return mErrorMessage;
     }
 
-    boolean hasErrors() {
-        return (mErrors != null && mErrors.length() > 0);
+    boolean hasError() {
+        return (mErrorMessage != null && mErrorMessage.length() > 0);
     }
 
     ThreeDSecureLookup getLookup() {
@@ -140,7 +137,7 @@ public class ThreeDSecureResult implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(mSuccess ? (byte) 1 : (byte) 0);
         dest.writeParcelable(mCardNonce, flags);
-        dest.writeString(mErrors);
+        dest.writeString(mErrorMessage);
         dest.writeString(mException);
         dest.writeParcelable(mLookup, flags);
     }
@@ -148,7 +145,7 @@ public class ThreeDSecureResult implements Parcelable {
     private ThreeDSecureResult(Parcel in) {
         mSuccess = in.readByte() != 0;
         mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
-        mErrors = in.readString();
+        mErrorMessage = in.readString();
         mException = in.readString();
         mLookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
