@@ -21,7 +21,6 @@ public class ThreeDSecureResult implements Parcelable {
     private CardNonce mCardNonce;
     private boolean mSuccess;
     private String mErrorMessage;
-    private String mException;
 
     private ThreeDSecureLookup mLookup;
 
@@ -71,20 +70,6 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @deprecated ThreeDSecure WebView flow is deprecated. Use the browser-switch flow.
-     * {@see https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v2}
-     */
-    @Deprecated
-    public static ThreeDSecureResult fromException(String exception) {
-        ThreeDSecureResult authenticationResponse = new ThreeDSecureResult();
-
-        authenticationResponse.mSuccess = false;
-        authenticationResponse.mException = exception;
-
-        return authenticationResponse;
-    }
-
-    /**
      * @return If the authentication was completed
      */
     boolean isSuccess() {
@@ -118,13 +103,6 @@ public class ThreeDSecureResult implements Parcelable {
         return mLookup;
     }
 
-    /**
-     * @return Possible exception that occurred during the authentication
-     */
-    public String getException() {
-        return mException;
-    }
-
     ThreeDSecureResult() {
     }
 
@@ -138,7 +116,6 @@ public class ThreeDSecureResult implements Parcelable {
         dest.writeByte(mSuccess ? (byte) 1 : (byte) 0);
         dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mErrorMessage);
-        dest.writeString(mException);
         dest.writeParcelable(mLookup, flags);
     }
 
@@ -146,7 +123,6 @@ public class ThreeDSecureResult implements Parcelable {
         mSuccess = in.readByte() != 0;
         mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mErrorMessage = in.readString();
-        mException = in.readString();
         mLookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 

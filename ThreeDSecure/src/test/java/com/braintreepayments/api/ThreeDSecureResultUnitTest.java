@@ -24,7 +24,6 @@ public class ThreeDSecureResultUnitTest {
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
         assertNull(authResponse.getErrorMessage());
-        assertNull(authResponse.getException());
     }
 
     @Test
@@ -37,7 +36,6 @@ public class ThreeDSecureResultUnitTest {
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
         assertNull(authResponse.getErrorMessage());
-        assertNull(authResponse.getException());
     }
 
     @Test
@@ -48,7 +46,6 @@ public class ThreeDSecureResultUnitTest {
         assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
         assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
-        assertNull(authResponse.getException());
     }
 
     @Test
@@ -59,16 +56,6 @@ public class ThreeDSecureResultUnitTest {
         assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
         assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
-        assertNull(authResponse.getException());
-    }
-
-    @Test
-    public void fromException_parsesCorrectly() {
-        ThreeDSecureResult authResponse = ThreeDSecureResult
-                .fromException("Error!");
-
-        assertFalse(authResponse.isSuccess());
-        assertEquals("Error!", authResponse.getException());
     }
 
     @Test
@@ -87,23 +74,8 @@ public class ThreeDSecureResultUnitTest {
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals(authResponse.isSuccess(), parceled.isSuccess());
-        assertEquals(authResponse.getException(), parceled.getException());
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(), parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-    }
-
-    @Test
-    public void exceptionsAreParcelable() {
-        ThreeDSecureResult authResponse = ThreeDSecureResult
-                .fromException("Error!");
-        Parcel parcel = Parcel.obtain();
-        authResponse.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        ThreeDSecureResult parceled = ThreeDSecureResult.CREATOR.createFromParcel(parcel);
-
-        assertEquals(authResponse.isSuccess(), parceled.isSuccess());
-        assertEquals(authResponse.getException(), parceled.getException());
     }
 }
