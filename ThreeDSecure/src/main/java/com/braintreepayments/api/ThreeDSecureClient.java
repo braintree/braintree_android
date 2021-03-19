@@ -132,7 +132,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                 if (!showChallenge) {
-                    CardNonce cardNonce = result.getCardNonce();
+                    CardNonce cardNonce = result.getTokenizedCard();
                     ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
 
                     braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
@@ -175,7 +175,7 @@ public class ThreeDSecureClient {
     }
 
     private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
-        ThreeDSecureInfo info = result.getCardNonce().getThreeDSecureInfo();
+        ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
@@ -184,7 +184,7 @@ public class ThreeDSecureClient {
     }
 
     void authenticateCardinalJWT(final ThreeDSecureResult threeDSecureResult, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
-        final CardNonce lookupCardNonce = threeDSecureResult.getCardNonce();
+        final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
 
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
@@ -205,7 +205,7 @@ public class ThreeDSecureClient {
                 try {
                     ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
                     if (result.hasError()) {
-                        result.setCardNonce(lookupCardNonce);
+                        result.setTokenizedCard(lookupCardNonce);
                         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
                     } else {
                         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");

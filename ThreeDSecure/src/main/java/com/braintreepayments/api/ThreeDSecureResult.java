@@ -17,7 +17,7 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String LOOKUP_KEY = "lookup";
 
-    private CardNonce mCardNonce;
+    private CardNonce mTokenizedCard;
     private String mErrorMessage;
 
     private ThreeDSecureLookup mLookup;
@@ -37,7 +37,7 @@ public class ThreeDSecureResult implements Parcelable {
         if (cardJson != null) {
             CardNonce cardNonce = new CardNonce();
             cardNonce.fromJson(cardJson);
-            result.mCardNonce = cardNonce;
+            result.mTokenizedCard = cardNonce;
         }
 
         if (json.has(ERRORS_KEY)) {
@@ -60,12 +60,12 @@ public class ThreeDSecureResult implements Parcelable {
      * @return The {@link CardNonce} associated with the 3D Secure
      * authentication
      */
-    public CardNonce getCardNonce() {
-        return mCardNonce;
+    public CardNonce getTokenizedCard() {
+        return mTokenizedCard;
     }
 
-    void setCardNonce(CardNonce cardNonce) {
-        mCardNonce = cardNonce;
+    void setTokenizedCard(CardNonce cardNonce) {
+        mTokenizedCard = cardNonce;
     }
 
     /**
@@ -93,13 +93,13 @@ public class ThreeDSecureResult implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mCardNonce, flags);
+        dest.writeParcelable(mTokenizedCard, flags);
         dest.writeString(mErrorMessage);
         dest.writeParcelable(mLookup, flags);
     }
 
     private ThreeDSecureResult(Parcel in) {
-        mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
+        mTokenizedCard = in.readParcelable(CardNonce.class.getClassLoader());
         mErrorMessage = in.readString();
         mLookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }

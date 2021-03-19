@@ -62,7 +62,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -108,7 +108,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
 
@@ -188,7 +188,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -233,7 +233,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());

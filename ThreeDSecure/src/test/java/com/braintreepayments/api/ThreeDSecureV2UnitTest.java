@@ -261,7 +261,7 @@ public class ThreeDSecureV2UnitTest {
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-        CardNonce cardNonce = captor.getValue().getCardNonce();
+        CardNonce cardNonce = captor.getValue().getTokenizedCard();
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals("12345678-1234-1234-1234-123456789012", cardNonce.getNonce());
@@ -313,7 +313,7 @@ public class ThreeDSecureV2UnitTest {
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
         ThreeDSecureResult actualResult = captor.getValue();
-        CardNonce cardNonce = actualResult.getCardNonce();
+        CardNonce cardNonce = actualResult.getTokenizedCard();
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
