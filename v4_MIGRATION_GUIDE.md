@@ -658,16 +658,15 @@ public class VenmoActivity extends AppCompatActivity {
 
 ## 3D Secure
 
-The 3D Secure feature is now supported by implementing the following dependencies:
+The 3D Secure feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
   implementation 'com.braintreepayments.api:three-d-secure:4.0.0-beta1'
-  implementation 'com.braintreepayments.api:card:4.0.0-beta1'
 }
 ```
 
-To use the feature, instantiate an `ThreeDSecureClient`:
+To use the feature, instantiate a `ThreeDSecureClient`:
 
 ```java
 package com.my.app;
@@ -754,28 +753,32 @@ public class ThreeDSecureActivity extends AppCompatActivity {
         .shippingMethod(ThreeDSecureShippingMethod.GROUND) 
         .additionalInformation(additionalInformation);
 
-    threeDSecureClient.performVerification(this, threeDSecureRequest, this::handleThreeDSecureLookup);
-  }
-  
-  private void handleThreeDSecureLookup(ThreeDSecureRequest request, ThreeDSecureLookup lookup, Exception error) {
-    if (lookup != null) {
-      // examine lookup response (if necessary), then continue verification
-      threeDSecureClient.continuePerformVerification(this, request, lookup, this::handleThreeDSecureResult);
-    } else {
-      // handle error
-    }
+    threeDSecureClient.performLookup(this, threeDSecureRequest, (threeDSecureResult, error) -> {
+      if (threeDSecureResult != null) {
+        // examine lookup response (if necessary), then continue verification
+        threeDSecureClient.initiateChallengeWithLookup(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+      } else {
+        // handle error
+      }
+    });
   }
 
-  private void handleThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-    if (paymentMethodNonce != null) {
+  private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+    if (threeDSecureResult != null) {
       // send this nonce to your server
-      String nonce = paymentMethodNonce.getNonce();
+      String nonce = threeDSecureResult.getTokenizedCard().getNonce();
     } else {
       // handle error
     }
   }
 }
 ```
+
+#### 3DS Methods
+
+- `ThreeDSecure#performVerification()` has been replaced by `ThreeDSecureClient#performLookup()`
+- `ThreeDSecure#continuePerformVerification()` has been replaced by `ThreeDSecureClient#initiateChallengeWithLookup()`
+
 #### 3DS1 UI Customization
 
 The `ThreeDSecureV1UiCustomization` class setters have been updated to remove method chaining and follow standard Java getter/setter pattern.
