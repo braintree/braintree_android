@@ -13,7 +13,7 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
 
-    static final String EXTRA_THREE_D_SECURE_LOOKUP = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP";
+    static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
     static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
 
@@ -32,16 +32,16 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
             extras = new Bundle();
         }
 
-        ThreeDSecureLookup threeDSecureLookup = extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP);
-        cardinalClient.continueLookup(this, threeDSecureLookup, this);
+        ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
+        cardinalClient.continueLookup(this, threeDSecureResult, this);
     }
 
     @Override
     public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
-        result.putExtra(EXTRA_THREE_D_SECURE_LOOKUP, getIntent().getExtras()
-                .getParcelable(EXTRA_THREE_D_SECURE_LOOKUP));
+        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, getIntent().getExtras()
+                .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 
         setResult(RESULT_OK, result);

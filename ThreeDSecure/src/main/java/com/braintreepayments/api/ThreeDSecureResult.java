@@ -16,6 +16,7 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String MESSAGE_KEY = "message";
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String SUCCESS_KEY = "success";
+    private static final String LOOKUP_KEY = "lookup";
 
     private CardNonce mCardNonce;
     private boolean mSuccess;
@@ -56,45 +57,17 @@ public class ThreeDSecureResult implements Parcelable {
                 }
                 authenticationResponse.mSuccess = authenticationResponse.mErrors == null;
             }
-            authenticationResponse.mLookup = ThreeDSecureLookup.fromJson(jsonString);
+
+            if (json.has(LOOKUP_KEY)) {
+                String lookupJson = json.getJSONObject(LOOKUP_KEY).toString();
+                authenticationResponse.mLookup = ThreeDSecureLookup.fromJson(lookupJson);
+            }
 
         } catch (JSONException e) {
             authenticationResponse.mSuccess = false;
         }
 
         return authenticationResponse;
-    }
-
-    @Deprecated
-    public static CardNonce getNonceWithAuthenticationDetails(String jsonString, CardNonce lookupCardNonce) {
-        ThreeDSecureResult authenticationResponse = new ThreeDSecureResult();
-        CardNonce nonceToReturn = lookupCardNonce;
-
-        try {
-            JSONObject json = new JSONObject(jsonString);
-
-            if (json.has(SUCCESS_KEY)) {
-                authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
-            } else if (!json.has(ERRORS_KEY)) {
-                authenticationResponse.mSuccess = true;
-            }
-
-            if (authenticationResponse.mSuccess) {
-                JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
-                if (cardJson != null) {
-                    nonceToReturn = new CardNonce();
-                    nonceToReturn.fromJson(cardJson);
-                }
-            } else {
-                authenticationResponse.mErrors = jsonString;
-            }
-        } catch (JSONException e) {
-            authenticationResponse.mSuccess = false;
-            authenticationResponse.mException = e.getMessage();
-        }
-
-        nonceToReturn.getThreeDSecureInfo().setThreeDSecureAuthenticationResponse(authenticationResponse);
-        return nonceToReturn;
     }
 
     /**

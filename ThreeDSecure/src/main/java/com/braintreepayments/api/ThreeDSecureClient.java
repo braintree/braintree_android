@@ -132,7 +132,6 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                 if (!showChallenge) {
-
                     CardNonce cardNonce = result.getCardNonce();
                     ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
 
@@ -165,75 +164,12 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
                 Bundle extras = new Bundle();
-                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, lookup);
+                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
 
                 Intent intent = new Intent(activity, ThreeDSecureActivity.class);
                 intent.putExtras(extras);
 
                 activity.startActivityForResult(intent, THREE_D_SECURE);
-            }
-        });
-    }
-
-    void initializeChallengeWithLookupResponse(FragmentActivity activity, String lookupResponse, ThreeDSecureInitializeChallengeCallback callback) {
-        initializeChallengeWithLookupResponse(activity, null, lookupResponse, callback);
-    }
-
-    void initializeChallengeWithLookupResponse(final FragmentActivity activity, final ThreeDSecureRequest threeDSecureRequest, final String lookupResponse, final ThreeDSecureInitializeChallengeCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    try {
-                        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(lookupResponse);
-
-                        boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
-                        String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
-
-                        if (!showChallenge) {
-                            CardNonce cardNonce = threeDSecureLookup.getCardNonce();
-                            ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
-
-                            braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
-                            braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
-
-                            callback.onResult(cardNonce, null);
-                            return;
-                        }
-
-                        if (!threeDSecureVersion.startsWith("2.")) {
-                            String browserSwitchUrl = browserSwitchHelper.getUrl(
-                                    braintreeClient.getReturnUrlScheme(),
-                                    configuration.getAssetsUrl(),
-                                    threeDSecureRequest,
-                                    threeDSecureLookup);
-
-                            BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                                    .requestCode(THREE_D_SECURE)
-                                    .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-                                    .url(Uri.parse(browserSwitchUrl));
-                            try {
-                                braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
-                            } catch (BrowserSwitchException e) {
-                                callback.onResult(null, e);
-                            }
-                            return;
-                        }
-
-                        // perform cardinal authentication
-                        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-
-                        Bundle extras = new Bundle();
-                        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
-
-                        Intent intent = new Intent(activity, ThreeDSecureActivity.class);
-                        intent.putExtras(extras);
-                        activity.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
-
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                }
             }
         });
     }
@@ -247,8 +183,8 @@ public class ThreeDSecureClient {
         callback.onResult(result, null);
     }
 
-    void authenticateCardinalJWT(final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
-        final CardNonce lookupCardNonce = threeDSecureLookup.getCardNonce();
+    void authenticateCardinalJWT(final ThreeDSecureResult threeDSecureResult, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
+        final CardNonce lookupCardNonce = threeDSecureResult.getCardNonce();
 
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
@@ -330,7 +266,7 @@ public class ThreeDSecureClient {
             return;
         }
 
-        ThreeDSecureLookup threeDSecureLookup = data.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP);
+        ThreeDSecureResult threeDSecureResult = data.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT);
         ValidateResponse validateResponse = (ValidateResponse) data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE);
         String jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_JWT);
 
@@ -340,7 +276,7 @@ public class ThreeDSecureClient {
             case FAILURE:
             case SUCCESS:
             case NOACTION:
-                authenticateCardinalJWT(threeDSecureLookup, jwt, callback);
+                authenticateCardinalJWT(threeDSecureResult, jwt, callback);
 
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                 break;

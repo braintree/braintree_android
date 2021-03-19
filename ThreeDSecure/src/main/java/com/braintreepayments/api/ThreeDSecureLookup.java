@@ -13,8 +13,6 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureLookup implements Parcelable {
 
-    private static final String CARD_NONCE_KEY = "paymentMethod";
-    private static final String LOOKUP_KEY = "lookup";
     private static final String ACS_URL_KEY = "acsUrl";
     private static final String MD_KEY = "md";
     private static final String TERM_URL_KEY = "termUrl";
@@ -22,7 +20,6 @@ public class ThreeDSecureLookup implements Parcelable {
     private static final String THREE_D_SECURE_VERSION_KEY = "threeDSecureVersion";
     private static final String TRANSACTION_ID_KEY = "transactionId";
 
-    private CardNonce mCardNonce;
     private String mAcsUrl;
     private String mMd;
     private String mTermUrl;
@@ -39,38 +36,22 @@ public class ThreeDSecureLookup implements Parcelable {
      * @throws JSONException when parsing fails.
      */
     static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
-        JSONObject json = new JSONObject(jsonString);
-
         ThreeDSecureLookup lookup = new ThreeDSecureLookup();
 
-        CardNonce cardNonce = new CardNonce();
-        cardNonce.fromJson(json.getJSONObject(CARD_NONCE_KEY));
-        lookup.mCardNonce = cardNonce;
-
-        JSONObject lookupJson = json.getJSONObject(LOOKUP_KEY);
-
-        if (lookupJson.isNull(ACS_URL_KEY)) {
+        JSONObject json = new JSONObject(jsonString);
+        if (json.isNull(ACS_URL_KEY)) {
             lookup.mAcsUrl = null;
         } else {
-            lookup.mAcsUrl = lookupJson.getString(ACS_URL_KEY);
+            lookup.mAcsUrl = json.getString(ACS_URL_KEY);
         }
 
-        lookup.mMd = lookupJson.getString(MD_KEY);
-        lookup.mTermUrl = lookupJson.getString(TERM_URL_KEY);
-        lookup.mPareq = lookupJson.getString(PA_REQ_KEY);
-        lookup.mThreeDSecureVersion = Json.optString(lookupJson, THREE_D_SECURE_VERSION_KEY, "");
-        lookup.mTransactionId = Json.optString(lookupJson, TRANSACTION_ID_KEY, "");
+        lookup.mMd = json.getString(MD_KEY);
+        lookup.mTermUrl = json.getString(TERM_URL_KEY);
+        lookup.mPareq = json.getString(PA_REQ_KEY);
+        lookup.mThreeDSecureVersion = Json.optString(json, THREE_D_SECURE_VERSION_KEY, "");
+        lookup.mTransactionId = Json.optString(json, TRANSACTION_ID_KEY, "");
 
         return lookup;
-    }
-
-    /**
-     * @return The {@link CardNonce} from the 3D Secure lookup.
-     * If {@link #getAcsUrl()} is {@code null} this card may be used immediately and will benefit
-     * from 3D Secure.
-     */
-    public CardNonce getCardNonce() {
-        return mCardNonce;
     }
 
     /**
@@ -119,7 +100,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return {@code boolean}
      * When `true`, the user will be presented with a 3D Secure challenge when calling
-     * {@link ThreeDSecureClient#initiateChallengeWithLookup(FragmentActivity, ThreeDSecureRequest, String, ThreeDSecureResultCallback)}
+     * {@link ThreeDSecureClient#initiateChallengeWithLookup(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult, ThreeDSecureResultCallback)}
      */
     public boolean requiresUserAuthentication() {
         return mAcsUrl != null;
@@ -134,7 +115,6 @@ public class ThreeDSecureLookup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mAcsUrl);
         dest.writeString(mMd);
         dest.writeString(mTermUrl);
@@ -144,7 +124,6 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     private ThreeDSecureLookup(Parcel in) {
-        mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mAcsUrl = in.readString();
         mMd = in.readString();
         mTermUrl = in.readString();
