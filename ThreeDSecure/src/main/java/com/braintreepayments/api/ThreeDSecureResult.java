@@ -142,6 +142,7 @@ public class ThreeDSecureResult implements Parcelable {
         dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mErrors);
         dest.writeString(mException);
+        dest.writeParcelable(mLookup, flags);
     }
 
     private ThreeDSecureResult(Parcel in) {
@@ -149,6 +150,7 @@ public class ThreeDSecureResult implements Parcelable {
         mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mErrors = in.readString();
         mException = in.readString();
+        mLookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureResult> CREATOR =

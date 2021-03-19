@@ -32,7 +32,6 @@ public class ThreeDSecureVerificationTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private String returnUrlScheme;
     private AppCompatActivity mActivity;
     private CountDownLatch mCountDownLatch;
 
@@ -40,8 +39,6 @@ public class ThreeDSecureVerificationTest {
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
-
-        returnUrlScheme = "com.braintreepayments.api.test.braintree";
     }
 
     @Test(timeout = 10000)
@@ -64,8 +61,8 @@ public class ThreeDSecureVerificationTest {
                         .amount(TEST_AMOUNT);
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) threeDSecureResult;
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -107,10 +104,11 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest()
                         .nonce(paymentMethodNonce.getNonce())
                         .amount(TEST_AMOUNT);
+
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) threeDSecureResult;
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
 
@@ -190,7 +188,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) threeDSecureResult;
+                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -235,7 +233,7 @@ public class ThreeDSecureVerificationTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) threeDSecureResult;
+                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());

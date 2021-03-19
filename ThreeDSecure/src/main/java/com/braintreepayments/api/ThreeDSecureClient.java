@@ -56,9 +56,9 @@ public class ThreeDSecureClient {
      * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      */
-    public void performLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureLookupCallback callback) {
+    public void performLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
-            callback.onResult(null, null, new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
+            callback.onResult(null, new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
         }
 
@@ -66,7 +66,7 @@ public class ThreeDSecureClient {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (!configuration.isThreeDSecureEnabled()) {
-                    callback.onResult(null, null, new BraintreeException("Three D Secure is not enabled for this account. " +
+                    callback.onResult(null, new BraintreeException("Three D Secure is not enabled for this account. " +
                             "Please contact Braintree Support for assistance."));
                     return;
                 }
@@ -74,7 +74,7 @@ public class ThreeDSecureClient {
                 boolean supportsBrowserSwitch = braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE);
                 if (!supportsBrowserSwitch) {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
-                    callback.onResult(null, null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
+                    callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                             "defines the same browser switch url as this app. See " +
                             "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
                             "for the correct configuration"));
@@ -82,7 +82,7 @@ public class ThreeDSecureClient {
                 }
 
                 if (configuration.getCardinalAuthenticationJwt() == null && ThreeDSecureRequest.VERSION_2.equals(request.getVersionRequested())) {
-                    callback.onResult(null, null, new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                    callback.onResult(null, new BraintreeException("Merchant is not configured for 3DS 2.0. " +
                             "Please contact Braintree Support for assistance."));
                     return;
                 }
@@ -110,7 +110,7 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Continues the 3DS verification. Should be called from {@link ThreeDSecureLookupCallback#onResult(ThreeDSecureRequest, ThreeDSecureResult, Exception)}
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
      *
      * @param activity           Android FragmentActivity
      * @param request            the {@link ThreeDSecureRequest} with information used for authentication.
@@ -292,7 +292,7 @@ public class ThreeDSecureClient {
         }
     }
 
-    private void performThreeDSecureLookup(final ThreeDSecureRequest request, final ThreeDSecureLookupCallback callback) {
+    private void performThreeDSecureLookup(final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
         // TODO: url escape nonce
         String url = TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         String data = request.build(cardinalClient.getConsumerSessionId());
@@ -301,12 +301,12 @@ public class ThreeDSecureClient {
             @Override
             public void success(String responseBody) {
                 ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-                callback.onResult(request, result, null);
+                callback.onResult(result, null);
             }
 
             @Override
             public void failure(Exception exception) {
-                callback.onResult(null, null, exception);
+                callback.onResult(null, exception);
             }
         });
     }
