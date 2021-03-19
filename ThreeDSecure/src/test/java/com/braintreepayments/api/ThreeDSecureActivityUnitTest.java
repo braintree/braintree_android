@@ -7,6 +7,7 @@ import com.cardinalcommerce.cardinalmobilesdk.a.a.c;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,8 +28,9 @@ public class ThreeDSecureActivityUnitTest {
     private static final c CARDINAL_ERROR = new c(0, "");
 
     @Test
-    public void onCreate_invokesCardinalWithLookupData() {
-        ThreeDSecureResult threeDSecureResult = sampleThreeDSecureResult();
+    public void onCreate_invokesCardinalWithLookupData() throws JSONException {
+        ThreeDSecureResult threeDSecureResult =
+            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
@@ -52,8 +54,9 @@ public class ThreeDSecureActivityUnitTest {
     }
 
     @Test
-    public void onValidated_returnsValidationResults() {
-        ThreeDSecureResult threeDSecureResult = sampleThreeDSecureResult();
+    public void onValidated_returnsValidationResults() throws JSONException {
+        ThreeDSecureResult threeDSecureResult =
+            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
@@ -78,9 +81,5 @@ public class ThreeDSecureActivityUnitTest {
         assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
         assertNotNull(activityResult);
         assertEquals("SUCCESS", activityResult.getActionCode().getString());
-    }
-
-    private ThreeDSecureResult sampleThreeDSecureResult() {
-        return ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
     }
 }

@@ -202,16 +202,19 @@ public class ThreeDSecureClient {
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                try {
+                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                    if (result.hasError()) {
+                        result.setCardNonce(lookupCardNonce);
+                        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                    } else {
+                        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                    }
+                    notify3DSComplete(result, callback);
 
-                if (result.hasError()) {
-                    result.setCardNonce(lookupCardNonce);
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-                } else {
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
                 }
-
-                notify3DSComplete(result, callback);
             }
 
             @Override
@@ -242,12 +245,15 @@ public class ThreeDSecureClient {
                 Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUrl != null) {
                     String authResponse = deepLinkUrl.getQueryParameter("auth_response");
-                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
-
-                    if (result.isSuccess()) {
-                        notify3DSComplete(result, callback);
-                    } else {
-                        callback.onResult(null, new ErrorWithResponse(422, authResponse));
+                    try {
+                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
+                        if (result.hasError()) {
+                            callback.onResult(null, new ErrorWithResponse(422, authResponse));
+                        } else {
+                            notify3DSComplete(result, callback);
+                        }
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
                     }
                 }
                 break;
@@ -293,15 +299,18 @@ public class ThreeDSecureClient {
     }
 
     private void performThreeDSecureLookup(final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
-        // TODO: url escape nonce
         String url = TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         String data = request.build(cardinalClient.getConsumerSessionId());
 
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-                callback.onResult(result, null);
+                try {
+                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                    callback.onResult(result, null);
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
+                }
             }
 
             @Override

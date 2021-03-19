@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ public class ThreeDSecureV1UnitTest {
     private Configuration threeDSecureEnabledConfig;
 
     @Before
-    public void setup() {
+    public void setup() throws JSONException {
         activity = mock(FragmentActivity.class);
         cardinalClient = mock(CardinalClient.class);
         browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
@@ -57,7 +58,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void initiateChallengeWithLookup_sendsAnalyticsEvent() throws InvalidArgumentException {
+    public void initiateChallengeWithLookup_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
