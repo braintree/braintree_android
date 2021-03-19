@@ -47,7 +47,6 @@ public class ThreeDSecureInfo implements Parcelable {
     private String mAuthenticationTransactionStatusReason;
     private String mLookupTransactionStatus;
     private String mLookupTransactionStatusReason;
-    private String mErrorMessage;
 
     static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
@@ -83,10 +82,6 @@ public class ThreeDSecureInfo implements Parcelable {
         }
 
         return threeDSecureInfo;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        mErrorMessage = errorMessage;
     }
 
     /**
@@ -225,13 +220,6 @@ public class ThreeDSecureInfo implements Parcelable {
      */
     public String getLookupTransactionStatusReason() {
         return mLookupTransactionStatusReason;
-    }
-
-    /**
-     * @return The error message, if present, that occurred during a 3D Secure challenge attempt
-     */
-    public String getErrorMessage() {
-        return mErrorMessage;
     }
 
     public ThreeDSecureInfo() {}
