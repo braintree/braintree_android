@@ -10,8 +10,8 @@ public interface ThreeDSecureLookupCallback {
 
     /**
      * @param request {@link ThreeDSecureRequest}
-     * @param lookupData 3D Secure lookup data
+     * @param threeDSecureResult {@link ThreeDSecureResult}
      * @param error an exception that occurred while performing a 3D Secure verification
      */
-    void onResult(ThreeDSecureRequest request, String lookupData, Exception error);
+    void onResult(ThreeDSecureRequest request, ThreeDSecureResult threeDSecureResult, Exception error);
 }

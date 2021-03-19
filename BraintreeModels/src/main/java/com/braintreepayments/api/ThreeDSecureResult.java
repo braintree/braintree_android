@@ -18,10 +18,11 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String SUCCESS_KEY = "success";
 
     private CardNonce mCardNonce;
-    private ThreeDSecureLookup mLookup;
     private boolean mSuccess;
     private String mErrors;
     private String mException;
+
+    private ThreeDSecureLookup mLookup;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
@@ -141,6 +142,10 @@ public class ThreeDSecureResult implements Parcelable {
 
     boolean hasErrors() {
         return (mErrors != null && mErrors.length() > 0);
+    }
+
+    ThreeDSecureLookup getLookup() {
+        return mLookup;
     }
 
     /**
