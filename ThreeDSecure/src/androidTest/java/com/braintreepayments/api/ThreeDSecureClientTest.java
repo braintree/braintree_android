@@ -59,7 +59,7 @@ public class ThreeDSecureClientTest {
                 threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) threeDSecureResult;
+                        CardNonce cardNonce = threeDSecureResult.getCardNonce();
 
                         assertIsANonce(cardNonce.getNonce());
                         assertEquals("51", cardNonce.getLastTwo());
