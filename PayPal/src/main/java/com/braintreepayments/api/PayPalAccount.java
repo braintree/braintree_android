@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 /**
- * Builder used to construct a PayPal account tokenization request
+ * Use to construct a PayPal account tokenization request
  */
 class PayPalAccount extends PaymentMethod {
 

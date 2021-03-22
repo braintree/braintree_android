@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Base builder class used to build various types of cards
+ * Base class used to build various types of cards
  */
 public abstract class BaseCard extends PaymentMethod implements Parcelable {
 

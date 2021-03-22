@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Builder used to construct a Visa Checkout tokenization request.
+ * Use to construct a Visa Checkout tokenization request.
  */
 public class VisaCheckoutAccount extends PaymentMethod {
     private static final String CALL_ID = "callId";

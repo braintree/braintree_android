@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Builder used to construct a card tokenization request.
+ * Use to construct a card tokenization request.
  */
 public class Card extends BaseCard implements Parcelable {
 
