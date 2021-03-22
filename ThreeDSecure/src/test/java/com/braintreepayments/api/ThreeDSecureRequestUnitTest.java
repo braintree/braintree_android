@@ -30,16 +30,16 @@ public class ThreeDSecureRequestUnitTest {
         additionalInformation.setAccountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("Joe");
-        billingAddress.surname("Guy");
-        billingAddress.phoneNumber("12345678");
-        billingAddress.streetAddress("555 Smith St.");
-        billingAddress.extendedAddress("#5");
-        billingAddress.line3("Suite C");
-        billingAddress.locality("Oakland");
-        billingAddress.region("CA");
-        billingAddress.countryCodeAlpha2("US");
-        billingAddress.postalCode("54321");
+        billingAddress.setGivenName("Joe");
+        billingAddress.setSurname("Guy");
+        billingAddress.setPhoneNumber("12345678");
+        billingAddress.setStreetAddress("555 Smith St.");
+        billingAddress.setExtendedAddress("#5");
+        billingAddress.setLine3("Suite C");
+        billingAddress.setLocality("Oakland");
+        billingAddress.setRegion("CA");
+        billingAddress.setCountryCodeAlpha2("US");
+        billingAddress.setPostalCode("54321");
 
         ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
         labelCustomization.setHeadingTextColor("#FFA5FF");
@@ -111,16 +111,16 @@ public class ThreeDSecureRequestUnitTest {
         additionalInformation.setAccountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
-        billingAddress.surname("billing-surname");
-        billingAddress.streetAddress("billing-line1");
-        billingAddress.extendedAddress("billing-line2");
-        billingAddress.line3("billing-line3");
-        billingAddress.locality("billing-city");
-        billingAddress.region("billing-state");
-        billingAddress.postalCode("billing-postal-code");
-        billingAddress.countryCodeAlpha2("billing-country-code");
-        billingAddress.phoneNumber("billing-phone-number");
+        billingAddress.setGivenName("billing-given-name");
+        billingAddress.setSurname("billing-surname");
+        billingAddress.setStreetAddress("billing-line1");
+        billingAddress.setExtendedAddress("billing-line2");
+        billingAddress.setLine3("billing-line3");
+        billingAddress.setLocality("billing-city");
+        billingAddress.setRegion("billing-state");
+        billingAddress.setPostalCode("billing-postal-code");
+        billingAddress.setCountryCodeAlpha2("billing-country-code");
+        billingAddress.setPhoneNumber("billing-phone-number");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.versionRequested(VERSION_2);

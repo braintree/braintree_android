@@ -56,7 +56,7 @@ public class ThreeDSecureV1UnitTest {
         mThreeDSecureRequest.amount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
+        billingAddress.setGivenName("billing-given-name");
         mThreeDSecureRequest.billingAddress(billingAddress);
 
         mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;

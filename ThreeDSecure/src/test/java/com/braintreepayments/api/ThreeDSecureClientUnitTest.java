@@ -54,7 +54,7 @@ public class ThreeDSecureClientUnitTest {
         basicRequest.amount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
+        billingAddress.setGivenName("billing-given-name");
         basicRequest.billingAddress(billingAddress);
     }
 
@@ -92,7 +92,7 @@ public class ThreeDSecureClientUnitTest {
         request.amount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
+        billingAddress.setGivenName("billing-given-name");
         request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
@@ -125,7 +125,7 @@ public class ThreeDSecureClientUnitTest {
         request.amount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
+        billingAddress.setGivenName("billing-given-name");
         request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
@@ -155,7 +155,7 @@ public class ThreeDSecureClientUnitTest {
         request.amount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("billing-given-name");
+        billingAddress.setGivenName("billing-given-name");
         request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);

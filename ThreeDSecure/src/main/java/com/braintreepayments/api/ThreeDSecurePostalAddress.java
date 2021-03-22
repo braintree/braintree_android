@@ -41,7 +41,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param givenName Given name associated with the address.
      */
-    public void givenName(String givenName) {
+    public void setGivenName(String givenName) {
         mGivenName = givenName;
     }
 
@@ -50,7 +50,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param surname Surname associated with the address.
      */
-    public void surname(String surname) {
+    public void setSurname(String surname) {
         mSurname = surname;
     }
 
@@ -59,7 +59,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param streetAddress Line 1 of the Address (eg. number, street, etc).
      * */
-    public void streetAddress(String streetAddress) {
+    public void setStreetAddress(String streetAddress) {
         mStreetAddress = streetAddress;
     }
 
@@ -68,7 +68,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param extendedAddress Line 2 of the Address (eg. suite, apt #, etc.).
      * */
-    public void extendedAddress(String extendedAddress) {
+    public void setExtendedAddress(String extendedAddress) {
         mExtendedAddress = extendedAddress;
     }
 
@@ -77,7 +77,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param line3 Line 3 of the Address (eg. suite, apt #, etc.).
      * */
-    public void line3(String line3) {
+    public void setLine3(String line3) {
         mLine3 = line3;
     }
 
@@ -86,7 +86,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param locality City name.
      * */
-    public void locality(String locality) {
+    public void setLocality(String locality) {
         mLocality = locality;
     }
 
@@ -95,7 +95,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country subdivision code of up to three letters.
      * */
-    public void region(String region) {
+    public void setRegion(String region) {
         mRegion = region;
     }
 
@@ -105,7 +105,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param postalCode Zip code or equivalent is usually required for countries that have them.
      * */
-    public void postalCode(String postalCode) {
+    public void setPostalCode(String postalCode) {
         mPostalCode = postalCode;
     }
 
@@ -114,7 +114,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param countryCodeAlpha2 2 letter country code.
      * */
-    public void countryCodeAlpha2(String countryCodeAlpha2) {
+    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
         mCountryCodeAlpha2 = countryCodeAlpha2;
     }
 
@@ -123,7 +123,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param phoneNumber The phone number associated with the address. Only numbers. Remove dashes, parentheses and other characters.
      * */
-    public void phoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         mPhoneNumber = phoneNumber;
     }
 

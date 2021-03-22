@@ -16,7 +16,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
-        shippingAddress.givenName("shipping-given-name");
+        shippingAddress.setGivenName("shipping-given-name");
 
         ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation();
         preSerialized.setShippingAddress(shippingAddress);
@@ -111,16 +111,16 @@ public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void toJson() throws JSONException {
         ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
-        shippingAddress.givenName("shipping-given-name");
-        shippingAddress.surname("shipping-surname");
-        shippingAddress.phoneNumber("shipping-phone");
-        shippingAddress.streetAddress("shipping-line1");
-        shippingAddress.extendedAddress("shipping-line2");
-        shippingAddress.line3("shipping-line3");
-        shippingAddress.locality("shipping-city");
-        shippingAddress.region("shipping-state");
-        shippingAddress.postalCode("shipping-postal-code");
-        shippingAddress.countryCodeAlpha2("shipping-country-code");
+        shippingAddress.setGivenName("shipping-given-name");
+        shippingAddress.setSurname("shipping-surname");
+        shippingAddress.setPhoneNumber("shipping-phone");
+        shippingAddress.setStreetAddress("shipping-line1");
+        shippingAddress.setExtendedAddress("shipping-line2");
+        shippingAddress.setLine3("shipping-line3");
+        shippingAddress.setLocality("shipping-city");
+        shippingAddress.setRegion("shipping-state");
+        shippingAddress.setPostalCode("shipping-postal-code");
+        shippingAddress.setCountryCodeAlpha2("shipping-country-code");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
         additionalInformation.setShippingAddress(shippingAddress);

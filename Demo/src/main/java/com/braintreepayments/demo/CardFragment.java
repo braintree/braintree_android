@@ -379,15 +379,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-        billingAddress.givenName("Jill");
-        billingAddress.surname("Doe");
-        billingAddress.phoneNumber("5551234567");
-        billingAddress.streetAddress("555 Smith St");
-        billingAddress.extendedAddress("#2");
-        billingAddress.locality("Chicago");
-        billingAddress.region("IL");
-        billingAddress.postalCode("12345");
-        billingAddress.countryCodeAlpha2("US");
+        billingAddress.setGivenName("Jill");
+        billingAddress.setSurname("Doe");
+        billingAddress.setPhoneNumber("5551234567");
+        billingAddress.setStreetAddress("555 Smith St");
+        billingAddress.setExtendedAddress("#2");
+        billingAddress.setLocality("Chicago");
+        billingAddress.setRegion("IL");
+        billingAddress.setPostalCode("12345");
+        billingAddress.setCountryCodeAlpha2("US");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
         additionalInformation.setAccountId("account-id");
