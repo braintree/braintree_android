@@ -568,12 +568,12 @@ public class LocalPaymentClientUnitTest {
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
         PostalAddress address = new PostalAddress();
-        address.streetAddress("836486 of 22321 Park Lake");
-        address.extendedAddress("Apt 2");
-        address.countryCodeAlpha2("NL");
-        address.locality("Den Haag");
-        address.region("CA");
-        address.postalCode("2585 GJ");
+        address.setStreetAddress("836486 of 22321 Park Lake");
+        address.setExtendedAddress("Apt 2");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Den Haag");
+        address.setRegion("CA");
+        address.setPostalCode("2585 GJ");
 
         LocalPaymentRequest request = new LocalPaymentRequest();
         request.paymentType("ideal");

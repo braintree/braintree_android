@@ -35,7 +35,7 @@ public class LocalPaymentClientTest {
     @Test(timeout = 10000)
     public void startPayment_callsListener_withApprovalUrl_andPaymentId() throws InterruptedException {
         PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
+                .setStreetAddress("836486 of 22321 Park Lake")
                 .countryCodeAlpha2("NL")
                 .locality("Den Haag")
                 .postalCode("2585 GJ");

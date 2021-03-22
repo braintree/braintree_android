@@ -60,13 +60,13 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PostalAddress shippingAddressOverride = new PostalAddress();
-        shippingAddressOverride.recipientName("Brianna Tree");
-        shippingAddressOverride.streetAddress("123 Fake St.");
-        shippingAddressOverride.extendedAddress("Apt. v.0");
-        shippingAddressOverride.locality("Oakland");
-        shippingAddressOverride.region("CA");
-        shippingAddressOverride.postalCode("12345");
-        shippingAddressOverride.countryCodeAlpha2("US");
+        shippingAddressOverride.setRecipientName("Brianna Tree");
+        shippingAddressOverride.setStreetAddress("123 Fake St.");
+        shippingAddressOverride.setExtendedAddress("Apt. v.0");
+        shippingAddressOverride.setLocality("Oakland");
+        shippingAddressOverride.setRegion("CA");
+        shippingAddressOverride.setPostalCode("12345");
+        shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
@@ -124,13 +124,13 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PostalAddress shippingAddressOverride = new PostalAddress();
-        shippingAddressOverride.recipientName("Brianna Tree");
-        shippingAddressOverride.streetAddress("123 Fake St.");
-        shippingAddressOverride.extendedAddress("Apt. v.0");
-        shippingAddressOverride.locality("Oakland");
-        shippingAddressOverride.region("CA");
-        shippingAddressOverride.postalCode("12345");
-        shippingAddressOverride.countryCodeAlpha2("US");
+        shippingAddressOverride.setRecipientName("Brianna Tree");
+        shippingAddressOverride.setStreetAddress("123 Fake St.");
+        shippingAddressOverride.setExtendedAddress("Apt. v.0");
+        shippingAddressOverride.setLocality("Oakland");
+        shippingAddressOverride.setRegion("CA");
+        shippingAddressOverride.setPostalCode("12345");
+        shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "Item 0", "1", "2");
         item.setDescription("A new item");

@@ -20,13 +20,13 @@ public class PostalAddressUnitTest {
     @Test
     public void constructsCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        postalAddress.streetAddress("123 Fake St.");
-        postalAddress.extendedAddress("Apt. 3");
-        postalAddress.locality("Oakland");
-        postalAddress.region("CA");
-        postalAddress.postalCode("94602");
-        postalAddress.countryCodeAlpha2("US");
-        postalAddress.recipientName("John Fakerson");
+        postalAddress.setStreetAddress("123 Fake St.");
+        postalAddress.setExtendedAddress("Apt. 3");
+        postalAddress.setLocality("Oakland");
+        postalAddress.setRegion("CA");
+        postalAddress.setPostalCode("94602");
+        postalAddress.setCountryCodeAlpha2("US");
+        postalAddress.setRecipientName("John Fakerson");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -106,12 +106,12 @@ public class PostalAddressUnitTest {
     @Test
     public void isEmpty_returnsTrueIfCountryCodeIsNotSet() {
         PostalAddress postalAddress = new PostalAddress();
-        postalAddress.streetAddress("123 Fake St.");
-        postalAddress.extendedAddress("Apt. 3");
-        postalAddress.locality("Oakland");
-        postalAddress.region("CA");
-        postalAddress.postalCode("94602");
-        postalAddress.recipientName("John Fakerson");
+        postalAddress.setStreetAddress("123 Fake St.");
+        postalAddress.setExtendedAddress("Apt. 3");
+        postalAddress.setLocality("Oakland");
+        postalAddress.setRegion("CA");
+        postalAddress.setPostalCode("94602");
+        postalAddress.setRecipientName("John Fakerson");
 
         assertTrue(postalAddress.isEmpty());
     }
@@ -119,7 +119,7 @@ public class PostalAddressUnitTest {
     @Test
     public void isEmpty_returnsFalseIfCountryCodeIsSet() {
         PostalAddress postalAddress = new PostalAddress();
-        postalAddress.countryCodeAlpha2("US");
+        postalAddress.setCountryCodeAlpha2("US");
 
         assertFalse(postalAddress.isEmpty());
     }

@@ -117,17 +117,17 @@ public class GooglePayCardNonceUnitTest {
 
     private PostalAddress getPostalAddressObject(JSONObject address) throws JSONException {
         PostalAddress result = new PostalAddress();
-        result.recipientName(Json.optString(address, "name", ""));
-        result.streetAddress(Json.optString(address, "address1", ""));
-        result.extendedAddress(
+        result.setRecipientName(Json.optString(address, "name", ""));
+        result.setStreetAddress(Json.optString(address, "address1", ""));
+        result.setExtendedAddress(
                 String.join("\n",
                         Json.optString(address, "address2", ""),
                         Json.optString(address, "address3", "")
                 ).trim());
-        result.locality(Json.optString(address, "locality", ""));
-        result.region(Json.optString(address, "administrativeArea", ""));
-        result.countryCodeAlpha2(Json.optString(address, "countryCode", ""));
-        result.postalCode(Json.optString(address, "postalCode", ""));
+        result.setLocality(Json.optString(address, "locality", ""));
+        result.setRegion(Json.optString(address, "administrativeArea", ""));
+        result.setCountryCodeAlpha2(Json.optString(address, "countryCode", ""));
+        result.setPostalCode(Json.optString(address, "postalCode", ""));
 
         return result;
     }
