@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 public class CardClientUnitTest {
 
     private Context context;
-    private CardBuilder cardBuilder;
+    private Card cardBuilder;
     private CardTokenizeCallback cardTokenizeCallback;
 
     private BraintreeClient braintreeClient;
@@ -23,7 +23,7 @@ public class CardClientUnitTest {
     @Before
     public void beforeEach() {
         context = mock(Context.class);
-        cardBuilder = mock(CardBuilder.class);
+        cardBuilder = mock(Card.class);
         cardTokenizeCallback = mock(CardTokenizeCallback.class);
 
         braintreeClient = mock(BraintreeClient.class);

@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Builder used to construct a PayPal account tokenization request
  */
-class PayPalAccountBuilder extends PaymentMethodBuilder {
+class PayPalAccount extends PaymentMethod {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
@@ -22,7 +22,7 @@ class PayPalAccountBuilder extends PaymentMethodBuilder {
     private String mIntent;
     private String mMerchantAccountId;
 
-    PayPalAccountBuilder() {
+    PayPalAccount() {
         super();
     }
 

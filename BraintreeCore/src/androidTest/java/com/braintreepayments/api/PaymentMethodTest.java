@@ -48,7 +48,7 @@ public class PaymentMethodTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("12");
         cardBuilder.setExpirationYear(validExpirationYear());
@@ -100,7 +100,7 @@ public class PaymentMethodTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("04");
         cardBuilder.setExpirationYear(validExpirationYear());

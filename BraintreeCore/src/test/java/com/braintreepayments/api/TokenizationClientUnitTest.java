@@ -40,7 +40,7 @@ public class TokenizationClientUnitTest {
 
     @Test
     public void tokenize_whenBraintreeClientReferenceIsNull_doesNothing() {
-        CardBuilder cardBuilder = mock(CardBuilder.class);
+        Card cardBuilder = mock(Card.class);
         PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
 
         TokenizationClient sut = new TokenizationClient(new WeakReference<BraintreeClient>(null));
@@ -59,7 +59,7 @@ public class TokenizationClientUnitTest {
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
-        sut.tokenize(new CardBuilder(), null);
+        sut.tokenize(new Card(), null);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
@@ -76,7 +76,7 @@ public class TokenizationClientUnitTest {
                 .build();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         sut.tokenize(cardBuilder, null);
 
@@ -94,7 +94,7 @@ public class TokenizationClientUnitTest {
                 .configuration(graphQLEnabledConfig)
                 .build();
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(cardBuilder, null);
@@ -108,7 +108,7 @@ public class TokenizationClientUnitTest {
                 .configuration(graphQLDisabledConfig)
                 .build();
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(cardBuilder, null);
@@ -129,9 +129,9 @@ public class TokenizationClientUnitTest {
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
-        sut.tokenize(new PayPalAccountBuilder(), null);
-        sut.tokenize(new UnionPayCardBuilder(), null);
-        sut.tokenize(new VenmoAccountBuilder(), null);
+        sut.tokenize(new PayPalAccount(), null);
+        sut.tokenize(new UnionPayCard(), null);
+        sut.tokenize(new VenmoAccount(), null);
 
         verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
     }
@@ -143,7 +143,7 @@ public class TokenizationClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD)
                 .build();
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
@@ -164,7 +164,7 @@ public class TokenizationClientUnitTest {
                 .sendGraphQLPOSTErrorResponse(ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR))
                 .build();
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
@@ -187,7 +187,7 @@ public class TokenizationClientUnitTest {
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
 
         sut.tokenize(cardBuilder, callback);

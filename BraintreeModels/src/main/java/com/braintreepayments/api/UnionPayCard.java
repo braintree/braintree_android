@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a UnionPay card tokenization request.
  */
-public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
+public class UnionPayCard extends BaseCard implements Parcelable {
 
     private static final String UNIONPAY_ENROLLMENT_KEY = "unionPayEnrollment";
     private static final String UNIONPAY_KEY = "creditCard";
@@ -24,7 +24,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     private String mSmsCode;
     private String mEnrollmentId;
 
-    public UnionPayCardBuilder() {}
+    public UnionPayCard() {}
 
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
@@ -124,7 +124,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
         dest.writeString(mEnrollmentId);
     }
 
-    protected UnionPayCardBuilder(Parcel in) {
+    protected UnionPayCard(Parcel in) {
         super(in);
         mMobileCountryCode = in.readString();
         mMobilePhoneNumber = in.readString();
@@ -132,15 +132,15 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
         mEnrollmentId = in.readString();
     }
 
-    public static final Creator<UnionPayCardBuilder> CREATOR = new Creator<UnionPayCardBuilder>() {
+    public static final Creator<UnionPayCard> CREATOR = new Creator<UnionPayCard>() {
         @Override
-        public UnionPayCardBuilder createFromParcel(Parcel in) {
-            return new UnionPayCardBuilder(in);
+        public UnionPayCard createFromParcel(Parcel in) {
+            return new UnionPayCard(in);
         }
 
         @Override
-        public UnionPayCardBuilder[] newArray(int size) {
-            return new UnionPayCardBuilder[size];
+        public UnionPayCard[] newArray(int size) {
+            return new UnionPayCard[size];
         }
     };
 }

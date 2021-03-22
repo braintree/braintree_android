@@ -30,7 +30,7 @@ public class UnionPayClientUnitTest {
     private BraintreeClient braintreeClient;
     private TokenizationClient tokenizationClient;
 
-    private UnionPayCardBuilder unionPayCardBuilder;
+    private UnionPayCard unionPayCardBuilder;
     private UnionPayEnrollCallback unionPayEnrollCallback;
     private UnionPayFetchCapabilitiesCallback unionPayFetchCapabilitiesCallback;
 
@@ -47,14 +47,14 @@ public class UnionPayClientUnitTest {
         unionPayEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY);
         unionPayDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
-        unionPayCardBuilder = mock(UnionPayCardBuilder.class);
+        unionPayCardBuilder = mock(UnionPayCard.class);
         unionPayEnrollCallback = mock(UnionPayEnrollCallback.class);
         unionPayFetchCapabilitiesCallback = mock(UnionPayFetchCapabilitiesCallback.class);
     }
 
     @Test
     public void tokenize_sendsAnalyticsEventOnTokenizeResult() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCardBuilder = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
 
@@ -69,7 +69,7 @@ public class UnionPayClientUnitTest {
 
     @Test
     public void tokenize_callsListenerWithErrorOnFailure() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCardBuilder = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
 
@@ -85,7 +85,7 @@ public class UnionPayClientUnitTest {
 
     @Test
     public void tokenize_sendsAnalyticsEventOnFailure() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCardBuilder = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
 

@@ -40,7 +40,7 @@ public class TokenizationClientTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 
         JSONObject urlResponseData = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
-        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
+        PayPalAccount paypalAccountBuilder = new PayPalAccount();
         paypalAccountBuilder.urlResponseData(urlResponseData);
 
         tokenizationClient.tokenize(paypalAccountBuilder, new PaymentMethodNonceCallback() {

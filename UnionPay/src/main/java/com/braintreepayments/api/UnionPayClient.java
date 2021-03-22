@@ -38,7 +38,7 @@ public class UnionPayClient {
 
     /**
      * Fetches the capabilities of a card. If the card needs to be enrolled use {@link
-     * UnionPayClient#enroll(UnionPayCardBuilder, UnionPayEnrollCallback)}.
+     * UnionPayClient#enroll(UnionPayCard, UnionPayEnrollCallback)}.
      * <p>
      * On completion, returns the {@link UnionPayCapabilities} to
      * {@link UnionPayFetchCapabilitiesCallback#onResult(UnionPayCapabilities, Exception)}
@@ -85,15 +85,15 @@ public class UnionPayClient {
      * UnionPayClient#fetchCapabilities(String, UnionPayFetchCapabilitiesCallback)} if your card needs to be enrolled.
      * <p>
      * On completion, returns an enrollmentId to {@link UnionPayEnrollCallback#onResult(UnionPayEnrollment, Exception)}
-     * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
-     * collected from the merchant before invoking {@link UnionPayClient#tokenize(UnionPayCardBuilder, UnionPayTokenizeCallback)}
+     * This enrollmentId needs to be applied to {@link UnionPayCard} along with the SMS code
+     * collected from the merchant before invoking {@link UnionPayClient#tokenize(UnionPayCard, UnionPayTokenizeCallback)}
      * <p>
      * On error, an exception will be passed back to {@link UnionPayEnrollCallback#onResult(UnionPayEnrollment, Exception)}
      *
-     * @param unionPayCardBuilder {@link UnionPayCardBuilder}
+     * @param unionPayCardBuilder {@link UnionPayCard}
      * @param callback {@link UnionPayEnrollCallback}
      */
-    public void enroll(final UnionPayCardBuilder unionPayCardBuilder, final UnionPayEnrollCallback callback) {
+    public void enroll(final UnionPayCard unionPayCardBuilder, final UnionPayEnrollCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -133,7 +133,7 @@ public class UnionPayClient {
 
     /**
      * Create a {@link CardNonce}. Note that if the card is a UnionPay card,
-     * {@link UnionPayCardBuilder#setEnrollmentId(String)} and {@link UnionPayCardBuilder#setSmsCode(String)}
+     * {@link UnionPayCard#setEnrollmentId(String)} and {@link UnionPayCard#setSmsCode(String)}
      * need to be set for tokenization to succeed.
      * <p>
      * On completion, returns the {@link CardNonce} to {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)}
@@ -145,10 +145,10 @@ public class UnionPayClient {
      * {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)} will be called with the {@link
      * Exception} that occurred.
      *
-     * @param unionPayCardBuilder {@link UnionPayCardBuilder}
+     * @param unionPayCardBuilder {@link UnionPayCard}
      * @param callback {@link UnionPayTokenizeCallback}
      */
-    public void tokenize(UnionPayCardBuilder unionPayCardBuilder, final UnionPayTokenizeCallback callback) {
+    public void tokenize(UnionPayCard unionPayCardBuilder, final UnionPayTokenizeCallback callback) {
         tokenizationClient.tokenize(unionPayCardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {

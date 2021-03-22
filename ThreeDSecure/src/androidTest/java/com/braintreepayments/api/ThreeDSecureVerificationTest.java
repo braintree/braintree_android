@@ -45,7 +45,7 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException, InvalidArgumentException {
 
-        final CardBuilder cardBuilder = new CardBuilder();
+        final Card cardBuilder = new Card();
         cardBuilder.setCardNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
         cardBuilder.setExpirationDate("12/20");
 
@@ -90,7 +90,7 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardWhenAuthenticationIsUnavailable()
             throws InterruptedException, InvalidArgumentException {
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE);
         cardBuilder.setExpirationMonth("12");
         cardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
@@ -135,7 +135,7 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException, InvalidArgumentException {
 
-        final CardBuilder cardBuilder = new CardBuilder();
+        final Card cardBuilder = new Card();
         cardBuilder.setCardNumber(THREE_D_SECURE_VERIFICATON);
         cardBuilder.setExpirationDate("12/20");
 
@@ -173,7 +173,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
-        final CardBuilder cardBuilder = new CardBuilder();
+        final Card cardBuilder = new Card();
         cardBuilder.setCardNumber(THREE_D_SECURE_LOOKUP_ERROR);
         cardBuilder.setExpirationDate("12/20");
 
@@ -219,7 +219,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
-        final CardBuilder cardBuilder = new CardBuilder();
+        final Card cardBuilder = new Card();
         cardBuilder.setCardNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
         cardBuilder.setExpirationDate("12/20");
 

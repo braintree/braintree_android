@@ -120,7 +120,7 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenIsUnionPay_returnsEnrollmentId() throws InterruptedException {
         String cardNumber = UNIONPAY_CREDIT;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        final UnionPayCard unionPayCardBuilder = new UnionPayCard();
         unionPayCardBuilder.setCardNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
@@ -148,7 +148,7 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenIsUnionPayFalse_willError() throws InterruptedException {
         String cardNumber = CardNumber.VISA;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        final UnionPayCard unionPayCardBuilder = new UnionPayCard();
         unionPayCardBuilder.setCardNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
@@ -176,7 +176,7 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
         String cardNumber = UNIONPAY_SMS_NOT_REQUIRED;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        final UnionPayCard unionPayCardBuilder = new UnionPayCard();
         unionPayCardBuilder.setCardNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
@@ -206,7 +206,7 @@ public class UnionPayClientTest {
     @Ignore("Sample merchant account is not set up for Union Pay")
     @Test(timeout = 10000)
     public void tokenize_unionPayCredit_withExpirationDate() throws InterruptedException {
-        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder();
+        final UnionPayCard cardBuilder = new UnionPayCard();
         cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("123");
@@ -237,7 +237,7 @@ public class UnionPayClientTest {
     @Ignore("Sample merchant account is not set up for Union Pay")
     @Test(timeout = 30000)
     public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InterruptedException {
-        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder();
+        final UnionPayCard cardBuilder = new UnionPayCard();
         cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
         cardBuilder.setExpirationMonth("08");
         cardBuilder.setExpirationYear("20");

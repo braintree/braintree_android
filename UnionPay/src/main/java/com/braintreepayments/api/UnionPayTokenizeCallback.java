@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link UnionPayClient#tokenize(UnionPayCardBuilder, UnionPayTokenizeCallback)}.
+ * {@link UnionPayClient#tokenize(UnionPayCard, UnionPayTokenizeCallback)}.
  */
 public interface UnionPayTokenizeCallback {
 

@@ -11,7 +11,7 @@ import org.json.JSONObject;
  * An abstract class to extend when creating a builder for a payment method. Contains logic and
  * implementations shared by all payment methods.
  */
-public abstract class PaymentMethodBuilder {
+public abstract class PaymentMethod {
 
     protected static final String OPTIONS_KEY = "options";
     protected static final String OPERATION_NAME_KEY = "operationName";
@@ -25,7 +25,7 @@ public abstract class PaymentMethodBuilder {
     private boolean mValidateSet;
     private String mSessionId;
 
-    public PaymentMethodBuilder() {}
+    public PaymentMethod() {}
 
     /**
      * Sets the integration method associated with the tokenization call for analytics use.
@@ -130,7 +130,7 @@ public abstract class PaymentMethodBuilder {
         return base.toString();
     }
 
-    protected PaymentMethodBuilder(Parcel in) {
+    protected PaymentMethod(Parcel in) {
         mIntegration = in.readString();
         mSource = in.readString();
         mValidate = in.readByte() > 0;

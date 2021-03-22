@@ -48,7 +48,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCustomerId().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
 
@@ -60,7 +60,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
 
@@ -72,7 +72,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setValidate(true);
@@ -85,7 +85,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setValidate(false);
@@ -97,7 +97,7 @@ public class CardClientTest {
     public void tokenize_tokenizesACardWithATokenizationKey() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
 
@@ -108,7 +108,7 @@ public class CardClientTest {
     public void tokenize_tokenizesACardWithATokenizationKeyAndValidateFalse() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setValidate(false);
@@ -120,7 +120,7 @@ public class CardClientTest {
     public void tokenize_failsWithTokenizationKeyAndValidateTrue() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setValidate(true);
@@ -152,7 +152,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCvvVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("123");
@@ -166,7 +166,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCvv("123");
 
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
@@ -196,7 +196,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCvvVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("200");
@@ -220,7 +220,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("123");
@@ -234,7 +234,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setPostalCode("20000");
@@ -259,7 +259,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCountryCode("ABC");
@@ -284,7 +284,7 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("123");
@@ -302,7 +302,7 @@ public class CardClientTest {
         assertTokenizationSuccessful(authorization, cardBuilder);
     }
 
-    private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
+    private void assertTokenizationSuccessful(String authorization, Card cardBuilder) throws Exception {
         BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Authorization.fromString(authorization));
         CardClient sut = new CardClient(braintreeClient);
 

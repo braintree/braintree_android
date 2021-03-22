@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Base builder class used to build various types of cards
  */
-public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Parcelable {
+public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
@@ -45,7 +45,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     String mRegion;
     String mStreetAddress;
 
-    public BaseCardBuilder() {}
+    public BaseCard() {}
 
     /**
      * @param number The card number.
@@ -264,7 +264,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
         return 0;
     }
 
-    protected BaseCardBuilder(Parcel in) {
+    protected BaseCard(Parcel in) {
         super(in);
         mCardnumber = in.readString();
         mCvv = in.readString();

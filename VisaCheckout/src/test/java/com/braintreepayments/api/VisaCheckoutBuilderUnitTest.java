@@ -41,7 +41,7 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject paymentMethodNonceJson = new JSONObject();
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
-        VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(null);
+        VisaCheckout visaCheckoutBuilder = new VisaCheckout(null);
         visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
@@ -56,7 +56,7 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
-        VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(visaPaymentSummary);
+        VisaCheckout visaCheckoutBuilder = new VisaCheckout(visaPaymentSummary);
         visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
 
         JSONObject expectedBase = new JSONObject();
@@ -71,12 +71,12 @@ public class VisaCheckoutBuilderUnitTest {
 
     @Test
     public void getApiPath_returnsCorrectApiPath() {
-        assertEquals("visa_checkout_cards", new VisaCheckoutBuilder(null).getApiPath());
+        assertEquals("visa_checkout_cards", new VisaCheckout(null).getApiPath());
     }
 
     @Test
     public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
         assertEquals(VisaCheckoutNonce.TYPE,
-                new VisaCheckoutBuilder(null).getResponsePaymentMethodType());
+                new VisaCheckout(null).getResponsePaymentMethodType());
     }
 }

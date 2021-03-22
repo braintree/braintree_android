@@ -21,7 +21,7 @@ import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.CardBuilder;
+import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
@@ -35,7 +35,7 @@ import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
-import com.braintreepayments.api.UnionPayCardBuilder;
+import com.braintreepayments.api.UnionPayCard;
 import com.braintreepayments.api.UnionPayClient;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
@@ -239,7 +239,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     public void sendSms(View v) {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCardBuilder = new UnionPayCard();
         unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
         unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
         unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
@@ -266,7 +266,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onPurchase(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (mIsUnionPay) {
-            UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+            UnionPayCard unionPayCardBuilder = new UnionPayCard();
             unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
             unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
@@ -286,7 +286,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
 
         } else {
-            CardBuilder cardBuilder = new CardBuilder();
+            Card cardBuilder = new Card();
             cardBuilder.setCardNumber(mCardForm.getCardNumber());
             cardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             cardBuilder.setExpirationYear(mCardForm.getExpirationYear());

@@ -84,7 +84,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_correctlyBuildsACard() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
@@ -120,7 +120,7 @@ public class CardBuilderUnitTest {
         assertTrue(json.getBoolean("authenticationInsight"));
         assertEquals("merchant-account-id", json.getString("merchantAccountId"));
 
-        assertTrue(jsonCard.getJSONObject(PaymentMethodBuilder.OPTIONS_KEY).getBoolean("validate"));
+        assertTrue(jsonCard.getJSONObject(PaymentMethod.OPTIONS_KEY).getBoolean("validate"));
 
         assertEquals("Joe", jsonBillingAddress.getString("firstName"));
         assertEquals("Smith", jsonBillingAddress.getString("lastName"));
@@ -139,7 +139,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_nestsAddressCorrectly() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setPostalCode("60606");
 
         JSONObject billingAddress = new JSONObject(cardBuilder.buildJSON())
@@ -162,7 +162,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_usesDefaultInfoForMetadata() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         JSONObject metadata = new JSONObject(cardBuilder.buildJSON())
                 .getJSONObject(MetadataBuilder.META_KEY);
@@ -173,7 +173,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_usesDefaultCardSource() throws JSONException {
-        CardBuilder builder = new CardBuilder();
+        Card builder = new Card();
         JSONObject jsonObject = new JSONObject(builder.buildJSON());
 
         assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"));
@@ -181,7 +181,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_setsCardSource() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setSource("form");
         JSONObject jsonObject = new JSONObject(cardBuilder.buildJSON());
 
@@ -190,7 +190,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_setsIntegrationMethod() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setIntegration("test-integration");
 
         JSONObject metadata = new JSONObject(cardBuilder.buildJSON())
@@ -201,7 +201,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_includesValidateOptionWhenSetToTrue() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setValidate(true);
 
         JSONObject builtCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
@@ -211,7 +211,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_includesValidateOptionWhenSetToFalse() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setValidate(false);
 
         JSONObject builtCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
@@ -221,7 +221,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         assertFalse(new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
         assertFalse(new JSONObject(cardBuilder.buildJSON()).has(BILLING_ADDRESS_KEY));
@@ -229,7 +229,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_doesNotIncludeEmptyStrings() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber("");
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
@@ -253,7 +253,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_whenAuthenticationInsightRequestedIsTrue_requestsAuthenticationInsight() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setAuthenticationInsightRequested(true);
         cardBuilder.setMerchantAccountId("merchant_account_id");
 
@@ -265,7 +265,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void build_whenAuthenticationInsightRequestedIsFalse_doesNotRequestsAuthenticationInsight() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setAuthenticationInsightRequested(false);
 
         JSONObject json = new JSONObject(cardBuilder.buildJSON());
@@ -275,7 +275,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_correctlyBuildsACardTokenization() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
@@ -300,11 +300,11 @@ public class CardBuilderUnitTest {
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
+                .getJSONObject(BaseCard.CREDIT_CARD_KEY);
         JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
+                .getJSONObject(PaymentMethod.OPTIONS_KEY);
         JSONObject jsonMetadata = json.getJSONObject("clientSdkMetadata");
 
         assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED, json.getString(Keys.QUERY));
@@ -334,13 +334,13 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_nestsAddressCorrectly() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setPostalCode("60606");
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
+                .getJSONObject(BaseCard.CREDIT_CARD_KEY);
         JSONObject billingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
 
         assertFalse(billingAddress.has("firstName"));
@@ -360,7 +360,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_usesDefaultInfoForMetadata() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject metadata = json.getJSONObject("clientSdkMetadata");
@@ -371,7 +371,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_usesDefaultCardSource() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
 
@@ -380,7 +380,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_setsCardSource() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setSource("test-source");
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
@@ -390,7 +390,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_setsIntegrationMethod() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setIntegration("test-integration");
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
@@ -400,58 +400,58 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_includesValidateOptionWhenSetToTrue() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setValidate(true);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
+                .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
         assertTrue(jsonOptions.getBoolean("validate"));
     }
 
     @Test
     public void buildGraphQL_includesValidateOptionWhenSetToFalse() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setValidate(false);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
+                .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
         assertFalse(jsonOptions.getBoolean("validate"));
     }
 
     @Test
     public void buildGraphQL_defaultsValidateToTrueForClientTokens() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         JSONObject json = new JSONObject(
                 cardBuilder.buildGraphQL(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN))));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
+                .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
         assertTrue(jsonOptions.getBoolean("validate"));
     }
 
     @Test
     public void buildGraphQL_defaultsValidateToFalseForTokenizationKeys() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
+                .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
         assertFalse(jsonOptions.getBoolean("validate"));
     }
 
     @Test
     public void buildGraphQL_doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
 
         assertFalse(new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
         assertFalse(new JSONObject(cardBuilder.buildJSON()).has(BILLING_ADDRESS_KEY));
@@ -459,7 +459,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_doesNotIncludeEmptyStrings() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber("");
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
@@ -480,14 +480,14 @@ public class CardBuilderUnitTest {
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
-                .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
+                .getJSONObject(BaseCard.CREDIT_CARD_KEY);
 
         assertFalse(jsonCard.keys().hasNext());
     }
 
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsTrue_requestsAuthInsight() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setMerchantAccountId("merchant-account-id");
         cardBuilder.setAuthenticationInsightRequested(true);
 
@@ -502,7 +502,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setMerchantAccountId("merchant-account-id");
         cardBuilder.setAuthenticationInsightRequested(false);
 
@@ -516,7 +516,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsTrue_throwsException() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setMerchantAccountId(null);
         cardBuilder.setAuthenticationInsightRequested(true);
 
@@ -527,7 +527,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setMerchantAccountId(null);
         cardBuilder.setAuthenticationInsightRequested(false);
 
@@ -541,7 +541,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void handlesFullExpirationDateMMYY() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setExpirationDate("01/15");
 
         JSONObject jsonCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
@@ -552,7 +552,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void handlesFullExpirationDateMMYYYY() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setExpirationDate("01/2015");
 
         JSONObject jsonCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
@@ -563,7 +563,7 @@ public class CardBuilderUnitTest {
 
     @Test
     public void parcelsCorrectly() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
@@ -589,7 +589,7 @@ public class CardBuilderUnitTest {
         cardBuilder.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
+        Card actual = Card.CREATOR.createFromParcel(parcel);
 
         JSONObject toParcelJson = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject fromParcelJson = new JSONObject(actual.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
@@ -599,14 +599,14 @@ public class CardBuilderUnitTest {
 
     @Test
     public void parcelsCountryCodeCorrectly() throws NoSuchFieldException, IllegalAccessException {
-        CardBuilder cardBuilder = new CardBuilder();
+        Card cardBuilder = new Card();
         cardBuilder.setCountryCode("USA");
 
         Parcel parcel = Parcel.obtain();
         cardBuilder.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
+        Card actual = Card.CREATOR.createFromParcel(parcel);
 
         assertEquals("USA", ReflectionHelper.getField("mCountryCode", actual));
     }

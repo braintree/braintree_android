@@ -119,7 +119,7 @@ public class VenmoClient {
             boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
             if (shouldVault && isClientToken) {
-                VenmoAccountBuilder venmoAccountBuilder = new VenmoAccountBuilder();
+                VenmoAccount venmoAccountBuilder = new VenmoAccount();
                 venmoAccountBuilder.setNonce(nonce);
                 tokenizationClient.tokenize(venmoAccountBuilder, new PaymentMethodNonceCallback() {
                     @Override

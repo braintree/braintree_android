@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 /**
- * Used to tokenize credit or debit cards using a {@link CardBuilder}. For more information see the
+ * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
  */
 public class CardClient {
@@ -44,10 +44,10 @@ public class CardClient {
      * an {@link Exception} describing the error.
      *
      * @param context Android Context
-     * @param cardBuilder {@link CardBuilder}
+     * @param cardBuilder {@link Card}
      * @param callback {@link CardTokenizeCallback}
      */
-    public void tokenize(final Context context, final CardBuilder cardBuilder, final CardTokenizeCallback callback) {
+    public void tokenize(final Context context, final Card cardBuilder, final CardTokenizeCallback callback) {
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {

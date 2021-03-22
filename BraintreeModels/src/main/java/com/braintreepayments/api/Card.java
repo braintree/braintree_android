@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a card tokenization request.
  */
-public class CardBuilder extends BaseCardBuilder implements Parcelable {
+public class Card extends BaseCard implements Parcelable {
 
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
@@ -60,7 +60,7 @@ public class CardBuilder extends BaseCardBuilder implements Parcelable {
         input.put(CREDIT_CARD_KEY, creditCard);
     }
 
-    public CardBuilder() {
+    public Card() {
     }
 
     /**
@@ -94,21 +94,21 @@ public class CardBuilder extends BaseCardBuilder implements Parcelable {
         dest.writeByte(mAuthenticationInsightRequested ? (byte) 1 : 0);
     }
 
-    protected CardBuilder(Parcel in) {
+    protected Card(Parcel in) {
         super(in);
         mMerchantAccountId = in.readString();
         mAuthenticationInsightRequested = in.readByte() > 0;
     }
 
-    public static final Creator<CardBuilder> CREATOR = new Creator<CardBuilder>() {
+    public static final Creator<Card> CREATOR = new Creator<Card>() {
         @Override
-        public CardBuilder createFromParcel(Parcel in) {
-            return new CardBuilder(in);
+        public Card createFromParcel(Parcel in) {
+            return new Card(in);
         }
 
         @Override
-        public CardBuilder[] newArray(int size) {
-            return new CardBuilder[size];
+        public Card[] newArray(int size) {
+            return new Card[size];
         }
     };
 

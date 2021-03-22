@@ -36,7 +36,7 @@ public class MockTokenizationClientBuilder {
                 }
                 return null;
             }
-        }).when(tokenizationClient).tokenize(any(PaymentMethodBuilder.class), any(PaymentMethodNonceCallback.class));
+        }).when(tokenizationClient).tokenize(any(PaymentMethod.class), any(PaymentMethodNonceCallback.class));
 
         return tokenizationClient;
     }
