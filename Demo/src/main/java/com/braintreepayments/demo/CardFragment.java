@@ -240,7 +240,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     public void sendSms(View v) {
         UnionPayCard unionPayCardBuilder = new UnionPayCard();
-        unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
+        unionPayCardBuilder.setNumber(mCardForm.getCardNumber());
         unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
         unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
         unionPayCardBuilder.setCvv(mCardForm.getCvv());
@@ -267,7 +267,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (mIsUnionPay) {
             UnionPayCard unionPayCardBuilder = new UnionPayCard();
-            unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
+            unionPayCardBuilder.setNumber(mCardForm.getCardNumber());
             unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
             unionPayCardBuilder.setCvv(mCardForm.getCvv());
@@ -287,7 +287,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         } else {
             Card cardBuilder = new Card();
-            cardBuilder.setCardNumber(mCardForm.getCardNumber());
+            cardBuilder.setNumber(mCardForm.getCardNumber());
             cardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             cardBuilder.setExpirationYear(mCardForm.getExpirationYear());
             cardBuilder.setCvv(mCardForm.getCvv());

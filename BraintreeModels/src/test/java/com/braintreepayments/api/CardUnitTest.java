@@ -85,7 +85,7 @@ public class CardUnitTest {
     @Test
     public void build_correctlyBuildsACard() throws JSONException {
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
         cardBuilder.setCvv("123");
@@ -230,7 +230,7 @@ public class CardUnitTest {
     @Test
     public void build_doesNotIncludeEmptyStrings() throws JSONException {
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber("");
+        cardBuilder.setNumber("");
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
         cardBuilder.setExpirationYear("");
@@ -276,7 +276,7 @@ public class CardUnitTest {
     @Test
     public void buildGraphQL_correctlyBuildsACardTokenization() throws Exception {
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
         cardBuilder.setCvv("123");
@@ -460,7 +460,7 @@ public class CardUnitTest {
     @Test
     public void buildGraphQL_doesNotIncludeEmptyStrings() throws Exception {
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber("");
+        cardBuilder.setNumber("");
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
         cardBuilder.setExpirationYear("");
@@ -564,7 +564,7 @@ public class CardUnitTest {
     @Test
     public void parcelsCorrectly() throws Exception {
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
         cardBuilder.setCvv("123");

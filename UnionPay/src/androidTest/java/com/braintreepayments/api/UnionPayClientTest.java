@@ -121,7 +121,7 @@ public class UnionPayClientTest {
     public void enroll_whenIsUnionPay_returnsEnrollmentId() throws InterruptedException {
         String cardNumber = UNIONPAY_CREDIT;
         final UnionPayCard unionPayCardBuilder = new UnionPayCard();
-        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
         unionPayCardBuilder.setMobileCountryCode("62");
@@ -149,7 +149,7 @@ public class UnionPayClientTest {
     public void enroll_whenIsUnionPayFalse_willError() throws InterruptedException {
         String cardNumber = CardNumber.VISA;
         final UnionPayCard unionPayCardBuilder = new UnionPayCard();
-        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
         unionPayCardBuilder.setMobileCountryCode("62");
@@ -177,7 +177,7 @@ public class UnionPayClientTest {
     public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
         String cardNumber = UNIONPAY_SMS_NOT_REQUIRED;
         final UnionPayCard unionPayCardBuilder = new UnionPayCard();
-        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setNumber(cardNumber);
         unionPayCardBuilder.setExpirationMonth("12");
         unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
         unionPayCardBuilder.setMobileCountryCode("62");
@@ -207,7 +207,7 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void tokenize_unionPayCredit_withExpirationDate() throws InterruptedException {
         final UnionPayCard cardBuilder = new UnionPayCard();
-        cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
+        cardBuilder.setNumber(CardNumber.UNIONPAY_CREDIT);
         cardBuilder.setExpirationDate("08/20");
         cardBuilder.setCvv("123");
         cardBuilder.setMobileCountryCode("62");
@@ -238,7 +238,7 @@ public class UnionPayClientTest {
     @Test(timeout = 30000)
     public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InterruptedException {
         final UnionPayCard cardBuilder = new UnionPayCard();
-        cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
+        cardBuilder.setNumber(CardNumber.UNIONPAY_CREDIT);
         cardBuilder.setExpirationMonth("08");
         cardBuilder.setExpirationYear("20");
         cardBuilder.setCvv("123");

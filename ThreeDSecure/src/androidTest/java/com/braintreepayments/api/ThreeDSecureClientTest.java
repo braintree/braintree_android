@@ -46,7 +46,7 @@ public class ThreeDSecureClientTest {
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber("4000000000000051");
+        cardBuilder.setNumber("4000000000000051");
         cardBuilder.setExpirationDate("12/20");
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {

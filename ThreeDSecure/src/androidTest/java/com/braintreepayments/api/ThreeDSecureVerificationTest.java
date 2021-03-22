@@ -46,7 +46,7 @@ public class ThreeDSecureVerificationTest {
             throws InterruptedException, InvalidArgumentException {
 
         final Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
+        cardBuilder.setNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
         cardBuilder.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
@@ -91,7 +91,7 @@ public class ThreeDSecureVerificationTest {
             throws InterruptedException, InvalidArgumentException {
 
         Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE);
+        cardBuilder.setNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE);
         cardBuilder.setExpirationMonth("12");
         cardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
@@ -136,7 +136,7 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_failsWithATokenizationKey() throws InterruptedException, InvalidArgumentException {
 
         final Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(THREE_D_SECURE_VERIFICATON);
+        cardBuilder.setNumber(THREE_D_SECURE_VERIFICATON);
         cardBuilder.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
@@ -174,7 +174,7 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
         final Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(THREE_D_SECURE_LOOKUP_ERROR);
+        cardBuilder.setNumber(THREE_D_SECURE_LOOKUP_ERROR);
         cardBuilder.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
@@ -220,7 +220,7 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
         final Card cardBuilder = new Card();
-        cardBuilder.setCardNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
+        cardBuilder.setNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
         cardBuilder.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();

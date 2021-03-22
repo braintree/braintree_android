@@ -31,7 +31,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     static final String STREET_ADDRESS_KEY = "streetAddress";
 
     String mCardholderName;
-    String mCardnumber;
+    String mNumber;
     String mCompany;
     String mCountryCode;
     String mCvv;
@@ -50,11 +50,11 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param number The card number.
      */
-    public void setCardNumber(String number) {
+    public void setNumber(String number) {
         if (TextUtils.isEmpty(number)) {
-            mCardnumber = null;
+            mNumber = null;
         } else {
-            mCardnumber = number;
+            mNumber = number;
         }
     }
 
@@ -221,7 +221,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     @Override
     protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(NUMBER_KEY, mCardnumber);
+        paymentMethodNonceJson.put(NUMBER_KEY, mNumber);
         paymentMethodNonceJson.put(CVV_KEY, mCvv);
         paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
         paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, mExpirationYear);
@@ -266,7 +266,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     protected BaseCard(Parcel in) {
         super(in);
-        mCardnumber = in.readString();
+        mNumber = in.readString();
         mCvv = in.readString();
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
@@ -285,7 +285,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mCardnumber);
+        dest.writeString(mNumber);
         dest.writeString(mCvv);
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);

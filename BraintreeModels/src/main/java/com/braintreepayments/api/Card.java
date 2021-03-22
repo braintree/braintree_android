@@ -36,7 +36,7 @@ public class Card extends BaseCard implements Parcelable {
         base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
         JSONObject creditCard = new JSONObject()
-                .put(NUMBER_KEY, mCardnumber)
+                .put(NUMBER_KEY, mNumber)
                 .put(EXPIRATION_MONTH_KEY, mExpirationMonth)
                 .put(EXPIRATION_YEAR_KEY, mExpirationYear)
                 .put(CVV_KEY, mCvv)
