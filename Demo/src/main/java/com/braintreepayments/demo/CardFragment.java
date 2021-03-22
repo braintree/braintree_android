@@ -389,8 +389,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .accountId("account-id");
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.accountId("account-id");
 
         ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");

@@ -18,47 +18,47 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
                 .givenName("shipping-given-name");
 
-        ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation()
-                .shippingAddress(shippingAddress)
-                .shippingMethodIndicator("shipping-method-indicator")
-                .productCode("product_code")
-                .deliveryTimeframe("delivery_timeframe")
-                .deliveryEmail("delivery_email")
-                .reorderIndicator("reorder_indicator")
-                .preorderIndicator("preorder_indicator")
-                .preorderDate("preorder_date")
-                .giftCardAmount("gift_card_amount")
-                .giftCardCurrencyCode("gift_card_currency_code")
-                .giftCardCount("gift_card_count")
-                .accountAgeIndicator("account_age_indicator")
-                .accountCreateDate("account_create_date")
-                .accountChangeIndicator("account_change_indicator")
-                .accountChangeDate("account_change_date")
-                .accountPwdChangeIndicator("account_pwd_change_indicator")
-                .accountPwdChangeDate("account_pwd_change_date")
-                .shippingAddressUsageIndicator("shipping_address_usage_indicator")
-                .shippingAddressUsageDate("shipping_address_usage_date")
-                .transactionCountDay("transaction_count_day")
-                .transactionCountYear("transaction_count_year")
-                .addCardAttempts("add_card_attempts")
-                .accountPurchases("account_purchases")
-                .fraudActivity("fraud_activity")
-                .shippingNameIndicator("shipping_name_indicator")
-                .paymentAccountIndicator("payment_account_indicator")
-                .paymentAccountAge("payment_account_age")
-                .addressMatch("address_match")
-                .accountId("account_id")
-                .ipAddress("ip_address")
-                .orderDescription("order_description")
-                .taxAmount("tax_amount")
-                .userAgent("user_agent")
-                .authenticationIndicator("authentication_indicator")
-                .installment("installment")
-                .purchaseDate("purchase_date")
-                .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency")
-                .sdkMaxTimeout("06")
-                .workPhoneNumber("5551115555");
+        ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation();
+        preSerialized.shippingAddress(shippingAddress);
+        preSerialized.shippingMethodIndicator("shipping-method-indicator");
+        preSerialized.productCode("product_code");
+        preSerialized.deliveryTimeframe("delivery_timeframe");
+        preSerialized.deliveryEmail("delivery_email");
+        preSerialized.reorderIndicator("reorder_indicator");
+        preSerialized.preorderIndicator("preorder_indicator");
+        preSerialized.preorderDate("preorder_date");
+        preSerialized.giftCardAmount("gift_card_amount");
+        preSerialized.giftCardCurrencyCode("gift_card_currency_code");
+        preSerialized.giftCardCount("gift_card_count");
+        preSerialized.accountAgeIndicator("account_age_indicator");
+        preSerialized.accountCreateDate("account_create_date");
+        preSerialized.accountChangeIndicator("account_change_indicator");
+        preSerialized.accountChangeDate("account_change_date");
+        preSerialized.accountPwdChangeIndicator("account_pwd_change_indicator");
+        preSerialized.accountPwdChangeDate("account_pwd_change_date");
+        preSerialized.shippingAddressUsageIndicator("shipping_address_usage_indicator");
+        preSerialized.shippingAddressUsageDate("shipping_address_usage_date");
+        preSerialized.transactionCountDay("transaction_count_day");
+        preSerialized.transactionCountYear("transaction_count_year");
+        preSerialized.addCardAttempts("add_card_attempts");
+        preSerialized.accountPurchases("account_purchases");
+        preSerialized.fraudActivity("fraud_activity");
+        preSerialized.shippingNameIndicator("shipping_name_indicator");
+        preSerialized.paymentAccountIndicator("payment_account_indicator");
+        preSerialized.paymentAccountAge("payment_account_age");
+        preSerialized.addressMatch("address_match");
+        preSerialized.accountId("account_id");
+        preSerialized.ipAddress("ip_address");
+        preSerialized.orderDescription("order_description");
+        preSerialized.taxAmount("tax_amount");
+        preSerialized.userAgent("user_agent");
+        preSerialized.authenticationIndicator("authentication_indicator");
+        preSerialized.installment("installment");
+        preSerialized.purchaseDate("purchase_date");
+        preSerialized.recurringEnd("recurring_end");
+        preSerialized.recurringFrequency("recurring_frequency");
+        preSerialized.sdkMaxTimeout("06");
+        preSerialized.workPhoneNumber("5551115555");
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
@@ -122,47 +122,47 @@ public class ThreeDSecureAdditionalInformationUnitTest {
                 .postalCode("shipping-postal-code")
                 .countryCodeAlpha2("shipping-country-code");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .shippingAddress(shippingAddress)
-                .shippingMethodIndicator("shipping-method-indicator")
-                .productCode("product_code")
-                .deliveryTimeframe("delivery_timeframe")
-                .deliveryEmail("delivery_email")
-                .reorderIndicator("reorder_indicator")
-                .preorderIndicator("preorder_indicator")
-                .preorderDate("preorder_date")
-                .giftCardAmount("gift_card_amount")
-                .giftCardCurrencyCode("gift_card_currency_code")
-                .giftCardCount("gift_card_count")
-                .accountAgeIndicator("account_age_indicator")
-                .accountCreateDate("account_create_date")
-                .accountChangeIndicator("account_change_indicator")
-                .accountChangeDate("account_change_date")
-                .accountPwdChangeIndicator("account_pwd_change_indicator")
-                .accountPwdChangeDate("account_pwd_change_date")
-                .shippingAddressUsageIndicator("shipping_address_usage_indicator")
-                .shippingAddressUsageDate("shipping_address_usage_date")
-                .transactionCountDay("transaction_count_day")
-                .transactionCountYear("transaction_count_year")
-                .addCardAttempts("add_card_attempts")
-                .accountPurchases("account_purchases")
-                .fraudActivity("fraud_activity")
-                .shippingNameIndicator("shipping_name_indicator")
-                .paymentAccountIndicator("payment_account_indicator")
-                .paymentAccountAge("payment_account_age")
-                .addressMatch("address_match")
-                .accountId("account_id")
-                .ipAddress("ip_address")
-                .orderDescription("order_description")
-                .taxAmount("tax_amount")
-                .userAgent("user_agent")
-                .authenticationIndicator("authentication_indicator")
-                .installment("installment")
-                .purchaseDate("purchase_date")
-                .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency")
-                .sdkMaxTimeout("06")
-                .workPhoneNumber("5551115555");
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.shippingAddress(shippingAddress);
+        additionalInformation.shippingMethodIndicator("shipping-method-indicator");
+        additionalInformation.productCode("product_code");
+        additionalInformation.deliveryTimeframe("delivery_timeframe");
+        additionalInformation.deliveryEmail("delivery_email");
+        additionalInformation.reorderIndicator("reorder_indicator");
+        additionalInformation.preorderIndicator("preorder_indicator");
+        additionalInformation.preorderDate("preorder_date");
+        additionalInformation.giftCardAmount("gift_card_amount");
+        additionalInformation.giftCardCurrencyCode("gift_card_currency_code");
+        additionalInformation.giftCardCount("gift_card_count");
+        additionalInformation.accountAgeIndicator("account_age_indicator");
+        additionalInformation.accountCreateDate("account_create_date");
+        additionalInformation.accountChangeIndicator("account_change_indicator");
+        additionalInformation.accountChangeDate("account_change_date");
+        additionalInformation.accountPwdChangeIndicator("account_pwd_change_indicator");
+        additionalInformation.accountPwdChangeDate("account_pwd_change_date");
+        additionalInformation.shippingAddressUsageIndicator("shipping_address_usage_indicator");
+        additionalInformation.shippingAddressUsageDate("shipping_address_usage_date");
+        additionalInformation.transactionCountDay("transaction_count_day");
+        additionalInformation.transactionCountYear("transaction_count_year");
+        additionalInformation.addCardAttempts("add_card_attempts");
+        additionalInformation.accountPurchases("account_purchases");
+        additionalInformation.fraudActivity("fraud_activity");
+        additionalInformation.shippingNameIndicator("shipping_name_indicator");
+        additionalInformation.paymentAccountIndicator("payment_account_indicator");
+        additionalInformation.paymentAccountAge("payment_account_age");
+        additionalInformation.addressMatch("address_match");
+        additionalInformation.accountId("account_id");
+        additionalInformation.ipAddress("ip_address");
+        additionalInformation.orderDescription("order_description");
+        additionalInformation.taxAmount("tax_amount");
+        additionalInformation.userAgent("user_agent");
+        additionalInformation.authenticationIndicator("authentication_indicator");
+        additionalInformation.installment("installment");
+        additionalInformation.purchaseDate("purchase_date");
+        additionalInformation.recurringEnd("recurring_end");
+        additionalInformation.recurringFrequency("recurring_frequency");
+        additionalInformation.sdkMaxTimeout("06");
+        additionalInformation.workPhoneNumber("5551115555");
 
         JSONObject jsonParams = additionalInformation.toJson();
 

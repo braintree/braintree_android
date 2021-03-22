@@ -28,8 +28,8 @@ public class ThreeDSecureRequestUnitTest {
 
     @Test
     public void writeToParcel() {
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .accountId("account-id");
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.accountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
                 .givenName("Joe")
@@ -108,9 +108,9 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void toJson() throws JSONException{
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .accountId("account-id");
+    public void toJson() throws JSONException {
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.accountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
                 .givenName("billing-given-name")
