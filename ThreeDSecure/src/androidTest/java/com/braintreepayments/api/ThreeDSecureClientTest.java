@@ -45,17 +45,19 @@ public class ThreeDSecureClientTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .setCardNumber("4000000000000051")
-                .expirationDate("12/20");
+        CardBuilder cardBuilder = new CardBuilder();
+        cardBuilder.setCardNumber("4000000000000051");
+        cardBuilder.setExpirationDate("12/20");
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 String nonce = paymentMethodNonce.getNonce();
-                ThreeDSecureRequest request = new ThreeDSecureRequest()
-                        .nonce(nonce)
-                        .amount("5");
+
+                ThreeDSecureRequest request = new ThreeDSecureRequest();
+                request.nonce(nonce);
+                request.amount("5");
+
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
