@@ -4,15 +4,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Contains information about which payment methods are preferred on the device.
- * This class is currently in beta and may change in future releases.
+ *  Contains information about which payment methods are preferred on the device.
+ *  This class is currently in beta and may change in future releases.
  */
 public class PreferredPaymentMethodsResult {
     private boolean mPayPalPreferred;
     private boolean mVenmoPreferred;
 
-    PreferredPaymentMethodsResult() {
-    }
+    PreferredPaymentMethodsResult() {}
 
     static PreferredPaymentMethodsResult fromJSON(String responseBody, boolean venmoInstalled) {
         boolean payPalPreferred = false;
@@ -26,22 +25,23 @@ public class PreferredPaymentMethodsResult {
         } catch (JSONException ignored) {
             // do nothing
         }
-
-        PreferredPaymentMethodsResult result = new PreferredPaymentMethodsResult();
-        result.isPayPalPreferred(payPalPreferred);
-        result.isVenmoPreferred(venmoInstalled);
-        return result;
+        return new PreferredPaymentMethodsResult()
+                .isPayPalPreferred(payPalPreferred)
+                .isVenmoPreferred(venmoInstalled);
     }
 
-    public void isPayPalPreferred(boolean payPalPreferred) {
+    public PreferredPaymentMethodsResult isPayPalPreferred(boolean payPalPreferred) {
         mPayPalPreferred = payPalPreferred;
+        return this;
     }
 
-    public void isVenmoPreferred(boolean venmoPreferred) {
+    public PreferredPaymentMethodsResult isVenmoPreferred(boolean venmoPreferred) {
         mVenmoPreferred = venmoPreferred;
+        return this;
     }
 
     /**
+     *
      * @return True if PayPal is a preferred payment method. False otherwise.
      */
     public boolean isPayPalPreferred() {
@@ -49,6 +49,7 @@ public class PreferredPaymentMethodsResult {
     }
 
     /**
+     *
      * @return True if Venmo app is installed. False otherwise.
      */
     public boolean isVenmoPreferred() {
