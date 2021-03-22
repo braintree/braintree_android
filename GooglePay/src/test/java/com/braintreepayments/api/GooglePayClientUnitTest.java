@@ -106,7 +106,8 @@ public class GooglePayClientUnitTest {
 
     @Test
     public void isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() throws JSONException {
-        ReadyForGooglePayRequest readyForGooglePayRequest = new ReadyForGooglePayRequest().existingPaymentMethodRequired(true);
+        ReadyForGooglePayRequest readyForGooglePayRequest = new ReadyForGooglePayRequest();
+        readyForGooglePayRequest.existingPaymentMethodRequired(true);
 
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()

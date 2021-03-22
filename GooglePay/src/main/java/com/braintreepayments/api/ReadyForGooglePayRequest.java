@@ -16,12 +16,9 @@ public class ReadyForGooglePayRequest {
      *
      * @param existingPaymentMethodRequired Indicates whether the customer must already have at least one payment method from your supported
      *              card networks in order to be considered ready to pay with Google Pay
-     *
-     * @return {@link ReadyForGooglePayRequest}
      */
-    public ReadyForGooglePayRequest existingPaymentMethodRequired(boolean existingPaymentMethodRequired) {
+    public void existingPaymentMethodRequired(boolean existingPaymentMethodRequired) {
         mExistingPaymentMethodRequired = existingPaymentMethodRequired;
-        return this;
     }
 
     public boolean isExistingPaymentMethodRequired() {
