@@ -48,10 +48,10 @@ public class PaymentMethodTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .setCardNumber(VISA)
-                .expirationMonth("12")
-                .expirationYear(validExpirationYear());
+        CardBuilder cardBuilder = new CardBuilder();
+        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setExpirationMonth("12");
+        cardBuilder.setExpirationYear(validExpirationYear());
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
@@ -100,10 +100,10 @@ public class PaymentMethodTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .setCardNumber(VISA)
-                .expirationMonth("04")
-                .expirationYear(validExpirationYear());
+        CardBuilder cardBuilder = new CardBuilder();
+        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setExpirationMonth("04");
+        cardBuilder.setExpirationYear(validExpirationYear());
 
         tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
