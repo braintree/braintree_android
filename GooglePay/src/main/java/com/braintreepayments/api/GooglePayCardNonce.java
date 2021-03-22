@@ -88,16 +88,15 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
     static PostalAddress postalAddressFromJson(JSONObject json) {
         PostalAddress address = new PostalAddress();
 
-        address
-                .recipientName(Json.optString(json, "name", ""))
-                .phoneNumber(Json.optString(json, "phoneNumber", ""))
-                .streetAddress(Json.optString(json, "address1", ""))
-                .extendedAddress(formatExtendedAddress(json))
-                .locality(Json.optString(json, "locality", ""))
-                .region(Json.optString(json, "administrativeArea", ""))
-                .countryCodeAlpha2(Json.optString(json, "countryCode", ""))
-                .postalCode(Json.optString(json, "postalCode", ""))
-                .sortingCode(Json.optString(json, "sortingCode", ""));
+        address.recipientName(Json.optString(json, "name", ""));
+        address.phoneNumber(Json.optString(json, "phoneNumber", ""));
+        address.streetAddress(Json.optString(json, "address1", ""));
+        address.extendedAddress(formatExtendedAddress(json));
+        address.locality(Json.optString(json, "locality", ""));
+        address.region(Json.optString(json, "administrativeArea", ""));
+        address.countryCodeAlpha2(Json.optString(json, "countryCode", ""));
+        address.postalCode(Json.optString(json, "postalCode", ""));
+        address.sortingCode(Json.optString(json, "sortingCode", ""));
 
         return address;
     }

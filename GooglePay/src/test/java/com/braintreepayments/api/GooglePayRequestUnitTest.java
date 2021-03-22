@@ -32,18 +32,18 @@ public class GooglePayRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN)
                 .build();
 
-        GooglePayRequest request = new GooglePayRequest()
-                .allowPrepaidCards(true)
-                .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
-                .billingAddressRequired(true)
-                .emailRequired(true)
-                .phoneNumberRequired(true)
-                .shippingAddressRequired(true)
-                .shippingAddressRequirements(shippingAddressRequirements)
-                .transactionInfo(transactionInfo)
-                .environment("production")
-                .googleMerchantId("google-merchant-id")
-                .googleMerchantName("google-merchant-name");
+        GooglePayRequest request = new GooglePayRequest();
+        request.allowPrepaidCards(true);
+        request.billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        request.billingAddressRequired(true);
+        request.emailRequired(true);
+        request.phoneNumberRequired(true);
+        request.shippingAddressRequired(true);
+        request.shippingAddressRequirements(shippingAddressRequirements);
+        request.transactionInfo(transactionInfo);
+        request.environment("production");
+        request.googleMerchantId("google-merchant-id");
+        request.googleMerchantName("google-merchant-name");
 
         assertEquals(true, request.getAllowPrepaidCards().booleanValue());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, request.getBillingAddressFormat().intValue());
@@ -121,7 +121,7 @@ public class GooglePayRequestUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly_allFieldsPopulated_null() throws NoSuchFieldException{
+    public void parcelsCorrectly_allFieldsPopulated_null() throws NoSuchFieldException {
         GooglePayRequest request = new GooglePayRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()
@@ -205,18 +205,18 @@ public class GooglePayRequestUnitTest {
         JSONObject paypalAllowedPaymentMethodParams = new JSONObject()
                 .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
 
-        request.transactionInfo(info)
-                .setCountryCode("US")
-                .phoneNumberRequired(true)
-                .emailRequired(true)
-                .shippingAddressRequired(true)
-                .shippingAddressRequirements(shippingAddressRequirements)
-                .billingAddressRequired(true)
-                .allowPrepaidCards(true)
-                .setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams)
-                .setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams)
-                .setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams)
-                .setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
+        request.transactionInfo(info);
+        request.setCountryCode("US");
+        request.phoneNumberRequired(true);
+        request.emailRequired(true);
+        request.shippingAddressRequired(true);
+        request.shippingAddressRequirements(shippingAddressRequirements);
+        request.billingAddressRequired(true);
+        request.allowPrepaidCards(true);
+        request.setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams);
+        request.setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams);
+        request.setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams);
+        request.setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
 
         request.environment("production");
         request.googleMerchantId("GOOGLE_MERCHANT_ID");
@@ -240,9 +240,9 @@ public class GooglePayRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
-        request.transactionInfo(info)
-                .shippingAddressRequired(true)
-                .shippingAddressRequirements(nullyShippingAddressRequirements);
+        request.transactionInfo(info);
+        request.shippingAddressRequired(true);
+        request.shippingAddressRequirements(nullyShippingAddressRequirements);
 
         String actual = request.toJson();
 

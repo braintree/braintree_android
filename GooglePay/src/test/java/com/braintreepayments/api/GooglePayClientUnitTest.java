@@ -67,12 +67,12 @@ public class GooglePayClientUnitTest {
         activityResultCallback = mock(GooglePayOnActivityResultCallback.class);
         activityInfo = mock(ActivityInfo.class);
 
-        baseRequest = new GooglePayRequest()
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
+        baseRequest = new GooglePayRequest();
+        baseRequest.transactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
 
         when(activityInfo.getThemeResource()).thenReturn(R.style.bt_transparent_activity);
     }
@@ -228,19 +228,19 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest()
-                .allowPrepaidCards(true)
-                .billingAddressFormat(1)
-                .billingAddressRequired(true)
-                .emailRequired(true)
-                .phoneNumberRequired(true)
-                .shippingAddressRequired(true)
-                .shippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build())
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.allowPrepaidCards(true);
+        googlePayRequest.billingAddressFormat(1);
+        googlePayRequest.billingAddressRequired(true);
+        googlePayRequest.emailRequired(true);
+        googlePayRequest.phoneNumberRequired(true);
+        googlePayRequest.shippingAddressRequired(true);
+        googlePayRequest.shippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
+        googlePayRequest.transactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -340,12 +340,12 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest()
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.transactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -383,12 +383,12 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest()
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.transactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -427,12 +427,12 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest()
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.transactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -580,8 +580,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantId("google-merchant-id-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        baseRequest.googleMerchantId("google-merchant-id-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -618,8 +618,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        baseRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -656,8 +656,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -692,9 +692,9 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override")
-                .paypalEnabled(false);
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
+        googlePayRequest.paypalEnabled(false);
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -729,8 +729,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -749,17 +749,17 @@ public class GooglePayClientUnitTest {
 
     @Test
     public void requestPayment_usesGooglePayConfigurationClientId() throws JSONException, InvalidArgumentException {
-         Configuration configuration = new TestConfigurationBuilder()
+        Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
                         .paypalClientId("paypal-client-id-for-google-payment")
                         .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
                         .enabled(true))
-                 .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)
-                         .clientId("paypal-client-id-for-paypal"))
-                 .withAnalytics()
-                 .buildConfiguration();
+                .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)
+                        .clientId("paypal-client-id-for-paypal"))
+                .withAnalytics()
+                .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -767,8 +767,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -811,8 +811,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -846,8 +846,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest
-                .googleMerchantName("google-merchant-name-override");
+        GooglePayRequest googlePayRequest = baseRequest;
+        googlePayRequest.googleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
@@ -965,7 +965,7 @@ public class GooglePayClientUnitTest {
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
+        verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof GooglePayCardNonce);
     }
@@ -998,7 +998,7 @@ public class GooglePayClientUnitTest {
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), (Exception)isNull());
+        verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof PayPalAccountNonce);
     }
@@ -1212,7 +1212,7 @@ public class GooglePayClientUnitTest {
         GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback = mock(GooglePayGetTokenizationParametersCallback.class);
         sut.getTokenizationParameters(getTokenizationParametersCallback);
 
-        verify(getTokenizationParametersCallback).onResult(any(PaymentMethodTokenizationParameters.class), eq(sut.getAllowedCardNetworks(configuration)) );
+        verify(getTokenizationParametersCallback).onResult(any(PaymentMethodTokenizationParameters.class), eq(sut.getAllowedCardNetworks(configuration)));
     }
 
     // endregion
