@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * An abstract class to extend when creating a builder for a payment method. Contains logic and
+ * An abstract class to extend when creating a payment method. Contains logic and
  * implementations shared by all payment methods.
  */
 public abstract class PaymentMethod {
