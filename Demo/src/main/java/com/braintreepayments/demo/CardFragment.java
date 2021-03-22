@@ -239,16 +239,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     public void sendSms(View v) {
-        UnionPayCard unionPayCardBuilder = new UnionPayCard();
-        unionPayCardBuilder.setNumber(mCardForm.getCardNumber());
-        unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
-        unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-        unionPayCardBuilder.setCvv(mCardForm.getCvv());
-        unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
-        unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
-        unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
+        UnionPayCard unionPayCard = new UnionPayCard();
+        unionPayCard.setNumber(mCardForm.getCardNumber());
+        unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
+        unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
+        unionPayCard.setCvv(mCardForm.getCvv());
+        unionPayCard.setPostalCode(mCardForm.getPostalCode());
+        unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
+        unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
 
-        unionPayClient.enroll(unionPayCardBuilder, (enrollment, error) -> {
+        unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
             mEnrollmentId = enrollment.getId();
             if (enrollment.isSmsCodeRequired()) {
                 mSmsCodeContainer.setVisibility(VISIBLE);
@@ -266,18 +266,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onPurchase(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (mIsUnionPay) {
-            UnionPayCard unionPayCardBuilder = new UnionPayCard();
-            unionPayCardBuilder.setNumber(mCardForm.getCardNumber());
-            unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
-            unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-            unionPayCardBuilder.setCvv(mCardForm.getCvv());
-            unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
-            unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
-            unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
-            unionPayCardBuilder.setSmsCode(mSmsCode.getText().toString());
-            unionPayCardBuilder.setEnrollmentId(mEnrollmentId);
+            UnionPayCard unionPayCard = new UnionPayCard();
+            unionPayCard.setNumber(mCardForm.getCardNumber());
+            unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
+            unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
+            unionPayCard.setCvv(mCardForm.getCvv());
+            unionPayCard.setPostalCode(mCardForm.getPostalCode());
+            unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
+            unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
+            unionPayCard.setSmsCode(mSmsCode.getText().toString());
+            unionPayCard.setEnrollmentId(mEnrollmentId);
 
-            unionPayClient.tokenize(unionPayCardBuilder, (cardNonce, tokenizeError) -> {
+            unionPayClient.tokenize(unionPayCard, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
                     handlePaymentMethodNonceCreated(cardNonce);
                 } else {
@@ -286,15 +286,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
 
         } else {
-            Card cardBuilder = new Card();
-            cardBuilder.setNumber(mCardForm.getCardNumber());
-            cardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
-            cardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-            cardBuilder.setCvv(mCardForm.getCvv());
-            cardBuilder.setValidate(false); // TODO GQL currently only returns the bin if validate = false
-            cardBuilder.setPostalCode(mCardForm.getPostalCode());
+            Card card = new Card();
+            card.setNumber(mCardForm.getCardNumber());
+            card.setExpirationMonth(mCardForm.getExpirationMonth());
+            card.setExpirationYear(mCardForm.getExpirationYear());
+            card.setCvv(mCardForm.getCvv());
+            card.setValidate(false); // TODO GQL currently only returns the bin if validate = false
+            card.setPostalCode(mCardForm.getPostalCode());
 
-            cardClient.tokenize(getActivity(), cardBuilder, (cardNonce, tokenizeError) -> {
+            cardClient.tokenize(getActivity(), card, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
                     handlePaymentMethodNonceCreated(cardNonce);
                 } else {

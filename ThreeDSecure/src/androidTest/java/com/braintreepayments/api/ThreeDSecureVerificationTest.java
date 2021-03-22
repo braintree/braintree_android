@@ -45,15 +45,15 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException, InvalidArgumentException {
 
-        final Card cardBuilder = new Card();
-        cardBuilder.setNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
-        cardBuilder.setExpirationDate("12/20");
+        final Card card = new Card();
+        card.setNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
+        card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -90,16 +90,16 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardWhenAuthenticationIsUnavailable()
             throws InterruptedException, InvalidArgumentException {
 
-        Card cardBuilder = new Card();
-        cardBuilder.setNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE);
-        cardBuilder.setExpirationMonth("12");
-        cardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
+        Card card = new Card();
+        card.setNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE);
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -135,15 +135,15 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException, InvalidArgumentException {
 
-        final Card cardBuilder = new Card();
-        cardBuilder.setNumber(THREE_D_SECURE_VERIFICATON);
-        cardBuilder.setExpirationDate("12/20");
+        final Card card = new Card();
+        card.setNumber(THREE_D_SECURE_VERIFICATON);
+        card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -173,15 +173,15 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
-        final Card cardBuilder = new Card();
-        cardBuilder.setNumber(THREE_D_SECURE_LOOKUP_ERROR);
-        cardBuilder.setExpirationDate("12/20");
+        final Card card = new Card();
+        card.setNumber(THREE_D_SECURE_LOOKUP_ERROR);
+        card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -219,15 +219,15 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
-        final Card cardBuilder = new Card();
-        cardBuilder.setNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
-        cardBuilder.setExpirationDate("12/20");
+        final Card card = new Card();
+        card.setNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
+        card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();

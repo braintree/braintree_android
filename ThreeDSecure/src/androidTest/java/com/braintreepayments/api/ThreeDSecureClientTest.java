@@ -45,11 +45,11 @@ public class ThreeDSecureClientTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        Card cardBuilder = new Card();
-        cardBuilder.setNumber("4000000000000051");
-        cardBuilder.setExpirationDate("12/20");
+        Card card = new Card();
+        card.setNumber("4000000000000051");
+        card.setExpirationDate("12/20");
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 String nonce = paymentMethodNonce.getNonce();

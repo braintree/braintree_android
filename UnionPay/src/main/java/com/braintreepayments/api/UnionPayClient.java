@@ -90,10 +90,10 @@ public class UnionPayClient {
      * <p>
      * On error, an exception will be passed back to {@link UnionPayEnrollCallback#onResult(UnionPayEnrollment, Exception)}
      *
-     * @param unionPayCardBuilder {@link UnionPayCard}
+     * @param unionPayCard {@link UnionPayCard}
      * @param callback {@link UnionPayEnrollCallback}
      */
-    public void enroll(final UnionPayCard unionPayCardBuilder, final UnionPayEnrollCallback callback) {
+    public void enroll(final UnionPayCard unionPayCard, final UnionPayEnrollCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -103,7 +103,7 @@ public class UnionPayClient {
                 }
 
                 try {
-                    String enrollmentPayload = unionPayCardBuilder.buildEnrollment().toString();
+                    String enrollmentPayload = unionPayCard.buildEnrollment().toString();
                     braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, new HttpResponseCallback() {
                         @Override
                         public void success(String responseBody) {
@@ -145,11 +145,11 @@ public class UnionPayClient {
      * {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)} will be called with the {@link
      * Exception} that occurred.
      *
-     * @param unionPayCardBuilder {@link UnionPayCard}
+     * @param unionPayCard {@link UnionPayCard}
      * @param callback {@link UnionPayTokenizeCallback}
      */
-    public void tokenize(UnionPayCard unionPayCardBuilder, final UnionPayTokenizeCallback callback) {
-        tokenizationClient.tokenize(unionPayCardBuilder, new PaymentMethodNonceCallback() {
+    public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
+        tokenizationClient.tokenize(unionPayCard, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 callback.onResult((CardNonce) paymentMethodNonce, null);

@@ -14,11 +14,11 @@ public class VenmoAccountUnitTest {
 
     @Test
     public void correctlyBuildsVenmoVaultRequest() throws JSONException {
-        VenmoAccount builder = new VenmoAccount();
-        builder.setNonce("some-nonce");
-        builder.setValidate(true);
+        VenmoAccount sut = new VenmoAccount();
+        sut.setNonce("some-nonce");
+        sut.setValidate(true);
 
-        JSONObject fullJson = new JSONObject(builder.buildJSON());
+        JSONObject fullJson = new JSONObject(sut.buildJSON());
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");
         assertEquals("some-nonce", venmoAccountJson.getString("nonce"));
 

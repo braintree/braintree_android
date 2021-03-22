@@ -227,21 +227,21 @@ public class PayPalClient {
                     Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                     if (deepLinkUri != null) {
                         JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, successUrl, approvalUrl, tokenKey);
-                        PayPalAccount payPalAccountBuilder = new PayPalAccount();
-                        payPalAccountBuilder.clientMetadataId(clientMetadataId);
-                        payPalAccountBuilder.intent(payPalIntent);
-                        payPalAccountBuilder.setSource("paypal-browser");
-                        payPalAccountBuilder.urlResponseData(urlResponseData);
+                        PayPalAccount payPalAccount = new PayPalAccount();
+                        payPalAccount.clientMetadataId(clientMetadataId);
+                        payPalAccount.intent(payPalIntent);
+                        payPalAccount.setSource("paypal-browser");
+                        payPalAccount.urlResponseData(urlResponseData);
 
                         if (merchantAccountId != null) {
-                            payPalAccountBuilder.merchantAccountId(merchantAccountId);
+                            payPalAccount.merchantAccountId(merchantAccountId);
                         }
 
                         if (payPalIntent != null) {
-                            payPalAccountBuilder.intent(payPalIntent);
+                            payPalAccount.intent(payPalIntent);
                         }
 
-                        tokenizationClient.tokenize(payPalAccountBuilder, new PaymentMethodNonceCallback() {
+                        tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
                             @Override
                             public void success(PaymentMethodNonce paymentMethodNonce) {
                                 if (paymentMethodNonce instanceof PayPalAccountNonce) {

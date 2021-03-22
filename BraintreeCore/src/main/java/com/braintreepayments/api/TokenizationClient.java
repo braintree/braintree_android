@@ -65,11 +65,11 @@ class TokenizationClient {
         });
     }
 
-    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final Card cardBuilder, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final Card card, final PaymentMethodNonceCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
-            payload = cardBuilder.buildGraphQL(braintreeClient.getAuthorization());
+            payload = card.buildGraphQL(braintreeClient.getAuthorization());
         } catch (BraintreeException e) {
             callback.failure(e);
             return;
@@ -79,7 +79,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.success(parsePaymentMethodNonces(responseBody, cardBuilder.getResponsePaymentMethodType()));
+                    callback.success(parsePaymentMethodNonces(responseBody, card.getResponsePaymentMethodType()));
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.failure(e);

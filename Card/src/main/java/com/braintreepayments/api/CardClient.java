@@ -44,11 +44,11 @@ public class CardClient {
      * an {@link Exception} describing the error.
      *
      * @param context Android Context
-     * @param cardBuilder {@link Card}
+     * @param card {@link Card}
      * @param callback {@link CardTokenizeCallback}
      */
-    public void tokenize(final Context context, final Card cardBuilder, final CardTokenizeCallback callback) {
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+    public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
+        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 dataCollector.collectRiskData(context, paymentMethodNonce);

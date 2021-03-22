@@ -190,16 +190,16 @@ public class UnionPayCardUnitTest {
 
     @Test
     public void build_doesNotIncludeValidate() throws JSONException {
-        UnionPayCard unionPayCardBuilderValidateTrue = new UnionPayCard();
-        unionPayCardBuilderValidateTrue.setValidate(true);
+        UnionPayCard unionPayCardValidateTrue = new UnionPayCard();
+        unionPayCardValidateTrue.setValidate(true);
 
-        UnionPayCard unionPayCardBuilderValidateFalse = new UnionPayCard();
-        unionPayCardBuilderValidateFalse.setValidate(false);
+        UnionPayCard unionPayCardValidateFalse = new UnionPayCard();
+        unionPayCardValidateFalse.setValidate(false);
 
-        JSONObject optionsValidateTrue = new JSONObject(unionPayCardBuilderValidateTrue.buildJSON())
+        JSONObject optionsValidateTrue = new JSONObject(unionPayCardValidateTrue.buildJSON())
                 .getJSONObject("creditCard")
                 .getJSONObject("options");
-        JSONObject optionsValidateFalse = new JSONObject(unionPayCardBuilderValidateFalse.buildJSON())
+        JSONObject optionsValidateFalse = new JSONObject(unionPayCardValidateFalse.buildJSON())
                 .getJSONObject("creditCard")
                 .getJSONObject("options");
 
