@@ -47,11 +47,11 @@ public class LocalPaymentFragment extends BaseFragment {
                 }
 
                 localPaymentClient = new LocalPaymentClient(braintreeClient);
-                PostalAddress address = new PostalAddress()
-                        .streetAddress("Stadhouderskade 78")
-                        .countryCodeAlpha2("NL")
-                        .locality("Amsterdam")
-                        .postalCode("1072 AE");
+                PostalAddress address = new PostalAddress();
+                        address.streetAddress("Stadhouderskade 78");
+                        address.countryCodeAlpha2("NL");
+                        address.locality("Amsterdam");
+                        address.postalCode("1072 AE");
                 LocalPaymentRequest request = new LocalPaymentRequest()
                         .paymentType("ideal")
                         .amount("1.10")

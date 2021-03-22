@@ -106,9 +106,10 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         initializeFeatureClients(initError -> {
-            VenmoRequest venmoRequest = new VenmoRequest()
-                    .profileId(null)
-                    .shouldVault(false);
+            VenmoRequest venmoRequest = new VenmoRequest();
+            venmoRequest.profileId(null);
+            venmoRequest.shouldVault(false);
+
             venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
                 if (requestError != null) {
                     handleError(requestError);
