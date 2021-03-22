@@ -54,16 +54,16 @@ public class LocalPaymentFragment extends BaseFragment {
                 address.setPostalCode("1072 AE");
 
                 LocalPaymentRequest request = new LocalPaymentRequest();
-                request.paymentType("ideal");
-                request.amount("1.10");
-                request.address(address);
-                request.phone("207215300");
-                request.email("android-test-buyer@paypal.com");
-                request.givenName("Test");
-                request.surname("Buyer");
-                request.shippingAddressRequired(true);
-                request.merchantAccountId("altpay_eur");
-                request.currencyCode("EUR");
+                request.setPaymentType("ideal");
+                request.setAmount("1.10");
+                request.setAddress(address);
+                request.setPhone("207215300");
+                request.setEmail("android-test-buyer@paypal.com");
+                request.setGivenName("Test");
+                request.setSurname("Buyer");
+                request.setShippingAddressRequired(true);
+                request.setMerchantAccountId("altpay_eur");
+                request.setCurrencyCode("EUR");
 
                 localPaymentClient.startPayment(request, (transaction, error) -> {
                     if (transaction != null) {

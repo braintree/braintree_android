@@ -45,21 +45,21 @@ public class LocalPaymentRequest {
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
      */
-    public void address(PostalAddress address) {
+    public void setAddress(PostalAddress address) {
         mAddress = address;
     }
 
     /**
      * @param amount Optional - The amount for the transaction.
      */
-    public void amount(String amount) {
+    public void setAmount(String amount) {
         mAmount = amount;
     }
 
     /**
      * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
      */
-    public void bic(String bankIdentificationCode) {
+    public void setBic(String bankIdentificationCode) {
         mBankIdentificationCode = bankIdentificationCode;
     }
 
@@ -68,35 +68,35 @@ public class LocalPaymentRequest {
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
      */
-    public void currencyCode(String currencyCode) {
+    public void setCurrencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
     }
 
     /**
      * @param email Optional - Payer email of the customer.
      */
-    public void email(String email) {
+    public void setEmail(String email) {
         mEmail = email;
     }
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
      */
-    public void givenName(String givenName) {
+    public void setGivenName(String givenName) {
         mGivenName = givenName;
     }
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
      */
-    public void merchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
     }
 
     /**
      * @param paymentType - The type of payment
      */
-    public void paymentType(String paymentType) {
+    public void setPaymentType(String paymentType) {
         mPaymentType = paymentType;
     }
 
@@ -107,14 +107,14 @@ public class LocalPaymentRequest {
      *                               may determine which banks are presented to the customer.
      *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
      */
-    public void paymentTypeCountryCode(String paymentTypeCountryCode) {
+    public void setPaymentTypeCountryCode(String paymentTypeCountryCode) {
         mPaymentTypeCountryCode = paymentTypeCountryCode;
     }
 
     /**
      * @param phone Optional - Phone number of the customer.
      */
-    public void phone(String phone) {
+    public void setPhone(String phone) {
         mPhone = phone;
     }
 
@@ -122,14 +122,14 @@ public class LocalPaymentRequest {
      * @param shippingAddressRequired - Indicates whether or not the payment needs to be shipped. For digital goods,
      *                                this should be false. Defaults to false.
      */
-    public void shippingAddressRequired(boolean shippingAddressRequired) {
+    public void setShippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
     }
 
     /**
      * @param surname Optional - Surname (last name) of the customer.
      */
-    public void surname(String surname) {
+    public void setSurname(String surname) {
         mSurname = surname;
     }
 
@@ -173,7 +173,7 @@ public class LocalPaymentRequest {
         return mPhone;
     }
 
-    public boolean getShippingAddressRequired() {
+    public boolean isShippingAddressRequired() {
         return mShippingAddressRequired;
     }
 

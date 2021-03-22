@@ -40,7 +40,7 @@ public class LocalPaymentClientTest {
                 .locality("Den Haag")
                 .postalCode("2585 GJ");
         LocalPaymentRequest request = new LocalPaymentRequest()
-                .paymentType("ideal")
+                .setPaymentType("ideal")
                 .amount("1.10")
                 .address(address)
                 .phone("639847934")

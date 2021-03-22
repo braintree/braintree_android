@@ -25,18 +25,18 @@ public class LocalPaymentRequestUnitTest {
         address.setPostalCode("2585 GJ");
 
         LocalPaymentRequest request = new LocalPaymentRequest();
-        request.paymentType("ideal");
-        request.amount("1.10");
-        request.address(address);
-        request.phone("639847934");
-        request.email("jon@getbraintree.com");
-        request.givenName("Jon");
-        request.surname("Doe");
-        request.shippingAddressRequired(false);
-        request.merchantAccountId("local-merchant-account-id");
-        request.currencyCode("EUR");
-        request.paymentTypeCountryCode("NL");
-        request.bic("bank-id-code");
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("639847934");
+        request.setEmail("jon@getbraintree.com");
+        request.setGivenName("Jon");
+        request.setSurname("Doe");
+        request.setShippingAddressRequired(false);
+        request.setMerchantAccountId("local-merchant-account-id");
+        request.setCurrencyCode("EUR");
+        request.setPaymentTypeCountryCode("NL");
+        request.setBic("bank-id-code");
 
         JSONObject json = new JSONObject(request.build("http://success-url.com", "http://cancel-url.com"));
 

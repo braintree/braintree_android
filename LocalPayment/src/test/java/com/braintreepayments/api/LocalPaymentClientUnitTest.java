@@ -222,7 +222,7 @@ public class LocalPaymentClientUnitTest {
     public void startPayment_callsExceptionListener_amountIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        request.amount(null);
+        request.setAmount(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -238,7 +238,7 @@ public class LocalPaymentClientUnitTest {
     public void startPayment_callsExceptionListener_paymentTypeIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        request.paymentType(null);
+        request.setPaymentType(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -576,17 +576,17 @@ public class LocalPaymentClientUnitTest {
         address.setPostalCode("2585 GJ");
 
         LocalPaymentRequest request = new LocalPaymentRequest();
-        request.paymentType("ideal");
-        request.amount("1.10");
-        request.address(address);
-        request.phone("639847934");
-        request.email("jon@getbraintree.com");
-        request.givenName("Jon");
-        request.surname("Doe");
-        request.shippingAddressRequired(false);
-        request.merchantAccountId("local-merchant-account-id");
-        request.currencyCode("EUR");
-        request.paymentTypeCountryCode("NL");
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("639847934");
+        request.setEmail("jon@getbraintree.com");
+        request.setGivenName("Jon");
+        request.setSurname("Doe");
+        request.setShippingAddressRequired(false);
+        request.setMerchantAccountId("local-merchant-account-id");
+        request.setCurrencyCode("EUR");
+        request.setPaymentTypeCountryCode("NL");
 
         return request;
     }
