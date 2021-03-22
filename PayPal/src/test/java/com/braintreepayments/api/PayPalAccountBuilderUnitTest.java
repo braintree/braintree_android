@@ -20,11 +20,11 @@ public class PayPalAccountBuilderUnitTest {
 
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
-        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .intent(PayPalCheckoutRequest.INTENT_SALE)
-                .clientMetadataId("correlation_id")
-                .source("paypal-sdk")
-                .merchantAccountId("alt_merchant_account_id");
+        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
+        paypalAccountBuilder.intent(PayPalRequest.INTENT_SALE);
+        paypalAccountBuilder.clientMetadataId("correlation_id");
+        paypalAccountBuilder.source("paypal-sdk");
+        paypalAccountBuilder.merchantAccountId("alt_merchant_account_id");
 
         String json = paypalAccountBuilder.build();
         JSONObject jsonObject = new JSONObject(json);
@@ -41,8 +41,8 @@ public class PayPalAccountBuilderUnitTest {
 
     @Test
     public void usesCorrectInfoForMetadata() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                .source("paypal-app");
+        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
+        payPalAccountBuilder.source("paypal-app");
 
         String json = payPalAccountBuilder.build();
         JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
@@ -53,8 +53,8 @@ public class PayPalAccountBuilderUnitTest {
 
     @Test
     public void setsIntegrationMethod() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder().integration(
-                "test-integration");
+        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
+        payPalAccountBuilder.integration("test-integration");
 
         String json = payPalAccountBuilder.build();
         JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
@@ -64,8 +64,8 @@ public class PayPalAccountBuilderUnitTest {
 
     @Test
     public void includesValidateOptionWhenSet() throws JSONException {
-        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .validate(true);
+        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
+        paypalAccountBuilder.validate(true);
 
         String json = paypalAccountBuilder.build();
         JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
@@ -93,8 +93,8 @@ public class PayPalAccountBuilderUnitTest {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                .urlResponseData(urlResponseData);
+        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
+        payPalAccountBuilder.urlResponseData(urlResponseData);
 
         payPalAccountBuilder.build(base, paymentMethodNonceJson);
 

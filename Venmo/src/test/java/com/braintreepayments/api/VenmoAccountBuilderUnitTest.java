@@ -13,10 +13,10 @@ import static junit.framework.Assert.assertTrue;
 public class VenmoAccountBuilderUnitTest {
 
     @Test
-    public void correctlyBuildsVenmoVaultRequst() throws JSONException {
-        VenmoAccountBuilder builder = new VenmoAccountBuilder()
-                .nonce("some-nonce")
-                .validate(true);
+    public void correctlyBuildsVenmoVaultRequest() throws JSONException {
+        VenmoAccountBuilder builder = new VenmoAccountBuilder();
+        builder.nonce("some-nonce");
+        builder.validate(true);
 
         JSONObject fullJson = new JSONObject(builder.build());
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");
