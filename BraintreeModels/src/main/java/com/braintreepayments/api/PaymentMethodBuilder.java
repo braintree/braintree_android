@@ -33,7 +33,7 @@ public abstract class PaymentMethodBuilder {
      *
      * @param integration the current integration style.
      */
-    void integration(String integration) {
+    void setIntegration(String integration) {
         mIntegration = integration;
     }
 
@@ -42,7 +42,7 @@ public abstract class PaymentMethodBuilder {
      *
      * @param source the source of the payment method.
      */
-    void source(String source) {
+    void setSource(String source) {
         mSource = source;
     }
 
@@ -52,7 +52,7 @@ public abstract class PaymentMethodBuilder {
      *   will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
      *   will be validated when used by a server side library for a Braintree gateway action.
      */
-    public void validate(boolean validate) {
+    public void setValidate(boolean validate) {
         mValidate = validate;
         mValidateSet = true;
     }
@@ -69,7 +69,7 @@ public abstract class PaymentMethodBuilder {
     /**
      * @return String representation of {@link PaymentMethodNonce} for API use.
      */
-    public String build() {
+    public String buildJSON() {
         JSONObject base = new JSONObject();
         JSONObject optionsJson = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -86,7 +86,7 @@ public abstract class PaymentMethodBuilder {
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
 
-            build(base, paymentMethodNonceJson);
+            buildJSON(base, paymentMethodNonceJson);
         } catch (JSONException ignored) {}
 
         return base.toString();
@@ -154,7 +154,7 @@ public abstract class PaymentMethodBuilder {
         return "custom";
     }
 
-    protected abstract void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
+    protected abstract void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
 
     protected abstract void buildGraphQL(JSONObject base, JSONObject input) throws BraintreeException,
             JSONException;

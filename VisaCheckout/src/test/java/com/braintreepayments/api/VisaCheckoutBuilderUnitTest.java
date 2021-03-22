@@ -42,7 +42,7 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
         VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(null);
-        visaCheckoutBuilder.build(base, paymentMethodNonceJson);
+        visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
     }
@@ -57,7 +57,7 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject paymentMethodNonceJson = new JSONObject();
 
         VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(visaPaymentSummary);
-        visaCheckoutBuilder.build(base, paymentMethodNonceJson);
+        visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();

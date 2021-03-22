@@ -78,8 +78,8 @@ public class CardBuilder extends BaseCardBuilder implements Parcelable {
     }
 
     @Override
-    protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.build(json, paymentMethodNonceJson);
+    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+        super.buildJSON(json, paymentMethodNonceJson);
 
         if (mAuthenticationInsightRequested) {
             json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);

@@ -118,7 +118,7 @@ public class TokenizationClientUnitTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
-        assertEquals(cardBuilder.build(), captor.getValue());
+        assertEquals(cardBuilder.buildJSON(), captor.getValue());
     }
 
     @Test

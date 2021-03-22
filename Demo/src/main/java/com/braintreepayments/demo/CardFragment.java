@@ -291,7 +291,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             cardBuilder.expirationMonth(mCardForm.getExpirationMonth());
             cardBuilder.expirationYear(mCardForm.getExpirationYear());
             cardBuilder.cvv(mCardForm.getCvv());
-            cardBuilder.validate(false); // TODO GQL currently only returns the bin if validate = false
+            cardBuilder.setValidate(false); // TODO GQL currently only returns the bin if validate = false
             cardBuilder.postalCode(mCardForm.getPostalCode());
 
             cardClient.tokenize(getActivity(), cardBuilder, (cardNonce, tokenizeError) -> {

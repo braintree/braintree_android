@@ -77,7 +77,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
      */
     @Deprecated
     @Override
-    public void validate(boolean validate) {
+    public void setValidate(boolean validate) {
         // prevent validation for union pay methods
     }
 
@@ -96,8 +96,8 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     }
 
     @Override
-    protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.build(json, paymentMethodNonceJson);
+    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+        super.buildJSON(json, paymentMethodNonceJson);
 
         JSONObject options = paymentMethodNonceJson.optJSONObject(OPTIONS_KEY);
         if (options == null) {

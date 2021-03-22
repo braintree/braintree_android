@@ -16,9 +16,9 @@ public class VenmoAccountBuilderUnitTest {
     public void correctlyBuildsVenmoVaultRequest() throws JSONException {
         VenmoAccountBuilder builder = new VenmoAccountBuilder();
         builder.nonce("some-nonce");
-        builder.validate(true);
+        builder.setValidate(true);
 
-        JSONObject fullJson = new JSONObject(builder.build());
+        JSONObject fullJson = new JSONObject(builder.buildJSON());
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");
         assertEquals("some-nonce", venmoAccountJson.getString("nonce"));
 

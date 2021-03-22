@@ -230,7 +230,7 @@ public class PayPalClient {
                         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
                         payPalAccountBuilder.clientMetadataId(clientMetadataId);
                         payPalAccountBuilder.intent(payPalIntent);
-                        payPalAccountBuilder.source("paypal-browser");
+                        payPalAccountBuilder.setSource("paypal-browser");
                         payPalAccountBuilder.urlResponseData(urlResponseData);
 
                         if (merchantAccountId != null) {

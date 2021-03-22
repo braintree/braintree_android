@@ -17,7 +17,7 @@ public class VenmoAccountBuilder extends PaymentMethodBuilder {
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(NONCE_KEY, mNonce);
         base.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
     }

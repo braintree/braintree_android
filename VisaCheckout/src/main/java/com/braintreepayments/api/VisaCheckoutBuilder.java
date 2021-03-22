@@ -32,7 +32,7 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder {
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(CALL_ID, mCallId);
         paymentMethodNonceJson.put(ENCRYPTED_KEY, mEncryptedKey);
         paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, mEncryptedPaymentData);

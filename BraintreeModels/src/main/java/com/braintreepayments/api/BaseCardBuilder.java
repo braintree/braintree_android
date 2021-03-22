@@ -220,7 +220,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     }
 
     @Override
-    protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(NUMBER_KEY, mCardnumber);
         paymentMethodNonceJson.put(CVV_KEY, mCvv);
         paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);

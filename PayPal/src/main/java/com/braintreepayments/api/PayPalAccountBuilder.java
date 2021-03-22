@@ -40,7 +40,7 @@ class PayPalAccountBuilder extends PaymentMethodBuilder {
      * Response data from callback url. Used by PayPal wrappers to construct
      * a request to create a PayPal account.
      *
-     * Response data will be merged into the payment method json on {@link #build()}
+     * Response data will be merged into the payment method json on {@link #buildJSON()}
      *
      * @param urlResponseData The data parsed from the PayPal callback url.
      */
@@ -69,7 +69,7 @@ class PayPalAccountBuilder extends PaymentMethodBuilder {
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
         paymentMethodNonceJson.put(INTENT_KEY, mIntent);
 

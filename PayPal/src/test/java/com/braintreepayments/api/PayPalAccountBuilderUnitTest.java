@@ -23,10 +23,10 @@ public class PayPalAccountBuilderUnitTest {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
         paypalAccountBuilder.intent(PayPalRequest.INTENT_SALE);
         paypalAccountBuilder.clientMetadataId("correlation_id");
-        paypalAccountBuilder.source("paypal-sdk");
+        paypalAccountBuilder.setSource("paypal-sdk");
         paypalAccountBuilder.merchantAccountId("alt_merchant_account_id");
 
-        String json = paypalAccountBuilder.build();
+        String json = paypalAccountBuilder.buildJSON();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
         JSONObject jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY);
@@ -42,9 +42,9 @@ public class PayPalAccountBuilderUnitTest {
     @Test
     public void usesCorrectInfoForMetadata() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
-        payPalAccountBuilder.source("paypal-app");
+        payPalAccountBuilder.setSource("paypal-app");
 
-        String json = payPalAccountBuilder.build();
+        String json = payPalAccountBuilder.buildJSON();
         JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
@@ -54,9 +54,9 @@ public class PayPalAccountBuilderUnitTest {
     @Test
     public void setsIntegrationMethod() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
-        payPalAccountBuilder.integration("test-integration");
+        payPalAccountBuilder.setIntegration("test-integration");
 
-        String json = payPalAccountBuilder.build();
+        String json = payPalAccountBuilder.buildJSON();
         JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("test-integration", metadata.getString("integration"));
@@ -65,9 +65,9 @@ public class PayPalAccountBuilderUnitTest {
     @Test
     public void includesValidateOptionWhenSet() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
-        paypalAccountBuilder.validate(true);
+        paypalAccountBuilder.setValidate(true);
 
-        String json = paypalAccountBuilder.build();
+        String json = paypalAccountBuilder.buildJSON();
         JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
 
         assertTrue(builtAccount.getJSONObject("options").getBoolean("validate"));
@@ -77,7 +77,7 @@ public class PayPalAccountBuilderUnitTest {
     public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
 
-        String json = payPalAccountBuilder.build();
+        String json = payPalAccountBuilder.buildJSON();
         JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
 
         assertFalse(builtAccount.keys().hasNext());
@@ -96,7 +96,7 @@ public class PayPalAccountBuilderUnitTest {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
         payPalAccountBuilder.urlResponseData(urlResponseData);
 
-        payPalAccountBuilder.build(base, paymentMethodNonceJson);
+        payPalAccountBuilder.buildJSON(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(urlResponseData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
         JSONAssert.assertEquals(paymentMethodNonceJson, base.getJSONObject("paypalAccount"),
@@ -106,7 +106,7 @@ public class PayPalAccountBuilderUnitTest {
     @Test
     public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
-        String json = paypalAccountBuilder.build();
+        String json = paypalAccountBuilder.buildJSON();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
 
