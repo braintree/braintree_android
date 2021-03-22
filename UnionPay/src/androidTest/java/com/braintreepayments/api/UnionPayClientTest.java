@@ -120,12 +120,12 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenIsUnionPay_returnsEnrollmentId() throws InterruptedException {
         String cardNumber = UNIONPAY_CREDIT;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .setCardNumber(cardNumber)
-                .expirationMonth("12")
-                .expirationYear(ExpirationDateHelper.validExpirationYear())
-                .mobileCountryCode("62")
-                .mobilePhoneNumber("11111111111");
+        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setExpirationMonth("12");
+        unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
+        unionPayCardBuilder.setMobileCountryCode("62");
+        unionPayCardBuilder.setMobilePhoneNumber("11111111111");
 
         unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
@@ -148,12 +148,12 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenIsUnionPayFalse_willError() throws InterruptedException {
         String cardNumber = CardNumber.VISA;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .setCardNumber(cardNumber)
-                .expirationMonth("12")
-                .expirationYear(ExpirationDateHelper.validExpirationYear())
-                .mobileCountryCode("62")
-                .mobilePhoneNumber("11111111111");
+        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setExpirationMonth("12");
+        unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
+        unionPayCardBuilder.setMobileCountryCode("62");
+        unionPayCardBuilder.setMobilePhoneNumber("11111111111");
 
         unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
@@ -176,12 +176,12 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
         String cardNumber = UNIONPAY_SMS_NOT_REQUIRED;
-        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .setCardNumber(cardNumber)
-                .expirationMonth("12")
-                .expirationYear(ExpirationDateHelper.validExpirationYear())
-                .mobileCountryCode("62")
-                .mobilePhoneNumber("11111111111");
+        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        unionPayCardBuilder.setCardNumber(cardNumber);
+        unionPayCardBuilder.setExpirationMonth("12");
+        unionPayCardBuilder.setExpirationYear(ExpirationDateHelper.validExpirationYear());
+        unionPayCardBuilder.setMobileCountryCode("62");
+        unionPayCardBuilder.setMobilePhoneNumber("11111111111");
 
         unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
@@ -206,12 +206,12 @@ public class UnionPayClientTest {
     @Ignore("Sample merchant account is not set up for Union Pay")
     @Test(timeout = 10000)
     public void tokenize_unionPayCredit_withExpirationDate() throws InterruptedException {
-        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
-                .setCardNumber(CardNumber.UNIONPAY_CREDIT)
-                .expirationDate("08/20")
-                .cvv("123")
-                .mobileCountryCode("62")
-                .mobilePhoneNumber("1111111111");
+        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder();
+        cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
+        cardBuilder.setExpirationDate("08/20");
+        cardBuilder.setCvv("123");
+        cardBuilder.setMobileCountryCode("62");
+        cardBuilder.setMobilePhoneNumber("1111111111");
 
         unionPayClient.enroll(cardBuilder, new UnionPayEnrollCallback() {
             @Override
@@ -224,7 +224,7 @@ public class UnionPayClientTest {
                     @Override
                     public void onResult(CardNonce cardNonce, Exception error) {
                         assertIsANonce(cardNonce.getNonce());
-                        assertEquals("32", ((CardNonce) cardNonce).getLastTwo());
+                        assertEquals("32", cardNonce.getLastTwo());
                         mCountDownLatch.countDown();
                     }
                 });
@@ -237,13 +237,13 @@ public class UnionPayClientTest {
     @Ignore("Sample merchant account is not set up for Union Pay")
     @Test(timeout = 30000)
     public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InterruptedException {
-        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
-                .setCardNumber(CardNumber.UNIONPAY_CREDIT)
-                .expirationMonth("08")
-                .expirationYear("20")
-                .cvv("123")
-                .mobileCountryCode("62")
-                .mobilePhoneNumber("1111111111");
+        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder();
+        cardBuilder.setCardNumber(CardNumber.UNIONPAY_CREDIT);
+        cardBuilder.setExpirationMonth("08");
+        cardBuilder.setExpirationYear("20");
+        cardBuilder.setCvv("123");
+        cardBuilder.setMobileCountryCode("62");
+        cardBuilder.setMobilePhoneNumber("1111111111");
 
         unionPayClient.enroll(cardBuilder, new UnionPayEnrollCallback() {
             @Override
@@ -256,7 +256,7 @@ public class UnionPayClientTest {
                     @Override
                     public void onResult(CardNonce cardNonce, Exception error) {
                         assertIsANonce(cardNonce.getNonce());
-                        assertEquals("32", ((CardNonce) cardNonce).getLastTwo());
+                        assertEquals("32", cardNonce.getLastTwo());
                         mCountDownLatch.countDown();
                     }
                 });
