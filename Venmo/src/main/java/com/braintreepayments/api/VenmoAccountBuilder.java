@@ -12,7 +12,7 @@ public class VenmoAccountBuilder extends PaymentMethodBuilder {
 
     public VenmoAccountBuilder() {}
 
-    public void nonce(String nonce) {
+    public void setNonce(String nonce) {
         mNonce = nonce;
     }
 

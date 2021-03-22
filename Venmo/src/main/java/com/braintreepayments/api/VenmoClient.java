@@ -120,7 +120,7 @@ public class VenmoClient {
 
             if (shouldVault && isClientToken) {
                 VenmoAccountBuilder venmoAccountBuilder = new VenmoAccountBuilder();
-                venmoAccountBuilder.nonce(nonce);
+                venmoAccountBuilder.setNonce(nonce);
                 tokenizationClient.tokenize(venmoAccountBuilder, new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
