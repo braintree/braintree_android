@@ -50,7 +50,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param transactionInfo See {@link TransactionInfo}.
      */
-    public void transactionInfo(TransactionInfo transactionInfo) {
+    public void setTransactionInfo(TransactionInfo transactionInfo) {
         mTransactionInfo = transactionInfo;
     }
 
@@ -60,7 +60,7 @@ public class GooglePayRequest implements Parcelable {
      * @param emailRequired {@code true} if the buyer's email address is required to be returned, {@code false} otherwise.
      * @return {@link GooglePayRequest}
      */
-    public void emailRequired(boolean emailRequired) {
+    public void setEmailRequired(boolean emailRequired) {
         mEmailRequired = emailRequired;
     }
 
@@ -70,7 +70,7 @@ public class GooglePayRequest implements Parcelable {
      * @param phoneNumberRequired {@code true} if the buyer's phone number is required to be returned as part of the
      * billing address and shipping address, {@code false} otherwise.
      */
-    public void phoneNumberRequired(boolean phoneNumberRequired) {
+    public void setPhoneNumberRequired(boolean phoneNumberRequired) {
         mPhoneNumberRequired = phoneNumberRequired;
     }
 
@@ -80,7 +80,7 @@ public class GooglePayRequest implements Parcelable {
      * @param billingAddressRequired {@code true} if the buyer's billing address is required to be returned,
      * {@code false} otherwise.
      */
-    public void billingAddressRequired(boolean billingAddressRequired) {
+    public void setBillingAddressRequired(boolean billingAddressRequired) {
         mBillingAddressRequired = billingAddressRequired;
     }
 
@@ -89,7 +89,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param billingAddressFormat the billing address format to return. {@link BillingAddressFormat}
      */
-    public void billingAddressFormat(@BillingAddressFormat int billingAddressFormat) {
+    public void setBillingAddressFormat(@BillingAddressFormat int billingAddressFormat) {
         mBillingAddressFormat = billingAddressFormat;
     }
 
@@ -99,7 +99,7 @@ public class GooglePayRequest implements Parcelable {
      * @param shippingAddressRequired {@code true} if the buyer's shipping address is required to be returned,
      * {@code false} otherwise.
      */
-    public void shippingAddressRequired(boolean shippingAddressRequired) {
+    public void setShippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
     }
 
@@ -108,7 +108,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param shippingAddressRequirements the shipping address requirements. {@link ShippingAddressRequirements}
      */
-    public void shippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
+    public void setShippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
         mShippingAddressRequirements = shippingAddressRequirements;
     }
 
@@ -117,7 +117,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param allowPrepaidCards {@code true} prepaid cards are allowed, {@code false} otherwise.
      */
-    public void allowPrepaidCards(boolean allowPrepaidCards) {
+    public void setAllowPrepaidCards(boolean allowPrepaidCards) {
         mAllowPrepaidCards = allowPrepaidCards;
     }
 
@@ -126,7 +126,7 @@ public class GooglePayRequest implements Parcelable {
      * Defaults to {@code true}.
      * @param enablePayPal {@code true} by default. Allows PayPal to be a payment method in Google Pay.
      */
-    public void paypalEnabled(boolean enablePayPal) {
+    public void setPayPalEnabled(boolean enablePayPal) {
         mPayPalEnabled = enablePayPal;
     }
 
@@ -169,18 +169,18 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @param merchantId The merchant ID that Google Pay has provided.
      */
-    public void googleMerchantId(String merchantId) {
+    public void setGoogleMerchantId(String merchantId) {
         mGoogleMerchantId = merchantId;
     }
 
     /**
      * @param merchantName The merchant name that will be presented in Google Pay
      */
-    public void googleMerchantName(String merchantName) {
+    public void setGoogleMerchantName(String merchantName) {
         mGoogleMerchantName = merchantName;
     }
 
-    public void environment(String environment) {
+    public void setEnvironment(String environment) {
         mEnvironment = "PRODUCTION".equals(environment.toUpperCase()) ? "PRODUCTION" : "TEST";
     }
 

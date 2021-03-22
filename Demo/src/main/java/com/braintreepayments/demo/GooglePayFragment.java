@@ -87,21 +87,21 @@ public class GooglePayFragment extends BaseFragment {
         activity.setProgressBarIndeterminateVisibility(true);
         getBraintreeClient(braintreeClient -> {
             GooglePayRequest googlePayRequest = new GooglePayRequest();
-                    googlePayRequest.transactionInfo(TransactionInfo.newBuilder()
+                    googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
                             .setCurrencyCode(Settings.getGooglePayCurrency(activity))
                             .setTotalPrice("1.00")
                             .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                             .build());
-                    googlePayRequest.allowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
-                    googlePayRequest.billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
-                    googlePayRequest.billingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
-                    googlePayRequest.emailRequired(Settings.isGooglePayEmailRequired(activity));
-                    googlePayRequest.phoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
-                    googlePayRequest.shippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
-                    googlePayRequest.shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
+                    googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
+                    googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+                    googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
+                    googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
+                    googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
+                    googlePayRequest.setShippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
+                    googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
                             .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                             .build());
-                    googlePayRequest.googleMerchantId(Settings.getGooglePayMerchantId(activity));
+                    googlePayRequest.setGoogleMerchantId(Settings.getGooglePayMerchantId(activity));
 
             googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
                 if (requestPaymentError != null) {
