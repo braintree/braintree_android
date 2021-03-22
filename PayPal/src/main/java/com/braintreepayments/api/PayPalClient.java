@@ -227,11 +227,11 @@ public class PayPalClient {
                     Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                     if (deepLinkUri != null) {
                         JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, successUrl, approvalUrl, tokenKey);
-                        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                                .clientMetadataId(clientMetadataId)
-                                .intent(payPalIntent)
-                                .source("paypal-browser")
-                                .urlResponseData(urlResponseData);
+                        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
+                        payPalAccountBuilder.clientMetadataId(clientMetadataId);
+                        payPalAccountBuilder.intent(payPalIntent);
+                        payPalAccountBuilder.source("paypal-browser");
+                        payPalAccountBuilder.urlResponseData(urlResponseData);
 
                         if (merchantAccountId != null) {
                             payPalAccountBuilder.merchantAccountId(merchantAccountId);

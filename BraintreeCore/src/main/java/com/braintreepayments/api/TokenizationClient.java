@@ -41,7 +41,7 @@ class TokenizationClient {
      *        to be created.
      * @param callback {@link PaymentMethodNonceCallback}
      */
-    <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    void tokenize(final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();
         if (braintreeClient == null) {
             return;
@@ -94,7 +94,7 @@ class TokenizationClient {
         });
     }
 
-    private static <T> void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath());
 

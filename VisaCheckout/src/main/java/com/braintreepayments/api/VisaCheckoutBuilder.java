@@ -8,7 +8,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a Visa Checkout tokenization request.
  */
-public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilder> {
+public class VisaCheckoutBuilder extends PaymentMethodBuilder {
     private static final String CALL_ID = "callId";
     private static final String ENCRYPTED_KEY = "encryptedKey";
     private static final String ENCRYPTED_PAYMENT_DATA = "encryptedPaymentData";

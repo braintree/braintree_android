@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Builder used to construct a PayPal account tokenization request
  */
-class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
+class PayPalAccountBuilder extends PaymentMethodBuilder {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
@@ -31,11 +31,9 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
      *
      * @param clientMetadataId Application clientMetadataId created by
      * {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
-     * @return {@link PayPalAccountBuilder}
      */
-    PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
+    public void clientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
-        return this;
     }
 
     /**
@@ -45,35 +43,29 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
      * Response data will be merged into the payment method json on {@link #build()}
      *
      * @param urlResponseData The data parsed from the PayPal callback url.
-     * @return {@link PayPalAccountBuilder}
      */
-    PayPalAccountBuilder urlResponseData(JSONObject urlResponseData) {
+   void urlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
             mUrlResponseData = urlResponseData;
         }
-        return this;
     }
 
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} or {@link PayPalCheckoutRequest#INTENT_SALE}.
-     * @return {@link PayPalAccountBuilder}
+     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
      */
-    PayPalAccountBuilder intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
+   void intent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
-        return this;
     }
 
     /**
      * Used to set a non-default merchant account id.
      *
      * @param merchantAccountId String merchant account id
-     * @return {@link PayPalAccountBuilder}
      */
-    PayPalAccountBuilder merchantAccountId(String merchantAccountId) {
+   void merchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
-        return this;
     }
 
     @Override

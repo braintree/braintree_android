@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a UnionPay card tokenization request.
  */
-public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> implements Parcelable {
+public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
 
     private static final String UNIONPAY_ENROLLMENT_KEY = "unionPayEnrollment";
     private static final String UNIONPAY_KEY = "creditCard";
@@ -28,66 +28,57 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
 
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder mobileCountryCode(String mobileCountryCode) {
+    public void mobileCountryCode(String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             mMobileCountryCode = null;
         } else {
             mMobileCountryCode = mobileCountryCode;
         }
-        return this;
     }
 
     /**
      * @param mobilePhoneNumber The mobile phone number to use when sending the auth code via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder mobilePhoneNumber(String mobilePhoneNumber) {
+    public void mobilePhoneNumber(String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
             mMobilePhoneNumber = null;
         } else {
             mMobilePhoneNumber = mobilePhoneNumber;
         }
-        return this;
     }
 
     /**
      * @param smsCode The auth code sent to the user via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder smsCode(String smsCode) {
+    public void smsCode(String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
             mSmsCode = null;
         } else {
             mSmsCode = smsCode;
         }
-        return this;
     }
 
     /**
      * @param enrollmentId The UnionPay enrollment ID
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder enrollmentId(String enrollmentId) {
+    public void enrollmentId(String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
             mEnrollmentId = null;
         } else {
             mEnrollmentId = enrollmentId;
         }
-        return this;
     }
 
     /**
      * @deprecated UnionPay enrollment performs validation. This value will not be used for UnionPay payment methods.
      *
      * @param validate Ignored
-     * @return {@link UnionPayCardBuilder}
      */
     @Deprecated
     @Override
-    public UnionPayCardBuilder validate(boolean validate) {
-        return this;
+    public void validate(boolean validate) {
+        // prevent validation for union pay methods
     }
 
     public JSONObject buildEnrollment() throws JSONException {

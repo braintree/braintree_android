@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Base builder class used to build various types of cards
  */
-public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> implements Parcelable {
+public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Parcelable {
 
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
@@ -49,66 +49,52 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
 
     /**
      * @param number The card number.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T cardNumber(String number) {
+    public void cardNumber(String number) {
         if (TextUtils.isEmpty(number)) {
             mCardnumber = null;
         } else {
             mCardnumber = number;
         }
-        return (T) this;
     }
 
     /**
      * @param cvv The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T cvv(String cvv) {
+    public void cvv(String cvv) {
         if (TextUtils.isEmpty(cvv)) {
             mCvv = null;
         } else {
             mCvv = cvv;
         }
-        return (T) this;
     }
 
     /**
      * @param expirationMonth The expiration month of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T expirationMonth(String expirationMonth) {
+    public void expirationMonth(String expirationMonth) {
         if (TextUtils.isEmpty(expirationMonth)) {
             mExpirationMonth = null;
         } else {
             mExpirationMonth = expirationMonth;
         }
-        return (T) this;
     }
 
     /**
      * @param expirationYear The expiration year of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T expirationYear(String expirationYear) {
+    public void expirationYear(String expirationYear) {
         if (TextUtils.isEmpty(expirationYear)) {
             mExpirationYear = null;
         } else {
             mExpirationYear = expirationYear;
         }
-        return (T) this;
     }
 
     /**
      * @param expirationDate The expiration date of the card. May be in the form MM/YY or MM/YYYY.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T expirationDate(String expirationDate) {
+    public void expirationDate(String expirationDate) {
         if (TextUtils.isEmpty(expirationDate)) {
             mExpirationMonth = null;
             mExpirationYear = null;
@@ -121,147 +107,116 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
                 mExpirationYear = splitExpiration[1];
             }
         }
-        return (T) this;
     }
 
     /**
      * @param cardholderName Name on the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T cardholderName(String cardholderName) {
+    public void cardholderName(String cardholderName) {
         if (TextUtils.isEmpty(cardholderName)) {
             mCardholderName = null;
         } else {
             mCardholderName = cardholderName;
         }
-        return (T) this;
     }
 
     /**
      * @param firstName First name on the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T firstName(String firstName) {
+    public void firstName(String firstName) {
         if (TextUtils.isEmpty(firstName)) {
             mFirstName = null;
         } else {
             mFirstName = firstName;
         }
-        return (T) this;
     }
 
     /**
      * @param lastName Last name on the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T lastName(String lastName) {
+    public void lastName(String lastName) {
         if (TextUtils.isEmpty(lastName)) {
             mLastName = null;
         } else {
             mLastName = lastName;
         }
-        return (T) this;
     }
 
     /**
      * @param company Company associated with the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T company(String company) {
+    public void company(String company) {
         if (TextUtils.isEmpty(company)) {
             mCompany = null;
         } else {
             mCompany = company;
         }
-        return (T) this;
     }
 
     /**
      * @param countryCode The ISO 3166-1 alpha-3 country code specified in the card's billing address.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T countryCode(String countryCode) {
+    public void countryCode(String countryCode) {
         if (TextUtils.isEmpty(countryCode)) {
             mCountryCode = null;
         } else {
             mCountryCode = countryCode;
         }
-        return (T) this;
     }
 
     /**
      * @param locality Locality of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T locality(String locality) {
+    public void locality(String locality) {
         if (TextUtils.isEmpty(locality)) {
             mLocality = null;
         } else {
             mLocality = locality;
         }
-        return (T) this;
     }
 
     /**
      * @param postalCode Postal code of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T postalCode(String postalCode) {
+    public void postalCode(String postalCode) {
         if (TextUtils.isEmpty(postalCode)) {
             mPostalCode = null;
         } else {
             mPostalCode = postalCode;
         }
-        return (T) this;
     }
 
     /**
      * @param region Region of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T region(String region) {
+    public void region(String region) {
         if (TextUtils.isEmpty(region)) {
             mRegion = null;
         } else {
             mRegion = region;
         }
-        return (T) this;
     }
 
     /**
      * @param streetAddress Street address of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T streetAddress(String streetAddress) {
+    public void streetAddress(String streetAddress) {
         if (TextUtils.isEmpty(streetAddress)) {
             mStreetAddress = null;
         } else {
             mStreetAddress = streetAddress;
         }
-        return (T) this;
     }
 
     /**
      * @param extendedAddress  address of the card.
-     * @return {@link BaseCardBuilder}
      */
-    @SuppressWarnings("unchecked")
-    public T extendedAddress(String extendedAddress) {
+    public void extendedAddress(String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
             mExtendedAddress = null;
         } else {
             mExtendedAddress = extendedAddress;
         }
-        return (T) this;
     }
 
     @Override

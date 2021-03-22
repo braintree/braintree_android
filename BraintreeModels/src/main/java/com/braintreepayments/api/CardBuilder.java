@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a card tokenization request.
  */
-public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcelable {
+public class CardBuilder extends BaseCardBuilder implements Parcelable {
 
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
@@ -65,20 +65,16 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
 
     /**
      * @param id The merchant account id used to generate the authentication insight.
-     * @return {@link CardBuilder}
      */
-    public CardBuilder merchantAccountId(String id) {
+    public void merchantAccountId(String id) {
         mMerchantAccountId = TextUtils.isEmpty(id) ? null : id;
-        return this;
     }
 
     /**
      * @param requested If authentication insight will be requested.
-     * @return {@link CardBuilder}
      */
-    public CardBuilder authenticationInsightRequested(boolean requested) {
+    public void authenticationInsightRequested(boolean requested) {
         mAuthenticationInsightRequested = requested;
-        return this;
     }
 
     @Override
