@@ -58,28 +58,29 @@ class PostalAddressParser {
             return fromUserAddressJson(accountAddress);
         }
 
-        return new PostalAddress().recipientName(Json.optString(accountAddress, RECIPIENT_NAME_KEY, null))
-                .streetAddress(streetAddress)
-                .extendedAddress(extendedAddress)
-                .locality(Json.optString(accountAddress, LOCALITY_KEY, null))
-                .region(Json.optString(accountAddress, REGION_KEY, null))
-                .postalCode(Json.optString(accountAddress, POSTAL_CODE_KEY, null))
-                .countryCodeAlpha2(countryCodeAlpha2);
+        PostalAddress result = new PostalAddress();
+        result.recipientName(Json.optString(accountAddress, RECIPIENT_NAME_KEY, null));
+        result.streetAddress(streetAddress);
+        result.extendedAddress(extendedAddress);
+        result.locality(Json.optString(accountAddress, LOCALITY_KEY, null));
+        result.region(Json.optString(accountAddress, REGION_KEY, null));
+        result.postalCode(Json.optString(accountAddress, POSTAL_CODE_KEY, null));
+        result.countryCodeAlpha2(countryCodeAlpha2);
+
+        return result;
     }
 
     static PostalAddress fromUserAddressJson(JSONObject json) {
         PostalAddress address = new PostalAddress();
-
-        address
-                .recipientName(Json.optString(json, USER_ADDRESS_NAME_KEY, ""))
-                .phoneNumber(Json.optString(json, USER_ADDRESS_PHONE_NUMBER_KEY, ""))
-                .streetAddress(Json.optString(json, USER_ADDRESS_ADDRESS_1_KEY, ""))
-                .extendedAddress(formatExtendedUserAddress(json))
-                .locality(Json.optString(json, USER_ADDRESS_LOCALITY_KEY, ""))
-                .region(Json.optString(json, USER_ADDRESS_ADMINISTRATIVE_AREA_KEY, ""))
-                .countryCodeAlpha2(Json.optString(json, USER_ADDRESS_COUNTRY_CODE_KEY, ""))
-                .postalCode(Json.optString(json, USER_ADDRESS_POSTAL_CODE_KEY, ""))
-                .sortingCode(Json.optString(json, USER_ADDRESS_SORTING_CODE_KEY, ""));
+        address.recipientName(Json.optString(json, USER_ADDRESS_NAME_KEY, ""));
+        address.phoneNumber(Json.optString(json, USER_ADDRESS_PHONE_NUMBER_KEY, ""));
+        address.streetAddress(Json.optString(json, USER_ADDRESS_ADDRESS_1_KEY, ""));
+        address.extendedAddress(formatExtendedUserAddress(json));
+        address.locality(Json.optString(json, USER_ADDRESS_LOCALITY_KEY, ""));
+        address.region(Json.optString(json, USER_ADDRESS_ADMINISTRATIVE_AREA_KEY, ""));
+        address.countryCodeAlpha2(Json.optString(json, USER_ADDRESS_COUNTRY_CODE_KEY, ""));
+        address.postalCode(Json.optString(json, USER_ADDRESS_POSTAL_CODE_KEY, ""));
+        address.sortingCode(Json.optString(json, USER_ADDRESS_SORTING_CODE_KEY, ""));
 
         return address;
     }
