@@ -16,13 +16,14 @@ public class LocalPaymentRequestUnitTest {
 
     @Test
     public void build_setsAllParams() throws JSONException {
-        PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
-                .extendedAddress("Apt 2")
-                .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .region("CA")
-                .postalCode("2585 GJ");
+        PostalAddress address = new PostalAddress();
+        address.streetAddress("836486 of 22321 Park Lake");
+        address.extendedAddress("Apt 2");
+        address.countryCodeAlpha2("NL");
+        address.locality("Den Haag");
+        address.region("CA");
+        address.postalCode("2585 GJ");
+
         LocalPaymentRequest request = new LocalPaymentRequest()
                 .paymentType("ideal")
                 .amount("1.10")

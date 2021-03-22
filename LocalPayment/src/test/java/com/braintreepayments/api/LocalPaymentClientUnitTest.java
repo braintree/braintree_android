@@ -567,13 +567,13 @@ public class LocalPaymentClientUnitTest {
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
-        PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
-                .extendedAddress("Apt 2")
-                .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .region("CA")
-                .postalCode("2585 GJ");
+        PostalAddress address = new PostalAddress();
+        address.streetAddress("836486 of 22321 Park Lake");
+        address.extendedAddress("Apt 2");
+        address.countryCodeAlpha2("NL");
+        address.locality("Den Haag");
+        address.region("CA");
+        address.postalCode("2585 GJ");
         return new LocalPaymentRequest()
                 .paymentType("ideal")
                 .amount("1.10")
