@@ -390,7 +390,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         billingAddress.countryCodeAlpha2("US");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
-        additionalInformation.accountId("account-id");
+        additionalInformation.setAccountId("account-id");
 
         ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
