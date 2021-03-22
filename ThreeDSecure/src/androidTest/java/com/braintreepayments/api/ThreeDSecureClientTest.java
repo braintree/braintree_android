@@ -55,8 +55,8 @@ public class ThreeDSecureClientTest {
                 String nonce = paymentMethodNonce.getNonce();
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(nonce);
-                request.amount("5");
+                request.setNonce(nonce);
+                request.setAmount("5");
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override

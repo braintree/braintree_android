@@ -51,13 +51,13 @@ public class ThreeDSecureV1UnitTest {
                 .buildConfiguration();
 
         mThreeDSecureRequest = new ThreeDSecureRequest();
-        mThreeDSecureRequest.versionRequested(ThreeDSecureRequest.VERSION_1);
-        mThreeDSecureRequest.nonce("a-nonce");
-        mThreeDSecureRequest.amount("amount");
+        mThreeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_1);
+        mThreeDSecureRequest.setNonce("a-nonce");
+        mThreeDSecureRequest.setAmount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
-        mThreeDSecureRequest.billingAddress(billingAddress);
+        mThreeDSecureRequest.setBillingAddress(billingAddress);
 
         mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
         mThreeDSecureResult = ThreeDSecureResult.fromJson(mThreeDSecureLookupResponse);

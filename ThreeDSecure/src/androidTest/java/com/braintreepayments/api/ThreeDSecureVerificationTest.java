@@ -57,8 +57,8 @@ public class ThreeDSecureVerificationTest {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(paymentMethodNonce.getNonce());
-                request.amount(TEST_AMOUNT);
+                request.setNonce(paymentMethodNonce.getNonce());
+                request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
@@ -103,8 +103,8 @@ public class ThreeDSecureVerificationTest {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(paymentMethodNonce.getNonce());
-                request.amount(TEST_AMOUNT);
+                request.setNonce(paymentMethodNonce.getNonce());
+                request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
@@ -147,8 +147,8 @@ public class ThreeDSecureVerificationTest {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(paymentMethodNonce.getNonce());
-                request.amount(TEST_AMOUNT);
+                request.setNonce(paymentMethodNonce.getNonce());
+                request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
@@ -185,8 +185,8 @@ public class ThreeDSecureVerificationTest {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(paymentMethodNonce.getNonce());
-                request.amount(TEST_AMOUNT);
+                request.setNonce(paymentMethodNonce.getNonce());
+                request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
@@ -231,8 +231,8 @@ public class ThreeDSecureVerificationTest {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.nonce(paymentMethodNonce.getNonce());
-                request.amount(TEST_AMOUNT);
+                request.setNonce(paymentMethodNonce.getNonce());
+                request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override

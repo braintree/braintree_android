@@ -50,12 +50,12 @@ public class ThreeDSecureClientUnitTest {
                 .buildConfiguration();
 
         basicRequest = new ThreeDSecureRequest();
-        basicRequest.nonce("a-nonce");
-        basicRequest.amount("amount");
+        basicRequest.setNonce("a-nonce");
+        basicRequest.setAmount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
-        basicRequest.billingAddress(billingAddress);
+        basicRequest.setBillingAddress(billingAddress);
     }
 
     @Test
@@ -87,13 +87,13 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.nonce("a-nonce");
-        request.versionRequested(ThreeDSecureRequest.VERSION_2);
-        request.amount("amount");
+        request.setNonce("a-nonce");
+        request.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        request.setAmount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
-        request.billingAddress(billingAddress);
+        request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, request, threeDSecureResultCallback);
@@ -120,13 +120,13 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.nonce("a-nonce");
-        request.versionRequested(ThreeDSecureRequest.VERSION_2);
-        request.amount("amount");
+        request.setNonce("a-nonce");
+        request.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        request.setAmount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
-        request.billingAddress(billingAddress);
+        request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, request, threeDSecureResultCallback);
@@ -150,13 +150,13 @@ public class ThreeDSecureClientUnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.nonce("a-nonce");
-        request.versionRequested(ThreeDSecureRequest.VERSION_2);
-        request.amount("amount");
+        request.setNonce("a-nonce");
+        request.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        request.setAmount("amount");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
-        request.billingAddress(billingAddress);
+        request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
@@ -176,7 +176,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.amount("5");
+        request.setAmount("5");
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);

@@ -407,14 +407,14 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         v1UiCustomization.setRedirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
-        threeDSecureRequest.amount("10");
-        threeDSecureRequest.email("test@email.com");
-        threeDSecureRequest.billingAddress(billingAddress);
-        threeDSecureRequest.nonce(cardNonce.getNonce());
-        threeDSecureRequest.versionRequested(ThreeDSecureRequest.VERSION_2);
-        threeDSecureRequest.additionalInformation(additionalInformation);
-        threeDSecureRequest.v2UiCustomization(v2UiCustomization);
-        threeDSecureRequest.v1UiCustomization(v1UiCustomization);
+        threeDSecureRequest.setAmount("10");
+        threeDSecureRequest.setEmail("test@email.com");
+        threeDSecureRequest.setBillingAddress(billingAddress);
+        threeDSecureRequest.setNonce(cardNonce.getNonce());
+        threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        threeDSecureRequest.setAdditionalInformation(additionalInformation);
+        threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
+        threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
 
         return threeDSecureRequest;
     }

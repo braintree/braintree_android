@@ -54,10 +54,10 @@ public class ThreeDSecureV2UnitTest {
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
 
         mBasicRequest = new ThreeDSecureRequest();
-        mBasicRequest.nonce("a-nonce");
-        mBasicRequest.amount("1.00");
-        mBasicRequest.versionRequested(ThreeDSecureRequest.VERSION_2);
-        mBasicRequest.v2UiCustomization(v2UiCustomization);
+        mBasicRequest.setNonce("a-nonce");
+        mBasicRequest.setAmount("1.00");
+        mBasicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        mBasicRequest.setV2UiCustomization(v2UiCustomization);
     }
 
     @Test
