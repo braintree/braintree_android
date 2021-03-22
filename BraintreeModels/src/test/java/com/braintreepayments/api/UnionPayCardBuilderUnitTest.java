@@ -67,7 +67,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void mobileCountryCode_addsToJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.mobileCountryCode("1");
+        sut.setMobileCountryCode("1");
 
         assertEquals("1", sut.buildEnrollment()
                 .getJSONObject("unionPayEnrollment")
@@ -77,7 +77,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void mobilePhoneNumber_addsToJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.mobilePhoneNumber("867-5309");
+        sut.setMobilePhoneNumber("867-5309");
 
         assertEquals("867-5309", sut.buildEnrollment()
                 .getJSONObject("unionPayEnrollment")
@@ -87,7 +87,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void smsCode_addsToOptionsJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.smsCode("mySmsCode");
+        sut.setSmsCode("mySmsCode");
 
         JSONObject jsonObject = new JSONObject(sut.buildJSON());
         assertEquals("mySmsCode", jsonObject.getJSONObject("creditCard")
@@ -99,7 +99,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void enrollmentId_addsToOptionsJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.enrollmentId("myEnrollmentId");
+        sut.setEnrollmentId("myEnrollmentId");
 
         JSONObject jsonObject = new JSONObject(sut.buildJSON());
         assertEquals("myEnrollmentId", jsonObject.getJSONObject("creditCard")
@@ -124,10 +124,10 @@ public class UnionPayCardBuilderUnitTest {
         sut.setLocality("");
         sut.setPostalCode("");
         sut.setRegion("");
-        sut.enrollmentId("");
-        sut.mobileCountryCode("");
-        sut.mobilePhoneNumber("");
-        sut.smsCode("");
+        sut.setEnrollmentId("");
+        sut.setMobileCountryCode("");
+        sut.setMobilePhoneNumber("");
+        sut.setSmsCode("");
 
         assertEquals("{\"options\":{\"unionPayEnrollment\":{}}}",
                 new JSONObject(sut.buildJSON()).getJSONObject(CREDIT_CARD_KEY).toString());
@@ -138,13 +138,13 @@ public class UnionPayCardBuilderUnitTest {
     public void buildEnrollment_createsUnionPayEnrollmentJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
         sut.setCVV("123");
-        sut.enrollmentId("enrollment-id");
+        sut.setEnrollmentId("enrollment-id");
         sut.setExpirationYear("expiration-year");
         sut.setExpirationMonth("expiration-month");
         sut.setCardNumber("card-number");
-        sut.mobileCountryCode("mobile-country-code");
-        sut.mobilePhoneNumber("mobile-phone-number");
-        sut.smsCode("sms-code");
+        sut.setMobileCountryCode("mobile-country-code");
+        sut.setMobilePhoneNumber("mobile-phone-number");
+        sut.setSmsCode("sms-code");
         sut.setIntegration("integration");
         sut.setSessionId("session-id");
         sut.setSource("source");
@@ -163,13 +163,13 @@ public class UnionPayCardBuilderUnitTest {
     public void build_createsUnionPayTokenizeJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
         sut.setCVV("123");
-        sut.enrollmentId("enrollment-id");
+        sut.setEnrollmentId("enrollment-id");
         sut.setExpirationYear("expiration-year");
         sut.setExpirationMonth("expiration-month");
         sut.setCardNumber("card-number");
-        sut.mobileCountryCode("mobile-country-code");
-        sut.mobilePhoneNumber("mobile-phone-number");
-        sut.smsCode("sms-code");
+        sut.setMobileCountryCode("mobile-country-code");
+        sut.setMobilePhoneNumber("mobile-phone-number");
+        sut.setSmsCode("sms-code");
         sut.setIntegration("integration");
         sut.setSessionId("session-id");
         sut.setSource("source");
@@ -214,8 +214,8 @@ public class UnionPayCardBuilderUnitTest {
         sut.setExpirationMonth("expirationMonth");
         sut.setExpirationYear("expirationYear");
         sut.setCVV("cvv");
-        sut.enrollmentId("enrollmentId");
-        sut.smsCode("smsCode");
+        sut.setEnrollmentId("enrollmentId");
+        sut.setSmsCode("smsCode");
         sut.setValidate(true);
 
         String result = sut.buildJSON();
@@ -241,7 +241,7 @@ public class UnionPayCardBuilderUnitTest {
         sut.setExpirationMonth("expirationMonth");
         sut.setExpirationYear("expirationYear");
         sut.setCVV("cvv");
-        sut.enrollmentId("enrollmentId");
+        sut.setEnrollmentId("enrollmentId");
         sut.setValidate(true);
 
         String result = sut.buildJSON();
@@ -276,8 +276,8 @@ public class UnionPayCardBuilderUnitTest {
         sut.setCardNumber("someCardNumber");
         sut.setExpirationMonth("expirationMonth");
         sut.setExpirationYear("expirationYear");
-        sut.mobileCountryCode("mobileCountryCode");
-        sut.mobilePhoneNumber("mobilePhoneNumber");
+        sut.setMobileCountryCode("mobileCountryCode");
+        sut.setMobilePhoneNumber("mobilePhoneNumber");
 
         JSONObject result = new JSONObject(sut.buildEnrollment().toString());
         JSONObject unionPayEnrollment = result.getJSONObject("unionPayEnrollment");

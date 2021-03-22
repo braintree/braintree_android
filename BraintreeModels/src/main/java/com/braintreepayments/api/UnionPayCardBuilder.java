@@ -29,7 +29,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
      */
-    public void mobileCountryCode(String mobileCountryCode) {
+    public void setMobileCountryCode(String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             mMobileCountryCode = null;
         } else {
@@ -40,7 +40,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     /**
      * @param mobilePhoneNumber The mobile phone number to use when sending the auth code via SMS.
      */
-    public void mobilePhoneNumber(String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
             mMobilePhoneNumber = null;
         } else {
@@ -51,7 +51,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     /**
      * @param smsCode The auth code sent to the user via SMS.
      */
-    public void smsCode(String smsCode) {
+    public void setSmsCode(String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
             mSmsCode = null;
         } else {
@@ -62,7 +62,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder implements Parcelable {
     /**
      * @param enrollmentId The UnionPay enrollment ID
      */
-    public void enrollmentId(String enrollmentId) {
+    public void setEnrollmentId(String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
             mEnrollmentId = null;
         } else {

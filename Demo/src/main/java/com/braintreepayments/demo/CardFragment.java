@@ -245,8 +245,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
         unionPayCardBuilder.setCVV(mCardForm.getCvv());
         unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
-        unionPayCardBuilder.mobileCountryCode(mCardForm.getCountryCode());
-        unionPayCardBuilder.mobilePhoneNumber(mCardForm.getMobileNumber());
+        unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
+        unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
 
         unionPayClient.enroll(unionPayCardBuilder, (enrollment, error) -> {
             mEnrollmentId = enrollment.getId();
@@ -272,10 +272,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
             unionPayCardBuilder.setCVV(mCardForm.getCvv());
             unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
-            unionPayCardBuilder.mobileCountryCode(mCardForm.getCountryCode());
-            unionPayCardBuilder.mobilePhoneNumber(mCardForm.getMobileNumber());
-            unionPayCardBuilder.smsCode(mSmsCode.getText().toString());
-            unionPayCardBuilder.enrollmentId(mEnrollmentId);
+            unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
+            unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
+            unionPayCardBuilder.setSmsCode(mSmsCode.getText().toString());
+            unionPayCardBuilder.setEnrollmentId(mEnrollmentId);
 
             unionPayClient.tokenize(unionPayCardBuilder, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {

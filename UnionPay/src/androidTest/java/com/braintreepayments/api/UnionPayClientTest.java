@@ -217,8 +217,8 @@ public class UnionPayClientTest {
             @Override
             public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                 assertTrue(enrollment.isSmsCodeRequired());
-                cardBuilder.enrollmentId(enrollment.getId());
-                cardBuilder.smsCode("12345");
+                cardBuilder.setEnrollmentId(enrollment.getId());
+                cardBuilder.setSmsCode("12345");
 
                 unionPayClient.tokenize(cardBuilder, new UnionPayTokenizeCallback() {
                     @Override
@@ -249,8 +249,8 @@ public class UnionPayClientTest {
             @Override
             public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                 assertTrue(enrollment.isSmsCodeRequired());
-                cardBuilder.enrollmentId(enrollment.getId());
-                cardBuilder.smsCode("12345");
+                cardBuilder.setEnrollmentId(enrollment.getId());
+                cardBuilder.setSmsCode("12345");
 
                 unionPayClient.tokenize(cardBuilder, new UnionPayTokenizeCallback() {
                     @Override

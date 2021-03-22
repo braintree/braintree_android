@@ -133,7 +133,7 @@ public class UnionPayClient {
 
     /**
      * Create a {@link CardNonce}. Note that if the card is a UnionPay card,
-     * {@link UnionPayCardBuilder#enrollmentId(String)} and {@link UnionPayCardBuilder#smsCode(String)}
+     * {@link UnionPayCardBuilder#setEnrollmentId(String)} and {@link UnionPayCardBuilder#setSmsCode(String)}
      * need to be set for tokenization to succeed.
      * <p>
      * On completion, returns the {@link CardNonce} to {@link UnionPayTokenizeCallback#onResult(CardNonce, Exception)}
