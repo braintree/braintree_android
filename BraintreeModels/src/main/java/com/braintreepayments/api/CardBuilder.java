@@ -66,14 +66,14 @@ public class CardBuilder extends BaseCardBuilder implements Parcelable {
     /**
      * @param id The merchant account id used to generate the authentication insight.
      */
-    public void merchantAccountId(String id) {
+    public void setMerchantAccountId(String id) {
         mMerchantAccountId = TextUtils.isEmpty(id) ? null : id;
     }
 
     /**
      * @param requested If authentication insight will be requested.
      */
-    public void authenticationInsightRequested(boolean requested) {
+    public void setAuthenticationInsightRequested(boolean requested) {
         mAuthenticationInsightRequested = requested;
     }
 

@@ -103,8 +103,8 @@ public class CardBuilderUnitTest {
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
         cardBuilder.setSessionId("test-session-id");
-        cardBuilder.merchantAccountId("merchant-account-id");
-        cardBuilder.authenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId("merchant-account-id");
+        cardBuilder.setAuthenticationInsightRequested(true);
 
         JSONObject json = new JSONObject(cardBuilder.buildJSON());
         JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
@@ -254,8 +254,8 @@ public class CardBuilderUnitTest {
     @Test
     public void build_whenAuthenticationInsightRequestedIsTrue_requestsAuthenticationInsight() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.authenticationInsightRequested(true);
-        cardBuilder.merchantAccountId("merchant_account_id");
+        cardBuilder.setAuthenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId("merchant_account_id");
 
         JSONObject json = new JSONObject(cardBuilder.buildJSON());
 
@@ -266,7 +266,7 @@ public class CardBuilderUnitTest {
     @Test
     public void build_whenAuthenticationInsightRequestedIsFalse_doesNotRequestsAuthenticationInsight() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.authenticationInsightRequested(false);
+        cardBuilder.setAuthenticationInsightRequested(false);
 
         JSONObject json = new JSONObject(cardBuilder.buildJSON());
 
@@ -294,8 +294,8 @@ public class CardBuilderUnitTest {
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
         cardBuilder.setSessionId("test-session-id");
-        cardBuilder.merchantAccountId("merchant-account-id");
-        cardBuilder.authenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId("merchant-account-id");
+        cardBuilder.setAuthenticationInsightRequested(true);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
@@ -488,8 +488,8 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsTrue_requestsAuthInsight() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.merchantAccountId("merchant-account-id");
-        cardBuilder.authenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId("merchant-account-id");
+        cardBuilder.setAuthenticationInsightRequested(true);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
@@ -503,8 +503,8 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.merchantAccountId("merchant-account-id");
-        cardBuilder.authenticationInsightRequested(false);
+        cardBuilder.setMerchantAccountId("merchant-account-id");
+        cardBuilder.setAuthenticationInsightRequested(false);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
@@ -517,8 +517,8 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsTrue_throwsException() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.merchantAccountId(null);
-        cardBuilder.authenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId(null);
+        cardBuilder.setAuthenticationInsightRequested(true);
 
         exceptionRule.expect(BraintreeException.class);
         exceptionRule.expectMessage("A merchant account ID is required when authenticationInsightRequested is true.");
@@ -528,8 +528,8 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.merchantAccountId(null);
-        cardBuilder.authenticationInsightRequested(false);
+        cardBuilder.setMerchantAccountId(null);
+        cardBuilder.setAuthenticationInsightRequested(false);
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
@@ -582,8 +582,8 @@ public class CardBuilderUnitTest {
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
         cardBuilder.setSessionId("test-session-id");
-        cardBuilder.merchantAccountId("merchant-account-id");
-        cardBuilder.authenticationInsightRequested(true);
+        cardBuilder.setMerchantAccountId("merchant-account-id");
+        cardBuilder.setAuthenticationInsightRequested(true);
 
         Parcel parcel = Parcel.obtain();
         cardBuilder.writeToParcel(parcel, 0);
