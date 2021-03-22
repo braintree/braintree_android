@@ -81,11 +81,11 @@ public class AmericanExpressActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder();
-    cardBuilder.setCardNumber("378282246310005");
-    cardBuilder.setExpirationDate("12/2022");
+    Card card = new Card();
+    card.setCardNumber("378282246310005");
+    card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
+    cardClient.tokenize(this, card, (cardNonce, error) -> {
       if (cardNonce != null) {
         getAmexRewardsBalance(cardNonce);
       } else {
@@ -140,11 +140,11 @@ public class CardActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder();
-    cardBuilder.setCardNumber("4111111111111111");
-    cardBuilder.setExpirationDate("12/2022");
+    Card card = new Card();
+    card.setCardNumber("4111111111111111");
+    card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
+    cardClient.tokenize(this, card, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
         String nonce = cardNonce.getNonce();
@@ -566,24 +566,24 @@ public class UnionPayActivity extends AppCompatActivity {
   }
 
   private void enrollUnionPay() {
-    UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
-    unionPayCardBuilder.setCardNumber("4111111111111111");
-    unionPayCardBuilder.setExpirationMonth("12");
-    unionPayCardBuilder.setExpirationYear("22");
-    unionPayCardBuilder.setCvv("123");
-    unionPayCardBuilder.setPostalCode("12345");
-    unionPayCardBuilder.setMobileCountryCode("1");
-    unionPayCardBuilder.setMobilePhoneNumber("1234567890");
+    UnionPayCard unionPayCard = new UnionPayCard();
+    unionPayCard.setCardNumber("4111111111111111");
+    unionPayCard.setExpirationMonth("12");
+    unionPayCard.setExpirationYear("22");
+    unionPayCard.setCvv("123");
+    unionPayCard.setPostalCode("12345");
+    unionPayCard.setMobileCountryCode("1");
+    unionPayCard.setMobilePhoneNumber("1234567890");
 
-    unionPayClient.enroll(unionPayCardBuilder, (enrollment, error) -> {
-      unionPayCardBuilder.setSmsCode("1234");
-      unionPayCardBuilder.setEnrollmentId(enrollment.getId());
-      tokenizeUnionPayMethod(unionPayCardBuilder);
+    unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
+      unionPayCard.setSmsCode("1234");
+      unionPayCard.setEnrollmentId(enrollment.getId());
+      tokenizeUnionPayMethod(unionPayCard);
     });
   }
 
-  private tokenizeUnionPay(UnionPayCardBuilder unionPayCardBuilder) {
-    unionPayClient.tokenize(unionPayCardBuilder, (cardNonce, error) -> {
+  private tokenizeUnionPay(UnionPayCard unionPayCard) {
+    unionPayClient.tokenize(unionPayCard, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
         String nonce = cardNonce.getNonce();
@@ -730,11 +730,11 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder();
-    cardBuilder.setCardNumber("378282246310005");
-    cardBuilder.setExpirationDate("12/2022"); 
+    Card card = new Card();
+    card.setCardNumber("378282246310005");
+    card.setExpirationDate("12/2022"); 
 
-    cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
+    cardClient.tokenize(this, card, (cardNonce, error) -> {
       if (cardNonce != null) {
         performThreeDSecureVerification(cardNonce);
       } else {
