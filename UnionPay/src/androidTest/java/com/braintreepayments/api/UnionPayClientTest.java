@@ -121,7 +121,7 @@ public class UnionPayClientTest {
     public void enroll_whenIsUnionPay_returnsEnrollmentId() throws InterruptedException {
         String cardNumber = UNIONPAY_CREDIT;
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .cardNumber(cardNumber)
+                .setCardNumber(cardNumber)
                 .expirationMonth("12")
                 .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
@@ -149,7 +149,7 @@ public class UnionPayClientTest {
     public void enroll_whenIsUnionPayFalse_willError() throws InterruptedException {
         String cardNumber = CardNumber.VISA;
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .cardNumber(cardNumber)
+                .setCardNumber(cardNumber)
                 .expirationMonth("12")
                 .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
@@ -177,7 +177,7 @@ public class UnionPayClientTest {
     public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
         String cardNumber = UNIONPAY_SMS_NOT_REQUIRED;
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .cardNumber(cardNumber)
+                .setCardNumber(cardNumber)
                 .expirationMonth("12")
                 .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
@@ -207,7 +207,7 @@ public class UnionPayClientTest {
     @Test(timeout = 10000)
     public void tokenize_unionPayCredit_withExpirationDate() throws InterruptedException {
         final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
-                .cardNumber(CardNumber.UNIONPAY_CREDIT)
+                .setCardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationDate("08/20")
                 .cvv("123")
                 .mobileCountryCode("62")
@@ -238,7 +238,7 @@ public class UnionPayClientTest {
     @Test(timeout = 30000)
     public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InterruptedException {
         final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
-                .cardNumber(CardNumber.UNIONPAY_CREDIT)
+                .setCardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationMonth("08")
                 .expirationYear("20")
                 .cvv("123")

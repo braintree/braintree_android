@@ -50,7 +50,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param number The card number.
      */
-    public void cardNumber(String number) {
+    public void setCardNumber(String number) {
         if (TextUtils.isEmpty(number)) {
             mCardnumber = null;
         } else {
@@ -61,7 +61,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param cvv The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
      */
-    public void cvv(String cvv) {
+    public void setCVV(String cvv) {
         if (TextUtils.isEmpty(cvv)) {
             mCvv = null;
         } else {
@@ -72,7 +72,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param expirationMonth The expiration month of the card.
      */
-    public void expirationMonth(String expirationMonth) {
+    public void setExpirationMonth(String expirationMonth) {
         if (TextUtils.isEmpty(expirationMonth)) {
             mExpirationMonth = null;
         } else {
@@ -83,7 +83,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param expirationYear The expiration year of the card.
      */
-    public void expirationYear(String expirationYear) {
+    public void setExpirationYear(String expirationYear) {
         if (TextUtils.isEmpty(expirationYear)) {
             mExpirationYear = null;
         } else {
@@ -94,7 +94,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param expirationDate The expiration date of the card. May be in the form MM/YY or MM/YYYY.
      */
-    public void expirationDate(String expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         if (TextUtils.isEmpty(expirationDate)) {
             mExpirationMonth = null;
             mExpirationYear = null;
@@ -112,7 +112,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param cardholderName Name on the card.
      */
-    public void cardholderName(String cardholderName) {
+    public void setCardholderName(String cardholderName) {
         if (TextUtils.isEmpty(cardholderName)) {
             mCardholderName = null;
         } else {
@@ -123,7 +123,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param firstName First name on the card.
      */
-    public void firstName(String firstName) {
+    public void setFirstName(String firstName) {
         if (TextUtils.isEmpty(firstName)) {
             mFirstName = null;
         } else {
@@ -134,7 +134,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param lastName Last name on the card.
      */
-    public void lastName(String lastName) {
+    public void setLastName(String lastName) {
         if (TextUtils.isEmpty(lastName)) {
             mLastName = null;
         } else {
@@ -145,7 +145,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param company Company associated with the card.
      */
-    public void company(String company) {
+    public void setCompany(String company) {
         if (TextUtils.isEmpty(company)) {
             mCompany = null;
         } else {
@@ -156,7 +156,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param countryCode The ISO 3166-1 alpha-3 country code specified in the card's billing address.
      */
-    public void countryCode(String countryCode) {
+    public void setCountryCode(String countryCode) {
         if (TextUtils.isEmpty(countryCode)) {
             mCountryCode = null;
         } else {
@@ -167,7 +167,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param locality Locality of the card.
      */
-    public void locality(String locality) {
+    public void setLocality(String locality) {
         if (TextUtils.isEmpty(locality)) {
             mLocality = null;
         } else {
@@ -178,7 +178,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param postalCode Postal code of the card.
      */
-    public void postalCode(String postalCode) {
+    public void setPostalCode(String postalCode) {
         if (TextUtils.isEmpty(postalCode)) {
             mPostalCode = null;
         } else {
@@ -189,7 +189,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param region Region of the card.
      */
-    public void region(String region) {
+    public void setRegion(String region) {
         if (TextUtils.isEmpty(region)) {
             mRegion = null;
         } else {
@@ -200,7 +200,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param streetAddress Street address of the card.
      */
-    public void streetAddress(String streetAddress) {
+    public void setStreetAddress(String streetAddress) {
         if (TextUtils.isEmpty(streetAddress)) {
             mStreetAddress = null;
         } else {
@@ -211,7 +211,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param extendedAddress  address of the card.
      */
-    public void extendedAddress(String extendedAddress) {
+    public void setExtendedAddress(String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
             mExtendedAddress = null;
         } else {

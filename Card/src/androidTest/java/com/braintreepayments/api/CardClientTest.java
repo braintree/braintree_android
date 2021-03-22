@@ -49,7 +49,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20");
 
         assertTokenizationSuccessful(authorization, cardBuilder);
@@ -61,7 +61,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20");
 
         assertTokenizationSuccessful(authorization, cardBuilder);
@@ -73,7 +73,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .validate(true);
 
@@ -86,7 +86,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .validate(false);
 
@@ -98,7 +98,7 @@ public class CardClientTest {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20");
 
         assertTokenizationSuccessful(TOKENIZATION_KEY, cardBuilder);
@@ -109,7 +109,7 @@ public class CardClientTest {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .validate(false);
 
@@ -121,7 +121,7 @@ public class CardClientTest {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .validate(true);
 
@@ -153,7 +153,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .cvv("123");
 
@@ -166,7 +166,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        CardBuilder cardBuilder = new CardBuilder().cvv("123");
+        CardBuilder cardBuilder = new CardBuilder().setCVV("123");
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
@@ -195,7 +195,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .cvv("200");
 
@@ -219,7 +219,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .cvv("123");
 
@@ -233,7 +233,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .postalCode("20000");
 
@@ -258,7 +258,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .countryCode("ABC");
 
@@ -283,7 +283,7 @@ public class CardClientTest {
         overrideConfigurationCache(authorization, requestProtocol);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationDate("08/20")
                 .cvv("123")
                 .cardholderName("Joe Smith")

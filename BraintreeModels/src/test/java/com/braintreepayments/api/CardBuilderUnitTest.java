@@ -85,20 +85,20 @@ public class CardBuilderUnitTest {
     @Test
     public void build_correctlyBuildsACard() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.cardNumber(VISA);
-        cardBuilder.expirationMonth("01");
-        cardBuilder.expirationYear("2015");
-        cardBuilder.cvv("123");
-        cardBuilder.cardholderName("Joe Smith");
-        cardBuilder.firstName("Joe");
-        cardBuilder.lastName("Smith");
-        cardBuilder.company("Company");
-        cardBuilder.streetAddress("1 Main St");
-        cardBuilder.extendedAddress("Unit 1");
-        cardBuilder.locality("Some Town");
-        cardBuilder.postalCode("12345");
-        cardBuilder.region("Some Region");
-        cardBuilder.countryCode("USA");
+        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setExpirationMonth("01");
+        cardBuilder.setExpirationYear("2015");
+        cardBuilder.setCVV("123");
+        cardBuilder.setCardholderName("Joe Smith");
+        cardBuilder.setFirstName("Joe");
+        cardBuilder.setLastName("Smith");
+        cardBuilder.setCompany("Company");
+        cardBuilder.setStreetAddress("1 Main St");
+        cardBuilder.setExtendedAddress("Unit 1");
+        cardBuilder.setLocality("Some Town");
+        cardBuilder.setPostalCode("12345");
+        cardBuilder.setRegion("Some Region");
+        cardBuilder.setCountryCode("USA");
         cardBuilder.setIntegration("test-integration");
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
@@ -140,7 +140,7 @@ public class CardBuilderUnitTest {
     @Test
     public void build_nestsAddressCorrectly() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.postalCode("60606");
+        cardBuilder.setPostalCode("60606");
 
         JSONObject billingAddress = new JSONObject(cardBuilder.buildJSON())
                 .getJSONObject(CREDIT_CARD_KEY).getJSONObject(BILLING_ADDRESS_KEY);
@@ -230,22 +230,22 @@ public class CardBuilderUnitTest {
     @Test
     public void build_doesNotIncludeEmptyStrings() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.cardNumber("");
-        cardBuilder.expirationDate("");
-        cardBuilder.expirationMonth("");
-        cardBuilder.expirationYear("");
-        cardBuilder.cvv("");
-        cardBuilder.postalCode("");
-        cardBuilder.cardholderName("");
-        cardBuilder.firstName("");
-        cardBuilder.lastName("");
-        cardBuilder.company("");
-        cardBuilder.streetAddress("");
-        cardBuilder.extendedAddress("");
-        cardBuilder.locality("");
-        cardBuilder.postalCode("");
-        cardBuilder.region("");
-        cardBuilder.countryCode("");
+        cardBuilder.setCardNumber("");
+        cardBuilder.setExpirationDate("");
+        cardBuilder.setExpirationMonth("");
+        cardBuilder.setExpirationYear("");
+        cardBuilder.setCVV("");
+        cardBuilder.setPostalCode("");
+        cardBuilder.setCardholderName("");
+        cardBuilder.setFirstName("");
+        cardBuilder.setLastName("");
+        cardBuilder.setCompany("");
+        cardBuilder.setStreetAddress("");
+        cardBuilder.setExtendedAddress("");
+        cardBuilder.setLocality("");
+        cardBuilder.setPostalCode("");
+        cardBuilder.setRegion("");
+        cardBuilder.setCountryCode("");
 
         assertFalse(new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
         assertFalse(new JSONObject(cardBuilder.buildJSON()).has(BILLING_ADDRESS_KEY));
@@ -276,20 +276,20 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_correctlyBuildsACardTokenization() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.cardNumber(VISA);
-        cardBuilder.expirationMonth("01");
-        cardBuilder.expirationYear("2015");
-        cardBuilder.cvv("123");
-        cardBuilder.cardholderName("Joe Smith");
-        cardBuilder.firstName("Joe");
-        cardBuilder.lastName("Smith");
-        cardBuilder.company("Company");
-        cardBuilder.streetAddress("1 Main St");
-        cardBuilder.extendedAddress("Unit 1");
-        cardBuilder.locality("Some Town");
-        cardBuilder.postalCode("12345");
-        cardBuilder.region("Some Region");
-        cardBuilder.countryCode("USA");
+        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setExpirationMonth("01");
+        cardBuilder.setExpirationYear("2015");
+        cardBuilder.setCVV("123");
+        cardBuilder.setCardholderName("Joe Smith");
+        cardBuilder.setFirstName("Joe");
+        cardBuilder.setLastName("Smith");
+        cardBuilder.setCompany("Company");
+        cardBuilder.setStreetAddress("1 Main St");
+        cardBuilder.setExtendedAddress("Unit 1");
+        cardBuilder.setLocality("Some Town");
+        cardBuilder.setPostalCode("12345");
+        cardBuilder.setRegion("Some Region");
+        cardBuilder.setCountryCode("USA");
         cardBuilder.setIntegration("test-integration");
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
@@ -335,7 +335,7 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_nestsAddressCorrectly() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.postalCode("60606");
+        cardBuilder.setPostalCode("60606");
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
@@ -460,22 +460,22 @@ public class CardBuilderUnitTest {
     @Test
     public void buildGraphQL_doesNotIncludeEmptyStrings() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.cardNumber("");
-        cardBuilder.expirationDate("");
-        cardBuilder.expirationMonth("");
-        cardBuilder.expirationYear("");
-        cardBuilder.cvv("");
-        cardBuilder.postalCode("");
-        cardBuilder.cardholderName("");
-        cardBuilder.firstName("");
-        cardBuilder.lastName("");
-        cardBuilder.company("");
-        cardBuilder.streetAddress("");
-        cardBuilder.extendedAddress("");
-        cardBuilder.locality("");
-        cardBuilder.postalCode("");
-        cardBuilder.region("");
-        cardBuilder.countryCode("");
+        cardBuilder.setCardNumber("");
+        cardBuilder.setExpirationDate("");
+        cardBuilder.setExpirationMonth("");
+        cardBuilder.setExpirationYear("");
+        cardBuilder.setCVV("");
+        cardBuilder.setPostalCode("");
+        cardBuilder.setCardholderName("");
+        cardBuilder.setFirstName("");
+        cardBuilder.setLastName("");
+        cardBuilder.setCompany("");
+        cardBuilder.setStreetAddress("");
+        cardBuilder.setExtendedAddress("");
+        cardBuilder.setLocality("");
+        cardBuilder.setPostalCode("");
+        cardBuilder.setRegion("");
+        cardBuilder.setCountryCode("");
 
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
@@ -542,7 +542,7 @@ public class CardBuilderUnitTest {
     @Test
     public void handlesFullExpirationDateMMYY() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.expirationDate("01/15");
+        cardBuilder.setExpirationDate("01/15");
 
         JSONObject jsonCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
 
@@ -553,7 +553,7 @@ public class CardBuilderUnitTest {
     @Test
     public void handlesFullExpirationDateMMYYYY() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.expirationDate("01/2015");
+        cardBuilder.setExpirationDate("01/2015");
 
         JSONObject jsonCard = new JSONObject(cardBuilder.buildJSON()).getJSONObject(CREDIT_CARD_KEY);
 
@@ -564,20 +564,20 @@ public class CardBuilderUnitTest {
     @Test
     public void parcelsCorrectly() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.cardNumber(VISA);
-        cardBuilder.expirationMonth("01");
-        cardBuilder.expirationYear("2015");
-        cardBuilder.cvv("123");
-        cardBuilder.cardholderName("Joe Smith");
-        cardBuilder.firstName("Joe");
-        cardBuilder.lastName("Smith");
-        cardBuilder.company("Company");
-        cardBuilder.streetAddress("1 Main St");
-        cardBuilder.extendedAddress("Unit 1");
-        cardBuilder.locality("Some Town");
-        cardBuilder.postalCode("12345");
-        cardBuilder.region("Some Region");
-        cardBuilder.countryCode("USA");
+        cardBuilder.setCardNumber(VISA);
+        cardBuilder.setExpirationMonth("01");
+        cardBuilder.setExpirationYear("2015");
+        cardBuilder.setCVV("123");
+        cardBuilder.setCardholderName("Joe Smith");
+        cardBuilder.setFirstName("Joe");
+        cardBuilder.setLastName("Smith");
+        cardBuilder.setCompany("Company");
+        cardBuilder.setStreetAddress("1 Main St");
+        cardBuilder.setExtendedAddress("Unit 1");
+        cardBuilder.setLocality("Some Town");
+        cardBuilder.setPostalCode("12345");
+        cardBuilder.setRegion("Some Region");
+        cardBuilder.setCountryCode("USA");
         cardBuilder.setIntegration("test-integration");
         cardBuilder.setSource("test-source");
         cardBuilder.setValidate(true);
@@ -600,7 +600,7 @@ public class CardBuilderUnitTest {
     @Test
     public void parcelsCountryCodeCorrectly() throws NoSuchFieldException, IllegalAccessException {
         CardBuilder cardBuilder = new CardBuilder();
-        cardBuilder.countryCode("USA");
+        cardBuilder.setCountryCode("USA");
 
         Parcel parcel = Parcel.obtain();
         cardBuilder.writeToParcel(parcel, 0);

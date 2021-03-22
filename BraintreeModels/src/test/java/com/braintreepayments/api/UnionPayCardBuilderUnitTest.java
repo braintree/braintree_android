@@ -27,7 +27,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void cardNumber_addsToJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("myCardNumber");
+        sut.setCardNumber("myCardNumber");
 
         assertEquals("myCardNumber", sut.buildEnrollment()
                 .getJSONObject("unionPayEnrollment")
@@ -37,7 +37,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void expirationMonth_addsToJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.expirationMonth("12");
+        sut.setExpirationMonth("12");
 
         assertEquals("12", sut.buildEnrollment()
                 .getJSONObject("unionPayEnrollment")
@@ -47,7 +47,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void expirationYear_addsToJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.expirationYear("2020");
+        sut.setExpirationYear("2020");
 
         assertEquals("2020", sut.buildEnrollment()
                 .getJSONObject("unionPayEnrollment")
@@ -57,7 +57,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void expirationDate_addsToJsonAsExpirationMonthAndExpirationYear() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.expirationDate("12/2020");
+        sut.setExpirationDate("12/2020");
 
         JSONObject enrollment = sut.buildEnrollment().getJSONObject("unionPayEnrollment");
         assertEquals("12", enrollment.getString("expirationMonth"));
@@ -111,19 +111,19 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void doesNotIncludeEmptyStrings() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("");
-        sut.expirationDate("");
-        sut.expirationMonth("");
-        sut.expirationYear("");
-        sut.cvv("");
-        sut.postalCode("");
-        sut.cardholderName("");
-        sut.firstName("");
-        sut.lastName("");
-        sut.streetAddress("");
-        sut.locality("");
-        sut.postalCode("");
-        sut.region("");
+        sut.setCardNumber("");
+        sut.setExpirationDate("");
+        sut.setExpirationMonth("");
+        sut.setExpirationYear("");
+        sut.setCVV("");
+        sut.setPostalCode("");
+        sut.setCardholderName("");
+        sut.setFirstName("");
+        sut.setLastName("");
+        sut.setStreetAddress("");
+        sut.setLocality("");
+        sut.setPostalCode("");
+        sut.setRegion("");
         sut.enrollmentId("");
         sut.mobileCountryCode("");
         sut.mobilePhoneNumber("");
@@ -137,11 +137,11 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void buildEnrollment_createsUnionPayEnrollmentJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cvv("123");
+        sut.setCVV("123");
         sut.enrollmentId("enrollment-id");
-        sut.expirationYear("expiration-year");
-        sut.expirationMonth("expiration-month");
-        sut.cardNumber("card-number");
+        sut.setExpirationYear("expiration-year");
+        sut.setExpirationMonth("expiration-month");
+        sut.setCardNumber("card-number");
         sut.mobileCountryCode("mobile-country-code");
         sut.mobilePhoneNumber("mobile-phone-number");
         sut.smsCode("sms-code");
@@ -162,11 +162,11 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void build_createsUnionPayTokenizeJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cvv("123");
+        sut.setCVV("123");
         sut.enrollmentId("enrollment-id");
-        sut.expirationYear("expiration-year");
-        sut.expirationMonth("expiration-month");
-        sut.cardNumber("card-number");
+        sut.setExpirationYear("expiration-year");
+        sut.setExpirationMonth("expiration-month");
+        sut.setCardNumber("card-number");
         sut.mobileCountryCode("mobile-country-code");
         sut.mobilePhoneNumber("mobile-phone-number");
         sut.smsCode("sms-code");
@@ -210,10 +210,10 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void build_standardPayload() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("someCardNumber");
-        sut.expirationMonth("expirationMonth");
-        sut.expirationYear("expirationYear");
-        sut.cvv("cvv");
+        sut.setCardNumber("someCardNumber");
+        sut.setExpirationMonth("expirationMonth");
+        sut.setExpirationYear("expirationYear");
+        sut.setCVV("cvv");
         sut.enrollmentId("enrollmentId");
         sut.smsCode("smsCode");
         sut.setValidate(true);
@@ -237,10 +237,10 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void build_optionalSmsCode() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("someCardNumber");
-        sut.expirationMonth("expirationMonth");
-        sut.expirationYear("expirationYear");
-        sut.cvv("cvv");
+        sut.setCardNumber("someCardNumber");
+        sut.setExpirationMonth("expirationMonth");
+        sut.setExpirationYear("expirationYear");
+        sut.setCVV("cvv");
         sut.enrollmentId("enrollmentId");
         sut.setValidate(true);
 
@@ -263,8 +263,8 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void build_doesNotIncludeCvv() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("some-card-number");
-        sut.cvv("123");
+        sut.setCardNumber("some-card-number");
+        sut.setCVV("123");
 
         JSONObject unionPayEnrollmentPayload = new JSONObject(sut.buildJSON());
         assertFalse(unionPayEnrollmentPayload.has("cvv"));
@@ -273,9 +273,9 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void buildEnrollment_basicPayload() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.cardNumber("someCardNumber");
-        sut.expirationMonth("expirationMonth");
-        sut.expirationYear("expirationYear");
+        sut.setCardNumber("someCardNumber");
+        sut.setExpirationMonth("expirationMonth");
+        sut.setExpirationYear("expirationYear");
         sut.mobileCountryCode("mobileCountryCode");
         sut.mobilePhoneNumber("mobilePhoneNumber");
 

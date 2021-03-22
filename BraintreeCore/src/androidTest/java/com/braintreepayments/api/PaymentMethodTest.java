@@ -49,7 +49,7 @@ public class PaymentMethodTest {
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationMonth("12")
                 .expirationYear(validExpirationYear());
 
@@ -101,7 +101,7 @@ public class PaymentMethodTest {
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
+                .setCardNumber(VISA)
                 .expirationMonth("04")
                 .expirationYear(validExpirationYear());
 
