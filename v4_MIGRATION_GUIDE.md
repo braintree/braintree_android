@@ -82,7 +82,7 @@ public class AmericanExpressActivity extends AppCompatActivity {
 
   private void tokenizeCard() {
     Card card = new Card();
-    card.setCardNumber("378282246310005");
+    card.setNumber("378282246310005");
     card.setExpirationDate("12/2022");
 
     cardClient.tokenize(this, card, (cardNonce, error) -> {
@@ -141,7 +141,7 @@ public class CardActivity extends AppCompatActivity {
 
   private void tokenizeCard() {
     Card card = new Card();
-    card.setCardNumber("4111111111111111");
+    card.setNumber("4111111111111111");
     card.setExpirationDate("12/2022");
 
     cardClient.tokenize(this, card, (cardNonce, error) -> {
@@ -567,7 +567,7 @@ public class UnionPayActivity extends AppCompatActivity {
 
   private void enrollUnionPay() {
     UnionPayCard unionPayCard = new UnionPayCard();
-    unionPayCard.setCardNumber("4111111111111111");
+    unionPayCard.setNumber("4111111111111111");
     unionPayCard.setExpirationMonth("12");
     unionPayCard.setExpirationYear("22");
     unionPayCard.setCvv("123");
@@ -731,7 +731,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
 
   private void tokenizeCard() {
     Card card = new Card();
-    card.setCardNumber("378282246310005");
+    card.setNumber("378282246310005");
     card.setExpirationDate("12/2022"); 
 
     cardClient.tokenize(this, card, (cardNonce, error) -> {
