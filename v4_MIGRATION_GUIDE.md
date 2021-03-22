@@ -81,9 +81,9 @@ public class AmericanExpressActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder()
-      .cardNumber("378282246310005") 
-      .expirationDate("12/2022"); 
+    CardBuilder cardBuilder = new CardBuilder();
+    cardBuilder.setCardNumber("378282246310005");
+    cardBuilder.setExpirationDate("12/2022");
 
     cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
       if (cardNonce != null) {
@@ -140,9 +140,9 @@ public class CardActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder()
-      .cardNumber("4111111111111111") 
-      .expirationDate("12/2022"); 
+    CardBuilder cardBuilder = new CardBuilder();
+    cardBuilder.setCardNumber("4111111111111111");
+    cardBuilder.setExpirationDate("12/2022");
 
     cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
       if (cardNonce != null) {
@@ -251,22 +251,22 @@ public class LocalPaymentActivity extends AppCompatActivity {
   }
   
   private void startLocalPayment() {
-    PostalAddress address = new PostalAddress()
-        .streetAddress("836486 of 22321 Park Lake")
-        .countryCodeAlpha2("NL")
-        .locality("Den Haag")
-        .postalCode("2585 GJ");
+    PostalAddress address = new PostalAddress();
+    address.setStreetAddress("836486 of 22321 Park Lake");
+    address.setCountryCodeAlpha2("NL");
+    address.setLocality("Den Haag");
+    address.setPostalCode("2585 GJ");
 
-    LocalPaymentRequest request = new LocalPaymentRequest()
-        .paymentType("ideal")
-        .amount("1.01")
-        .address(address)
-        .phone("639847934")
-        .email("joe@getbraintree.com")
-        .givenName("Jon")
-        .surname("Doe")
-        .shippingAddressRequired(true)
-        .currencyCode("EUR");
+    LocalPaymentRequest request = new LocalPaymentRequest();
+    request.setPaymentType("ideal");
+    request.setAmount("1.01");
+    request.setAddress(address);
+    request.setPhone("639847934");
+    request.setEmail("joe@getbraintree.com");
+    request.setGivenName("Jon");
+    request.setSurname("Doe");
+    request.setShippingAddressRequired(true);
+    request.setCurrencyCode("EUR");
      
     localPaymentClient.startPayment(request, (localPaymentTransaction, error) -> {
       if (localPaymentTransaction != null) {
@@ -322,14 +322,14 @@ public class GooglePayActivity extends AppCompatActivity {
   }
 
   private void makeGooglePayRequest() {
-    GooglePayRequest googlePayRequest = new GooglePayRequest()
-      .transactionInfo(TransactionInfo.newBuilder()
-        .setTotalPrice("1.00")
-        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-        .setCurrencyCode("USD")
-        .build())
-      .billingAddressRequired(true)
-      .googleMerchantId("merchant-id-from-google");
+    GooglePayRequest googlePayRequest = new GooglePayRequest();
+    googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
+      .setTotalPrice("1.00")
+      .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+      .setCurrencyCode("USD")
+      .build());
+    googlePayRequest.setBillingAddressRequired(true);
+    googlePayRequest.setGoogleMerchantId("merchant-id-from-google");
 
     googlePayClient.requestPayment(this, googlePayRequest, (success, error) -> {
       if (error != null) {
@@ -566,19 +566,18 @@ public class UnionPayActivity extends AppCompatActivity {
   }
 
   private void enrollUnionPay() {
-    UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-        .cardNumber("4111111111111111")
-        .expirationMonth("12")
-        .expirationYear("22")
-        .cvv("123")
-        .postalCode("12345")
-        .mobileCountryCode("1")
-        .mobilePhoneNumber("1234567890");
+    UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+    unionPayCardBuilder.setCardNumber("4111111111111111");
+    unionPayCardBuilder.setExpirationMonth("12");
+    unionPayCardBuilder.setExpirationYear("22");
+    unionPayCardBuilder.setCvv("123");
+    unionPayCardBuilder.setPostalCode("12345");
+    unionPayCardBuilder.setMobileCountryCode("1");
+    unionPayCardBuilder.setMobilePhoneNumber("1234567890");
 
     unionPayClient.enroll(unionPayCardBuilder, (enrollment, error) -> {
-      unionPayCardBuilder
-          .smsCode("1234")
-          .enrollmentId(enrollment.getId());
+      unionPayCardBuilder.setSmsCode("1234");
+      unionPayCardBuilder.setEnrollmentId(enrollment.getId());
       tokenizeUnionPayMethod(unionPayCardBuilder);
     });
   }
@@ -629,9 +628,9 @@ public class VenmoActivity extends AppCompatActivity {
 
   // The authorizeAccount() method has been replaced with tokenizeVenmoAccount()
   private void tokenizeVenmoAccount() {
-    VenmoRequest request = new VenmoRequest()
-            .profileId("your-profile-id")
-            .shouldVault(false);
+    VenmoRequest request = new VenmoRequest();
+    request.setProfileId("your-profile-id");
+    request.setShouldVault(false);
           
     venmoClient.tokenizeVenmoAccount(this, request, (error) -> {
       if (error != null) {
@@ -680,7 +679,7 @@ repositories {
 }
 ```
 
-To use the feature, instantiate an `ThreeDSecureClient`:
+To use the feature, instantiate a `ThreeDSecureClient`:
 
 ```java
 package com.my.app;
@@ -731,9 +730,9 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
 
   private void tokenizeCard() {
-    CardBuilder cardBuilder = new CardBuilder()
-      .cardNumber("378282246310005") 
-      .expirationDate("12/2022"); 
+    CardBuilder cardBuilder = new CardBuilder();
+    cardBuilder.setCardNumber("378282246310005");
+    cardBuilder.setExpirationDate("12/2022"); 
 
     cardClient.tokenize(this, cardBuilder, (cardNonce, error) -> {
       if (cardNonce != null) {
@@ -745,27 +744,27 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
  
   private void performThreeDSecureVerification(CardNonce cardNonce) {
-    ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-        .givenName("Jill")
-        .surname("Doe")
-        .phoneNumber("5551234567")
-        .streetAddress("555 Smith St")
-        .extendedAddress("#2")
-        .locality("Chicago")
-        .region("IL")
-        .postalCode("12345")
-        .countryCodeAlpha2("US");
+    ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+    billingAddress.setGivenName("Jill");
+    billingAddress.setSurname("Doe");
+    billingAddress.setPhoneNumber("5551234567");
+    billingAddress.setStreetAddress("555 Smith St");
+    billingAddress.setExtendedAddress("#2");
+    billingAddress.setLocality("Chicago");
+    billingAddress.setRegion("IL");
+    billingAddress.setPostalCode("12345");
+    billingAddress.setCountryCodeAlpha2("US");
 
-    ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-        .accountId("account-id");
+    ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+    additionalInformation.accountId("account-id");
 
-    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
-        .amount("10")
-        .email("test@email.com")
-        .billingAddress(billingAddress)
-        .nonce(cardNonce.getNonce())
-        .shippingMethod(ThreeDSecureShippingMethod.GROUND) 
-        .additionalInformation(additionalInformation);
+    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+    threeDSecureRequest.setAmount("10");
+    threeDSecureRequest.setEmail("test@email.com");
+    threeDSecureRequest.setBillingAddress(billingAddress);
+    threeDSecureRequest.setNonce(cardNonce.getNonce());
+    threeDSecureRequest.setShippingMethod(ThreeDSecureShippingMethod.GROUND);
+    threeDSecureRequest.setAdditionalInformation(additionalInformation);
 
     threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureResult, error) -> {
       if (threeDSecureResult != null) {
