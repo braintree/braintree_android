@@ -48,21 +48,22 @@ public class LocalPaymentFragment extends BaseFragment {
 
                 localPaymentClient = new LocalPaymentClient(braintreeClient);
                 PostalAddress address = new PostalAddress();
-                        address.streetAddress("Stadhouderskade 78");
-                        address.countryCodeAlpha2("NL");
-                        address.locality("Amsterdam");
-                        address.postalCode("1072 AE");
-                LocalPaymentRequest request = new LocalPaymentRequest()
-                        .paymentType("ideal")
-                        .amount("1.10")
-                        .address(address)
-                        .phone("207215300")
-                        .email("android-test-buyer@paypal.com")
-                        .givenName("Test")
-                        .surname("Buyer")
-                        .shippingAddressRequired(true)
-                        .merchantAccountId("altpay_eur")
-                        .currencyCode("EUR");
+                address.streetAddress("Stadhouderskade 78");
+                address.countryCodeAlpha2("NL");
+                address.locality("Amsterdam");
+                address.postalCode("1072 AE");
+
+                LocalPaymentRequest request = new LocalPaymentRequest();
+                request.paymentType("ideal");
+                request.amount("1.10");
+                request.address(address);
+                request.phone("207215300");
+                request.email("android-test-buyer@paypal.com");
+                request.givenName("Test");
+                request.surname("Buyer");
+                request.shippingAddressRequired(true);
+                request.merchantAccountId("altpay_eur");
+                request.currencyCode("EUR");
 
                 localPaymentClient.startPayment(request, (transaction, error) -> {
                     if (transaction != null) {
@@ -92,7 +93,7 @@ public class LocalPaymentFragment extends BaseFragment {
         super.onPaymentMethodNonceCreated(localPaymentNonce);
 
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
-            LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
+                LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 }

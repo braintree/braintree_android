@@ -221,8 +221,8 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_callsExceptionListener_amountIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
-        LocalPaymentRequest request = getIdealLocalPaymentRequest()
-                .amount(null);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        request.amount(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -237,8 +237,8 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_callsExceptionListener_paymentTypeIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
-        LocalPaymentRequest request = getIdealLocalPaymentRequest()
-                .paymentType(null);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        request.paymentType(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -574,17 +574,20 @@ public class LocalPaymentClientUnitTest {
         address.locality("Den Haag");
         address.region("CA");
         address.postalCode("2585 GJ");
-        return new LocalPaymentRequest()
-                .paymentType("ideal")
-                .amount("1.10")
-                .address(address)
-                .phone("639847934")
-                .email("jon@getbraintree.com")
-                .givenName("Jon")
-                .surname("Doe")
-                .shippingAddressRequired(false)
-                .merchantAccountId("local-merchant-account-id")
-                .currencyCode("EUR")
-                .paymentTypeCountryCode("NL");
+
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        request.paymentType("ideal");
+        request.amount("1.10");
+        request.address(address);
+        request.phone("639847934");
+        request.email("jon@getbraintree.com");
+        request.givenName("Jon");
+        request.surname("Doe");
+        request.shippingAddressRequired(false);
+        request.merchantAccountId("local-merchant-account-id");
+        request.currencyCode("EUR");
+        request.paymentTypeCountryCode("NL");
+
+        return request;
     }
 }
