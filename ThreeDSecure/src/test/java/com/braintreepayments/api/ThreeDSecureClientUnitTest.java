@@ -52,8 +52,10 @@ public class ThreeDSecureClientUnitTest {
         basicRequest = new ThreeDSecureRequest();
         basicRequest.nonce("a-nonce");
         basicRequest.amount("amount");
-        basicRequest.billingAddress(new ThreeDSecurePostalAddress()
-                .givenName("billing-given-name"));
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("billing-given-name");
+        basicRequest.billingAddress(billingAddress);
     }
 
     @Test
@@ -88,8 +90,10 @@ public class ThreeDSecureClientUnitTest {
         request.nonce("a-nonce");
         request.versionRequested(ThreeDSecureRequest.VERSION_2);
         request.amount("amount");
-        request.billingAddress(new ThreeDSecurePostalAddress()
-                .givenName("billing-given-name"));
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("billing-given-name");
+        request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, request, threeDSecureResultCallback);
@@ -119,8 +123,10 @@ public class ThreeDSecureClientUnitTest {
         request.nonce("a-nonce");
         request.versionRequested(ThreeDSecureRequest.VERSION_2);
         request.amount("amount");
-        request.billingAddress(new ThreeDSecurePostalAddress()
-                .givenName("billing-given-name"));
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("billing-given-name");
+        request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, request, threeDSecureResultCallback);
@@ -147,8 +153,10 @@ public class ThreeDSecureClientUnitTest {
         request.nonce("a-nonce");
         request.versionRequested(ThreeDSecureRequest.VERSION_2);
         request.amount("amount");
-        request.billingAddress(new ThreeDSecurePostalAddress()
-                .givenName("billing-given-name"));
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("billing-given-name");
+        request.billingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 

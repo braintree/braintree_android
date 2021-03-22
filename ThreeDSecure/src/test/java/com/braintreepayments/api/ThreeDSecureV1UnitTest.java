@@ -54,8 +54,10 @@ public class ThreeDSecureV1UnitTest {
         mThreeDSecureRequest.versionRequested(ThreeDSecureRequest.VERSION_1);
         mThreeDSecureRequest.nonce("a-nonce");
         mThreeDSecureRequest.amount("amount");
-        mThreeDSecureRequest.billingAddress(new ThreeDSecurePostalAddress()
-                .givenName("billing-given-name"));
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("billing-given-name");
+        mThreeDSecureRequest.billingAddress(billingAddress);
 
         mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
         mThreeDSecureResult = ThreeDSecureResult.fromJson(mThreeDSecureLookupResponse);

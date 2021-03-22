@@ -378,16 +378,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .givenName("Jill")
-                .surname("Doe")
-                .phoneNumber("5551234567")
-                .streetAddress("555 Smith St")
-                .extendedAddress("#2")
-                .locality("Chicago")
-                .region("IL")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.givenName("Jill");
+        billingAddress.surname("Doe");
+        billingAddress.phoneNumber("5551234567");
+        billingAddress.streetAddress("555 Smith St");
+        billingAddress.extendedAddress("#2");
+        billingAddress.locality("Chicago");
+        billingAddress.region("IL");
+        billingAddress.postalCode("12345");
+        billingAddress.countryCodeAlpha2("US");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
         additionalInformation.accountId("account-id");

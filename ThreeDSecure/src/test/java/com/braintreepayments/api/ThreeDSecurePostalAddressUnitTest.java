@@ -17,16 +17,16 @@ public class ThreeDSecurePostalAddressUnitTest {
 
     @Test
     public void constructsCorrectly() {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .givenName("John")
-                .surname("Fakerson")
-                .phoneNumber("5151231234");
+        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress();
+        postalAddress.streetAddress("123 Fake St.");
+        postalAddress.extendedAddress("Apt. 3");
+        postalAddress.locality("Oakland");
+        postalAddress.region("CA");
+        postalAddress.postalCode("94602");
+        postalAddress.countryCodeAlpha2("US");
+        postalAddress.givenName("John");
+        postalAddress.surname("Fakerson");
+        postalAddress.phoneNumber("5151231234");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -41,17 +41,17 @@ public class ThreeDSecurePostalAddressUnitTest {
 
     @Test
     public void testWriteToParcel_serializesCorrectly() {
-        ThreeDSecurePostalAddress preSerialized = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .line3("Suite A")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .givenName("John")
-                .surname("Fakerson")
-                .phoneNumber("5151231234");
+        ThreeDSecurePostalAddress preSerialized = new ThreeDSecurePostalAddress();
+        preSerialized.streetAddress("123 Fake St.");
+        preSerialized.extendedAddress("Apt. 3");
+        preSerialized.line3("Suite A");
+        preSerialized.locality("Oakland");
+        preSerialized.region("CA");
+        preSerialized.postalCode("94602");
+        preSerialized.countryCodeAlpha2("US");
+        preSerialized.givenName("John");
+        preSerialized.surname("Fakerson");
+        preSerialized.phoneNumber("5151231234");
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
@@ -73,18 +73,18 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void testToJson_buildsAllParameters() throws JSONException{
-        ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .line3("Suite C")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .givenName("John")
-                .surname("Fakerson")
-                .phoneNumber("5151231234");
+    public void testToJson_buildsAllParameters() throws JSONException {
+        ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
+        address.streetAddress("123 Fake St.");
+        address.extendedAddress("Apt. 3");
+        address.line3("Suite C");
+        address.locality("Oakland");
+        address.region("CA");
+        address.postalCode("94602");
+        address.countryCodeAlpha2("US");
+        address.givenName("John");
+        address.surname("Fakerson");
+        address.phoneNumber("5151231234");
 
         JSONObject jsonParams = address.toJson();
         JSONObject jsonBillingAddress = jsonParams.getJSONObject("billingAddress");
@@ -102,15 +102,15 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void testToJson_buildsPartialParameters() throws JSONException{
-        ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .givenName("John")
-                .surname("Fakerson");
+    public void testToJson_buildsPartialParameters() throws JSONException {
+        ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
+        address.streetAddress("123 Fake St.");
+        address.extendedAddress("Apt. 3");
+        address.locality("Oakland");
+        address.region("CA");
+        address.postalCode("94602");
+        address.givenName("John");
+        address.surname("Fakerson");
 
         JSONObject jsonParams = address.toJson();
         JSONObject jsonBillingAddress = jsonParams.getJSONObject("billingAddress");

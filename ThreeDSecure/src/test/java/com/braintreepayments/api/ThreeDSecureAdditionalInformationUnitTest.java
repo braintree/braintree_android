@@ -15,8 +15,8 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void writeToParcel() {
-        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .givenName("shipping-given-name");
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
+        shippingAddress.givenName("shipping-given-name");
 
         ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation();
         preSerialized.shippingAddress(shippingAddress);
@@ -110,17 +110,17 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
     @Test
     public void toJson() throws JSONException {
-        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .givenName("shipping-given-name")
-                .surname("shipping-surname")
-                .phoneNumber("shipping-phone")
-                .streetAddress("shipping-line1")
-                .extendedAddress("shipping-line2")
-                .line3("shipping-line3")
-                .locality("shipping-city")
-                .region("shipping-state")
-                .postalCode("shipping-postal-code")
-                .countryCodeAlpha2("shipping-country-code");
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
+        shippingAddress.givenName("shipping-given-name");
+        shippingAddress.surname("shipping-surname");
+        shippingAddress.phoneNumber("shipping-phone");
+        shippingAddress.streetAddress("shipping-line1");
+        shippingAddress.extendedAddress("shipping-line2");
+        shippingAddress.line3("shipping-line3");
+        shippingAddress.locality("shipping-city");
+        shippingAddress.region("shipping-state");
+        shippingAddress.postalCode("shipping-postal-code");
+        shippingAddress.countryCodeAlpha2("shipping-country-code");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
         additionalInformation.shippingAddress(shippingAddress);
