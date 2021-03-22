@@ -22,7 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
 @PrepareForTest({ VisaPaymentSummary.class })
-public class VisaCheckoutBuilderUnitTest {
+public class VisaCheckoutAccountUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
@@ -41,8 +41,8 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject paymentMethodNonceJson = new JSONObject();
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
-        VisaCheckout visaCheckoutBuilder = new VisaCheckout(null);
-        visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
+        VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(null);
+        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
     }
@@ -56,8 +56,8 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
-        VisaCheckout visaCheckoutBuilder = new VisaCheckout(visaPaymentSummary);
-        visaCheckoutBuilder.buildJSON(base, paymentMethodNonceJson);
+        VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(visaPaymentSummary);
+        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();
@@ -71,12 +71,12 @@ public class VisaCheckoutBuilderUnitTest {
 
     @Test
     public void getApiPath_returnsCorrectApiPath() {
-        assertEquals("visa_checkout_cards", new VisaCheckout(null).getApiPath());
+        assertEquals("visa_checkout_cards", new VisaCheckoutAccount(null).getApiPath());
     }
 
     @Test
     public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
         assertEquals(VisaCheckoutNonce.TYPE,
-                new VisaCheckout(null).getResponsePaymentMethodType());
+                new VisaCheckoutAccount(null).getResponsePaymentMethodType());
     }
 }
