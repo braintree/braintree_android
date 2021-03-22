@@ -55,6 +55,7 @@ public class ThreeDSecureClient {
      *
      * @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param callback {@link ThreeDSecureResultCallback}
      */
     public void performLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
