@@ -30,20 +30,20 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     static final String REGION_KEY = "region";
     static final String STREET_ADDRESS_KEY = "streetAddress";
 
-    String mCardholderName;
-    String mNumber;
-    String mCompany;
-    String mCountryCode;
-    String mCvv;
-    String mExpirationMonth;
-    String mExpirationYear;
-    String mExtendedAddress;
-    String mFirstName;
-    String mLastName;
-    String mLocality;
-    String mPostalCode;
-    String mRegion;
-    String mStreetAddress;
+    protected String mCardholderName;
+    protected String mNumber;
+    protected String mCompany;
+    protected String mCountryCode;
+    protected String mCvv;
+    protected String mExpirationMonth;
+    protected String mExpirationYear;
+    protected String mExtendedAddress;
+    protected String mFirstName;
+    protected String mLastName;
+    protected String mLocality;
+    protected String mPostalCode;
+    protected String mRegion;
+    protected String mStreetAddress;
 
     public BaseCard() {}
 
