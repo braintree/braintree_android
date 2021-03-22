@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class CardBuilderUnitTest {
+public class CardUnitTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 

@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalAccountBuilderUnitTest {
+public class PayPalAccountUnitTest {
 
     private static final String PAYPAL_KEY = "paypalAccount";
 

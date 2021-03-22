@@ -12,7 +12,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
-public class UnionPayCardBuilderUnitTest {
+public class UnionPayCardUnitTest {
 
     @Test
     public void getApiPath_returnsExpected() {
