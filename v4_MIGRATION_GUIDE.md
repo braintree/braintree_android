@@ -44,6 +44,8 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 </activity>
 ``` 
 
+FEEDBACK: `onBrowserSwitchResult` crashes if `browserSwitchResult` is null, but in Kotlin we could just prevent devs from passing in null. Maybe we can add a null-check for Java too.
+
 ## American Express
 
 The American Express feature is now supported by implementing the following dependencies:
@@ -246,7 +248,7 @@ public class LocalPaymentActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
   
@@ -395,7 +397,7 @@ public class PayPalActivity extends AppCompatActivity {
       payPalClient.onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
         if (payPalAccountNonce != null) {
           // Send nonce to server
-          String nonce = payPalNonce.getNonce();
+          String nonce = payPalAccountNonce.getNonce();
         } else {
           // handle error
         }
@@ -406,7 +408,7 @@ public class PayPalActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
 
@@ -695,7 +697,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
 
