@@ -166,7 +166,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        CardBuilder cardBuilder = new CardBuilder().setCVV("123");
+        CardBuilder cardBuilder = new CardBuilder().setCvv("123");
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override

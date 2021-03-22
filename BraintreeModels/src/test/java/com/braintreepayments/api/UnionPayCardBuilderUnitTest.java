@@ -115,7 +115,7 @@ public class UnionPayCardBuilderUnitTest {
         sut.setExpirationDate("");
         sut.setExpirationMonth("");
         sut.setExpirationYear("");
-        sut.setCVV("");
+        sut.setCvv("");
         sut.setPostalCode("");
         sut.setCardholderName("");
         sut.setFirstName("");
@@ -137,7 +137,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void buildEnrollment_createsUnionPayEnrollmentJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.setCVV("123");
+        sut.setCvv("123");
         sut.setEnrollmentId("enrollment-id");
         sut.setExpirationYear("expiration-year");
         sut.setExpirationMonth("expiration-month");
@@ -162,7 +162,7 @@ public class UnionPayCardBuilderUnitTest {
     @Test
     public void build_createsUnionPayTokenizeJson() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
-        sut.setCVV("123");
+        sut.setCvv("123");
         sut.setEnrollmentId("enrollment-id");
         sut.setExpirationYear("expiration-year");
         sut.setExpirationMonth("expiration-month");
@@ -213,7 +213,7 @@ public class UnionPayCardBuilderUnitTest {
         sut.setCardNumber("someCardNumber");
         sut.setExpirationMonth("expirationMonth");
         sut.setExpirationYear("expirationYear");
-        sut.setCVV("cvv");
+        sut.setCvv("cvv");
         sut.setEnrollmentId("enrollmentId");
         sut.setSmsCode("smsCode");
         sut.setValidate(true);
@@ -240,7 +240,7 @@ public class UnionPayCardBuilderUnitTest {
         sut.setCardNumber("someCardNumber");
         sut.setExpirationMonth("expirationMonth");
         sut.setExpirationYear("expirationYear");
-        sut.setCVV("cvv");
+        sut.setCvv("cvv");
         sut.setEnrollmentId("enrollmentId");
         sut.setValidate(true);
 
@@ -264,7 +264,7 @@ public class UnionPayCardBuilderUnitTest {
     public void build_doesNotIncludeCvv() throws JSONException {
         UnionPayCardBuilder sut = new UnionPayCardBuilder();
         sut.setCardNumber("some-card-number");
-        sut.setCVV("123");
+        sut.setCvv("123");
 
         JSONObject unionPayEnrollmentPayload = new JSONObject(sut.buildJSON());
         assertFalse(unionPayEnrollmentPayload.has("cvv"));

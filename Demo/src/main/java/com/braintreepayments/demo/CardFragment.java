@@ -243,7 +243,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
         unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
         unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-        unionPayCardBuilder.setCVV(mCardForm.getCvv());
+        unionPayCardBuilder.setCvv(mCardForm.getCvv());
         unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
         unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
         unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
@@ -270,7 +270,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             unionPayCardBuilder.setCardNumber(mCardForm.getCardNumber());
             unionPayCardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             unionPayCardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-            unionPayCardBuilder.setCVV(mCardForm.getCvv());
+            unionPayCardBuilder.setCvv(mCardForm.getCvv());
             unionPayCardBuilder.setPostalCode(mCardForm.getPostalCode());
             unionPayCardBuilder.setMobileCountryCode(mCardForm.getCountryCode());
             unionPayCardBuilder.setMobilePhoneNumber(mCardForm.getMobileNumber());
@@ -290,7 +290,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             cardBuilder.setCardNumber(mCardForm.getCardNumber());
             cardBuilder.setExpirationMonth(mCardForm.getExpirationMonth());
             cardBuilder.setExpirationYear(mCardForm.getExpirationYear());
-            cardBuilder.setCVV(mCardForm.getCvv());
+            cardBuilder.setCvv(mCardForm.getCvv());
             cardBuilder.setValidate(false); // TODO GQL currently only returns the bin if validate = false
             cardBuilder.setPostalCode(mCardForm.getPostalCode());
 

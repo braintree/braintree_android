@@ -61,7 +61,7 @@ public abstract class BaseCardBuilder extends PaymentMethodBuilder implements Pa
     /**
      * @param cvv The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
      */
-    public void setCVV(String cvv) {
+    public void setCvv(String cvv) {
         if (TextUtils.isEmpty(cvv)) {
             mCvv = null;
         } else {

@@ -88,7 +88,7 @@ public class CardBuilderUnitTest {
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
-        cardBuilder.setCVV("123");
+        cardBuilder.setCvv("123");
         cardBuilder.setCardholderName("Joe Smith");
         cardBuilder.setFirstName("Joe");
         cardBuilder.setLastName("Smith");
@@ -234,7 +234,7 @@ public class CardBuilderUnitTest {
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
         cardBuilder.setExpirationYear("");
-        cardBuilder.setCVV("");
+        cardBuilder.setCvv("");
         cardBuilder.setPostalCode("");
         cardBuilder.setCardholderName("");
         cardBuilder.setFirstName("");
@@ -279,7 +279,7 @@ public class CardBuilderUnitTest {
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
-        cardBuilder.setCVV("123");
+        cardBuilder.setCvv("123");
         cardBuilder.setCardholderName("Joe Smith");
         cardBuilder.setFirstName("Joe");
         cardBuilder.setLastName("Smith");
@@ -464,7 +464,7 @@ public class CardBuilderUnitTest {
         cardBuilder.setExpirationDate("");
         cardBuilder.setExpirationMonth("");
         cardBuilder.setExpirationYear("");
-        cardBuilder.setCVV("");
+        cardBuilder.setCvv("");
         cardBuilder.setPostalCode("");
         cardBuilder.setCardholderName("");
         cardBuilder.setFirstName("");
@@ -567,7 +567,7 @@ public class CardBuilderUnitTest {
         cardBuilder.setCardNumber(VISA);
         cardBuilder.setExpirationMonth("01");
         cardBuilder.setExpirationYear("2015");
-        cardBuilder.setCVV("123");
+        cardBuilder.setCvv("123");
         cardBuilder.setCardholderName("Joe Smith");
         cardBuilder.setFirstName("Joe");
         cardBuilder.setLastName("Smith");
