@@ -78,8 +78,8 @@ public class CardinalClientUnitTest {
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
 
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .v2UiCustomization(v2UiCustomization);
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        request.v2UiCustomization(v2UiCustomization);
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
 
         ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);

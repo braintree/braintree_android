@@ -53,11 +53,11 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
 
-        mBasicRequest = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .v2UiCustomization(v2UiCustomization);
+        mBasicRequest = new ThreeDSecureRequest();
+        mBasicRequest.nonce("a-nonce");
+        mBasicRequest.amount("1.00");
+        mBasicRequest.versionRequested(ThreeDSecureRequest.VERSION_2);
+        mBasicRequest.v2UiCustomization(v2UiCustomization);
     }
 
     @Test

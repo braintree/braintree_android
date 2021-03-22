@@ -51,8 +51,8 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         v1UiCustomization.setRedirectButtonText("button text");
         v1UiCustomization.setRedirectDescription("description text");
 
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .v1UiCustomization(v1UiCustomization);
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        request.v1UiCustomization(v1UiCustomization);
 
         ThreeDSecureV1BrowserSwitchHelper sut = new ThreeDSecureV1BrowserSwitchHelper();
         String actualUrl = sut.getUrl(urlScheme, assetsUrl, request, mThreeDSecureLookup);

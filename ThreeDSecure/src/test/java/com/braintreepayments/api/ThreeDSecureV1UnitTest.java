@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*"})
 public class ThreeDSecureV1UnitTest {
 
     private FragmentActivity activity;
@@ -50,12 +50,12 @@ public class ThreeDSecureV1UnitTest {
                 .assetsUrl("https://www.some-assets.com")
                 .buildConfiguration();
 
-        mThreeDSecureRequest = new ThreeDSecureRequest()
-                .versionRequested(ThreeDSecureRequest.VERSION_1)
-                .nonce("a-nonce")
-                .amount("amount")
-                .billingAddress(new ThreeDSecurePostalAddress()
-                        .givenName("billing-given-name"));
+        mThreeDSecureRequest = new ThreeDSecureRequest();
+        mThreeDSecureRequest.versionRequested(ThreeDSecureRequest.VERSION_1);
+        mThreeDSecureRequest.nonce("a-nonce");
+        mThreeDSecureRequest.amount("amount");
+        mThreeDSecureRequest.billingAddress(new ThreeDSecurePostalAddress()
+                .givenName("billing-given-name"));
 
         mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
         mThreeDSecureResult = ThreeDSecureResult.fromJson(mThreeDSecureLookupResponse);
