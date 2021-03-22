@@ -78,8 +78,8 @@ public class VenmoFragment extends BaseFragment {
                         public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
                                 VenmoRequest venmoRequest = new VenmoRequest();
-                                venmoRequest.profileId(null);
-                                venmoRequest.shouldVault(shouldVault);
+                                venmoRequest.getProfileId(null);
+                                venmoRequest.setShouldVault(shouldVault);
 
                                 venmoClient.tokenizeVenmoAccount(activity, venmoRequest, new VenmoTokenizeAccountCallback() {
                                     @Override

@@ -91,7 +91,7 @@ public class VenmoClient {
                     return;
                 }
 
-                sharedPrefsWriter.persistVenmoVaultOption(activity, request.shouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
+                sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
 
                 String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
