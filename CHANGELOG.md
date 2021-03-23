@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Add Venmo to `queries` element in `AndroidManifest.xml`
+* Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
 
 ## 3.17.0
 
