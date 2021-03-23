@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
+/**
+ * The Activity that receives Cardinal SDK result from 3DS v2 flow
+ */
 public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
 
     static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
