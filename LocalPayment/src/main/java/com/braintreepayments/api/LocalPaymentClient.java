@@ -132,6 +132,10 @@ public class LocalPaymentClient {
      * @param callback {@link LocalPaymentBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, final LocalPaymentBrowserSwitchResultCallback callback) {
+        if (browserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            return;
+        }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
 
         final String paymentType = Json.optString(metadata, "payment-type", null);

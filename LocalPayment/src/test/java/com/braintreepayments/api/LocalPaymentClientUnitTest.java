@@ -552,6 +552,20 @@ public class LocalPaymentClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchResultIsNull_returnsExceptionToCallback() {
+        LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
+
+        sut.onBrowserSwitchResult(activity, null, localPaymentBrowserSwitchResultCallback);
+
+        ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(localPaymentBrowserSwitchResultCallback).onResult((LocalPaymentNonce) isNull(), exceptionCaptor.capture());
+
+        Exception exception = exceptionCaptor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("BrowserSwitchResult cannot be null", exception.getMessage());
+    }
+
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
         PostalAddress address = new PostalAddress()
                 .streetAddress("836486 of 22321 Park Lake")
