@@ -77,6 +77,7 @@
   * Remove `firstName` and `lastName` properties from `ThreeDSecurePostalAddress`
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
+  * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
   * Remove `ThreeDSecureClient#performVerification()` convenience method
 
 ## 4.0.0-beta1
