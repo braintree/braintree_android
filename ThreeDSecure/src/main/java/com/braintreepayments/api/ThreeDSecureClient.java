@@ -369,6 +369,10 @@ public class ThreeDSecureClient {
      */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final ThreeDSecureResultCallback callback) {
         // V1 flow
+        if (browserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            return;
+        }
         int status = browserSwitchResult.getStatus();
         switch (status) {
             case BrowserSwitchStatus.CANCELED:
