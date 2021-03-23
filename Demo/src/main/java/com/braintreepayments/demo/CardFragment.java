@@ -335,7 +335,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
                 if (threeDSecureResult != null) {
-                    threeDSecureClient.initiateChallengeWithLookup(activity, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();

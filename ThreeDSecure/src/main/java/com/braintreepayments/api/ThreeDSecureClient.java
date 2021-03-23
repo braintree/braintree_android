@@ -121,7 +121,7 @@ public class ThreeDSecureClient {
      *                 be invoked in this method.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void initiateChallengeWithLookup(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResult result, final ThreeDSecureResultCallback callback) {
+    public void continuePerformVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResult result, final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

@@ -756,7 +756,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureResult, error) -> {
       if (threeDSecureResult != null) {
         // examine lookup response (if necessary), then continue verification
-        threeDSecureClient.initiateChallengeWithLookup(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+        threeDSecureClient.continuePerformVerification(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
       } else {
         // handle error
       }
