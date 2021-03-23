@@ -30,7 +30,7 @@ class PayPalAccount extends PaymentMethod {
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
      * @param clientMetadataId Application clientMetadataId created by
-     * {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
+     *                         {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      */
     public void clientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
@@ -39,12 +39,12 @@ class PayPalAccount extends PaymentMethod {
     /**
      * Response data from callback url. Used by PayPal wrappers to construct
      * a request to create a PayPal account.
-     *
+     * <p>
      * Response data will be merged into the payment method json on {@link #buildJSON()}
      *
      * @param urlResponseData The data parsed from the PayPal callback url.
      */
-   void urlResponseData(JSONObject urlResponseData) {
+    void urlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
             mUrlResponseData = urlResponseData;
         }
@@ -55,7 +55,7 @@ class PayPalAccount extends PaymentMethod {
      *
      * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
      */
-   void intent(@PayPalPaymentIntent String intent) {
+    void intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
         mIntent = intent;
     }
 
@@ -64,7 +64,7 @@ class PayPalAccount extends PaymentMethod {
      *
      * @param merchantAccountId String merchant account id
      */
-   void merchantAccountId(String merchantAccountId) {
+    void merchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
     }
 
@@ -79,7 +79,7 @@ class PayPalAccount extends PaymentMethod {
             paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
         }
 
-        if(mMerchantAccountId != null) {
+        if (mMerchantAccountId != null) {
             base.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
         }
 
@@ -87,7 +87,8 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {}
+    protected void buildGraphQL(JSONObject base, JSONObject input) {
+    }
 
     @Override
     public String getApiPath() {
