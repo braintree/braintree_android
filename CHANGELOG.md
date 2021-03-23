@@ -94,6 +94,10 @@
     * `ThreeDSecureAdditionalInformation`
     * `ThreeDSecurePostalAddress`
     * `ThreeDSecureRequest`
+  * Rename `PayPalPaymentIntent` enums:
+    * `INTENT_ORDER` to `ORDER`
+    * `INTENT_SALE` to `SALE`
+    * `INTENT_AUTHORIZE` to `AUTHORIZE`
   * Remove `paymentRequested` param from `GooglePayRequestPaymentCallback`
   * Refactor `BraintreeClient` constructor to take a `String` instead of `Authorization` and change parameter ordering 
   * Make `Authorization` package-private
