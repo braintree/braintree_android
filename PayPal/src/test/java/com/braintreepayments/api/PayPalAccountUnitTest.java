@@ -21,7 +21,7 @@ public class PayPalAccountUnitTest {
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
-        sut.intent(PayPalRequest.INTENT_SALE);
+        sut.intent(PayPalPaymentIntent.SALE);
         sut.clientMetadataId("correlation_id");
         sut.setSource("paypal-sdk");
         sut.merchantAccountId("alt_merchant_account_id");
@@ -33,7 +33,7 @@ public class PayPalAccountUnitTest {
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
-        assertEquals(PayPalCheckoutRequest.INTENT_SALE, jsonAccount.getString("intent"));
+        assertEquals(PayPalPaymentIntent.SALE, jsonAccount.getString("intent"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
         assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));

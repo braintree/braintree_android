@@ -56,25 +56,24 @@ public class PayPalClient {
     /**
      * Tokenize a PayPal account for vault or checkout.
      *
-     * @param activity Android FragmentActivity
+     * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
+     * @param callback      {@link PayPalFlowStartedCallback}
      */
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-       if (payPalRequest instanceof PayPalCheckoutRequest) {
-           sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
-       } else if (payPalRequest instanceof PayPalVaultRequest) {
-           sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
-       }
+        if (payPalRequest instanceof PayPalCheckoutRequest) {
+            sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+        } else if (payPalRequest instanceof PayPalVaultRequest) {
+            sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
+        }
     }
 
     /**
+     * @param activity              Android FragmentActivity
+     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
+     * @param callback              {@link PayPalFlowStartedCallback}
      * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the One-Time Payment (Checkout) flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
      */
     @Deprecated
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
@@ -82,12 +81,11 @@ public class PayPalClient {
     }
 
     /**
+     * @param activity           Android FragmentActivity
+     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
+     * @param callback           {@link PayPalFlowStartedCallback}
      * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the Billing Agreement (Vault) flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
      */
     @Deprecated
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
@@ -197,7 +195,7 @@ public class PayPalClient {
 
     /**
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback {@link PayPalBrowserSwitchResultCallback}
+     * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final PayPalBrowserSwitchResultCallback callback) {
         if (browserSwitchResult == null) {

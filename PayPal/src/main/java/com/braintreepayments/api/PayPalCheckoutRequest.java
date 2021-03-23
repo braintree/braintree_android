@@ -21,7 +21,8 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalCheckoutRequest.USER_ACTION_DEFAULT, PayPalCheckoutRequest.USER_ACTION_COMMIT})
-    @interface PayPalPaymentUserAction {}
+    @interface PayPalPaymentUserAction {
+    }
 
     /**
      * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
@@ -45,13 +46,13 @@ public class PayPalCheckoutRequest extends PayPalRequest {
 
     /**
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
-     * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
-     * number, may optionally contain exactly 2 decimal places separated by '.', optional
-     * thousands separator ',', limited to 7 digits before the decimal point.
-     *
-     * This amount may differ slightly from the transaction amount. The exact decline rules
-     * for mismatches between this client-side amount and the final amount in the Transaction
-     * are determined by the gateway.
+     *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
+     *               number, may optionally contain exactly 2 decimal places separated by '.', optional
+     *               thousands separator ',', limited to 7 digits before the decimal point.
+     *               <p>
+     *               This amount may differ slightly from the transaction amount. The exact decline rules
+     *               for mismatches between this client-side amount and the final amount in the Transaction
+     *               are determined by the gateway.
      **/
     public PayPalCheckoutRequest(String amount) {
         this.amount = amount;
@@ -60,7 +61,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     /**
      * Optional: A valid ISO currency code to use for the transaction. Defaults to merchant currency
      * code if not set.
-     *
+     * <p>
      * If unspecified, the currency code will be chosen based on the active merchant account in the
      * client token.
      *
@@ -71,18 +72,16 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     }
 
     /**
-     * Optional: Payment intent. Must be set to {@link PayPalCheckoutRequest#INTENT_SALE} for immediate payment,
-     * {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} to authorize a payment for capture later, or
-     * {@link PayPalCheckoutRequest#INTENT_ORDER} to create an order.
-     *
+     * Optional: Payment intent. Must be set to {@link PayPalPaymentIntent#SALE} for immediate payment,
+     * {@link PayPalPaymentIntent#AUTHORIZE} to authorize a payment for capture later, or
+     * {@link PayPalPaymentIntent#ORDER} to create an order.
+     * <p>
      * Defaults to authorize.
      *
      * @param intent {@link PayPalPaymentIntent}
-     *
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent" under the "payment" definition</a>
      * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
      * for more information
-     *
      */
     public void setIntent(@PayPalPaymentIntent String intent) {
         this.intent = intent;
@@ -90,18 +89,17 @@ public class PayPalCheckoutRequest extends PayPalRequest {
 
     /**
      * Optional: The call-to-action in the PayPal Checkout flow.
-     *
+     * <p>
      * By default the final button will show the localized word for "Continue" and implies that the
      * final amount billed is not yet known. Setting the PayPalCheckoutRequest's userAction to
      * {@link PayPalCheckoutRequest#USER_ACTION_COMMIT} changes the button text to "Pay Now",
      * conveying to the user that billing will take place immediately.
      *
      * @param userAction Must be a be {@link PayPalPaymentUserAction} value:
-     * <ul>
-     * <li>{@link PayPalCheckoutRequest#USER_ACTION_COMMIT}</li>
-     * <li>{@link PayPalCheckoutRequest#USER_ACTION_DEFAULT}</li>
-     * </ul>
-     *
+     *                   <ul>
+     *                   <li>{@link PayPalCheckoutRequest#USER_ACTION_COMMIT}</li>
+     *                   <li>{@link PayPalCheckoutRequest#USER_ACTION_DEFAULT}</li>
+     *                   </ul>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
     public void setUserAction(@PayPalPaymentUserAction String userAction) {

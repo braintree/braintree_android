@@ -39,7 +39,7 @@ class PayPalResponse {
     }
 
     String getUserAction() {
-        if (payPalRequest instanceof  PayPalCheckoutRequest) {
+        if (payPalRequest instanceof PayPalCheckoutRequest) {
             return ((PayPalCheckoutRequest) payPalRequest).getUserAction();
         }
         return "";

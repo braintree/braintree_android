@@ -38,7 +38,8 @@ public abstract class PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
-    @interface PayPalLandingPageType {}
+    @interface PayPalLandingPageType {
+    }
 
     /**
      * A non-PayPal account landing page is used.
@@ -157,10 +158,9 @@ public abstract class PayPalRequest {
      * Optional: Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
      *
      * @param landingPageType Must be a {@link PayPalLandingPageType} value:
-     * <ul>
-     * <li>{@link #LANDING_PAGE_TYPE_BILLING}</li>
-     * <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
-     *
+     *                        <ul>
+     *                        <li>{@link #LANDING_PAGE_TYPE_BILLING}</li>
+     *                        <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
     public void setLandingPageType(@PayPalLandingPageType String landingPageType) {

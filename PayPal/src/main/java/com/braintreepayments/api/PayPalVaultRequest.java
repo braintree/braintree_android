@@ -12,7 +12,8 @@ public class PayPalVaultRequest extends PayPalRequest {
 
     private boolean offerCredit;
 
-    public PayPalVaultRequest() {}
+    public PayPalVaultRequest() {
+    }
 
     /**
      * Optional: Offers PayPal Credit if the customer qualifies. Defaults to false.
