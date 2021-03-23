@@ -41,7 +41,7 @@ public class TokenizationClientTest {
 
         JSONObject urlResponseData = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
         PayPalAccount paypalAccount = new PayPalAccount();
-        paypalAccount.urlResponseData(urlResponseData);
+        paypalAccount.setUrlResponseData(urlResponseData);
 
         tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
             @Override

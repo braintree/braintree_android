@@ -21,10 +21,10 @@ public class PayPalAccountUnitTest {
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
-        sut.intent(PayPalPaymentIntent.SALE);
-        sut.clientMetadataId("correlation_id");
+        sut.setIntent(PayPalPaymentIntent.SALE);
+        sut.setClientMetadataId("correlation_id");
         sut.setSource("paypal-sdk");
-        sut.merchantAccountId("alt_merchant_account_id");
+        sut.setMerchantAccountId("alt_merchant_account_id");
 
         String json = sut.buildJSON();
         JSONObject jsonObject = new JSONObject(json);
@@ -94,7 +94,7 @@ public class PayPalAccountUnitTest {
         JSONObject paymentMethodNonceJson = new JSONObject();
 
         PayPalAccount sut = new PayPalAccount();
-        sut.urlResponseData(urlResponseData);
+        sut.setUrlResponseData(urlResponseData);
 
         sut.buildJSON(base, paymentMethodNonceJson);
 

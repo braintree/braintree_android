@@ -32,7 +32,7 @@ class PayPalAccount extends PaymentMethod {
      * @param clientMetadataId Application clientMetadataId created by
      *                         {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      */
-    public void clientMetadataId(String clientMetadataId) {
+    void setClientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
     }
 
@@ -44,7 +44,7 @@ class PayPalAccount extends PaymentMethod {
      *
      * @param urlResponseData The data parsed from the PayPal callback url.
      */
-    void urlResponseData(JSONObject urlResponseData) {
+    void setUrlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
             mUrlResponseData = urlResponseData;
         }
@@ -55,7 +55,7 @@ class PayPalAccount extends PaymentMethod {
      *
      * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
      */
-    void intent(@PayPalPaymentIntent String intent) {
+    void setIntent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
     }
 
@@ -64,7 +64,7 @@ class PayPalAccount extends PaymentMethod {
      *
      * @param merchantAccountId String merchant account id
      */
-    void merchantAccountId(String merchantAccountId) {
+    void setMerchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
     }
 
