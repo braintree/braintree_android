@@ -70,14 +70,10 @@
   * Update `PayPalRequest` setter method names and remove method chaining
   * Make `PayPalAccountBuilder` package-private
   * Remove `ThreeDSecureClient#performVerification()` convenience overload
-  * Remove `ThreeDSecureClient#prepareLookup()`
-  * Replace `ThreeDSecureClient#performVerification()` with `ThreeDSecureClient#performLookup()`
-  * Replace `ThreeDSecureClient#continuePerformVerification()` with `ThreeDSecureClient#initiateChallengeWithLookup()`
   * Remove `ThreeDSecureAuthenticationResponse`
   * Remove `errorMessage` and `threeDSecureAuthenticationResponse` properties from `ThreeDSecureInfo`
   * Remove `cardNonce` property from `ThreeDSecureLookup`
   * Remove `ThreeDSecureLookupCallback`
-  * Remove `ThreeDSecurePrepareLookupCallback`
   * Remove `firstName` and `lastName` properties from `ThreeDSecurePostalAddress`
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
 

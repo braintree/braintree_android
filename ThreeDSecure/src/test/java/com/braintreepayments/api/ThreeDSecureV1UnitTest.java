@@ -76,7 +76,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void performLookup_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() throws InvalidArgumentException {
+    public void performVerification_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
@@ -87,7 +87,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performLookup(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient, never()).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
     }

@@ -753,7 +753,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
         .shippingMethod(ThreeDSecureShippingMethod.GROUND) 
         .additionalInformation(additionalInformation);
 
-    threeDSecureClient.performLookup(this, threeDSecureRequest, (threeDSecureResult, error) -> {
+    threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureResult, error) -> {
       if (threeDSecureResult != null) {
         // examine lookup response (if necessary), then continue verification
         threeDSecureClient.initiateChallengeWithLookup(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
@@ -773,11 +773,6 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   }
 }
 ```
-
-#### 3DS Methods
-
-- `ThreeDSecure#performVerification()` has been replaced by `ThreeDSecureClient#performLookup()`
-- `ThreeDSecure#continuePerformVerification()` has been replaced by `ThreeDSecureClient#initiateChallengeWithLookup()`
 
 #### 3DS1 UI Customization
 

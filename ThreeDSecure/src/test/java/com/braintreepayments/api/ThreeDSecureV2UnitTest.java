@@ -173,7 +173,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performLookup_initializesCardinal() throws InvalidArgumentException {
+    public void performVerification_initializesCardinal() throws InvalidArgumentException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
@@ -185,13 +185,13 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig), same(mBasicRequest), any(CardinalInitializeCallback.class));
     }
 
     @Test
-    public void performLookup_whenCardinalSetupCompleted_sendsAnalyticEvent() throws InvalidArgumentException {
+    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() throws InvalidArgumentException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
@@ -203,13 +203,13 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
     }
 
     @Test
-    public void performLookup_whenCardinalSetupFailed_sendsAnalyticEvent() throws InvalidArgumentException {
+    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() throws InvalidArgumentException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("cardinal error"))
                 .build();
@@ -221,7 +221,7 @@ public class ThreeDSecureV2UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performLookup(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
     }
@@ -308,7 +308,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performLookup_withoutCardinalJWT_postsException() throws Exception {
+    public void performVerification_withoutCardinalJWT_postsException() throws Exception {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -324,7 +324,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.performLookup(activity, mBasicRequest, callback);
+        sut.performVerification(activity, mBasicRequest, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());

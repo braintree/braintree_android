@@ -56,7 +56,7 @@ public class ThreeDSecureClientTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest()
                         .nonce(nonce)
                         .amount("5");
-                threeDSecureClient.performLookup(mActivity, request, new ThreeDSecureResultCallback() {
+                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                         CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
