@@ -41,8 +41,8 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     private String userAction = USER_ACTION_DEFAULT;
     private final String amount;
     private String currencyCode;
-    private boolean requestBillingAgreement;
-    private boolean offerPayLater;
+    private boolean shouldRequestBillingAgreement;
+    private boolean shouldOfferPayLater;
 
     /**
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
@@ -109,20 +109,20 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     /**
      * Optional: Offers PayPal Pay Later if the customer qualifies. Defaults to false.
      *
-     * @param offerPayLater Whether to offer PayPal Pay Later.
+     * @param shouldOfferPayLater Whether to offer PayPal Pay Later.
      */
-    public void setOfferPayLater(boolean offerPayLater) {
-        this.offerPayLater = offerPayLater;
+    public void setShouldOfferPayLater(boolean shouldOfferPayLater) {
+        this.shouldOfferPayLater = shouldOfferPayLater;
     }
 
     /**
      * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be
      * prompted to consent to a billing agreement during checkout.
      *
-     * @param requestBillingAgreement Whether to request billing agreement during checkout.
+     * @param shouldRequestBillingAgreement Whether to request billing agreement during checkout.
      */
-    public void setRequestBillingAgreement(boolean requestBillingAgreement) {
-        this.requestBillingAgreement = requestBillingAgreement;
+    public void setShouldRequestBillingAgreement(boolean shouldRequestBillingAgreement) {
+        this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
     public String getAmount() {
@@ -143,19 +143,19 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         return userAction;
     }
 
-    public boolean shouldOfferPayLater() {
-        return offerPayLater;
+    public boolean getShouldOfferPayLater() {
+        return shouldOfferPayLater;
     }
 
-    public boolean shouldRequestBillingAgreement() {
-        return requestBillingAgreement;
+    public boolean getShouldRequestBillingAgreement() {
+        return shouldRequestBillingAgreement;
     }
 
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
-                .put(OFFER_PAY_LATER_KEY, offerPayLater);
+                .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater);
 
         if (authorization instanceof ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
@@ -163,12 +163,12 @@ public class PayPalCheckoutRequest extends PayPalRequest {
             parameters.put(TOKENIZATION_KEY, authorization.getBearer());
         }
 
-        if (requestBillingAgreement) {
+        if (shouldRequestBillingAgreement) {
             parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true);
         }
 
         String billingAgreementDescription = getBillingAgreementDescription();
-        if (requestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
+        if (shouldRequestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
 

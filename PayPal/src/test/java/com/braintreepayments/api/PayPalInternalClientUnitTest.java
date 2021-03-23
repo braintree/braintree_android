@@ -141,7 +141,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         payPalRequest.setCurrencyCode("USD");
         payPalRequest.setIntent("authorize");
-        payPalRequest.setRequestBillingAgreement(true);
+        payPalRequest.setShouldRequestBillingAgreement(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setLandingPageType("sample-landing-page-type");
@@ -149,7 +149,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
         payPalRequest.setShippingAddressEditable(true);
-        payPalRequest.setOfferPayLater(true);
+        payPalRequest.setShouldOfferPayLater(true);
         payPalRequest.setLineItems(Collections.singletonList(item));
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
@@ -410,7 +410,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
-        payPalRequest.setRequestBillingAgreement(false);
+        payPalRequest.setShouldRequestBillingAgreement(false);
         payPalRequest.setBillingAgreementDescription("Billing agreement description");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 

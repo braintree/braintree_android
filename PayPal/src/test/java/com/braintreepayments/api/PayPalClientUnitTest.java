@@ -276,7 +276,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
-        request.setOfferPayLater(true);
+        request.setShouldOfferPayLater(true);
         sut.tokenizePayPalAccount(context, request, payPalFlowStartedCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
