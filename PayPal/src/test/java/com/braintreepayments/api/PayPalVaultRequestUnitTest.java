@@ -21,7 +21,7 @@ public class PayPalVaultRequestUnitTest {
         assertNull(request.getShippingAddressOverride());
         assertNull(request.getDisplayName());
         assertNull(request.getLandingPageType());
-        assertFalse(request.shouldOfferCredit());
+        assertFalse(request.getShouldOfferCredit());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
-        request.setOfferCredit(true);
+        request.setShouldOfferCredit(true);
 
         assertEquals("US", request.getLocaleCode());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
@@ -42,6 +42,6 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
-        assertTrue(request.shouldOfferCredit());
+        assertTrue(request.getShouldOfferCredit());
     }
 }

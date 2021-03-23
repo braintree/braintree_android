@@ -323,7 +323,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
-        payPalRequest.setOfferCredit(true);
+        payPalRequest.setShouldOfferCredit(true);
 
         PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, payPalRequest, payPalFlowStartedCallback);

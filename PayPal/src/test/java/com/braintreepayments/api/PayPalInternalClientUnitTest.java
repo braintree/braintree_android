@@ -76,7 +76,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
         payPalRequest.setShippingAddressEditable(true);
-        payPalRequest.setOfferCredit(true);
+        payPalRequest.setShouldOfferCredit(true);
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);

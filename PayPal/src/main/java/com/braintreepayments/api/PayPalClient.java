@@ -121,7 +121,7 @@ public class PayPalClient {
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-        if (payPalVaultRequest.shouldOfferCredit()) {
+        if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
         }
 

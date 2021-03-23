@@ -24,7 +24,7 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.isPayPalCreditOffered(context)) {
-            request.setOfferCredit(true);
+            request.setShouldOfferCredit(true);
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
