@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -171,6 +172,52 @@ public class ThreeDSecureClient {
                 intent.putExtras(extras);
 
                 activity.startActivityForResult(intent, THREE_D_SECURE);
+            }
+        });
+    }
+
+    /**
+     * Creates a stringified JSON object containing the information necessary to perform a lookup
+     *
+     * @param context Android Context
+     * @param request  the {@link ThreeDSecureRequest} that has a nonce and an optional UI customization.
+     * @param callback {@link ThreeDSecurePrepareLookupCallback}
+     */
+    public void prepareLookup(final Context context, final ThreeDSecureRequest request, final ThreeDSecurePrepareLookupCallback callback) {
+        final JSONObject lookupJSON = new JSONObject();
+        try {
+            lookupJSON
+                    .put("authorizationFingerprint", braintreeClient.getAuthorization().getBearer())
+                    .put("braintreeLibraryVersion", "Android-" + BuildConfig.VERSION_NAME)
+                    .put("nonce", request.getNonce())
+                    .put("clientMetadata", new JSONObject()
+                            .put("requestedThreeDSecureVersion", "2")
+                            .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
+        } catch (JSONException ignored) {
+        }
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration.getCardinalAuthenticationJwt() == null) {
+                    Exception authError = new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                            "Please contact Braintree Support for assistance.");
+                    callback.onResult(null, null, authError);
+                    return;
+                }
+
+                cardinalClient.initialize(context, configuration, request, new CardinalInitializeCallback() {
+                    @Override
+                    public void onResult(String consumerSessionId, Exception error) {
+                        if (consumerSessionId != null) {
+                            try {
+                                lookupJSON.put("dfReferenceId", consumerSessionId);
+                            } catch (JSONException ignored) {
+                            }
+                        }
+                        callback.onResult(request, lookupJSON.toString(), null);
+                    }
+                });
             }
         });
     }

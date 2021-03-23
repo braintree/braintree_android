@@ -8,6 +8,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +58,118 @@ public class ThreeDSecureV2UnitTest {
                 .amount("1.00")
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .v2UiCustomization(v2UiCustomization);
+    }
+
+    @Test
+    public void prepareLookup_returnsValidLookupJSONString() throws InvalidArgumentException, JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("fake-df")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, mBasicRequest, callback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(same(mBasicRequest), captor.capture(), (Exception) isNull());
+
+        String clientData = captor.getValue();
+        JSONObject lookup = new JSONObject(clientData);
+        assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"));
+        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+        assertEquals(lookup.getString("dfReferenceId"), "fake-df");
+        assertEquals(lookup.getString("nonce"), "a-nonce");
+
+        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
+        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+        assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
+    }
+
+    @Test
+    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws InvalidArgumentException, JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .error(new Exception("cardinal error"))
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, mBasicRequest, callback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(same(mBasicRequest), captor.capture(), (Exception) isNull());
+
+        String clientData = captor.getValue();
+        JSONObject lookup = new JSONObject(clientData);
+        assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"));
+        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+        assertEquals(lookup.getString("nonce"), "a-nonce");
+        assertFalse(lookup.has("dfReferenceId"));
+
+        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
+        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+        assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
+    }
+
+    @Test
+    public void prepareLookup_initializesCardinal() throws InvalidArgumentException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("fake-df")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, mBasicRequest, callback);
+
+        verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig), same(mBasicRequest), any(CardinalInitializeCallback.class));
+    }
+
+    @Test
+    public void prepareLookup_withoutCardinalJWT_postsException() throws Exception {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(configuration)
+                .build();
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, mBasicRequest, callback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(callback).onResult((ThreeDSecureRequest) isNull(), (String) isNull(), captor.capture());
+
+        assertTrue(captor.getValue() instanceof BraintreeException);
+        assertEquals(captor.getValue().getMessage(), "Merchant is not configured for 3DS 2.0. " +
+                "Please contact Braintree Support for assistance.");
     }
 
     @Test
