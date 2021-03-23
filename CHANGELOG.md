@@ -76,6 +76,7 @@
   * Remove `ThreeDSecureLookupCallback`
   * Remove `firstName` and `lastName` properties from `ThreeDSecurePostalAddress`
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
+  * Remove `ThreeDSecureClient#performVerification()` convenience method
 
 ## 4.0.0-beta1
 
