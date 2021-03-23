@@ -288,7 +288,7 @@ The Google Pay feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:google-pay:4.0.0-beta1'
+  implementation 'com.braintreepayments.api:google-payment:4.0.0-beta1' // we think this should probably be google-pay, but it's deployed as google-payment
 }
 ```
 
@@ -314,6 +314,7 @@ public class GooglePayActivity extends AppCompatActivity {
   }
 
   private void checkIfGooglePayIsAvailable() {
+  // FEEDBACK: we needed to pass a fragment activity to isReadyToPay, which this code snippet doesn't show
     googlePayClient.isReadyToPay((isReadyToPay, error) -> {
       if (isReadyToPay) {
         // Google Pay is available
@@ -324,7 +325,7 @@ public class GooglePayActivity extends AppCompatActivity {
   }
 
   private void makeGooglePayRequest() {
-    GooglePayRequest googlePayRequest = new GooglePayReques()
+    GooglePayRequest googlePayRequest = new GooglePayRequest()
       .transactionInfo(TransactionInfo.newBuilder()
         .setTotalPrice("1.00")
         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
@@ -333,6 +334,7 @@ public class GooglePayActivity extends AppCompatActivity {
       .billingAddressRequired(true)
       .googleMerchantId("merchant-id-from-google");
 
+// FEEDBACK: Why do merchants need success and error? Is there ever a case where you would have success = true and a non-null error OR success = false and a null error?
     googlePayClient.requestPayment(this, googlePayRequest, (success, error) -> {
       if (error != null) {
         // Handle error
@@ -344,6 +346,7 @@ public class GooglePayActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == BraintreeRequestCodes.GOOGLE_PAY) {
+      // FEEDBACK: this method also required a FragmentActivity, which the code snippet doesn't show
       googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
         if (paymentMethodNonce != null) {
           // send this nonce to your server
@@ -658,6 +661,8 @@ dependencies {
   implementation 'com.braintreepayments.api:card:4.0.0-beta1'
 }
 ```
+
+FEEDBACK: It might help to note that merchants still need to include the Cardinal maven repo and credentials.
 
 To use the feature, instantiate an `ThreeDSecureClient`:
 
