@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add Venmo to `queries` element in `AndroidManifest.xml`
+
 ## 3.17.0
 
 * Add `bic` (Bank Identification Code) to `LocalPaymentRequest`
