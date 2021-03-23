@@ -16,6 +16,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PayPalCheckoutRequest extends PayPalRequest {
 
+    /**
+     * The payment intent in the PayPal Checkout flow
+     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalCheckoutRequest.INTENT_ORDER, PayPalCheckoutRequest.INTENT_SALE, PayPalCheckoutRequest.INTENT_AUTHORIZE})
     @interface PayPalPaymentIntent {}
@@ -35,6 +38,9 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      */
     public static final String INTENT_AUTHORIZE = "authorize";
 
+    /**
+     * The call-to-action in the PayPal Checkout flow
+     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalCheckoutRequest.USER_ACTION_DEFAULT, PayPalCheckoutRequest.USER_ACTION_COMMIT})
     @interface PayPalPaymentUserAction {}
