@@ -5,7 +5,7 @@
 
     <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk"/>
 
-    <queries tools:node="merge">
+    <queries>
         <package android:name="com.venmo" />
     </queries>
 
