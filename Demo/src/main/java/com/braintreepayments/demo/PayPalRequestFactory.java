@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.PayPalCheckoutRequest;
+import com.braintreepayments.api.PayPalPaymentIntent;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PostalAddress;
@@ -27,14 +28,15 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
-            request.setShippingAddressOverride(new PostalAddress()
-                    .recipientName("Brian Tree")
-                    .streetAddress("123 Fake Street")
-                    .extendedAddress("Floor A")
-                    .locality("San Francisco")
-                    .region("CA")
-                    .countryCodeAlpha2("US")
-            );
+            PostalAddress postalAddress = new PostalAddress();
+            postalAddress.setRecipientName("Brian Tree");
+            postalAddress.setStreetAddress("123 Fake Street");
+            postalAddress.setExtendedAddress("Floor A");
+            postalAddress.setLocality("San Francisco");
+            postalAddress.setRegion("CA");
+            postalAddress.setCountryCodeAlpha2("US");
+
+            request.setShippingAddressOverride(postalAddress);
         }
 
         return request;
@@ -54,11 +56,11 @@ public class PayPalRequestFactory {
 
         String intentType = Settings.getPayPalIntentType(context);
         if (intentType.equals(context.getString(R.string.paypal_intent_authorize))) {
-            request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
+            request.setIntent(PayPalPaymentIntent.AUTHORIZE);
         } else if (intentType.equals(context.getString(R.string.paypal_intent_order))) {
-            request.setIntent(PayPalCheckoutRequest.INTENT_ORDER);
+            request.setIntent(PayPalPaymentIntent.ORDER);
         } else if (intentType.equals(context.getString(R.string.paypal_intent_sale))) {
-            request.setIntent(PayPalCheckoutRequest.INTENT_SALE);
+            request.setIntent(PayPalPaymentIntent.SALE);
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
@@ -66,14 +68,15 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
-            request.setShippingAddressOverride(new PostalAddress()
-                    .recipientName("Brian Tree")
-                    .streetAddress("123 Fake Street")
-                    .extendedAddress("Floor A")
-                    .locality("San Francisco")
-                    .region("CA")
-                    .countryCodeAlpha2("US")
-            );
+            PostalAddress shippingAddress = new PostalAddress();
+            shippingAddress.setRecipientName("Brian Tree");
+            shippingAddress.setStreetAddress("123 Fake Street");
+            shippingAddress.setExtendedAddress("Floor A");
+            shippingAddress.setLocality("San Francisco");
+            shippingAddress.setRegion("CA");
+            shippingAddress.setCountryCodeAlpha2("US");
+
+            request.setShippingAddressOverride(shippingAddress);
         }
 
         return request;

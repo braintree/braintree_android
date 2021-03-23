@@ -53,9 +53,9 @@ class PayPalAccount extends PaymentMethod {
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
      */
-    void intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
+    void intent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
     }
 
