@@ -46,7 +46,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_whenPayPalNotEnabled_throwsError() {
+    public void tokenizePayPalAccount_whenPayPalNotEnabled_throwsError() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -66,7 +66,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_whenDeviceCantPerformBrowserSwitch_throwsError() {
+    public void tokenizePayPalAccount_whenDeviceCantPerformBrowserSwitch_throwsError() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -88,7 +88,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_startsBrowser() throws JSONException, BrowserSwitchException {
+    public void tokenizePayPalAccount_startsBrowser() throws JSONException, BrowserSwitchException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
@@ -129,7 +129,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_sendsAnalyticsEvents() {
+    public void tokenizePayPalAccount_sendsAnalyticsEvents() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
@@ -283,7 +283,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_sendsPayPalRequestViaInternalClient() {
+    public void tokenizePayPalAccount_sendsPayPalRequestViaInternalClient() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -317,7 +317,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_sendsPayPalCreditOfferedAnalyticsEvent() {
+    public void tokenizePayPalAccount_sendsPayPalCreditOfferedAnalyticsEvent() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
