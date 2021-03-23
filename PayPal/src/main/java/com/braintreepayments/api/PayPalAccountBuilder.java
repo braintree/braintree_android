@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.PayPalRequest.PayPalPaymentIntent;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +10,7 @@ import java.util.Iterator;
 /**
  * Builder used to construct a PayPal account tokenization request
  */
-public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
+class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
@@ -24,7 +22,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     private String mIntent;
     private String mMerchantAccountId;
 
-    public PayPalAccountBuilder() {
+    PayPalAccountBuilder() {
         super();
     }
 
@@ -35,7 +33,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
+    PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
         return this;
     }
@@ -49,7 +47,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * @param urlResponseData The data parsed from the PayPal callback url.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder urlResponseData(JSONObject urlResponseData) {
+    PayPalAccountBuilder urlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
             mUrlResponseData = urlResponseData;
         }
@@ -59,10 +57,10 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     * @param intent Can be either {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} or {@link PayPalCheckoutRequest#INTENT_SALE}.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder intent(@PayPalPaymentIntent String intent) {
+    PayPalAccountBuilder intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
         mIntent = intent;
         return this;
     }
@@ -73,7 +71,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * @param merchantAccountId String merchant account id
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder merchantAccountId(String merchantAccountId) {
+    PayPalAccountBuilder merchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
         return this;
     }

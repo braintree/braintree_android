@@ -8,54 +8,55 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalRequestUnitTest {
+public class PayPalCheckoutRequestUnitTest {
 
     @Test
-    public void newPayPalRequest_setsDefaultValues() {
-        PayPalRequest request = new PayPalRequest();
+    public void newPayPalCheckoutRequest_setsDefaultValues() {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
 
-        assertNull(request.getAmount());
+        assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
         assertNull(request.getDisplayName());
-        assertEquals(PayPalRequest.INTENT_AUTHORIZE, request.getIntent());
+        assertEquals(PayPalCheckoutRequest.INTENT_AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
-        assertFalse(request.shouldOfferCredit());
+        assertNull(request.getBillingAgreementDescription());
         assertFalse(request.shouldOfferPayLater());
     }
 
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalRequest request = new PayPalRequest()
-                .amount("1.00")
-                .currencyCode("USD")
-                .localeCode("US")
-                .billingAgreementDescription("Billing Agreement Description")
-                .shippingAddressRequired(true)
-                .shippingAddressOverride(postalAddress)
-                .intent(PayPalRequest.INTENT_SALE)
-                .userAction(PayPalRequest.USER_ACTION_COMMIT)
-                .displayName("Display Name")
-                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
-                .offerCredit(true)
-                .offerPayLater(true);
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+        request.setCurrencyCode("USD");
+        request.setOfferPayLater(true);
+        request.setIntent(PayPalCheckoutRequest.INTENT_SALE);
+
+        request.setLocaleCode("US");
+        request.setRequestBillingAgreement(true);
+        request.setBillingAgreementDescription("Billing Agreement Description");
+        request.setShippingAddressRequired(true);
+        request.setShippingAddressOverride(postalAddress);
+        request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+        request.setDisplayName("Display Name");
+        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
+        assertTrue(request.shouldRequestBillingAgreement());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
-        assertEquals(PayPalRequest.INTENT_SALE, request.getIntent());
-        assertEquals(PayPalRequest.USER_ACTION_COMMIT, request.getUserAction());
+        assertEquals(PayPalCheckoutRequest.INTENT_SALE, request.getIntent());
+        assertEquals(PayPalCheckoutRequest.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
-        assertTrue(request.shouldOfferCredit());
         assertTrue(request.shouldOfferPayLater());
     }
 }

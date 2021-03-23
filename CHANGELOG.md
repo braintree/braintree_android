@@ -11,6 +11,10 @@
   * `ThreeDSecureV2LabelCustomization`
   * `ThreeDSecureV2TextBoxCustomization`
   * `ThreeDSecureV2ToolbarCustomization`
+* Add `PayPalCheckoutRequest`
+* Add `PayPalVaultRequest`
+* Add `tokenizePayPalAccount` method to `PayPalClient`
+* Add `requestBillingAgreement` to `PayPalCheckoutRequest`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
@@ -58,6 +62,11 @@
   * Rename `VenmoAuthorizeAccountCallback` to `VenmoTokenizeAccountCallback`
   * Remove `activity` parameter from `GooglePayClient#onActivityResult()`
   * Remove `activity` parameter from `GooglePayClient#getTokenizationParameters()`
+  * Update `PayPalClient#requestOneTimePayment()` to expect a `PayPalCheckoutRequest` and deprecate method
+  * Update `PayPalClient#requestBillingAgreement()` to expect a `PayPalVaultRequest` and deprecate method
+  * Make `PayPalRequest` abstract
+  * Update `PayPalRequest` setter method names and remove method chaining
+  * Make `PayPalAccountBuilder` package-private
 
 ## 4.0.0-beta1
 

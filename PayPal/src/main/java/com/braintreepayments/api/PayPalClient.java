@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Used to create and tokenize PayPal accounts. For more information see the
+ * Used to tokenize PayPal accounts. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/">documentation</a>
  */
 public class PayPalClient {
@@ -54,91 +54,106 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the One-Time Payment flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request. An amount MUST be specified.
-     * @param callback {@link PayPalFlowStartedCallback}
-     */
-    public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-        if (payPalRequest.getAmount() != null) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-            if (payPalRequest.shouldOfferCredit()) {
-                braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
-            }
-            
-            if (payPalRequest.shouldOfferPayLater()) {
-                braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-            }
-
-            braintreeClient.getConfiguration(new ConfigurationCallback() {
-                @Override
-                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-                    if (payPalConfigInvalid(configuration)) {
-                        Exception configInvalidError = createPayPalError();
-                        callback.onResult(configInvalidError);
-                        return;
-                    }
-
-                    if (browserSwitchNotPossible(activity)) {
-                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                        Exception manifestInvalidError = createBrowserSwitchError();
-                        callback.onResult(manifestInvalidError);
-                        return;
-                    }
-                    sendCheckoutRequest(activity, payPalRequest, false, callback);
-                }
-            });
-
-        } else {
-            callback.onResult(new BraintreeException("An amount must be specified for the Single Payment flow."));
-        }
-    }
-
-    /**
-     * Starts the Billing Agreement flow for PayPal.
+     * Tokenize a PayPal account for vault or checkout.
      *
      * @param activity Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback {@link PayPalFlowStartedCallback}
      */
-    public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-        if (payPalRequest.getAmount() == null) {
-            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-            if (payPalRequest.shouldOfferCredit()) {
-                braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
-            }
-
-            braintreeClient.getConfiguration(new ConfigurationCallback() {
-                @Override
-                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-                    if (payPalConfigInvalid(configuration)) {
-                        Exception configInvalidError = createPayPalError();
-                        callback.onResult(configInvalidError);
-                        return;
-                    }
-
-                    if (browserSwitchNotPossible(activity)) {
-                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                        Exception manifestInvalidError = createBrowserSwitchError();
-                        callback.onResult(manifestInvalidError);
-                        return;
-                    }
-
-                    sendCheckoutRequest(activity, payPalRequest, true, callback);
-                }
-            });
-        } else {
-            callback.onResult(new BraintreeException("There must be no amount specified for the Billing Agreement flow"));
-        }
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+       if (payPalRequest instanceof PayPalCheckoutRequest) {
+           sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+       } else if (payPalRequest instanceof PayPalVaultRequest) {
+           sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
+       }
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalFlowStartedCallback callback) {
-        internalPayPalClient.sendRequest(activity, payPalRequest, isBillingAgreement, new PayPalInternalClientCallback() {
+    /**
+     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
+     * Starts the One-Time Payment (Checkout) flow for PayPal.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
+    @Deprecated
+    public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+        tokenizePayPalAccount(activity, payPalCheckoutRequest, callback);
+    }
+
+    /**
+     * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
+     * Starts the Billing Agreement (Vault) flow for PayPal.
+     *
+     * @param activity Android FragmentActivity
+     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
+     * @param callback {@link PayPalFlowStartedCallback}
+     */
+    @Deprecated
+    public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+        tokenizePayPalAccount(activity, payPalVaultRequest, callback);
+    }
+
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
+        if (payPalCheckoutRequest.shouldOfferPayLater()) {
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+        }
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (payPalConfigInvalid(configuration)) {
+                    Exception configInvalidError = createPayPalError();
+                    callback.onResult(configInvalidError);
+                    return;
+                }
+
+                if (browserSwitchNotPossible(activity)) {
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    Exception manifestInvalidError = createBrowserSwitchError();
+                    callback.onResult(manifestInvalidError);
+                    return;
+                }
+                sendPayPalRequest(activity, payPalCheckoutRequest, callback);
+            }
+        });
+
+    }
+
+    private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
+        if (payPalVaultRequest.shouldOfferCredit()) {
+            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+        }
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (payPalConfigInvalid(configuration)) {
+                    Exception configInvalidError = createPayPalError();
+                    callback.onResult(configInvalidError);
+                    return;
+                }
+
+                if (browserSwitchNotPossible(activity)) {
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    Exception manifestInvalidError = createBrowserSwitchError();
+                    callback.onResult(manifestInvalidError);
+                    return;
+                }
+
+                sendPayPalRequest(activity, payPalVaultRequest, callback);
+            }
+        });
+    }
+
+    private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+        internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
             public void onResult(PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
-                    String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
 
                     try {
@@ -176,8 +191,8 @@ public class PayPalClient {
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 
-    private static String getAnalyticsEventPrefix(boolean isBillingAgreement) {
-        return isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
+    private static String getAnalyticsEventPrefix(PayPalRequest request) {
+        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
     /**
@@ -195,7 +210,7 @@ public class PayPalClient {
 
         boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
-        String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+        String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
         int result = browserSwitchResult.getStatus();
         switch (result) {

@@ -15,9 +15,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.PostalAddress;
+
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
 public class PayPalFragment extends BaseFragment {
 
@@ -69,13 +70,13 @@ public class PayPalFragment extends BaseFragment {
                     dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> mDeviceData = deviceData);
                 }
                 if (isBillingAgreement) {
-                    payPalClient.requestBillingAgreement(activity, getPayPalRequest(null), payPalError -> {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
                         if (payPalError != null) {
                             handleError(payPalError);
                         }
                     });
                 } else {
-                    payPalClient.requestOneTimePayment(activity, getPayPalRequest("1.00"), payPalError -> {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
                         if (payPalError != null) {
                             handleError(payPalError);
                         }
@@ -95,51 +96,6 @@ public class PayPalFragment extends BaseFragment {
 
             NavHostFragment.findNavController(this).navigate(action);
         }
-    }
-
-    private PayPalRequest getPayPalRequest(@Nullable String amount) {
-        FragmentActivity activity = getActivity();
-        PayPalRequest request = new PayPalRequest()
-               .amount(amount);
-
-        request.displayName(Settings.getPayPalDisplayName(activity));
-
-        String landingPageType = Settings.getPayPalLandingPageType(activity);
-        if (getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
-        } else if (getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
-        }
-
-        String intentType = Settings.getPayPalIntentType(activity);
-        if (intentType.equals(getString(R.string.paypal_intent_authorize))) {
-            request.intent(PayPalRequest.INTENT_AUTHORIZE);
-        } else if (intentType.equals(getString(R.string.paypal_intent_order))) {
-            request.intent(PayPalRequest.INTENT_ORDER);
-        } else if (intentType.equals(getString(R.string.paypal_intent_sale))) {
-            request.intent(PayPalRequest.INTENT_SALE);
-        }
-
-        if (Settings.isPayPalUseractionCommitEnabled(activity)) {
-            request.userAction(PayPalRequest.USER_ACTION_COMMIT);
-        }
-
-        if (Settings.isPayPalCreditOffered(activity)) {
-            request.offerCredit(true);
-        }
-
-        if (Settings.usePayPalAddressOverride(activity)) {
-            request.shippingAddressOverride(new PostalAddress()
-                    .recipientName("Brian Tree")
-                    .streetAddress("123 Fake Street")
-                    .extendedAddress("Floor A")
-                    .locality("San Francisco")
-                    .region("CA")
-                    .countryCodeAlpha2("US")
-            );
-        }
-
-        return request;
     }
 
     public void handlePayPalBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
