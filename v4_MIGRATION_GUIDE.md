@@ -413,7 +413,7 @@ public class PayPalActivity extends AppCompatActivity {
   private void myTokenizePayPalAccountWithCheckoutMethod() {
     PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
     request.setCurrencyCode("USD");
-    request.setIntent(PayPalCheckoutRequest.INTENT_AUTHORIZE);
+    request.setIntent(PayPalPaymentIntent.AUTHORIZE);
 
     payPalClient.tokenizePayPalAccount(this, request, (error) -> {
       if (error != null) {
