@@ -9,8 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 public interface GooglePayRequestPaymentCallback {
 
     /**
-     * @param paymentRequested true if Google Pay flow started successfully; false otherwise.
      * @param error an exception that occurred while initiating the Google Pay flow
      */
-    void onResult(boolean paymentRequested, Exception error);
+    void onResult(Exception error);
 }
