@@ -4,4 +4,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk"/>
+
+    <queries>
+        <package android:name="com.venmo" />
+        <package android:name="com.paypal.android.p2pmobile" />
+    </queries>
 </manifest>
