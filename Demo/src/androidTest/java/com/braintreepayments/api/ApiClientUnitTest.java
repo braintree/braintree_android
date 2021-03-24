@@ -1,4 +1,6 @@
-package com.braintreepayments.demo.test;
+package com.braintreepayments.api;
+
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.Settings;
 import com.braintreepayments.demo.internal.ApiClient;
@@ -8,6 +10,7 @@ import com.braintreepayments.demo.models.Transaction;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -22,6 +25,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class ApiClientUnitTest {
 
     private CountDownLatch mCountDownLatch;
