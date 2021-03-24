@@ -578,7 +578,7 @@ public class UnionPayActivity extends AppCompatActivity {
     unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
       unionPayCard.setSmsCode("1234");
       unionPayCard.setEnrollmentId(enrollment.getId());
-      tokenizeUnionPayMethod(unionPayCard);
+      tokenizeUnionPay(unionPayCard);
     });
   }
 
