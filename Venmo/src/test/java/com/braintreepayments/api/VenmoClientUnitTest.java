@@ -101,7 +101,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -137,7 +137,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
@@ -157,7 +157,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
@@ -177,7 +177,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
@@ -204,7 +204,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -231,7 +231,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId("second-pwv-profile-id");
+        request.setProfileId("second-pwv-profile-id");
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -259,7 +259,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -287,7 +287,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
@@ -303,7 +303,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -323,7 +323,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(true);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -342,7 +342,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -362,7 +362,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -380,7 +380,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(false);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
@@ -445,7 +445,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest();
-        request.getProfileId(null);
+        request.setProfileId(null);
         request.setShouldVault(true);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
