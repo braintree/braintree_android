@@ -24,7 +24,7 @@ public class VenmoRequest {
      *                  Venmo profile IDs can be found in the Braintree Control Panel.
      *                  Leaving this `null` will use the default Venmo profile.
      */
-    public void getProfileId(String profileId) {
+    public void setProfileId(String profileId) {
         this.profileId = profileId;
     }
 
