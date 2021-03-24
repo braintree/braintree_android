@@ -5,6 +5,10 @@
 
     <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk"/>
 
+    <queries>
+        <package android:name="com.venmo" />
+    </queries>
+
     <application>
         <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
         <activity android:name=".ThreeDSecureActivity"/>
