@@ -142,10 +142,6 @@ def prompt_for_sonatype_username_and_password
 end
 
 def post_release(version)
-  if !`git remote`.include?("github")
-    sh "git remote add github git@github.com:braintree/braintree_android.git"
-  end
-
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -a -m 'Release #{version}'"
