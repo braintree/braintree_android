@@ -200,6 +200,10 @@ public class PayPalClient {
      * @param callback {@link PayPalBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final PayPalBrowserSwitchResultCallback callback) {
+        if (browserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            return;
+        }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);

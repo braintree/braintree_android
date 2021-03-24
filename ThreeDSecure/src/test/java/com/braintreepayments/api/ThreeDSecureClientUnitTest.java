@@ -296,4 +296,20 @@ public class ThreeDSecureClientUnitTest {
         assertEquals(422, error.getStatusCode());
         assertEquals("Failed to authenticate, please try a different form of payment.", error.getMessage());
     }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchResultIsNull_returnsExceptionToCallback() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        sut.onBrowserSwitchResult(null, threeDSecureResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("BrowserSwitchResult cannot be null", exception.getMessage());
+    }
 }

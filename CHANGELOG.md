@@ -15,6 +15,7 @@
 * Add `PayPalVaultRequest`
 * Add `tokenizePayPalAccount` method to `PayPalClient`
 * Add `requestBillingAgreement` to `PayPalCheckoutRequest`
+* Fix issue where `onBrowserSwitchResult` crashes if `browserSwitchResult` is null
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private

@@ -579,4 +579,21 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchResultIsNull_returnsExceptionToCallbak() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPalClient sut = new PayPalClient(braintreeClient, tokenizationClient, payPalInternalClient);
+
+        sut.onBrowserSwitchResult(null, payPalBrowserSwitchResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalBrowserSwitchResultCallback).onResult((PayPalAccountNonce) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("BrowserSwitchResult cannot be null", exception.getMessage());
+    }
 }
