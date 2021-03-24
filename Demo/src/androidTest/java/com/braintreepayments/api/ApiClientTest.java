@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class ApiClientUnitTest {
+public class ApiClientTest {
 
     private CountDownLatch mCountDownLatch;
     private ApiClient mApiClient;
