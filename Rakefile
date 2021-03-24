@@ -160,12 +160,7 @@ def post_release(version)
   puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
-  sh "git push origin master #{version}"
-
-  puts "\nPushed to GHE! Press ENTER to push to public Github."
-  $stdin.gets
-
-  sh "git push github master #{version}"
+  sh "git push origin #{version}"
 
   $stdin.gets
 end
