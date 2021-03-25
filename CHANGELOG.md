@@ -78,6 +78,7 @@
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
+  * Remove `paymentRequested` from `GooglePayRequestPaymentCallback`
 
 ## 4.0.0-beta1
 
