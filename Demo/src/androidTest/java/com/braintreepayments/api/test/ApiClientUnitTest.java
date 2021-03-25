@@ -1,4 +1,4 @@
-package com.braintreepayments.demo.test;
+package com.braintreepayments.api.test;
 
 import com.braintreepayments.demo.Settings;
 import com.braintreepayments.demo.internal.ApiClient;
