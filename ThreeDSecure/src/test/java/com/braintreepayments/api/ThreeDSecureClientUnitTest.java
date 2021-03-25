@@ -306,7 +306,7 @@ public class ThreeDSecureClientUnitTest {
         sut.onBrowserSwitchResult(null, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
