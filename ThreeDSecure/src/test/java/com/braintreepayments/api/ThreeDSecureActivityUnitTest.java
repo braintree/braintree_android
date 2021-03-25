@@ -28,11 +28,12 @@ public class ThreeDSecureActivityUnitTest {
     private static final c CARDINAL_ERROR = new c(0, "");
 
     @Test
-    public void onCreate_invokesCardinalWithLookupData() {
-        ThreeDSecureLookup threeDSecureLookup = sampleThreeDSecureLookup();
+    public void onCreate_invokesCardinalWithLookupData() throws JSONException {
+        ThreeDSecureResult threeDSecureResult =
+            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -43,19 +44,22 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.onCreateInternal(cardinalClient);
 
-        ArgumentCaptor<ThreeDSecureLookup> captor = ArgumentCaptor.forClass(ThreeDSecureLookup.class);
+        ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(cardinalClient).continueLookup(same(sut), captor.capture(), same(sut));
 
-        ThreeDSecureLookup actualLookup = captor.getValue();
+        ThreeDSecureResult actualResult = captor.getValue();
+        ThreeDSecureLookup actualLookup = actualResult.getLookup();
         assertEquals("sample-transaction-id", actualLookup.getTransactionId());
         assertEquals("sample-pareq", actualLookup.getPareq());
     }
 
     @Test
-    public void onValidated_returnsValidationResults() {
-        ThreeDSecureLookup threeDSecureLookup = sampleThreeDSecureLookup();
+    public void onValidated_returnsValidationResults() throws JSONException {
+        ThreeDSecureResult threeDSecureResult =
+            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -74,16 +78,8 @@ public class ThreeDSecureActivityUnitTest {
         ValidateResponse activityResult = (ValidateResponse)(intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
 
         assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT));
-        assertEquals(threeDSecureLookup, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP));
+        assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
         assertNotNull(activityResult);
         assertEquals("SUCCESS", activityResult.getActionCode().getString());
-    }
-
-    private ThreeDSecureLookup sampleThreeDSecureLookup() {
-        try {
-            return ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

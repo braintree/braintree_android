@@ -16,6 +16,7 @@
 * Add `tokenizePayPalAccount` method to `PayPalClient`
 * Add `requestBillingAgreement` to `PayPalCheckoutRequest`
 * Fix issue where `onBrowserSwitchResult` crashes if `browserSwitchResult` is null
+* Add `ThreeDSecureResult`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
@@ -68,6 +69,15 @@
   * Make `PayPalRequest` abstract
   * Update `PayPalRequest` setter method names and remove method chaining
   * Make `PayPalAccountBuilder` package-private
+  * Remove `ThreeDSecureClient#performVerification()` convenience overload
+  * Remove `ThreeDSecureAuthenticationResponse`
+  * Remove `errorMessage` and `threeDSecureAuthenticationResponse` properties from `ThreeDSecureInfo`
+  * Remove `cardNonce` property from `ThreeDSecureLookup`
+  * Remove `ThreeDSecureLookupCallback`
+  * Remove `firstName` and `lastName` properties from `ThreeDSecurePostalAddress`
+  * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
+  * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
+  * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
 
 ## 4.0.0-beta1
 

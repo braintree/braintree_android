@@ -15,25 +15,13 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
     @Before
     public void setup() throws Exception {
         mThreeDSecureLookup = ThreeDSecureLookup.fromJson("{\n" +
-                "  \"lookup\": {\n" +
-                "    \"acsUrl\": \"https://acs.com\",\n" +
-                "    \"md\": \"m d\",\n" +
-                "    \"termUrl\": \"https://terms.com\",\n" +
-                "    \"pareq\": \"pa.req\",\n" +
-                "    \"threeDSecureVersion\": \"1.0\",\n" +
-                "    \"transactionId\": \"some-transaction-id\"\n" +
-                "  },\n" +
-                "  \"paymentMethod\": {\n" +
-                "    \"type\": \"CreditCard\",\n" +
-                "    \"nonce\": \"123456-12345-12345-a-adfa\",\n" +
-                "    \"description\": \"ending in ••11\",\n" +
-                "    \"details\": {\n" +
-                "      \"cardType\": \"Visa\",\n" +
-                "      \"lastTwo\": \"11\",\n" +
-                "      \"lastFour\": \"1111\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}");
+                "\"acsUrl\": \"https://acs.com\",\n" +
+                "\"md\": \"m d\",\n" +
+                "\"termUrl\": \"https://terms.com\",\n" +
+                "\"pareq\": \"pa.req\",\n" +
+                "\"threeDSecureVersion\": \"1.0\",\n" +
+                "\"transactionId\": \"some-transaction-id\"\n" +
+            "}");
     }
 
     @Test

@@ -37,10 +37,11 @@ class CardinalClient {
         });
     }
 
-    void continueLookup(FragmentActivity activity, ThreeDSecureLookup lookup, CardinalValidateReceiver validateReceiver) {
-        String tranactionId = lookup.getTransactionId();
+    void continueLookup(FragmentActivity activity, ThreeDSecureResult threeDSecureResult, CardinalValidateReceiver validateReceiver) {
+        ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
+        String transactionId = lookup.getTransactionId();
         String paReq = lookup.getPareq();
-        Cardinal.getInstance().cca_continue(tranactionId, paReq, activity, validateReceiver);
+        Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
     }
 
     private void configurationCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) {

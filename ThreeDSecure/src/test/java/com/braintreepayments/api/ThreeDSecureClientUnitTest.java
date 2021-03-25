@@ -21,7 +21,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -152,10 +151,10 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
-        ThreeDSecureLookupCallback lookupListener = mock(ThreeDSecureLookupCallback.class);
-        sut.performVerification(activity, request, lookupListener);
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performVerification(activity, request, callback);
 
-        verify(lookupListener).onResult(same(request), any(ThreeDSecureLookup.class), any(Exception.class));
+        verify(callback).onResult(any(ThreeDSecureResult.class), any(Exception.class));
     }
 
     @Test
@@ -171,7 +170,7 @@ public class ThreeDSecureClientUnitTest {
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
         assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
                 captor.getValue().getMessage());
     }
@@ -189,7 +188,7 @@ public class ThreeDSecureClientUnitTest {
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
@@ -240,10 +239,11 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
 
-        ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
+        ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(threeDSecureResultCallback).onResult(captor.capture(), (Exception) isNull());
 
-        CardNonce cardNonce = captor.getValue();
+        ThreeDSecureResult result = captor.getValue();
+        CardNonce cardNonce = result.getTokenizedCard();
         assertIsANonce(cardNonce.getNonce());
         assertEquals("11", cardNonce.getLastTwo());
         assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
@@ -290,7 +290,7 @@ public class ThreeDSecureClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
 
         ArgumentCaptor<ErrorWithResponse> captor = ArgumentCaptor.forClass(ErrorWithResponse.class);
-        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         ErrorWithResponse error = captor.getValue();
         assertEquals(422, error.getStatusCode());
@@ -306,7 +306,7 @@ public class ThreeDSecureClientUnitTest {
         sut.onBrowserSwitchResult(null, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult((CardNonce) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);

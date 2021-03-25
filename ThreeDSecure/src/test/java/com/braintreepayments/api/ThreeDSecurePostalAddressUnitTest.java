@@ -16,24 +16,6 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecurePostalAddressUnitTest {
 
     @Test
-    public void firstName_setsGivenName() {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .firstName("given-name");
-
-        assertEquals("given-name", postalAddress.getFirstName());
-        assertEquals("given-name", postalAddress.getGivenName());
-    }
-
-    @Test
-    public void lastName_setsSurname() {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .lastName("surname");
-
-        assertEquals("surname", postalAddress.getLastName());
-        assertEquals("surname", postalAddress.getSurname());
-    }
-
-    @Test
     public void constructsCorrectly() {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")

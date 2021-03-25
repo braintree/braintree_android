@@ -7,16 +7,16 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link ThreeDSecureClient#performVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResultCallback)} and
- * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureLookup, ThreeDSecureResultCallback)} and
- * {@link ThreeDSecureClient#onBrowserSwitchResult(BrowserSwitchResult, ThreeDSecureResultCallback)} and
+ * {@link ThreeDSecureClient#performVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResultCallback)},
+ * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult, ThreeDSecureResultCallback)},
+ * {@link ThreeDSecureClient#onBrowserSwitchResult(BrowserSwitchResult, ThreeDSecureResultCallback)}, and
  * {@link ThreeDSecureClient#onActivityResult(int, Intent, ThreeDSecureResultCallback)}.
  */
 public interface ThreeDSecureResultCallback {
 
     /**
-     * @param paymentMethodNonce {@link PaymentMethodNonce}
+     * @param threeDSecureResult {@link ThreeDSecureResult}
      * @param error an exception that occurred while processing a 3D Secure result
      */
-    void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error);
+    void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error);
 }

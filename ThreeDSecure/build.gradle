@@ -30,6 +30,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
     implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-1'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

@@ -30,6 +30,7 @@ import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
+import com.braintreepayments.api.ThreeDSecureResult;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
@@ -303,9 +304,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         }
     }
 
-    private void handleThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
-        if (paymentMethodNonce != null) {
+        if (threeDSecureResult != null) {
+            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
@@ -330,9 +332,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
 
-            threeDSecureClient.performVerification(activity, threeDSecureRequest(paymentMethodNonce), (request, lookup, error) -> {
-                if (request != null && lookup != null) {
-                    threeDSecureClient.continuePerformVerification(activity, request, lookup, this::handleThreeDSecureResult);
+            ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
+            threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
+                if (threeDSecureResult != null) {
+                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();

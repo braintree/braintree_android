@@ -58,8 +58,8 @@ public class ThreeDSecureClientTest {
                         .amount("5");
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertIsANonce(cardNonce.getNonce());
                         assertEquals("51", cardNonce.getLastTwo());

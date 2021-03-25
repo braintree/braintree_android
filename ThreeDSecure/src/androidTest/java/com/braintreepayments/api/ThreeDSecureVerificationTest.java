@@ -32,7 +32,6 @@ public class ThreeDSecureVerificationTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private String returnUrlScheme;
     private AppCompatActivity mActivity;
     private CountDownLatch mCountDownLatch;
 
@@ -40,8 +39,6 @@ public class ThreeDSecureVerificationTest {
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
-
-        returnUrlScheme = "com.braintreepayments.api.test.braintree";
     }
 
     @Test(timeout = 10000)
@@ -64,8 +61,8 @@ public class ThreeDSecureVerificationTest {
                         .amount(TEST_AMOUNT);
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -107,10 +104,11 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest()
                         .nonce(paymentMethodNonce.getNonce())
                         .amount(TEST_AMOUNT);
+
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
 
@@ -152,7 +150,7 @@ public class ThreeDSecureVerificationTest {
                         .amount(TEST_AMOUNT);
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                         assertTrue(error instanceof AuthorizationException);
                         assertEquals(
                                 "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
@@ -189,8 +187,8 @@ public class ThreeDSecureVerificationTest {
                         .amount(TEST_AMOUNT);
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
@@ -234,8 +232,8 @@ public class ThreeDSecureVerificationTest {
                         .amount(TEST_AMOUNT);
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
                     @Override
-                    public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                         assertNotNull(cardNonce);
                         assertIsANonce(cardNonce.getNonce());
