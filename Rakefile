@@ -156,7 +156,7 @@ def post_release(version)
   puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
-  sh "git push origin #{version}"
+  sh "git push origin 3.x #{version}"
 
   $stdin.gets
 end
