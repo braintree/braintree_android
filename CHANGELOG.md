@@ -79,6 +79,14 @@
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
 
+## 3.17.2
+
+* Bump Cardinal version to `2.2.5-2`
+
+## 3.17.1
+
+* Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
+
 ## 4.0.0-beta1
 
 * Add a `client` for each feature:
