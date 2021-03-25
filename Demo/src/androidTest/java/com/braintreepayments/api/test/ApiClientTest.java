@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-public class ApiClientUnitTest {
+public class ApiClientTest {
 
     private CountDownLatch mCountDownLatch;
     private ApiClient mApiClient;
