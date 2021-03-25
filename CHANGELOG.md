@@ -17,6 +17,7 @@
 * Add `requestBillingAgreement` to `PayPalCheckoutRequest`
 * Fix issue where `onBrowserSwitchResult` crashes if `browserSwitchResult` is null
 * Add `ThreeDSecureResult`
+* Bump `browser-switch` to `2.0.0-beta2`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
