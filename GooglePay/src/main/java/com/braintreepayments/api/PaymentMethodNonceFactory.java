@@ -24,6 +24,8 @@ public class PaymentMethodNonceFactory {
                 case GooglePayCardNonce.API_RESOURCE_KEY:
                     return GooglePayCardNonce.fromJson(paymentDataString);
 
+                // TODO: determine if we should be using a PayPalAccountNonce here, or if we
+                // can modify GooglePayCardNonce to have a "PayPal" type
                 case PayPalAccountNonce.API_RESOURCE_KEY:
                     return PayPalAccountNonce.fromJson(paymentDataString);
             }

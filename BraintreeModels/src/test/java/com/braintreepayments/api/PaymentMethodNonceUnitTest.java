@@ -65,7 +65,7 @@ public class PaymentMethodNonceUnitTest {
     public void parsePaymentMethod_parsesCards() throws JSONException {
         JSONObject card = new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
 
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(card, CardNonce.TYPE);
+        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonce(card, CardNonce.TYPE);
 
         assertTrue(paymentMethodNonce instanceof CardNonce);
         assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
@@ -85,7 +85,7 @@ public class PaymentMethodNonceUnitTest {
     public void parsePaymentMethod_parsesCardResponses() throws JSONException {
         JSONObject card = new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
 
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(card, CardNonce.TYPE);
+        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonce(card, CardNonce.TYPE);
 
         assertTrue(paymentMethodNonce instanceof CardNonce);
         assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());

@@ -301,7 +301,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
 
     @Override
     public String getResponsePaymentMethodType() {
-        return CardNonce.TYPE;
+        // TODO: unit test
+        return "CreditCard";
+//        return CardNonce.TYPE;
     }
 
     @Override

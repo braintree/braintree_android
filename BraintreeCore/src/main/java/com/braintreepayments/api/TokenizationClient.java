@@ -9,8 +9,6 @@ import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 
-import static com.braintreepayments.api.PaymentMethodNonce.parsePaymentMethodNonces;
-
 class TokenizationClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
@@ -79,7 +77,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.success(parsePaymentMethodNonces(responseBody, cardBuilder.getResponsePaymentMethodType()));
+                    callback.success(PaymentMethodNonce.parsePaymentMethodNonce(responseBody, cardBuilder.getResponsePaymentMethodType()));
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.failure(e);
@@ -103,7 +101,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.success(parsePaymentMethodNonces(responseBody,
+                    callback.success(PaymentMethodNonce.parsePaymentMethodNonce(responseBody,
                             paymentMethodBuilder.getResponsePaymentMethodType()));
                 } catch (JSONException e) {
                     callback.failure(e);
