@@ -136,7 +136,7 @@ public class DataCollector {
         return "";
     }
 
-    void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
+    void collectRiskData(final Context context, @NonNull final String nonce) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -155,7 +155,7 @@ public class DataCollector {
 
                         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                                 .setApplicationGuid(payPalDataCollector.getPayPalInstallationGUID(context))
-                                .setClientMetadataId(paymentMethodNonce.getNonce())
+                                .setClientMetadataId(nonce)
                                 .setDisableBeacon(true)
                                 .setAdditionalData(additionalProperties);
 

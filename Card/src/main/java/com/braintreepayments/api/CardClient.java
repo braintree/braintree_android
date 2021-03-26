@@ -48,19 +48,18 @@ public class CardClient {
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(final Context context, final CardBuilder cardBuilder, final CardTokenizeCallback callback) {
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                dataCollector.collectRiskData(context, paymentMethodNonce);
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {
+                if (error == null) {
+                    dataCollector.collectRiskData(context, tokenizationResult.getNonce());
 
-                callback.onResult((CardNonce) paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent("card.nonce-received");
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                    callback.onResult(CardNonce.from(tokenizationResult), null);
+                    braintreeClient.sendAnalyticsEvent("card.nonce-received");
+                } else {
+                    callback.onResult(null, error);
+                    braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                }
             }
         });
     }

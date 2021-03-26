@@ -49,10 +49,10 @@ public class ThreeDSecureClientTest {
                 .cardNumber("4000000000000051")
                 .expirationDate("12/20");
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                String nonce = paymentMethodNonce.getNonce();
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {
+                String nonce = tokenizationResult.getNonce();
                 ThreeDSecureRequest request = new ThreeDSecureRequest()
                         .nonce(nonce)
                         .amount("5");

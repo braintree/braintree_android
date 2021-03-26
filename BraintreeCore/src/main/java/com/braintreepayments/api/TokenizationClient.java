@@ -27,19 +27,19 @@ class TokenizationClient {
     /**
      * Create a {@link PaymentMethodNonce} in the Braintree Gateway.
      * <p>
-     * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
+     * On completion, returns the {@link PaymentMethodNonce} to {@link TokenizeCallback}.
      * <p>
-     * If creation fails validation, {@link PaymentMethodNonceCallback#failure(Exception)}
+     * If creation fails validation, {@link TokenizeCallback#failure(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * PaymentMethodNonceCallback#failure(Exception)} will be called with the {@link Exception} that occurred.
+     * TokenizeCallback#failure(Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}
      *        to be created.
-     * @param callback {@link PaymentMethodNonceCallback}
+     * @param callback {@link TokenizeCallback}
      */
-    <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final TokenizeCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();
         if (braintreeClient == null) {
             return;
@@ -57,19 +57,19 @@ class TokenizationClient {
                         tokenizeRest(braintreeClient, paymentMethodBuilder, callback);
                     }
                 } else {
-                    callback.failure(error);
+                    callback.onResult(null, error);
                 }
             }
         });
     }
 
-    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final CardBuilder cardBuilder, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final CardBuilder cardBuilder, final TokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
             payload = cardBuilder.buildGraphQL(braintreeClient.getAuthorization());
         } catch (BraintreeException e) {
-            callback.failure(e);
+            callback.onResult(null, e);
             return;
         }
 
@@ -77,22 +77,22 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.success(PaymentMethodNonce.parsePaymentMethodNonce(responseBody, cardBuilder.getResponsePaymentMethodType()));
+                    callback.onResult(TokenizationResult.fromJson(responseBody), null);
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
-                    callback.failure(e);
+                    callback.onResult(null, e);
                 }
             }
 
             @Override
-            public void failure(Exception exception) {
+            public void failure(Exception e) {
                 braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                callback.failure(exception);
+                callback.onResult(null, e);
             }
         });
     }
 
-    private static <T> void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    private static <T> void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethodBuilder<T> paymentMethodBuilder, final TokenizeCallback callback) {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath());
 
@@ -101,16 +101,15 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.success(PaymentMethodNonce.parsePaymentMethodNonce(responseBody,
-                            paymentMethodBuilder.getResponsePaymentMethodType()));
+                    callback.onResult(TokenizationResult.fromJson(responseBody), null);
                 } catch (JSONException e) {
-                    callback.failure(e);
+                    callback.onResult(null, e);
                 }
             }
 
             @Override
-            public void failure(Exception exception) {
-                callback.failure(exception);
+            public void failure(Exception e) {
+                callback.onResult(null, e);
             }
         });
     }

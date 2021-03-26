@@ -364,7 +364,7 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());
@@ -410,7 +410,7 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());

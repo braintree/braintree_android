@@ -33,6 +33,11 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private String mCallId;
     private BinData mBinData;
 
+    static VisaCheckoutNonce from(TokenizationResult tokenizationResult) {
+        // TODO: implement
+        return null;
+    }
+
     /**
      * Convert an API response to a {@link VisaCheckoutNonce}.
      *

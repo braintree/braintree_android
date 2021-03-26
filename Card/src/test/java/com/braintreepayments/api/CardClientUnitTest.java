@@ -36,13 +36,13 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-            ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+            ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        TokenizeCallback callback = callbackCaptor.getValue();
         CardNonce cardNonce = mock(CardNonce.class);
-        callback.success(cardNonce);
+        callback.onResult(cardNonce, );
 
         verify(cardTokenizeCallback).onResult(cardNonce, null);
     }
@@ -52,12 +52,12 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
-        callback.success(mock(CardNonce.class));
+        TokenizeCallback callback = callbackCaptor.getValue();
+        callback.onResult(mock(CardNonce.class), );
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }
@@ -67,11 +67,11 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        TokenizeCallback callback = callbackCaptor.getValue();
         Exception error = new Exception("error");
         callback.failure(error);
 
@@ -83,11 +83,11 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        TokenizeCallback callback = callbackCaptor.getValue();
         callback.failure(new Exception("error"));
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");

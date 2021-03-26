@@ -43,11 +43,11 @@ public class TokenizationClientTest {
         PayPalAccountBuilder paypalAccountBuilder =
                 new PayPalAccountBuilder().urlResponseData(urlResponseData);
 
-        tokenizationClient.tokenize(paypalAccountBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(paypalAccountBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {
+                assertIsANonce(tokenizationResult.getNonce());
+                assertEquals("PayPal", tokenizationResult.getTypeLabel());
                 latch.countDown();
             }
 

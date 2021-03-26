@@ -46,6 +46,11 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     private PayPalCreditFinancing mCreditFinancing;
     private String mAuthenticateUrl;
 
+    static PayPalAccountNonce from(TokenizationResult tokenizationResult) {
+        // TODO: implement
+        return null;
+    }
+
     /**
      * Convert an API response to a {@link PayPalAccountNonce}.
      *

@@ -41,7 +41,7 @@ public class TokenizationClientUnitTest {
     @Test
     public void tokenize_whenBraintreeClientReferenceIsNull_doesNothing() {
         CardBuilder cardBuilder = mock(CardBuilder.class);
-        PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
+        TokenizeCallback callback = mock(TokenizeCallback.class);
 
         TokenizationClient sut = new TokenizationClient(new WeakReference<BraintreeClient>(null));
         sut.tokenize(cardBuilder, callback);
@@ -146,9 +146,9 @@ public class TokenizationClientUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        sut.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {}
 
             @Override
             public void failure(Exception exception) {}
@@ -167,9 +167,9 @@ public class TokenizationClientUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        sut.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {}
 
             @Override
             public void failure(Exception exception) {}
@@ -188,7 +188,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
         CardBuilder cardBuilder = new CardBuilder();
-        PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
+        TokenizeCallback callback = mock(TokenizeCallback.class);
 
         sut.tokenize(cardBuilder, callback);
         verify(callback).failure(configError);

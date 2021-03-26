@@ -53,9 +53,9 @@ public class PaymentMethodTest {
                 .expirationMonth("12")
                 .expirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void onResult(TokenizationResult tokenizationResult, Exception error) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
@@ -105,9 +105,9 @@ public class PaymentMethodTest {
                 .expirationMonth("04")
                 .expirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new TokenizeCallback() {
             @Override
-            public void success(final PaymentMethodNonce paymentMethodNonce) {
+            public void onResult(final TokenizationResult tokenizationResult, Exception error) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {

@@ -28,15 +28,15 @@ public class MockTokenizationClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                PaymentMethodNonceCallback listener = (PaymentMethodNonceCallback) invocation.getArguments()[1];
+                TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
                 if (successNonce != null) {
-                    listener.success(successNonce);
+                    listener.onResult(successNonce, );
                 } else if (error != null) {
                     listener.failure(error);
                 }
                 return null;
             }
-        }).when(tokenizationClient).tokenize(any(PaymentMethodBuilder.class), any(PaymentMethodNonceCallback.class));
+        }).when(tokenizationClient).tokenize(any(PaymentMethodBuilder.class), any(TokenizeCallback.class));
 
         return tokenizationClient;
     }

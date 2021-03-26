@@ -43,6 +43,11 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private String mExpirationYear;
     private String mCardholderName;
 
+    static CardNonce from(TokenizationResult tokenizationResult) {
+        // TODO: implement
+        return null;
+    }
+
     /**
      * Convert an API response to a {@link CardNonce}.
      *
