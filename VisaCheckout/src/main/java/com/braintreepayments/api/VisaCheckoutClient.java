@@ -7,6 +7,8 @@ import com.visa.checkout.Environment;
 import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 /**
@@ -101,8 +103,13 @@ public class VisaCheckoutClient {
             @Override
             public void onResult(TokenizationResult tokenizationResult, Exception error) {
                 if (error == null) {
-                    callback.onResult(VisaCheckoutNonce.from(tokenizationResult), null);
-                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                    try {
+                        callback.onResult(VisaCheckoutNonce.from(tokenizationResult), null);
+                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                    } catch (JSONException exception) {
+                        callback.onResult(null, error);
+                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                    }
                 } else {
                     callback.onResult(null, error);
                     braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");

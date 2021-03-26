@@ -21,12 +21,6 @@ public class PaymentMethodNonce implements Parcelable {
 
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
-    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
-
-    static final String DATA_KEY = "data";
-    static final String TOKEN_KEY = "token";
 
     protected String mNonce;
     protected String mDescription;
@@ -37,16 +31,16 @@ public class PaymentMethodNonce implements Parcelable {
     }
 
     PaymentMethodNonce(JSONObject json) throws JSONException {
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+//        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+//        mDescription = json.getString(DESCRIPTION_KEY);
+//        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
     }
 
     @CallSuper
     void fromJson(JSONObject json) throws JSONException {
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+//        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+//        mDescription = json.getString(DESCRIPTION_KEY);
+//        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
     }
 
     /**
@@ -88,7 +82,7 @@ public class PaymentMethodNonce implements Parcelable {
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
+    static List<PaymentMethodInterface> parsePaymentMethodNonces(String jsonBody)
             throws JSONException {
         JSONArray paymentMethods = new JSONObject(jsonBody).getJSONArray(
                 PAYMENT_METHOD_NONCE_COLLECTION_KEY);
@@ -97,13 +91,12 @@ public class PaymentMethodNonce implements Parcelable {
             return Collections.emptyList();
         }
 
-        List<PaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
+        List<PaymentMethodInterface> paymentMethodsNonces = new ArrayList<>();
         JSONObject json;
-        PaymentMethodNonce paymentMethodNonce;
+        PaymentMethodInterface paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            paymentMethodNonce = parsePaymentMethodNonce(json,
-                    json.getString(PAYMENT_METHOD_TYPE_KEY));
+            paymentMethodNonce = new OpaquePaymentMethodNonce(json);
             if (paymentMethodNonce != null) {
                 paymentMethodsNonces.add(paymentMethodNonce);
             }
@@ -121,8 +114,8 @@ public class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    static PaymentMethodNonce parsePaymentMethodNonce(String json, String type) throws JSONException {
-        return parsePaymentMethodNonce(new JSONObject(json), type);
+    static PaymentMethodInterface parsePaymentMethodNonce(String json, String type) throws JSONException {
+        return new OpaquePaymentMethodNonce(new JSONObject(json));
     }
 
     /**
@@ -134,8 +127,8 @@ public class PaymentMethodNonce implements Parcelable {
      * @throws JSONException if parsing fails
      */
     @Nullable
-    static PaymentMethodNonce parsePaymentMethodNonce(JSONObject json, String type) throws JSONException {
-        return new PaymentMethodNonce(json);
+    static PaymentMethodInterface parsePaymentMethodNonce(JSONObject json, String type) throws JSONException {
+        return new OpaquePaymentMethodNonce(json);
 
 //        switch (type) {
 //            case CardNonce.TYPE:
@@ -194,4 +187,16 @@ public class PaymentMethodNonce implements Parcelable {
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
     }
+
+    public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
+        @Override
+        public PaymentMethodNonce createFromParcel(Parcel in) {
+            return new PaymentMethodNonce(in);
+        }
+
+        @Override
+        public PaymentMethodNonce[] newArray(int size) {
+            return new PaymentMethodNonce[size];
+        }
+    };
 }

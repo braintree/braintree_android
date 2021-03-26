@@ -153,8 +153,13 @@ public class UnionPayClient {
             @Override
             public void onResult(TokenizationResult tokenizationResult, Exception error) {
                 if (error == null) {
-                    callback.onResult(CardNonce.from(tokenizationResult), null);
-                    braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
+                    try {
+                        callback.onResult(CardNonce.from(tokenizationResult), null);
+                        braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
+                    } catch (JSONException exception) {
+                        callback.onResult(null, error);
+                        braintreeClient.sendAnalyticsEvent("union-pay.nonce-failed");
+                    }
                 } else {
                     callback.onResult(null, error);
                     braintreeClient.sendAnalyticsEvent("union-pay.nonce-failed");

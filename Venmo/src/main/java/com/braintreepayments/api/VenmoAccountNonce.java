@@ -25,9 +25,11 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         mUsername = username;
     }
 
-    static VenmoAccountNonce from(TokenizationResult tokenizationResult) {
-        // TODO: implement
-        return null;
+    static VenmoAccountNonce from(TokenizationResult tokenizationResult) throws JSONException {
+        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
+        venmoAccountNonce.fromJson(VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenizationResult.getJson()));
+
+        return venmoAccountNonce;
     }
 
     /**

@@ -125,8 +125,13 @@ public class VenmoClient {
                     @Override
                     public void onResult(TokenizationResult tokenizationResult, Exception error) {
                         if (error == null) {
-                            callback.onResult(VenmoAccountNonce.from(tokenizationResult), null);
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                            try {
+                                callback.onResult(VenmoAccountNonce.from(tokenizationResult), null);
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                            } catch (JSONException exception) {
+                                callback.onResult(null, exception);
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                            }
                         } else {
                             callback.onResult(null, error);
                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");

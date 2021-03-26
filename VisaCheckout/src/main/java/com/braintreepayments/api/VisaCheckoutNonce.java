@@ -33,9 +33,11 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private String mCallId;
     private BinData mBinData;
 
-    static VisaCheckoutNonce from(TokenizationResult tokenizationResult) {
-        // TODO: implement
-        return null;
+    static VisaCheckoutNonce from(TokenizationResult tokenizationResult) throws JSONException {
+        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
+        visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenizationResult.getJson()));
+
+        return visaCheckoutNonce;
     }
 
     /**

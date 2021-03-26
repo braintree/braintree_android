@@ -46,9 +46,29 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     private PayPalCreditFinancing mCreditFinancing;
     private String mAuthenticateUrl;
 
-    static PayPalAccountNonce from(TokenizationResult tokenizationResult) {
-        // TODO: implement
-        return null;
+    static PayPalAccountNonce from(TokenizationResult tokenizationResult) throws JSONException {
+        JSONObject jsonObj = tokenizationResult.getJson();
+        String jsonString = jsonObj.toString();
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
+
+        if(jsonObj.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
+            payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObj));
+        } else if(jsonObj.has(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)) {
+            JSONObject tokenObj = new JSONObject(new JSONObject(jsonString)
+                    .getJSONObject(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)
+                    .getJSONObject(PayPalAccountNonce.TOKENIZATION_DATA_KEY)
+                    .getString(PayPalAccountNonce.TOKEN_KEY));
+
+            payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenObj));
+            JSONObject shippingAddress = jsonObj.optJSONObject(SHIPPING_ADDRESS_KEY);
+            if (shippingAddress != null) {
+                payPalAccountNonce.mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
+            }
+        } else {
+            throw new JSONException("Could not parse JSON for a payment method nonce");
+        }
+
+        return payPalAccountNonce;
     }
 
     /**

@@ -245,11 +245,15 @@ public class PayPalClient {
                             @Override
                             public void onResult(TokenizationResult tokenizationResult, Exception error) {
                                 if (error == null) {
-                                    PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.from(tokenizationResult);
-                                    if (payPalAccountNonce.getCreditFinancing() != null) {
-                                        braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                    try {
+                                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.from(tokenizationResult);
+                                        if (payPalAccountNonce.getCreditFinancing() != null) {
+                                            braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                        }
+                                        callback.onResult(payPalAccountNonce, null);
+                                    } catch (JSONException exception) {
+                                        callback.onResult(null, exception);
                                     }
-                                    callback.onResult(payPalAccountNonce, null);
                                 } else {
                                     callback.onResult(null, error);
                                 }

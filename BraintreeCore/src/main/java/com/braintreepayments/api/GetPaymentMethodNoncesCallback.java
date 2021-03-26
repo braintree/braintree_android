@@ -17,5 +17,5 @@ public interface GetPaymentMethodNoncesCallback {
      * @param paymentMethodNonceList {@link PaymentMethodNonce} list
      * @param error an exception that occurred while fetching payment method nonces
      */
-    void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonceList, @Nullable Exception error);
+    void onResult(@Nullable List<PaymentMethodInterface> paymentMethodNonceList, @Nullable Exception error);
 }
