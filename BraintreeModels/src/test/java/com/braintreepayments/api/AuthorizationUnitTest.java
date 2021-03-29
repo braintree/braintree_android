@@ -6,47 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
 public class AuthorizationUnitTest {
-
-    @Test
-    public void fromString_returnsValidClientTokenWhenBase64() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
-
-        assertTrue(authorization instanceof ClientToken);
-    }
-
-    @Test
-    public void fromString_returnsValidTokenizationKey() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-
-        assertTrue(authorization instanceof TokenizationKey);
-    }
-
-    @Test
-    public void fromString_returnsValidPayPalUAT() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(Fixtures.BASE64_PAYPAL_UAT);
-
-        assertTrue(authorization instanceof PayPalUAT);
-    }
-
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedNull() throws InvalidArgumentException {
-        Authorization.fromString(null);
-    }
-
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedAnEmptyString() throws InvalidArgumentException {
-        Authorization.fromString("");
-    }
-
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedJunk() throws InvalidArgumentException {
-        Authorization.fromString("not authorization");
-    }
 
     @Test
     public void parcelable_parcelsClientTokenCorrectly() throws InvalidArgumentException {

@@ -26,15 +26,7 @@ public abstract class Authorization implements Parcelable {
      * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
     public static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
-        if (isTokenizationKey(authorizationString)) {
-            return new TokenizationKey(authorizationString);
-        } else if (isPayPalUAT(authorizationString)){
-            return new PayPalUAT(authorizationString);
-        } else if (isClientToken(authorizationString)) {
-            return new ClientToken(authorizationString);
-        } else {
-            throw new InvalidArgumentException("Authorization provided is invalid: " + authorizationString);
-        }
+        return new AuthorizationParser().parse(authorizationString);
     }
 
     /**
@@ -53,23 +45,6 @@ public abstract class Authorization implements Parcelable {
     @Override
     public String toString() {
         return mRawValue;
-    }
-
-    /**
-     * @param tokenizationKey The {@link String} to check if it is a tokenization key
-     * @return {@code true} if the {@link String} is a tokenization key, {@code false} otherwise.
-     */
-    @Deprecated
-    public static boolean isTokenizationKey(String tokenizationKey) {
-        return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
-    }
-
-    private static boolean isPayPalUAT(String payPalUAT) {
-        return !TextUtils.isEmpty(payPalUAT) && payPalUAT.matches(PayPalUAT.MATCHER);
-    }
-
-    private static boolean isClientToken(String clientToken) {
-        return !TextUtils.isEmpty(clientToken) && clientToken.matches(ClientToken.BASE_64_MATCHER);
     }
 
     @Override
