@@ -5,9 +5,9 @@ import android.os.Parcelable;
 
 import com.braintreepayments.api.models.BuildConfig;
 
-public class TokenizationKey extends Authorization implements Parcelable {
+class TokenizationKey extends Authorization implements Parcelable {
 
-    protected static final String MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
+    static final String MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
     private final String mEnvironment;
     private final String mMerchantId;
@@ -23,25 +23,25 @@ public class TokenizationKey extends Authorization implements Parcelable {
                 mMerchantId + "/client_api/";
     }
 
-    public String getEnvironment() {
+    String getEnvironment() {
         return mEnvironment;
     }
 
-    public String getMerchantId() {
+    String getMerchantId() {
         return mMerchantId;
     }
 
-    public String getUrl() {
+    String getUrl() {
         return mUrl;
     }
 
     @Override
-    public String getConfigUrl() {
+    String getConfigUrl() {
         return mUrl + "v1/configuration";
     }
 
     @Override
-    public String getBearer() {
+    String getBearer() {
         return toString();
     }
 

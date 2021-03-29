@@ -9,9 +9,9 @@ import org.json.JSONObject;
 /**
  * A class containing the configuration url and authorization for the current Braintree environment.
  */
-public class ClientToken extends Authorization {
+class ClientToken extends Authorization {
 
-    protected static final String BASE_64_MATCHER =
+    static final String BASE_64_MATCHER =
             "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)";
     private static final String CONFIG_URL_KEY = "configUrl";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
@@ -39,26 +39,26 @@ public class ClientToken extends Authorization {
     }
 
     @Override
-    public String getConfigUrl() {
+    String getConfigUrl() {
         return mConfigUrl;
     }
 
     @Override
-    public String getBearer() {
+    String getBearer() {
         return mAuthorizationFingerprint;
     }
 
     /**
      * @return The authorizationFingerprint for the current session
      */
-    public String getAuthorizationFingerprint() {
+    String getAuthorizationFingerprint() {
         return mAuthorizationFingerprint;
     }
 
     /**
      * @return The customer ID in the authorizationFingerprint if it is present
      */
-    public String getCustomerId() {
+    String getCustomerId() {
         String authorizationFingerprint = getAuthorizationFingerprint();
         String[] components = authorizationFingerprint.split("&");
         for (String component : components) {
