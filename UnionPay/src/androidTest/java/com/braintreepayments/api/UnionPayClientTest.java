@@ -34,10 +34,10 @@ public class UnionPayClientTest {
     private CountDownLatch mCountDownLatch;
 
     @Before
-    public void setUp() throws InvalidArgumentException {
+    public void setUp() {
         mCountDownLatch = new CountDownLatch(1);
         BraintreeClient braintreeClient =
-                new BraintreeClient(Authorization.fromString(new TestClientTokenBuilder().build()), ApplicationProvider.getApplicationContext());
+                new BraintreeClient(new TestClientTokenBuilder().build(), ApplicationProvider.getApplicationContext());
         unionPayClient = new UnionPayClient(braintreeClient, null);
     }
 
