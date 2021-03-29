@@ -16,6 +16,7 @@ class BraintreeClientParams {
     private ConfigurationLoader configurationLoader;
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
+    private AuthorizationParser authorizationParser;
 
     String getAuthorization() {
         return authorization;
@@ -104,6 +105,15 @@ class BraintreeClientParams {
 
     BraintreeClientParams setIntegrationType(String integrationType) {
         this.integrationType = integrationType;
+        return this;
+    }
+
+    AuthorizationParser getAuthorizationParser() {
+        return authorizationParser;
+    }
+
+    BraintreeClientParams authorizationParser(AuthorizationParser authorizationParser) {
+        this.authorizationParser = authorizationParser;
         return this;
     }
 }

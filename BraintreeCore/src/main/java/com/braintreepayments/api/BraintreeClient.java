@@ -26,6 +26,7 @@ public class BraintreeClient {
     private final ManifestValidator manifestValidator;
     private final String sessionId;
     private final String integrationType;
+    private final AuthorizationParser authorizationParser;
     private Authorization authorization;
 
     private static BraintreeClientParams createDefaultParams(String authorization, Context context) {
@@ -40,7 +41,8 @@ public class BraintreeClient {
                 .analyticsClient(new AnalyticsClient())
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
-                .configurationLoader(new ConfigurationLoader(httpClient));
+                .configurationLoader(new ConfigurationLoader(httpClient))
+                .authorizationParser(new AuthorizationParser());
     }
 
     public BraintreeClient(String authString, Context context) {
@@ -59,6 +61,7 @@ public class BraintreeClient {
         this.manifestValidator = params.getManifestValidator();
         this.sessionId = params.getSessionId();
         this.integrationType = params.getIntegrationType();
+        this.authorizationParser = params.getAuthorizationParser();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -71,7 +74,7 @@ public class BraintreeClient {
     public void getConfiguration(ConfigurationCallback callback) {
         if (authorization == null) {
             try {
-                authorization = Authorization.fromString(authString);
+                authorization = authorizationParser.parse(authString);
             } catch (InvalidArgumentException e) {
                 callback.onResult(null, new InvalidArgumentException("Tokenization Key or client token was invalid."));
             }

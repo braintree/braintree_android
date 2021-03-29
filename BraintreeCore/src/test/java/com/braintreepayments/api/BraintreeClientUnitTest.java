@@ -41,9 +41,10 @@ public class BraintreeClientUnitTest {
     private AnalyticsClient analyticsClient;
     private ManifestValidator manifestValidator;
     private BrowserSwitchClient browserSwitchClient;
+    private AuthorizationParser authorizationParser;
 
     @Before
-    public void beforeEach() {
+    public void beforeEach() throws InvalidArgumentException {
         authorization = mock(Authorization.class);
         context = mock(Context.class);
         applicationContext = ApplicationProvider.getApplicationContext();
@@ -54,8 +55,10 @@ public class BraintreeClientUnitTest {
         analyticsClient = mock(AnalyticsClient.class);
         manifestValidator = mock(ManifestValidator.class);
         browserSwitchClient = mock(BrowserSwitchClient.class);
+        authorizationParser = mock(AuthorizationParser.class);
 
         when(context.getApplicationContext()).thenReturn(applicationContext);
+        when(authorizationParser.parse("authString")).thenReturn(authorization);
     }
 
     @Test
@@ -346,6 +349,7 @@ public class BraintreeClientUnitTest {
                 .graphQLHttpClient(braintreeGraphQLHttpClient)
                 .analyticsClient(analyticsClient)
                 .browserSwitchClient(browserSwitchClient)
-                .manifestValidator(manifestValidator);
+                .manifestValidator(manifestValidator)
+                .authorizationParser(authorizationParser);
     }
 }
