@@ -82,7 +82,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback), );
+        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback), same(authorization));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback), );
+        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback), same(authorization));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(braintreeGraphQLHttpClient).post(eq("{}"), same(configuration), same(httpResponseCallback), );
+        verify(braintreeGraphQLHttpClient).post(eq("{}"), same(configuration), same(httpResponseCallback), same(authorization));
     }
 
     @Test
@@ -177,7 +177,7 @@ public class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started");
 
         ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
-        verify(analyticsClient).sendEvent(, captor.capture(), same(configuration), same(applicationContext));
+        verify(analyticsClient).sendEvent(same(authorization), captor.capture(), same(configuration), same(applicationContext));
 
         AnalyticsEvent event = captor.getValue();
         assertEquals("sessionId", event.metadata.getString("sessionId"));
@@ -334,10 +334,10 @@ public class BraintreeClientUnitTest {
         String returnUrlScheme = sut.getReturnUrlScheme();
         assertEquals("com.braintreepayments.api.test.braintree", returnUrlScheme);
     }
-
+    // TODO: fix
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, String sessionId, String integrationType) {
         return new BraintreeClientParams()
-                .authorization(authorization)
+                .authorization("authString")
                 .context(context)
                 .sessionId(sessionId)
                 .setIntegrationType(integrationType)

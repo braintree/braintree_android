@@ -36,12 +36,12 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    public void get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() throws InvalidArgumentException {
+    public void get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() {
         Authorization tokenizationKey = mock(Authorization.class);
         BraintreeHttpClient sut = new BraintreeHttpClient(httpClient);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.get("sample/path", null, callback, );
+        sut.get("sample/path", null, callback, tokenizationKey);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).failure(captor.capture());
@@ -60,7 +60,7 @@ public class BraintreeHttpClientUnitTest {
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.get("sample/path", configuration, callback, );
+        sut.get("sample/path", configuration, callback, tokenizationKey);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
@@ -82,7 +82,7 @@ public class BraintreeHttpClientUnitTest {
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.get("sample/path", configuration, callback, );
+        sut.get("sample/path", configuration, callback, clientToken);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
@@ -105,7 +105,7 @@ public class BraintreeHttpClientUnitTest {
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.get("sample/path", configuration, callback, );
+        sut.get("sample/path", configuration, callback, payPalUAT);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
@@ -129,7 +129,7 @@ public class BraintreeHttpClientUnitTest {
 
         when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample result");
 
-        String result = sut.post("sample/path", "{}", configuration, );
+        String result = sut.post("sample/path", "{}", configuration, tokenizationKey);
         assertEquals("sample result", result);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -154,7 +154,7 @@ public class BraintreeHttpClientUnitTest {
 
         when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample result");
 
-        String result = sut.post("sample/path", "{}", configuration, );
+        String result = sut.post("sample/path", "{}", configuration, clientToken);
         assertEquals("sample result", result);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -177,7 +177,7 @@ public class BraintreeHttpClientUnitTest {
         BraintreeHttpClient sut = new BraintreeHttpClient(httpClient);
 
         try {
-            sut.post("sample/path", "{}", null, );
+            sut.post("sample/path", "{}", null, clientToken);
         } catch (Exception e) {
             assertTrue(e instanceof BraintreeException);
             assertEquals("Braintree HTTP GET request without configuration cannot have a relative path.", e.getMessage());
@@ -193,7 +193,7 @@ public class BraintreeHttpClientUnitTest {
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.post("sample/path", "{}", configuration, callback, );
+        sut.post("sample/path", "{}", configuration, callback, tokenizationKey);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(callback));
@@ -217,7 +217,7 @@ public class BraintreeHttpClientUnitTest {
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
-        sut.post("sample/path", "{}", configuration, callback, );
+        sut.post("sample/path", "{}", configuration, callback, clientToken);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(callback));
@@ -240,7 +240,7 @@ public class BraintreeHttpClientUnitTest {
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
-        sut.post("sample/path", "{}", null, callback, );
+        sut.post("sample/path", "{}", null, callback, clientToken);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).failure(captor.capture());
@@ -259,7 +259,7 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
         BraintreeHttpClient sut = new BraintreeHttpClient(httpClient);
-        sut.post("sample/path", "not json", configuration, callback, );
+        sut.post("sample/path", "not json", configuration, callback, clientToken);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).failure(captor.capture());
