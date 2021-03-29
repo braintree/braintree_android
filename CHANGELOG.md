@@ -80,6 +80,7 @@
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
   * Remove `paymentRequested` param from `GooglePayRequestPaymentCallback`
+  * Refactor `BraintreeClient` constructor to take a `String` instead of `Authorization` and change parameter ordering 
 
 ## 3.17.2
 
