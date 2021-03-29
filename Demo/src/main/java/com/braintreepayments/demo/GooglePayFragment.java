@@ -103,7 +103,7 @@ public class GooglePayFragment extends BaseFragment {
                             .build())
                     .googleMerchantId(Settings.getGooglePayMerchantId(activity));
 
-            googlePayClient.requestPayment(getActivity(), googlePayRequest, (success, requestPaymentError) -> {
+            googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
                 if (requestPaymentError != null) {
                     handleError(requestPaymentError);
                 }

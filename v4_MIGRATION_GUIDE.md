@@ -246,7 +246,7 @@ public class LocalPaymentActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
   
@@ -312,7 +312,7 @@ public class GooglePayActivity extends AppCompatActivity {
   }
 
   private void checkIfGooglePayIsAvailable() {
-    googlePayClient.isReadyToPay((isReadyToPay, error) -> {
+    googlePayClient.isReadyToPay(this, (isReadyToPay, error) -> {
       if (isReadyToPay) {
         // Google Pay is available
       } else {
@@ -322,7 +322,7 @@ public class GooglePayActivity extends AppCompatActivity {
   }
 
   private void makeGooglePayRequest() {
-    GooglePayRequest googlePayRequest = new GooglePayReques()
+    GooglePayRequest googlePayRequest = new GooglePayRequest()
       .transactionInfo(TransactionInfo.newBuilder()
         .setTotalPrice("1.00")
         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
@@ -406,7 +406,7 @@ public class PayPalActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
 
@@ -666,7 +666,21 @@ dependencies {
 }
 ```
 
-To use the feature, instantiate a `ThreeDSecureClient`:
+Additionally, add the following Maven repository and (non-sensitive) credentials to your app-level gradle:
+
+```groovy
+repositories {
+    maven {
+        url "https://cardinalcommerce.bintray.com/android"
+        credentials {
+            username 'braintree-team-sdk@cardinalcommerce'
+            password '220cc9476025679c4e5c843666c27d97cfb0f951'
+        }
+    }
+}
+```
+
+To use the feature, instantiate an `ThreeDSecureClient`:
 
 ```java
 package com.my.app;
@@ -704,7 +718,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   @Override
   protected void onNewIntent(Intent newIntent) {
     super.onNewIntent(newIntent);
-    // optional: if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
+    // required if your activity's launch mode is "singleTop", "singleTask", or "singleInstance"
     setIntent(newIntent);
   }
 

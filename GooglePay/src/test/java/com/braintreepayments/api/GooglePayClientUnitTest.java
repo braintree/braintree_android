@@ -488,7 +488,7 @@ public class GooglePayClientUnitTest {
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(requestPaymentCallback).onResult(eq(false), captor.capture());
+        verify(requestPaymentCallback).onResult(captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
                 captor.getValue().getMessage());
@@ -890,7 +890,7 @@ public class GooglePayClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(requestPaymentCallback).onResult(eq(false), captor.capture());
+        verify(requestPaymentCallback).onResult(captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -925,7 +925,7 @@ public class GooglePayClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(requestPaymentCallback).onResult(eq(false), captor.capture());
+        verify(requestPaymentCallback).onResult(captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
