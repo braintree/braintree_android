@@ -31,6 +31,8 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeClientUnitTest {
 
+    private static final String AUTHORIZATION_STRING = "sample-auth-string";
+
     private Authorization authorization;
     private Context context;
     private Context applicationContext;
@@ -58,7 +60,7 @@ public class BraintreeClientUnitTest {
         authorizationParser = mock(AuthorizationParser.class);
 
         when(context.getApplicationContext()).thenReturn(applicationContext);
-        when(authorizationParser.parse("authString")).thenReturn(authorization);
+        when(authorizationParser.parse(AUTHORIZATION_STRING)).thenReturn(authorization);
     }
 
     @Test
@@ -337,10 +339,10 @@ public class BraintreeClientUnitTest {
         String returnUrlScheme = sut.getReturnUrlScheme();
         assertEquals("com.braintreepayments.api.test.braintree", returnUrlScheme);
     }
-    // TODO: fix
+
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, String sessionId, String integrationType) {
         return new BraintreeClientParams()
-                .authorization("authString")
+                .authorization(AUTHORIZATION_STRING)
                 .context(context)
                 .sessionId(sessionId)
                 .setIntegrationType(integrationType)
