@@ -27,7 +27,7 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
 
-    private static BraintreeClientParams createDefaultParams(String authString, Context context) throws InvalidArgumentException {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString) throws InvalidArgumentException {
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
@@ -43,8 +43,8 @@ public class BraintreeClient {
                 .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
-    public BraintreeClient(String authorization, Context context) throws InvalidArgumentException {
-        this(createDefaultParams(authorization, context));
+    public BraintreeClient(Context context, String authorization) throws InvalidArgumentException {
+        this(createDefaultParams(context, authorization));
     }
 
     @VisibleForTesting

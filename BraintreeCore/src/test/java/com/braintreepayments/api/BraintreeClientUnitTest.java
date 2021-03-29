@@ -63,7 +63,7 @@ public class BraintreeClientUnitTest {
     @Test
     public void constructor_whenAuthStringIsValidTokenizationKey_shouldNotThrow() {
         try {
-            BraintreeClient sut = new BraintreeClient(Fixtures.TOKENIZATION_KEY, context);
+            BraintreeClient sut = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
             assertNotNull(sut);
         } catch (InvalidArgumentException e) {
             fail("this should not throw");
@@ -73,7 +73,7 @@ public class BraintreeClientUnitTest {
     @Test
     public void constructor_whenAuthStringIsValidClientToken_shouldNotThrow() {
         try {
-            BraintreeClient sut = new BraintreeClient(Fixtures.BASE64_CLIENT_TOKEN, context);
+            BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_CLIENT_TOKEN);
             assertNotNull(sut);
         } catch (InvalidArgumentException e) {
             fail("this should not throw");
@@ -83,7 +83,7 @@ public class BraintreeClientUnitTest {
     @Test
     public void constructor_whenAuthStringIsValidPayPalUAT_shouldNotThrow() {
         try {
-            BraintreeClient sut = new BraintreeClient(Fixtures.BASE64_PAYPAL_UAT, context);
+            BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_PAYPAL_UAT);
             assertNotNull(sut);
         } catch (InvalidArgumentException e) {
             fail("this should not throw");
@@ -93,7 +93,7 @@ public class BraintreeClientUnitTest {
     @Test
     public void constructor_whenAuthStringIsInvalid_shouldThrow() {
         try {
-            new BraintreeClient("invalid-auth-string", context);
+            new BraintreeClient(context, "invalid-auth-string");
             fail("this should throw");
         } catch (InvalidArgumentException e) {
             assertEquals("Authorization provided is invalid: invalid-auth-string", e.getMessage());

@@ -1,7 +1,6 @@
 package com.braintreepayments.demo;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -20,13 +19,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.braintreepayments.FetchAuthorizationCallback;
-import com.braintreepayments.api.Authorization;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.InvalidArgumentException;
@@ -93,7 +89,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         }
         if (mAuthorization != null) {
             try {
-                braintreeClient = new BraintreeClient(mAuthorization, this);
+                braintreeClient = new BraintreeClient(this, mAuthorization);
                 callback.onResult(braintreeClient);
             } catch (InvalidArgumentException e) {
                 showDialog(e.getMessage());
@@ -105,7 +101,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             if (authorization != null) {
                 mAuthorization = authorization;
                 try {
-                    braintreeClient = new BraintreeClient(mAuthorization, DemoActivity.this);
+                    braintreeClient = new BraintreeClient(DemoActivity.this, mAuthorization);
                     callback.onResult(braintreeClient);
                 } catch (InvalidArgumentException e) {
                     showDialog(e.getMessage());
