@@ -39,12 +39,11 @@ public class PaymentMethodTest {
     // TODO: investigate
     @Ignore("This test is passing when run individually, but not when run with other tests.")
     @Test(timeout = 10000)
-    public void getPaymentMethodNonces_andDeletePaymentMethod_returnsCardNonce() throws InterruptedException, InvalidArgumentException {
+    public void getPaymentMethodNonces_andDeletePaymentMethod_returnsCardNonce() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final String clientToken = new TestClientTokenBuilder().withCustomerId().build();
 
-        Authorization authorization = Authorization.fromString(clientToken);
-        final BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
+        final BraintreeClient braintreeClient = new BraintreeClient(clientToken, mActivity);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
@@ -95,8 +94,7 @@ public class PaymentMethodTest {
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        final BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
+        final BraintreeClient braintreeClient = new BraintreeClient(Fixtures.TOKENIZATION_KEY, mActivity);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 

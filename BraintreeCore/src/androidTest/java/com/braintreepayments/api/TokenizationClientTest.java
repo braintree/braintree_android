@@ -31,11 +31,10 @@ public class TokenizationClientTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException, InvalidArgumentException {
+    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
+        BraintreeClient braintreeClient = new BraintreeClient(Fixtures.TOKENIZATION_KEY, mActivity);
 
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 

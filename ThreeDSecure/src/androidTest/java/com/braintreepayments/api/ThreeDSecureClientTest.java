@@ -37,11 +37,10 @@ public class ThreeDSecureClientTest {
 
     @Test(timeout = 10000)
     public void performVerification_acceptsAThreeDSecureRequest_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
-            throws InterruptedException, InvalidArgumentException {
+            throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().build();
 
-        Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
+        BraintreeClient braintreeClient = new BraintreeClient(clientToken, mActivity);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 

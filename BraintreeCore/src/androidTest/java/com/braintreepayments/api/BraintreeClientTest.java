@@ -30,9 +30,8 @@ public class BraintreeClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getConfiguration_succeedsWithATokenizationKey() throws InvalidArgumentException, InterruptedException {
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeClient sut = new BraintreeClient(authorization, activity);
+    public void getConfiguration_succeedsWithATokenizationKey() throws InterruptedException {
+        BraintreeClient sut = new BraintreeClient(Fixtures.TOKENIZATION_KEY, activity);
 
         sut.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -46,10 +45,9 @@ public class BraintreeClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getConfiguration_succeedsWithAClientToken() throws InterruptedException, InvalidArgumentException {
+    public void getConfiguration_succeedsWithAClientToken() throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().build();
-        Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient sut = new BraintreeClient(authorization, activity);
+        BraintreeClient sut = new BraintreeClient(clientToken, activity);
 
         sut.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -64,10 +62,9 @@ public class BraintreeClientTest {
 
     @Ignore("PayPalUAT development still in progress.")
     @Test(timeout = 10000)
-    public void fetchConfiguration_succeedsWithAPayPalUAT() throws InterruptedException, InvalidArgumentException {
+    public void fetchConfiguration_succeedsWithAPayPalUAT() throws InterruptedException {
         String payPalUAT = new TestPayPalUATBuilder().build();
-        Authorization authorization = Authorization.fromString(payPalUAT);
-        BraintreeClient sut = new BraintreeClient(authorization, activity);
+        BraintreeClient sut = new BraintreeClient(payPalUAT, activity);
 
         sut.getConfiguration(new ConfigurationCallback() {
             @Override

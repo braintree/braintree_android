@@ -43,7 +43,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
-            throws InterruptedException, InvalidArgumentException {
+            throws InterruptedException {
 
         final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED)
@@ -87,7 +87,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_doesALookupAndReturnsACardWhenAuthenticationIsUnavailable()
-            throws InterruptedException, InvalidArgumentException {
+            throws InterruptedException {
 
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE)
@@ -132,7 +132,7 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    public void performVerification_failsWithATokenizationKey() throws InterruptedException, InvalidArgumentException {
+    public void performVerification_failsWithATokenizationKey() throws InterruptedException {
 
         final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
@@ -170,7 +170,7 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
+    public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException {
         final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_LOOKUP_ERROR)
                 .expirationDate("12/20");
@@ -215,7 +215,7 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
+    public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException {
         final CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR)
                 .expirationDate("12/20");
@@ -258,12 +258,12 @@ public class ThreeDSecureVerificationTest {
     }
 
     /* helpers */
-    private BraintreeClient getBraintreeClient() throws InvalidArgumentException {
+    private BraintreeClient getBraintreeClient() {
         String clientToken = new TestClientTokenBuilder().build();
         return getBraintreeClient(clientToken);
     }
 
-    private BraintreeClient getBraintreeClient(String authorization) throws InvalidArgumentException {
-        return new BraintreeClient(Authorization.fromString(authorization), mActivity);
+    private BraintreeClient getBraintreeClient(String authorization) {
+        return new BraintreeClient(authorization, mActivity);
     }
 }
