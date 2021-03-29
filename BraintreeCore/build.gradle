@@ -46,7 +46,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.work:work-runtime:2.4.0'
 
-    api 'com.braintreepayments.api:browser-switch:2.0.0-beta1'
+    api 'com.braintreepayments.api:browser-switch:2.0.0-beta2'
     api project(':BraintreeModels')
     api project(':SharedUtils')
 

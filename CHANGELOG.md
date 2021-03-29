@@ -17,6 +17,7 @@
 * Add `requestBillingAgreement` to `PayPalCheckoutRequest`
 * Fix issue where `onBrowserSwitchResult` crashes if `browserSwitchResult` is null
 * Add `ThreeDSecureResult`
+* Bump `browser-switch` to `2.0.0-beta2`
 * Breaking Changes
   * Make `AmericanExpressRewardsBalance#fromJson()` package-private
   * Make `TYPE` and `API_RESOURCE_KEY` in `CardNonce` package-private
@@ -78,6 +79,15 @@
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
+
+## 3.17.2
+
+* Bump Cardinal version to `2.2.5-2`
+* Add PayPal to `queries` element in `AndroidManifest.xml`
+
+## 3.17.1
+
+* Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
 
 ## 4.0.0-beta1
 

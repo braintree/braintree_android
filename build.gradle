@@ -37,7 +37,7 @@ ext {
     compileSdkVersion = 30
     minSdkVersion = 21
     targetSdkVersion = 30
-    versionCode = 126
+    versionCode = 127
     versionName = version
 
     playServicesWalletVersion ='16.0.1'
