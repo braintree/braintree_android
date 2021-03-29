@@ -83,14 +83,6 @@
 ## 3.17.2
 
 * Bump Cardinal version to `2.2.5-2`
-
-## 3.17.1
-
-* Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
-
-## 3.17.2
-
-* Bump Cardinal version to `2.2.5-2`
 * Add PayPal to `queries` element in `AndroidManifest.xml`
 
 ## 3.17.1
