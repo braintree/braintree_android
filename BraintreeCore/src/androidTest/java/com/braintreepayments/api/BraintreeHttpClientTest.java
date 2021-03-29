@@ -38,7 +38,7 @@ public class BraintreeHttpClientTest {
                 assertTrue(exception instanceof AuthorizationException);
                 mCountDownLatch.countDown();
             }
-        });
+        }, );
 
         mCountDownLatch.await();
     }
@@ -60,7 +60,7 @@ public class BraintreeHttpClientTest {
                 assertTrue(exception instanceof AuthorizationException);
                 mCountDownLatch.countDown();
             }
-        });
+        }, );
 
         mCountDownLatch.await();
     }

@@ -96,7 +96,7 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    httpClient.get(url, configuration, responseCallback);
+                    httpClient.get(url, configuration, responseCallback, authorization);
                 } else {
                     responseCallback.failure(error);
                 }
@@ -109,7 +109,7 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    httpClient.post(url, data, configuration, responseCallback);
+                    httpClient.post(url, data, configuration, responseCallback, authorization);
                 } else {
                     responseCallback.failure(error);
                 }
@@ -184,9 +184,9 @@ public class BraintreeClient {
     // TODO: Remove application context dependency from AnalyticsEvent and unit test
     void reportCrash() {
         String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
-        if (analyticsUrl != null) {
+        if (analyticsUrl != null && authorization != null) {
             final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
-            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
+            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse(), authorization);
         }
     }
 

@@ -82,7 +82,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback), );
     }
 
     @Test
@@ -114,7 +114,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback), );
     }
 
     @Test

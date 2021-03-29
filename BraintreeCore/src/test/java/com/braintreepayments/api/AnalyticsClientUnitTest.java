@@ -164,7 +164,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), same(configuration));
+        verify(httpClient).post(anyString(), captor.capture(), same(configuration), );
         JSONObject object = new JSONObject(captor.getValue());
         JSONObject meta = object.getJSONObject("_meta");
 
@@ -207,7 +207,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), same(configuration));
+        verify(httpClient).post(anyString(), captor.capture(), same(configuration), );
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
         JSONArray array = analyticsJson.getJSONArray("analytics");
@@ -239,7 +239,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration));
+        verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration), );
 
         List<String> values = captor.getAllValues();
         assertEquals(2, values.size());
@@ -274,7 +274,7 @@ public class AnalyticsClientUnitTest {
         awaitTasksFinished(database);
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
-        when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
+        when(httpClient.post(anyString(), anyString(), same(configuration), )).thenReturn("");
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(, context, configuration);
@@ -298,7 +298,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         Exception httpError = new Exception("error");
-        when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
+        when(httpClient.post(anyString(), anyString(), same(configuration), )).thenThrow(httpError);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         try {

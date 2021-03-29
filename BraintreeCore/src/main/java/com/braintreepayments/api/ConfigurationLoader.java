@@ -55,7 +55,7 @@ class ConfigurationLoader {
                     ConfigurationException configurationException = new ConfigurationException(errorMessage, httpException);
                     callback.onResult(null, configurationException);
                 }
-            });
+            }, authorization);
         }
     }
 

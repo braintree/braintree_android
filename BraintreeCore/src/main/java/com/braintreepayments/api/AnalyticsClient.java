@@ -101,7 +101,7 @@ class AnalyticsClient {
         try {
             for (final List<AnalyticsEvent> innerEvents : events) {
                 JSONObject analyticsRequest = serializeEvents(context, authorization, innerEvents);
-                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
+                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, authorization);
                 db.removeEvents(innerEvents);
             }
         } catch (JSONException ignored) {}
