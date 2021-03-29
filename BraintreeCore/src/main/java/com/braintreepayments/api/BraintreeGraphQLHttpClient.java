@@ -8,16 +8,14 @@ import javax.net.ssl.SSLSocketFactory;
 class BraintreeGraphQLHttpClient {
 
     private final HttpClient httpClient;
-    private final Authorization authorization;
 
-    BraintreeGraphQLHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLHttpResponseParser()));
+    BraintreeGraphQLHttpClient() {
+        this(new HttpClient(getSocketFactory(), new BraintreeGraphQLHttpResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeGraphQLHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.authorization = authorization;
     }
 
     private static SSLSocketFactory getSocketFactory() {
@@ -28,7 +26,7 @@ class BraintreeGraphQLHttpClient {
         }
     }
 
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HttpResponseCallback callback, Authorization authorization) {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
@@ -40,7 +38,7 @@ class BraintreeGraphQLHttpClient {
         httpClient.sendRequest(request, callback);
     }
 
-    void post(String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String data, Configuration configuration, HttpResponseCallback callback, Authorization authorization) {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path("")
@@ -52,7 +50,7 @@ class BraintreeGraphQLHttpClient {
         httpClient.sendRequest(request, callback);
     }
 
-    String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration, Authorization authorization) throws Exception {
         HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)

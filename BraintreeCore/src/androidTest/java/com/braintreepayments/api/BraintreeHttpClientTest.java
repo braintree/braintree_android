@@ -2,13 +2,6 @@ package com.braintreepayments.api;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.BraintreeHttpClient;
-import com.braintreepayments.api.AuthorizationException;
-import com.braintreepayments.api.InvalidArgumentException;
-import com.braintreepayments.api.HttpResponseCallback;
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.Fixtures;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +24,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
         braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
             @Override
@@ -53,7 +46,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
         braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
             @Override

@@ -22,16 +22,15 @@ class BraintreeHttpClient {
     private static final String CLIENT_KEY_HEADER = "Client-Key";
 
     private final HttpClient httpClient;
-    private final Authorization authorization;
+    private Authorization authorization;
 
-    BraintreeHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
+    BraintreeHttpClient() {
+        this(new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.authorization = authorization;
     }
 
     private static SSLSocketFactory getSocketFactory() {
@@ -40,10 +39,6 @@ class BraintreeHttpClient {
         } catch (SSLException e) {
             return null;
         }
-    }
-
-    Authorization getAuthorization() {
-        return authorization;
     }
 
     /**

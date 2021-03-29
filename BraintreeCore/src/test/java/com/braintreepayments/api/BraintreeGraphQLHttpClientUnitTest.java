@@ -39,8 +39,8 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
-        sut.post("sample/path", "data", configuration, httpResponseCallback);
+        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(httpClient);
+        sut.post("sample/path", "data", configuration, httpResponseCallback, );
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
@@ -58,8 +58,8 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
-        sut.post("data", configuration, httpResponseCallback);
+        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(httpClient);
+        sut.post("data", configuration, httpResponseCallback, );
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
@@ -79,8 +79,8 @@ public class BraintreeGraphQLHttpClientUnitTest {
     public void post_withPathAndDataAndConfiguration_sendsHttpRequest() throws Exception {
         when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample response");
 
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
-        String result = sut.post("sample/path", "data", configuration);
+        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(httpClient);
+        String result = sut.post("sample/path", "data", configuration, );
         assertEquals("sample response", result);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);

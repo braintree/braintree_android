@@ -4,7 +4,7 @@ import android.content.Context;
 
 class BraintreeClientParams {
 
-    private Authorization authorization;
+    private String authorization;
     private AnalyticsClient analyticsClient;
     private BraintreeHttpClient httpClient;
     private Context context;
@@ -17,11 +17,11 @@ class BraintreeClientParams {
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
 
-    Authorization getAuthorization() {
+    String getAuthorization() {
         return authorization;
     }
 
-    BraintreeClientParams authorization(Authorization authorization) {
+    BraintreeClientParams authorization(String authorization) {
         this.authorization = authorization;
         return this;
     }

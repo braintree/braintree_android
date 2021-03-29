@@ -32,9 +32,9 @@ public class AnalyticsUploadWorker extends Worker {
             return Result.failure();
         }
 
-        AnalyticsClient analyticsClient = new AnalyticsClient(authorization);
+        AnalyticsClient analyticsClient = new AnalyticsClient();
         try {
-            analyticsClient.uploadAnalytics(getApplicationContext(), configuration);
+            analyticsClient.uploadAnalytics(authorization, getApplicationContext(), configuration);
             return Result.success();
         } catch (Exception e) {
             return Result.failure();

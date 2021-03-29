@@ -93,7 +93,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(event, configuration, context);
+        sut.sendEvent(, event, configuration, context);
 
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
         awaitTasksFinished(database);
@@ -111,7 +111,7 @@ public class AnalyticsClientUnitTest {
                 context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(event, configuration, context);
+        sut.sendEvent(, event, configuration, context);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
@@ -125,7 +125,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        UUID workSpecId = sut.sendEventAndReturnId(event, configuration, context);
+        UUID workSpecId = sut.sendEventAndReturnId(, event, configuration, context);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(WorkInfo.State.ENQUEUED, analyticsWorkerInfo.getState());
@@ -136,7 +136,7 @@ public class AnalyticsClientUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(, context, configuration);
 
         verifyZeroInteractions(httpClient);
     }
@@ -161,7 +161,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -204,7 +204,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -236,7 +236,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(, context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration));
@@ -277,7 +277,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(, context, configuration);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(0, pendingEvents.size());
@@ -302,7 +302,7 @@ public class AnalyticsClientUnitTest {
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         try {
-            sut.uploadAnalytics(context, configuration);
+            sut.uploadAnalytics(, context, configuration);
             fail("uploadAnalytics should throw");
         } catch (Exception e) {
             assertSame(httpError, e);

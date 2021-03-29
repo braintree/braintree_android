@@ -15,7 +15,7 @@ import java.util.Locale;
  */
 public class BraintreeClient {
 
-    private final Authorization authorization;
+    private final String authString;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLHttpClient graphQLHttpClient;
@@ -26,31 +26,32 @@ public class BraintreeClient {
     private final ManifestValidator manifestValidator;
     private final String sessionId;
     private final String integrationType;
+    private Authorization authorization;
 
-    private static BraintreeClientParams createDefaultParams(Authorization authorization, Context context) {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
+    private static BraintreeClientParams createDefaultParams(String authorization, Context context) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)
                 .setIntegrationType(IntegrationType.get(context))
                 .sessionId(UUIDHelper.getFormattedUUID())
                 .httpClient(httpClient)
-                .graphQLHttpClient(new BraintreeGraphQLHttpClient(authorization))
-                .analyticsClient(new AnalyticsClient(authorization))
+                .graphQLHttpClient(new BraintreeGraphQLHttpClient())
+                .analyticsClient(new AnalyticsClient())
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
-    public BraintreeClient(Authorization authorization, Context context) {
-        this(createDefaultParams(authorization, context));
+    public BraintreeClient(String authString, Context context) {
+        this(createDefaultParams(authString, context));
     }
 
     @VisibleForTesting
     BraintreeClient(BraintreeClientParams params) {
         this.analyticsClient = params.getAnalyticsClient();
         this.applicationContext = params.getContext().getApplicationContext();
-        this.authorization = params.getAuthorization();
+        this.authString = params.getAuthorization();
         this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLHttpClient = params.getGraphQLHttpClient();
@@ -68,6 +69,13 @@ public class BraintreeClient {
      * @param callback {@link ConfigurationCallback}
      */
     public void getConfiguration(ConfigurationCallback callback) {
+        if (authorization == null) {
+            try {
+                authorization = Authorization.fromString(authString);
+            } catch (InvalidArgumentException e) {
+                callback.onResult(null, new InvalidArgumentException("Tokenization Key or client token was invalid."));
+            }
+        }
         configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
@@ -77,7 +85,7 @@ public class BraintreeClient {
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (isAnalyticsEnabled(configuration)) {
                     final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventFragment);
-                    analyticsClient.sendEvent(event, configuration, applicationContext);
+                    analyticsClient.sendEvent(authorization, event, configuration, applicationContext);
                 }
             }
         });
@@ -122,7 +130,7 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    graphQLHttpClient.post(payload, configuration, responseCallback);
+                    graphQLHttpClient.post(payload, configuration, responseCallback, authorization);
                 } else {
                     responseCallback.failure(error);
                 }
@@ -186,7 +194,13 @@ public class BraintreeClient {
         return configuration != null && configuration.isAnalyticsEnabled();
     }
 
+    // TODO: Investigate how to get rid of this accessor
     Authorization getAuthorization() {
+        if (authorization == null) {
+            try {
+                authorization = Authorization.fromString(authString);
+            } catch (InvalidArgumentException ignored) { }
+        }
         return authorization;
     }
 }

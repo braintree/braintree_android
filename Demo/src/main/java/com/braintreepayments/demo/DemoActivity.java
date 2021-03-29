@@ -92,24 +92,16 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             return;
         }
         if (mAuthorization != null) {
-            try {
-                braintreeClient = new BraintreeClient(Authorization.fromString(mAuthorization), this);
-                callback.onResult(braintreeClient);
-            } catch (InvalidArgumentException e) {
-                showDialog(e.getMessage());
-            }
+            braintreeClient = new BraintreeClient(mAuthorization, this);
+            callback.onResult(braintreeClient);
             return;
         }
 
         authProvider.fetchAuthorization(this, (authorization, error) -> {
             if (authorization != null) {
                 mAuthorization = authorization;
-                try {
-                    braintreeClient = new BraintreeClient(Authorization.fromString(mAuthorization), DemoActivity.this);
-                    callback.onResult(braintreeClient);
-                } catch (InvalidArgumentException e) {
-                    showDialog(e.getMessage());
-                }
+                braintreeClient = new BraintreeClient(mAuthorization, DemoActivity.this);
+                callback.onResult(braintreeClient);
             } else if (error != null) {
                 showDialog(error.getMessage());
             }

@@ -44,8 +44,8 @@ class AnalyticsClient {
     private final DeviceInspector deviceInspector;
     private String lastKnownAnalyticsUrl;
 
-    AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector());
+    AnalyticsClient() {
+        this(new BraintreeHttpClient(), new DeviceInspector());
     }
 
     @VisibleForTesting
@@ -54,19 +54,19 @@ class AnalyticsClient {
         this.deviceInspector = deviceInspector;
     }
 
-    void sendEvent(AnalyticsEvent event, Configuration configuration, Context context) {
-        sendEventAndReturnId(event, configuration, context);
+    void sendEvent(Authorization authorization, AnalyticsEvent event, Configuration configuration, Context context) {
+        sendEventAndReturnId(authorization, event, configuration, context);
     }
 
     @VisibleForTesting
-    UUID sendEventAndReturnId(AnalyticsEvent event, Configuration configuration, Context context) {
+    UUID sendEventAndReturnId(Authorization authorization, AnalyticsEvent event, Configuration configuration, Context context) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         Context applicationContext = context.getApplicationContext();
         AnalyticsDatabase db = AnalyticsDatabase.getInstance(applicationContext);
         db.addEvent(event);
 
-        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization());
+        return scheduleAnalyticsUpload(context, configuration, authorization);
     }
 
     private UUID scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization) {
@@ -92,7 +92,7 @@ class AnalyticsClient {
                 .build();
     }
 
-    void uploadAnalytics(Context context, Configuration configuration) throws Exception {
+    void uploadAnalytics(Authorization authorization, Context context, Configuration configuration) throws Exception {
         String analyticsUrl = configuration.getAnalyticsUrl();
 
         final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
@@ -100,7 +100,7 @@ class AnalyticsClient {
 
         try {
             for (final List<AnalyticsEvent> innerEvents : events) {
-                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents);
+                JSONObject analyticsRequest = serializeEvents(context, authorization, innerEvents);
                 httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
                 db.removeEvents(innerEvents);
             }
