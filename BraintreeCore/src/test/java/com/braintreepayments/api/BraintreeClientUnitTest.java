@@ -16,8 +16,10 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.same;
@@ -56,6 +58,46 @@ public class BraintreeClientUnitTest {
         browserSwitchClient = mock(BrowserSwitchClient.class);
 
         when(context.getApplicationContext()).thenReturn(applicationContext);
+    }
+
+    @Test
+    public void constructor_whenAuthStringIsValidTokenizationKey_shouldNotThrow() {
+        try {
+            BraintreeClient sut = new BraintreeClient(Fixtures.TOKENIZATION_KEY, context);
+            assertNotNull(sut);
+        } catch (InvalidArgumentException e) {
+            fail("this should not throw");
+        }
+    }
+
+    @Test
+    public void constructor_whenAuthStringIsValidClientToken_shouldNotThrow() {
+        try {
+            BraintreeClient sut = new BraintreeClient(Fixtures.BASE64_CLIENT_TOKEN, context);
+            assertNotNull(sut);
+        } catch (InvalidArgumentException e) {
+            fail("this should not throw");
+        }
+    }
+
+    @Test
+    public void constructor_whenAuthStringIsValidPayPalUAT_shouldNotThrow() {
+        try {
+            BraintreeClient sut = new BraintreeClient(Fixtures.BASE64_PAYPAL_UAT, context);
+            assertNotNull(sut);
+        } catch (InvalidArgumentException e) {
+            fail("this should not throw");
+        }
+    }
+
+    @Test
+    public void constructor_whenAuthStringIsInvalid_shouldThrow() {
+        try {
+            new BraintreeClient("invalid-auth-string", context);
+            fail("this should throw");
+        } catch (InvalidArgumentException e) {
+            assertEquals("Authorization provided is invalid: invalid-auth-string", e.getMessage());
+        }
     }
 
     @Test
