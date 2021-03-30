@@ -27,7 +27,8 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
 
-    private static BraintreeClientParams createDefaultParams(Authorization authorization, Context context) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString) throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
@@ -42,8 +43,15 @@ public class BraintreeClient {
                 .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
-    public BraintreeClient(Authorization authorization, Context context) {
-        this(createDefaultParams(authorization, context));
+    /**
+     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
+     *
+     * @param context       Android Context
+     * @param authorization The tokenization key or client token to use.
+     * @throws InvalidArgumentException If the tokenization key or client token is not valid, or cannot be parsed.
+     */
+    public BraintreeClient(Context context, String authorization) throws InvalidArgumentException {
+        this(createDefaultParams(context, authorization));
     }
 
     @VisibleForTesting
@@ -65,6 +73,7 @@ public class BraintreeClient {
 
     /**
      * Retrieve Braintree configuration.
+     *
      * @param callback {@link ConfigurationCallback}
      */
     public void getConfiguration(ConfigurationCallback callback) {

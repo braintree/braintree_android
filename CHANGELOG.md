@@ -80,6 +80,11 @@
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
   * Remove `paymentRequested` param from `GooglePayRequestPaymentCallback`
+  * Refactor `BraintreeClient` constructor to take a `String` instead of `Authorization` and change parameter ordering 
+  * Make `Authorization` package-private
+  * Make `TokenizationKey` package-private
+  * Make `ClientToken` package-private
+  * Make `PayPalUAT` package-private
 
 ## 3.17.2
 

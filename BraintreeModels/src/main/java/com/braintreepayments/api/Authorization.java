@@ -2,18 +2,18 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
-
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 /**
  * Generic base class for Braintree authorization
  */
-public abstract class Authorization implements Parcelable {
+abstract class Authorization implements Parcelable {
 
     private final String mRawValue;
 
-    public Authorization(String rawValue) {
+    Authorization(String rawValue) {
         mRawValue = rawValue;
     }
 
@@ -25,7 +25,7 @@ public abstract class Authorization implements Parcelable {
      * @throws InvalidArgumentException This method will throw this exception type if the string
      * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
-    public static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
+    static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
         if (isTokenizationKey(authorizationString)) {
             return new TokenizationKey(authorizationString);
         } else if (isPayPalUAT(authorizationString)){
@@ -40,12 +40,12 @@ public abstract class Authorization implements Parcelable {
     /**
      * @return The url to fetch configuration for the current Braintree environment.
      */
-    public abstract String getConfigUrl();
+    abstract String getConfigUrl();
 
     /**
      * @return The authorization bearer string for authorizing requests.
      */
-    public abstract String getBearer();
+    abstract String getBearer();
 
     /**
      * @return The original Client token or Tokenization Key string, which can be used for serialization
@@ -55,12 +55,7 @@ public abstract class Authorization implements Parcelable {
         return mRawValue;
     }
 
-    /**
-     * @param tokenizationKey The {@link String} to check if it is a tokenization key
-     * @return {@code true} if the {@link String} is a tokenization key, {@code false} otherwise.
-     */
-    @Deprecated
-    public static boolean isTokenizationKey(String tokenizationKey) {
+    private static boolean isTokenizationKey(String tokenizationKey) {
         return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
     }
 

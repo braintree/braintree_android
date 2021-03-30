@@ -8,10 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PayPalUAT extends Authorization {
+class PayPalUAT extends Authorization {
 
-    protected static final String MATCHER =
-            "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9_-]+$";
+    static final String MATCHER = "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9_-]+$";
 
     private static final String EXTERNAL_ID_STRING = "external_id";
 
@@ -21,7 +20,7 @@ public class PayPalUAT extends Authorization {
     private String mToken;
     private Environment mEnvironment;
 
-    public enum Environment {
+    enum Environment {
         STAGING,
         SANDBOX,
         PRODUCTION
@@ -96,26 +95,26 @@ public class PayPalUAT extends Authorization {
     }
 
     @Override
-    public String getConfigUrl() {
+    String getConfigUrl() {
         return mConfigUrl;
     }
 
     @Override
-    public String getBearer() {
+    String getBearer() {
         return mToken;
     }
 
     /**
      * @return The base PayPal URL
      */
-    public String getPayPalURL() {
+    String getPayPalURL() {
         return mPayPalUrl;
     }
 
     /**
      * @return The environment context of the provided PayPal UAT
      */
-    public Environment getEnvironment() {
+    Environment getEnvironment() {
         return mEnvironment;
     }
 
@@ -150,5 +149,4 @@ public class PayPalUAT extends Authorization {
             return new PayPalUAT[size];
         }
     };
-
 }

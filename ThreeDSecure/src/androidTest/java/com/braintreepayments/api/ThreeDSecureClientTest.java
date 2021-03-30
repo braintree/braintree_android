@@ -41,7 +41,7 @@ public class ThreeDSecureClientTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity);
+        BraintreeClient braintreeClient = new BraintreeClient(mActivity, authorization);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
