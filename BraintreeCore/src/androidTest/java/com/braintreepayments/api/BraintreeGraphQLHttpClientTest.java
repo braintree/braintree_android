@@ -28,9 +28,8 @@ public class BraintreeGraphQLHttpClientTest {
 
     @Test(timeout = 5000)
     public void postRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         Context context = ApplicationProvider.getApplicationContext();
-        BraintreeClient braintreeClient = new BraintreeClient(context, authorization);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override
@@ -51,9 +50,8 @@ public class BraintreeGraphQLHttpClientTest {
 
     @Test(timeout = 5000)
     public void postRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         Context context = ApplicationProvider.getApplicationContext();
-        BraintreeClient braintreeClient = new BraintreeClient(context, authorization);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override

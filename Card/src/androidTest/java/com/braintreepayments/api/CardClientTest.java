@@ -303,7 +303,7 @@ public class CardClientTest {
     }
 
     private void assertTokenizationSuccessful(String authorization, Card card) throws Exception {
-        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Authorization.fromString(authorization));
+        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
         CardClient sut = new CardClient(braintreeClient);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -336,7 +336,7 @@ public class CardClientTest {
     }
 
     private CardClient setupCardClient(String authorization) throws Exception {
-        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Authorization.fromString(authorization));
+        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
         return new CardClient(braintreeClient);
     }
 

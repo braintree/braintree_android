@@ -27,8 +27,7 @@ public class LocalPaymentClientTest {
     public void setUp() throws InvalidArgumentException {
         mCountDownLatch = new CountDownLatch(1);
 
-        Authorization authorization = Authorization.fromString("sandbox_f252zhq7_hh4cpc39zq4rgjcg");
-        braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
+        braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), "sandbox_f252zhq7_hh4cpc39zq4rgjcg");
     }
 
     @Test(timeout = 10000)
