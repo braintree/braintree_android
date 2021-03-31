@@ -40,8 +40,7 @@ public class ThreeDSecureClientTest {
             throws InterruptedException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().build();
 
-        Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, authorization);
+        BraintreeClient braintreeClient = new BraintreeClient(mActivity, clientToken);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 

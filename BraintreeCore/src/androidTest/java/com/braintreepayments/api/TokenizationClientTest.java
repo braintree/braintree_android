@@ -34,8 +34,7 @@ public class TokenizationClientTest {
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException, InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, authorization);
+        BraintreeClient braintreeClient = new BraintreeClient(mActivity, Fixtures.TOKENIZATION_KEY);
 
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 
