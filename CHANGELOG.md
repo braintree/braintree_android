@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.0.0-beta2
 
 * Add `setCountryCode` to `GooglePayRequest`
 * Add Google Pay support for Elo cards. 
