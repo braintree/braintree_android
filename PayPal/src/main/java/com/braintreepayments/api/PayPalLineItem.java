@@ -13,13 +13,14 @@ public class PayPalLineItem {
 
     /**
      * The type of PayPal line item.
-     *
+     * <p>
      * {@link #KIND_CREDIT} A line item that is a credit.
      * {@link #KIND_DEBIT} A line item that debits.
      */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalLineItem.KIND_CREDIT, PayPalLineItem.KIND_DEBIT})
-    @interface PayPalLineItemKind {}
+    @interface PayPalLineItemKind {
+    }
 
     public static final String KIND_CREDIT = "credit";
     public static final String KIND_DEBIT = "debit";
@@ -45,9 +46,9 @@ public class PayPalLineItem {
     /**
      * Constructs a line item for PayPal checkout flows. All parameters are required.
      *
-     * @param kind The {@link PayPalLineItemKind} kind.
-     * @param name The name of the item to display.
-     * @param quantity The quantity of the item.
+     * @param kind       The {@link PayPalLineItemKind} kind.
+     * @param name       The name of the item to display.
+     * @param quantity   The quantity of the item.
      * @param unitAmount The unit amount.
      */
     public PayPalLineItem(@NonNull @PayPalLineItemKind String kind,
@@ -176,7 +177,8 @@ public class PayPalLineItem {
                     .putOpt(UNIT_AMOUNT_KEY, mUnitAmount)
                     .putOpt(UNIT_TAX_AMOUNT_KEY, mUnitTaxAmount)
                     .putOpt(URL_KEY, mUrl);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return new JSONObject();
     }

@@ -59,14 +59,14 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PostalAddress shippingAddressOverride = new PostalAddress()
-                .recipientName("Brianna Tree")
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
+        PostalAddress shippingAddressOverride = new PostalAddress();
+        shippingAddressOverride.setRecipientName("Brianna Tree");
+        shippingAddressOverride.setStreetAddress("123 Fake St.");
+        shippingAddressOverride.setExtendedAddress("Apt. v.0");
+        shippingAddressOverride.setLocality("Oakland");
+        shippingAddressOverride.setRegion("CA");
+        shippingAddressOverride.setPostalCode("12345");
+        shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
@@ -76,7 +76,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
         payPalRequest.setShippingAddressEditable(true);
-        payPalRequest.setOfferCredit(true);
+        payPalRequest.setShouldOfferCredit(true);
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -123,14 +123,14 @@ public class PayPalInternalClientUnitTest {
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
-        PostalAddress shippingAddressOverride = new PostalAddress()
-                .recipientName("Brianna Tree")
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
+        PostalAddress shippingAddressOverride = new PostalAddress();
+        shippingAddressOverride.setRecipientName("Brianna Tree");
+        shippingAddressOverride.setStreetAddress("123 Fake St.");
+        shippingAddressOverride.setExtendedAddress("Apt. v.0");
+        shippingAddressOverride.setLocality("Oakland");
+        shippingAddressOverride.setRegion("CA");
+        shippingAddressOverride.setPostalCode("12345");
+        shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "Item 0", "1", "2");
         item.setDescription("A new item");
@@ -141,7 +141,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         payPalRequest.setCurrencyCode("USD");
         payPalRequest.setIntent("authorize");
-        payPalRequest.setRequestBillingAgreement(true);
+        payPalRequest.setShouldRequestBillingAgreement(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setLandingPageType("sample-landing-page-type");
@@ -149,7 +149,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
         payPalRequest.setShippingAddressEditable(true);
-        payPalRequest.setOfferPayLater(true);
+        payPalRequest.setShouldOfferPayLater(true);
         payPalRequest.setLineItems(Collections.singletonList(item));
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
@@ -410,7 +410,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
-        payPalRequest.setRequestBillingAgreement(false);
+        payPalRequest.setShouldRequestBillingAgreement(false);
         payPalRequest.setBillingAgreementDescription("Billing agreement description");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -446,7 +446,7 @@ public class PayPalInternalClientUnitTest {
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
-            "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
 
         PayPalResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());

@@ -10,15 +10,15 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class VenmoAccountBuilderUnitTest {
+public class VenmoAccountUnitTest {
 
     @Test
-    public void correctlyBuildsVenmoVaultRequst() throws JSONException {
-        VenmoAccountBuilder builder = new VenmoAccountBuilder()
-                .nonce("some-nonce")
-                .validate(true);
+    public void correctlyBuildsVenmoVaultRequest() throws JSONException {
+        VenmoAccount sut = new VenmoAccount();
+        sut.setNonce("some-nonce");
+        sut.setValidate(true);
 
-        JSONObject fullJson = new JSONObject(builder.build());
+        JSONObject fullJson = new JSONObject(sut.buildJSON());
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");
         assertEquals("some-nonce", venmoAccountJson.getString("nonce"));
 

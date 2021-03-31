@@ -3,22 +3,21 @@ package com.braintreepayments.api;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VenmoAccountBuilder extends PaymentMethodBuilder<VenmoAccountBuilder> {
+public class VenmoAccount extends PaymentMethod {
 
     private static final String VENMO_ACCOUNT_KEY = "venmoAccount";
     private static final String NONCE_KEY = "nonce";
 
     private String mNonce;
 
-    public VenmoAccountBuilder() {}
+    public VenmoAccount() {}
 
-    public VenmoAccountBuilder nonce(String nonce) {
+    public void setNonce(String nonce) {
         mNonce = nonce;
-        return this;
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(NONCE_KEY, mNonce);
         base.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
     }

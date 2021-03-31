@@ -6,9 +6,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Builder used to construct a Visa Checkout tokenization request.
+ * Use to construct a Visa Checkout tokenization request.
  */
-public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilder> {
+public class VisaCheckoutAccount extends PaymentMethod {
     private static final String CALL_ID = "callId";
     private static final String ENCRYPTED_KEY = "encryptedKey";
     private static final String ENCRYPTED_PAYMENT_DATA = "encryptedPaymentData";
@@ -21,7 +21,7 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilde
     /**
      * @param visaPaymentSummary returned from Visa Checkout after a successful payment.
      */
-    public VisaCheckoutBuilder(VisaPaymentSummary visaPaymentSummary) {
+    public VisaCheckoutAccount(VisaPaymentSummary visaPaymentSummary) {
         if (visaPaymentSummary == null) {
             return;
         }
@@ -32,7 +32,7 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilde
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(CALL_ID, mCallId);
         paymentMethodNonceJson.put(ENCRYPTED_KEY, mEncryptedKey);
         paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, mEncryptedPaymentData);

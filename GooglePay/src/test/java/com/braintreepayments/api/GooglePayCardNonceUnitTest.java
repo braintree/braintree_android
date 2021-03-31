@@ -19,8 +19,8 @@ public class GooglePayCardNonceUnitTest {
     public void fromJson_createsGooglePayCardNonce() throws Exception {
         String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
         JSONObject billing = new JSONObject(response).getJSONObject("paymentMethodData")
-            .getJSONObject("info")
-            .getJSONObject("billingAddress");
+                .getJSONObject("info")
+                .getJSONObject("billingAddress");
         JSONObject shipping = new JSONObject(response).getJSONObject("shippingAddress");
 
         PostalAddress billingPostalAddress = getPostalAddressObject(billing);
@@ -116,18 +116,20 @@ public class GooglePayCardNonceUnitTest {
     }
 
     private PostalAddress getPostalAddressObject(JSONObject address) throws JSONException {
-        return new PostalAddress()
-                .recipientName(Json.optString(address, "name", ""))
-                .streetAddress(Json.optString(address, "address1", ""))
-                .extendedAddress(
-                        String.join("\n",
-                                Json.optString(address, "address2", ""),
-                                Json.optString(address, "address3", "")
-                        ).trim())
-                .locality(Json.optString(address, "locality", ""))
-                .region(Json.optString(address, "administrativeArea", ""))
-                .countryCodeAlpha2(Json.optString(address, "countryCode", ""))
-                .postalCode(Json.optString(address, "postalCode", ""));
+        PostalAddress result = new PostalAddress();
+        result.setRecipientName(Json.optString(address, "name", ""));
+        result.setStreetAddress(Json.optString(address, "address1", ""));
+        result.setExtendedAddress(
+                String.join("\n",
+                        Json.optString(address, "address2", ""),
+                        Json.optString(address, "address3", "")
+                ).trim());
+        result.setLocality(Json.optString(address, "locality", ""));
+        result.setRegion(Json.optString(address, "administrativeArea", ""));
+        result.setCountryCodeAlpha2(Json.optString(address, "countryCode", ""));
+        result.setPostalCode(Json.optString(address, "postalCode", ""));
+
+        return result;
     }
 
     private void assertPostalAddress(PostalAddress expected, PostalAddress actual) {

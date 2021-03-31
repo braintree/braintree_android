@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 /**
- * Callback for receiving result of {@link CardClient#tokenize(Context, CardBuilder, CardTokenizeCallback)}.
+ * Callback for receiving result of {@link CardClient#tokenize(Context, Card, CardTokenizeCallback)}.
  */
 public interface CardTokenizeCallback {
 

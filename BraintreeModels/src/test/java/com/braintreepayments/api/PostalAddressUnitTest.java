@@ -19,14 +19,14 @@ public class PostalAddressUnitTest {
 
     @Test
     public void constructsCorrectly() {
-        PostalAddress postalAddress = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .recipientName("John Fakerson");
+        PostalAddress postalAddress = new PostalAddress();
+        postalAddress.setStreetAddress("123 Fake St.");
+        postalAddress.setExtendedAddress("Apt. 3");
+        postalAddress.setLocality("Oakland");
+        postalAddress.setRegion("CA");
+        postalAddress.setPostalCode("94602");
+        postalAddress.setCountryCodeAlpha2("US");
+        postalAddress.setRecipientName("John Fakerson");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -82,7 +82,7 @@ public class PostalAddressUnitTest {
     }
 
     @Test
-    public void testWriteToParcel_serializesCorrectly() throws JSONException{
+    public void testWriteToParcel_serializesCorrectly() throws JSONException {
         String accountAddressJson = Fixtures.PAYMENT_METHODS_PAYPAL_ADDRESS;
 
         PostalAddress preSerialized = PostalAddressParser.fromJson(new JSONObject(accountAddressJson));
@@ -105,21 +105,21 @@ public class PostalAddressUnitTest {
 
     @Test
     public void isEmpty_returnsTrueIfCountryCodeIsNotSet() {
-        PostalAddress postalAddress = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .recipientName("John Fakerson");
+        PostalAddress postalAddress = new PostalAddress();
+        postalAddress.setStreetAddress("123 Fake St.");
+        postalAddress.setExtendedAddress("Apt. 3");
+        postalAddress.setLocality("Oakland");
+        postalAddress.setRegion("CA");
+        postalAddress.setPostalCode("94602");
+        postalAddress.setRecipientName("John Fakerson");
 
         assertTrue(postalAddress.isEmpty());
     }
 
     @Test
     public void isEmpty_returnsFalseIfCountryCodeIsSet() {
-        PostalAddress postalAddress = new PostalAddress()
-                .countryCodeAlpha2("US");
+        PostalAddress postalAddress = new PostalAddress();
+        postalAddress.setCountryCodeAlpha2("US");
 
         assertFalse(postalAddress.isEmpty());
     }

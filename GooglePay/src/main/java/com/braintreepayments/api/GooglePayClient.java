@@ -473,28 +473,28 @@ public class GooglePayClient {
     private void setGooglePayRequestDefaults(Configuration configuration,
                                              GooglePayRequest request) {
         if (request.isEmailRequired() == null) {
-            request.emailRequired(false);
+            request.setEmailRequired(false);
         }
 
         if (request.isPhoneNumberRequired() == null) {
-            request.phoneNumberRequired(false);
+            request.setPhoneNumberRequired(false);
         }
 
         if (request.isBillingAddressRequired() == null) {
-            request.billingAddressRequired(false);
+            request.setBillingAddressRequired(false);
         }
 
         if (request.isBillingAddressRequired() &&
                 request.getBillingAddressFormat() == null) {
-            request.billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_MIN);
+            request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_MIN);
         }
 
         if (request.isShippingAddressRequired() == null) {
-            request.shippingAddressRequired(false);
+            request.setShippingAddressRequired(false);
         }
 
         if (request.getAllowPrepaidCards() == null) {
-            request.allowPrepaidCards(true);
+            request.setAllowPrepaidCards(true);
         }
 
         if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
@@ -523,7 +523,7 @@ public class GooglePayClient {
             }
         }
 
-        request.environment(configuration.getGooglePayEnvironment());
+        request.setEnvironment(configuration.getGooglePayEnvironment());
     }
 
     private boolean validateManifest() {

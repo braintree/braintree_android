@@ -28,7 +28,7 @@ public class CardClientTest {
     private static final String REST = "REST";
     private static final String GRAPHQL = "GRAPHQL";
 
-    @Parameterized.Parameters(name="{0}")
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<String> requestProtocols() {
         return Arrays.asList(REST, GRAPHQL);
     }
@@ -48,11 +48,11 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCustomerId().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Test(timeout = 10000)
@@ -60,11 +60,11 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Test(timeout = 10000)
@@ -72,12 +72,12 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .validate(true);
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setValidate(true);
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Test(timeout = 10000)
@@ -85,49 +85,49 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .validate(false);
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setValidate(false);
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithATokenizationKey() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
 
-        assertTokenizationSuccessful(TOKENIZATION_KEY, cardBuilder);
+        assertTokenizationSuccessful(TOKENIZATION_KEY, card);
     }
 
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithATokenizationKeyAndValidateFalse() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .validate(false);
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setValidate(false);
 
-        assertTokenizationSuccessful(TOKENIZATION_KEY, cardBuilder);
+        assertTokenizationSuccessful(TOKENIZATION_KEY, card);
     }
 
     @Test(timeout = 10000)
     public void tokenize_failsWithTokenizationKeyAndValidateTrue() throws Exception {
         overrideConfigurationCache(TOKENIZATION_KEY, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .validate(true);
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setValidate(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertTrue(error instanceof AuthorizationException);
@@ -152,12 +152,12 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCvvVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .cvv("123");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setCvv("123");
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Test(timeout = 10000)
@@ -166,9 +166,11 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        CardBuilder cardBuilder = new CardBuilder().cvv("123");
+        Card card = new Card();
+        card.setCvv("123");
+
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
 
@@ -194,14 +196,14 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withCvvVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .cvv("200");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setCvv("200");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("CVV verification failed",
@@ -218,12 +220,12 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .cvv("123");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setCvv("123");
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
     @Ignore("Sample merchant account is not set up for postal code verification")
@@ -232,14 +234,14 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .postalCode("20000");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setPostalCode("20000");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Postal code verification failed",
@@ -257,14 +259,14 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .countryCode("ABC");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setCountryCode("ABC");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Country code (alpha3) is not an accepted country",
@@ -282,30 +284,30 @@ public class CardClientTest {
         String authorization = new TestClientTokenBuilder().build();
         overrideConfigurationCache(authorization, requestProtocol);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .cvv("123")
-                .cardholderName("Joe Smith")
-                .firstName("Joe")
-                .lastName("Smith")
-                .company("Company")
-                .streetAddress("1 Main St")
-                .extendedAddress("Unit 1")
-                .locality("Some Town")
-                .postalCode("12345")
-                .region("Some Region")
-                .countryCode("USA");
+        Card card = new Card();
+        card.setNumber(VISA);
+        card.setExpirationDate("08/20");
+        card.setCvv("123");
+        card.setCardholderName("Joe Smith");
+        card.setFirstName("Joe");
+        card.setLastName("Smith");
+        card.setCompany("Company");
+        card.setStreetAddress("1 Main St");
+        card.setExtendedAddress("Unit 1");
+        card.setLocality("Some Town");
+        card.setPostalCode("12345");
+        card.setRegion("Some Region");
+        card.setCountryCode("USA");
 
-        assertTokenizationSuccessful(authorization, cardBuilder);
+        assertTokenizationSuccessful(authorization, card);
     }
 
-    private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
+    private void assertTokenizationSuccessful(String authorization, Card card) throws Exception {
         BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Authorization.fromString(authorization));
         CardClient sut = new CardClient(braintreeClient);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
+        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
 

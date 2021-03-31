@@ -221,8 +221,8 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_callsExceptionListener_amountIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
-        LocalPaymentRequest request = getIdealLocalPaymentRequest()
-                .amount(null);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        request.setAmount(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -237,8 +237,8 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_callsExceptionListener_paymentTypeIsNull() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
-        LocalPaymentRequest request = getIdealLocalPaymentRequest()
-                .paymentType(null);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        request.setPaymentType(null);
 
         sut.startPayment(request, localPaymentStartCallback);
 
@@ -567,24 +567,27 @@ public class LocalPaymentClientUnitTest {
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
-        PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
-                .extendedAddress("Apt 2")
-                .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .region("CA")
-                .postalCode("2585 GJ");
-        return new LocalPaymentRequest()
-                .paymentType("ideal")
-                .amount("1.10")
-                .address(address)
-                .phone("639847934")
-                .email("jon@getbraintree.com")
-                .givenName("Jon")
-                .surname("Doe")
-                .shippingAddressRequired(false)
-                .merchantAccountId("local-merchant-account-id")
-                .currencyCode("EUR")
-                .paymentTypeCountryCode("NL");
+        PostalAddress address = new PostalAddress();
+        address.setStreetAddress("836486 of 22321 Park Lake");
+        address.setExtendedAddress("Apt 2");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Den Haag");
+        address.setRegion("CA");
+        address.setPostalCode("2585 GJ");
+
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("639847934");
+        request.setEmail("jon@getbraintree.com");
+        request.setGivenName("Jon");
+        request.setSurname("Doe");
+        request.setShippingAddressRequired(false);
+        request.setMerchantAccountId("local-merchant-account-id");
+        request.setCurrencyCode("EUR");
+        request.setPaymentTypeCountryCode("NL");
+
+        return request;
     }
 }

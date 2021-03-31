@@ -23,10 +23,10 @@ public class PayPalCheckoutRequestUnitTest {
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
         assertNull(request.getDisplayName());
-        assertEquals(PayPalCheckoutRequest.INTENT_AUTHORIZE, request.getIntent());
+        assertEquals(PayPalPaymentIntent.AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
         assertNull(request.getBillingAgreementDescription());
-        assertFalse(request.shouldOfferPayLater());
+        assertFalse(request.getShouldOfferPayLater());
     }
 
     @Test
@@ -34,11 +34,11 @@ public class PayPalCheckoutRequestUnitTest {
         PostalAddress postalAddress = new PostalAddress();
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
         request.setCurrencyCode("USD");
-        request.setOfferPayLater(true);
-        request.setIntent(PayPalCheckoutRequest.INTENT_SALE);
+        request.setShouldOfferPayLater(true);
+        request.setIntent(PayPalPaymentIntent.SALE);
 
         request.setLocaleCode("US");
-        request.setRequestBillingAgreement(true);
+        request.setShouldRequestBillingAgreement(true);
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
         request.setShippingAddressOverride(postalAddress);
@@ -49,14 +49,14 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
-        assertTrue(request.shouldRequestBillingAgreement());
+        assertTrue(request.getShouldRequestBillingAgreement());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
-        assertEquals(PayPalCheckoutRequest.INTENT_SALE, request.getIntent());
+        assertEquals(PayPalPaymentIntent.SALE, request.getIntent());
         assertEquals(PayPalCheckoutRequest.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
-        assertTrue(request.shouldOfferPayLater());
+        assertTrue(request.getShouldOfferPayLater());
     }
 }

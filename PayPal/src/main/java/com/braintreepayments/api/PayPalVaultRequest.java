@@ -10,28 +10,29 @@ import org.json.JSONObject;
  */
 public class PayPalVaultRequest extends PayPalRequest {
 
-    private boolean offerCredit;
+    private boolean shouldOfferCredit;
 
-    public PayPalVaultRequest() {}
+    public PayPalVaultRequest() {
+    }
 
     /**
      * Optional: Offers PayPal Credit if the customer qualifies. Defaults to false.
      *
-     * @param offerCredit Whether to offer PayPal Credit.
+     * @param shouldOfferCredit Whether to offer PayPal Credit.
      */
-    public void setOfferCredit(boolean offerCredit) {
-        this.offerCredit = offerCredit;
+    public void setShouldOfferCredit(boolean shouldOfferCredit) {
+        this.shouldOfferCredit = shouldOfferCredit;
     }
 
-    public boolean shouldOfferCredit() {
-        return offerCredit;
+    public boolean getShouldOfferCredit() {
+        return shouldOfferCredit;
     }
 
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
-                .put(OFFER_CREDIT_KEY, offerCredit);
+                .put(OFFER_CREDIT_KEY, shouldOfferCredit);
 
         if (authorization instanceof ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());

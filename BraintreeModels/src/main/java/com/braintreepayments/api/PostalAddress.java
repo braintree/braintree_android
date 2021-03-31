@@ -22,49 +22,40 @@ public class PostalAddress implements Parcelable {
     public PostalAddress() {
     }
 
-    public PostalAddress recipientName(String name) {
+    public void setRecipientName(String name) {
         mRecipientName = name;
-        return this;
     }
 
-    public PostalAddress phoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         mPhoneNumber = phoneNumber;
-        return this;
     }
 
-    public PostalAddress streetAddress(String streetAddress) {
+    public void setStreetAddress(String streetAddress) {
         mStreetAddress = streetAddress;
-        return this;
     }
 
-    public PostalAddress extendedAddress(String extendedAddress) {
+    public void setExtendedAddress(String extendedAddress) {
         mExtendedAddress = extendedAddress;
-        return this;
     }
 
-    public PostalAddress locality(String locality) {
+    public void setLocality(String locality) {
         mLocality = locality;
-        return this;
     }
 
-    public PostalAddress region(String region) {
+    public void setRegion(String region) {
         mRegion = region;
-        return this;
     }
 
-    public PostalAddress postalCode(String postalCode) {
+    public void setPostalCode(String postalCode) {
         mPostalCode = postalCode;
-        return this;
     }
 
-    public PostalAddress sortingCode(String sortingCode) {
+    public void setSortingCode(String sortingCode) {
         mSortingCode = sortingCode;
-        return this;
     }
 
-    public PostalAddress countryCodeAlpha2(String countryCodeAlpha2) {
+    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
         mCountryCodeAlpha2 = countryCodeAlpha2;
-        return this;
     }
 
     public String getRecipientName() {

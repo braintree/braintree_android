@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link UnionPayClient#enroll(UnionPayCardBuilder, UnionPayEnrollCallback)}.
+ * {@link UnionPayClient#enroll(UnionPayCard, UnionPayEnrollCallback)}.
  */
 public interface UnionPayEnrollCallback {
 

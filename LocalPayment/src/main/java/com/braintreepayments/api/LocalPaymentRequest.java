@@ -44,76 +44,60 @@ public class LocalPaymentRequest {
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest address(PostalAddress address) {
+    public void setAddress(PostalAddress address) {
         mAddress = address;
-        return this;
     }
 
     /**
      * @param amount Optional - The amount for the transaction.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest amount(String amount) {
+    public void setAmount(String amount) {
         mAmount = amount;
-        return this;
     }
 
     /**
      * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest bic(String bankIdentificationCode) {
+    public void setBic(String bankIdentificationCode) {
         mBankIdentificationCode = bankIdentificationCode;
-        return this;
     }
 
 
     /**
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest currencyCode(String currencyCode) {
+    public void setCurrencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
-        return this;
     }
 
     /**
      * @param email Optional - Payer email of the customer.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest email(String email) {
+    public void setEmail(String email) {
         mEmail = email;
-        return this;
     }
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest givenName(String givenName) {
+    public void setGivenName(String givenName) {
         mGivenName = givenName;
-        return this;
     }
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest merchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
-        return this;
     }
 
     /**
      * @param paymentType - The type of payment
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest paymentType(String paymentType) {
+    public void setPaymentType(String paymentType) {
         mPaymentType = paymentType;
-        return this;
     }
 
     /**
@@ -122,39 +106,31 @@ public class LocalPaymentRequest {
      *                               For local payments supported in multiple countries, this value
      *                               may determine which banks are presented to the customer.
      *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest paymentTypeCountryCode(String paymentTypeCountryCode) {
+    public void setPaymentTypeCountryCode(String paymentTypeCountryCode) {
         mPaymentTypeCountryCode = paymentTypeCountryCode;
-        return this;
     }
 
     /**
      * @param phone Optional - Phone number of the customer.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest phone(String phone) {
+    public void setPhone(String phone) {
         mPhone = phone;
-        return this;
     }
 
     /**
      * @param shippingAddressRequired - Indicates whether or not the payment needs to be shipped. For digital goods,
      *                                this should be false. Defaults to false.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest shippingAddressRequired(boolean shippingAddressRequired) {
+    public void setShippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
-        return this;
     }
 
     /**
      * @param surname Optional - Surname (last name) of the customer.
-     * @return {@link LocalPaymentRequest}
      */
-    public LocalPaymentRequest surname(String surname) {
+    public void setSurname(String surname) {
         mSurname = surname;
-        return this;
     }
 
     public PostalAddress getAddress() {
@@ -197,7 +173,7 @@ public class LocalPaymentRequest {
         return mPhone;
     }
 
-    public boolean getShippingAddressRequired() {
+    public boolean isShippingAddressRequired() {
         return mShippingAddressRequired;
     }
 

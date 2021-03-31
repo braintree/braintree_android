@@ -47,9 +47,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      */
-    public ThreeDSecureRequest nonce(String nonce) {
+    public void setNonce(String nonce) {
         mNonce = nonce;
-        return this;
     }
 
     /**
@@ -57,9 +56,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
      */
-    public ThreeDSecureRequest amount(String amount) {
+    public void setAmount(String amount) {
         mAmount = amount;
-        return this;
     }
 
     /**
@@ -67,9 +65,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
      */
-    public ThreeDSecureRequest mobilePhoneNumber(String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(String mobilePhoneNumber) {
         mMobilePhoneNumber = mobilePhoneNumber;
-        return this;
     }
 
     /**
@@ -77,9 +74,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param email The email used for verification.
      */
-    public ThreeDSecureRequest email(String email) {
+    public void setEmail(String email) {
         mEmail = email;
-        return this;
     }
 
     /**
@@ -94,9 +90,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
-    public ThreeDSecureRequest shippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
+    public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
         mShippingMethod = shippingMethod;
-        return this;
     }
 
     /**
@@ -104,9 +99,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param billingAddress The billing address used for verification.
      */
-    public ThreeDSecureRequest billingAddress(ThreeDSecurePostalAddress billingAddress) {
+    public void setBillingAddress(ThreeDSecurePostalAddress billingAddress) {
         mBillingAddress = billingAddress;
-        return this;
     }
 
     /**
@@ -121,9 +115,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
-    public ThreeDSecureRequest versionRequested(@ThreeDSecureVersion String versionRequested) {
+    public void setVersionRequested(@ThreeDSecureVersion String versionRequested) {
         mVersionRequested = versionRequested;
-        return this;
     }
 
     /**
@@ -133,9 +126,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
      */
-    public ThreeDSecureRequest accountType(@ThreeDSecureAccountType String accountType) {
+    public void setAccountType(@ThreeDSecureAccountType String accountType) {
         mAccountType = accountType;
-        return this;
     }
 
     /**
@@ -143,9 +135,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param additionalInformation Additional information.
      */
-    public ThreeDSecureRequest additionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
+    public void setAdditionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
         mAdditionalInformation = additionalInformation;
-        return this;
     }
 
     /**
@@ -153,14 +144,12 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param challengeRequested decides if a challenge will be forced.
      */
-    public ThreeDSecureRequest challengeRequested(boolean challengeRequested) {
+    public void setChallengeRequested(boolean challengeRequested) {
         mChallengeRequested = challengeRequested;
-        return this;
     }
 
-    public ThreeDSecureRequest dataOnlyRequested(boolean dataOnlyRequested) {
+    public void setDataOnlyRequested(boolean dataOnlyRequested) {
         mDataOnlyRequested = dataOnlyRequested;
-        return this;
     }
 
     /**
@@ -168,9 +157,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param exemptionRequested decides if a exemption will be requested.
      */
-    public ThreeDSecureRequest exemptionRequested(boolean exemptionRequested) {
+    public void setExemptionRequested(boolean exemptionRequested) {
         mExemptionRequested = exemptionRequested;
-        return this;
     }
 
     /**
@@ -179,9 +167,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
-    public ThreeDSecureRequest v2UiCustomization(ThreeDSecureV2UiCustomization v2UiCustomization) {
+    public void setV2UiCustomization(ThreeDSecureV2UiCustomization v2UiCustomization) {
         mV2UiCustomization = v2UiCustomization;
-        return this;
     }
 
     /**
@@ -189,9 +176,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
      */
-    public ThreeDSecureRequest v1UiCustomization(ThreeDSecureV1UiCustomization v1UiCustomization) {
+    public void setV1UiCustomization(ThreeDSecureV1UiCustomization v1UiCustomization) {
         mV1UiCustomization = v1UiCustomization;
-        return this;
     }
 
     /**

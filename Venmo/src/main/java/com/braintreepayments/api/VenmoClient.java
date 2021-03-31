@@ -91,7 +91,7 @@ public class VenmoClient {
                     return;
                 }
 
-                sharedPrefsWriter.persistVenmoVaultOption(activity, request.shouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
+                sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
 
                 String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
@@ -119,9 +119,10 @@ public class VenmoClient {
             boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
             if (shouldVault && isClientToken) {
-                VenmoAccountBuilder vaultBuilder = new VenmoAccountBuilder()
-                    .nonce(nonce);
-                tokenizationClient.tokenize(vaultBuilder, new PaymentMethodNonceCallback() {
+                VenmoAccount venmoAccount = new VenmoAccount();
+                venmoAccount.setNonce(nonce);
+
+                tokenizationClient.tokenize(venmoAccount, new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
                         callback.onResult((VenmoAccountNonce) paymentMethodNonce, null);

@@ -41,7 +41,7 @@ class PayPalPaymentResource {
 
         PayPalPaymentResource payPalPaymentResource = new PayPalPaymentResource();
         JSONObject redirectJson = json.optJSONObject(PAYMENT_RESOURCE_KEY);
-        if(redirectJson != null) {
+        if (redirectJson != null) {
             payPalPaymentResource.redirectUrl(Json.optString(redirectJson, REDIRECT_URL_KEY, ""));
         } else {
             redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY);

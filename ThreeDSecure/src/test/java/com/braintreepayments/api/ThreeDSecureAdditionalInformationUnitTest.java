@@ -15,50 +15,50 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void writeToParcel() {
-        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .givenName("shipping-given-name");
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
+        shippingAddress.setGivenName("shipping-given-name");
 
-        ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation()
-                .shippingAddress(shippingAddress)
-                .shippingMethodIndicator("shipping-method-indicator")
-                .productCode("product_code")
-                .deliveryTimeframe("delivery_timeframe")
-                .deliveryEmail("delivery_email")
-                .reorderIndicator("reorder_indicator")
-                .preorderIndicator("preorder_indicator")
-                .preorderDate("preorder_date")
-                .giftCardAmount("gift_card_amount")
-                .giftCardCurrencyCode("gift_card_currency_code")
-                .giftCardCount("gift_card_count")
-                .accountAgeIndicator("account_age_indicator")
-                .accountCreateDate("account_create_date")
-                .accountChangeIndicator("account_change_indicator")
-                .accountChangeDate("account_change_date")
-                .accountPwdChangeIndicator("account_pwd_change_indicator")
-                .accountPwdChangeDate("account_pwd_change_date")
-                .shippingAddressUsageIndicator("shipping_address_usage_indicator")
-                .shippingAddressUsageDate("shipping_address_usage_date")
-                .transactionCountDay("transaction_count_day")
-                .transactionCountYear("transaction_count_year")
-                .addCardAttempts("add_card_attempts")
-                .accountPurchases("account_purchases")
-                .fraudActivity("fraud_activity")
-                .shippingNameIndicator("shipping_name_indicator")
-                .paymentAccountIndicator("payment_account_indicator")
-                .paymentAccountAge("payment_account_age")
-                .addressMatch("address_match")
-                .accountId("account_id")
-                .ipAddress("ip_address")
-                .orderDescription("order_description")
-                .taxAmount("tax_amount")
-                .userAgent("user_agent")
-                .authenticationIndicator("authentication_indicator")
-                .installment("installment")
-                .purchaseDate("purchase_date")
-                .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency")
-                .sdkMaxTimeout("06")
-                .workPhoneNumber("5551115555");
+        ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation();
+        preSerialized.setShippingAddress(shippingAddress);
+        preSerialized.setShippingMethodIndicator("shipping-method-indicator");
+        preSerialized.setProductCode("product_code");
+        preSerialized.setDeliveryTimeframe("delivery_timeframe");
+        preSerialized.setDeliveryEmail("delivery_email");
+        preSerialized.setReorderIndicator("reorder_indicator");
+        preSerialized.setPreorderIndicator("preorder_indicator");
+        preSerialized.setPreorderDate("preorder_date");
+        preSerialized.setGiftCardAmount("gift_card_amount");
+        preSerialized.setGiftCardCurrencyCode("gift_card_currency_code");
+        preSerialized.setGiftCardCount("gift_card_count");
+        preSerialized.setAccountAgeIndicator("account_age_indicator");
+        preSerialized.setAccountCreateDate("account_create_date");
+        preSerialized.setAccountChangeIndicator("account_change_indicator");
+        preSerialized.setAccountChangeDate("account_change_date");
+        preSerialized.setAccountPwdChangeIndicator("account_pwd_change_indicator");
+        preSerialized.setAccountPwdChangeDate("account_pwd_change_date");
+        preSerialized.setShippingAddressUsageIndicator("shipping_address_usage_indicator");
+        preSerialized.setShippingAddressUsageDate("shipping_address_usage_date");
+        preSerialized.setTransactionCountDay("transaction_count_day");
+        preSerialized.setTransactionCountYear("transaction_count_year");
+        preSerialized.setAddCardAttempts("add_card_attempts");
+        preSerialized.setAccountPurchases("account_purchases");
+        preSerialized.setFraudActivity("fraud_activity");
+        preSerialized.setShippingNameIndicator("shipping_name_indicator");
+        preSerialized.setPaymentAccountIndicator("payment_account_indicator");
+        preSerialized.setPaymentAccountAge("payment_account_age");
+        preSerialized.setAddressMatch("address_match");
+        preSerialized.setAccountId("account_id");
+        preSerialized.setIpAddress("ip_address");
+        preSerialized.setOrderDescription("order_description");
+        preSerialized.setTaxAmount("tax_amount");
+        preSerialized.setUserAgent("user_agent");
+        preSerialized.setAuthenticationIndicator("authentication_indicator");
+        preSerialized.setInstallment("installment");
+        preSerialized.setPurchaseDate("purchase_date");
+        preSerialized.setRecurringEnd("recurring_end");
+        preSerialized.setRecurringFrequency("recurring_frequency");
+        preSerialized.setSdkMaxTimeout("06");
+        preSerialized.setWorkPhoneNumber("5551115555");
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
@@ -110,59 +110,59 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
     @Test
     public void toJson() throws JSONException {
-        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .givenName("shipping-given-name")
-                .surname("shipping-surname")
-                .phoneNumber("shipping-phone")
-                .streetAddress("shipping-line1")
-                .extendedAddress("shipping-line2")
-                .line3("shipping-line3")
-                .locality("shipping-city")
-                .region("shipping-state")
-                .postalCode("shipping-postal-code")
-                .countryCodeAlpha2("shipping-country-code");
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress();
+        shippingAddress.setGivenName("shipping-given-name");
+        shippingAddress.setSurname("shipping-surname");
+        shippingAddress.setPhoneNumber("shipping-phone");
+        shippingAddress.setStreetAddress("shipping-line1");
+        shippingAddress.setExtendedAddress("shipping-line2");
+        shippingAddress.setLine3("shipping-line3");
+        shippingAddress.setLocality("shipping-city");
+        shippingAddress.setRegion("shipping-state");
+        shippingAddress.setPostalCode("shipping-postal-code");
+        shippingAddress.setCountryCodeAlpha2("shipping-country-code");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .shippingAddress(shippingAddress)
-                .shippingMethodIndicator("shipping-method-indicator")
-                .productCode("product_code")
-                .deliveryTimeframe("delivery_timeframe")
-                .deliveryEmail("delivery_email")
-                .reorderIndicator("reorder_indicator")
-                .preorderIndicator("preorder_indicator")
-                .preorderDate("preorder_date")
-                .giftCardAmount("gift_card_amount")
-                .giftCardCurrencyCode("gift_card_currency_code")
-                .giftCardCount("gift_card_count")
-                .accountAgeIndicator("account_age_indicator")
-                .accountCreateDate("account_create_date")
-                .accountChangeIndicator("account_change_indicator")
-                .accountChangeDate("account_change_date")
-                .accountPwdChangeIndicator("account_pwd_change_indicator")
-                .accountPwdChangeDate("account_pwd_change_date")
-                .shippingAddressUsageIndicator("shipping_address_usage_indicator")
-                .shippingAddressUsageDate("shipping_address_usage_date")
-                .transactionCountDay("transaction_count_day")
-                .transactionCountYear("transaction_count_year")
-                .addCardAttempts("add_card_attempts")
-                .accountPurchases("account_purchases")
-                .fraudActivity("fraud_activity")
-                .shippingNameIndicator("shipping_name_indicator")
-                .paymentAccountIndicator("payment_account_indicator")
-                .paymentAccountAge("payment_account_age")
-                .addressMatch("address_match")
-                .accountId("account_id")
-                .ipAddress("ip_address")
-                .orderDescription("order_description")
-                .taxAmount("tax_amount")
-                .userAgent("user_agent")
-                .authenticationIndicator("authentication_indicator")
-                .installment("installment")
-                .purchaseDate("purchase_date")
-                .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency")
-                .sdkMaxTimeout("06")
-                .workPhoneNumber("5551115555");
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.setShippingAddress(shippingAddress);
+        additionalInformation.setShippingMethodIndicator("shipping-method-indicator");
+        additionalInformation.setProductCode("product_code");
+        additionalInformation.setDeliveryTimeframe("delivery_timeframe");
+        additionalInformation.setDeliveryEmail("delivery_email");
+        additionalInformation.setReorderIndicator("reorder_indicator");
+        additionalInformation.setPreorderIndicator("preorder_indicator");
+        additionalInformation.setPreorderDate("preorder_date");
+        additionalInformation.setGiftCardAmount("gift_card_amount");
+        additionalInformation.setGiftCardCurrencyCode("gift_card_currency_code");
+        additionalInformation.setGiftCardCount("gift_card_count");
+        additionalInformation.setAccountAgeIndicator("account_age_indicator");
+        additionalInformation.setAccountCreateDate("account_create_date");
+        additionalInformation.setAccountChangeIndicator("account_change_indicator");
+        additionalInformation.setAccountChangeDate("account_change_date");
+        additionalInformation.setAccountPwdChangeIndicator("account_pwd_change_indicator");
+        additionalInformation.setAccountPwdChangeDate("account_pwd_change_date");
+        additionalInformation.setShippingAddressUsageIndicator("shipping_address_usage_indicator");
+        additionalInformation.setShippingAddressUsageDate("shipping_address_usage_date");
+        additionalInformation.setTransactionCountDay("transaction_count_day");
+        additionalInformation.setTransactionCountYear("transaction_count_year");
+        additionalInformation.setAddCardAttempts("add_card_attempts");
+        additionalInformation.setAccountPurchases("account_purchases");
+        additionalInformation.setFraudActivity("fraud_activity");
+        additionalInformation.setShippingNameIndicator("shipping_name_indicator");
+        additionalInformation.setPaymentAccountIndicator("payment_account_indicator");
+        additionalInformation.setPaymentAccountAge("payment_account_age");
+        additionalInformation.setAddressMatch("address_match");
+        additionalInformation.setAccountId("account_id");
+        additionalInformation.setIpAddress("ip_address");
+        additionalInformation.setOrderDescription("order_description");
+        additionalInformation.setTaxAmount("tax_amount");
+        additionalInformation.setUserAgent("user_agent");
+        additionalInformation.setAuthenticationIndicator("authentication_indicator");
+        additionalInformation.setInstallment("installment");
+        additionalInformation.setPurchaseDate("purchase_date");
+        additionalInformation.setRecurringEnd("recurring_end");
+        additionalInformation.setRecurringFrequency("recurring_frequency");
+        additionalInformation.setSdkMaxTimeout("06");
+        additionalInformation.setWorkPhoneNumber("5551115555");
 
         JSONObject jsonParams = additionalInformation.toJson();
 

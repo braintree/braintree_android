@@ -56,25 +56,24 @@ public class PayPalClient {
     /**
      * Tokenize a PayPal account for vault or checkout.
      *
-     * @param activity Android FragmentActivity
+     * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
+     * @param callback      {@link PayPalFlowStartedCallback}
      */
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-       if (payPalRequest instanceof PayPalCheckoutRequest) {
-           sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
-       } else if (payPalRequest instanceof PayPalVaultRequest) {
-           sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
-       }
+        if (payPalRequest instanceof PayPalCheckoutRequest) {
+            sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+        } else if (payPalRequest instanceof PayPalVaultRequest) {
+            sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
+        }
     }
 
     /**
+     * @param activity              Android FragmentActivity
+     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
+     * @param callback              {@link PayPalFlowStartedCallback}
      * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the One-Time Payment (Checkout) flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
      */
     @Deprecated
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
@@ -82,12 +81,11 @@ public class PayPalClient {
     }
 
     /**
+     * @param activity           Android FragmentActivity
+     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
+     * @param callback           {@link PayPalFlowStartedCallback}
      * @deprecated Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
      * Starts the Billing Agreement (Vault) flow for PayPal.
-     *
-     * @param activity Android FragmentActivity
-     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
-     * @param callback {@link PayPalFlowStartedCallback}
      */
     @Deprecated
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
@@ -96,7 +94,7 @@ public class PayPalClient {
 
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-        if (payPalCheckoutRequest.shouldOfferPayLater()) {
+        if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
         }
 
@@ -123,7 +121,7 @@ public class PayPalClient {
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-        if (payPalVaultRequest.shouldOfferCredit()) {
+        if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
         }
 
@@ -197,7 +195,7 @@ public class PayPalClient {
 
     /**
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback {@link PayPalBrowserSwitchResultCallback}
+     * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final PayPalBrowserSwitchResultCallback callback) {
         if (browserSwitchResult == null) {
@@ -227,21 +225,21 @@ public class PayPalClient {
                     Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                     if (deepLinkUri != null) {
                         JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, successUrl, approvalUrl, tokenKey);
-                        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                                .clientMetadataId(clientMetadataId)
-                                .intent(payPalIntent)
-                                .source("paypal-browser")
-                                .urlResponseData(urlResponseData);
+                        PayPalAccount payPalAccount = new PayPalAccount();
+                        payPalAccount.setClientMetadataId(clientMetadataId);
+                        payPalAccount.setIntent(payPalIntent);
+                        payPalAccount.setSource("paypal-browser");
+                        payPalAccount.setUrlResponseData(urlResponseData);
 
                         if (merchantAccountId != null) {
-                            payPalAccountBuilder.merchantAccountId(merchantAccountId);
+                            payPalAccount.setMerchantAccountId(merchantAccountId);
                         }
 
                         if (payPalIntent != null) {
-                            payPalAccountBuilder.intent(payPalIntent);
+                            payPalAccount.setIntent(payPalIntent);
                         }
 
-                        tokenizationClient.tokenize(payPalAccountBuilder, new PaymentMethodNonceCallback() {
+                        tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
                             @Override
                             public void success(PaymentMethodNonce paymentMethodNonce) {
                                 if (paymentMethodNonce instanceof PayPalAccountNonce) {

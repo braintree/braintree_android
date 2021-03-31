@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Builder used to construct a UnionPay card tokenization request.
  */
-public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> implements Parcelable {
+public class UnionPayCard extends BaseCard implements Parcelable {
 
     private static final String UNIONPAY_ENROLLMENT_KEY = "unionPayEnrollment";
     private static final String UNIONPAY_KEY = "creditCard";
@@ -24,75 +24,66 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
     private String mSmsCode;
     private String mEnrollmentId;
 
-    public UnionPayCardBuilder() {}
+    public UnionPayCard() {}
 
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder mobileCountryCode(String mobileCountryCode) {
+    public void setMobileCountryCode(String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             mMobileCountryCode = null;
         } else {
             mMobileCountryCode = mobileCountryCode;
         }
-        return this;
     }
 
     /**
      * @param mobilePhoneNumber The mobile phone number to use when sending the auth code via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder mobilePhoneNumber(String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
             mMobilePhoneNumber = null;
         } else {
             mMobilePhoneNumber = mobilePhoneNumber;
         }
-        return this;
     }
 
     /**
      * @param smsCode The auth code sent to the user via SMS.
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder smsCode(String smsCode) {
+    public void setSmsCode(String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
             mSmsCode = null;
         } else {
             mSmsCode = smsCode;
         }
-        return this;
     }
 
     /**
      * @param enrollmentId The UnionPay enrollment ID
-     * @return {@link UnionPayCardBuilder}
      */
-    public UnionPayCardBuilder enrollmentId(String enrollmentId) {
+    public void setEnrollmentId(String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
             mEnrollmentId = null;
         } else {
             mEnrollmentId = enrollmentId;
         }
-        return this;
     }
 
     /**
      * @deprecated UnionPay enrollment performs validation. This value will not be used for UnionPay payment methods.
      *
      * @param validate Ignored
-     * @return {@link UnionPayCardBuilder}
      */
     @Deprecated
     @Override
-    public UnionPayCardBuilder validate(boolean validate) {
-        return this;
+    public void setValidate(boolean validate) {
+        // prevent validation for union pay methods
     }
 
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
-        unionPayEnrollment.put(NUMBER_KEY, mCardnumber);
+        unionPayEnrollment.put(NUMBER_KEY, mNumber);
         unionPayEnrollment.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
         unionPayEnrollment.put(EXPIRATION_YEAR_KEY, mExpirationYear);
         unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mMobileCountryCode);
@@ -105,8 +96,8 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
     }
 
     @Override
-    protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.build(json, paymentMethodNonceJson);
+    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+        super.buildJSON(json, paymentMethodNonceJson);
 
         JSONObject options = paymentMethodNonceJson.optJSONObject(OPTIONS_KEY);
         if (options == null) {
@@ -133,7 +124,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
         dest.writeString(mEnrollmentId);
     }
 
-    protected UnionPayCardBuilder(Parcel in) {
+    protected UnionPayCard(Parcel in) {
         super(in);
         mMobileCountryCode = in.readString();
         mMobilePhoneNumber = in.readString();
@@ -141,15 +132,15 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
         mEnrollmentId = in.readString();
     }
 
-    public static final Creator<UnionPayCardBuilder> CREATOR = new Creator<UnionPayCardBuilder>() {
+    public static final Creator<UnionPayCard> CREATOR = new Creator<UnionPayCard>() {
         @Override
-        public UnionPayCardBuilder createFromParcel(Parcel in) {
-            return new UnionPayCardBuilder(in);
+        public UnionPayCard createFromParcel(Parcel in) {
+            return new UnionPayCard(in);
         }
 
         @Override
-        public UnionPayCardBuilder[] newArray(int size) {
-            return new UnionPayCardBuilder[size];
+        public UnionPayCard[] newArray(int size) {
+            return new UnionPayCard[size];
         }
     };
 }

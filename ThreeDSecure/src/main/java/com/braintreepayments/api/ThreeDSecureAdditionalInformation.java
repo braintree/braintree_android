@@ -60,9 +60,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * @param shippingAddress The shipping address used for verification.
      *
      * */
-    public ThreeDSecureAdditionalInformation shippingAddress(ThreeDSecurePostalAddress shippingAddress) {
+    public void setShippingAddress(ThreeDSecurePostalAddress shippingAddress) {
         mShippingAddress = shippingAddress;
-        return this;
     }
 
     /**
@@ -77,9 +76,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 06 Travel and event tickets, not shipped
      * 07 Other
      */
-    public ThreeDSecureAdditionalInformation shippingMethodIndicator(String shippingMethodIndicator) {
+    public void setShippingMethodIndicator(String shippingMethodIndicator) {
         mShippingMethodIndicator = shippingMethodIndicator;
-        return this;
     }
 
     /**
@@ -99,9 +97,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * ACC Accommodation Retail
      * TBD Other
      */
-    public ThreeDSecureAdditionalInformation productCode(String productCode) {
+    public void setProductCode(String productCode) {
         mProductCode = productCode;
-        return this;
     }
 
     /**
@@ -113,17 +110,15 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 Overnight shipping
      * 04 Two or more day shipping
      */
-    public ThreeDSecureAdditionalInformation deliveryTimeframe(String deliveryTimeframe) {
+    public void setDeliveryTimeframe(String deliveryTimeframe) {
         mDeliveryTimeframe = deliveryTimeframe;
-        return this;
     }
 
     /**
      * Optional. For electronic delivery, email address to which the merchandise was delivered
      */
-    public ThreeDSecureAdditionalInformation deliveryEmail(String deliveryEmail) {
+    public void setDeliveryEmail(String deliveryEmail) {
         mDeliveryEmail = deliveryEmail;
-        return this;
     }
 
     /**
@@ -133,9 +128,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 First time ordered
      * 02 Reordered
      */
-    public ThreeDSecureAdditionalInformation reorderIndicator(String reorderIndicator) {
+    public void setReorderIndicator(String reorderIndicator) {
         mReorderIndicator = reorderIndicator;
-        return this;
     }
 
     /**
@@ -145,41 +139,36 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 Merchandise available
      * 02 Future availability
      */
-    public ThreeDSecureAdditionalInformation preorderIndicator(String preorderIndicator) {
+    public void setPreorderIndicator(String preorderIndicator) {
         mPreorderIndicator = preorderIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating expected date that a pre-ordered purchase will be available
      */
-    public ThreeDSecureAdditionalInformation preorderDate(String preorderDate) {
+    public void setPreorderDate(String preorderDate) {
         mPreorderDate = preorderDate;
-        return this;
     }
 
     /**
      * Optional. The purchase amount total for prepaid gift cards in major units
      */
-    public ThreeDSecureAdditionalInformation giftCardAmount(String giftCardAmount) {
+    public void setGiftCardAmount(String giftCardAmount) {
         mGiftCardAmount = giftCardAmount;
-        return this;
     }
 
     /**
      * Optional. ISO 4217 currency code for the gift card purchased
      */
-    public ThreeDSecureAdditionalInformation giftCardCurrencyCode(String giftCardCurrencyCode) {
+    public void setGiftCardCurrencyCode(String giftCardCurrencyCode) {
         mGiftCardCurrencyCode = giftCardCurrencyCode;
-        return this;
     }
 
     /**
      * Optional. Total count of individual prepaid gift cards purchased
      */
-    public ThreeDSecureAdditionalInformation giftCardCount(String giftCardCount) {
+    public void setGiftCardCount(String giftCardCount) {
         mGiftCardCount = giftCardCount;
-        return this;
     }
 
     /**
@@ -192,17 +181,15 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public ThreeDSecureAdditionalInformation accountAgeIndicator(String accountAgeIndicator) {
+    public void setAccountAgeIndicator(String accountAgeIndicator) {
         mAccountAgeIndicator = accountAgeIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder opened the account.
      */
-    public ThreeDSecureAdditionalInformation accountCreateDate(String accountCreateDate) {
+    public void setAccountCreateDate(String accountCreateDate) {
         mAccountCreateDate = accountCreateDate;
-        return this;
     }
 
     /**
@@ -214,17 +201,15 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 30-60 days
      * 04 More than 60 days
      */
-    public ThreeDSecureAdditionalInformation accountChangeIndicator(String accountChangeIndicator) {
+    public void setAccountChangeIndicator(String accountChangeIndicator) {
         mAccountChangeIndicator = accountChangeIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder's account was last changed. This includes changes to the billing or shipping address, new payment accounts or new users added.
      */
-    public ThreeDSecureAdditionalInformation accountChangeDate(String accountChangeDate) {
+    public void setAccountChangeDate(String accountChangeDate) {
         mAccountChangeDate = accountChangeDate;
-        return this;
     }
 
     /**
@@ -237,17 +222,15 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public ThreeDSecureAdditionalInformation accountPwdChangeIndicator(String accountPwdChangeIndicator) {
+    public void setAccountPwdChangeIndicator(String accountPwdChangeIndicator) {
         mAccountPwdChangeIndicator = accountPwdChangeIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder last changed or reset password on account.
      */
-    public ThreeDSecureAdditionalInformation accountPwdChangeDate(String accountPwdChangeDate) {
+    public void setAccountPwdChangeDate(String accountPwdChangeDate) {
         mAccountPwdChangeDate = accountPwdChangeDate;
-        return this;
     }
 
     /**
@@ -259,49 +242,43 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 30-60 days
      * 04 More than 60 days
      */
-    public ThreeDSecureAdditionalInformation shippingAddressUsageIndicator(String shippingAddressUsageIndicator) {
+    public void setShippingAddressUsageIndicator(String shippingAddressUsageIndicator) {
         mShippingAddressUsageIndicator = shippingAddressUsageIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date when the shipping address used for this transaction was first used.
      */
-    public ThreeDSecureAdditionalInformation shippingAddressUsageDate(String shippingAddressUsageDate) {
+    public void setShippingAddressUsageDate(String shippingAddressUsageDate) {
         mShippingAddressUsageDate = shippingAddressUsageDate;
-        return this;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last 24 hours.
      */
-    public ThreeDSecureAdditionalInformation transactionCountDay(String transactionCountDay) {
+    public void setTransactionCountDay(String transactionCountDay) {
         mTransactionCountDay = transactionCountDay;
-        return this;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last year.
      */
-    public ThreeDSecureAdditionalInformation transactionCountYear(String transactionCountYear) {
+    public void setTransactionCountYear(String transactionCountYear) {
         mTransactionCountYear = transactionCountYear;
-        return this;
     }
 
     /**
      * Optional. Number of add card attempts in the last 24 hours.
      */
-    public ThreeDSecureAdditionalInformation addCardAttempts(String addCardAttempts) {
+    public void setAddCardAttempts(String addCardAttempts) {
         mAddCardAttempts = addCardAttempts;
-        return this;
     }
 
     /**
      * Optional. Number of purchases with this cardholder account during the previous six months.
      */
-    public ThreeDSecureAdditionalInformation accountPurchases(String accountPurchases) {
+    public void setAccountPurchases(String accountPurchases) {
         mAccountPurchases = accountPurchases;
-        return this;
     }
 
     /**
@@ -311,9 +288,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 No suspicious activity
      * 02 Suspicious activity observed
      */
-    public ThreeDSecureAdditionalInformation fraudActivity(String fraudActivity) {
+    public void setFraudActivity(String fraudActivity) {
         mFraudActivity = fraudActivity;
-        return this;
     }
 
     /**
@@ -323,9 +299,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 Account name identical to shipping name
      * 02 Account name different than shipping name
      */
-    public ThreeDSecureAdditionalInformation shippingNameIndicator(String shippingNameIndicator) {
+    public void setShippingNameIndicator(String shippingNameIndicator) {
         mShippingNameIndicator = shippingNameIndicator;
-        return this;
     }
 
     /**
@@ -338,65 +313,57 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public ThreeDSecureAdditionalInformation paymentAccountIndicator(String paymentAccountIndicator) {
+    public void setPaymentAccountIndicator(String paymentAccountIndicator) {
         mPaymentAccountIndicator = paymentAccountIndicator;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the payment account was added to the cardholder account.
      */
-    public ThreeDSecureAdditionalInformation paymentAccountAge(String paymentAccountAge) {
+    public void setPaymentAccountAge(String paymentAccountAge) {
         mPaymentAccountAge = paymentAccountAge;
-        return this;
     }
 
     /**
      * Optional. The 1-character value (Y/N) indicating whether cardholder billing and shipping addresses match.
      */
-    public ThreeDSecureAdditionalInformation addressMatch(String addressMatch) {
+    public void setAddressMatch(String addressMatch) {
         mAddressMatch = addressMatch;
-        return this;
     }
 
     /**
      * Optional. Additional cardholder account information.
      */
-    public ThreeDSecureAdditionalInformation accountId(String accountId) {
+    public void setAccountId(String accountId) {
         mAccountId = accountId;
-        return this;
     }
 
     /**
      * Optional. The IP address of the consumer. IPv4 and IPv6 are supported.
      */
-    public ThreeDSecureAdditionalInformation ipAddress(String ipAddress) {
+    public void setIpAddress(String ipAddress) {
         mIpAddress = ipAddress;
-        return this;
     }
 
     /**
      * Optional. Brief description of items purchased.
      */
-    public ThreeDSecureAdditionalInformation orderDescription(String orderDescription) {
+    public void setOrderDescription(String orderDescription) {
         mOrderDescription = orderDescription;
-        return this;
     }
 
     /**
      * Optional. Unformatted tax amount without any decimalization (ie. $123.67 = 12367).
      */
-    public ThreeDSecureAdditionalInformation taxAmount(String taxAmount) {
+    public void setTaxAmount(String taxAmount) {
         mTaxAmount = taxAmount;
-        return this;
     }
 
     /**
      * Optional. The exact content of the HTTP user agent header.
      */
-    public ThreeDSecureAdditionalInformation userAgent(String userAgent) {
+    public void setUserAgent(String userAgent) {
         mUserAgent = userAgent;
-        return this;
     }
 
     /**
@@ -406,57 +373,50 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Recurring transaction
      * 03 Installment transaction
      */
-    public ThreeDSecureAdditionalInformation authenticationIndicator(String authenticationIndicator) {
+    public void setAuthenticationIndicator(String authenticationIndicator) {
         mAuthenticationIndicator = authenticationIndicator;
-        return this;
     }
 
     /**
      * Optional.  An integer value greater than 1 indicating the maximum number of permitted authorizations for installment payments.
      */
-    public ThreeDSecureAdditionalInformation installment(String installment) {
+    public void setInstallment(String installment) {
         mInstallment = installment;
-        return this;
     }
 
     /**
      * Optional. The 14-digit number (format: YYYYMMDDHHMMSS) indicating the date in UTC of original purchase.
      */
-    public ThreeDSecureAdditionalInformation purchaseDate(String purchaseDate) {
+    public void setPurchaseDate(String purchaseDate) {
         mPurchaseDate = purchaseDate;
-        return this;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date after which no further recurring authorizations should be performed..
      */
-    public ThreeDSecureAdditionalInformation recurringEnd(String recurringEnd) {
+    public void setRecurringEnd(String recurringEnd) {
         mRecurringEnd = recurringEnd;
-        return this;
     }
 
     /**
      * Optional. Integer value indicating the minimum number of days between recurring authorizations. A frequency of monthly is indicated by the value 28. Multiple of 28 days will be used to indicate months (ex. 6 months = 168).
      */
-    public ThreeDSecureAdditionalInformation recurringFrequency(String recurringFrequency) {
+    public void setRecurringFrequency(String recurringFrequency) {
         mRecurringFrequency = recurringFrequency;
-        return this;
     }
 
     /**
      * Optional. The 2-digit number of minutes (minimum 05) to set the maximum amount of time for all 3DS 2.0 messages to be communicated between all components.
      */
-    public ThreeDSecureAdditionalInformation sdkMaxTimeout(String sdkMaxTimeout) {
+    public void setSdkMaxTimeout(String sdkMaxTimeout) {
         mSdkMaxTimeout = sdkMaxTimeout;
-        return this;
     }
 
     /**
      * Optional. The work phone number used for verification. Only numbers; remove dashes, parenthesis and other characters.
      */
-    public ThreeDSecureAdditionalInformation workPhoneNumber(String workPhoneNumber) {
+    public void setWorkPhoneNumber(String workPhoneNumber) {
         mWorkPhoneNumber = workPhoneNumber;
-        return this;
     }
 
     /**

@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class LocalPaymentClientTest {
@@ -34,21 +33,22 @@ public class LocalPaymentClientTest {
 
     @Test(timeout = 10000)
     public void startPayment_callsListener_withApprovalUrl_andPaymentId() throws InterruptedException {
-        PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
-                .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .postalCode("2585 GJ");
-        LocalPaymentRequest request = new LocalPaymentRequest()
-                .paymentType("ideal")
-                .amount("1.10")
-                .address(address)
-                .phone("639847934")
-                .email("jon@getbraintree.com")
-                .givenName("Jon")
-                .surname("Doe")
-                .shippingAddressRequired(true)
-                .currencyCode("EUR");
+        PostalAddress address = new PostalAddress();
+        address.setStreetAddress("836486 of 22321 Park Lake");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Den Haag");
+        address.setPostalCode("2585 GJ");
+
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("639847934");
+        request.setEmail("jon@getbraintree.com");
+        request.setGivenName("Jon");
+        request.setSurname("Doe");
+        request.setShippingAddressRequired(true);
+        request.setCurrencyCode("EUR");
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient);
         sut.startPayment(request, new LocalPaymentStartCallback() {

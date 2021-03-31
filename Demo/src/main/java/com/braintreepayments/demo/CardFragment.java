@@ -21,7 +21,7 @@ import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.CardBuilder;
+import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
@@ -35,7 +35,7 @@ import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
-import com.braintreepayments.api.UnionPayCardBuilder;
+import com.braintreepayments.api.UnionPayCard;
 import com.braintreepayments.api.UnionPayClient;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
@@ -239,16 +239,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     public void sendSms(View v) {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .cardNumber(mCardForm.getCardNumber())
-                .expirationMonth(mCardForm.getExpirationMonth())
-                .expirationYear(mCardForm.getExpirationYear())
-                .cvv(mCardForm.getCvv())
-                .postalCode(mCardForm.getPostalCode())
-                .mobileCountryCode(mCardForm.getCountryCode())
-                .mobilePhoneNumber(mCardForm.getMobileNumber());
+        UnionPayCard unionPayCard = new UnionPayCard();
+        unionPayCard.setNumber(mCardForm.getCardNumber());
+        unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
+        unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
+        unionPayCard.setCvv(mCardForm.getCvv());
+        unionPayCard.setPostalCode(mCardForm.getPostalCode());
+        unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
+        unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
 
-        unionPayClient.enroll(unionPayCardBuilder, (enrollment, error) -> {
+        unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
             mEnrollmentId = enrollment.getId();
             if (enrollment.isSmsCodeRequired()) {
                 mSmsCodeContainer.setVisibility(VISIBLE);
@@ -266,18 +266,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onPurchase(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (mIsUnionPay) {
-            UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                    .cardNumber(mCardForm.getCardNumber())
-                    .expirationMonth(mCardForm.getExpirationMonth())
-                    .expirationYear(mCardForm.getExpirationYear())
-                    .cvv(mCardForm.getCvv())
-                    .postalCode(mCardForm.getPostalCode())
-                    .mobileCountryCode(mCardForm.getCountryCode())
-                    .mobilePhoneNumber(mCardForm.getMobileNumber())
-                    .smsCode(mSmsCode.getText().toString())
-                    .enrollmentId(mEnrollmentId);
+            UnionPayCard unionPayCard = new UnionPayCard();
+            unionPayCard.setNumber(mCardForm.getCardNumber());
+            unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
+            unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
+            unionPayCard.setCvv(mCardForm.getCvv());
+            unionPayCard.setPostalCode(mCardForm.getPostalCode());
+            unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
+            unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
+            unionPayCard.setSmsCode(mSmsCode.getText().toString());
+            unionPayCard.setEnrollmentId(mEnrollmentId);
 
-            unionPayClient.tokenize(unionPayCardBuilder, (cardNonce, tokenizeError) -> {
+            unionPayClient.tokenize(unionPayCard, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
                     handlePaymentMethodNonceCreated(cardNonce);
                 } else {
@@ -286,15 +286,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
 
         } else {
-            CardBuilder cardBuilder = new CardBuilder()
-                    .cardNumber(mCardForm.getCardNumber())
-                    .expirationMonth(mCardForm.getExpirationMonth())
-                    .expirationYear(mCardForm.getExpirationYear())
-                    .cvv(mCardForm.getCvv())
-                    .validate(false) // TODO GQL currently only returns the bin if validate = false
-                    .postalCode(mCardForm.getPostalCode());
+            Card card = new Card();
+            card.setNumber(mCardForm.getCardNumber());
+            card.setExpirationMonth(mCardForm.getExpirationMonth());
+            card.setExpirationYear(mCardForm.getExpirationYear());
+            card.setCvv(mCardForm.getCvv());
+            card.setValidate(false); // TODO GQL currently only returns the bin if validate = false
+            card.setPostalCode(mCardForm.getPostalCode());
 
-            cardClient.tokenize(getActivity(), cardBuilder, (cardNonce, tokenizeError) -> {
+            cardClient.tokenize(getActivity(), card, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
                     handlePaymentMethodNonceCreated(cardNonce);
                 } else {
@@ -356,7 +356,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         } else {
 
             CardFragmentDirections.ActionCardFragmentToDisplayNonceFragment action =
-                CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setDeviceData(mDeviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
@@ -378,19 +378,19 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .givenName("Jill")
-                .surname("Doe")
-                .phoneNumber("5551234567")
-                .streetAddress("555 Smith St")
-                .extendedAddress("#2")
-                .locality("Chicago")
-                .region("IL")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+        billingAddress.setGivenName("Jill");
+        billingAddress.setSurname("Doe");
+        billingAddress.setPhoneNumber("5551234567");
+        billingAddress.setStreetAddress("555 Smith St");
+        billingAddress.setExtendedAddress("#2");
+        billingAddress.setLocality("Chicago");
+        billingAddress.setRegion("IL");
+        billingAddress.setPostalCode("12345");
+        billingAddress.setCountryCodeAlpha2("US");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .accountId("account-id");
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        additionalInformation.setAccountId("account-id");
 
         ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
@@ -406,14 +406,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         v1UiCustomization.setRedirectButtonText("Return to Demo App");
         v1UiCustomization.setRedirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
-        return new ThreeDSecureRequest()
-                .amount("10")
-                .email("test@email.com")
-                .billingAddress(billingAddress)
-                .nonce(cardNonce.getNonce())
-                .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .additionalInformation(additionalInformation)
-                .v2UiCustomization(v2UiCustomization)
-                .v1UiCustomization(v1UiCustomization);
+        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+        threeDSecureRequest.setAmount("10");
+        threeDSecureRequest.setEmail("test@email.com");
+        threeDSecureRequest.setBillingAddress(billingAddress);
+        threeDSecureRequest.setNonce(cardNonce.getNonce());
+        threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        threeDSecureRequest.setAdditionalInformation(additionalInformation);
+        threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
+        threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
+
+        return threeDSecureRequest;
     }
 }

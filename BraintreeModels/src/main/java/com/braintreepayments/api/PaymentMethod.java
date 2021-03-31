@@ -8,10 +8,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * An abstract class to extend when creating a builder for a payment method. Contains logic and
+ * An abstract class to extend when creating a payment method. Contains logic and
  * implementations shared by all payment methods.
  */
-public abstract class PaymentMethodBuilder<T> {
+public abstract class PaymentMethod {
 
     protected static final String OPTIONS_KEY = "options";
     protected static final String OPERATION_NAME_KEY = "operationName";
@@ -25,7 +25,7 @@ public abstract class PaymentMethodBuilder<T> {
     private boolean mValidateSet;
     private String mSessionId;
 
-    public PaymentMethodBuilder() {}
+    public PaymentMethod() {}
 
     /**
      * Sets the integration method associated with the tokenization call for analytics use.
@@ -33,10 +33,8 @@ public abstract class PaymentMethodBuilder<T> {
      *
      * @param integration the current integration style.
      */
-    @SuppressWarnings("unchecked")
-    T integration(String integration) {
+    void setIntegration(String integration) {
         mIntegration = integration;
-        return (T) this;
     }
 
     /**
@@ -44,10 +42,8 @@ public abstract class PaymentMethodBuilder<T> {
      *
      * @param source the source of the payment method.
      */
-    @SuppressWarnings("unchecked")
-    T source(String source) {
+    void setSource(String source) {
         mSource = source;
-        return (T) this;
     }
 
     /**
@@ -56,11 +52,9 @@ public abstract class PaymentMethodBuilder<T> {
      *   will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
      *   will be validated when used by a server side library for a Braintree gateway action.
      */
-    @SuppressWarnings("unchecked")
-    public T validate(boolean validate) {
+    public void setValidate(boolean validate) {
         mValidate = validate;
         mValidateSet = true;
-        return (T) this;
     }
 
     /**
@@ -68,16 +62,14 @@ public abstract class PaymentMethodBuilder<T> {
      * This field is automatically set at the point of tokenization, and any previous
      * values ignored.
      */
-    @SuppressWarnings("unchecked")
-    T setSessionId(String sessionId) {
+    void setSessionId(String sessionId) {
         mSessionId = sessionId;
-        return (T) this;
     }
 
     /**
      * @return String representation of {@link PaymentMethodNonce} for API use.
      */
-    public String build() {
+    public String buildJSON() {
         JSONObject base = new JSONObject();
         JSONObject optionsJson = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -94,7 +86,7 @@ public abstract class PaymentMethodBuilder<T> {
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
 
-            build(base, paymentMethodNonceJson);
+            buildJSON(base, paymentMethodNonceJson);
         } catch (JSONException ignored) {}
 
         return base.toString();
@@ -138,7 +130,7 @@ public abstract class PaymentMethodBuilder<T> {
         return base.toString();
     }
 
-    protected PaymentMethodBuilder(Parcel in) {
+    protected PaymentMethod(Parcel in) {
         mIntegration = in.readString();
         mSource = in.readString();
         mValidate = in.readByte() > 0;
@@ -162,7 +154,7 @@ public abstract class PaymentMethodBuilder<T> {
         return "custom";
     }
 
-    protected abstract void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
+    protected abstract void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
 
     protected abstract void buildGraphQL(JSONObject base, JSONObject input) throws BraintreeException,
             JSONException;

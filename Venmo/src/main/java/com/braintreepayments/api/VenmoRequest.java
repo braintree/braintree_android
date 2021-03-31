@@ -12,11 +12,9 @@ public class VenmoRequest {
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
      *                    Vaulting will only occur if a client token with a customer ID is being used.
      *                    Defaults to false.
-     * @return {@link VenmoRequest}
      */
-    public VenmoRequest shouldVault(boolean shouldVault) {
+    public void setShouldVault(boolean shouldVault) {
         this.shouldVault = shouldVault;
-        return this;
     }
 
     /**
@@ -25,17 +23,15 @@ public class VenmoRequest {
      *                  profile, and it will show up in the Venmo app as a "Connected Merchant".
      *                  Venmo profile IDs can be found in the Braintree Control Panel.
      *                  Leaving this `null` will use the default Venmo profile.
-     * @return {@link VenmoRequest}
      */
-    public VenmoRequest profileId(String profileId) {
+    public void setProfileId(String profileId) {
         this.profileId = profileId;
-        return this;
     }
 
     /**
      * @return Whether or not to automatically vault the Venmo Account.
      */
-    public boolean shouldVault() {
+    public boolean getShouldVault() {
         return shouldVault;
     }
 

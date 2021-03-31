@@ -30,7 +30,7 @@ public class UnionPayClientUnitTest {
     private BraintreeClient braintreeClient;
     private TokenizationClient tokenizationClient;
 
-    private UnionPayCardBuilder unionPayCardBuilder;
+    private UnionPayCard unionPayCard;
     private UnionPayEnrollCallback unionPayEnrollCallback;
     private UnionPayFetchCapabilitiesCallback unionPayFetchCapabilitiesCallback;
 
@@ -47,19 +47,19 @@ public class UnionPayClientUnitTest {
         unionPayEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY);
         unionPayDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
-        unionPayCardBuilder = mock(UnionPayCardBuilder.class);
+        unionPayCard = mock(UnionPayCard.class);
         unionPayEnrollCallback = mock(UnionPayEnrollCallback.class);
         unionPayFetchCapabilitiesCallback = mock(UnionPayFetchCapabilitiesCallback.class);
     }
 
     @Test
     public void tokenize_sendsAnalyticsEventOnTokenizeResult() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCard = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
+        sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         callback.success(mock(CardNonce.class));
@@ -69,12 +69,12 @@ public class UnionPayClientUnitTest {
 
     @Test
     public void tokenize_callsListenerWithErrorOnFailure() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCard = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
+        sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -85,12 +85,12 @@ public class UnionPayClientUnitTest {
 
     @Test
     public void tokenize_sendsAnalyticsEventOnFailure() {
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
+        UnionPayCard unionPayCard = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.tokenize(unionPayCardBuilder, unionPayTokenizeCallback);
+        sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -106,10 +106,10 @@ public class UnionPayClientUnitTest {
                 .build();
 
         String unionPayCardJson = "{\"sample\":\"json\"}";
-        when(unionPayCardBuilder.buildEnrollment()).thenReturn(new JSONObject(unionPayCardJson));
+        when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject(unionPayCardJson));
 
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.enroll(unionPayCardBuilder, unionPayEnrollCallback);
+        sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         String expectedPath = "/v1/union_pay_enrollments";
         verify(braintreeClient).sendPOST(eq(expectedPath), eq(unionPayCardJson), any(HttpResponseCallback.class));
@@ -127,10 +127,10 @@ public class UnionPayClientUnitTest {
                 .sendPOSTSuccessfulResponse(response)
                 .build();
 
-        when(unionPayCardBuilder.buildEnrollment()).thenReturn(new JSONObject("{}"));
+        when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.enroll(unionPayCardBuilder, unionPayEnrollCallback);
+        sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<UnionPayEnrollment> resultCaptor = ArgumentCaptor.forClass(UnionPayEnrollment.class);
         verify(unionPayEnrollCallback).onResult(resultCaptor.capture(), (Exception) isNull());
@@ -147,7 +147,7 @@ public class UnionPayClientUnitTest {
                 .build();
 
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.enroll(unionPayCardBuilder, unionPayEnrollCallback);
+        sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(unionPayEnrollCallback).onResult((UnionPayEnrollment) isNull(), exceptionCaptor.capture());
@@ -164,10 +164,10 @@ public class UnionPayClientUnitTest {
                 .sendPOSTErrorResponse(new BraintreeException())
                 .build();
 
-        when(unionPayCardBuilder.buildEnrollment()).thenReturn(new JSONObject("{}"));
+        when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.enroll(unionPayCardBuilder, unionPayEnrollCallback);
+        sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-failed");
     }
@@ -184,10 +184,10 @@ public class UnionPayClientUnitTest {
                 .sendPOSTSuccessfulResponse(response)
                 .build();
 
-        when(unionPayCardBuilder.buildEnrollment()).thenReturn(new JSONObject("{}"));
+        when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
-        sut.enroll(unionPayCardBuilder, unionPayEnrollCallback);
+        sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-succeeded");
     }

@@ -16,26 +16,27 @@ public class LocalPaymentRequestUnitTest {
 
     @Test
     public void build_setsAllParams() throws JSONException {
-        PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
-                .extendedAddress("Apt 2")
-                .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .region("CA")
-                .postalCode("2585 GJ");
-        LocalPaymentRequest request = new LocalPaymentRequest()
-                .paymentType("ideal")
-                .amount("1.10")
-                .address(address)
-                .phone("639847934")
-                .email("jon@getbraintree.com")
-                .givenName("Jon")
-                .surname("Doe")
-                .shippingAddressRequired(false)
-                .merchantAccountId("local-merchant-account-id")
-                .currencyCode("EUR")
-                .paymentTypeCountryCode("NL")
-                .bic("bank-id-code");
+        PostalAddress address = new PostalAddress();
+        address.setStreetAddress("836486 of 22321 Park Lake");
+        address.setExtendedAddress("Apt 2");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Den Haag");
+        address.setRegion("CA");
+        address.setPostalCode("2585 GJ");
+
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("639847934");
+        request.setEmail("jon@getbraintree.com");
+        request.setGivenName("Jon");
+        request.setSurname("Doe");
+        request.setShippingAddressRequired(false);
+        request.setMerchantAccountId("local-merchant-account-id");
+        request.setCurrencyCode("EUR");
+        request.setPaymentTypeCountryCode("NL");
+        request.setBic("bank-id-code");
 
         JSONObject json = new JSONObject(request.build("http://success-url.com", "http://cancel-url.com"));
 

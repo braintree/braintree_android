@@ -79,6 +79,25 @@
   * Update `ThreeDSecureResultCallback` to expect a `ThreeDSecureResult` parameter
   * Update `ThreeDSecureClient#continuePerformVerification()` to expect a `ThreeDSecureResult` parameter
   * Update callback type in `ThreeDSecureClient#initializeChallengeWithLookupResponse` methods
+  * Replace `CardBuilder` with `Card`
+  * Replace `BaseCardBuilder` with `BaseCard`
+  * Replace `PaymentMethodBuilder` with `PaymentMethod`
+  * Replace `UnionPayCardBuilder` with `UnionPayCard`
+  * Replace `PayPalAccountBuilder` with `PayPalAccount`
+  * Replace `VenmoAccountBuilder` with `VenmoAccount`
+  * Replace `VisaCheckoutBuilder` with `VisaCheckoutAccount`
+  * Remove builder pattern from the following classes:
+    * `PostalAddress`
+    * `GooglePayRequest`
+    * `ReadyForGooglePayRequest`
+    * `LocalPaymentRequest`
+    * `ThreeDSecureAdditionalInformation`
+    * `ThreeDSecurePostalAddress`
+    * `ThreeDSecureRequest`
+  * Rename `PayPalPaymentIntent` enums:
+    * `INTENT_ORDER` to `ORDER`
+    * `INTENT_SALE` to `SALE`
+    * `INTENT_AUTHORIZE` to `AUTHORIZE`
   * Remove `paymentRequested` param from `GooglePayRequestPaymentCallback`
   * Refactor `BraintreeClient` constructor to take a `String` instead of `Authorization` and change parameter ordering 
   * Make `Authorization` package-private

@@ -47,22 +47,23 @@ public class LocalPaymentFragment extends BaseFragment {
                 }
 
                 localPaymentClient = new LocalPaymentClient(braintreeClient);
-                PostalAddress address = new PostalAddress()
-                        .streetAddress("Stadhouderskade 78")
-                        .countryCodeAlpha2("NL")
-                        .locality("Amsterdam")
-                        .postalCode("1072 AE");
-                LocalPaymentRequest request = new LocalPaymentRequest()
-                        .paymentType("ideal")
-                        .amount("1.10")
-                        .address(address)
-                        .phone("207215300")
-                        .email("android-test-buyer@paypal.com")
-                        .givenName("Test")
-                        .surname("Buyer")
-                        .shippingAddressRequired(true)
-                        .merchantAccountId("altpay_eur")
-                        .currencyCode("EUR");
+                PostalAddress address = new PostalAddress();
+                address.setStreetAddress("Stadhouderskade 78");
+                address.setCountryCodeAlpha2("NL");
+                address.setLocality("Amsterdam");
+                address.setPostalCode("1072 AE");
+
+                LocalPaymentRequest request = new LocalPaymentRequest();
+                request.setPaymentType("ideal");
+                request.setAmount("1.10");
+                request.setAddress(address);
+                request.setPhone("207215300");
+                request.setEmail("android-test-buyer@paypal.com");
+                request.setGivenName("Test");
+                request.setSurname("Buyer");
+                request.setShippingAddressRequired(true);
+                request.setMerchantAccountId("altpay_eur");
+                request.setCurrencyCode("EUR");
 
                 localPaymentClient.startPayment(request, (transaction, error) -> {
                     if (transaction != null) {
@@ -92,7 +93,7 @@ public class LocalPaymentFragment extends BaseFragment {
         super.onPaymentMethodNonceCreated(localPaymentNonce);
 
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
-            LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
+                LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 }

@@ -8,9 +8,9 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 /**
- * Builder used to construct a PayPal account tokenization request
+ * Use to construct a PayPal account tokenization request
  */
-class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
+class PayPalAccount extends PaymentMethod {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
@@ -22,7 +22,7 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
     private String mIntent;
     private String mMerchantAccountId;
 
-    PayPalAccountBuilder() {
+    PayPalAccount() {
         super();
     }
 
@@ -30,54 +30,46 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
      * @param clientMetadataId Application clientMetadataId created by
-     * {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
-     * @return {@link PayPalAccountBuilder}
+     *                         {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      */
-    PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
+    void setClientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
-        return this;
     }
 
     /**
      * Response data from callback url. Used by PayPal wrappers to construct
      * a request to create a PayPal account.
-     *
-     * Response data will be merged into the payment method json on {@link #build()}
+     * <p>
+     * Response data will be merged into the payment method json on {@link #buildJSON()}
      *
      * @param urlResponseData The data parsed from the PayPal callback url.
-     * @return {@link PayPalAccountBuilder}
      */
-    PayPalAccountBuilder urlResponseData(JSONObject urlResponseData) {
+    void setUrlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
             mUrlResponseData = urlResponseData;
         }
-        return this;
     }
 
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalCheckoutRequest#INTENT_AUTHORIZE} or {@link PayPalCheckoutRequest#INTENT_SALE}.
-     * @return {@link PayPalAccountBuilder}
+     * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
      */
-    PayPalAccountBuilder intent(@PayPalCheckoutRequest.PayPalPaymentIntent String intent) {
+    void setIntent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
-        return this;
     }
 
     /**
      * Used to set a non-default merchant account id.
      *
      * @param merchantAccountId String merchant account id
-     * @return {@link PayPalAccountBuilder}
      */
-    PayPalAccountBuilder merchantAccountId(String merchantAccountId) {
+    void setMerchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
-        return this;
     }
 
     @Override
-    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
         paymentMethodNonceJson.put(INTENT_KEY, mIntent);
 
@@ -87,7 +79,7 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
             paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
         }
 
-        if(mMerchantAccountId != null) {
+        if (mMerchantAccountId != null) {
             base.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
         }
 
@@ -95,7 +87,8 @@ class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
     }
 
     @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {}
+    protected void buildGraphQL(JSONObject base, JSONObject input) {
+    }
 
     @Override
     public String getApiPath() {
