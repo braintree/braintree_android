@@ -2,8 +2,9 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,16 +12,19 @@ import org.json.JSONObject;
 /**
  * {@link UntypedPaymentMethodNonce} representing a PayPal account.
  *
- * @see CardNonce
  * @see UntypedPaymentMethodNonce
  */
-public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Parcelable {
+public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
 
     static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
     static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
     static final String TOKENIZATION_DATA_KEY = "tokenizationData";
     static final String TOKEN_KEY = "token";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private static final String CREDIT_FINANCING_KEY = "creditFinancingOffered";
     private static final String DETAILS_KEY = "details";
@@ -46,13 +50,15 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
     private PayPalCreditFinancing mCreditFinancing;
     private String mAuthenticateUrl;
 
+    protected String mNonce;
+    protected String mDescription;
+    protected boolean mDefault;
+
     PayPalAccountNonce(String jsonString) throws JSONException {
-        super(jsonString);
+        this(new JSONObject(jsonString));
     }
 
     PayPalAccountNonce(JSONObject inputJson) throws JSONException {
-        super(inputJson);
-
         boolean getShippingAddressFromTopLevel = false;
 
         JSONObject json;
@@ -68,6 +74,10 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
         } else {
             json = inputJson;
         }
+
+        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);
 
@@ -95,7 +105,7 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
             mPhone = Json.optString(payerInfo, PHONE_KEY, "");
             mPayerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
-            if(mEmail == null) {
+            if (mEmail == null) {
                 mEmail = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
@@ -120,23 +130,32 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
         return mEmail;
     }
 
+    @Override
+    public String getNonce() {
+        return mNonce;
+    }
+
     /**
      * @return The description of this PayPal account for displaying to a customer, either email or
      * 'PayPal'
      */
     @Override
     public String getDescription() {
-        if (TextUtils.equals(super.getDescription(), "PayPal") && !TextUtils.isEmpty(getEmail())) {
+        if (TextUtils.equals(mDescription, "PayPal") && !TextUtils.isEmpty(getEmail())) {
             return getEmail();
         } else {
-            return super.getDescription();
+            return mDescription;
         }
+    }
+
+    @Override
+    public boolean isDefault() {
+        return mDefault;
     }
 
     /**
      * @return The type of this {@link UntypedPaymentMethodNonce} (always "PayPal")
      */
-    @Override
     public String getTypeLabel() {
         return "PayPal";
     }
@@ -179,14 +198,14 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
     /**
      * @return The ClientMetadataId associated with this transaction.
      */
-    public String getClientMetadataId(){
+    public String getClientMetadataId() {
         return mClientMetadataId;
     }
 
     /**
      * @return The Payer ID provided in checkout flows.
      */
-    public String getPayerId(){
+    public String getPayerId() {
         return mPayerId;
     }
 
@@ -199,7 +218,6 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
     }
 
     /**
-     *
      * @return The URL used to authenticate the customer during two-factor authentication flows.
      * This property will only be present if two-factor authentication is required.
      */
@@ -208,11 +226,16 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
         return mAuthenticateUrl;
     }
 
-    PayPalAccountNonce() {}
+    PayPalAccountNonce() {
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
         dest.writeString(mClientMetadataId);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
@@ -223,10 +246,12 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
         dest.writeString(mPayerId);
         dest.writeParcelable(mCreditFinancing, flags);
         dest.writeString(mAuthenticateUrl);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private PayPalAccountNonce(Parcel in) {
-        super(in);
         mClientMetadataId = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
@@ -237,6 +262,9 @@ public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Par
         mPayerId = in.readString();
         mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
         mAuthenticateUrl = in.readString();
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {

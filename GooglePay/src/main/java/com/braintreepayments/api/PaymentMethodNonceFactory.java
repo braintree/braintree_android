@@ -13,7 +13,7 @@ class PaymentMethodNonceFactory {
                         .getString("token"));
     }
 
-   static UntypedPaymentMethodNonce fromString(String paymentDataString) throws JSONException {
+   static PaymentMethodNonce fromString(String paymentDataString) throws JSONException {
         JSONObject token = extractPaymentMethodToken(paymentDataString);
         Iterator<String> keys = token.keys();
 

@@ -490,7 +490,7 @@ public class PayPalClientUnitTest {
 
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(payPalAccountNonce)
+                .successResponse(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

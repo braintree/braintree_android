@@ -19,8 +19,8 @@ public class VenmoAccountNonceUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.
-                fromJson(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
+        VenmoAccountNonce venmoAccountNonce =
+            new VenmoAccountNonce(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
 
         assertEquals("venmojoe", venmoAccountNonce.getDescription());
         assertEquals("venmojoe", venmoAccountNonce.getUsername());

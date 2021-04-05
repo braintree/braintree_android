@@ -16,13 +16,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ACCESS_TOKEN;
 import static com.braintreepayments.api.VenmoClient.EXTRA_BRAINTREE_DATA;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_PAYMENT_METHOD_NONCE;
 import static com.braintreepayments.api.VenmoClient.EXTRA_USERNAME;
-import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -500,10 +500,9 @@ public class VenmoClientUnitTest {
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
         PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
-        tokenizeNonceCallback.success(venmoAccountNonce);
+        tokenizeNonceCallback.success(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
 
-        verify(onActivityResultCallback).onResult(venmoAccountNonce, null);
+        verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
     }
 
     @Test
@@ -524,8 +523,7 @@ public class VenmoClientUnitTest {
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
         PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
-        tokenizeNonceCallback.success(venmoAccountNonce);
+        tokenizeNonceCallback.success(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }

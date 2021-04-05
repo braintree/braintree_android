@@ -12,7 +12,7 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 /**
  * {@link UntypedPaymentMethodNonce} representing a credit or debit card.
  */
-public class CardNonce implements PaymentMethodNonce, Parcelable {
+public class CardNonce implements PaymentMethodNonce {
 
     static final String TYPE = "CreditCard";
     static final String API_RESOURCE_KEY = "creditCards";

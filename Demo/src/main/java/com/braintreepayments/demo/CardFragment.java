@@ -25,6 +25,7 @@ import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.UntypedPaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
@@ -307,7 +308,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
-            UntypedPaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
+            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
@@ -324,7 +325,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
     }
 
-    private void handlePaymentMethodNonceCreated(UntypedPaymentMethodNonce paymentMethodNonce) {
+    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
@@ -375,7 +376,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 "- errorCode: " + rewardsBalance.getErrorCode();
     }
 
-    private ThreeDSecureRequest threeDSecureRequest(UntypedPaymentMethodNonce paymentMethodNonce) {
+    private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();

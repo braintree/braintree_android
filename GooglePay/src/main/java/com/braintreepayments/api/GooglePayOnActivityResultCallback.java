@@ -9,8 +9,8 @@ import android.content.Intent;
 public interface GooglePayOnActivityResultCallback {
 
     /**
-     * @param paymentMethodNonce {@link UntypedPaymentMethodNonce}
+     * @param paymentMethodNonce {@link PaymentMethodNonce}
      * @param error an exception that occurred while processing Google Pay activity result
      */
-    void onResult(UntypedPaymentMethodNonce paymentMethodNonce, Exception error);
+    void onResult(PaymentMethodNonce paymentMethodNonce, Exception error);
 }

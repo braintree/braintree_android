@@ -26,7 +26,7 @@ public class PayPalAccountNonceUnitTest {
 
     @Test
     public void fromJson_parsesResponseWithCreditFinancingOffer() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
 
         assertNotNull(payPalAccountNonce);
         assertEquals("fake-authenticate-url", payPalAccountNonce.getAuthenticateUrl());
@@ -56,7 +56,7 @@ public class PayPalAccountNonceUnitTest {
     public void fromJson_parsesResponseWithoutCreditFinancingOffer() throws JSONException {
         JSONObject response = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
         response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details").remove("creditFinancingOffered");
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(response.toString());
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(response.toString());
 
         assertNotNull(payPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
@@ -76,7 +76,7 @@ public class PayPalAccountNonceUnitTest {
     @Test
     public void fromJson_whenNoAddresses_returnsEmptyPostalAddress() throws JSONException {
         JSONObject response = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_ADDRESSES);
-        PayPalAccountNonce paypalAccount = PayPalAccountNonce.fromJson(response.toString());
+        PayPalAccountNonce paypalAccount = new PayPalAccountNonce(response.toString());
 
         assertNotNull(paypalAccount.getShippingAddress());
         assertNotNull(paypalAccount.getBillingAddress());
@@ -93,7 +93,7 @@ public class PayPalAccountNonceUnitTest {
 
     @Test
     public void parcelsCorrectly_withAllValuesPresent() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
         Parcel parcel = Parcel.obtain();
         payPalAccountNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -128,7 +128,7 @@ public class PayPalAccountNonceUnitTest {
     public void parcelsCorrectly_ifCreditFinancingNotPresent() throws JSONException {
         JSONObject response = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
         response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details").remove("creditFinancingOffered");
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(response.toString());
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(response.toString());
         assertNull(payPalAccountNonce.getCreditFinancing());
 
         Parcel parcel = Parcel.obtain();
