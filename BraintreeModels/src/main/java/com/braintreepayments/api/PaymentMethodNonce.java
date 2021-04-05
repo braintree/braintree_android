@@ -13,6 +13,7 @@ import org.json.JSONObject;
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
 public class PaymentMethodNonce implements Parcelable {
+
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -78,7 +79,8 @@ public class PaymentMethodNonce implements Parcelable {
                 mTypeLabel = "Venmo";
                 break;
             default:
-                mTypeLabel = "Unknown";
+                // fallback to display type as type label
+                mTypeLabel = mType;
                 break;
         }
     }
