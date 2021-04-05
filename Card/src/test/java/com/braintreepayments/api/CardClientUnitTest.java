@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,10 +43,9 @@ public class CardClientUnitTest {
         verify(tokenizationClient).tokenize(same(card), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
-        CardNonce cardNonce = mock(CardNonce.class);
-        callback.success(cardNonce);
+        callback.success(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
-        verify(cardTokenizeCallback).onResult(cardNonce, null);
+        verify(cardTokenizeCallback).onResult(any(CardNonce.class), (Exception) isNull());
     }
 
     @Test
@@ -57,7 +58,7 @@ public class CardClientUnitTest {
         verify(tokenizationClient).tokenize(same(card), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
-        callback.success(mock(CardNonce.class));
+        callback.success(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }

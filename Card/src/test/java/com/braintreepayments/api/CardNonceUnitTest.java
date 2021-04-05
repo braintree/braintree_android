@@ -22,7 +22,7 @@ public class CardNonceUnitTest {
 
     @Test
     public void canCreateCardFromJson() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
+        CardNonce cardNonce = new CardNonce(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
 
         assertEquals("Visa", cardNonce.getTypeLabel());
         assertEquals("Visa", cardNonce.getCardType());
@@ -52,7 +52,7 @@ public class CardNonceUnitTest {
 
     @Test
     public void canCreateCardFromTokenizeCreditCardGraphQLResponse() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
+        CardNonce cardNonce = new CardNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
         assertEquals("Visa", cardNonce.getTypeLabel());
         assertEquals("Visa", cardNonce.getCardType());
@@ -82,7 +82,7 @@ public class CardNonceUnitTest {
 
     @Test
     public void setsCorrectDefaultsWhenValuesAreMissingFromJson() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD_MISSING_VALUES);
+        CardNonce cardNonce = new CardNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD_MISSING_VALUES);
 
         assertEquals("", cardNonce.getLastFour());
         assertEquals("", cardNonce.getLastTwo());
@@ -102,7 +102,7 @@ public class CardNonceUnitTest {
 
     @Test
     public void handlesGraphQLUnknownCardResponses() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(Fixtures.GRAPHQL_RESPONSE_UNKNOWN_CREDIT_CARD);
+        CardNonce cardNonce = new CardNonce(Fixtures.GRAPHQL_RESPONSE_UNKNOWN_CREDIT_CARD);
 
         assertEquals("Unknown", cardNonce.getTypeLabel());
         assertEquals("Unknown", cardNonce.getCardType());
@@ -130,7 +130,7 @@ public class CardNonceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
+        CardNonce cardNonce = new CardNonce(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
 
         Parcel parcel = Parcel.obtain();
         cardNonce.writeToParcel(parcel, 0);
