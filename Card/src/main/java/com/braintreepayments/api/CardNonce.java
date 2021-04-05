@@ -12,10 +12,17 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 /**
  * {@link UntypedPaymentMethodNonce} representing a credit or debit card.
  */
-public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
+public class CardNonce implements PaymentMethodNonce, Parcelable {
 
     static final String TYPE = "CreditCard";
     static final String API_RESOURCE_KEY = "creditCards";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
+
+    static final String DATA_KEY = "data";
+    static final String TOKEN_KEY = "token";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
@@ -43,13 +50,15 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
     private String mExpirationYear;
     private String mCardholderName;
 
+    protected String mNonce;
+    protected String mDescription;
+    protected boolean mDefault;
+
     CardNonce(String jsonString) throws JSONException {
-        super(jsonString);
+        this(new JSONObject(jsonString));
     }
 
     CardNonce(JSONObject inputJson) throws JSONException {
-        super(inputJson);
-
         if (inputJson.has(DATA_KEY)) {
             JSONObject data = inputJson.getJSONObject(DATA_KEY);
 
@@ -81,6 +90,10 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
                 json = inputJson;
             }
 
+            mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+            mDescription = json.getString(DESCRIPTION_KEY);
+            mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
             JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
             mLastTwo = details.getString(LAST_TWO_KEY);
             mLastFour = details.getString(LAST_FOUR_KEY);
@@ -98,7 +111,6 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
     /**
      * @return Type of this card (e.g. MasterCard, American Express)
      */
-    @Override
     public String getTypeLabel() {
         return mCardType;
     }
@@ -145,6 +157,21 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
         return mCardholderName;
     }
 
+    /** @inheritDoc */
+    public String getNonce() {
+        return mNonce;
+    }
+
+    /** @inheritDoc */
+    public String getDescription() {
+        return mDescription;
+    }
+
+    /** @inheritDoc */
+    public boolean isDefault() {
+        return mDefault;
+    }
+
     /**
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
@@ -177,12 +204,13 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
         return mAuthenticationInsight;
     }
 
-    CardNonce() {
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
         dest.writeString(mLastFour);
@@ -192,10 +220,12 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);
         dest.writeString(mCardholderName);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected CardNonce(Parcel in) {
-        super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
         mLastFour = in.readString();
@@ -205,6 +235,9 @@ public class CardNonce extends UntypedPaymentMethodNonce implements Parcelable {
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
         mCardholderName = in.readString();
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {

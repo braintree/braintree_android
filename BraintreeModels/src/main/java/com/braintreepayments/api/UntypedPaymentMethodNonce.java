@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * Base class representing a method of payment for a customer. {@link UntypedPaymentMethodNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public class UntypedPaymentMethodNonce implements Parcelable {
+public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable {
 
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
     private static final String CARD_DETAILS_KEY = "details";
@@ -24,9 +24,6 @@ public class UntypedPaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
-
-    static final String DATA_KEY = "data";
-    static final String TOKEN_KEY = "token";
 
     protected String mNonce;
     protected String mDescription;
@@ -84,25 +81,17 @@ public class UntypedPaymentMethodNonce implements Parcelable {
 //        }
     }
 
-    /**
-     * @return The nonce generated for this payment method by the Braintree gateway. The nonce will
-     *          represent this PaymentMethod for the purposes of creating transactions and other monetary
-     *          actions.
-     */
+    /** @inheritDoc */
     public String getNonce() {
         return mNonce;
     }
 
-    /**
-     * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
-     */
+    /** @inheritDoc */
     public String getDescription() {
         return mDescription;
     }
 
-    /**
-     * @return {@code true} if this payment method is the default for the current customer, {@code false} otherwise
-     */
+    /** @inheritDoc */
     public boolean isDefault() {
         return mDefault;
     }
