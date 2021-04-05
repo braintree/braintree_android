@@ -38,16 +38,20 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
         super(jsonString);
     }
 
+    private static JSONObject parseAndroidPayCardObject(JSONObject inputJson) throws JSONException {
+        JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(inputJson.toString());
+        return new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
+    }
+
     GooglePayCardNonce(JSONObject json) throws JSONException {
-        super(json);
+        super(parseAndroidPayCardObject(json));
 
         JSONObject billingAddressJson = new JSONObject();
         JSONObject shippingAddressJson = new JSONObject();
 
-        JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(json.toString());
-
-        JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
-        super.fromJson(androidPayCardObject);
+        // TODO: consider changing PaymentMethodNonce into an interface to break inheritance constraint
+        // and eliminate the need to double parse here
+        JSONObject androidPayCardObject = parseAndroidPayCardObject(json);
         JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
 
         JSONObject info = json
