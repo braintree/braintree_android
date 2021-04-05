@@ -13,6 +13,13 @@ import org.json.JSONObject;
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
 public class PaymentMethodNonce implements Parcelable {
+    private static final String CARD_API_RESOURCE_KEY = "creditCards";
+    private static final String CARD_DETAILS_KEY = "details";
+    private static final String CARD_TYPE_KEY = "cardType";
+
+    private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
+    private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
+    private static final String GRAPHQL_BRAND_KEY = "brand";
 
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -27,16 +34,53 @@ public class PaymentMethodNonce implements Parcelable {
     protected boolean mDefault;
 
     protected String mType;
+    protected String mTypeLabel;
 
     PaymentMethodNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }
 
-    PaymentMethodNonce(JSONObject json) throws JSONException {
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-        mType = json.getString(PAYMENT_METHOD_TYPE_KEY);
+    PaymentMethodNonce(JSONObject inputJson) throws JSONException {
+        mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = inputJson.getString(DESCRIPTION_KEY);
+        mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+
+        switch (mType) {
+            case "CreditCard":
+                if (inputJson.has(DATA_KEY)) {
+                    JSONObject data = inputJson.getJSONObject(DATA_KEY);
+
+                    if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
+                        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+                        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+                        mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+                    }
+                } else {
+                    JSONObject json;
+                    if (inputJson.has(CARD_API_RESOURCE_KEY)) {
+                        json = inputJson.getJSONArray(CARD_API_RESOURCE_KEY).getJSONObject(0);
+                    } else {
+                        json = inputJson;
+                    }
+
+                    JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
+                    mTypeLabel = details.getString(CARD_TYPE_KEY);
+                }
+                break;
+            case "PayPalAccount":
+                mTypeLabel = "PayPal";
+                break;
+            case "VisaCheckoutCard":
+                mTypeLabel = "Visa Checkout";
+                break;
+            case "VenmoAccount":
+                mTypeLabel = "Venmo";
+                break;
+            default:
+                mTypeLabel = "Unknown";
+                break;
+        }
     }
 
     static JSONObject getJsonObjectForType(String apiResourceKey, JSONObject json) throws JSONException {
@@ -78,54 +122,10 @@ public class PaymentMethodNonce implements Parcelable {
      *          for displaying appropriate logos, etc.
      */
     public String getTypeLabel() {
+
         // TODO: introspect json and return a type label (e.g. Venmo, PayPal, Mastercard)
         return null;
     }
-
-    //    /**
-//     * Parses a {@link PaymentMethodNonce} from json.
-//     *
-//     * @param json {@link String} representation of a {@link PaymentMethodNonce}.
-//     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
-//     * @return {@link PaymentMethodNonce}
-//     * @throws JSONException if parsing fails
-//     */
-//    @Nullable
-//    static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
-//        return parsePaymentMethodNonces(new JSONObject(json), type);
-//    }
-//
-//    /**
-//     * Parses a {@link PaymentMethodNonce} from json.
-//     *
-//     * @param json {@link JSONObject} representation of a {@link PaymentMethodNonce}.
-//     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
-//     * @return {@link PaymentMethodNonce}
-//     * @throws JSONException if parsing fails
-//     */
-//    @Nullable
-//    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
-//        switch (type) {
-//            case VenmoAccountNonce.TYPE:
-//                if (json.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
-//                    return VenmoAccountNonce.fromJson(json.toString());
-//                } else {
-//                    VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
-//                    venmoAccountNonce.fromJson(json);
-//                    return venmoAccountNonce;
-//                }
-//            case VisaCheckoutNonce.TYPE:
-//                if (json.has(VisaCheckoutNonce.API_RESOURCE_KEY)) {
-//                    return VisaCheckoutNonce.fromJson(json.toString());
-//                } else {
-//                    VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
-//                    visaCheckoutNonce.fromJson(json);
-//                    return visaCheckoutNonce;
-//                }
-//            default:
-//                return null;
-//        }
-//    }
 
     PaymentMethodNonce() {}
 

@@ -37,28 +37,15 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         super(jsonString);
     }
 
-    VisaCheckoutNonce(JSONObject json) throws JSONException {
-        super(json);
-        // TODO: implement
-    }
+    VisaCheckoutNonce(JSONObject inputJson) throws JSONException {
+        super(inputJson);
 
-    /**
-     * Convert an API response to a {@link VisaCheckoutNonce}.
-     *
-     * @param json Raw JSON response from Braintree of a {@link VisaCheckoutNonce}.
-     * @return {@link VisaCheckoutNonce}.
-     * @throws JSONException when parsing the response fails.
-     */
-    static VisaCheckoutNonce fromJson(String json) throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
-        visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
-
-        return visaCheckoutNonce;
-    }
-
-    @Override
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
+        JSONObject json;
+        if (inputJson.has(VisaCheckoutNonce.API_RESOURCE_KEY)) {
+            json = PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+        } else {
+            json = inputJson;
+        }
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
