@@ -43,6 +43,58 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private String mExpirationYear;
     private String mCardholderName;
 
+    CardNonce(String jsonString) throws JSONException {
+        super(jsonString);
+    }
+
+    CardNonce(JSONObject inputJson) throws JSONException {
+        super(inputJson);
+
+        if (inputJson.has(DATA_KEY)) {
+            JSONObject data = inputJson.getJSONObject(DATA_KEY);
+
+            if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
+                JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+
+                JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+                mLastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
+                mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
+                mCardType = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+                mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
+                mBin = Json.optString(creditCard, "bin", "");
+                mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
+                mNonce = payload.getString(TOKEN_KEY);
+                mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
+                mDefault = false;
+                mAuthenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
+                mExpirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
+                mExpirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
+                mCardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
+            } else {
+                throw new JSONException("Failed to parse GraphQL response JSON");
+            }
+        } else {
+            JSONObject json;
+            if (inputJson.has(API_RESOURCE_KEY)) {
+                json = CardNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+            } else {
+                json = inputJson;
+            }
+
+            JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
+            mLastTwo = details.getString(LAST_TWO_KEY);
+            mLastFour = details.getString(LAST_FOUR_KEY);
+            mCardType = details.getString(CARD_TYPE_KEY);
+            mThreeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+            mBin = Json.optString(details, BIN_KEY, "");
+            mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+            mAuthenticationInsight = AuthenticationInsight.fromJson(json.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
+            mExpirationMonth = Json.optString(details, EXPIRATION_MONTH_KEY, "");
+            mExpirationYear = Json.optString(details, EXPIRATION_YEAR_KEY, "");
+            mCardholderName = Json.optString(details, CARDHOLDER_NAME_KEY, "");
+        }
+    }
+
     /**
      * Convert an API response to a {@link CardNonce}.
      *
@@ -192,7 +244,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         return mAuthenticationInsight;
     }
 
-    CardNonce() {}
+    CardNonce() {
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

@@ -55,9 +55,9 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.setNonce(paymentMethodNonce.getNonce());
+                request.setNonce(tokenizationResponse.getNonce());
                 request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -101,9 +101,9 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.setNonce(paymentMethodNonce.getNonce());
+                request.setNonce(tokenizationResponse.getNonce());
                 request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -145,9 +145,9 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.setNonce(paymentMethodNonce.getNonce());
+                request.setNonce(tokenizationResponse.getNonce());
                 request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -183,9 +183,9 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.setNonce(paymentMethodNonce.getNonce());
+                request.setNonce(tokenizationResponse.getNonce());
                 request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -229,9 +229,9 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                request.setNonce(paymentMethodNonce.getNonce());
+                request.setNonce(tokenizationResponse.getNonce());
                 request.setAmount(TEST_AMOUNT);
 
                 threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {

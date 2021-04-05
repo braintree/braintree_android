@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONException;
+
 /**
  * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
@@ -50,11 +52,16 @@ public class CardClient {
     public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                dataCollector.collectRiskData(context, paymentMethodNonce);
+            public void success(String tokenizationResponse) {
+                try {
+                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    dataCollector.collectRiskData(context, cardNonce);
 
-                callback.onResult((CardNonce) paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent("card.nonce-received");
+                    callback.onResult(cardNonce, null);
+                    braintreeClient.sendAnalyticsEvent("card.nonce-received");
+                } catch (JSONException exception) {
+                    callback.onResult(null, exception);
+                }
             }
 
             @Override

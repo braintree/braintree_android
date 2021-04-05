@@ -2,16 +2,11 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
-import org.json.JSONArray;
+import androidx.annotation.CallSuper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
@@ -19,7 +14,6 @@ import java.util.List;
  */
 public class PaymentMethodNonce implements Parcelable {
 
-    private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
@@ -33,6 +27,10 @@ public class PaymentMethodNonce implements Parcelable {
     protected boolean mDefault;
 
     protected String mType;
+
+    PaymentMethodNonce(String jsonString) throws JSONException {
+        this(new JSONObject(jsonString));
+    }
 
     PaymentMethodNonce(JSONObject json) throws JSONException {
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
@@ -84,60 +82,30 @@ public class PaymentMethodNonce implements Parcelable {
         return null;
     }
 
-    /**
-     * Parses a response from the Braintree gateway for a list of payment method nonces.
-     *
-     * @param jsonBody Json-formatted String containing a list of {@link PaymentMethodNonce}s
-     * @return List of {@link PaymentMethodNonce}s contained in jsonBody
-     * @throws JSONException if parsing fails
-     */
-    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
-            throws JSONException {
-        JSONArray paymentMethods = new JSONObject(jsonBody).getJSONArray(
-                PAYMENT_METHOD_NONCE_COLLECTION_KEY);
-
-        if (paymentMethods == null) {
-            return Collections.emptyList();
-        }
-
-        List<PaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
-        JSONObject json;
-        PaymentMethodNonce paymentMethodNonce;
-        for(int i = 0; i < paymentMethods.length(); i++) {
-            json = paymentMethods.getJSONObject(i);
-            paymentMethodNonce = new PaymentMethodNonce(json);
-            if (paymentMethodNonce != null) {
-                paymentMethodsNonces.add(paymentMethodNonce);
-            }
-        }
-
-        return paymentMethodsNonces;
-    }
-
-    /**
-     * Parses a {@link PaymentMethodNonce} from json.
-     *
-     * @param json {@link String} representation of a {@link PaymentMethodNonce}.
-     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
-     * @return {@link PaymentMethodNonce}
-     * @throws JSONException if parsing fails
-     */
-    @Nullable
-    static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
-        return parsePaymentMethodNonces(new JSONObject(json), type);
-    }
-
-    /**
-     * Parses a {@link PaymentMethodNonce} from json.
-     *
-     * @param json {@link JSONObject} representation of a {@link PaymentMethodNonce}.
-     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
-     * @return {@link PaymentMethodNonce}
-     * @throws JSONException if parsing fails
-     */
-    @Nullable
-    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
-        switch (type) {
+    //    /**
+//     * Parses a {@link PaymentMethodNonce} from json.
+//     *
+//     * @param json {@link String} representation of a {@link PaymentMethodNonce}.
+//     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
+//     * @return {@link PaymentMethodNonce}
+//     * @throws JSONException if parsing fails
+//     */
+//    @Nullable
+//    static PaymentMethodNonce parsePaymentMethodNonces(String json, String type) throws JSONException {
+//        return parsePaymentMethodNonces(new JSONObject(json), type);
+//    }
+//
+//    /**
+//     * Parses a {@link PaymentMethodNonce} from json.
+//     *
+//     * @param json {@link JSONObject} representation of a {@link PaymentMethodNonce}.
+//     * @param type The {@link String} type of the {@link PaymentMethodNonce}.
+//     * @return {@link PaymentMethodNonce}
+//     * @throws JSONException if parsing fails
+//     */
+//    @Nullable
+//    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
+//        switch (type) {
 //            case CardNonce.TYPE:
 //                if (json.has(CardNonce.API_RESOURCE_KEY) || json.has(CardNonce.DATA_KEY)) {
 //                    return CardNonce.fromJson(json.toString());
@@ -170,10 +138,10 @@ public class PaymentMethodNonce implements Parcelable {
 //                    visaCheckoutNonce.fromJson(json);
 //                    return visaCheckoutNonce;
 //                }
-            default:
-                return null;
-        }
-    }
+//            default:
+//                return null;
+//        }
+//    }
 
     PaymentMethodNonce() {}
 

@@ -46,6 +46,15 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     private PayPalCreditFinancing mCreditFinancing;
     private String mAuthenticateUrl;
 
+    PayPalAccountNonce(String jsonString) throws JSONException {
+        super(jsonString);
+    }
+
+    PayPalAccountNonce(JSONObject json) throws JSONException {
+        super(json);
+        // TODO: implement
+    }
+
     /**
      * Convert an API response to a {@link PayPalAccountNonce}.
      *

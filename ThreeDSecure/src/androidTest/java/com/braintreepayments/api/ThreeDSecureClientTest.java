@@ -50,8 +50,8 @@ public class ThreeDSecureClientTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                String nonce = paymentMethodNonce.getNonce();
+            public void success(String tokenizationResponse) {
+                String nonce = tokenizationResponse.getNonce();
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 request.setNonce(nonce);

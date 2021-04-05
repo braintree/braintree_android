@@ -54,7 +54,7 @@ public class PaymentMethodTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
+            public void success(String tokenizationResponse) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
@@ -105,7 +105,7 @@ public class PaymentMethodTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(final PaymentMethodNonce paymentMethodNonce) {
+            public void success(final String tokenizationResponse) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {

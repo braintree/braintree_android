@@ -241,14 +241,16 @@ public class PayPalClient {
 
                         tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
                             @Override
-                            public void success(PaymentMethodNonce paymentMethodNonce) {
-                                if (paymentMethodNonce instanceof PayPalAccountNonce) {
-                                    PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
-
+                            public void success(String tokenizationResponse) {
+                                try {
+                                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
                                     if (payPalAccountNonce.getCreditFinancing() != null) {
                                         braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
                                     }
                                     callback.onResult(payPalAccountNonce, null);
+
+                                } catch (JSONException exception) {
+                                    callback.onResult(null, exception);
                                 }
                             }
 

@@ -25,6 +25,15 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         mUsername = username;
     }
 
+    VenmoAccountNonce(String jsonString) throws JSONException {
+        super(jsonString);
+    }
+
+    VenmoAccountNonce(JSONObject json) throws JSONException {
+        super(json);
+        // TODO: implement
+    }
+
     /**
      * Convert an API response to an {@link VenmoAccountNonce}.
      *

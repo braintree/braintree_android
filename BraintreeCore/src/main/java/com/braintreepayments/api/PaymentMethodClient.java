@@ -4,16 +4,21 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Class used to retrieve a customer's payment methods.
  */
 public class PaymentMethodClient {
+
+    private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
 
     protected static final String SINGLE_USE_TOKEN_ID = "singleUseTokenId";
     protected static final String VARIABLES = "variables";
@@ -24,6 +29,35 @@ public class PaymentMethodClient {
 
     public PaymentMethodClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
+    }
+
+    /**
+     * Parses a response from the Braintree gateway for a list of payment method nonces.
+     *
+     * @param jsonBody Json-formatted String containing a list of {@link PaymentMethodNonce}s
+     * @return List of {@link PaymentMethodNonce}s contained in jsonBody
+     * @throws JSONException if parsing fails
+     */
+    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+        JSONArray paymentMethods =
+            new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
+
+        if (paymentMethods == null) {
+            return Collections.emptyList();
+        }
+
+        List<PaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
+        JSONObject json;
+        PaymentMethodNonce paymentMethodNonce;
+        for(int i = 0; i < paymentMethods.length(); i++) {
+            json = paymentMethods.getJSONObject(i);
+            paymentMethodNonce = new PaymentMethodNonce(json);
+            if (paymentMethodNonce != null) {
+                paymentMethodsNonces.add(paymentMethodNonce);
+            }
+        }
+
+        return paymentMethodsNonces;
     }
 
     /**
@@ -48,7 +82,7 @@ public class PaymentMethodClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.onResult(PaymentMethodNonce.parsePaymentMethodNonces(responseBody), null);
+                    callback.onResult(parsePaymentMethodNonces(responseBody), null);
                     braintreeClient.sendAnalyticsEvent("get-payment-methods.succeeded");
                 } catch (JSONException e) {
                     callback.onResult(null, e);

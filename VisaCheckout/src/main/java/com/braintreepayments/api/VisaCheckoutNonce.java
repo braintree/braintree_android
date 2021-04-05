@@ -33,6 +33,15 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private String mCallId;
     private BinData mBinData;
 
+    VisaCheckoutNonce(String jsonString) throws JSONException {
+        super(jsonString);
+    }
+
+    VisaCheckoutNonce(JSONObject json) throws JSONException {
+        super(json);
+        // TODO: implement
+    }
+
     /**
      * Convert an API response to a {@link VisaCheckoutNonce}.
      *

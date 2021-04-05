@@ -147,7 +147,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void success(String tokenizationResponse) {}
 
             @Override
             public void failure(Exception exception) {}
@@ -168,7 +168,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void success(String tokenizationResponse) {}
 
             @Override
             public void failure(Exception exception) {}

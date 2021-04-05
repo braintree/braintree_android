@@ -8,9 +8,9 @@ package com.braintreepayments.api;
 public interface PaymentMethodNonceCallback {
 
     /**
-     * @param paymentMethodNonce parsed {@link PaymentMethodNonce} from the HTTP request.
+     * @param tokenizationResponse parsed {@link PaymentMethodNonce} from the HTTP request.
      */
-    void success(PaymentMethodNonce paymentMethodNonce);
+    void success(String tokenizationResponse);
 
     /**
      * @param exception error that caused the request to fail.
