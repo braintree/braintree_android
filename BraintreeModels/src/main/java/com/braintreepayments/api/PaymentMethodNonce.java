@@ -106,14 +106,6 @@ public class PaymentMethodNonce implements Parcelable {
 //    @Nullable
 //    static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
 //        switch (type) {
-//            case PayPalAccountNonce.TYPE:
-//                if (json.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
-//                    return PayPalAccountNonce.fromJson(json.toString());
-//                } else {
-//                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
-//                    payPalAccountNonce.fromJson(json);
-//                    return payPalAccountNonce;
-//                }
 //            case VenmoAccountNonce.TYPE:
 //                if (json.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
 //                    return VenmoAccountNonce.fromJson(json.toString());
