@@ -34,21 +34,12 @@ public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable
     private PostalAddress mShippingAddress;
     private BinData mBinData;
 
-    /**
-     * Convert an API response to a {@link GooglePayCardNonce}.
-     *
-     * @param json Raw JSON response from Braintree of a {@link GooglePayCardNonce}.
-     * @return {@link GooglePayCardNonce}.
-     * @throws JSONException when parsing the response fails.
-     */
-    static GooglePayCardNonce fromJson(String json) throws JSONException {
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce();
-        googlePayCardNonce.fromJson(new JSONObject(json));
-
-        return googlePayCardNonce;
+    GooglePayCardNonce(String jsonString) throws JSONException {
+        super(jsonString);
     }
 
-    void fromJson(JSONObject json) throws JSONException {
+    GooglePayCardNonce(JSONObject json) throws JSONException {
+        super(json);
 
         JSONObject billingAddressJson = new JSONObject();
         JSONObject shippingAddressJson = new JSONObject();
