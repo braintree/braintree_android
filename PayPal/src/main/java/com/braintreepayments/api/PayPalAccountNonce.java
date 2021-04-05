@@ -56,15 +56,15 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         boolean getShippingAddressFromTopLevel = false;
 
         JSONObject json;
-        if (inputJson.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
-            json = PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
-        } else if (inputJson.has(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)) {
+        if (inputJson.has(API_RESOURCE_KEY)) {
+            json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
+        } else if (inputJson.has(PAYMENT_METHOD_DATA_KEY)) {
             getShippingAddressFromTopLevel = true;
             JSONObject tokenObj = new JSONObject(inputJson
                     .getJSONObject(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)
                     .getJSONObject(PayPalAccountNonce.TOKENIZATION_DATA_KEY)
                     .getString(PayPalAccountNonce.TOKEN_KEY));
-            json = PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenObj);
+            json = tokenObj.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         } else {
             json = inputJson;
         }

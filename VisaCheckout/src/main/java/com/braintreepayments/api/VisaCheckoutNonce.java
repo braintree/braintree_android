@@ -41,8 +41,8 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         super(inputJson);
 
         JSONObject json;
-        if (inputJson.has(VisaCheckoutNonce.API_RESOURCE_KEY)) {
-            json = PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+        if (inputJson.has(API_RESOURCE_KEY)) {
+            json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         } else {
             json = inputJson;
         }

@@ -76,7 +76,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         } else {
             JSONObject json;
             if (inputJson.has(API_RESOURCE_KEY)) {
-                json = CardNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+                json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
             } else {
                 json = inputJson;
             }

@@ -85,17 +85,6 @@ public class PaymentMethodNonce implements Parcelable {
         }
     }
 
-    static JSONObject getJsonObjectForType(String apiResourceKey, JSONObject json) throws JSONException {
-        return json.getJSONArray(apiResourceKey).getJSONObject(0);
-    }
-
-    @CallSuper
-    void fromJson(JSONObject json) throws JSONException {
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-    }
-
     /**
      * @return The nonce generated for this payment method by the Braintree gateway. The nonce will
      *          represent this PaymentMethod for the purposes of creating transactions and other monetary
