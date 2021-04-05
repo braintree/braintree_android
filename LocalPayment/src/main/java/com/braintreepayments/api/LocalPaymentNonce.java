@@ -38,27 +38,12 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
     private String mPayerId;
     private String mType;
 
-    /**
-     * Convert an API response to a {@link LocalPaymentNonce}.
-     *
-     * @param json Raw JSON representation of a {@link LocalPaymentNonce}.
-     * @return {@link LocalPaymentNonce} for use in payment method selection UIs.
-     */
-    static LocalPaymentNonce fromJson(String json) throws JSONException {
-        LocalPaymentNonce localPaymentNonce = new LocalPaymentNonce();
-        localPaymentNonce.fromJson(LocalPaymentNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
-
-        return localPaymentNonce;
+    LocalPaymentNonce(String jsonString) throws JSONException {
+        super(jsonString);
     }
 
-    /**
-     * Generates a {@link LocalPaymentNonce} from the {@link JSONObject}.
-     *
-     * @param json {@link JSONObject} that holds properties for {@link LocalPaymentNonce}.
-     * @throws JSONException if object could not be constructed from JSON.
-     */
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
+    LocalPaymentNonce(JSONObject json) throws JSONException {
+        super(json);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
         mEmail = Json.optString(details, EMAIL_KEY, null);
