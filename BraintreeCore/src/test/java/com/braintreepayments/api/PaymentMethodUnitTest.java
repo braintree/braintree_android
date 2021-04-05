@@ -110,9 +110,9 @@ public class PaymentMethodUnitTest {
 
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
         assertEquals(3, paymentMethodNonces.size());
-        assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
+        assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(2)).getUsername());
+        assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, true, callback);
+        sut.getPaymentMethodNonces(true, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGET(captor.capture(), any(HttpResponseCallback.class));

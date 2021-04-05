@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Callback for receiving result of
  * {@link PaymentMethodClient#getPaymentMethodNonces(Context, GetPaymentMethodNoncesCallback)} and
- * {@link PaymentMethodClient#getPaymentMethodNonces(Context, boolean, GetPaymentMethodNoncesCallback)}.
+ * {@link PaymentMethodClient#getPaymentMethodNonces(boolean, GetPaymentMethodNoncesCallback)}.
  */
 public interface GetPaymentMethodNoncesCallback {
 

@@ -79,8 +79,9 @@ public class PaymentMethodNonce implements Parcelable {
                 mTypeLabel = "Venmo";
                 break;
             default:
-                // fallback to display type as type label
-                mTypeLabel = mType;
+                // TODO: consider throwing here for nonces that aren't supposed to be
+                // parsed by payment methods client
+                mTypeLabel = "Unknown";
                 break;
         }
     }

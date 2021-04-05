@@ -52,7 +52,7 @@ public class PaymentMethodClient {
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
             paymentMethodNonce = new PaymentMethodNonce(json);
-            if (paymentMethodNonce != null) {
+            if (!paymentMethodNonce.getTypeLabel().equals("Unknown")) {
                 paymentMethodsNonces.add(paymentMethodNonce);
             }
         }
@@ -65,13 +65,11 @@ public class PaymentMethodClient {
      * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
-     *
-     * @param context Android Context
-     * @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
+     *  @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
      *        payment methods will be ordered my most recently used.
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
-    public void getPaymentMethodNonces(final Context context, boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
+    public void getPaymentMethodNonces(boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
         final Uri uri = Uri.parse(TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT))
                 .buildUpon()
                 .appendQueryParameter("default_first", String.valueOf(defaultFirst))
@@ -108,7 +106,7 @@ public class PaymentMethodClient {
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
     public void getPaymentMethodNonces(Context context, GetPaymentMethodNoncesCallback callback) {
-        getPaymentMethodNonces(context, false, callback);
+        getPaymentMethodNonces(false, callback);
     }
 
     /**
