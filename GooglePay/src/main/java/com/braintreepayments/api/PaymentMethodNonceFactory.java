@@ -25,7 +25,7 @@ class PaymentMethodNonceFactory {
                     return GooglePayCardNonce.fromJson(paymentDataString);
 
                 case PayPalAccountNonce.API_RESOURCE_KEY:
-                    return PayPalAccountNonce.fromJson(paymentDataString);
+                    return new PayPalAccountNonce(paymentDataString);
             }
         }
 

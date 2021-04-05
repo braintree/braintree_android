@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 /**
  * {@link PaymentMethodNonce} representing a {@link VenmoAccountNonce}
+ *
  * @see PaymentMethodNonce
  */
 public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable {
@@ -20,6 +21,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     private String mUsername;
 
     VenmoAccountNonce(String nonce, String description, String username) {
+        // TODO: consider creating JSON object here and calling JSON constructor
         mNonce = nonce;
         mDescription = description;
         mUsername = username;
@@ -29,27 +31,15 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         super(jsonString);
     }
 
-    VenmoAccountNonce(JSONObject json) throws JSONException {
-        super(json);
-        // TODO: implement
-    }
+    VenmoAccountNonce(JSONObject inputJson) throws JSONException {
+        super(inputJson);
 
-    /**
-     * Convert an API response to an {@link VenmoAccountNonce}.
-     *
-     * @param json Raw JSON response from Braintree of a {@link VenmoAccountNonce}.
-     * @return {@link VenmoAccountNonce}.
-     * @throws JSONException when parsing the response fails.
-     */
-    static VenmoAccountNonce fromJson(String json) throws JSONException {
-        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
-        venmoAccountNonce.fromJson(VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
-
-        return venmoAccountNonce;
-    }
-
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
+        JSONObject json;
+        if (inputJson.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
+            json = VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+        } else {
+            json = inputJson;
+        }
 
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
         mUsername = details.getString(VENMO_USERNAME_KEY);
@@ -74,7 +64,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         dest.writeString(mUsername);
     }
 
-    VenmoAccountNonce() {}
+    VenmoAccountNonce() {
+    }
 
     private VenmoAccountNonce(Parcel in) {
         super(in);
