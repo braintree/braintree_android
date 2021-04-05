@@ -122,9 +122,7 @@ public class PaymentMethodNonce implements Parcelable {
      *          for displaying appropriate logos, etc.
      */
     public String getTypeLabel() {
-
-        // TODO: introspect json and return a type label (e.g. Venmo, PayPal, Mastercard)
-        return null;
+        return mTypeLabel;
     }
 
     PaymentMethodNonce() {}
@@ -140,6 +138,7 @@ public class PaymentMethodNonce implements Parcelable {
         dest.writeString(mDescription);
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
         dest.writeString(mType);
+        dest.writeString(mTypeLabel);
     }
 
     protected PaymentMethodNonce(Parcel in) {
@@ -147,6 +146,7 @@ public class PaymentMethodNonce implements Parcelable {
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
         mType = in.readString();
+        mTypeLabel = in.readString();
     }
 
     public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
