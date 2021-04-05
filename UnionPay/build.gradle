@@ -27,6 +27,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
 
     implementation 'androidx.annotation:annotation:1.1.0'
 

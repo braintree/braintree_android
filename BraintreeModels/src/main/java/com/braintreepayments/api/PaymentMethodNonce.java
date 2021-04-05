@@ -17,7 +17,7 @@ import java.util.List;
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public abstract class PaymentMethodNonce implements Parcelable {
+public class PaymentMethodNonce implements Parcelable {
 
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
@@ -31,6 +31,15 @@ public abstract class PaymentMethodNonce implements Parcelable {
     protected String mNonce;
     protected String mDescription;
     protected boolean mDefault;
+
+    protected String mType;
+
+    PaymentMethodNonce(JSONObject json) throws JSONException {
+        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        mType = json.getString(PAYMENT_METHOD_TYPE_KEY);
+    }
 
     static JSONObject getJsonObjectForType(String apiResourceKey, JSONObject json) throws JSONException {
         return json.getJSONArray(apiResourceKey).getJSONObject(0);
@@ -70,7 +79,10 @@ public abstract class PaymentMethodNonce implements Parcelable {
      * @return The type of this PaymentMethod for displaying to a customer, e.g. 'Visa'. Can be used
      *          for displaying appropriate logos, etc.
      */
-    public abstract String getTypeLabel();
+    public String getTypeLabel() {
+        // TODO: introspect json and return a type label (e.g. Venmo, PayPal, Mastercard)
+        return null;
+    }
 
     /**
      * Parses a response from the Braintree gateway for a list of payment method nonces.
@@ -93,8 +105,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
         PaymentMethodNonce paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            paymentMethodNonce = parsePaymentMethodNonces(json,
-                    json.getString(PAYMENT_METHOD_TYPE_KEY));
+            paymentMethodNonce = new PaymentMethodNonce(json);
             if (paymentMethodNonce != null) {
                 paymentMethodsNonces.add(paymentMethodNonce);
             }
@@ -127,38 +138,38 @@ public abstract class PaymentMethodNonce implements Parcelable {
     @Nullable
     static PaymentMethodNonce parsePaymentMethodNonces(JSONObject json, String type) throws JSONException {
         switch (type) {
-            case CardNonce.TYPE:
-                if (json.has(CardNonce.API_RESOURCE_KEY) || json.has(CardNonce.DATA_KEY)) {
-                    return CardNonce.fromJson(json.toString());
-                } else {
-                    CardNonce cardNonce = new CardNonce();
-                    cardNonce.fromJson(json);
-                    return cardNonce;
-                }
-            case PayPalAccountNonce.TYPE:
-                if (json.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
-                    return PayPalAccountNonce.fromJson(json.toString());
-                } else {
-                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
-                    payPalAccountNonce.fromJson(json);
-                    return payPalAccountNonce;
-                }
-            case VenmoAccountNonce.TYPE:
-                if (json.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
-                    return VenmoAccountNonce.fromJson(json.toString());
-                } else {
-                    VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
-                    venmoAccountNonce.fromJson(json);
-                    return venmoAccountNonce;
-                }
-            case VisaCheckoutNonce.TYPE:
-                if (json.has(VisaCheckoutNonce.API_RESOURCE_KEY)) {
-                    return VisaCheckoutNonce.fromJson(json.toString());
-                } else {
-                    VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
-                    visaCheckoutNonce.fromJson(json);
-                    return visaCheckoutNonce;
-                }
+//            case CardNonce.TYPE:
+//                if (json.has(CardNonce.API_RESOURCE_KEY) || json.has(CardNonce.DATA_KEY)) {
+//                    return CardNonce.fromJson(json.toString());
+//                } else {
+//                    CardNonce cardNonce = new CardNonce();
+//                    cardNonce.fromJson(json);
+//                    return cardNonce;
+//                }
+//            case PayPalAccountNonce.TYPE:
+//                if (json.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
+//                    return PayPalAccountNonce.fromJson(json.toString());
+//                } else {
+//                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
+//                    payPalAccountNonce.fromJson(json);
+//                    return payPalAccountNonce;
+//                }
+//            case VenmoAccountNonce.TYPE:
+//                if (json.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
+//                    return VenmoAccountNonce.fromJson(json.toString());
+//                } else {
+//                    VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
+//                    venmoAccountNonce.fromJson(json);
+//                    return venmoAccountNonce;
+//                }
+//            case VisaCheckoutNonce.TYPE:
+//                if (json.has(VisaCheckoutNonce.API_RESOURCE_KEY)) {
+//                    return VisaCheckoutNonce.fromJson(json.toString());
+//                } else {
+//                    VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
+//                    visaCheckoutNonce.fromJson(json);
+//                    return visaCheckoutNonce;
+//                }
             default:
                 return null;
         }
@@ -176,11 +187,25 @@ public abstract class PaymentMethodNonce implements Parcelable {
         dest.writeString(mNonce);
         dest.writeString(mDescription);
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
+        dest.writeString(mType);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
+        mType = in.readString();
     }
+
+    public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
+        @Override
+        public PaymentMethodNonce createFromParcel(Parcel in) {
+            return new PaymentMethodNonce(in);
+        }
+
+        @Override
+        public PaymentMethodNonce[] newArray(int size) {
+            return new PaymentMethodNonce[size];
+        }
+    };
 }
