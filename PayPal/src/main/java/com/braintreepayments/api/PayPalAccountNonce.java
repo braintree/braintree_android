@@ -50,49 +50,24 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         super(jsonString);
     }
 
-    PayPalAccountNonce(JSONObject json) throws JSONException {
-        super(json);
-        // TODO: implement
-    }
+    PayPalAccountNonce(JSONObject inputJson) throws JSONException {
+        super(inputJson);
 
-    /**
-     * Convert an API response to a {@link PayPalAccountNonce}.
-     *
-     * @param jsonString Raw JSON representation of a {@link PayPalAccountNonce}.
-     * @return {@link PayPalAccountNonce} for use in payment method selection UIs.
-     */
-    static PayPalAccountNonce fromJson(String jsonString) throws JSONException {
-        JSONObject jsonObj = new JSONObject(jsonString);
-        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
+        boolean getShippingAddressFromTopLevel = false;
 
-        if(jsonObj.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
-            payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObj));
-        } else if(jsonObj.has(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)) {
-            JSONObject tokenObj = new JSONObject(new JSONObject(jsonString)
+        JSONObject json;
+        if (inputJson.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
+            json = PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, inputJson);
+        } else if (inputJson.has(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)) {
+            getShippingAddressFromTopLevel = true;
+            JSONObject tokenObj = new JSONObject(inputJson
                     .getJSONObject(PayPalAccountNonce.PAYMENT_METHOD_DATA_KEY)
                     .getJSONObject(PayPalAccountNonce.TOKENIZATION_DATA_KEY)
                     .getString(PayPalAccountNonce.TOKEN_KEY));
-
-            payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenObj));
-            JSONObject shippingAddress = jsonObj.optJSONObject(SHIPPING_ADDRESS_KEY);
-            if (shippingAddress != null) {
-                payPalAccountNonce.mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
-            }
+            json = PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, tokenObj);
         } else {
-            throw new JSONException("Could not parse JSON for a payment method nonce");
+            json = inputJson;
         }
-
-        return payPalAccountNonce;
-    }
-
-    /**
-     * Generates a {@link PayPalAccountNonce} from the {@link JSONObject}.
-     *
-     * @param json {@link JSONObject} that holds properties for {@link PayPalAccountNonce}.
-     * @throws JSONException if parsing fails
-     */
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
 
         mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);
 
@@ -126,6 +101,15 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         } catch (JSONException e) {
             mBillingAddress = new PostalAddress();
             mShippingAddress = new PostalAddress();
+        }
+
+        // TODO: this boolean exists to replicate existing functionality where shipping address
+        // gets overriden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level
+        if (getShippingAddressFromTopLevel) {
+            JSONObject shippingAddress = json.optJSONObject(SHIPPING_ADDRESS_KEY);
+            if (shippingAddress != null) {
+                mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
+            }
         }
     }
 
