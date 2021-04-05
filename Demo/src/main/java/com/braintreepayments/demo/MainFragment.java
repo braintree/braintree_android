@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.UntypedPaymentMethodNonce;
 
 public class MainFragment extends BaseFragment {
 
@@ -21,7 +21,7 @@ public class MainFragment extends BaseFragment {
 
     private static final String KEY_NONCE = "nonce";
 
-    private PaymentMethodNonce mNonce;
+    private UntypedPaymentMethodNonce mNonce;
 
     private Button mGooglePayButton;
     private Button mCardsButton;

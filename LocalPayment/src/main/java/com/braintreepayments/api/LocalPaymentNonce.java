@@ -7,11 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link PaymentMethodNonce} representing a local payment.
+ * {@link UntypedPaymentMethodNonce} representing a local payment.
  *
- * @see PaymentMethodNonce
+ * @see UntypedPaymentMethodNonce
  */
-public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable {
+public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parcelable {
 
     static final String API_RESOURCE_KEY = "paypalAccounts";
 
@@ -95,7 +95,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
     }
 
     /**
-     * @return The type of this {@link PaymentMethodNonce}
+     * @return The type of this {@link UntypedPaymentMethodNonce}
      */
     @Override
     public String getTypeLabel() {

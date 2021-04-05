@@ -5,7 +5,7 @@ import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.UntypedPaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VisaCheckoutAddress;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PaymentMethodNonceFormatter {
 
-    public static String convertToString(PaymentMethodNonce nonce) {
+    public static String convertToString(UntypedPaymentMethodNonce nonce) {
         if (nonce instanceof CardNonce) {
             return convertCardNonceToString((CardNonce) nonce);
         } else if (nonce instanceof PayPalAccountNonce) {

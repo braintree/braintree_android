@@ -3,16 +3,14 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.CallSuper;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
+ * Base class representing a method of payment for a customer. {@link UntypedPaymentMethodNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public class PaymentMethodNonce implements Parcelable {
+public class UntypedPaymentMethodNonce implements Parcelable {
 
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
     private static final String CARD_DETAILS_KEY = "details";
@@ -37,11 +35,11 @@ public class PaymentMethodNonce implements Parcelable {
     protected String mType;
     protected String mTypeLabel;
 
-    PaymentMethodNonce(String jsonString) throws JSONException {
+    UntypedPaymentMethodNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }
 
-    PaymentMethodNonce(JSONObject inputJson) throws JSONException {
+    UntypedPaymentMethodNonce(JSONObject inputJson) throws JSONException {
 //        mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
 //        mDescription = inputJson.getString(DESCRIPTION_KEY);
 //        mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
@@ -117,7 +115,7 @@ public class PaymentMethodNonce implements Parcelable {
         return mTypeLabel;
     }
 
-    PaymentMethodNonce() {}
+    UntypedPaymentMethodNonce() {}
 
     @Override
     public int describeContents() {
@@ -133,7 +131,7 @@ public class PaymentMethodNonce implements Parcelable {
         dest.writeString(mTypeLabel);
     }
 
-    protected PaymentMethodNonce(Parcel in) {
+    protected UntypedPaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
@@ -141,15 +139,15 @@ public class PaymentMethodNonce implements Parcelable {
         mTypeLabel = in.readString();
     }
 
-    public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
+    public static final Creator<UntypedPaymentMethodNonce> CREATOR = new Creator<UntypedPaymentMethodNonce>() {
         @Override
-        public PaymentMethodNonce createFromParcel(Parcel in) {
-            return new PaymentMethodNonce(in);
+        public UntypedPaymentMethodNonce createFromParcel(Parcel in) {
+            return new UntypedPaymentMethodNonce(in);
         }
 
         @Override
-        public PaymentMethodNonce[] newArray(int size) {
-            return new PaymentMethodNonce[size];
+        public UntypedPaymentMethodNonce[] newArray(int size) {
+            return new UntypedPaymentMethodNonce[size];
         }
     };
 }

@@ -7,11 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link PaymentMethodNonce} representing a {@link VenmoAccountNonce}
+ * {@link UntypedPaymentMethodNonce} representing a {@link VenmoAccountNonce}
  *
- * @see PaymentMethodNonce
+ * @see UntypedPaymentMethodNonce
  */
-public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable {
+public class VenmoAccountNonce extends UntypedPaymentMethodNonce implements Parcelable {
 
     static final String TYPE = "VenmoAccount";
     static final String API_RESOURCE_KEY = "venmoAccounts";

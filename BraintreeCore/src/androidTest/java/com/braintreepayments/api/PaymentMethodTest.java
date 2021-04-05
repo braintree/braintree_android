@@ -57,7 +57,7 @@ public class PaymentMethodTest {
             public void success(String tokenizationResponse) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<UntypedPaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(error);
                         assertNotNull(paymentMethodNonces);
                         assertEquals(1, paymentMethodNonces.size());
@@ -69,7 +69,7 @@ public class PaymentMethodTest {
 
                         sut.deletePaymentMethod(mActivity, cardNonce, new DeletePaymentMethodNonceCallback() {
                             @Override
-                            public void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error) {
+                            public void onResult(@Nullable UntypedPaymentMethodNonce deletedNonce, @Nullable Exception error) {
                                 assertNull(error);
                                 CardNonce cardNonce = (CardNonce) deletedNonce;
                                 assertEquals("11", cardNonce.getLastTwo());
@@ -108,7 +108,7 @@ public class PaymentMethodTest {
             public void success(final String tokenizationResponse) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<UntypedPaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(paymentMethodNonces);
 
                         assertTrue(error instanceof AuthorizationException);

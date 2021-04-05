@@ -12,11 +12,11 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 import static java.lang.Boolean.FALSE;
 
 /**
- * {@link PaymentMethodNonce} representing a Google Pay card.
+ * {@link UntypedPaymentMethodNonce} representing a Google Pay card.
  *
- * @see PaymentMethodNonce
+ * @see UntypedPaymentMethodNonce
  */
-public class GooglePayCardNonce extends PaymentMethodNonce implements Parcelable {
+public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Parcelable {
 
     static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";

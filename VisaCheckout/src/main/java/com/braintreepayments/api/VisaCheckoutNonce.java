@@ -9,10 +9,10 @@ import org.json.JSONObject;
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 /**
- * {@link PaymentMethodNonce} representing a Visa Checkout card.
- * @see PaymentMethodNonce
+ * {@link UntypedPaymentMethodNonce} representing a Visa Checkout card.
+ * @see UntypedPaymentMethodNonce
  */
-public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable {
+public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parcelable {
 
     static final String TYPE = "VisaCheckoutCard";
     static final String API_RESOURCE_KEY = "visaCheckoutCards";

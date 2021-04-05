@@ -9,12 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link PaymentMethodNonce} representing a PayPal account.
+ * {@link UntypedPaymentMethodNonce} representing a PayPal account.
  *
  * @see CardNonce
- * @see PaymentMethodNonce
+ * @see UntypedPaymentMethodNonce
  */
-public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable {
+public class PayPalAccountNonce extends UntypedPaymentMethodNonce implements Parcelable {
 
     static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
@@ -134,7 +134,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     }
 
     /**
-     * @return The type of this {@link PaymentMethodNonce} (always "PayPal")
+     * @return The type of this {@link UntypedPaymentMethodNonce} (always "PayPal")
      */
     @Override
     public String getTypeLabel() {

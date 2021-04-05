@@ -9,8 +9,8 @@ import com.visa.checkout.VisaPaymentSummary;
 public interface VisaCheckoutTokenizeCallback {
 
     /**
-     * @param paymentMethodNonce {@link PaymentMethodNonce}
+     * @param paymentMethodNonce {@link UntypedPaymentMethodNonce}
      * @param error an exception that occurred while tokenizing a Visa payment method
      */
-    void onResult(PaymentMethodNonce paymentMethodNonce, Exception error);
+    void onResult(UntypedPaymentMethodNonce paymentMethodNonce, Exception error);
 }
