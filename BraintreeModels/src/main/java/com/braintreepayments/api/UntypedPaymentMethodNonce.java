@@ -15,6 +15,7 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
+    static final String DATA_KEY = "data";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
@@ -37,48 +38,48 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
     }
 
     UntypedPaymentMethodNonce(JSONObject inputJson) throws JSONException {
-//        mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-//        mDescription = inputJson.getString(DESCRIPTION_KEY);
-//        mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-//        mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-//
-//        switch (mType) {
-//            case "CreditCard":
-//                if (inputJson.has(DATA_KEY)) {
-//                    JSONObject data = inputJson.getJSONObject(DATA_KEY);
-//
-//                    if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
-//                        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
-//                        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-//                        mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-//                    }
-//                } else {
-//                    JSONObject json;
-//                    if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-//                        json = inputJson.getJSONArray(CARD_API_RESOURCE_KEY).getJSONObject(0);
-//                    } else {
-//                        json = inputJson;
-//                    }
-//
-//                    JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-//                    mTypeLabel = details.getString(CARD_TYPE_KEY);
-//                }
-//                break;
-//            case "PayPalAccount":
-//                mTypeLabel = "PayPal";
-//                break;
-//            case "VisaCheckoutCard":
-//                mTypeLabel = "Visa Checkout";
-//                break;
-//            case "VenmoAccount":
-//                mTypeLabel = "Venmo";
-//                break;
-//            default:
-//                // TODO: consider throwing here for nonces that aren't supposed to be
-//                // parsed by payment methods client
-//                mTypeLabel = "Unknown";
-//                break;
-//        }
+        mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = inputJson.getString(DESCRIPTION_KEY);
+        mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+
+        switch (mType) {
+            case "CreditCard":
+                if (inputJson.has(DATA_KEY)) {
+                    JSONObject data = inputJson.getJSONObject(DATA_KEY);
+
+                    if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
+                        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+                        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+                        mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+                    }
+                } else {
+                    JSONObject json;
+                    if (inputJson.has(CARD_API_RESOURCE_KEY)) {
+                        json = inputJson.getJSONArray(CARD_API_RESOURCE_KEY).getJSONObject(0);
+                    } else {
+                        json = inputJson;
+                    }
+
+                    JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
+                    mTypeLabel = details.getString(CARD_TYPE_KEY);
+                }
+                break;
+            case "PayPalAccount":
+                mTypeLabel = "PayPal";
+                break;
+            case "VisaCheckoutCard":
+                mTypeLabel = "Visa Checkout";
+                break;
+            case "VenmoAccount":
+                mTypeLabel = "Venmo";
+                break;
+            default:
+                // TODO: consider throwing here for nonces that aren't supposed to be
+                // parsed by payment methods client
+                mTypeLabel = "Unknown";
+                break;
+        }
     }
 
     /** @inheritDoc */

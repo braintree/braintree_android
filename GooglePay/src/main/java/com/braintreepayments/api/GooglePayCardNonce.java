@@ -16,7 +16,7 @@ import static java.lang.Boolean.FALSE;
  *
  * @see UntypedPaymentMethodNonce
  */
-public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Parcelable {
+public class GooglePayCardNonce implements PaymentMethodNonce {
 
     static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";
@@ -25,6 +25,9 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
     private static final String LAST_FOUR_KEY = "lastFour";
     private static final String IS_NETWORK_TOKENIZED_KEY = "isNetworkTokenized";
 
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
     private String mCardType;
     private String mLastTwo;
     private String mLastFour;
@@ -34,26 +37,25 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
     private PostalAddress mShippingAddress;
     private BinData mBinData;
 
-    GooglePayCardNonce(String jsonString) throws JSONException {
-        super(jsonString);
-    }
+    protected String mNonce;
+    protected String mDescription;
+    protected boolean mDefault;
 
-    private static JSONObject parseAndroidPayCardObject(JSONObject inputJson) throws JSONException {
-        JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(inputJson.toString());
-        return new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
+    GooglePayCardNonce(String jsonString) throws JSONException {
+        this(new JSONObject(jsonString));
     }
 
     GooglePayCardNonce(JSONObject json) throws JSONException {
-        super(parseAndroidPayCardObject(json));
-
         JSONObject billingAddressJson = new JSONObject();
         JSONObject shippingAddressJson = new JSONObject();
 
-        // TODO: consider changing PaymentMethodNonce into an interface to break inheritance constraint
-        // and eliminate the need to double parse here
-        JSONObject androidPayCardObject = parseAndroidPayCardObject(json);
-        JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
+        JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(json.toString());
+        JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
+        mNonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = androidPayCardObject.getString(DESCRIPTION_KEY);
+        mDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
+        JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
         JSONObject info = json
                 .getJSONObject("paymentMethodData")
                 .getJSONObject("info");
@@ -78,6 +80,7 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
         mIsNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
+
     }
 
     static PostalAddress postalAddressFromJson(JSONObject json) {
@@ -166,16 +169,32 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
     }
 
     @Override
+    public String getNonce() {
+        return mNonce;
+    }
+
+    @Override
+    public String getDescription() {
+        return mDescription;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return mDefault;
+    }
+
+    @Override
     public String getTypeLabel() {
         return "Google Pay";
     }
 
-    GooglePayCardNonce() {
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
         dest.writeString(mLastFour);
@@ -183,10 +202,12 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeParcelable(mBinData, flags);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private GooglePayCardNonce(Parcel in) {
-        super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
         mLastFour = in.readString();
@@ -194,6 +215,9 @@ public class GooglePayCardNonce extends UntypedPaymentMethodNonce implements Par
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mBinData = in.readParcelable(BinData.class.getClassLoader());
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {

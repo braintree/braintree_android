@@ -14,7 +14,7 @@ public class PaymentMethodNonceFactoryUnitTest {
     public void getPaymentMethodNonce_returnsGooglePay() throws JSONException {
         String jsonString = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
 
-        UntypedPaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
+        PaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
 
         assertTrue(nonce instanceof GooglePayCardNonce);
     }
@@ -23,7 +23,7 @@ public class PaymentMethodNonceFactoryUnitTest {
     public void getPaymentMethodNonce_returnsPayPalAccountNonce() throws JSONException {
         String jsonString = Fixtures.REPSONSE_GOOGLE_PAY_PAYPAL_ACCOUNT;
 
-        UntypedPaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
+        PaymentMethodNonce nonce = PaymentMethodNonceFactory.fromString(jsonString);
 
         assertTrue(nonce instanceof PayPalAccountNonce);
     }

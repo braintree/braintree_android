@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.VisaCheckoutClient;
 import com.visa.checkout.CheckoutButton;
 import com.visa.checkout.Profile;
@@ -67,7 +67,7 @@ public class VisaCheckoutFragment extends BaseFragment {
         });
     }
 
-    private void handlePaymentMethodNonceCreated(UntypedPaymentMethodNonce paymentMethodNonce) {
+    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         VisaCheckoutFragmentDirections.ActionVisaCheckoutFragmentToDisplayNonceFragment action =

@@ -11,9 +11,13 @@ import org.json.JSONObject;
  *
  * @see UntypedPaymentMethodNonce
  */
-public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parcelable {
+public class LocalPaymentNonce implements PaymentMethodNonce {
 
     static final String API_RESOURCE_KEY = "paypalAccounts";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
@@ -38,14 +42,20 @@ public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parc
     private String mPayerId;
     private String mType;
 
+    protected String mNonce;
+    protected String mDescription;
+    protected boolean mDefault;
+
     LocalPaymentNonce(String jsonString) throws JSONException {
-        super(jsonString);
+        this(new JSONObject(jsonString));
     }
 
-    LocalPaymentNonce(JSONObject json) throws JSONException {
-        super(json);
-
+    LocalPaymentNonce(JSONObject inputJson) throws JSONException {
+        JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
+        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
         mEmail = Json.optString(details, EMAIL_KEY, null);
         mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
         mType = Json.optString(json, TYPE_KEY, "PayPalAccount");
@@ -86,12 +96,22 @@ public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parc
         return mEmail;
     }
 
+    @Override
+    public String getNonce() {
+        return mNonce;
+    }
+
     /**
      * @return The description of this local payment for displaying to a customer
      */
     @Override
     public String getDescription() {
-        return super.getDescription();
+        return mDescription;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return mDefault;
     }
 
     /**
@@ -151,11 +171,13 @@ public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parc
         return mPayerId;
     }
 
-    LocalPaymentNonce() {}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
         dest.writeString(mClientMetadataId);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
@@ -165,10 +187,12 @@ public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parc
         dest.writeString(mPhone);
         dest.writeString(mPayerId);
         dest.writeString(mType);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private LocalPaymentNonce(Parcel in) {
-        super(in);
         mClientMetadataId = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
@@ -178,6 +202,9 @@ public class LocalPaymentNonce extends UntypedPaymentMethodNonce implements Parc
         mPhone = in.readString();
         mPayerId = in.readString();
         mType = in.readString();
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<LocalPaymentNonce> CREATOR = new Creator<LocalPaymentNonce>() {

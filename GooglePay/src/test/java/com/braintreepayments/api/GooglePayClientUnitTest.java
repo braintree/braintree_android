@@ -964,7 +964,7 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<UntypedPaymentMethodNonce> captor = ArgumentCaptor.forClass(UntypedPaymentMethodNonce.class);
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof GooglePayCardNonce);
@@ -997,7 +997,7 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<UntypedPaymentMethodNonce> captor = ArgumentCaptor.forClass(UntypedPaymentMethodNonce.class);
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof PayPalAccountNonce);

@@ -5,13 +5,13 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 /**
- * Callback for receiving result of {@link PaymentMethodClient#deletePaymentMethod(Context, UntypedPaymentMethodNonce, DeletePaymentMethodNonceCallback)}.
+ * Callback for receiving result of {@link PaymentMethodClient#deletePaymentMethod(Context, PaymentMethodNonce, DeletePaymentMethodNonceCallback)}.
  */
 public interface DeletePaymentMethodNonceCallback {
 
     /**
-     * @param deletedNonce {@link UntypedPaymentMethodNonce}
+     * @param deletedNonce {@link PaymentMethodNonce}
      * @param error an exception that occurred while deleting a payment method
      */
-    void onResult(@Nullable UntypedPaymentMethodNonce deletedNonce, @Nullable Exception error);
+    void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error);
 }

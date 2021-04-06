@@ -15,7 +15,7 @@ public class LocalPaymentNonceUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        LocalPaymentNonce result = LocalPaymentNonce.fromJson(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
+        LocalPaymentNonce result = new LocalPaymentNonce(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
 
         assertNotNull(result);
         assertEquals("PayPal", result.getDescription());
@@ -37,7 +37,7 @@ public class LocalPaymentNonceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        LocalPaymentNonce result = LocalPaymentNonce.fromJson(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
+        LocalPaymentNonce result = new LocalPaymentNonce(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);

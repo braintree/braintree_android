@@ -62,7 +62,7 @@ public class UnionPayClientUnitTest {
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
-        callback.success(mock(CardNonce.class));
+        callback.success(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-received");
     }

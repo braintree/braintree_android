@@ -38,7 +38,7 @@ public class PaymentMethodClient {
      * @return List of {@link UntypedPaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    static List<UntypedPaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
         JSONArray paymentMethods =
             new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
 
@@ -46,9 +46,9 @@ public class PaymentMethodClient {
             return Collections.emptyList();
         }
 
-        List<UntypedPaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
+        List<PaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
         JSONObject json;
-        UntypedPaymentMethodNonce paymentMethodNonce;
+        PaymentMethodNonce paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
             paymentMethodNonce = new UntypedPaymentMethodNonce(json);
@@ -118,7 +118,7 @@ public class PaymentMethodClient {
      * @param callback {@link DeletePaymentMethodNonceCallback}
      */
     // TODO: Investigate if this feature should be removed from Android or added to iOS for feature parity
-    public void deletePaymentMethod(final Context context, final UntypedPaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
+    public void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
         boolean usesClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
         if (!usesClientToken) {
