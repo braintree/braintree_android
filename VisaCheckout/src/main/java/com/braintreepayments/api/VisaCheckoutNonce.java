@@ -12,10 +12,14 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  * {@link UntypedPaymentMethodNonce} representing a Visa Checkout card.
  * @see UntypedPaymentMethodNonce
  */
-public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parcelable {
+public class VisaCheckoutNonce implements PaymentMethodNonce {
 
     static final String TYPE = "VisaCheckoutCard";
     static final String API_RESOURCE_KEY = "visaCheckoutCards";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -33,13 +37,15 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
     private String mCallId;
     private BinData mBinData;
 
+    protected String mNonce;
+    protected String mDescription;
+    protected boolean mDefault;
+
     VisaCheckoutNonce(String jsonString) throws JSONException {
-        super(jsonString);
+        this(new JSONObject(jsonString));
     }
 
     VisaCheckoutNonce(JSONObject inputJson) throws JSONException {
-        super(inputJson);
-
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
             json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
@@ -55,6 +61,10 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
         mUserData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
         mCallId = Json.optString(json, CALL_ID_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+
+        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
     }
 
     /**
@@ -100,6 +110,21 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
     }
 
     @Override
+    public String getNonce() {
+        return mNonce;
+    }
+
+    @Override
+    public String getDescription() {
+        return mDescription;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return mDefault;
+    }
+
+    @Override
     public String getTypeLabel() {
         return "Visa Checkout";
     }
@@ -111,11 +136,14 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
         return mBinData;
     }
 
-    VisaCheckoutNonce() {}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
         dest.writeString(mLastTwo);
         dest.writeString(mCardType);
         dest.writeParcelable(mBillingAddress, flags);
@@ -123,10 +151,12 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
         dest.writeParcelable(mUserData, flags);
         dest.writeString(mCallId);
         dest.writeParcelable(mBinData, flags);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected VisaCheckoutNonce(Parcel in) {
-        super(in);
         mLastTwo = in.readString();
         mCardType = in.readString();
         mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
@@ -134,6 +164,9 @@ public class VisaCheckoutNonce extends UntypedPaymentMethodNonce implements Parc
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
         mCallId = in.readString();
         mBinData = in.readParcelable(BinData.class.getClassLoader());
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<VisaCheckoutNonce> CREATOR =
