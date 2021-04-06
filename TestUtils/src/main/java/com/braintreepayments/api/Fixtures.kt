@@ -1402,6 +1402,41 @@ object Fixtures {
     """
 
     // language=JSON
+    const val TOKENIZE_CARD_SUCCESS_RESPONSE = """
+        {
+          "creditCards": [
+            {
+              "type": "CreditCard",
+              "nonce": "3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1",
+              "description": "ending in ••11",
+              "consumed": false,
+              "threeDSecureInfo": null,
+              "details": {
+                "bin": "411111",
+                "lastTwo": "11",
+                "lastFour": "1111",
+                "cardType": "Visa",
+                "cardholderName": null,
+                "expirationYear": "2022",
+                "expirationMonth": "02"
+              },
+              "binData": {
+                "prepaid": "Unknown",
+                "healthcare": "Unknown",
+                "debit": "Unknown",
+                "durbinRegulated": "Unknown",
+                "commercial": "Unknown",
+                "payroll": "Unknown",
+                "issuingBank": "Unknown",
+                "countryOfIssuance": "Unknown",
+                "productId": "Unknown"
+              }
+            }
+          ]
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE = """
         {
           "paymentMethods": [
