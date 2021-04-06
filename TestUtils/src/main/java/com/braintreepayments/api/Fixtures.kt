@@ -1338,6 +1338,24 @@ object Fixtures {
     """
     // endregion
 
+    // language=JSON
+    const val PAYMENT_METHOD_CARD = """
+       {
+         "type": "CreditCard",
+         "nonce": "123456-12345-12345-a-adfa",
+         "description": "ending in ••11",
+         "default": true,
+         "isLocked": false,
+         "securityQuestions": [],
+         "details":
+         {
+           "cardType": "Visa",
+           "lastTwo": "11",
+           "lastFour": "1111"
+         }
+       }
+    """
+
     // region Payment Methods
     // language=JSON
     const val PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE = """

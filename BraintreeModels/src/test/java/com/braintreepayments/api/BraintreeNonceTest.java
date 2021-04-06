@@ -9,12 +9,24 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeNonceTest {
 
     @Test
-    public void constructor_parsesGraphQLCardTokenizeJSON() throws JSONException {
+    public void constructor_parsesCardFromPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHOD_CARD);
+
+        assertTrue(nonce.isDefault());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
+        assertEquals("ending in ••11", nonce.getDescription());
+        assertEquals("Visa", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHOD_CARD), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesGraphQLCardTokenizeResponseJSON() throws JSONException {
         BraintreeNonce nonce = new BraintreeNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
         assertFalse(nonce.isDefault());
@@ -25,7 +37,7 @@ public class BraintreeNonceTest {
     }
 
     @Test
-    public void constructor_parsesRestCardTokenizeJSON() throws JSONException {
+    public void constructor_parsesRESTCardTokenizeResponseJSON() throws JSONException {
         BraintreeNonce nonce = new BraintreeNonce(Fixtures.TOKENIZE_CARD_SUCCESS_RESPONSE);
 
         assertFalse(nonce.isDefault());
@@ -33,5 +45,27 @@ public class BraintreeNonceTest {
         assertEquals("ending in ••11", nonce.getDescription());
         assertEquals("Visa", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.TOKENIZE_CARD_SUCCESS_RESPONSE), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesPayPalTokenizeResponseJSON() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getNonce());
+        assertEquals("with email paypalaccount@example.com", nonce.getDescription());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesPayPalFromPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getNonce());
+        assertEquals("with email paypalaccount@example.com", nonce.getDescription());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT), new JSONObject(nonce.getJson()), true);
     }
 }
