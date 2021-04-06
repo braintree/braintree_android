@@ -6,7 +6,6 @@ import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VisaCheckoutAddress;

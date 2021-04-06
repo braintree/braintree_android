@@ -26,7 +26,6 @@ import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;

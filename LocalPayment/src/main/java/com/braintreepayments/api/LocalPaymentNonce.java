@@ -1,15 +1,14 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a local payment.
+ * {@link BraintreeNonce} representing a local payment.
  *
- * @see UntypedPaymentMethodNonce
+ * @see BraintreeNonce
  */
 public class LocalPaymentNonce implements PaymentMethodNonce {
 
@@ -115,7 +114,7 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     }
 
     /**
-     * @return The type of this {@link UntypedPaymentMethodNonce}
+     * @return The type of this {@link BraintreeNonce}
      */
     @Override
     public String getTypeLabel() {

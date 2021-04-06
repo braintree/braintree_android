@@ -12,7 +12,6 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
 
 /**
  * A simple Android Fragment subclass.

@@ -6,9 +6,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a {@link VenmoAccountNonce}
+ * {@link BraintreeNonce} representing a {@link VenmoAccountNonce}
  *
- * @see UntypedPaymentMethodNonce
+ * @see BraintreeNonce
  */
 public class VenmoAccountNonce implements PaymentMethodNonce {
 

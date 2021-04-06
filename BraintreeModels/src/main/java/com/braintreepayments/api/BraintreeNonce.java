@@ -7,10 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Base class representing a method of payment for a customer. {@link UntypedPaymentMethodNonce} represents the
+ * Base class representing a method of payment for a customer. {@link BraintreeNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable {
+public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
     private static final String CARD_DETAILS_KEY = "details";
@@ -33,11 +33,11 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
     protected String mType;
     protected String mTypeLabel;
 
-    UntypedPaymentMethodNonce(String jsonString) throws JSONException {
+    BraintreeNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }
 
-    UntypedPaymentMethodNonce(JSONObject inputJson) throws JSONException {
+    BraintreeNonce(JSONObject inputJson) throws JSONException {
         mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = inputJson.getString(DESCRIPTION_KEY);
         mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
@@ -105,7 +105,7 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
         return mTypeLabel;
     }
 
-    UntypedPaymentMethodNonce() {}
+    BraintreeNonce() {}
 
     @Override
     public int describeContents() {
@@ -121,7 +121,7 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
         dest.writeString(mTypeLabel);
     }
 
-    protected UntypedPaymentMethodNonce(Parcel in) {
+    protected BraintreeNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
@@ -129,15 +129,15 @@ public class UntypedPaymentMethodNonce implements PaymentMethodNonce, Parcelable
         mTypeLabel = in.readString();
     }
 
-    public static final Creator<UntypedPaymentMethodNonce> CREATOR = new Creator<UntypedPaymentMethodNonce>() {
+    public static final Creator<BraintreeNonce> CREATOR = new Creator<BraintreeNonce>() {
         @Override
-        public UntypedPaymentMethodNonce createFromParcel(Parcel in) {
-            return new UntypedPaymentMethodNonce(in);
+        public BraintreeNonce createFromParcel(Parcel in) {
+            return new BraintreeNonce(in);
         }
 
         @Override
-        public UntypedPaymentMethodNonce[] newArray(int size) {
-            return new UntypedPaymentMethodNonce[size];
+        public BraintreeNonce[] newArray(int size) {
+            return new BraintreeNonce[size];
         }
     };
 }

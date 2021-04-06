@@ -2,13 +2,13 @@ package com.braintreepayments.api;
 
 
 /**
- * Communicates {@link UntypedPaymentMethodNonce} from a HTTP request on the main thread.
+ * Communicates {@link BraintreeNonce} from a HTTP request on the main thread.
  * One and only one method will be invoked in response to a request.
  */
 public interface PaymentMethodNonceCallback {
 
     /**
-     * @param tokenizationResponse parsed {@link UntypedPaymentMethodNonce} from the HTTP request.
+     * @param tokenizationResponse parsed {@link BraintreeNonce} from the HTTP request.
      */
     void success(String tokenizationResponse);
 

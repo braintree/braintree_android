@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -10,7 +9,7 @@ import org.json.JSONObject;
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a credit or debit card.
+ * {@link BraintreeNonce} representing a credit or debit card.
  */
 public class CardNonce implements PaymentMethodNonce {
 

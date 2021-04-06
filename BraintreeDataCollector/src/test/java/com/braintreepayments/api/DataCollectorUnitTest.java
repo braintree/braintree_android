@@ -158,7 +158,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        UntypedPaymentMethodNonce paymentMethodNonce = mock(UntypedPaymentMethodNonce.class);
+        BraintreeNonce paymentMethodNonce = mock(BraintreeNonce.class);
         when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
 
         sut.collectRiskData(context, paymentMethodNonce);
@@ -191,7 +191,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        UntypedPaymentMethodNonce paymentMethodNonce = mock(UntypedPaymentMethodNonce.class);
+        BraintreeNonce paymentMethodNonce = mock(BraintreeNonce.class);
         when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
 
         sut.collectRiskData(context, paymentMethodNonce);
@@ -221,7 +221,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        UntypedPaymentMethodNonce paymentMethodNonce = mock(UntypedPaymentMethodNonce.class);
+        BraintreeNonce paymentMethodNonce = mock(BraintreeNonce.class);
         when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
 
         sut.collectRiskData(context, paymentMethodNonce);
@@ -237,7 +237,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        UntypedPaymentMethodNonce paymentMethodNonce = mock(UntypedPaymentMethodNonce.class);
+        BraintreeNonce paymentMethodNonce = mock(BraintreeNonce.class);
         when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
 
         sut.collectRiskData(context, paymentMethodNonce);

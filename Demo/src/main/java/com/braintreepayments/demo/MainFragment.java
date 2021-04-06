@@ -12,7 +12,6 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
 
 public class MainFragment extends BaseFragment {
 

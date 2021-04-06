@@ -23,9 +23,9 @@ class TokenizationClient {
     }
 
     /**
-     * Create a {@link UntypedPaymentMethodNonce} in the Braintree Gateway.
+     * Create a {@link BraintreeNonce} in the Braintree Gateway.
      * <p>
-     * On completion, returns the {@link UntypedPaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
+     * On completion, returns the {@link BraintreeNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
      * If creation fails validation, {@link PaymentMethodNonceCallback#failure(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
@@ -33,7 +33,7 @@ class TokenizationClient {
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
      * PaymentMethodNonceCallback#failure(Exception)} will be called with the {@link Exception} that occurred.
      *
-     * @param paymentMethod {@link PaymentMethod} for the {@link UntypedPaymentMethodNonce}
+     * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
      * @param callback {@link PaymentMethodNonceCallback}
      */

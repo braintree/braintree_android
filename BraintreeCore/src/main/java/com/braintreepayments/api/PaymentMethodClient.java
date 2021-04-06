@@ -34,8 +34,8 @@ public class PaymentMethodClient {
     /**
      * Parses a response from the Braintree gateway for a list of payment method nonces.
      *
-     * @param jsonBody Json-formatted String containing a list of {@link UntypedPaymentMethodNonce}s
-     * @return List of {@link UntypedPaymentMethodNonce}s contained in jsonBody
+     * @param jsonBody Json-formatted String containing a list of {@link BraintreeNonce}s
+     * @return List of {@link BraintreeNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
     static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
@@ -51,7 +51,7 @@ public class PaymentMethodClient {
         PaymentMethodNonce paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            paymentMethodNonce = new UntypedPaymentMethodNonce(json);
+            paymentMethodNonce = new BraintreeNonce(json);
             if (!paymentMethodNonce.getTypeLabel().equals("Unknown")) {
                 paymentMethodsNonces.add(paymentMethodNonce);
             }
@@ -61,9 +61,9 @@ public class PaymentMethodClient {
     }
 
     /**
-     * Retrieves the current list of {@link UntypedPaymentMethodNonce}s for the current customer.
+     * Retrieves the current list of {@link BraintreeNonce}s for the current customer.
      * <p>
-     * When finished, the {@link java.util.List} of {@link UntypedPaymentMethodNonce}s will be sent to {@link
+     * When finished, the {@link java.util.List} of {@link BraintreeNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *  @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
      *        payment methods will be ordered my most recently used.
@@ -97,9 +97,9 @@ public class PaymentMethodClient {
     }
 
     /**
-     * Retrieves the current list of {@link UntypedPaymentMethodNonce}s for the current customer.
+     * Retrieves the current list of {@link BraintreeNonce}s for the current customer.
      * <p>
-     * When finished, the {@link java.util.List} of {@link UntypedPaymentMethodNonce}s will be sent to {@link
+     * When finished, the {@link java.util.List} of {@link BraintreeNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *
      * @param callback {@link GetPaymentMethodNoncesCallback}

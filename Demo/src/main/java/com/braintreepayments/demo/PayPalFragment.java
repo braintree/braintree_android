@@ -16,7 +16,6 @@ import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.UntypedPaymentMethodNonce;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;

@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,9 +11,9 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 import static java.lang.Boolean.FALSE;
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a Google Pay card.
+ * {@link BraintreeNonce} representing a Google Pay card.
  *
- * @see UntypedPaymentMethodNonce
+ * @see BraintreeNonce
  */
 public class GooglePayCardNonce implements PaymentMethodNonce {
 

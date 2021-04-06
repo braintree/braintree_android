@@ -10,9 +10,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a PayPal account.
+ * {@link BraintreeNonce} representing a PayPal account.
  *
- * @see UntypedPaymentMethodNonce
+ * @see BraintreeNonce
  */
 public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
 
@@ -154,7 +154,7 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     }
 
     /**
-     * @return The type of this {@link UntypedPaymentMethodNonce} (always "PayPal")
+     * @return The type of this {@link BraintreeNonce} (always "PayPal")
      */
     public String getTypeLabel() {
         return "PayPal";

@@ -9,8 +9,8 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 
 /**
- * {@link UntypedPaymentMethodNonce} representing a Visa Checkout card.
- * @see UntypedPaymentMethodNonce
+ * {@link BraintreeNonce} representing a Visa Checkout card.
+ * @see BraintreeNonce
  */
 public class VisaCheckoutNonce implements PaymentMethodNonce {
 
