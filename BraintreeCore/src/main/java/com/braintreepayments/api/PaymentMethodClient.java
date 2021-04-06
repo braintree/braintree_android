@@ -102,10 +102,9 @@ public class PaymentMethodClient {
      * When finished, the {@link java.util.List} of {@link UntypedPaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *
-     * @param context Android Context
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
-    public void getPaymentMethodNonces(Context context, GetPaymentMethodNoncesCallback callback) {
+    public void getPaymentMethodNonces(GetPaymentMethodNoncesCallback callback) {
         getPaymentMethodNonces(false, callback);
     }
 

@@ -46,7 +46,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
@@ -62,7 +62,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((List<PaymentMethodNonce>) isNull(), captor.capture());
@@ -77,7 +77,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.failed");
     }
@@ -90,7 +90,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.failed");
     }
@@ -103,7 +103,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
@@ -123,7 +123,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
@@ -140,7 +140,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
-        sut.getPaymentMethodNonces(context, callback);
+        sut.getPaymentMethodNonces(callback);
 
         verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.succeeded");
     }

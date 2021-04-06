@@ -45,9 +45,14 @@ public class TokenizationClientTest {
         tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
             @Override
             public void success(String tokenizationResponse) {
-                assertIsANonce(tokenizationResponse.getNonce());
-                assertEquals("PayPal", tokenizationResponse.getTypeLabel());
-                latch.countDown();
+                try {
+                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
+                    assertIsANonce(payPalAccountNonce.getNonce());
+                    assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
+                    latch.countDown();
+                } catch (JSONException e) {
+                    fail("This should not fail");
+                }
             }
 
             @Override

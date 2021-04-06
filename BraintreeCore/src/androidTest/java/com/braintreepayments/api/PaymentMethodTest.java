@@ -55,24 +55,23 @@ public class PaymentMethodTest {
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(String tokenizationResponse) {
-                sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
+                sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<UntypedPaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(error);
                         assertNotNull(paymentMethodNonces);
                         assertEquals(1, paymentMethodNonces.size());
 
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonces.get(0);
+                        PaymentMethodNonce paymentMethodNonce = paymentMethodNonces.get(0);
 
-                        assertIsANonce(cardNonce.getNonce());
-                        assertEquals("11", cardNonce.getLastTwo());
+                        assertIsANonce(paymentMethodNonce.getNonce());
+                        assertEquals("Visa", paymentMethodNonce.getTypeLabel());
 
-                        sut.deletePaymentMethod(mActivity, cardNonce, new DeletePaymentMethodNonceCallback() {
+                        sut.deletePaymentMethod(mActivity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {
                             @Override
-                            public void onResult(@Nullable UntypedPaymentMethodNonce deletedNonce, @Nullable Exception error) {
+                            public void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error) {
                                 assertNull(error);
-                                CardNonce cardNonce = (CardNonce) deletedNonce;
-                                assertEquals("11", cardNonce.getLastTwo());
+                                assertEquals("Visa", deletedNonce.getTypeLabel());
                                 latch.countDown();
                             }
                         });
@@ -106,9 +105,9 @@ public class PaymentMethodTest {
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(final String tokenizationResponse) {
-                sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
+                sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<UntypedPaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(paymentMethodNonces);
 
                         assertTrue(error instanceof AuthorizationException);
