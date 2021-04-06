@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +52,13 @@ public class ThreeDSecureClientTest {
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
             public void success(String tokenizationResponse) {
-                String nonce = tokenizationResponse.getNonce();
+                CardNonce cardNonce = null;
+                try {
+                    cardNonce = new CardNonce(tokenizationResponse);
+                } catch (JSONException e) {
+                    fail("This should not fail");
+                }
+                String nonce = cardNonce.getNonce();
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 request.setNonce(nonce);
