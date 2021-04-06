@@ -485,12 +485,9 @@ public class PayPalClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenPayPalCreditPresent_sendsAnalyticsEvents() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
-        when(payPalAccountNonce.getCreditFinancing()).thenReturn(mock(PayPalCreditFinancing.class));
-
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
+                .successNonce(new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

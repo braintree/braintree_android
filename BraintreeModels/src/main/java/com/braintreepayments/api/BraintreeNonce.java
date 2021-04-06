@@ -14,8 +14,13 @@ import org.json.JSONObject;
 public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     private static final String CARD_API_RESOURCE_KEY = "creditCards";
+    private static final String PAYPAL_API_RESOURCE_KEY = "paypalAccounts";
+    private static final String VENMO_API_RESOURCE_KEY = "venmoAccounts";
+    private static final String VISA_CHECKOUT_API_RESOURCE_KEY = "visaCheckoutCards";
+
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
+
     static final String DATA_KEY = "data";
     static final String TOKEN_KEY = "token";
 
@@ -42,65 +47,76 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     }
 
     BraintreeNonce(JSONObject inputJson) throws JSONException {
-        mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
         mJsonString = inputJson.toString();
 
-        switch (mType) {
-            case "CreditCard":
-                if (inputJson.has(DATA_KEY)) {
-                    JSONObject data = inputJson.getJSONObject(DATA_KEY);
+        boolean isGraphQL = false;
+        String apiResourceKey = null;
 
-                    if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
-                        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
-                        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-                        mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-                        mNonce = payload.getString(TOKEN_KEY);
-                        String mLastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
-                        String mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
-                        mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
-                        mDefault = false;
-                    }
-                } else {
-                    JSONObject json;
-                    if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-                        json = inputJson.getJSONArray(CARD_API_RESOURCE_KEY).getJSONObject(0);
-                    } else {
-                        json = inputJson;
-                    }
-                    mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-                    mDescription = json.getString(DESCRIPTION_KEY);
-                    mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        if (inputJson.has(DATA_KEY)) {
+            mType = "CreditCard";
+            isGraphQL = true;
+        } else if (inputJson.has(CARD_API_RESOURCE_KEY)) {
+            mType = "CreditCard";
+            apiResourceKey = CARD_API_RESOURCE_KEY;
+        } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
+            mType = "PayPalAccount";
+            apiResourceKey = PAYPAL_API_RESOURCE_KEY;
+        } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
+            mType = "VenmoAccount";
+            apiResourceKey = VENMO_API_RESOURCE_KEY;
+        } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
+            mType = "VisaCheckoutCard";
+            apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
+        } else {
+            mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+        }
 
-                    JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-                    mTypeLabel = details.getString(CARD_TYPE_KEY);
+        if (isGraphQL) {
+            JSONObject data = inputJson.getJSONObject(DATA_KEY);
+
+            if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
+                JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+                JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+                mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+                mNonce = payload.getString(TOKEN_KEY);
+                String mLastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
+                String mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
+                mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
+                mDefault = false;
+            }
+        } else {
+            JSONObject json;
+            if (inputJson.has(apiResourceKey)) {
+                json = inputJson.getJSONArray(apiResourceKey).getJSONObject(0);
+            } else {
+                json = inputJson;
+            }
+
+            mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+            mDescription = json.getString(DESCRIPTION_KEY);
+            mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+            if (mType.equals("CreditCard")) {
+                JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
+                mTypeLabel = details.getString(CARD_TYPE_KEY);
+            } else {
+                switch (mType) {
+                    case "PayPalAccount":
+                        mTypeLabel = "PayPal";
+                        break;
+                    case "VisaCheckoutCard":
+                        mTypeLabel = "Visa Checkout";
+                        break;
+                    case "VenmoAccount":
+                        mTypeLabel = "Venmo";
+                        break;
+                    default:
+                        // TODO: consider throwing here for nonces that aren't supposed to be
+                        // parsed by payment methods client
+                        mTypeLabel = "Unknown";
+                        break;
                 }
-                break;
-            case "PayPalAccount":
-                mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-                mDescription = inputJson.getString(DESCRIPTION_KEY);
-                mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-                mTypeLabel = "PayPal";
-                break;
-            case "VisaCheckoutCard":
-                mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-                mDescription = inputJson.getString(DESCRIPTION_KEY);
-                mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-                mTypeLabel = "Visa Checkout";
-                break;
-            case "VenmoAccount":
-                mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-                mDescription = inputJson.getString(DESCRIPTION_KEY);
-                mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-                mTypeLabel = "Venmo";
-                break;
-            default:
-                mNonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-                mDescription = inputJson.getString(DESCRIPTION_KEY);
-                mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-                // TODO: consider throwing here for nonces that aren't supposed to be
-                // parsed by payment methods client
-                mTypeLabel = "Unknown";
-                break;
+            }
         }
     }
 
