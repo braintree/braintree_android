@@ -52,22 +52,21 @@ public class CardClient {
     public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {
-                try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    dataCollector.collectRiskData(context, cardNonce);
+            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
+                if (braintreeNonce != null) {
+                    try {
+                        CardNonce cardNonce = CardNonce.from(braintreeNonce);
+                        dataCollector.collectRiskData(context, cardNonce);
 
-                    callback.onResult(cardNonce, null);
-                    braintreeClient.sendAnalyticsEvent("card.nonce-received");
-                } catch (JSONException exception) {
+                        callback.onResult(cardNonce, null);
+                        braintreeClient.sendAnalyticsEvent("card.nonce-received");
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
                     callback.onResult(null, exception);
+                    braintreeClient.sendAnalyticsEvent("card.nonce-failed");
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
             }
         });
     }

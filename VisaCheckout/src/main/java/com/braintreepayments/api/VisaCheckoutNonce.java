@@ -41,6 +41,10 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static VisaCheckoutNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new VisaCheckoutNonce(braintreeNonce.getJson());
+    }
+
     VisaCheckoutNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }

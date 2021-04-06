@@ -124,20 +124,19 @@ public class VenmoClient {
 
                 tokenizationClient.tokenize(venmoAccount, new PaymentMethodNonceCallback() {
                     @Override
-                    public void success(String tokenizationResponse) {
-                        try {
-                            VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(tokenizationResponse);
-                            callback.onResult(venmoAccountNonce, null);
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
-                        } catch (JSONException exception) {
-                            callback.onResult(null, exception);
-                        }
-                    }
-
-                    @Override
-                    public void failure(Exception exception) {
-                        callback.onResult(null, exception);
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                    public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
+                       if (braintreeNonce != null) {
+                           try {
+                               VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.from(braintreeNonce);
+                               callback.onResult(venmoAccountNonce, null);
+                               braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                           } catch (JSONException e) {
+                               callback.onResult(null, e);
+                           }
+                       } else {
+                           callback.onResult(null, exception);
+                           braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                       }
                     }
                 });
             } else {

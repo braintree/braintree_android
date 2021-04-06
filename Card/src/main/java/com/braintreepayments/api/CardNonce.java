@@ -53,6 +53,10 @@ public class CardNonce implements PaymentMethodNonce {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static CardNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new CardNonce(braintreeNonce.getJson());
+    }
+
     CardNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }

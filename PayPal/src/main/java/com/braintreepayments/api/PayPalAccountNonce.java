@@ -54,6 +54,10 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static PayPalAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new PayPalAccountNonce(braintreeNonce.getJson());
+    }
+
     PayPalAccountNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }

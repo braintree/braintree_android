@@ -241,22 +241,21 @@ public class PayPalClient {
 
                         tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
                             @Override
-                            public void success(String tokenizationResponse) {
-                                try {
-                                    PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
-                                    if (payPalAccountNonce.getCreditFinancing() != null) {
-                                        braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
-                                    }
-                                    callback.onResult(payPalAccountNonce, null);
+                            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
+                                if (braintreeNonce != null) {
+                                    try {
+                                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.from(braintreeNonce);
+                                        if (payPalAccountNonce.getCreditFinancing() != null) {
+                                            braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                        }
+                                        callback.onResult(payPalAccountNonce, null);
 
-                                } catch (JSONException exception) {
+                                    } catch (JSONException e) {
+                                        callback.onResult(null, e);
+                                    }
+                                } else {
                                     callback.onResult(null, exception);
                                 }
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                callback.onResult(null, exception);
                             }
                         });
 

@@ -40,6 +40,10 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static GooglePayCardNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new GooglePayCardNonce(braintreeNonce.getJson());
+    }
+
     GooglePayCardNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }

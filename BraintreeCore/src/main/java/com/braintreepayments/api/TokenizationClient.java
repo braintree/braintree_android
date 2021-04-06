@@ -5,6 +5,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.GraphQLConstants.Features;
 
+import org.json.JSONException;
+
 import java.lang.ref.WeakReference;
 
 class TokenizationClient {
@@ -27,11 +29,11 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link BraintreeNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
-     * If creation fails validation, {@link PaymentMethodNonceCallback#failure(Exception)}
+     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(BraintreeNonce, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * PaymentMethodNonceCallback#failure(Exception)} will be called with the {@link Exception} that occurred.
+     * PaymentMethodNonceCallback#onResult(BraintreeNonce, Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
@@ -55,7 +57,7 @@ class TokenizationClient {
                         tokenizeRest(braintreeClient, paymentMethod, callback);
                     }
                 } else {
-                    callback.failure(error);
+                    callback.onResult(null, error);
                 }
             }
         });
@@ -67,21 +69,26 @@ class TokenizationClient {
         try {
             payload = graphQLTokenizable.buildGraphQL(braintreeClient.getAuthorization());
         } catch (BraintreeException e) {
-            callback.failure(e);
+            callback.onResult(null, e);
             return;
         }
 
         braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                callback.success(responseBody);
-                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                try {
+                    callback.onResult(new BraintreeNonce(responseBody), null);
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                }
             }
 
             @Override
             public void failure(Exception exception) {
                 braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                callback.failure(exception);
+                callback.onResult(null, exception);
             }
         });
     }
@@ -94,12 +101,16 @@ class TokenizationClient {
 
             @Override
             public void success(String responseBody) {
-                callback.success(responseBody);
+                try {
+                    callback.onResult(new BraintreeNonce(responseBody), null);
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
+                }
             }
 
             @Override
             public void failure(Exception exception) {
-                callback.failure(exception);
+                callback.onResult(null, exception);
             }
         });
     }

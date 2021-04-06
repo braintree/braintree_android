@@ -45,6 +45,10 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static LocalPaymentNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new LocalPaymentNonce(braintreeNonce.getJson());
+    }
+
     LocalPaymentNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
     }

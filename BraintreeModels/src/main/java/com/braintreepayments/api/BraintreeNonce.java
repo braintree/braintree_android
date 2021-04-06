@@ -32,6 +32,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     protected String mType;
     protected String mTypeLabel;
+    protected String mJsonString;
 
     BraintreeNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
@@ -42,6 +43,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mDescription = inputJson.getString(DESCRIPTION_KEY);
         mDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
         mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+        mJsonString = inputJson.toString();
 
         switch (mType) {
             case "CreditCard":
@@ -105,7 +107,9 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return mTypeLabel;
     }
 
-    BraintreeNonce() {}
+    String getJson() {
+        return mJsonString;
+    }
 
     @Override
     public int describeContents() {
@@ -119,6 +123,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
         dest.writeString(mType);
         dest.writeString(mTypeLabel);
+        dest.writeString(mJsonString);
     }
 
     protected BraintreeNonce(Parcel in) {
@@ -127,6 +132,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mDefault = in.readByte() > 0;
         mType = in.readString();
         mTypeLabel = in.readString();
+        mJsonString = in.readString();
     }
 
     public static final Creator<BraintreeNonce> CREATOR = new Creator<BraintreeNonce>() {

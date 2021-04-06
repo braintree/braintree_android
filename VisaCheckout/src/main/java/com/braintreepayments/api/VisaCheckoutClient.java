@@ -101,20 +101,19 @@ public class VisaCheckoutClient {
     public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
         tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {
-                try {
-                    VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(tokenizationResponse);
-                    callback.onResult(visaCheckoutNonce, null);
-                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
-                } catch (JSONException exception) {
+            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
+                if (braintreeNonce != null) {
+                    try {
+                        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.from(braintreeNonce);
+                        callback.onResult(visaCheckoutNonce, null);
+                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
                     callback.onResult(null, exception);
+                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
                 }
-            }
-
-            @Override
-            public void failure(Exception e) {
-                callback.onResult(null, e);
-                braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
             }
         });
     }

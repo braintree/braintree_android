@@ -27,6 +27,10 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     protected String mDescription;
     protected boolean mDefault;
 
+    public static VenmoAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
+        return new VenmoAccountNonce(braintreeNonce.getJson());
+    }
+
     VenmoAccountNonce(String nonce, String description, String username) {
         mNonce = nonce;
         mDescription = description;

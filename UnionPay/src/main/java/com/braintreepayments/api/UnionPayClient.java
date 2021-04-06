@@ -151,20 +151,19 @@ public class UnionPayClient {
     public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
         tokenizationClient.tokenize(unionPayCard, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {
-                try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    callback.onResult(cardNonce, null);
-                    braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
-                } catch (JSONException exception) {
+            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
+                if (braintreeNonce != null) {
+                    try {
+                        CardNonce cardNonce = CardNonce.from(braintreeNonce);
+                        callback.onResult(cardNonce, null);
+                        braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
                     callback.onResult(null, exception);
+                    braintreeClient.sendAnalyticsEvent("union-pay.nonce-failed");
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent("union-pay.nonce-failed");
             }
         });
     }
