@@ -48,7 +48,7 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(callback);
 
-        ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
+        ArgumentCaptor<List<BraintreeNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
         assertEquals(0, captor.getValue().size());
@@ -65,7 +65,7 @@ public class PaymentMethodUnitTest {
         sut.getPaymentMethodNonces(callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((List<PaymentMethodNonce>) isNull(), captor.capture());
+        verify(callback).onResult((List<BraintreeNonce>) isNull(), captor.capture());
         assertTrue(captor.getValue() instanceof UnexpectedException);
     }
 
@@ -105,10 +105,10 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(callback);
 
-        ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
+        ArgumentCaptor<List<BraintreeNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-        List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
+        List<BraintreeNonce> paymentMethodNonces = captor.getValue();
         assertEquals(3, paymentMethodNonces.size());
         assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
@@ -125,10 +125,10 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(callback);
 
-        ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
+        ArgumentCaptor<List<BraintreeNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-        List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
+        List<BraintreeNonce> paymentMethodNonces = captor.getValue();
         assertEquals(0, paymentMethodNonces.size());
     }
 
@@ -174,7 +174,7 @@ public class PaymentMethodUnitTest {
         sut.deletePaymentMethod(context, mCardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+        verify(callback).onResult((BraintreeNonce) isNull(), captor.capture());
 
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("A client token with a customer id must be used to delete a payment method nonce.",
@@ -196,7 +196,7 @@ public class PaymentMethodUnitTest {
         sut.deletePaymentMethod(context, mCardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+        verify(callback).onResult((BraintreeNonce) isNull(), captor.capture());
 
         PaymentMethodDeleteException paymentMethodDeleteException = (PaymentMethodDeleteException)captor.getValue();
         PaymentMethodNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();

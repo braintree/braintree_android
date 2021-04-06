@@ -10,10 +10,10 @@ import static org.mockito.Mockito.mock;
 public class MockTokenizationClientBuilder {
 
     private Exception error;
-    private String successResponse;
+    private BraintreeNonce successNonce;
 
-    public MockTokenizationClientBuilder successResponse(String successResponse) {
-        this.successResponse = successResponse;
+    public MockTokenizationClientBuilder successNonce(BraintreeNonce successNonce) {
+        this.successNonce = successNonce;
         return this;
     }
 
@@ -27,13 +27,9 @@ public class MockTokenizationClientBuilder {
 
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 PaymentMethodNonceCallback listener = (PaymentMethodNonceCallback) invocation.getArguments()[1];
-                if (successResponse != null) {
-                    listener.success(successResponse);
-                } else if (error != null) {
-                    listener.failure(error);
-                }
+                listener.onResult(successNonce, error);
                 return null;
             }
         }).when(tokenizationClient).tokenize(any(PaymentMethod.class), any(PaymentMethodNonceCallback.class));

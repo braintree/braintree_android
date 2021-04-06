@@ -141,7 +141,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+                .successNonce(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -158,7 +158,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenSuccessful_sendsAnalyticEvent() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+                .successNonce(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()

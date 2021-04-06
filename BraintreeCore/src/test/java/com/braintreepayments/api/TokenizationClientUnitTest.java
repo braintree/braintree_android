@@ -147,10 +147,9 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {}
+            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
 
-            @Override
-            public void failure(Exception exception) {}
+            }
         });
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.success");
@@ -168,10 +167,9 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {}
+            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
 
-            @Override
-            public void failure(Exception exception) {}
+            }
         });
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.failure");
@@ -190,7 +188,7 @@ public class TokenizationClientUnitTest {
         PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
 
         sut.tokenize(card, callback);
-        verify(callback).failure(configError);
+        verify(callback).onResult(null, configError);
     }
 
     @Test
