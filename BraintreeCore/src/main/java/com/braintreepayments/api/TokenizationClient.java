@@ -48,9 +48,9 @@ class TokenizationClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    if (paymentMethod instanceof Card &&
+                    if (paymentMethod instanceof GraphQLTokenizable &&
                             configuration.isGraphQLFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
-                        tokenizeGraphQL(braintreeClient, (Card) paymentMethod, callback);
+                        tokenizeGraphQL(braintreeClient, (GraphQLTokenizable) paymentMethod, callback);
                     } else {
                         tokenizeRest(braintreeClient, paymentMethod, callback);
                     }
@@ -61,11 +61,11 @@ class TokenizationClient {
         });
     }
 
-    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final Card card, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final GraphQLTokenizable graphQLTokenizable, final PaymentMethodNonceCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
-            payload = card.buildGraphQL(braintreeClient.getAuthorization());
+            payload = graphQLTokenizable.buildGraphQL(braintreeClient.getAuthorization());
         } catch (BraintreeException e) {
             callback.failure(e);
             return;

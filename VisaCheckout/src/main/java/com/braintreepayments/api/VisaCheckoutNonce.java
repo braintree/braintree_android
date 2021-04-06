@@ -1,12 +1,12 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
+
 
 /**
  * {@link UntypedPaymentMethodNonce} representing a Visa Checkout card.

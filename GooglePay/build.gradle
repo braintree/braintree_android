@@ -39,6 +39,7 @@ dependencies {
 
     api project(':BraintreeCore')
     api project(':PayPal')
+    api project(':Card')
 
     testImplementation project(':TestUtils')
     testImplementation 'androidx.test:rules:1.2.0'
