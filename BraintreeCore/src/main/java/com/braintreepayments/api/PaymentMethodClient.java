@@ -38,7 +38,7 @@ public class PaymentMethodClient {
      * @return List of {@link BraintreeNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+    private static List<BraintreeNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
         JSONArray paymentMethods =
             new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
 
@@ -46,18 +46,18 @@ public class PaymentMethodClient {
             return Collections.emptyList();
         }
 
-        List<PaymentMethodNonce> paymentMethodsNonces = new ArrayList<>();
+        List<BraintreeNonce> braintreeNonces = new ArrayList<>();
         JSONObject json;
-        PaymentMethodNonce paymentMethodNonce;
+        BraintreeNonce braintreeNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            paymentMethodNonce = new BraintreeNonce(json);
-            if (!paymentMethodNonce.getTypeLabel().equals("Unknown")) {
-                paymentMethodsNonces.add(paymentMethodNonce);
+            braintreeNonce = new BraintreeNonce(json);
+            if (!braintreeNonce.getTypeLabel().equals("Unknown")) {
+                braintreeNonces.add(braintreeNonce);
             }
         }
 
-        return paymentMethodsNonces;
+        return braintreeNonces;
     }
 
     /**

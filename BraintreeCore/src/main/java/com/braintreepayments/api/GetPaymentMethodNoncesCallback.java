@@ -12,8 +12,8 @@ import java.util.List;
 public interface GetPaymentMethodNoncesCallback {
 
     /**
-     * @param paymentMethodNonceList {@link PaymentMethodNonce} list
+     * @param braintreeNonceList {@link BraintreeNonce} list
      * @param error an exception that occurred while fetching payment method nonces
      */
-    void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonceList, @Nullable Exception error);
+    void onResult(@Nullable List<BraintreeNonce> braintreeNonceList, @Nullable Exception error);
 }
