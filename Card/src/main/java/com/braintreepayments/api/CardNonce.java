@@ -14,14 +14,14 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 public class CardNonce implements PaymentMethodNonce {
 
     static final String TYPE = "CreditCard";
-    static final String API_RESOURCE_KEY = "creditCards";
+    private static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
 
-    static final String DATA_KEY = "data";
-    static final String TOKEN_KEY = "token";
+    private static final String DATA_KEY = "data";
+    private static final String TOKEN_KEY = "token";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
@@ -38,20 +38,20 @@ public class CardNonce implements PaymentMethodNonce {
     private static final String EXPIRATION_YEAR_KEY = "expirationYear";
     private static final String CARDHOLDER_NAME_KEY = "cardholderName";
 
-    private String mCardType;
-    private String mLastTwo;
-    private String mLastFour;
-    private ThreeDSecureInfo mThreeDSecureInfo;
-    private String mBin;
-    private BinData mBinData;
-    private AuthenticationInsight mAuthenticationInsight;
-    private String mExpirationMonth;
-    private String mExpirationYear;
-    private String mCardholderName;
+    private final String mCardType;
+    private final String mLastTwo;
+    private final String mLastFour;
+    private final ThreeDSecureInfo mThreeDSecureInfo;
+    private final String mBin;
+    private final BinData mBinData;
+    private final AuthenticationInsight mAuthenticationInsight;
+    private final String mExpirationMonth;
+    private final String mExpirationYear;
+    private final String mCardholderName;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static CardNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new CardNonce(braintreeNonce.getJson());
@@ -217,6 +217,7 @@ public class CardNonce implements PaymentMethodNonce {
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
         dest.writeString(mLastFour);
+        dest.writeString(mBin);
         dest.writeParcelable(mBinData, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
         dest.writeParcelable(mAuthenticationInsight, flags);
@@ -232,6 +233,7 @@ public class CardNonce implements PaymentMethodNonce {
         mCardType = in.readString();
         mLastTwo = in.readString();
         mLastFour = in.readString();
+        mBin = in.readString();
         mBinData = in.readParcelable(BinData.class.getClassLoader());
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mAuthenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
