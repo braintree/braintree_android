@@ -12,20 +12,20 @@ import org.json.JSONObject;
  */
 public class VenmoAccountNonce implements PaymentMethodNonce {
 
-    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
-
     static final String TYPE = "VenmoAccount";
     static final String API_RESOURCE_KEY = "venmoAccounts";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";
 
-    private String mUsername;
+    private final String mUsername;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static VenmoAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new VenmoAccountNonce(braintreeNonce.getJson());
@@ -35,6 +35,7 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
         mNonce = nonce;
         mDescription = description;
         mUsername = username;
+        mDefault = false;
     }
 
     VenmoAccountNonce(String jsonString) throws JSONException {
@@ -42,7 +43,6 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     }
 
     VenmoAccountNonce(JSONObject inputJson) throws JSONException {
-
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
             json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
