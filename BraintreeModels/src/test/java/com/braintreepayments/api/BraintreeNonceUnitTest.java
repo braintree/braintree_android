@@ -12,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class BraintreeNonceTest {
+public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesCardFromPlainJSONObject() throws JSONException {
@@ -67,5 +67,37 @@ public class BraintreeNonceTest {
         assertEquals("with email paypalaccount@example.com", nonce.getDescription());
         assertEquals("PayPal", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesVenmoTokenizeResponseJSON() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
+
+        assertTrue(nonce.isDefault());
+        assertEquals("fake-venmo-nonce", nonce.getNonce());
+        assertEquals("VenmoAccount", nonce.getDescription());
+        assertEquals("Venmo", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesVenmoFromPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("fake-venmo-nonce", nonce.getNonce());
+        assertEquals("VenmoAccount", nonce.getDescription());
+        assertEquals("Venmo", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesVisaCheckoutTokenizeResponseJSON() {
+
+    }
+
+    @Test
+    public void constructor_parsesVisaCheckoutFromPlainJSONObject() {
+
     }
 }

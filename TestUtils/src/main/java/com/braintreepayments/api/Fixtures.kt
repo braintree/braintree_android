@@ -1747,6 +1747,19 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYMENT_METHOD_VENMO_PLAIN_OBJECT = """
+        {
+          "type": "VenmoAccount",
+          "nonce": "fake-venmo-nonce",
+          "description": "VenmoAccount",
+          "details": {
+            "cardType": "Visa",
+            "username": "happy-venmo-joe"
+          }
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE = """
         {
           "visaCheckoutCards":[{
