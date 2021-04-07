@@ -15,7 +15,7 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 public class VisaCheckoutNonce implements PaymentMethodNonce {
 
     static final String TYPE = "VisaCheckoutCard";
-    static final String API_RESOURCE_KEY = "visaCheckoutCards";
+    private static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
@@ -29,17 +29,17 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     private static final String USER_DATA_KEY = "userData";
     private static final String CALL_ID_KEY = "callId";
 
-    private String mLastTwo;
-    private String mCardType;
-    private VisaCheckoutAddress mBillingAddress;
-    private VisaCheckoutAddress mShippingAddress;
-    private VisaCheckoutUserData mUserData;
-    private String mCallId;
-    private BinData mBinData;
+    private final String mLastTwo;
+    private final String mCardType;
+    private final VisaCheckoutAddress mBillingAddress;
+    private final VisaCheckoutAddress mShippingAddress;
+    private final VisaCheckoutUserData mUserData;
+    private final String mCallId;
+    private final BinData mBinData;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static VisaCheckoutNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new VisaCheckoutNonce(braintreeNonce.getJson());
