@@ -81,10 +81,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return mTypeLabel;
     }
 
-    /**
-     * @return type of payment method.
-     */
-    public int getType() {
+    int getType() {
         return mType;
     }
 
