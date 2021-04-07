@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting;
 import com.braintreepayments.api.GraphQLConstants.Features;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
@@ -29,11 +30,11 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link BraintreeNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
-     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(BraintreeNonce, Exception)}
+     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(org.json.JSONObject, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * PaymentMethodNonceCallback#onResult(BraintreeNonce, Exception)} will be called with the {@link Exception} that occurred.
+     * PaymentMethodNonceCallback#onResult(org.json.JSONObject, Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
@@ -77,7 +78,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.onResult(BraintreeNonce.fromJson(responseBody), null);
+                    callback.onResult(new JSONObject(responseBody), null);
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.onResult(null, e);
@@ -102,7 +103,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.onResult(BraintreeNonce.fromJson(responseBody), null);
+                    callback.onResult(new JSONObject(responseBody), null);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
                 }

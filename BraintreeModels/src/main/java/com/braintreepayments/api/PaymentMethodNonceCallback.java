@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 
+import org.json.JSONObject;
+
 /**
  * Communicates {@link BraintreeNonce} from a HTTP request on the main thread.
  * One and only one method will be invoked in response to a request.
@@ -8,8 +10,8 @@ package com.braintreepayments.api;
 interface PaymentMethodNonceCallback {
 
     /**
-     * @param braintreeNonce parsed {@link BraintreeNonce} from the HTTP request.
+     * @param tokenizationResponse parsed {@link BraintreeNonce} from the HTTP request.
      * @param exception error that caused the request to fail.
      */
-    void onResult(BraintreeNonce braintreeNonce, Exception exception);
+    void onResult(JSONObject tokenizationResponse, Exception exception);
 }

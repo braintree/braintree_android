@@ -151,10 +151,10 @@ public class UnionPayClient {
     public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
         tokenizationClient.tokenize(unionPayCard, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(BraintreeNonce braintreeNonce, Exception exception) {
-                if (braintreeNonce != null) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (tokenizationResponse != null) {
                     try {
-                        CardNonce cardNonce = CardNonce.from(braintreeNonce);
+                        CardNonce cardNonce = new CardNonce(tokenizationResponse);
                         callback.onResult(cardNonce, null);
                         braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
                     } catch (JSONException e) {
