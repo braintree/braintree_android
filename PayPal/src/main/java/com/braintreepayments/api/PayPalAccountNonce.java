@@ -117,8 +117,8 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
             mShippingAddress = new PostalAddress();
         }
 
-        // TODO: this boolean exists to replicate existing functionality where shipping address
-        // gets overriden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level
+        // shipping address should be overriden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level;
+        // this occurs when parsing a GooglePay PayPal Account Nonce
         if (getShippingAddressFromTopLevel) {
             JSONObject shippingAddress = json.optJSONObject(SHIPPING_ADDRESS_KEY);
             if (shippingAddress != null) {
