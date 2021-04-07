@@ -60,16 +60,14 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
             mType = PaymentMethodType.CARD;
             JSONObject data = inputJson.getJSONObject(DATA_KEY);
 
-            if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
-                JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
-                JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-                mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-                mNonce = payload.getString(TOKEN_KEY);
-                String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
-                String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
-                mDescription = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
-                mDefault = false;
-            }
+            JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+            JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+            mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+            mNonce = payload.getString(TOKEN_KEY);
+            String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
+            String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
+            mDescription = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
+            mDefault = false;
 
         } else if (isGooglePay(inputJson)) {
             mType = PaymentMethodType.GOOGLE_PAY;
