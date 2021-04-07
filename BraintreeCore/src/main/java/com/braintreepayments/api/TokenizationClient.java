@@ -5,9 +5,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.GraphQLConstants.Features;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 
 class TokenizationClient {

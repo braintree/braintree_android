@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,7 @@ public class CardClientUnitTest {
     }
 
     @Test
-    public void tokenize_callsListenerWithNonceOnSuccess() throws JSONException {
+    public void tokenize_callsListenerWithNonceOnSuccess() {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, card, cardTokenizeCallback);
 
@@ -47,13 +46,13 @@ public class CardClientUnitTest {
         verify(tokenizationClient).tokenize(same(card), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
-        callback.onResult(new BraintreeNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
+        callback.onResult(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD, null);
 
         verify(cardTokenizeCallback).onResult(any(CardNonce.class), (Exception) isNull());
     }
 
     @Test
-    public void tokenize_sendsAnalyticsEventOnSuccess() throws JSONException {
+    public void tokenize_sendsAnalyticsEventOnSuccess() {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
         sut.tokenize(context, card, cardTokenizeCallback);
 
@@ -62,7 +61,7 @@ public class CardClientUnitTest {
         verify(tokenizationClient).tokenize(same(card), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
-        callback.onResult(new BraintreeNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
+        callback.onResult(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD, null);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }

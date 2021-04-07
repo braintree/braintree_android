@@ -487,7 +487,7 @@ public class PayPalClientUnitTest {
     public void onBrowserSwitchResult_whenPayPalCreditPresent_sendsAnalyticsEvents() throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
+                .successResponse(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcelable;
 
 public interface PaymentMethodNonce extends Parcelable {
+
     /**
      * @return The nonce generated for this payment method by the Braintree gateway. The nonce will
      *          represent this PaymentMethod for the purposes of creating transactions and other monetary

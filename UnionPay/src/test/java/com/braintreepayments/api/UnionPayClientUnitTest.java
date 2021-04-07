@@ -53,7 +53,7 @@ public class UnionPayClientUnitTest {
     }
 
     @Test
-    public void tokenize_sendsAnalyticsEventOnTokenizeResult() throws JSONException {
+    public void tokenize_sendsAnalyticsEventOnTokenizeResult() {
         UnionPayCard unionPayCard = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
@@ -62,7 +62,7 @@ public class UnionPayClientUnitTest {
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
-        callback.onResult(new BraintreeNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
+        callback.onResult(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD, null);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-received");
     }
