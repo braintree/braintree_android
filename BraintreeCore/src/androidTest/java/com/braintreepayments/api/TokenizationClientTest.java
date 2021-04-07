@@ -44,7 +44,7 @@ public class TokenizationClientTest {
 
         tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
                 try {
                     PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
                     assertIsANonce(payPalAccountNonce.getString());
@@ -53,11 +53,6 @@ public class TokenizationClientTest {
                 } catch (JSONException e) {
                     fail("This should not fail");
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 
