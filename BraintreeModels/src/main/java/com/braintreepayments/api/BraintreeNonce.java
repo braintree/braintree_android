@@ -54,8 +54,6 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     BraintreeNonce(JSONObject inputJson) throws JSONException {
         mJsonString = inputJson.toString();
 
-        boolean isGraphQL = false;
-
         if (isGraphQL(inputJson)) {
             mType = PaymentMethodType.CARD;
             JSONObject data = inputJson.getJSONObject(DATA_KEY);
