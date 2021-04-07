@@ -42,7 +42,8 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     protected String mDescription;
     protected boolean mDefault;
 
-    protected @PaymentMethodType int mType;
+    protected @PaymentMethodType
+    int mType;
     protected String mTypeLabel;
     protected String mJsonString;
 
@@ -54,34 +55,9 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mJsonString = inputJson.toString();
 
         boolean isGraphQL = false;
-        boolean isGooglePay = false;
 
-        String apiResourceKey = null;
-
-        if (inputJson.has(DATA_KEY)) {
+        if (isGraphQL(inputJson)) {
             mType = PaymentMethodType.CARD;
-            isGraphQL = true;
-        } else if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-            mType = PaymentMethodType.CARD;
-            apiResourceKey = CARD_API_RESOURCE_KEY;
-        } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
-            mType = PaymentMethodType.PAYPAL;
-            apiResourceKey = PAYPAL_API_RESOURCE_KEY;
-        } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
-            mType = PaymentMethodType.VENMO;
-            apiResourceKey = VENMO_API_RESOURCE_KEY;
-        } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
-            mType = PaymentMethodType.VISA_CHECKOUT;
-            apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
-        } else if (isGooglePay(inputJson)) {
-            mType = PaymentMethodType.GOOGLE_PAY;
-            isGooglePay = true;
-        } else {
-            String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-            mType = paymentMethodTypeFromString(typeString);
-        }
-
-        if (isGraphQL) {
             JSONObject data = inputJson.getJSONObject(DATA_KEY);
 
             if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
@@ -94,7 +70,9 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
                 mDescription = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
                 mDefault = false;
             }
-        } else if (isGooglePay) {
+
+        } else if (isGooglePay(inputJson)) {
+            mType = PaymentMethodType.GOOGLE_PAY;
             JSONObject token = new JSONObject(inputJson
                     .getJSONObject("paymentMethodData")
                     .getJSONObject("tokenizationData")
@@ -105,8 +83,26 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
             mDescription = androidPayCardObject.getString(DESCRIPTION_KEY);
             mDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
             mTypeLabel = "Google Pay";
-
         } else {
+
+            String apiResourceKey = null;
+            if (inputJson.has(CARD_API_RESOURCE_KEY)) {
+                mType = PaymentMethodType.CARD;
+                apiResourceKey = CARD_API_RESOURCE_KEY;
+            } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
+                mType = PaymentMethodType.PAYPAL;
+                apiResourceKey = PAYPAL_API_RESOURCE_KEY;
+            } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
+                mType = PaymentMethodType.VENMO;
+                apiResourceKey = VENMO_API_RESOURCE_KEY;
+            } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
+                mType = PaymentMethodType.VISA_CHECKOUT;
+                apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
+            } else {
+                String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+                mType = paymentMethodTypeFromString(typeString);
+            }
+
             JSONObject json;
             if (inputJson.has(apiResourceKey)) {
                 json = inputJson.getJSONArray(apiResourceKey).getJSONObject(0);
@@ -127,6 +123,10 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         }
     }
 
+    private static boolean isGraphQL(JSONObject inputJson) {
+        return inputJson.has(DATA_KEY);
+    }
+
     private static boolean isGooglePay(JSONObject inputJson) throws JSONException {
         if (inputJson.has("paymentMethodData")) {
             JSONObject paymentMethodData = inputJson.getJSONObject("paymentMethodData");
@@ -138,24 +138,30 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return false;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public String getNonce() {
         return mNonce;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public String getDescription() {
         return mDescription;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public boolean isDefault() {
         return mDefault;
     }
 
     /**
      * @return The type of this PaymentMethod for displaying to a customer, e.g. 'Visa'. Can be used
-     *          for displaying appropriate logos, etc.
+     * for displaying appropriate logos, etc.
      */
     public String getTypeLabel() {
         return mTypeLabel;

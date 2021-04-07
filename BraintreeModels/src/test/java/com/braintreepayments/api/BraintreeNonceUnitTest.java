@@ -153,7 +153,7 @@ public class BraintreeNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals("fake-google-pay-nonce", nonce.getNonce());
         assertEquals("Google Pay", nonce.getDescription());
-        assertEquals("Unknown", nonce.getTypeLabel());
+        assertEquals("Google Pay", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.GOOGLE_PAY_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
     }
 }
