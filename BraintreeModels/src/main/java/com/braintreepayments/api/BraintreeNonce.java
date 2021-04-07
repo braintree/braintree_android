@@ -24,45 +24,32 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
-    protected String mTypeLabel;
-    protected String mJsonString;
+    private final String mTypeLabel;
+    private final String mJsonString;
 
-    protected @PaymentMethodType int mType;
+    private @PaymentMethodType int mType;
 
-    static BraintreeNonce fromJson(JSONObject inputJson) throws JSONException {
-        return parseBraintreeNonce(inputJson);
-    }
-
-    private BraintreeNonce(String nonce, @PaymentMethodType int type, String description, JSONObject inputJson, String typeLabel, boolean isDefault) {
-        mNonce = nonce;
-        mType = type;
-        mDescription = description;
-        mJsonString = inputJson.toString();
-        mTypeLabel = typeLabel;
-        mDefault = isDefault;
-    }
-
-    private static BraintreeNonce parseBraintreeNonce(JSONObject json) throws JSONException {
-
+    BraintreeNonce(JSONObject json) throws JSONException {
         String typeString = json.getString(PAYMENT_METHOD_TYPE_KEY);
         @PaymentMethodType int type = paymentMethodTypeFromString(typeString);
 
-        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = json.getString(DESCRIPTION_KEY);
-        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        String typeLabel;
         if (type == PaymentMethodType.CARD) {
             JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-            typeLabel = details.getString(CARD_TYPE_KEY);
+            mTypeLabel = details.getString(CARD_TYPE_KEY);
         } else {
-            typeLabel = displayNameFromPaymentMethodType(type);
+            mTypeLabel = displayNameFromPaymentMethodType(type);
         }
-        return new BraintreeNonce(nonce, type, description, json, typeLabel, isDefault);
+
+        // used when converting a BraintreeNonce into other 'typed' nonces
+        mJsonString = json.toString();
     }
 
     /**
@@ -120,7 +107,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         dest.writeString(mJsonString);
     }
 
-    protected BraintreeNonce(Parcel in) {
+    private BraintreeNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;

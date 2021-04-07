@@ -51,7 +51,7 @@ public class PaymentMethodClient {
         BraintreeNonce braintreeNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            braintreeNonce = BraintreeNonce.fromJson(json);
+            braintreeNonce = new BraintreeNonce(json);
             if (braintreeNonce.getType() != PaymentMethodType.GOOGLE_PAY) {
                 braintreeNonces.add(braintreeNonce);
             }
