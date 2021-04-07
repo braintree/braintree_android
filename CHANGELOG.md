@@ -22,6 +22,7 @@
   * Move `Card` to `Card` module
   * Move `CardNonce` to `Card` module
   * Move `ThreeDSecureInfo` to `Card` module
+  * Move `PayPalAccountNonce` to `PayPal` module
   * Move `PayPalCreditFinancing` to `PayPal` module
   * Move `PayPalCreditFinancingAmount` to `PayPal` module
   * Move `UnionPayCapabilities` to `UnionPay` module
