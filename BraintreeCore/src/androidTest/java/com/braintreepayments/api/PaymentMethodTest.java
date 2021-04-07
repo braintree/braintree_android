@@ -64,7 +64,7 @@ public class PaymentMethodTest {
 
                         PaymentMethodNonce paymentMethodNonce = paymentMethodNonces.get(0);
 
-                        assertIsANonce(paymentMethodNonce.getNonce());
+                        assertIsANonce(paymentMethodNonce.getString());
                         assertEquals("Visa", paymentMethodNonce.getTypeLabel());
 
                         sut.deletePaymentMethod(mActivity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {

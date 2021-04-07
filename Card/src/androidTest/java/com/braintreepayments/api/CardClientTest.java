@@ -181,7 +181,7 @@ public class CardClientTest {
                 assertNotNull(cardNonce.getThreeDSecureInfo());
                 assertFalse(cardNonce.isDefault());
                 assertEquals("", cardNonce.getDescription());
-                assertNotNull(cardNonce.getNonce());
+                assertNotNull(cardNonce.getString());
 
                 countDownLatch.countDown();
             }
@@ -311,7 +311,7 @@ public class CardClientTest {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
 
-                assertNotNull(cardNonce.getNonce());
+                assertNotNull(cardNonce.getString());
                 assertEquals("Visa", cardNonce.getCardType());
                 assertEquals("1111", cardNonce.getLastFour());
                 assertEquals("11", cardNonce.getLastTwo());

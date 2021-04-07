@@ -161,7 +161,7 @@ public class CardNonce implements PaymentMethodNonce {
     }
 
     /** @inheritDoc */
-    public String getNonce() {
+    public String getString() {
         return mNonce;
     }
 

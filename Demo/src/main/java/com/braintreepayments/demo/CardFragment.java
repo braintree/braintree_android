@@ -343,7 +343,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(activity)) {
             mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
-            String nonce = paymentMethodNonce.getNonce();
+            String nonce = paymentMethodNonce.getString();
 
             americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
                 if (rewardsBalance != null) {
@@ -410,7 +410,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setAmount("10");
         threeDSecureRequest.setEmail("test@email.com");
         threeDSecureRequest.setBillingAddress(billingAddress);
-        threeDSecureRequest.setNonce(cardNonce.getNonce());
+        threeDSecureRequest.setNonce(cardNonce.getString());
         threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);

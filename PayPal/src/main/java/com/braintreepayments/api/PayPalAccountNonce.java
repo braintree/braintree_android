@@ -135,7 +135,7 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     }
 
     @Override
-    public String getNonce() {
+    public String getString() {
         return mNonce;
     }
 

@@ -55,7 +55,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     /**
      * @inheritDoc
      */
-    public String getNonce() {
+    public String getString() {
         return mNonce;
     }
 

@@ -78,7 +78,7 @@ public class PaymentMethodClientUnitTest {
         List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
         assertEquals("ending in ••11", paymentMethodNonces.get(0).getDescription());
-        assertEquals("123456-12345-12345-a-adfa", paymentMethodNonces.get(0).getNonce());
+        assertEquals("123456-12345-12345-a-adfa", paymentMethodNonces.get(0).getString());
         assertTrue(paymentMethodNonces.get(0).isDefault());
     }
 
@@ -98,7 +98,7 @@ public class PaymentMethodClientUnitTest {
 
         List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", paymentMethodNonces.get(1).getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", paymentMethodNonces.get(1).getString());
         assertEquals("with email paypalaccount@example.com", paymentMethodNonces.get(1).getDescription());
         assertFalse(paymentMethodNonces.get(1).isDefault());
     }
@@ -119,7 +119,7 @@ public class PaymentMethodClientUnitTest {
 
         List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
-        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(2).getNonce());
+        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(2).getString());
         assertEquals("VenmoAccount", paymentMethodNonces.get(2).getDescription());
     }
 

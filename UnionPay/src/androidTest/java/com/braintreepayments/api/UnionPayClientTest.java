@@ -223,7 +223,7 @@ public class UnionPayClientTest {
                 unionPayClient.tokenize(unionPayCard, new UnionPayTokenizeCallback() {
                     @Override
                     public void onResult(CardNonce cardNonce, Exception error) {
-                        assertIsANonce(cardNonce.getNonce());
+                        assertIsANonce(cardNonce.getString());
                         assertEquals("32", cardNonce.getLastTwo());
                         mCountDownLatch.countDown();
                     }
@@ -255,7 +255,7 @@ public class UnionPayClientTest {
                 unionPayClient.tokenize(unionPayCard, new UnionPayTokenizeCallback() {
                     @Override
                     public void onResult(CardNonce cardNonce, Exception error) {
-                        assertIsANonce(cardNonce.getNonce());
+                        assertIsANonce(cardNonce.getString());
                         assertEquals("32", cardNonce.getLastTwo());
                         mCountDownLatch.countDown();
                     }

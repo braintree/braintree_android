@@ -52,7 +52,7 @@ public class DisplayNonceFragment extends Fragment {
 
     private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
         mNonce = paymentMethodNonce;
-        mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getNonce()));
+        mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getString()));
 
         String details = PaymentMethodNonceFormatter.convertToString(mNonce);
         mNonceDetails.setText(details);

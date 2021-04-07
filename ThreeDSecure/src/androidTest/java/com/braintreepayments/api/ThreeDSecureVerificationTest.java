@@ -60,7 +60,7 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    request.setNonce(cardNonce.getNonce());
+                    request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
                     threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -69,7 +69,7 @@ public class ThreeDSecureVerificationTest {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                             assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getNonce());
+                            assertIsANonce(cardNonce.getString());
                             assertEquals("51", cardNonce.getLastTwo());
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
@@ -111,7 +111,7 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    request.setNonce(cardNonce.getNonce());
+                    request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
                     threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -119,7 +119,7 @@ public class ThreeDSecureVerificationTest {
                         public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
                             assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getNonce());
+                            assertIsANonce(cardNonce.getString());
 
                             assertEquals("69", cardNonce.getLastTwo());
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
@@ -160,7 +160,7 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    request.setNonce(cardNonce.getNonce());
+                    request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
                     threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -203,7 +203,7 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    request.setNonce(cardNonce.getNonce());
+                    request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
                     threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -212,7 +212,7 @@ public class ThreeDSecureVerificationTest {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                             assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getNonce());
+                            assertIsANonce(cardNonce.getString());
 
                             assertEquals("77", cardNonce.getLastTwo());
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
@@ -254,7 +254,7 @@ public class ThreeDSecureVerificationTest {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
-                    request.setNonce(cardNonce.getNonce());
+                    request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
                     threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
@@ -263,7 +263,7 @@ public class ThreeDSecureVerificationTest {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
                             assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getNonce());
+                            assertIsANonce(cardNonce.getString());
 
                             assertEquals("85", cardNonce.getLastTwo());
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());

@@ -19,7 +19,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.PAYMENT_METHOD_CARD));
 
         assertTrue(nonce.isDefault());
-        assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getString());
         assertEquals("ending in ••11", nonce.getDescription());
         assertEquals("Visa", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHOD_CARD), new JSONObject(nonce.getJson()), true);
@@ -30,7 +30,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT));
 
         assertFalse(nonce.isDefault());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getString());
         assertEquals("with email paypalaccount@example.com", nonce.getDescription());
         assertEquals("PayPal", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT), new JSONObject(nonce.getJson()), true);
@@ -41,7 +41,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT));
 
         assertFalse(nonce.isDefault());
-        assertEquals("fake-venmo-nonce", nonce.getNonce());
+        assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("VenmoAccount", nonce.getDescription());
         assertEquals("Venmo", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
@@ -52,7 +52,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT));
 
         assertFalse(nonce.isDefault());
-        assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getString());
         assertEquals("ending in ••11", nonce.getDescription());
         assertEquals("Visa Checkout", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
@@ -63,7 +63,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT));
 
         assertFalse(nonce.isDefault());
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getNonce());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getString());
         assertEquals("PayPal", nonce.getDescription());
         assertEquals("PayPal", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
@@ -74,7 +74,7 @@ public class BraintreeNonceUnitTest {
         BraintreeNonce nonce = new BraintreeNonce(new JSONObject(Fixtures.GOOGLE_PAY_PLAIN_OBJECT));
 
         assertFalse(nonce.isDefault());
-        assertEquals("fake-google-pay-nonce", nonce.getNonce());
+        assertEquals("fake-google-pay-nonce", nonce.getString());
         assertEquals("Google Pay", nonce.getDescription());
         assertEquals("Google Pay", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.GOOGLE_PAY_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);

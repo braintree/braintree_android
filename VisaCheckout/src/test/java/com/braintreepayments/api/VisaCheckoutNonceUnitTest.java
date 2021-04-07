@@ -27,7 +27,7 @@ public class VisaCheckoutNonceUnitTest {
 
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getNonce());
+        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
         assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
         assertFalse(visaCheckoutNonce.isDefault());
         assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
@@ -97,7 +97,7 @@ public class VisaCheckoutNonceUnitTest {
         parcel.setDataPosition(0);
         VisaCheckoutNonce actual = VisaCheckoutNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(visaCheckoutNonce.getNonce(), actual.getNonce());
+        assertEquals(visaCheckoutNonce.getString(), actual.getString());
         assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());

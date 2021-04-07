@@ -377,7 +377,7 @@ public class ThreeDSecureV2UnitTest {
         CardNonce cardNonce = captor.getValue().getTokenizedCard();
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals("12345678-1234-1234-1234-123456789012", cardNonce.getNonce());
+        assertEquals("12345678-1234-1234-1234-123456789012", cardNonce.getString());
     }
 
     @Test
@@ -429,7 +429,7 @@ public class ThreeDSecureV2UnitTest {
         CardNonce cardNonce = actualResult.getTokenizedCard();
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
     }
 

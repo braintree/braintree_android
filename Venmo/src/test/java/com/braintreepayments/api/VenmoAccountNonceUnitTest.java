@@ -24,7 +24,7 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("venmojoe", venmoAccountNonce.getDescription());
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
-        assertEquals("fake-venmo-nonce", venmoAccountNonce.getNonce());
+        assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
         assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
     }
 
@@ -35,7 +35,7 @@ public class VenmoAccountNonceUnitTest {
 
     @Test
     public void getNonce_returnsNonce() {
-        assertEquals(NONCE, VENMO_NONCE.getNonce());
+        assertEquals(NONCE, VENMO_NONCE.getString());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class VenmoAccountNonceUnitTest {
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(NONCE, parceled.getNonce());
+        assertEquals(NONCE, parceled.getString());
         assertEquals(DESCRIPTION, parceled.getDescription());
         assertEquals(USERNAME, parceled.getUsername());
     }

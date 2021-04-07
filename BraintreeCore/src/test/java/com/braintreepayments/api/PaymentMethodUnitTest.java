@@ -35,7 +35,7 @@ public class PaymentMethodUnitTest {
         context = ApplicationProvider.getApplicationContext();
         mCardNonce = mock(CardNonce.class);
 
-        when(mCardNonce.getNonce()).thenReturn("im-a-card-nonce");
+        when(mCardNonce.getString()).thenReturn("im-a-card-nonce");
     }
 
     @Test
@@ -278,7 +278,7 @@ public class PaymentMethodUnitTest {
 
         JSONObject metadata = graphQlRequest.getJSONObject("clientSdkMetadata");
 
-        assertEquals(mCardNonce.getNonce(), graphQlRequest.getJSONObject("variables")
+        assertEquals(mCardNonce.getString(), graphQlRequest.getJSONObject("variables")
                 .getJSONObject("input").getString("singleUseTokenId"));
 
         assertEquals("DeletePaymentMethodFromSingleUseToken", graphQlRequest

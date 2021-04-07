@@ -58,7 +58,7 @@ public class ThreeDSecureClientTest {
                 } catch (JSONException e) {
                     fail("This should not fail");
                 }
-                String nonce = cardNonce.getNonce();
+                String nonce = cardNonce.getString();
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 request.setNonce(nonce);
@@ -69,7 +69,7 @@ public class ThreeDSecureClientTest {
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                         CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
-                        assertIsANonce(cardNonce.getNonce());
+                        assertIsANonce(cardNonce.getString());
                         assertEquals("51", cardNonce.getLastTwo());
 
                         ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();

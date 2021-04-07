@@ -66,7 +66,7 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     }
 
     @Override
-    public String getNonce() {
+    public String getString() {
         return mNonce;
     }
 

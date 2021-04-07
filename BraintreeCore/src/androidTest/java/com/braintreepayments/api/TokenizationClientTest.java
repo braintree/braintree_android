@@ -47,7 +47,7 @@ public class TokenizationClientTest {
             public void success(String tokenizationResponse) {
                 try {
                     PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
-                    assertIsANonce(payPalAccountNonce.getNonce());
+                    assertIsANonce(payPalAccountNonce.getString());
                     assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
                     latch.countDown();
                 } catch (JSONException e) {

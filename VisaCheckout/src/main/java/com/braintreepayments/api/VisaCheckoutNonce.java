@@ -114,7 +114,7 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     }
 
     @Override
-    public String getNonce() {
+    public String getString() {
         return mNonce;
     }
 

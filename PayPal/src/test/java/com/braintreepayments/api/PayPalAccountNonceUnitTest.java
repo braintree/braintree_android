@@ -31,7 +31,7 @@ public class PayPalAccountNonceUnitTest {
         assertNotNull(payPalAccountNonce);
         assertEquals("fake-authenticate-url", payPalAccountNonce.getAuthenticateUrl());
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
         assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
@@ -60,7 +60,7 @@ public class PayPalAccountNonceUnitTest {
 
         assertNotNull(payPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
         assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
@@ -101,7 +101,7 @@ public class PayPalAccountNonceUnitTest {
         PayPalAccountNonce parceled = PayPalAccountNonce.CREATOR.createFromParcel(parcel);
 
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
         assertEquals("PayPal", parceled.getTypeLabel());
         assertEquals("fake-authenticate-url", parceled.getAuthenticateUrl());
@@ -140,7 +140,7 @@ public class PayPalAccountNonceUnitTest {
         assertNull(parceled.getCreditFinancing());
 
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
         assertEquals("PayPal", parceled.getTypeLabel());
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());

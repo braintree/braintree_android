@@ -19,7 +19,7 @@ public class LocalPaymentNonceUnitTest {
 
         assertNotNull(result);
         assertEquals("PayPal", result.getDescription());
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getNonce());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getString());
         assertEquals("jon@getbraintree.com", result.getEmail());
         assertEquals("PayPalAccount", result.getTypeLabel());
         assertEquals("836486 of 22321 Park Lake", result.getShippingAddress().getStreetAddress());
@@ -46,7 +46,7 @@ public class LocalPaymentNonceUnitTest {
 
         assertNotNull(parceled);
         assertEquals("PayPal", parceled.getDescription());
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.getNonce());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.getString());
         assertEquals("jon@getbraintree.com", parceled.getEmail());
         assertEquals("PayPalAccount", parceled.getTypeLabel());
         assertEquals("836486 of 22321 Park Lake", parceled.getShippingAddress().getStreetAddress());

@@ -275,7 +275,7 @@ public class ThreeDSecureClient {
 
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
-        final String lookupNonce = lookupCardNonce.getNonce();
+        final String lookupNonce = lookupCardNonce.getString();
         JSONObject body = new JSONObject();
         try {
             body.put("jwt", cardinalJWT);

@@ -29,7 +29,7 @@ public class GooglePayCardNonceUnitTest {
         GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
 
         assertEquals("Google Pay", googlePayCardNonce.getTypeLabel());
-        assertEquals("fake-google-pay-nonce", googlePayCardNonce.getNonce());
+        assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
         assertEquals("MasterCard 0276", googlePayCardNonce.getDescription());
         assertEquals("Visa", googlePayCardNonce.getCardType());
         assertEquals("11", googlePayCardNonce.getLastTwo());
@@ -103,7 +103,7 @@ public class GooglePayCardNonceUnitTest {
         GooglePayCardNonce parceled = GooglePayCardNonce.CREATOR.createFromParcel(parcel);
 
         assertEquals("Google Pay", parceled.getTypeLabel());
-        assertEquals("fake-google-pay-nonce", parceled.getNonce());
+        assertEquals("fake-google-pay-nonce", parceled.getString());
         assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("11", parceled.getLastTwo());

@@ -83,16 +83,16 @@ public class CreateTransactionFragment extends Fragment {
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (Settings.isThreeDSecureEnabled(activity) && Settings.isThreeDSecureRequired(activity)) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getNonce(),
+            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
                     Settings.getThreeDSecureMerchantAccountId(activity), true, callback);
         } else if (Settings.isThreeDSecureEnabled(activity)) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getNonce(),
+            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
                     Settings.getThreeDSecureMerchantAccountId(activity), callback);
         } else if (nonce instanceof CardNonce && ((CardNonce) nonce).getCardType().equals("UnionPay")) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getNonce(),
+            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
                     Settings.getUnionPayMerchantAccountId(activity), callback);
         } else {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getNonce(), Settings.getMerchantAccountId(activity),
+            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(), Settings.getMerchantAccountId(activity),
                     callback);
         }
     }

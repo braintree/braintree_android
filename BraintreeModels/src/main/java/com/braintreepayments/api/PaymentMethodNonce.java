@@ -9,7 +9,7 @@ public interface PaymentMethodNonce extends Parcelable {
      *          represent this PaymentMethod for the purposes of creating transactions and other monetary
      *          actions.
      */
-    String getNonce();
+    String getString();
 
     /**
      * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
