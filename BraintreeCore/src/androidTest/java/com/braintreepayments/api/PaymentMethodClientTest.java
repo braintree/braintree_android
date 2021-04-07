@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class PaymentMethodTest {
+public class PaymentMethodClientTest {
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
