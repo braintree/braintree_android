@@ -17,6 +17,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     private static final String PAYPAL_API_RESOURCE_KEY = "paypalAccounts";
     private static final String VENMO_API_RESOURCE_KEY = "venmoAccounts";
     private static final String VISA_CHECKOUT_API_RESOURCE_KEY = "visaCheckoutCards";
+    private static final String GOOGLE_PAY_API_RESOURCE_KEY = "androidPayCards";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -50,6 +51,8 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mJsonString = inputJson.toString();
 
         boolean isGraphQL = false;
+        boolean isGooglePay = false;
+
         String apiResourceKey = null;
 
         if (inputJson.has(DATA_KEY)) {
@@ -67,6 +70,9 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
             mType = "VisaCheckoutCard";
             apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
+        } else if (isGooglePay(inputJson)) {
+            mType = "GooglePay";
+            isGooglePay = true;
         } else {
             mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
         }
@@ -79,11 +85,23 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
                 JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
                 mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
                 mNonce = payload.getString(TOKEN_KEY);
-                String mLastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
-                String mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
-                mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
+                String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
+                String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
+                mDescription = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
                 mDefault = false;
             }
+        } else if (isGooglePay) {
+            JSONObject token = new JSONObject(inputJson
+                    .getJSONObject("paymentMethodData")
+                    .getJSONObject("tokenizationData")
+                    .getString("token"));
+
+            JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(GOOGLE_PAY_API_RESOURCE_KEY).get(0).toString());
+            mNonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
+            mDescription = androidPayCardObject.getString(DESCRIPTION_KEY);
+            mDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+            mTypeLabel = "Google Pay";
+
         } else {
             JSONObject json;
             if (inputJson.has(apiResourceKey)) {
@@ -118,6 +136,17 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
                 }
             }
         }
+    }
+
+    private static boolean isGooglePay(JSONObject inputJson) throws JSONException {
+        if (inputJson.has("paymentMethodData")) {
+            JSONObject paymentMethodData = inputJson.getJSONObject("paymentMethodData");
+            if (paymentMethodData.has("tokenizationData")) {
+                JSONObject tokenizationData = paymentMethodData.getJSONObject("tokenizationData");
+                return tokenizationData.has("token");
+            }
+        }
+        return false;
     }
 
     /** @inheritDoc */

@@ -1455,6 +1455,19 @@ object Fixtures {
     """
 
     // language=JSON
+    const val GOOGLE_PAY_PLAIN_OBJECT = """
+        {
+          "type": "AndroidPayCard",
+          "nonce": "fake-google-pay-nonce",
+          "description": "Google Pay",
+          "details": {
+            "cardType": "Visa",
+            "lastTwo": "11"
+          }
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE = """
         {
           "paymentMethods": [
@@ -1532,6 +1545,34 @@ object Fixtures {
               }
             }
           ]
+        }
+    """
+
+    const val LOCAL_PAYMENT_PLAIN_OBJECT = """
+        {
+          "type": "PayPalAccount",
+          "nonce": "e11c9c39-d6a4-0305-791d-bfe680ef2d5d",
+          "description": "PayPal",
+          "consumed": false,
+          "details": {
+            "correlationId": "084afbf1db15445587d30bc120a23b09",
+            "payerInfo": {
+              "email": "jon@getbraintree.com",
+              "firstName": "Jon",
+              "lastName": "Doe",
+              "payerId": "9KQSUZTL7YZQ4",
+              "shippingAddress": {
+                "recipientName": "Jon Doe",
+                "line1": "836486 of 22321 Park Lake",
+                "line2": "Apt B",
+                "city": "Den Haag",
+                "state": "CA",
+                "postalCode": "2585 GJ",
+                "countryCode": "NL"
+              },
+              "countryCode": "NL"
+            }
+          }
         }
     """
 

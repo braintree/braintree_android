@@ -112,4 +112,48 @@ public class BraintreeNonceUnitTest {
         assertEquals("Visa Checkout", nonce.getTypeLabel());
         JSONAssert.assertEquals(new JSONObject(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
     }
+
+    @Test
+    public void constructor_parsesLocalPaymentTokenizeResponseJSON() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getNonce());
+        assertEquals("PayPal", nonce.getDescription());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesLocalPaymentPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getNonce());
+        assertEquals("PayPal", nonce.getDescription());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesGooglePayTokenizeResponseJSON() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("fake-google-pay-nonce", nonce.getNonce());
+        assertEquals("Google Pay", nonce.getDescription());
+        assertEquals("Google Pay", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE), new JSONObject(nonce.getJson()), true);
+    }
+
+    @Test
+    public void constructor_parsesGooglePayPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.GOOGLE_PAY_PLAIN_OBJECT);
+
+        assertFalse(nonce.isDefault());
+        assertEquals("fake-google-pay-nonce", nonce.getNonce());
+        assertEquals("Google Pay", nonce.getDescription());
+        assertEquals("Unknown", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.GOOGLE_PAY_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
+    }
 }
