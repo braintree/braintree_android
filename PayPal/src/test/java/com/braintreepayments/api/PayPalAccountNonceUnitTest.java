@@ -13,15 +13,13 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalAccountNonceUnitTest {
 
     @Test
-    public void payPalAccountTypeIsPayPal() {
-        assertEquals("PayPal", new PayPalAccountNonce().getTypeLabel());
+    public void payPalAccountTypeIsPayPal() throws JSONException {
+        assertEquals("PayPal", new PayPalAccountNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE).getTypeLabel());
     }
 
     @Test
@@ -83,12 +81,10 @@ public class PayPalAccountNonceUnitTest {
     }
 
     @Test
-    public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
-        PayPalAccountNonce payPalAccountNonce = spy(new PayPalAccountNonce());
-        payPalAccountNonce.mDescription = "PayPal";
-        when(payPalAccountNonce.getEmail()).thenReturn("test_email_address");
-
-        assertEquals("test_email_address", payPalAccountNonce.getDescription());
+    public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() throws JSONException {
+        PayPalAccountNonce payPalAccountNonce =
+            new PayPalAccountNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITH_DEFAULT_DESCRIPTION);
+        assertEquals("paypalaccount@example.com", payPalAccountNonce.getDescription());
     }
 
     @Test

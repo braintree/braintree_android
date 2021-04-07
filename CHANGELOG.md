@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add `BraintreeNonce` result type for `GetPaymentMethodNoncesCallback`
+* Add static factory constructors for converting a `BraintreeNonce` into: `CardNonce`, `PayPalAccountNonce`, `VenmoAccountNonce`, `LocalPaymentNonce`, `GooglePayNonce`, and `VisaCheckoutNonce`
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`

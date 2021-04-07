@@ -1660,6 +1660,36 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITH_DEFAULT_DESCRIPTION = """
+        {
+          "paypalAccounts": [
+            {
+              "authenticateUrl": "fake-authenticate-url",
+              "type": "PayPalAccount",
+              "nonce": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+              "description": "PayPal",
+              "default": false,
+              "isLocked": false,
+              "securityQuestions": [],
+              "details": {
+                "email": "paypalaccount@example.com",
+                "payerInfo": {
+                  "accountAddress": {
+                    "street1": "123 Fake St.",
+                    "street2": "Apt. 3",
+                    "city": "Oakland",
+                    "state": "CA",
+                    "postalCode": "94602",
+                    "country": "US"
+                  }
+                }
+              }
+            }
+          ]
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_ADDRESSES = """
         {
           "paypalAccounts": [
