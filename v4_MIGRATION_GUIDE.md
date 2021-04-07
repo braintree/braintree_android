@@ -530,7 +530,6 @@ The Union Pay feature is now supported by implementing the following dependencie
 ```groovy
 dependencies {
   implementation 'com.braintreepayments.api:union-pay:4.0.0-beta2'
-  implementation 'com.braintreepayments.api:card:4.0.0-beta2'
 }
 ```
 
