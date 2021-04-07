@@ -241,7 +241,7 @@ public class PayPalClient {
 
                         tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
                             @Override
-                            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                            public void onResult(String tokenizationResponse, Exception exception) {
                                 if (tokenizationResponse != null) {
                                     try {
                                         PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);

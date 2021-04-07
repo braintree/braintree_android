@@ -124,7 +124,7 @@ public class VenmoClient {
 
                 tokenizationClient.tokenize(venmoAccount, new PaymentMethodNonceCallback() {
                     @Override
-                    public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                    public void onResult(String tokenizationResponse, Exception exception) {
                        if (tokenizationResponse != null) {
                            try {
                                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(tokenizationResponse);

@@ -8,7 +8,6 @@ import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -102,7 +101,7 @@ public class VisaCheckoutClient {
     public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
         tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+            public void onResult(String tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
                         VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(tokenizationResponse);

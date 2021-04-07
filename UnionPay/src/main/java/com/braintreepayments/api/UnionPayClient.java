@@ -151,7 +151,7 @@ public class UnionPayClient {
     public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
         tokenizationClient.tokenize(unionPayCard, new PaymentMethodNonceCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+            public void onResult(String tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
                         CardNonce cardNonce = new CardNonce(tokenizationResponse);

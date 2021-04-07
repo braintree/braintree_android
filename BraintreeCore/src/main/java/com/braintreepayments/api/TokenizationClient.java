@@ -30,11 +30,11 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link BraintreeNonce} to {@link PaymentMethodNonceCallback}.
      * <p>
-     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(org.json.JSONObject, Exception)}
+     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(String, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * PaymentMethodNonceCallback#onResult(org.json.JSONObject, Exception)} will be called with the {@link Exception} that occurred.
+     * PaymentMethodNonceCallback#onResult(String, Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
@@ -77,13 +77,8 @@ class TokenizationClient {
         braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
-                } catch (JSONException e) {
-                    callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                }
+                callback.onResult(responseBody, null);
+                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
             }
 
             @Override
@@ -102,11 +97,7 @@ class TokenizationClient {
 
             @Override
             public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                } catch (JSONException e) {
-                    callback.onResult(null, e);
-                }
+                callback.onResult(responseBody, null);
             }
 
             @Override
