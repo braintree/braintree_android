@@ -13,7 +13,7 @@ import org.json.JSONObject;
 public class VenmoAccountNonce implements PaymentMethodNonce {
 
     static final String TYPE = "VenmoAccount";
-    static final String API_RESOURCE_KEY = "venmoAccounts";
+    private static final String API_RESOURCE_KEY = "venmoAccounts";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";

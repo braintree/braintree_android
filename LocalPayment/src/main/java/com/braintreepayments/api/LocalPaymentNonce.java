@@ -12,7 +12,7 @@ import org.json.JSONObject;
  */
 public class LocalPaymentNonce implements PaymentMethodNonce {
 
-    static final String API_RESOURCE_KEY = "paypalAccounts";
+    private static final String API_RESOURCE_KEY = "paypalAccounts";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
@@ -31,7 +31,7 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
     private static final String TYPE_KEY = "type";
 
-    private String mClientMetadataId;
+    private final String mClientMetadataId;
     private PostalAddress mBillingAddress;
     private PostalAddress mShippingAddress;
     private String mGivenName;
@@ -39,11 +39,11 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     private String mPhone;
     private String mEmail;
     private String mPayerId;
-    private String mType;
+    private final String mType;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static LocalPaymentNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new LocalPaymentNonce(braintreeNonce.getJson());
