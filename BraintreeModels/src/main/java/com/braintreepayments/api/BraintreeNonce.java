@@ -2,13 +2,12 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
 import static com.braintreepayments.api.PaymentMethodTypeUtils.displayNameFromPaymentMethodType;
+import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
 
 /**
  * Base class representing a method of payment for a customer. {@link BraintreeNonce} represents the
@@ -31,7 +30,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     private final String mTypeLabel;
     private final String mJsonString;
 
-    private @PaymentMethodType int mType;
+    private @PaymentMethodType final int mType;
 
     BraintreeNonce(JSONObject json) throws JSONException {
         String typeString = json.getString(PAYMENT_METHOD_TYPE_KEY);
