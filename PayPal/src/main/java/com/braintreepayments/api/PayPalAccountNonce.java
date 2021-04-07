@@ -18,9 +18,9 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
 
     static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
-    static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
-    static final String TOKENIZATION_DATA_KEY = "tokenizationData";
-    static final String TOKEN_KEY = "token";
+    private static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
+    private static final String TOKENIZATION_DATA_KEY = "tokenizationData";
+    private static final String TOKEN_KEY = "token";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
@@ -39,7 +39,7 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
 
-    private String mClientMetadataId;
+    private final String mClientMetadataId;
     private PostalAddress mBillingAddress;
     private PostalAddress mShippingAddress;
     private String mFirstName;
@@ -48,11 +48,11 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     private String mEmail;
     private String mPayerId;
     private PayPalCreditFinancing mCreditFinancing;
-    private String mAuthenticateUrl;
+    private final String mAuthenticateUrl;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static PayPalAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new PayPalAccountNonce(braintreeNonce.getJson());
