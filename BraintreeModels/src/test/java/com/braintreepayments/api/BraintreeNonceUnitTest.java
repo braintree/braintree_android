@@ -92,12 +92,24 @@ public class BraintreeNonceUnitTest {
     }
 
     @Test
-    public void constructor_parsesVisaCheckoutTokenizeResponseJSON() {
+    public void constructor_parsesVisaCheckoutTokenizeResponseJSON() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
 
+        assertFalse(nonce.isDefault());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
+        assertEquals("ending in ••11", nonce.getDescription());
+        assertEquals("Visa Checkout", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE), new JSONObject(nonce.getJson()), true);
     }
 
     @Test
-    public void constructor_parsesVisaCheckoutFromPlainJSONObject() {
+    public void constructor_parsesVisaCheckoutFromPlainJSONObject() throws JSONException {
+        BraintreeNonce nonce = new BraintreeNonce(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT);
 
+        assertFalse(nonce.isDefault());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
+        assertEquals("ending in ••11", nonce.getDescription());
+        assertEquals("Visa Checkout", nonce.getTypeLabel());
+        JSONAssert.assertEquals(new JSONObject(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT), new JSONObject(nonce.getJson()), true);
     }
 }
