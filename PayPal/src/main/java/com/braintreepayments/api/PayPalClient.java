@@ -239,7 +239,7 @@ public class PayPalClient {
                             payPalAccount.setIntent(payPalIntent);
                         }
 
-                        tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
+                        tokenizationClient.tokenize(payPalAccount, new TokenizeCallback() {
                             @Override
                             public void onResult(String tokenizationResponse, Exception exception) {
                                 if (tokenizationResponse != null) {

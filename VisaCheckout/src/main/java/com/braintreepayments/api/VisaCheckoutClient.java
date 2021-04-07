@@ -99,7 +99,7 @@ public class VisaCheckoutClient {
      * @param callback {@link VisaCheckoutTokenizeCallback}
      */
     public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
-        tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new TokenizeCallback() {
             @Override
             public void onResult(String tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {

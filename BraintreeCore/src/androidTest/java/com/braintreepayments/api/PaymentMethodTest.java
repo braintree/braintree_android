@@ -52,7 +52,7 @@ public class PaymentMethodTest {
         card.setExpirationMonth("12");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void onResult(String tokenizationResponse, Exception exception) {
                 if (exception != null) {
@@ -101,7 +101,7 @@ public class PaymentMethodTest {
         card.setExpirationMonth("04");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void onResult(String tokenizationResponse, Exception exception) {
                 if (exception != null) {

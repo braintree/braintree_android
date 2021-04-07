@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Add `BraintreeNonce` result type for `GetPaymentMethodNoncesCallback`
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
@@ -11,6 +12,10 @@
   * Make `VisaCheckoutAccount` package-private
   * Make `VenmoAccount` package-private
   * Return an `IllegalArgumentException` instead of `GoogleApiClientException` to `GooglePayIsReadyToPayCallback#onResult()` when activity is null
+  * Refactor `GetPaymentMethodNoncesCallback` to have a single `onResult()` method instead of `success()` and `failure()`
+  * Remove `Context` parameter from `PaymentMethodClient#getPaymentMethodNonces`
+  * Remove `PaymentMethodNonce` base class in favor of a `PaymentMethodNonce` interface type
+  * Rename `PaymentMethodNonce#getNonce()` to `getString()`
 
 ## 4.0.0-beta2
 

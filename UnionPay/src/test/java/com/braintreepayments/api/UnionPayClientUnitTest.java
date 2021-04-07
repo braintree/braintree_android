@@ -58,10 +58,10 @@ public class UnionPayClientUnitTest {
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
+        TokenizeCallback callback = captor.getValue();
         callback.onResult(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD, null);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-received");
@@ -73,10 +73,10 @@ public class UnionPayClientUnitTest {
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
+        TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
         callback.onResult(null, error);
 
@@ -89,10 +89,10 @@ public class UnionPayClientUnitTest {
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
+        TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
         callback.onResult(null, error);
 

@@ -42,7 +42,7 @@ public class TokenizationClientTest {
         PayPalAccount paypalAccount = new PayPalAccount();
         paypalAccount.setUrlResponseData(urlResponseData);
 
-        tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(paypalAccount, new TokenizeCallback() {
             @Override
             public void onResult(String tokenizationResponse, Exception exception) {
                 if (exception != null) {

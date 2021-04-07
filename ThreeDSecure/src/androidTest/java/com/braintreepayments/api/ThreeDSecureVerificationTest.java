@@ -54,7 +54,7 @@ public class ThreeDSecureVerificationTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -105,7 +105,7 @@ public class ThreeDSecureVerificationTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -154,7 +154,7 @@ public class ThreeDSecureVerificationTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -197,7 +197,7 @@ public class ThreeDSecureVerificationTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
@@ -248,7 +248,7 @@ public class ThreeDSecureVerificationTest {
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
             public void success(String tokenizationResponse) {
                 ThreeDSecureRequest request = new ThreeDSecureRequest();

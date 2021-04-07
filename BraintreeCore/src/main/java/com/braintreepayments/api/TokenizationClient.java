@@ -25,19 +25,19 @@ class TokenizationClient {
     /**
      * Create a {@link BraintreeNonce} in the Braintree Gateway.
      * <p>
-     * On completion, returns the {@link BraintreeNonce} to {@link PaymentMethodNonceCallback}.
+     * On completion, returns the {@link BraintreeNonce} to {@link TokenizeCallback}.
      * <p>
-     * If creation fails validation, {@link PaymentMethodNonceCallback#onResult(String, Exception)}
+     * If creation fails validation, {@link TokenizeCallback#onResult(String, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * PaymentMethodNonceCallback#onResult(String, Exception)} will be called with the {@link Exception} that occurred.
+     * TokenizeCallback#onResult(String, Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
-     * @param callback {@link PaymentMethodNonceCallback}
+     * @param callback {@link TokenizeCallback}
      */
-    void tokenize(final PaymentMethod paymentMethod, final PaymentMethodNonceCallback callback) {
+    void tokenize(final PaymentMethod paymentMethod, final TokenizeCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();
         if (braintreeClient == null) {
             return;
@@ -61,7 +61,7 @@ class TokenizationClient {
         });
     }
 
-    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final GraphQLTokenizable graphQLTokenizable, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final GraphQLTokenizable graphQLTokenizable, final TokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
@@ -86,7 +86,7 @@ class TokenizationClient {
         });
     }
 
-    private static void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethod paymentMethod, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethod paymentMethod, final TokenizeCallback callback) {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
