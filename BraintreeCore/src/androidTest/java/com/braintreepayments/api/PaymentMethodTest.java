@@ -54,7 +54,11 @@ public class PaymentMethodTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<BraintreeNonce> paymentMethodNonces, @Nullable Exception error) {
@@ -78,11 +82,6 @@ public class PaymentMethodTest {
                     }
                 });
             }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
-            }
         });
 
         latch.await();
@@ -104,7 +103,11 @@ public class PaymentMethodTest {
 
         tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
             @Override
-            public void success(final String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<BraintreeNonce> paymentMethodNonces, @Nullable Exception error) {
@@ -116,11 +119,6 @@ public class PaymentMethodTest {
                         latch.countDown();
                     }
                 });
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 

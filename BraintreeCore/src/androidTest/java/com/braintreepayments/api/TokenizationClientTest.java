@@ -45,6 +45,10 @@ public class TokenizationClientTest {
         tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
             @Override
             public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 try {
                     PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
                     assertIsANonce(payPalAccountNonce.getString());
