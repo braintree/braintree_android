@@ -256,7 +256,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     @Override
     public String getResponsePaymentMethodType() {
-        return "CreditCard";
+        return CardNonce.TYPE;
     }
 
     @Override

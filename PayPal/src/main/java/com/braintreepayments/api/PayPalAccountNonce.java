@@ -230,9 +230,6 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
         return mAuthenticateUrl;
     }
 
-    PayPalAccountNonce() {
-    }
-
     @Override
     public int describeContents() {
         return 0;

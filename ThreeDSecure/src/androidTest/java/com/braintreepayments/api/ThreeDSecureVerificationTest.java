@@ -56,7 +56,11 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
@@ -82,11 +86,6 @@ public class ThreeDSecureVerificationTest {
                     fail("This should not fail");
                 }
             }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Tokenization should succeed");
-            }
         });
 
         mCountDownLatch.await();
@@ -107,7 +106,11 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
@@ -133,11 +136,6 @@ public class ThreeDSecureVerificationTest {
                     fail("This should not fail");
                 }
             }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Tokenization should succeed");
-            }
         });
 
         mCountDownLatch.await();
@@ -156,7 +154,11 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
@@ -177,11 +179,6 @@ public class ThreeDSecureVerificationTest {
                     fail("This should not fail");
                 }
             }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Tokenization should succeed");
-            }
         });
 
         mCountDownLatch.await();
@@ -199,7 +196,11 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
@@ -228,11 +229,6 @@ public class ThreeDSecureVerificationTest {
                     fail("This should not fail");
                 }
             }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Tokenization should succeed");
-            }
         });
 
         mCountDownLatch.await();
@@ -250,7 +246,11 @@ public class ThreeDSecureVerificationTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
                     CardNonce cardNonce = new CardNonce(tokenizationResponse);
@@ -276,11 +276,6 @@ public class ThreeDSecureVerificationTest {
                 } catch (JSONException e) {
                     fail("This should not fail");
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Tokenization should succeed");
             }
         });
 

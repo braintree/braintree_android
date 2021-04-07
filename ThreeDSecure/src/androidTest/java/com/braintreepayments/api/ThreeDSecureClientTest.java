@@ -51,7 +51,11 @@ public class ThreeDSecureClientTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(String tokenizationResponse) {
+            public void onResult(String tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
                 CardNonce cardNonce = null;
                 try {
                     cardNonce = new CardNonce(tokenizationResponse);
@@ -79,11 +83,6 @@ public class ThreeDSecureClientTest {
                         mCountDownLatch.countDown();
                     }
                 });
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 

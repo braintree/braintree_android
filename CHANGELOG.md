@@ -16,6 +16,19 @@
   * Remove `Context` parameter from `PaymentMethodClient#getPaymentMethodNonces`
   * Remove `PaymentMethodNonce` base class in favor of a `PaymentMethodNonce` interface type
   * Rename `PaymentMethodNonce#getNonce()` to `getString()`
+  * Move `VenmoAccountNonce` to `Venmo` module
+  * Move `AuthenticationInsight` to `Card` module
+  * Move `BinData` to `Card` module
+  * Move `Card` to `Card` module
+  * Move `CardNonce` to `Card` module
+  * Move `ThreeDSecureInfo` to `Card` module
+  * Move `PayPalCreditFinancing` to `PayPal` module
+  * Move `PayPalCreditFinancingAmount` to `PayPal` module
+  * Move `UnionPayCapabilities` to `UnionPay` module
+  * Move `UnionPayCard` to `UnionPay` module
+  * Move `VisaCheckoutAddress` to `VisaCheckout` module
+  * Move `VisaCheckoutNonce` to `VisaCheckout` module
+  * Move `VisaCheckoutUserData` to `VisaCheckout` module
 
 ## 4.0.0-beta2
 
