@@ -16,22 +16,8 @@ import static com.braintreepayments.api.PaymentMethodTypeUtils.displayNameFromPa
  */
 public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
-    private static final String CARD_API_RESOURCE_KEY = "creditCards";
-    private static final String PAYPAL_API_RESOURCE_KEY = "paypalAccounts";
-    private static final String VENMO_API_RESOURCE_KEY = "venmoAccounts";
-    private static final String VISA_CHECKOUT_API_RESOURCE_KEY = "visaCheckoutCards";
-    private static final String GOOGLE_PAY_API_RESOURCE_KEY = "androidPayCards";
-
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
-
-    static final String DATA_KEY = "data";
-    static final String TOKEN_KEY = "token";
-
-    private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
-    private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
-    private static final String GRAPHQL_BRAND_KEY = "brand";
-    private static final String GRAPHQL_LAST_FOUR_KEY = "last4";
 
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -47,18 +33,8 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     protected @PaymentMethodType int mType;
 
-    static BraintreeNonce fromJson(String jsonString) throws JSONException {
-        return BraintreeNonce.fromJson(new JSONObject(jsonString));
-    }
-
     static BraintreeNonce fromJson(JSONObject inputJson) throws JSONException {
-        if (isGraphQL(inputJson)) {
-            return parseGraphQLNonce(inputJson);
-        } else if (isGooglePay(inputJson)) {
-            return parseGooglePayNonce(inputJson);
-        } else {
-            return parseBraintreeNonce(inputJson);
-        }
+        return parseBraintreeNonce(inputJson);
     }
 
     private BraintreeNonce(String nonce, @PaymentMethodType int type, String description, JSONObject inputJson, String typeLabel, boolean isDefault) {
@@ -70,65 +46,10 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mDefault = isDefault;
     }
 
-    private static BraintreeNonce parseGraphQLNonce(JSONObject inputJson) throws JSONException {
-        @PaymentMethodType int type = PaymentMethodType.CARD;
-        JSONObject data = inputJson.getJSONObject(DATA_KEY);
+    private static BraintreeNonce parseBraintreeNonce(JSONObject json) throws JSONException {
 
-        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
-        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-        String typeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-        String nonce = payload.getString(TOKEN_KEY);
-        String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
-        String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
-        String description = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
-        boolean isDefault = false;
-
-        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
-    }
-
-    private static BraintreeNonce parseGooglePayNonce(JSONObject inputJson) throws JSONException {
-        @PaymentMethodType int type = PaymentMethodType.GOOGLE_PAY;
-        JSONObject token = new JSONObject(inputJson
-                .getJSONObject("paymentMethodData")
-                .getJSONObject("tokenizationData")
-                .getString("token"));
-
-        JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(GOOGLE_PAY_API_RESOURCE_KEY).get(0).toString());
-        String nonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = androidPayCardObject.getString(DESCRIPTION_KEY);
-        boolean isDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-        String typeLabel = "Google Pay";
-
-        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
-    }
-
-    private static BraintreeNonce parseBraintreeNonce(JSONObject inputJson) throws JSONException {
-        @PaymentMethodType int type;
-
-        String apiResourceKey = null;
-        if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-            type = PaymentMethodType.CARD;
-            apiResourceKey = CARD_API_RESOURCE_KEY;
-        } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
-            type = PaymentMethodType.PAYPAL;
-            apiResourceKey = PAYPAL_API_RESOURCE_KEY;
-        } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
-            type = PaymentMethodType.VENMO;
-            apiResourceKey = VENMO_API_RESOURCE_KEY;
-        } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
-            type = PaymentMethodType.VISA_CHECKOUT;
-            apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
-        } else {
-            String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-            type = paymentMethodTypeFromString(typeString);
-        }
-
-        JSONObject json;
-        if (inputJson.has(apiResourceKey)) {
-            json = inputJson.getJSONArray(apiResourceKey).getJSONObject(0);
-        } else {
-            json = inputJson;
-        }
+        String typeString = json.getString(PAYMENT_METHOD_TYPE_KEY);
+        @PaymentMethodType int type = paymentMethodTypeFromString(typeString);
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         String description = json.getString(DESCRIPTION_KEY);
@@ -141,22 +62,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         } else {
             typeLabel = displayNameFromPaymentMethodType(type);
         }
-        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
-    }
-
-    private static boolean isGraphQL(JSONObject inputJson) {
-        return inputJson.has(DATA_KEY);
-    }
-
-    private static boolean isGooglePay(JSONObject inputJson) throws JSONException {
-        if (inputJson.has("paymentMethodData")) {
-            JSONObject paymentMethodData = inputJson.getJSONObject("paymentMethodData");
-            if (paymentMethodData.has("tokenizationData")) {
-                JSONObject tokenizationData = paymentMethodData.getJSONObject("tokenizationData");
-                return tokenizationData.has("token");
-            }
-        }
-        return false;
+        return new BraintreeNonce(nonce, type, description, json, typeLabel, isDefault);
     }
 
     /**
