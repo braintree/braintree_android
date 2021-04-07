@@ -77,7 +77,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.onResult(new BraintreeNonce(responseBody), null);
+                    callback.onResult(BraintreeNonce.fromJson(responseBody), null);
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.onResult(null, e);
@@ -102,7 +102,7 @@ class TokenizationClient {
             @Override
             public void success(String responseBody) {
                 try {
-                    callback.onResult(new BraintreeNonce(responseBody), null);
+                    callback.onResult(BraintreeNonce.fromJson(responseBody), null);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
                 }

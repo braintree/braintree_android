@@ -42,81 +42,106 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     protected String mDescription;
     protected boolean mDefault;
 
-    protected @PaymentMethodType
-    int mType;
     protected String mTypeLabel;
     protected String mJsonString;
 
-    BraintreeNonce(String jsonString) throws JSONException {
-        this(new JSONObject(jsonString));
+    protected @PaymentMethodType int mType;
+
+    static BraintreeNonce fromJson(String jsonString) throws JSONException {
+        return BraintreeNonce.fromJson(new JSONObject(jsonString));
     }
 
-    BraintreeNonce(JSONObject inputJson) throws JSONException {
-        mJsonString = inputJson.toString();
-
+    static BraintreeNonce fromJson(JSONObject inputJson) throws JSONException {
         if (isGraphQL(inputJson)) {
-            mType = PaymentMethodType.CARD;
-            JSONObject data = inputJson.getJSONObject(DATA_KEY);
-
-            JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
-            JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-            mTypeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-            mNonce = payload.getString(TOKEN_KEY);
-            String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
-            String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
-            mDescription = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
-            mDefault = false;
-
+            return parseGraphQLNonce(inputJson);
         } else if (isGooglePay(inputJson)) {
-            mType = PaymentMethodType.GOOGLE_PAY;
-            JSONObject token = new JSONObject(inputJson
-                    .getJSONObject("paymentMethodData")
-                    .getJSONObject("tokenizationData")
-                    .getString("token"));
-
-            JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(GOOGLE_PAY_API_RESOURCE_KEY).get(0).toString());
-            mNonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
-            mDescription = androidPayCardObject.getString(DESCRIPTION_KEY);
-            mDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-            mTypeLabel = "Google Pay";
+            return parseGooglePayNonce(inputJson);
         } else {
-
-            String apiResourceKey = null;
-            if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-                mType = PaymentMethodType.CARD;
-                apiResourceKey = CARD_API_RESOURCE_KEY;
-            } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
-                mType = PaymentMethodType.PAYPAL;
-                apiResourceKey = PAYPAL_API_RESOURCE_KEY;
-            } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
-                mType = PaymentMethodType.VENMO;
-                apiResourceKey = VENMO_API_RESOURCE_KEY;
-            } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
-                mType = PaymentMethodType.VISA_CHECKOUT;
-                apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
-            } else {
-                String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-                mType = paymentMethodTypeFromString(typeString);
-            }
-
-            JSONObject json;
-            if (inputJson.has(apiResourceKey)) {
-                json = inputJson.getJSONArray(apiResourceKey).getJSONObject(0);
-            } else {
-                json = inputJson;
-            }
-
-            mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-            mDescription = json.getString(DESCRIPTION_KEY);
-            mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-
-            if (mType == PaymentMethodType.CARD) {
-                JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-                mTypeLabel = details.getString(CARD_TYPE_KEY);
-            } else {
-                mTypeLabel = displayNameFromPaymentMethodType(mType);
-            }
+            return parseBraintreeNonce(inputJson);
         }
+    }
+
+    private BraintreeNonce(String nonce, @PaymentMethodType int type, String description, JSONObject inputJson, String typeLabel, boolean isDefault) {
+        mNonce = nonce;
+        mType = type;
+        mDescription = description;
+        mJsonString = inputJson.toString();
+        mTypeLabel = typeLabel;
+        mDefault = isDefault;
+    }
+
+    private static BraintreeNonce parseGraphQLNonce(JSONObject inputJson) throws JSONException {
+        @PaymentMethodType int type = PaymentMethodType.CARD;
+        JSONObject data = inputJson.getJSONObject(DATA_KEY);
+
+        JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
+        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+        String typeLabel = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
+        String nonce = payload.getString(TOKEN_KEY);
+        String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
+        String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
+        String description = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
+        boolean isDefault = false;
+
+        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
+    }
+
+    private static BraintreeNonce parseGooglePayNonce(JSONObject inputJson) throws JSONException {
+        @PaymentMethodType int type = PaymentMethodType.GOOGLE_PAY;
+        JSONObject token = new JSONObject(inputJson
+                .getJSONObject("paymentMethodData")
+                .getJSONObject("tokenizationData")
+                .getString("token"));
+
+        JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(GOOGLE_PAY_API_RESOURCE_KEY).get(0).toString());
+        String nonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = androidPayCardObject.getString(DESCRIPTION_KEY);
+        boolean isDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String typeLabel = "Google Pay";
+
+        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
+    }
+
+    private static BraintreeNonce parseBraintreeNonce(JSONObject inputJson) throws JSONException {
+        @PaymentMethodType int type;
+
+        String apiResourceKey = null;
+        if (inputJson.has(CARD_API_RESOURCE_KEY)) {
+            type = PaymentMethodType.CARD;
+            apiResourceKey = CARD_API_RESOURCE_KEY;
+        } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
+            type = PaymentMethodType.PAYPAL;
+            apiResourceKey = PAYPAL_API_RESOURCE_KEY;
+        } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
+            type = PaymentMethodType.VENMO;
+            apiResourceKey = VENMO_API_RESOURCE_KEY;
+        } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
+            type = PaymentMethodType.VISA_CHECKOUT;
+            apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
+        } else {
+            String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+            type = paymentMethodTypeFromString(typeString);
+        }
+
+        JSONObject json;
+        if (inputJson.has(apiResourceKey)) {
+            json = inputJson.getJSONArray(apiResourceKey).getJSONObject(0);
+        } else {
+            json = inputJson;
+        }
+
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+        String typeLabel;
+        if (type == PaymentMethodType.CARD) {
+            JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
+            typeLabel = details.getString(CARD_TYPE_KEY);
+        } else {
+            typeLabel = displayNameFromPaymentMethodType(type);
+        }
+        return new BraintreeNonce(nonce, type, description, inputJson, typeLabel, isDefault);
     }
 
     private static boolean isGraphQL(JSONObject inputJson) {

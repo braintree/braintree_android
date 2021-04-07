@@ -16,7 +16,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesCardFromPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHOD_CARD);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHOD_CARD);
 
         assertTrue(nonce.isDefault());
         assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
@@ -27,7 +27,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesGraphQLCardTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
 
         assertFalse(nonce.isDefault());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", nonce.getNonce());
@@ -38,7 +38,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesRESTCardTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.TOKENIZE_CARD_SUCCESS_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.TOKENIZE_CARD_SUCCESS_RESPONSE);
 
         assertFalse(nonce.isDefault());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", nonce.getNonce());
@@ -49,7 +49,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesPayPalTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
 
         assertFalse(nonce.isDefault());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getNonce());
@@ -60,7 +60,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesPayPalFromPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT);
 
         assertFalse(nonce.isDefault());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getNonce());
@@ -71,7 +71,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesVenmoTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
 
         assertTrue(nonce.isDefault());
         assertEquals("fake-venmo-nonce", nonce.getNonce());
@@ -82,7 +82,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesVenmoFromPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT);
 
         assertFalse(nonce.isDefault());
         assertEquals("fake-venmo-nonce", nonce.getNonce());
@@ -93,7 +93,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesVisaCheckoutTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
 
         assertFalse(nonce.isDefault());
         assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
@@ -104,7 +104,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesVisaCheckoutFromPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT);
 
         assertFalse(nonce.isDefault());
         assertEquals("123456-12345-12345-a-adfa", nonce.getNonce());
@@ -115,7 +115,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesLocalPaymentTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
 
         assertFalse(nonce.isDefault());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getNonce());
@@ -126,7 +126,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesLocalPaymentPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT);
 
         assertFalse(nonce.isDefault());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getNonce());
@@ -137,7 +137,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesGooglePayTokenizeResponseJSON() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE);
 
         assertFalse(nonce.isDefault());
         assertEquals("fake-google-pay-nonce", nonce.getNonce());
@@ -148,7 +148,7 @@ public class BraintreeNonceUnitTest {
 
     @Test
     public void constructor_parsesGooglePayPlainJSONObject() throws JSONException {
-        BraintreeNonce nonce = new BraintreeNonce(Fixtures.GOOGLE_PAY_PLAIN_OBJECT);
+        BraintreeNonce nonce = BraintreeNonce.fromJson(Fixtures.GOOGLE_PAY_PLAIN_OBJECT);
 
         assertFalse(nonce.isDefault());
         assertEquals("fake-google-pay-nonce", nonce.getNonce());
