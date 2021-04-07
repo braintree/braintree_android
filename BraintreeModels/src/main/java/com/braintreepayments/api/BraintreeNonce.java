@@ -7,6 +7,9 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
+import static com.braintreepayments.api.PaymentMethodTypeUtils.displayNameFromPaymentMethodType;
+
 /**
  * Base class representing a method of payment for a customer. {@link BraintreeNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
@@ -39,7 +42,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     protected String mDescription;
     protected boolean mDefault;
 
-    protected String mType;
+    protected @PaymentMethodType int mType;
     protected String mTypeLabel;
     protected String mJsonString;
 
@@ -56,25 +59,26 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         String apiResourceKey = null;
 
         if (inputJson.has(DATA_KEY)) {
-            mType = "CreditCard";
+            mType = PaymentMethodType.CARD;
             isGraphQL = true;
         } else if (inputJson.has(CARD_API_RESOURCE_KEY)) {
-            mType = "CreditCard";
+            mType = PaymentMethodType.CARD;
             apiResourceKey = CARD_API_RESOURCE_KEY;
         } else if (inputJson.has(PAYPAL_API_RESOURCE_KEY)) {
-            mType = "PayPalAccount";
+            mType = PaymentMethodType.PAYPAL;
             apiResourceKey = PAYPAL_API_RESOURCE_KEY;
         } else if (inputJson.has(VENMO_API_RESOURCE_KEY)) {
-            mType = "VenmoAccount";
+            mType = PaymentMethodType.VENMO;
             apiResourceKey = VENMO_API_RESOURCE_KEY;
         } else if (inputJson.has(VISA_CHECKOUT_API_RESOURCE_KEY)) {
-            mType = "VisaCheckoutCard";
+            mType = PaymentMethodType.VISA_CHECKOUT;
             apiResourceKey = VISA_CHECKOUT_API_RESOURCE_KEY;
         } else if (isGooglePay(inputJson)) {
-            mType = "GooglePay";
+            mType = PaymentMethodType.GOOGLE_PAY;
             isGooglePay = true;
         } else {
-            mType = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+            String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+            mType = paymentMethodTypeFromString(typeString);
         }
 
         if (isGraphQL) {
@@ -114,26 +118,11 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
             mDescription = json.getString(DESCRIPTION_KEY);
             mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-            if (mType.equals("CreditCard")) {
+            if (mType == PaymentMethodType.CARD) {
                 JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
                 mTypeLabel = details.getString(CARD_TYPE_KEY);
             } else {
-                switch (mType) {
-                    case "PayPalAccount":
-                        mTypeLabel = "PayPal";
-                        break;
-                    case "VisaCheckoutCard":
-                        mTypeLabel = "Visa Checkout";
-                        break;
-                    case "VenmoAccount":
-                        mTypeLabel = "Venmo";
-                        break;
-                    default:
-                        // TODO: consider throwing here for nonces that aren't supposed to be
-                        // parsed by payment methods client
-                        mTypeLabel = "Unknown";
-                        break;
-                }
+                mTypeLabel = displayNameFromPaymentMethodType(mType);
             }
         }
     }
@@ -172,6 +161,13 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return mTypeLabel;
     }
 
+    /**
+     * @return type of payment method.
+     */
+    public int getType() {
+        return mType;
+    }
+
     String getJson() {
         return mJsonString;
     }
@@ -186,7 +182,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         dest.writeString(mNonce);
         dest.writeString(mDescription);
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
-        dest.writeString(mType);
+        dest.writeInt(mType);
         dest.writeString(mTypeLabel);
         dest.writeString(mJsonString);
     }
@@ -195,7 +191,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
-        mType = in.readString();
+        mType = in.readInt();
         mTypeLabel = in.readString();
         mJsonString = in.readString();
     }
