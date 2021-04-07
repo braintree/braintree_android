@@ -35,17 +35,17 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     BraintreeNonce(JSONObject json) throws JSONException {
         String typeString = json.getString(PAYMENT_METHOD_TYPE_KEY);
-        @PaymentMethodType int type = paymentMethodTypeFromString(typeString);
+        mType = paymentMethodTypeFromString(typeString);
 
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = json.getString(DESCRIPTION_KEY);
         mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        if (type == PaymentMethodType.CARD) {
+        if (mType == PaymentMethodType.CARD) {
             JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
             mTypeLabel = details.getString(CARD_TYPE_KEY);
         } else {
-            mTypeLabel = displayNameFromPaymentMethodType(type);
+            mTypeLabel = displayNameFromPaymentMethodType(mType);
         }
 
         // used when converting a BraintreeNonce into other 'typed' nonces
