@@ -18,6 +18,7 @@ import static java.lang.Boolean.FALSE;
 public class GooglePayCardNonce implements PaymentMethodNonce {
 
     static final String API_RESOURCE_KEY = "androidPayCards";
+
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
@@ -26,19 +27,19 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
-    private String mCardType;
-    private String mLastTwo;
-    private String mLastFour;
-    private String mEmail;
-    private Boolean mIsNetworkTokenized;
-    private PostalAddress mBillingAddress;
-    private PostalAddress mShippingAddress;
-    private BinData mBinData;
 
-    protected String mNonce;
-    protected String mDescription;
-    protected boolean mDefault;
+    private final String mCardType;
+    private final String mLastTwo;
+    private final String mLastFour;
+    private final String mEmail;
+    private Boolean mIsNetworkTokenized;
+    private final PostalAddress mBillingAddress;
+    private final PostalAddress mShippingAddress;
+    private final BinData mBinData;
+
+    private final String mNonce;
+    private final String mDescription;
+    private final boolean mDefault;
 
     public static GooglePayCardNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new GooglePayCardNonce(braintreeNonce.getJson());
@@ -55,7 +56,6 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
         JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(json.toString());
         JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
         mNonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = androidPayCardObject.getString(DESCRIPTION_KEY);
         mDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
