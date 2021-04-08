@@ -3,7 +3,9 @@
 ## unreleased
 
 * Breaking Changes
-  * Rename DownForMaintenanceException to ServiceUnavailableException
+  * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
+  * Remove `GoogleApiClientException`
+  * Make `BraintreeWalletConstants` package-private
 
 ## 4.0.0-beta2
 

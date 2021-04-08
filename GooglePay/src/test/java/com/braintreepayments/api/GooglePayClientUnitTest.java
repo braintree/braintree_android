@@ -175,9 +175,8 @@ public class GooglePayClientUnitTest {
         verify(readyToPayCallback).onResult(eq(false), captor.capture());
 
         Exception exception = captor.getValue();
-        assertTrue(exception instanceof GoogleApiClientException);
-        assertEquals(GoogleApiClientException.ErrorType.NotAttachedToActivity, ((GoogleApiClientException) exception).getErrorType());
-        assertEquals(1, ((GoogleApiClientException) exception).getErrorCode());
+        assertTrue(exception instanceof IllegalArgumentException);
+        assertEquals("Activity cannot be null.", exception.getMessage());
     }
 
     // endregion
