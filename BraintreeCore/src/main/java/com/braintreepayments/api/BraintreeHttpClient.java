@@ -163,8 +163,7 @@ class BraintreeHttpClient {
         boolean isRelativeURL = !path.startsWith("http");
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
-            BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            throw relativeURLNotAllowedError;
+            throw new BraintreeException(message);
         }
 
         String requestData;
