@@ -9,6 +9,7 @@
   * Make `PaymentMethodNonceFactory` package-private
   * Make `GooglePayException` constructor package-private
   * Make `VisaCheckoutAccount` package-private
+  * Make `VenmoAccount` package-private
 
 ## 4.0.0-beta2
 

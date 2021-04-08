@@ -3,16 +3,16 @@ package com.braintreepayments.api;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VenmoAccount extends PaymentMethod {
+class VenmoAccount extends PaymentMethod {
 
     private static final String VENMO_ACCOUNT_KEY = "venmoAccount";
     private static final String NONCE_KEY = "nonce";
 
     private String mNonce;
 
-    public VenmoAccount() {}
+    VenmoAccount() {}
 
-    public void setNonce(String nonce) {
+    void setNonce(String nonce) {
         mNonce = nonce;
     }
 
