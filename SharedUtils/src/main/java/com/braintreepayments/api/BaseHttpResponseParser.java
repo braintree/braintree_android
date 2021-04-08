@@ -50,7 +50,7 @@ class BaseHttpResponseParser implements HttpResponseParser {
             case HTTP_INTERNAL_ERROR:
                 throw new ServerException(responseBody);
             case HTTP_UNAVAILABLE:
-                throw new DownForMaintenanceException(responseBody);
+                throw new ServiceUnavailableException(responseBody);
             default:
                 throw new UnexpectedException(responseBody);
         }

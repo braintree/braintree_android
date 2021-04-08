@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Breaking Changes
+  * Rename DownForMaintenanceException to ServiceUnavailableException
+
 ## 4.0.0-beta2
 
 * Add `setCountryCode` to `GooglePayRequest`

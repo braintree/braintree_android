@@ -1,15 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.BaseHttpResponseParser;
-import com.braintreepayments.api.AuthenticationException;
-import com.braintreepayments.api.AuthorizationException;
-import com.braintreepayments.api.DownForMaintenanceException;
-import com.braintreepayments.api.RateLimitException;
-import com.braintreepayments.api.ServerException;
-import com.braintreepayments.api.UnexpectedException;
-import com.braintreepayments.api.UnprocessableEntityException;
-import com.braintreepayments.api.UpgradeRequiredException;
-
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.function.ThrowingRunnable;
@@ -117,8 +107,8 @@ public class BaseHttpResponseParserTest {
                 { 426, null, createPlainTextInputStream("426_upgrade_required_plaintext"), UpgradeRequiredException.class, "426_upgrade_required_plaintext" },
                 { HTTP_INTERNAL_ERROR, "gzip", createGzippedInputStream("500_internal_server_error_gzip"), ServerException.class, "500_internal_server_error_gzip" },
                 { HTTP_INTERNAL_ERROR, null, createPlainTextInputStream("500_internal_server_error_plaintext"), ServerException.class, "500_internal_server_error_plaintext" },
-                { HTTP_UNAVAILABLE, "gzip", createGzippedInputStream("503_unavailable_gzip"), DownForMaintenanceException.class, "503_unavailable_gzip" },
-                { HTTP_UNAVAILABLE, null, createPlainTextInputStream("503_unavailable_plaintext"), DownForMaintenanceException.class, "503_unavailable_plaintext" },
+                { HTTP_UNAVAILABLE, "gzip", createGzippedInputStream("503_unavailable_gzip"), ServiceUnavailableException.class, "503_unavailable_gzip" },
+                { HTTP_UNAVAILABLE, null, createPlainTextInputStream("503_unavailable_plaintext"), ServiceUnavailableException.class, "503_unavailable_plaintext" },
                 { 418, "gzip", createGzippedInputStream("418_i'm_a_teapot_gzip"), UnexpectedException.class, "418_i'm_a_teapot_gzip" },
                 { 418, null, createPlainTextInputStream("418_i'm_a_teapot_plaintext"), UnexpectedException.class, "418_i'm_a_teapot_plaintext" }
             });
