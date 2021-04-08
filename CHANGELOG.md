@@ -6,6 +6,8 @@
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
   * Make `BraintreeWalletConstants` package-private
+  * Make `PaymentMethodNonceFactory` package-private
+  * Make `GooglePayException` constructor package-private
 
 ## 4.0.0-beta2
 
