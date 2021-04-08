@@ -65,7 +65,6 @@ class PayPalDataCollector {
      */
     @MainThread
     String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
-        // NEXT_MAJOR_VERSION In error scenarios, this function return null instead of "".
         if (context == null) {
             return "";
         }
