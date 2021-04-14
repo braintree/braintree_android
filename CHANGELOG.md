@@ -10,6 +10,7 @@
   * Make `GooglePayException` constructor package-private
   * Make `VisaCheckoutAccount` package-private
   * Make `VenmoAccount` package-private
+  * Return an `IllegalArgumentException` instead of `GoogleApiClientException` to `GooglePayIsReadyToPayCallback#onResult()` when activity is null
 
 ## 4.0.0-beta2
 
