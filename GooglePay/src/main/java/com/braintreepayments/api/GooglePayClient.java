@@ -98,7 +98,7 @@ public class GooglePayClient {
                 }
 
                 if (activity == null) {
-                    callback.onResult(false, new GoogleApiClientException(GoogleApiClientException.ErrorType.NotAttachedToActivity, 1));
+                    callback.onResult(false, new IllegalArgumentException("Activity cannot be null."));
                     return;
                 }
 

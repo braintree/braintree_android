@@ -1,7 +1,8 @@
 package com.braintreepayments.api;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +17,6 @@ import java.util.List;
  */
 class SamsungPayConfiguration {
 
-    private static final String SAMSUNG_PAY_CLASSNAME = "com.braintreepayments.api.SamsungPay";
     private static final String DISPLAY_NAME_KEY = "displayName";
     private static final String SERVICE_ID_KEY = "serviceId";
     private static final String SUPPORTED_CARD_BRANDS_KEY = "supportedCardBrands";
@@ -28,17 +28,6 @@ class SamsungPayConfiguration {
     private String mServiceId;
     private String mSamsungAuthorization;
     private String mEnvironment;
-
-    private final ClassHelper classHelper;
-
-    SamsungPayConfiguration() {
-        this(new ClassHelper());
-    }
-
-    @VisibleForTesting
-    SamsungPayConfiguration(ClassHelper classHelper) {
-        this.classHelper = classHelper;
-    }
 
     static SamsungPayConfiguration fromJson(JSONObject json) {
         SamsungPayConfiguration configuration = new SamsungPayConfiguration();
@@ -67,8 +56,7 @@ class SamsungPayConfiguration {
      * @return {@code true} if Samsung Pay is enabled, {@code false} otherwise.
      */
     boolean isEnabled() {
-        return !"".equals(mSamsungAuthorization) &&
-                classHelper.isClassAvailable(SAMSUNG_PAY_CLASSNAME);
+        return !TextUtils.isEmpty(mSamsungAuthorization);
     }
 
     /**

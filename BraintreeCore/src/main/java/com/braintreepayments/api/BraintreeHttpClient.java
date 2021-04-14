@@ -91,7 +91,7 @@ class BraintreeHttpClient {
                 .path(targetPath)
                 .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
 
-        if (configuration != null) {
+        if (isRelativeURL && configuration != null) {
             request.baseUrl(configuration.getClientApiUrl());
         }
 
@@ -139,8 +139,11 @@ class BraintreeHttpClient {
                 .method("POST")
                 .path(path)
                 .data(requestData)
-                .baseUrl(configuration.getClientApiUrl())
                 .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
+
+        if (isRelativeURL && configuration != null) {
+            request.baseUrl(configuration.getClientApiUrl());
+        }
 
         if (authorization instanceof TokenizationKey) {
             request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());
@@ -160,8 +163,7 @@ class BraintreeHttpClient {
         boolean isRelativeURL = !path.startsWith("http");
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
-            BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            throw relativeURLNotAllowedError;
+            throw new BraintreeException(message);
         }
 
         String requestData;
@@ -178,8 +180,11 @@ class BraintreeHttpClient {
                 .method("POST")
                 .path(path)
                 .data(requestData)
-                .baseUrl(configuration.getClientApiUrl())
                 .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
+
+        if (isRelativeURL && configuration != null) {
+            request.baseUrl(configuration.getClientApiUrl());
+        }
 
         if (authorization instanceof TokenizationKey) {
             request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());

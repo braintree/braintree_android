@@ -31,7 +31,6 @@ class BaseHttpResponseParser implements HttpResponseParser {
      * @param connection the connection through which the http request was made.
      * @return the body of the http response.
      */
-    // TODO: rename DownForMaintenanceException to ServiceUnavailableException
     public String parse(int responseCode, HttpURLConnection connection) throws Exception {
         String responseBody = parseBody(responseCode, connection);
         switch (responseCode) {
@@ -50,7 +49,7 @@ class BaseHttpResponseParser implements HttpResponseParser {
             case HTTP_INTERNAL_ERROR:
                 throw new ServerException(responseBody);
             case HTTP_UNAVAILABLE:
-                throw new DownForMaintenanceException(responseBody);
+                throw new ServiceUnavailableException(responseBody);
             default:
                 throw new UnexpectedException(responseBody);
         }

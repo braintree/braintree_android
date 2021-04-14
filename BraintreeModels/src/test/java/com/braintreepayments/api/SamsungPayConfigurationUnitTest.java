@@ -5,17 +5,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ SamsungPayConfiguration.class, ClassHelper.class })
+@RunWith(RobolectricTestRunner.class)
 public class SamsungPayConfigurationUnitTest {
 
     @Test
@@ -36,8 +35,7 @@ public class SamsungPayConfigurationUnitTest {
                 );
         SamsungPayConfiguration sut = SamsungPayConfiguration.fromJson(input);
 
-        // TODO: remove classpath check for Samsung Library to check if samsung is enabled
-        //assertTrue(sut.isEnabled());
+        assertTrue(sut.isEnabled());
         assertEquals("sample display name", sut.getMerchantDisplayName());
         assertEquals("sample-service-id", sut.getServiceId());
         assertEquals("sample-samsung-authorization", sut.getSamsungAuthorization());

@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Breaking Changes
+  * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
+  * Remove `GoogleApiClientException`
+  * Make `BraintreeWalletConstants` package-private
+  * Make `PaymentMethodNonceFactory` package-private
+  * Make `GooglePayException` constructor package-private
+  * Make `VisaCheckoutAccount` package-private
+  * Make `VenmoAccount` package-private
+  * Return an `IllegalArgumentException` instead of `GoogleApiClientException` to `GooglePayIsReadyToPayCallback#onResult()` when activity is null
+
 ## 4.0.0-beta2
 
 * Add `setCountryCode` to `GooglePayRequest`

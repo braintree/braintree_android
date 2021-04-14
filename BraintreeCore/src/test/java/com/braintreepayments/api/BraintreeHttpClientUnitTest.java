@@ -36,7 +36,7 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    public void get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() throws InvalidArgumentException {
+    public void get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() {
         Authorization tokenizationKey = mock(Authorization.class);
         BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
@@ -49,6 +49,21 @@ public class BraintreeHttpClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("Braintree HTTP GET request without configuration cannot have a relative path.", exception.getMessage());
+    }
+
+    @Test
+    public void get_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
+        Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
+
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
+        sut.get("https://example.com/sample/path", null, callback);
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
+
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
     }
 
     @Test
@@ -185,6 +200,20 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
+    public void postSync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
+
+        sut.post("https://example.com/sample/path", "{}", null);
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).sendRequest(captor.capture());
+
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
+    }
+
+    @Test
     public void postAsync_withTokenizationKey_forwardsHttpRequestToHttpClient() throws InvalidArgumentException, MalformedURLException, URISyntaxException {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
@@ -251,7 +280,22 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    public void post_withPathAndDataAndCallback_whenClientTokenAuthAndInvalidJSONPayload_postsCallbackError() throws InvalidArgumentException {
+    public void postAsync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
+
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
+        sut.post("https://example.com/sample/path", "{}", null, callback);
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).sendRequest(captor.capture(), same(callback));
+
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
+    }
+
+    @Test
+    public void postAsync_withPathAndDataAndCallback_whenClientTokenAuthAndInvalidJSONPayload_postsCallbackError() throws InvalidArgumentException {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 

@@ -12,7 +12,7 @@ public class GooglePayException extends BraintreeException implements Parcelable
 
     private Status mStatus;
 
-    public GooglePayException(String message, Status status) {
+    GooglePayException(String message, Status status) {
         super(message);
         mStatus = status;
     }

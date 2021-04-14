@@ -11,39 +11,19 @@ task :lint do
   sh "./gradlew clean lint"
 end
 
-# Usage:
-#   rake unit_tests
-#   rake unit_tests"[com.braintreepayments.api.CardClientUnitTest,Card]"
-#   rake unit_tests"[com.braintreepayments.api.CardClientUnitTest,Card,tokenize_sendsAnalyticsEventOnSuccess]"
 desc "Run Android unit tests"
-task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task, args|
-  if args.module_name.nil?
-    sh "./gradlew --continue testRelease"
-  elsif args.test_name.nil?
-    sh "./gradlew #{args[:module_name]}:testRelease --tests #{args[:qualified_class]}"
-  else
-    sh "./gradlew #{args[:module_name]}:testRelease --tests #{args[:qualified_class]}.#{args[:test_name]}"
-  end
+task :unit_tests => :lint do |task, args|
+  sh "./gradlew --continue testRelease"
 end
 
-# Usage:
-#   rake integration_tests
-#   rake integration_tests"[com.braintreepayments.demo.test.DropInTest,demo]"
-#   rake integration_tests"[com.braintreepayments.demo.test.DropInTest,demo,tokenizesACard]"
 desc "Run Android tests on a device or emulator"
-task :integration_tests, [:qualified_class, :module_name, :test_name] do |task, args|
+task :integration_tests do |task, args|
   output = `adb devices`
   if output.match(/device$/)
     begin
       log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      if args.file_path.nil?
-        sh "./gradlew --continue runAllTests connectedAndroidTest -x :TestUtils:connectedAndroidTest"
-      elsif args.test_name.nil?
-        sh "./gradlew -Pandroid.testInstrumentationRunnerArguments.class=#{args[:qualified_class]} #{args[:module_name]}:connectedAndroidTest"
-      else
-        sh "./gradlew -Pandroid.testInstrumentationRunnerArguments.class=#{args[:qualified_class]}##{args[:test_name]} #{args[:module_name]}:connectedAndroidTest"
-      end
+      sh "./gradlew --continue runAllTests connectedAndroidTest -x :TestUtils:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`

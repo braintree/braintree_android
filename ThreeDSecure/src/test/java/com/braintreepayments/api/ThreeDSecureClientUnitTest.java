@@ -17,6 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -109,7 +110,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_performsLookup_WhenCardinalSDKInitFails() {
+    public void performVerification_performsLookup_WhenCardinalSDKInitFails() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("error"))
                 .build();
@@ -131,8 +132,21 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
-        // TODO: consider refining this assertion to be more precise than the original
-        verify(braintreeClient).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendPOST(pathCaptor.capture(), bodyCaptor.capture(), any(HttpResponseCallback.class));
+
+        String path = pathCaptor.getValue();
+        String body = bodyCaptor.getValue();
+        JSONObject bodyJson = new JSONObject(body);
+
+        assertEquals("/v1/payment_methods/a-nonce/three_d_secure/lookup", path);
+        assertEquals("amount", bodyJson.get("amount"));
+        assertFalse(bodyJson.getBoolean("challenge_requested"));
+        assertFalse(bodyJson.getBoolean("data_only_requested"));
+        assertFalse(bodyJson.getBoolean("exemption_requested"));
+        JSONObject additionalInfo = bodyJson.getJSONObject("additional_info");
+        assertEquals("billing-given-name", additionalInfo.get("billing_given_name"));
     }
 
     @Test
