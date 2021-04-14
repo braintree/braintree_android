@@ -200,7 +200,7 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    public void postSync_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
+    public void postSync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
