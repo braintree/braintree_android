@@ -41,12 +41,89 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
     private final String mDescription;
     private final boolean mDefault;
 
+    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
+        JSONObject tokenPayload = new JSONObject(inputJson
+                .getJSONObject("paymentMethodData")
+                .getJSONObject("tokenizationData")
+                .getString("token"));
+
+        if (tokenPayload.has(GooglePayCardNonce.API_RESOURCE_KEY)) {
+            return GooglePayCardNonce.fromGooglePayJSON(tokenPayload);
+        } else if (tokenPayload.has(PayPalAccountNonce.API_RESOURCE_KEY)) {
+            return PayPalAccountNonce.fromJSON(tokenPayload);
+        } else {
+            throw new JSONException("Could not parse JSON for a payment method nonce");
+        }
+    }
+
+    private static GooglePayCardNonce fromGooglePayJSON(JSONObject inputJson) throws JSONException {
+        JSONObject androidPayCardObject = new JSONObject(inputJson.getJSONArray(API_RESOURCE_KEY).get(0).toString());
+        String nonce = androidPayCardObject.getString(PAYMENT_METHOD_NONCE_KEY);
+        boolean isDefault = androidPayCardObject.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+        JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
+        JSONObject info = inputJson
+                .getJSONObject("paymentMethodData")
+                .getJSONObject("info");
+
+        JSONObject billingAddressJson = null;
+        if (info.has("billingAddress")) {
+            billingAddressJson = info.getJSONObject("billingAddress");
+        }
+
+        JSONObject shippingAddressJson = null;
+        if (inputJson.has("shippingAddress")) {
+            shippingAddressJson = inputJson.getJSONObject("shippingAddress");
+        }
+
+        String description = inputJson
+                .getJSONObject("paymentMethodData")
+                .get("description").toString();
+        String email = Json.optString(inputJson, "email", "");
+        PostalAddress billingAddress = postalAddressFromJson(billingAddressJson);
+        PostalAddress shippingAddress = postalAddressFromJson(shippingAddressJson);
+
+        BinData binData = BinData.fromJson(inputJson.optJSONObject(BIN_DATA_KEY));
+        String lastTwo = details.getString(LAST_TWO_KEY);
+        String lastFour = details.getString(LAST_FOUR_KEY);
+        String cardType = details.getString(CARD_TYPE_KEY);
+        boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
+
+        return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, description, isDefault);
+    }
+
     public static GooglePayCardNonce from(BraintreeNonce braintreeNonce) throws JSONException {
         return new GooglePayCardNonce(braintreeNonce.getJson());
     }
 
     GooglePayCardNonce(String jsonString) throws JSONException {
         this(new JSONObject(jsonString));
+    }
+
+    GooglePayCardNonce(
+            String cardType,
+            String lastTwo,
+            String lastFour,
+            String email,
+            Boolean isNetworkTokenized,
+            PostalAddress billingAddress,
+            PostalAddress shippingAddress,
+            BinData binData,
+            String nonce,
+            String description,
+            boolean isDefault
+    ) {
+        mCardType = cardType;
+        mLastTwo = lastTwo;
+        mLastFour = lastFour;
+        mEmail = email;
+        mIsNetworkTokenized = isNetworkTokenized;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mBinData = binData;
+        mNonce = nonce;
+        mDescription = description;
+        mDefault = isDefault;
     }
 
     GooglePayCardNonce(JSONObject json) throws JSONException {
@@ -83,7 +160,6 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
         mIsNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
-
     }
 
     static PostalAddress postalAddressFromJson(JSONObject json) {

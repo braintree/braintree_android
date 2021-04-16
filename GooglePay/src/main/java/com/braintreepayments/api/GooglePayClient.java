@@ -214,7 +214,8 @@ public class GooglePayClient {
      */
     void tokenize(PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
         try {
-            callback.onResult(PaymentMethodNonceFactory.fromString(paymentData.toJson()), null);
+            JSONObject result = new JSONObject(paymentData.toJson());
+            callback.onResult(GooglePayCardNonce.fromJSON(result), null);
             braintreeClient.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
