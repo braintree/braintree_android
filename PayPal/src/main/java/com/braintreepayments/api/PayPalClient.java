@@ -244,7 +244,7 @@ public class PayPalClient {
                             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                                 if (tokenizationResponse != null) {
                                     try {
-                                        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce(tokenizationResponse);
+                                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
                                         if (payPalAccountNonce.getCreditFinancing() != null) {
                                             braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
                                         }

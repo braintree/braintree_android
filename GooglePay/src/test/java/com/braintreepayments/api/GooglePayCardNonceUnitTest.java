@@ -26,7 +26,7 @@ public class GooglePayCardNonceUnitTest {
         PostalAddress billingPostalAddress = getPostalAddressObject(billing);
         PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
 
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
+        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
         assertEquals("Google Pay", googlePayCardNonce.getTypeLabel());
         assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
@@ -50,7 +50,7 @@ public class GooglePayCardNonceUnitTest {
 
         PostalAddress billingPostalAddress = getPostalAddressObject(billing);
 
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
+        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
         assertPostalAddress(billingPostalAddress, googlePayCardNonce.getBillingAddress());
     }
@@ -65,7 +65,7 @@ public class GooglePayCardNonceUnitTest {
 
         PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
 
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
+        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
         assertPostalAddress(shippingPostalAddress, googlePayCardNonce.getShippingAddress());
     }
@@ -78,7 +78,7 @@ public class GooglePayCardNonceUnitTest {
         json.remove("email");
         response = json.toString();
 
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
+        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
         assertEquals("", googlePayCardNonce.getEmail());
     }
@@ -94,7 +94,7 @@ public class GooglePayCardNonceUnitTest {
         PostalAddress billingPostalAddress = getPostalAddressObject(billing);
         PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
 
-        GooglePayCardNonce googlePayCardNonce = new GooglePayCardNonce(response);
+        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
         Parcel parcel = Parcel.obtain();
         googlePayCardNonce.writeToParcel(parcel, 0);

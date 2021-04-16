@@ -40,33 +40,21 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
 
     private final String mClientMetadataId;
-    private PostalAddress mBillingAddress;
-    private PostalAddress mShippingAddress;
-    private String mFirstName;
-    private String mLastName;
-    private String mPhone;
-    private String mEmail;
-    private String mPayerId;
-    private PayPalCreditFinancing mCreditFinancing;
+    private final PostalAddress mBillingAddress;
+    private final PostalAddress mShippingAddress;
+    private final String mFirstName;
+    private final String mLastName;
+    private final String mPhone;
+    private final String mEmail;
+    private final String mPayerId;
+    private final PayPalCreditFinancing mCreditFinancing;
     private final String mAuthenticateUrl;
 
     private final String mNonce;
     private final String mDescription;
     private final boolean mDefault;
 
-    static PayPalAccountNonce fromJSON(JSONObject inputJSON) {
-
-    }
-
-    public static PayPalAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
-        return new PayPalAccountNonce(braintreeNonce.getJson());
-    }
-
-    PayPalAccountNonce(String jsonString) throws JSONException {
-        this(new JSONObject(jsonString));
-    }
-
-    PayPalAccountNonce(JSONObject inputJson) throws JSONException {
+    static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         boolean getShippingAddressFromTopLevel = false;
 
         JSONObject json;
@@ -83,52 +71,77 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
             json = inputJson;
         }
 
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);
+        String authenticateUrl = Json.optString(json, "authenticateUrl", null);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
-        mEmail = Json.optString(details, EMAIL_KEY, null);
-        mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
+        String email = Json.optString(details, EMAIL_KEY, null);
+        String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
 
+        PayPalCreditFinancing payPalCreditFinancing = null;
+        PostalAddress shippingAddress;
+        PostalAddress billingAddress;
+        String firstName = null;
+        String lastName = null;
+        String phone = null;
+        String payerId = null;
         try {
             if (details.has(CREDIT_FINANCING_KEY)) {
                 JSONObject creditFinancing = details.getJSONObject(CREDIT_FINANCING_KEY);
-                mCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancing);
+                payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancing);
             }
 
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
 
-            JSONObject billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+            JSONObject billingAddressJson = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
             if (payerInfo.has(ACCOUNT_ADDRESS_KEY)) {
-                billingAddress = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
+                billingAddressJson = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
             }
 
-            mShippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
-            mBillingAddress = PostalAddressParser.fromJson(billingAddress);
-            mFirstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
-            mLastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
-            mPhone = Json.optString(payerInfo, PHONE_KEY, "");
-            mPayerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
+            shippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
+            billingAddress = PostalAddressParser.fromJson(billingAddressJson);
+            firstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
+            lastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
+            phone = Json.optString(payerInfo, PHONE_KEY, "");
+            payerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
-            if (mEmail == null) {
-                mEmail = Json.optString(payerInfo, EMAIL_KEY, null);
+            if (email == null) {
+                email = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
-            mBillingAddress = new PostalAddress();
-            mShippingAddress = new PostalAddress();
+            billingAddress = new PostalAddress();
+            shippingAddress = new PostalAddress();
         }
 
         // shipping address should be overriden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level;
         // this occurs when parsing a GooglePay PayPal Account Nonce
         if (getShippingAddressFromTopLevel) {
-            JSONObject shippingAddress = json.optJSONObject(SHIPPING_ADDRESS_KEY);
-            if (shippingAddress != null) {
-                mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
+            JSONObject shippingAddressJson = json.optJSONObject(SHIPPING_ADDRESS_KEY);
+            if (shippingAddressJson != null) {
+                shippingAddress = PostalAddressParser.fromJson(shippingAddressJson);
             }
         }
+
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, description, isDefault);
+    }
+
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description, boolean isDefault) {
+        mClientMetadataId = clientMetadataId;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mFirstName = firstName;
+        mLastName = lastName;
+        mPhone = phone;
+        mEmail = email;
+        mPayerId = payerId;
+        mCreditFinancing = creditFinancing;
+        mAuthenticateUrl = authenticateUrl;
+        mNonce = nonce;
+        mDescription = description;
+        mDefault = isDefault;
     }
 
     /**
