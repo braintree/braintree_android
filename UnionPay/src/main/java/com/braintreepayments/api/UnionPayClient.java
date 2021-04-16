@@ -154,7 +154,7 @@ public class UnionPayClient {
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
-                        CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                        CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                         callback.onResult(cardNonce, null);
                         braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
                     } catch (JSONException e) {
