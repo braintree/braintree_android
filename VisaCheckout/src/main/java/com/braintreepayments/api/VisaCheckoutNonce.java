@@ -148,14 +148,9 @@ public class VisaCheckoutNonce extends BraintreeNonce {
         return mBinData;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(mLastTwo);
         dest.writeString(mCardType);
         dest.writeParcelable(mBillingAddress, flags);

@@ -199,7 +199,7 @@ public class PaymentMethodUnitTest {
         verify(callback).onResult((BraintreeNonce) isNull(), captor.capture());
 
         PaymentMethodDeleteException paymentMethodDeleteException = (PaymentMethodDeleteException)captor.getValue();
-        PaymentMethodNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();
+        BraintreeNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();
         assertEquals(mCardNonce, paymentMethodNonce);
     }
 

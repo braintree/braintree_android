@@ -230,12 +230,8 @@ public class GooglePayCardNonce extends BraintreeNonce {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
         dest.writeString(mLastFour);

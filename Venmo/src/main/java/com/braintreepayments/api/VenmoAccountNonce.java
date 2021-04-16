@@ -80,12 +80,8 @@ public class VenmoAccountNonce extends BraintreeNonce {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(mUsername);
         dest.writeString(mNonce);
         dest.writeString(mDescription);

@@ -249,12 +249,8 @@ public class PayPalAccountNonce extends BraintreeNonce {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(mClientMetadataId);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
