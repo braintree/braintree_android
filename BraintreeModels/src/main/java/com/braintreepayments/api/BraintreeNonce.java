@@ -28,7 +28,6 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     private final boolean mDefault;
 
     private final String mTypeLabel;
-    private final String mJsonString;
 
     private @PaymentMethodType final int mType;
 
@@ -48,18 +47,14 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
             typeLabel = displayNameFromPaymentMethodType(type);
         }
 
-        // used when converting a BraintreeNonce into other 'typed' nonces
-        String jsonString = inputJson.toString();
-
-        return new BraintreeNonce(nonce, description, isDefault, typeLabel, jsonString, type);
+        return new BraintreeNonce(nonce, description, isDefault, typeLabel, type);
     }
 
-    private BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, String jsonString, @PaymentMethodType int type) {
+    private BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
         mNonce = nonce;
         mDescription = description;
         mDefault = isDefault;
         mTypeLabel = typeLabel;
-        mJsonString = jsonString;
         mType = type;
     }
 
@@ -96,10 +91,6 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return mType;
     }
 
-    String getJson() {
-        return mJsonString;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -112,7 +103,6 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
         dest.writeInt(mType);
         dest.writeString(mTypeLabel);
-        dest.writeString(mJsonString);
     }
 
     private BraintreeNonce(Parcel in) {
@@ -121,7 +111,6 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         mDefault = in.readByte() > 0;
         mType = in.readInt();
         mTypeLabel = in.readString();
-        mJsonString = in.readString();
     }
 
     public static final Creator<BraintreeNonce> CREATOR = new Creator<BraintreeNonce>() {
