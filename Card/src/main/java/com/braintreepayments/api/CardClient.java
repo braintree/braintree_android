@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
@@ -52,7 +53,7 @@ public class CardClient {
     public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
                         CardNonce cardNonce = new CardNonce(tokenizationResponse);

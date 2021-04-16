@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class ThreeDSecureClientTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (exception != null) {
                     fail(exception.getMessage());
                 }

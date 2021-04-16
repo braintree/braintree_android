@@ -7,6 +7,7 @@ import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -140,9 +141,9 @@ public class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() {
+    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -157,9 +158,9 @@ public class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenSuccessful_sendsAnalyticEvent() {
+    public void tokenize_whenSuccessful_sendsAnalyticEvent() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()

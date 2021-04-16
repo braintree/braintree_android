@@ -483,7 +483,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws InvalidArgumentException {
+    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -500,13 +500,13 @@ public class VenmoClientUnitTest {
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        tokenizeNonceCallback.onResult(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE, null);
+        tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
 
         verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException {
+    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -523,7 +523,7 @@ public class VenmoClientUnitTest {
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        tokenizeNonceCallback.onResult(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE, null);
+        tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }

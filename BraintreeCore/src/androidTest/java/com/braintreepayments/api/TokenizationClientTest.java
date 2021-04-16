@@ -44,7 +44,7 @@ public class TokenizationClientTest {
 
         tokenizationClient.tokenize(paypalAccount, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (exception != null) {
                     fail(exception.getMessage());
                 }

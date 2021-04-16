@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -54,7 +55,7 @@ public class PaymentMethodClientTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (exception != null) {
                     fail(exception.getMessage());
                 }
@@ -103,7 +104,7 @@ public class PaymentMethodClientTest {
 
         tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (exception != null) {
                     fail(exception.getMessage());
                 }

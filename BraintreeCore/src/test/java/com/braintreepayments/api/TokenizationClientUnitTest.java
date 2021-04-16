@@ -147,7 +147,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
             }
         });
@@ -167,7 +167,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(card, new TokenizeCallback() {
             @Override
-            public void onResult(String tokenizationResponse, Exception exception) {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
             }
         });

@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import org.json.JSONObject;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -10,9 +11,9 @@ import static org.mockito.Mockito.mock;
 public class MockTokenizationClientBuilder {
 
     private Exception error;
-    private String successResponse;
+    private JSONObject successResponse;
 
-    public MockTokenizationClientBuilder successResponse(String successResponse) {
+    public MockTokenizationClientBuilder successResponse(JSONObject successResponse) {
         this.successResponse = successResponse;
         return this;
     }

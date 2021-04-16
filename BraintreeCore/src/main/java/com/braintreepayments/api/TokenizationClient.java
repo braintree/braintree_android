@@ -5,6 +5,9 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.GraphQLConstants.Features;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 
 class TokenizationClient {
@@ -27,11 +30,11 @@ class TokenizationClient {
      * <p>
      * On completion, returns the {@link BraintreeNonce} to {@link TokenizeCallback}.
      * <p>
-     * If creation fails validation, {@link TokenizeCallback#onResult(String, Exception)}
+     * If creation fails validation, {@link TokenizeCallback#onResult(org.json.JSONObject, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * TokenizeCallback#onResult(String, Exception)} will be called with the {@link Exception} that occurred.
+     * TokenizeCallback#onResult(org.json.JSONObject, Exception)} will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
      *        to be created.
@@ -74,8 +77,13 @@ class TokenizationClient {
         braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                callback.onResult(responseBody, null);
-                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                try {
+                    callback.onResult(new JSONObject(responseBody), null);
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                } catch (JSONException exception) {
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                    callback.onResult(null, exception);
+                }
             }
 
             @Override
@@ -94,7 +102,11 @@ class TokenizationClient {
 
             @Override
             public void success(String responseBody) {
-                callback.onResult(responseBody, null);
+                try {
+                    callback.onResult(new JSONObject(responseBody), null);
+                } catch (JSONException exception) {
+                    callback.onResult(null, exception);
+                }
             }
 
             @Override
