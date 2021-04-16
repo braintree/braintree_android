@@ -32,23 +32,35 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     private @PaymentMethodType final int mType;
 
-    BraintreeNonce(JSONObject json) throws JSONException {
-        String typeString = json.getString(PAYMENT_METHOD_TYPE_KEY);
-        mType = paymentMethodTypeFromString(typeString);
+    static BraintreeNonce fromJSON(JSONObject inputJson) throws JSONException {
+        String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
+        int type = paymentMethodTypeFromString(typeString);
 
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = inputJson.getString(DESCRIPTION_KEY);
+        boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        if (mType == PaymentMethodType.CARD) {
-            JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-            mTypeLabel = details.getString(CARD_TYPE_KEY);
+        String typeLabel;
+        if (type == PaymentMethodType.CARD) {
+            JSONObject details = inputJson.getJSONObject(CARD_DETAILS_KEY);
+            typeLabel = details.getString(CARD_TYPE_KEY);
         } else {
-            mTypeLabel = displayNameFromPaymentMethodType(mType);
+            typeLabel = displayNameFromPaymentMethodType(type);
         }
 
         // used when converting a BraintreeNonce into other 'typed' nonces
-        mJsonString = json.toString();
+        String jsonString = inputJson.toString();
+
+        return new BraintreeNonce(nonce, description, isDefault, typeLabel, jsonString, type);
+    }
+
+    private BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, String jsonString, @PaymentMethodType int type) {
+        mNonce = nonce;
+        mDescription = description;
+        mDefault = isDefault;
+        mTypeLabel = typeLabel;
+        mJsonString = jsonString;
+        mType = type;
     }
 
     /**
