@@ -22,6 +22,19 @@ import static org.junit.Assert.assertNull;
 public class CardNonceUnitTest {
 
     @Test
+    public void fromJSON_withPlainJSONCardNonce_parsesCardNonce() throws JSONException {
+        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHOD_CARD));
+
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
+        assertEquals("ending in ••11", cardNonce.getDescription());
+        assertEquals("Visa", cardNonce.getTypeLabel());
+        assertEquals("Visa", cardNonce.getCardType());
+        assertEquals("11", cardNonce.getLastTwo());
+        assertEquals("1111", cardNonce.getLastFour());
+        assertTrue(cardNonce.isDefault());
+    }
+
+    @Test
     public void fromJSON_withRESTfulTokenizationResponse_parsesCardNonce() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD));
 
