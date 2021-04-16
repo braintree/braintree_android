@@ -14,13 +14,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayRequest;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
+
+import kotlin.random.AbstractPlatformRandom;
 
 public class GooglePayFragment extends BaseFragment {
 
@@ -73,7 +75,7 @@ public class GooglePayFragment extends BaseFragment {
     }
 
     @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    public void onPaymentMethodNonceCreated(BraintreeNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         GooglePayFragmentDirections.ActionGooglePayFragmentToDisplayNonceFragment action =
@@ -119,7 +121,7 @@ public class GooglePayFragment extends BaseFragment {
         });
     }
 
-    private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
+    private void handleGooglePayActivityResult(BraintreeNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         NavDirections action =

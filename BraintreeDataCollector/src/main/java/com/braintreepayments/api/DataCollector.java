@@ -136,7 +136,7 @@ public class DataCollector {
         return "";
     }
 
-    void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
+    void collectRiskData(final Context context, @NonNull final BraintreeNonce paymentMethodNonce) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

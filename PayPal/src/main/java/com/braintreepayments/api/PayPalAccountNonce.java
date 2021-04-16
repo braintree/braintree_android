@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @see BraintreeNonce
  */
-public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
+public class PayPalAccountNonce extends BraintreeNonce {
 
     static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
@@ -129,6 +129,7 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     }
 
     private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description, boolean isDefault) {
+        super(nonce, description, isDefault, "TODO", PaymentMethodType.PAYPAL);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
@@ -270,6 +271,7 @@ public class PayPalAccountNonce implements PaymentMethodNonce, Parcelable {
     }
 
     private PayPalAccountNonce(Parcel in) {
+        super(in);
         mClientMetadataId = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());

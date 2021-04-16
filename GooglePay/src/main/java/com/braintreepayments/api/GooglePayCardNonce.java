@@ -15,7 +15,7 @@ import static java.lang.Boolean.FALSE;
  *
  * @see BraintreeNonce
  */
-public class GooglePayCardNonce implements PaymentMethodNonce {
+public class GooglePayCardNonce extends BraintreeNonce {
 
     static final String API_RESOURCE_KEY = "androidPayCards";
 
@@ -41,7 +41,7 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
     private final String mDescription;
     private final boolean mDefault;
 
-    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
+    static BraintreeNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject tokenPayload = new JSONObject(inputJson
                 .getJSONObject("paymentMethodData")
                 .getJSONObject("tokenizationData")
@@ -110,6 +110,7 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
             String description,
             boolean isDefault
     ) {
+        super(nonce, description, isDefault, "TODO", PaymentMethodType.GOOGLE_PAY);
         mCardType = cardType;
         mLastTwo = lastTwo;
         mLastFour = lastFour;
@@ -248,6 +249,7 @@ public class GooglePayCardNonce implements PaymentMethodNonce {
     }
 
     private GooglePayCardNonce(Parcel in) {
+        super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
         mLastFour = in.readString();

@@ -6,12 +6,12 @@ import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.BraintreeNonce;
 
 public abstract class BaseFragment extends Fragment {
 
     @CallSuper
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    public void onPaymentMethodNonceCreated(BraintreeNonce paymentMethodNonce) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         Log.d(getClass().getSimpleName(), "Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }

@@ -20,12 +20,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.BraintreeNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
@@ -324,7 +324,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
     }
 
-    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    private void handlePaymentMethodNonceCreated(BraintreeNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
@@ -375,7 +375,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 "- errorCode: " + rewardsBalance.getErrorCode();
     }
 
-    private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
+    private ThreeDSecureRequest threeDSecureRequest(BraintreeNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();

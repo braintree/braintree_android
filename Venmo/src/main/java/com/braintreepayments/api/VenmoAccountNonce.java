@@ -10,7 +10,7 @@ import org.json.JSONObject;
  *
  * @see BraintreeNonce
  */
-public class VenmoAccountNonce implements PaymentMethodNonce {
+public class VenmoAccountNonce extends BraintreeNonce {
 
     static final String TYPE = "VenmoAccount";
     private static final String API_RESOURCE_KEY = "venmoAccounts";
@@ -45,10 +45,11 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     }
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-       mNonce = nonce;
-       mUsername = username;
-       mDescription = username;
-       mDefault = isDefault;
+        super(nonce, username, isDefault, "TODO", PaymentMethodType.VENMO);
+        mNonce = nonce;
+        mUsername = username;
+        mDescription = username;
+        mDefault = isDefault;
     }
 
     /**
@@ -92,6 +93,7 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     }
 
     private VenmoAccountNonce(Parcel in) {
+        super(in);
         mUsername = in.readString();
         mNonce = in.readString();
         mDescription = in.readString();

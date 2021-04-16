@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.BraintreeNonce;
 
 /**
  * A simple Android Fragment subclass.
@@ -19,7 +19,7 @@ import com.braintreepayments.api.PaymentMethodNonce;
  */
 public class DisplayNonceFragment extends Fragment {
 
-    private PaymentMethodNonce mNonce;
+    private BraintreeNonce mNonce;
 
     private TextView mNonceString;
     private TextView mNonceDetails;
@@ -50,7 +50,7 @@ public class DisplayNonceFragment extends Fragment {
         return view;
     }
 
-    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
+    private void displayNonce(BraintreeNonce paymentMethodNonce, String deviceData) {
         mNonce = paymentMethodNonce;
         mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getString()));
 

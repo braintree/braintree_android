@@ -13,7 +13,7 @@ import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodType
  * Base class representing a method of payment for a customer. {@link BraintreeNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
+public class BraintreeNonce implements Parcelable {
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -50,7 +50,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         return new BraintreeNonce(nonce, description, isDefault, typeLabel, type);
     }
 
-    private BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
+    BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
         mNonce = nonce;
         mDescription = description;
         mDefault = isDefault;
@@ -59,21 +59,23 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
     }
 
     /**
-     * @inheritDoc
+     * @return The nonce generated for this payment method by the Braintree gateway. The nonce will
+     *          represent this PaymentMethod for the purposes of creating transactions and other monetary
+     *          actions.
      */
     public String getString() {
         return mNonce;
     }
 
     /**
-     * @inheritDoc
+     * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
      */
     public String getDescription() {
         return mDescription;
     }
 
     /**
-     * @inheritDoc
+     * @return {@code true} if this payment method is the default for the current customer, {@code false} otherwise
      */
     public boolean isDefault() {
         return mDefault;
@@ -81,7 +83,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
 
     /**
      * @return The type of this PaymentMethod for displaying to a customer, e.g. 'Visa'. Can be used
-     * for displaying appropriate logos, etc.
+     *          for displaying appropriate logos, etc.
      */
     public String getTypeLabel() {
         return mTypeLabel;
@@ -105,7 +107,7 @@ public class BraintreeNonce implements PaymentMethodNonce, Parcelable {
         dest.writeString(mTypeLabel);
     }
 
-    private BraintreeNonce(Parcel in) {
+    protected BraintreeNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;

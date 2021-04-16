@@ -13,7 +13,7 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 /**
  * {@link BraintreeNonce} representing a credit or debit card.
  */
-public class CardNonce implements PaymentMethodNonce {
+public class CardNonce extends BraintreeNonce {
 
     static final String TYPE = "CreditCard";
     private static final String API_RESOURCE_KEY = "creditCards";
@@ -155,6 +155,7 @@ public class CardNonce implements PaymentMethodNonce {
     }
 
     private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, String description, boolean isDefault) {
+        super(nonce, description, isDefault, "TODO", PaymentMethodType.CARD);
         mCardType = cardType;
         mLastTwo = lastTwo;
         mLastFour = lastFour;
@@ -295,6 +296,7 @@ public class CardNonce implements PaymentMethodNonce {
     }
 
     protected CardNonce(Parcel in) {
+        super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
         mLastFour = in.readString();

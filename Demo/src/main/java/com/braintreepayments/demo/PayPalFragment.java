@@ -12,10 +12,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PaymentMethodNonce;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
@@ -86,7 +86,7 @@ public class PayPalFragment extends BaseFragment {
         });
     }
 
-    private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+    private void handlePayPalResult(BraintreeNonce paymentMethodNonce, Exception error) {
         if (paymentMethodNonce != null) {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 

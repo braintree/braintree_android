@@ -12,7 +12,7 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  * {@link BraintreeNonce} representing a Visa Checkout card.
  * @see BraintreeNonce
  */
-public class VisaCheckoutNonce implements PaymentMethodNonce {
+public class VisaCheckoutNonce extends BraintreeNonce {
 
     static final String TYPE = "VisaCheckoutCard";
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";
@@ -66,6 +66,7 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     }
 
     private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description, boolean isDefault) {
+        super(nonce, description, isDefault, "TODO", PaymentMethodType.VISA_CHECKOUT);
         mLastTwo = lastTwo;
         mCardType = cardType;
         mBillingAddress = billingAddress;
@@ -168,6 +169,7 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     }
 
     protected VisaCheckoutNonce(Parcel in) {
+        super(in);
         mLastTwo = in.readString();
         mCardType = in.readString();
         mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());

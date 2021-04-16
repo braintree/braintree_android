@@ -10,7 +10,7 @@ import org.json.JSONObject;
  *
  * @see BraintreeNonce
  */
-public class LocalPaymentNonce implements PaymentMethodNonce {
+public class LocalPaymentNonce extends BraintreeNonce {
 
     private static final String API_RESOURCE_KEY = "paypalAccounts";
 
@@ -93,6 +93,7 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     }
 
     private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
+        super(nonce, description, isDefault, "TODO", PaymentMethodType.LOCAL_PAYMENT);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
@@ -211,6 +212,7 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     }
 
     private LocalPaymentNonce(Parcel in) {
+        super(in);
         mClientMetadataId = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
