@@ -186,7 +186,7 @@ public class LocalPaymentClient {
                         @Override
                         public void success(String responseBody) {
                             try {
-                                LocalPaymentNonce result = new LocalPaymentNonce(responseBody);
+                                LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(responseBody));
                                 sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
                                 callback.onResult(result, null);
                             } catch (JSONException jsonException) {

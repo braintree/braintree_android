@@ -45,51 +45,66 @@ public class LocalPaymentNonce implements PaymentMethodNonce {
     private final String mDescription;
     private final boolean mDefault;
 
-    public static LocalPaymentNonce from(BraintreeNonce braintreeNonce) throws JSONException {
-        return new LocalPaymentNonce(braintreeNonce.getJson());
-    }
-
-    LocalPaymentNonce(String jsonString) throws JSONException {
-        this(new JSONObject(jsonString));
-    }
-
-    LocalPaymentNonce(JSONObject inputJson) throws JSONException {
+    static LocalPaymentNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-        mEmail = Json.optString(details, EMAIL_KEY, null);
-        mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
-        mType = Json.optString(json, TYPE_KEY, "PayPalAccount");
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String email = Json.optString(details, EMAIL_KEY, null);
+        String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
+        String type = Json.optString(json, TYPE_KEY, "PayPalAccount");
 
+        PostalAddress billingAddress = null;
+        PostalAddress shippingAddress = null;
+        String givenName = null;
+        String surname = null;
+        String phone = null;
+        String payerId = null;
         try {
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
 
-            JSONObject billingAddress;
+            JSONObject billingAddressJson;
             if (payerInfo.has(ACCOUNT_ADDRESS_KEY)) {
-                billingAddress = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
+                billingAddressJson = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
             } else {
-                billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+                billingAddressJson = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
             }
 
-            JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
+            JSONObject shippingAddressJson = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
 
-            mBillingAddress = PostalAddressParser.fromJson(billingAddress);
-            mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
+            billingAddress = PostalAddressParser.fromJson(billingAddressJson);
+            shippingAddress = PostalAddressParser.fromJson(shippingAddressJson);
 
-            mGivenName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
-            mSurname = Json.optString(payerInfo, LAST_NAME_KEY, "");
-            mPhone = Json.optString(payerInfo, PHONE_KEY, "");
-            mPayerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
+            givenName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
+            surname = Json.optString(payerInfo, LAST_NAME_KEY, "");
+            phone = Json.optString(payerInfo, PHONE_KEY, "");
+            payerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
-            if(mEmail == null) {
-                mEmail = Json.optString(payerInfo, EMAIL_KEY, null);
+            if(email == null) {
+                email = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
-            mBillingAddress = new PostalAddress();
-            mShippingAddress = new PostalAddress();
+            billingAddress = new PostalAddress();
+            shippingAddress = new PostalAddress();
         }
+
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, description, isDefault);
+    }
+
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
+        mClientMetadataId = clientMetadataId;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mGivenName = givenName;
+        mSurname = surname;
+        mPhone = phone;
+        mEmail = email;
+        mPayerId = payerId;
+        mType = type;
+        mNonce = nonce;
+        mDescription = description;
+        mDefault = isDefault;
     }
 
     /**
