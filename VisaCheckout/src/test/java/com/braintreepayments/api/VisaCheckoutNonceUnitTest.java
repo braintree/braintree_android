@@ -22,8 +22,8 @@ public class VisaCheckoutNonceUnitTest {
 
     @Test
     public void fromJson_createsVisaCheckoutNonce() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(
-                Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(
+                Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
@@ -83,14 +83,14 @@ public class VisaCheckoutNonceUnitTest {
         visaCheckoutCardsJson.put(0, visaCheckoutNonceJson);
         visaCheckoutResponseJson.put("visaCheckoutCards", visaCheckoutCardsJson);
 
-        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(visaCheckoutResponseJson.toString());
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(visaCheckoutResponseJson);
 
         assertEquals("", visaCheckoutNonce.getCallId());
     }
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
         Parcel parcel = Parcel.obtain();
         visaCheckoutNonce.writeToParcel(parcel, 0);

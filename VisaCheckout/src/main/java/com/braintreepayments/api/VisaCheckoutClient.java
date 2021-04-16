@@ -105,7 +105,7 @@ public class VisaCheckoutClient {
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
-                        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce(tokenizationResponse);
+                        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(tokenizationResponse);
                         callback.onResult(visaCheckoutNonce, null);
                         braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                     } catch (JSONException e) {

@@ -41,15 +41,7 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
     private final String mDescription;
     private final boolean mDefault;
 
-    public static VisaCheckoutNonce from(BraintreeNonce braintreeNonce) throws JSONException {
-        return new VisaCheckoutNonce(braintreeNonce.getJson());
-    }
-
-    VisaCheckoutNonce(String jsonString) throws JSONException {
-        this(new JSONObject(jsonString));
-    }
-
-    VisaCheckoutNonce(JSONObject inputJson) throws JSONException {
+    static VisaCheckoutNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
             json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
@@ -58,17 +50,32 @@ public class VisaCheckoutNonce implements PaymentMethodNonce {
         }
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-        mLastTwo = details.getString(LAST_TWO_KEY);
-        mCardType = details.getString(CARD_TYPE_KEY);
-        mBillingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
-        mShippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
-        mUserData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
-        mCallId = Json.optString(json, CALL_ID_KEY, "");
-        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+        String lastTwo = details.getString(LAST_TWO_KEY);
+        String cardType = details.getString(CARD_TYPE_KEY);
+        VisaCheckoutAddress billingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
+        VisaCheckoutAddress shippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
+        VisaCheckoutUserData userData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
+        String callId = Json.optString(json, CALL_ID_KEY, "");
+        BinData binData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
 
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDescription = json.getString(DESCRIPTION_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, description, isDefault);
+    }
+
+    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description, boolean isDefault) {
+        mLastTwo = lastTwo;
+        mCardType = cardType;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mUserData = userData;
+        mCallId = callId;
+        mBinData = binData;
+        mNonce = nonce;
+        mDescription = description;
+        mDefault = isDefault;
     }
 
     /**
