@@ -27,22 +27,7 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
     private final String mDescription;
     private final boolean mDefault;
 
-    public static VenmoAccountNonce from(BraintreeNonce braintreeNonce) throws JSONException {
-        return new VenmoAccountNonce(braintreeNonce.getJson());
-    }
-
-    VenmoAccountNonce(String nonce, String description, String username) {
-        mNonce = nonce;
-        mDescription = description;
-        mUsername = username;
-        mDefault = false;
-    }
-
-    VenmoAccountNonce(String jsonString) throws JSONException {
-        this(new JSONObject(jsonString));
-    }
-
-    VenmoAccountNonce(JSONObject inputJson) throws JSONException {
+    static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
             json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
@@ -50,12 +35,20 @@ public class VenmoAccountNonce implements PaymentMethodNonce {
             json = inputJson;
         }
 
-        mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
-        mUsername = details.getString(VENMO_USERNAME_KEY);
-        mDescription = mUsername;
+        String username = details.getString(VENMO_USERNAME_KEY);
+
+        return new VenmoAccountNonce(nonce, username, isDefault);
+    }
+
+    VenmoAccountNonce(String nonce, String username, boolean isDefault) {
+       mNonce = nonce;
+       mUsername = username;
+       mDescription = username;
+       mDefault = isDefault;
     }
 
     /**
