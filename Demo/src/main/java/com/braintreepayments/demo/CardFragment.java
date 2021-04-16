@@ -307,7 +307,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
-            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
+            BraintreeNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
