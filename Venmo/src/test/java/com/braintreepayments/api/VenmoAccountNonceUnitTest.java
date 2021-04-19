@@ -25,12 +25,7 @@ public class VenmoAccountNonceUnitTest {
         assertEquals("venmojoe", venmoAccountNonce.getDescription());
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
-        assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
-    }
-
-    @Test
-    public void getTypeLabel_returnsPayWithVenmo() {
-        assertEquals("Venmo", VENMO_NONCE.getTypeLabel());
+        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
     }
 
     @Test

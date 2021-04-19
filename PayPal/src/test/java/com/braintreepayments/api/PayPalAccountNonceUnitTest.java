@@ -18,11 +18,6 @@ import static junit.framework.Assert.assertTrue;
 public class PayPalAccountNonceUnitTest {
 
     @Test
-    public void payPalAccountTypeIsPayPal() throws JSONException {
-        assertEquals("PayPal", PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)).getTypeLabel());
-    }
-
-    @Test
     public void fromJson_parsesResponseWithCreditFinancingOffer() throws JSONException {
         PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
 
@@ -31,7 +26,6 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
-        assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
@@ -60,7 +54,6 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
-        assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
@@ -99,7 +92,6 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
-        assertEquals("PayPal", parceled.getTypeLabel());
         assertEquals("fake-authenticate-url", parceled.getAuthenticateUrl());
 
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
@@ -138,7 +130,6 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
-        assertEquals("PayPal", parceled.getTypeLabel());
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", parceled.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", parceled.getBillingAddress().getLocality());

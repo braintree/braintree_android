@@ -30,7 +30,6 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
         assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
         assertFalse(visaCheckoutNonce.isDefault());
-        assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
         assertEquals("callId", visaCheckoutNonce.getCallId());
 
         assertNotNull(visaCheckoutNonce.getBillingAddress());

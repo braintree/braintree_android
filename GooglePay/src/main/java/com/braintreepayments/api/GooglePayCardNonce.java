@@ -110,7 +110,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             String description,
             boolean isDefault
     ) {
-        super(nonce, description, isDefault, "TODO", PaymentMethodType.GOOGLE_PAY);
+        super(nonce, description, isDefault, PaymentMethodType.GOOGLE_PAY);
         mCardType = cardType;
         mLastTwo = lastTwo;
         mLastFour = lastFour;
@@ -222,11 +222,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     @Override
     public boolean isDefault() {
         return mDefault;
-    }
-
-    @Override
-    public String getTypeLabel() {
-        return "Google Pay";
     }
 
     @Override

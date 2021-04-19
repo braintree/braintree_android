@@ -468,7 +468,7 @@ public class LocalPaymentClientUnitTest {
         verify(localPaymentBrowserSwitchResultCallback).onResult(resultCaptor.capture(), (Exception) isNull());
 
         LocalPaymentNonce localPaymentNonce = resultCaptor.getValue();
-        assertEquals("PayPalAccount", localPaymentNonce.getTypeLabel());
+        assertEquals(PaymentMethodType.LOCAL_PAYMENT, localPaymentNonce.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", localPaymentNonce.getString());
         assertEquals("PayPal", localPaymentNonce.getDescription());
         assertEquals("084afbf1db15445587d30bc120a23b09", localPaymentNonce.getClientMetadataId());

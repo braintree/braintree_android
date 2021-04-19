@@ -45,7 +45,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     }
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-        super(nonce, username, isDefault, "TODO", PaymentMethodType.VENMO);
+        super(nonce, username, isDefault, PaymentMethodType.VENMO);
         mNonce = nonce;
         mUsername = username;
         mDescription = username;
@@ -72,11 +72,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     @Override
     public boolean isDefault() {
         return mDefault;
-    }
-
-    @Override
-    public String getTypeLabel() {
-        return "Venmo";
     }
 
     @Override

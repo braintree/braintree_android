@@ -110,9 +110,9 @@ public class PaymentMethodUnitTest {
 
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
         assertEquals(3, paymentMethodNonces.size());
-        assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
-        assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
+        assertEquals(PaymentMethodType.CARD, paymentMethodNonces.get(0).getType());
+        assertEquals(PaymentMethodType.PAYPAL, paymentMethodNonces.get(1).getType());
+        assertEquals(PaymentMethodType.VENMO, paymentMethodNonces.get(2).getType());
     }
 
     @Test

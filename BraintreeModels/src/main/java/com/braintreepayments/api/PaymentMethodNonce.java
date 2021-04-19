@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.PaymentMethodTypeUtils.displayNameFromPaymentMethodType;
 import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
 
 /**
@@ -14,9 +13,6 @@ import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodType
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
 public class PaymentMethodNonce implements Parcelable {
-
-    private static final String CARD_DETAILS_KEY = "details";
-    private static final String CARD_TYPE_KEY = "cardType";
 
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -26,8 +22,6 @@ public class PaymentMethodNonce implements Parcelable {
     private final String mNonce;
     private final String mDescription;
     private final boolean mDefault;
-
-    private final String mTypeLabel;
 
     private @PaymentMethodType final int mType;
 
@@ -39,22 +33,13 @@ public class PaymentMethodNonce implements Parcelable {
         String description = inputJson.getString(DESCRIPTION_KEY);
         boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        String typeLabel;
-        if (type == PaymentMethodType.CARD) {
-            JSONObject details = inputJson.getJSONObject(CARD_DETAILS_KEY);
-            typeLabel = details.getString(CARD_TYPE_KEY);
-        } else {
-            typeLabel = displayNameFromPaymentMethodType(type);
-        }
-
-        return new PaymentMethodNonce(nonce, description, isDefault, typeLabel, type);
+        return new PaymentMethodNonce(nonce, description, isDefault, type);
     }
 
-    PaymentMethodNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
+    PaymentMethodNonce(String nonce, String description, boolean isDefault, @PaymentMethodType int type) {
         mNonce = nonce;
         mDescription = description;
         mDefault = isDefault;
-        mTypeLabel = typeLabel;
         mType = type;
     }
 
@@ -81,15 +66,7 @@ public class PaymentMethodNonce implements Parcelable {
         return mDefault;
     }
 
-    /**
-     * @return The type of this PaymentMethod for displaying to a customer, e.g. 'Visa'. Can be used
-     *          for displaying appropriate logos, etc.
-     */
-    public String getTypeLabel() {
-        return mTypeLabel;
-    }
-
-    int getType() {
+    @PaymentMethodType int getType() {
         return mType;
     }
 
@@ -104,7 +81,6 @@ public class PaymentMethodNonce implements Parcelable {
         dest.writeString(mDescription);
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
         dest.writeInt(mType);
-        dest.writeString(mTypeLabel);
     }
 
     protected PaymentMethodNonce(Parcel in) {
@@ -112,7 +88,6 @@ public class PaymentMethodNonce implements Parcelable {
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
         mType = in.readInt();
-        mTypeLabel = in.readString();
     }
 
     public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {

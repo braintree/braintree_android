@@ -32,13 +32,13 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private static final String TYPE_KEY = "type";
 
     private final String mClientMetadataId;
-    private PostalAddress mBillingAddress;
-    private PostalAddress mShippingAddress;
-    private String mGivenName;
-    private String mSurname;
-    private String mPhone;
-    private String mEmail;
-    private String mPayerId;
+    private final PostalAddress mBillingAddress;
+    private final PostalAddress mShippingAddress;
+    private final String mGivenName;
+    private final String mSurname;
+    private final String mPhone;
+    private final String mEmail;
+    private final String mPayerId;
     private final String mType;
 
     private final String mNonce;
@@ -55,8 +55,8 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
         String type = Json.optString(json, TYPE_KEY, "PayPalAccount");
 
-        PostalAddress billingAddress = null;
-        PostalAddress shippingAddress = null;
+        PostalAddress billingAddress;
+        PostalAddress shippingAddress;
         String givenName = null;
         String surname = null;
         String phone = null;
@@ -93,7 +93,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     }
 
     private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, "TODO", PaymentMethodType.LOCAL_PAYMENT);
+        super(nonce, description, isDefault, PaymentMethodType.LOCAL_PAYMENT);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
@@ -131,14 +131,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     @Override
     public boolean isDefault() {
         return mDefault;
-    }
-
-    /**
-     * @return The type of this {@link PaymentMethodNonce}
-     */
-    @Override
-    public String getTypeLabel() {
-        return mType;
     }
 
     /**

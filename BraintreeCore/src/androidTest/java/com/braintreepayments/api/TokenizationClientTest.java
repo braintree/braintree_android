@@ -52,7 +52,7 @@ public class TokenizationClientTest {
                 try {
                     PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
                     assertIsANonce(payPalAccountNonce.getString());
-                    assertEquals("PayPal", payPalAccountNonce.getTypeLabel());
+                    assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
                     latch.countDown();
                 } catch (JSONException e) {
                     fail("This should not fail");

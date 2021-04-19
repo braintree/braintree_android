@@ -70,13 +70,12 @@ public class PaymentMethodClientTest {
                         PaymentMethodNonce paymentMethodNonce = paymentMethodNonces.get(0);
 
                         assertIsANonce(paymentMethodNonce.getString());
-                        assertEquals("Visa", paymentMethodNonce.getTypeLabel());
 
                         sut.deletePaymentMethod(mActivity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {
                             @Override
                             public void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error) {
                                 assertNull(error);
-                                assertEquals("Visa", deletedNonce.getTypeLabel());
+                                assertEquals(PaymentMethodType.CARD, deletedNonce.getType());
                                 latch.countDown();
                             }
                         });

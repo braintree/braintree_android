@@ -66,7 +66,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     }
 
     private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, "TODO", PaymentMethodType.VISA_CHECKOUT);
+        super(nonce, description, isDefault, PaymentMethodType.VISA_CHECKOUT);
         mLastTwo = lastTwo;
         mCardType = cardType;
         mBillingAddress = billingAddress;
@@ -134,11 +134,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     @Override
     public boolean isDefault() {
         return mDefault;
-    }
-
-    @Override
-    public String getTypeLabel() {
-        return "Visa Checkout";
     }
 
     /**

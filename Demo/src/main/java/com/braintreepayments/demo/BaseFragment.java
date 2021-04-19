@@ -13,7 +13,6 @@ public abstract class BaseFragment extends Fragment {
     @CallSuper
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         getActivity().setProgressBarIndeterminateVisibility(true);
-        Log.d(getClass().getSimpleName(), "Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }
 
     @CallSuper

@@ -128,7 +128,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     }
 
     private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, "TODO", PaymentMethodType.PAYPAL);
+        super(nonce, description, isDefault, PaymentMethodType.PAYPAL);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
@@ -172,13 +172,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     @Override
     public boolean isDefault() {
         return mDefault;
-    }
-
-    /**
-     * @return The type of this {@link PaymentMethodNonce} (always "PayPal")
-     */
-    public String getTypeLabel() {
-        return "PayPal";
     }
 
     /**
