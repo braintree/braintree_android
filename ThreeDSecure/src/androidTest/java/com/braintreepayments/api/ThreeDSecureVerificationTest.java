@@ -64,7 +64,7 @@ public class ThreeDSecureVerificationTest {
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
@@ -114,7 +114,7 @@ public class ThreeDSecureVerificationTest {
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
@@ -162,7 +162,7 @@ public class ThreeDSecureVerificationTest {
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
@@ -204,7 +204,7 @@ public class ThreeDSecureVerificationTest {
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
@@ -254,7 +254,7 @@ public class ThreeDSecureVerificationTest {
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 try {
-                    CardNonce cardNonce = new CardNonce(tokenizationResponse);
+                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
