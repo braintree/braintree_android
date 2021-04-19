@@ -37,10 +37,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private final String mCallId;
     private final BinData mBinData;
 
-    private final String mNonce;
-    private final String mDescription;
-    private final boolean mDefault;
-
     static VisaCheckoutNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
@@ -74,9 +70,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         mUserData = userData;
         mCallId = callId;
         mBinData = binData;
-        mNonce = nonce;
-        mDescription = description;
-        mDefault = isDefault;
     }
 
     /**
@@ -121,21 +114,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         return mCallId;
     }
 
-    @Override
-    public String getString() {
-        return mNonce;
-    }
-
-    @Override
-    public String getDescription() {
-        return mDescription;
-    }
-
-    @Override
-    public boolean isDefault() {
-        return mDefault;
-    }
-
     /**
      * @return The BIN data for the card number associated with {@link VisaCheckoutNonce}
      */
@@ -153,9 +131,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         dest.writeParcelable(mUserData, flags);
         dest.writeString(mCallId);
         dest.writeParcelable(mBinData, flags);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected VisaCheckoutNonce(Parcel in) {
@@ -167,9 +142,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
         mCallId = in.readString();
         mBinData = in.readParcelable(BinData.class.getClassLoader());
-        mNonce = in.readString();
-        mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<VisaCheckoutNonce> CREATOR =

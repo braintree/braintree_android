@@ -23,10 +23,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
 
     private final String mUsername;
 
-    private final String mNonce;
-    private final String mDescription;
-    private final boolean mDefault;
-
     static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
         if (inputJson.has(API_RESOURCE_KEY)) {
@@ -46,10 +42,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
         super(nonce, username, isDefault, PaymentMethodType.VENMO);
-        mNonce = nonce;
         mUsername = username;
-        mDescription = username;
-        mDefault = isDefault;
     }
 
     /**
@@ -60,35 +53,14 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     }
 
     @Override
-    public String getString() {
-        return mNonce;
-    }
-
-    @Override
-    public String getDescription() {
-        return mDescription;
-    }
-
-    @Override
-    public boolean isDefault() {
-        return mDefault;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(mUsername);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private VenmoAccountNonce(Parcel in) {
         super(in);
         mUsername = in.readString();
-        mNonce = in.readString();
-        mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<VenmoAccountNonce> CREATOR = new Creator<VenmoAccountNonce>() {

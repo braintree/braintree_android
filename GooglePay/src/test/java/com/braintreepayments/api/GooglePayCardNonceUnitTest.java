@@ -28,6 +28,7 @@ public class GooglePayCardNonceUnitTest {
 
         GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
 
+        assertEquals(PaymentMethodType.GOOGLE_PAY, googlePayCardNonce.getType());
         assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
         assertEquals("MasterCard 0276", googlePayCardNonce.getDescription());
         assertEquals("Visa", googlePayCardNonce.getCardType());
@@ -101,6 +102,7 @@ public class GooglePayCardNonceUnitTest {
 
         GooglePayCardNonce parceled = GooglePayCardNonce.CREATOR.createFromParcel(parcel);
 
+        assertEquals(PaymentMethodType.GOOGLE_PAY, googlePayCardNonce.getType());
         assertEquals("fake-google-pay-nonce", parceled.getString());
         assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
@@ -113,7 +115,7 @@ public class GooglePayCardNonceUnitTest {
         assertBinDataEqual(googlePayCardNonce.getBinData(), parceled.getBinData());
     }
 
-    private PostalAddress getPostalAddressObject(JSONObject address) throws JSONException {
+    private PostalAddress getPostalAddressObject(JSONObject address) {
         PostalAddress result = new PostalAddress();
         result.setRecipientName(Json.optString(address, "name", ""));
         result.setStreetAddress(Json.optString(address, "address1", ""));

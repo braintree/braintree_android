@@ -51,10 +51,6 @@ public class CardNonce extends PaymentMethodNonce {
     private final String mExpirationYear;
     private final String mCardholderName;
 
-    private final String mNonce;
-    private final String mDescription;
-    private final boolean mDefault;
-
     /**
      * Parse card nonce from plain JSON object.
      * @param inputJson plain JSON object
@@ -166,9 +162,6 @@ public class CardNonce extends PaymentMethodNonce {
         mExpirationMonth = expirationMonth;
         mExpirationYear = expirationYear;
         mCardholderName = cardholderName;
-        mNonce = nonce;
-        mDescription = description;
-        mDefault = isDefault;
     }
 
     /**
@@ -211,27 +204,6 @@ public class CardNonce extends PaymentMethodNonce {
      */
     public String getCardholderName() {
         return mCardholderName;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public String getString() {
-        return mNonce;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public String getDescription() {
-        return mDescription;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public boolean isDefault() {
-        return mDefault;
     }
 
     /**
@@ -279,9 +251,6 @@ public class CardNonce extends PaymentMethodNonce {
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);
         dest.writeString(mCardholderName);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected CardNonce(Parcel in) {
@@ -296,9 +265,6 @@ public class CardNonce extends PaymentMethodNonce {
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
         mCardholderName = in.readString();
-        mNonce = in.readString();
-        mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {

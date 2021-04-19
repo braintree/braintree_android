@@ -41,10 +41,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private final String mPayerId;
     private final String mType;
 
-    private final String mNonce;
-    private final String mDescription;
-    private final boolean mDefault;
-
     static LocalPaymentNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
@@ -103,9 +99,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         mEmail = email;
         mPayerId = payerId;
         mType = type;
-        mNonce = nonce;
-        mDescription = description;
-        mDefault = isDefault;
     }
 
     /**
@@ -113,24 +106,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
      */
     public String getEmail() {
         return mEmail;
-    }
-
-    @Override
-    public String getString() {
-        return mNonce;
-    }
-
-    /**
-     * @return The description of this local payment for displaying to a customer
-     */
-    @Override
-    public String getDescription() {
-        return mDescription;
-    }
-
-    @Override
-    public boolean isDefault() {
-        return mDefault;
     }
 
     /**
@@ -194,9 +169,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         dest.writeString(mPhone);
         dest.writeString(mPayerId);
         dest.writeString(mType);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private LocalPaymentNonce(Parcel in) {
@@ -210,9 +182,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         mPhone = in.readString();
         mPayerId = in.readString();
         mType = in.readString();
-        mNonce = in.readString();
-        mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<LocalPaymentNonce> CREATOR = new Creator<LocalPaymentNonce>() {

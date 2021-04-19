@@ -25,6 +25,7 @@ public class CardNonceUnitTest {
     public void fromJSON_withPlainJSONCardNonce_parsesCardNonce() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHOD_CARD));
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("Visa", cardNonce.getCardType());
@@ -37,6 +38,7 @@ public class CardNonceUnitTest {
     public void fromJSON_withRESTfulTokenizationResponse_parsesCardNonce() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD));
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("ending in ••11", cardNonce.getDescription());
@@ -66,6 +68,7 @@ public class CardNonceUnitTest {
     public void fromJSON_withGraphQLTokenizationResponse_parsesCardNonce() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD));
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
         assertEquals("ending in ••11", cardNonce.getDescription());
@@ -95,6 +98,7 @@ public class CardNonceUnitTest {
     public void fromJSON_withGraphQLTokenizationResponse_parsesCardNonceWithDefaultValues() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD_MISSING_VALUES));
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("", cardNonce.getLastFour());
         assertEquals("", cardNonce.getLastTwo());
         assertEquals("Unknown", cardNonce.getCardType());
@@ -114,6 +118,7 @@ public class CardNonceUnitTest {
     public void fromJSON_withGraphQLTokenizationResponse_parsesUnknownCardResponses() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_UNKNOWN_CREDIT_CARD));
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Unknown", cardNonce.getCardType());
         assertEquals("tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz", cardNonce.getString());
         assertEquals("", cardNonce.getDescription());
@@ -147,6 +152,7 @@ public class CardNonceUnitTest {
 
         CardNonce parceled = CardNonce.CREATOR.createFromParcel(parcel);
 
+        assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("123456-12345-12345-a-adfa", parceled.getString());
         assertEquals("ending in ••11", parceled.getDescription());

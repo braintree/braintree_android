@@ -49,9 +49,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private final PayPalCreditFinancing mCreditFinancing;
     private final String mAuthenticateUrl;
 
-    private final String mNonce;
     private final String mDescription;
-    private final boolean mDefault;
 
     static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         boolean getShippingAddressFromTopLevel = false;
@@ -139,9 +137,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         mPayerId = payerId;
         mCreditFinancing = creditFinancing;
         mAuthenticateUrl = authenticateUrl;
-        mNonce = nonce;
         mDescription = description;
-        mDefault = isDefault;
     }
 
     /**
@@ -149,11 +145,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
      */
     public String getEmail() {
         return mEmail;
-    }
-
-    @Override
-    public String getString() {
-        return mNonce;
     }
 
     /**
@@ -167,11 +158,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         } else {
             return mDescription;
         }
-    }
-
-    @Override
-    public boolean isDefault() {
-        return mDefault;
     }
 
     /**
@@ -253,9 +239,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         dest.writeString(mPayerId);
         dest.writeParcelable(mCreditFinancing, flags);
         dest.writeString(mAuthenticateUrl);
-        dest.writeString(mNonce);
         dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private PayPalAccountNonce(Parcel in) {
@@ -270,9 +254,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         mPayerId = in.readString();
         mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
         mAuthenticateUrl = in.readString();
-        mNonce = in.readString();
         mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {

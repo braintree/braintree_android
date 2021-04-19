@@ -37,10 +37,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private final PostalAddress mShippingAddress;
     private final BinData mBinData;
 
-    private final String mNonce;
-    private final String mDescription;
-    private final boolean mDefault;
-
     static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject tokenPayload = new JSONObject(inputJson
                 .getJSONObject("paymentMethodData")
@@ -119,9 +115,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
         mBinData = binData;
-        mNonce = nonce;
-        mDescription = description;
-        mDefault = isDefault;
     }
 
     static PostalAddress postalAddressFromJson(JSONObject json) {
@@ -210,21 +203,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     }
 
     @Override
-    public String getString() {
-        return mNonce;
-    }
-
-    @Override
-    public String getDescription() {
-        return mDescription;
-    }
-
-    @Override
-    public boolean isDefault() {
-        return mDefault;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
@@ -234,9 +212,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeParcelable(mBinData, flags);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     private GooglePayCardNonce(Parcel in) {
@@ -248,9 +223,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mBinData = in.readParcelable(BinData.class.getClassLoader());
-        mNonce = in.readString();
-        mDescription = in.readString();
-        mDefault = in.readByte() > 0;
     }
 
     public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {

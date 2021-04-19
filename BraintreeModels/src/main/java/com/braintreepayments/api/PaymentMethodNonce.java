@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
 
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
@@ -56,6 +55,7 @@ public class PaymentMethodNonce implements Parcelable {
      * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
      */
     public String getDescription() {
+        // TODO: Localize
         return mDescription;
     }
 
@@ -101,4 +101,21 @@ public class PaymentMethodNonce implements Parcelable {
             return new PaymentMethodNonce[size];
         }
     };
+
+    static @PaymentMethodType int paymentMethodTypeFromString(String typeString) {
+        switch (typeString) {
+            case "CreditCard":
+                return PaymentMethodType.CARD;
+            case "PayPalAccount":
+                return PaymentMethodType.PAYPAL;
+            case "VisaCheckoutCard":
+                return PaymentMethodType.VISA_CHECKOUT;
+            case "VenmoAccount":
+                return PaymentMethodType.VENMO;
+            case "AndroidPayCard":
+                return PaymentMethodType.GOOGLE_PAY;
+            default:
+                return PaymentMethodType.UNKNOWN;
+        }
+    }
 }
