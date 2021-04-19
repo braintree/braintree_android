@@ -47,9 +47,9 @@ public abstract class PaymentMethod {
     }
 
     /**
-     * @param validate Flag to denote when the associated {@link BraintreeNonce}
-     *   will be validated. When set to {@code true}, the {@link BraintreeNonce}
-     *   will be validated immediately. When {@code false}, the {@link BraintreeNonce}
+     * @param validate Flag to denote when the associated {@link PaymentMethodNonce}
+     *   will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
+     *   will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
      *   will be validated when used by a server side library for a Braintree gateway action.
      */
     public void setValidate(boolean validate) {
@@ -67,7 +67,7 @@ public abstract class PaymentMethod {
     }
 
     /**
-     * @return String representation of {@link BraintreeNonce} for API use.
+     * @return String representation of {@link PaymentMethodNonce} for API use.
      */
     public String buildJSON() {
         JSONObject base = new JSONObject();
@@ -94,7 +94,7 @@ public abstract class PaymentMethod {
 
     /**
      * @param authorization The current authorization being used.
-     * @return String representation of a GraphQL request for {@link BraintreeNonce}.
+     * @return String representation of a GraphQL request for {@link PaymentMethodNonce}.
      * @throws BraintreeException Thrown if resources cannot be accessed.
      */
     public String buildGraphQL(Authorization authorization) throws BraintreeException {

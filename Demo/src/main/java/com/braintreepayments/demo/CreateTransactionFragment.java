@@ -15,7 +15,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.braintreepayments.api.BraintreeNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.demo.models.Transaction;
 
@@ -54,7 +54,7 @@ public class CreateTransactionFragment extends Fragment {
         return view;
     }
 
-    private void sendNonceToServer(BraintreeNonce nonce) {
+    private void sendNonceToServer(PaymentMethodNonce nonce) {
         Callback<Transaction> callback = new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {

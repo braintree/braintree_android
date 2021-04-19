@@ -6,11 +6,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link BraintreeNonce} representing a local payment.
+ * {@link PaymentMethodNonce} representing a local payment.
  *
- * @see BraintreeNonce
+ * @see PaymentMethodNonce
  */
-public class LocalPaymentNonce extends BraintreeNonce {
+public class LocalPaymentNonce extends PaymentMethodNonce {
 
     private static final String API_RESOURCE_KEY = "paypalAccounts";
 
@@ -134,7 +134,7 @@ public class LocalPaymentNonce extends BraintreeNonce {
     }
 
     /**
-     * @return The type of this {@link BraintreeNonce}
+     * @return The type of this {@link PaymentMethodNonce}
      */
     @Override
     public String getTypeLabel() {

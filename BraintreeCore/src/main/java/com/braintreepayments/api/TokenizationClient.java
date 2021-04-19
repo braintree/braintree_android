@@ -26,9 +26,9 @@ class TokenizationClient {
     }
 
     /**
-     * Create a {@link BraintreeNonce} in the Braintree Gateway.
+     * Create a {@link PaymentMethodNonce} in the Braintree Gateway.
      * <p>
-     * On completion, returns the {@link BraintreeNonce} to {@link TokenizeCallback}.
+     * On completion, returns the {@link PaymentMethodNonce} to {@link TokenizeCallback}.
      * <p>
      * If creation fails validation, {@link TokenizeCallback#onResult(org.json.JSONObject, Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
@@ -36,7 +36,7 @@ class TokenizationClient {
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
      * TokenizeCallback#onResult(org.json.JSONObject, Exception)} will be called with the {@link Exception} that occurred.
      *
-     * @param paymentMethod {@link PaymentMethod} for the {@link BraintreeNonce}
+     * @param paymentMethod {@link PaymentMethod} for the {@link PaymentMethodNonce}
      *        to be created.
      * @param callback {@link TokenizeCallback}
      */

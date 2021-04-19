@@ -10,10 +10,10 @@ import static com.braintreepayments.api.PaymentMethodTypeUtils.displayNameFromPa
 import static com.braintreepayments.api.PaymentMethodTypeUtils.paymentMethodTypeFromString;
 
 /**
- * Base class representing a method of payment for a customer. {@link BraintreeNonce} represents the
+ * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
-public class BraintreeNonce implements Parcelable {
+public class PaymentMethodNonce implements Parcelable {
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -31,7 +31,7 @@ public class BraintreeNonce implements Parcelable {
 
     private @PaymentMethodType final int mType;
 
-    static BraintreeNonce fromJSON(JSONObject inputJson) throws JSONException {
+    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
         String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
         int type = paymentMethodTypeFromString(typeString);
 
@@ -47,10 +47,10 @@ public class BraintreeNonce implements Parcelable {
             typeLabel = displayNameFromPaymentMethodType(type);
         }
 
-        return new BraintreeNonce(nonce, description, isDefault, typeLabel, type);
+        return new PaymentMethodNonce(nonce, description, isDefault, typeLabel, type);
     }
 
-    BraintreeNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
+    PaymentMethodNonce(String nonce, String description, boolean isDefault, String typeLabel, @PaymentMethodType int type) {
         mNonce = nonce;
         mDescription = description;
         mDefault = isDefault;
@@ -107,7 +107,7 @@ public class BraintreeNonce implements Parcelable {
         dest.writeString(mTypeLabel);
     }
 
-    protected BraintreeNonce(Parcel in) {
+    protected PaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mDefault = in.readByte() > 0;
@@ -115,15 +115,15 @@ public class BraintreeNonce implements Parcelable {
         mTypeLabel = in.readString();
     }
 
-    public static final Creator<BraintreeNonce> CREATOR = new Creator<BraintreeNonce>() {
+    public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
         @Override
-        public BraintreeNonce createFromParcel(Parcel in) {
-            return new BraintreeNonce(in);
+        public PaymentMethodNonce createFromParcel(Parcel in) {
+            return new PaymentMethodNonce(in);
         }
 
         @Override
-        public BraintreeNonce[] newArray(int size) {
-            return new BraintreeNonce[size];
+        public PaymentMethodNonce[] newArray(int size) {
+            return new PaymentMethodNonce[size];
         }
     };
 }

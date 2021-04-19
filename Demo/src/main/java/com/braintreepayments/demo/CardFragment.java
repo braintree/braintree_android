@@ -20,7 +20,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
-import com.braintreepayments.api.BraintreeNonce;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
@@ -307,7 +307,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
-            BraintreeNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
+            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
@@ -324,7 +324,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
     }
 
-    private void handlePaymentMethodNonceCreated(BraintreeNonce paymentMethodNonce) {
+    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
@@ -375,7 +375,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 "- errorCode: " + rewardsBalance.getErrorCode();
     }
 
-    private ThreeDSecureRequest threeDSecureRequest(BraintreeNonce paymentMethodNonce) {
+    private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();

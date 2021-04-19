@@ -62,7 +62,7 @@ public class PaymentMethodClientTest {
 
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<BraintreeNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(error);
                         assertNotNull(paymentMethodNonces);
                         assertEquals(1, paymentMethodNonces.size());
@@ -111,7 +111,7 @@ public class PaymentMethodClientTest {
 
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
-                    public void onResult(@Nullable List<BraintreeNonce> paymentMethodNonces, @Nullable Exception error) {
+                    public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(paymentMethodNonces);
 
                         assertTrue(error instanceof AuthorizationException);

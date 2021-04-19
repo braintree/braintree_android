@@ -11,11 +11,11 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 import static java.lang.Boolean.FALSE;
 
 /**
- * {@link BraintreeNonce} representing a Google Pay card.
+ * {@link PaymentMethodNonce} representing a Google Pay card.
  *
- * @see BraintreeNonce
+ * @see PaymentMethodNonce
  */
-public class GooglePayCardNonce extends BraintreeNonce {
+public class GooglePayCardNonce extends PaymentMethodNonce {
 
     static final String API_RESOURCE_KEY = "androidPayCards";
 
@@ -41,7 +41,7 @@ public class GooglePayCardNonce extends BraintreeNonce {
     private final String mDescription;
     private final boolean mDefault;
 
-    static BraintreeNonce fromJSON(JSONObject inputJson) throws JSONException {
+    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject tokenPayload = new JSONObject(inputJson
                 .getJSONObject("paymentMethodData")
                 .getJSONObject("tokenizationData")

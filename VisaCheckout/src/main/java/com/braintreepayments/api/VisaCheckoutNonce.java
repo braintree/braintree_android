@@ -9,10 +9,10 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 
 /**
- * {@link BraintreeNonce} representing a Visa Checkout card.
- * @see BraintreeNonce
+ * {@link PaymentMethodNonce} representing a Visa Checkout card.
+ * @see PaymentMethodNonce
  */
-public class VisaCheckoutNonce extends BraintreeNonce {
+public class VisaCheckoutNonce extends PaymentMethodNonce {
 
     static final String TYPE = "VisaCheckoutCard";
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";

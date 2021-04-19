@@ -6,11 +6,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link BraintreeNonce} representing a {@link VenmoAccountNonce}
+ * {@link PaymentMethodNonce} representing a {@link VenmoAccountNonce}
  *
- * @see BraintreeNonce
+ * @see PaymentMethodNonce
  */
-public class VenmoAccountNonce extends BraintreeNonce {
+public class VenmoAccountNonce extends PaymentMethodNonce {
 
     static final String TYPE = "VenmoAccount";
     private static final String API_RESOURCE_KEY = "venmoAccounts";

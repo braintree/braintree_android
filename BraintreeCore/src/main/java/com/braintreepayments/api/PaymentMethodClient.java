@@ -34,11 +34,11 @@ public class PaymentMethodClient {
     /**
      * Parses a response from the Braintree gateway for a list of payment method nonces.
      *
-     * @param jsonBody Json-formatted String containing a list of {@link BraintreeNonce}s
-     * @return List of {@link BraintreeNonce}s contained in jsonBody
+     * @param jsonBody Json-formatted String containing a list of {@link PaymentMethodNonce}s
+     * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    private static List<BraintreeNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+    private static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
         JSONArray paymentMethods =
             new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
 
@@ -46,24 +46,24 @@ public class PaymentMethodClient {
             return Collections.emptyList();
         }
 
-        List<BraintreeNonce> braintreeNonces = new ArrayList<>();
+        List<PaymentMethodNonce> paymentMethodNonces = new ArrayList<>();
         JSONObject json;
-        BraintreeNonce braintreeNonce;
+        PaymentMethodNonce paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            braintreeNonce = BraintreeNonce.fromJSON(json);
-            if (braintreeNonce.getType() != PaymentMethodType.GOOGLE_PAY) {
-                braintreeNonces.add(braintreeNonce);
+            paymentMethodNonce = PaymentMethodNonce.fromJSON(json);
+            if (paymentMethodNonce.getType() != PaymentMethodType.GOOGLE_PAY) {
+                paymentMethodNonces.add(paymentMethodNonce);
             }
         }
 
-        return braintreeNonces;
+        return paymentMethodNonces;
     }
 
     /**
-     * Retrieves the current list of {@link BraintreeNonce}s for the current customer.
+     * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
      * <p>
-     * When finished, the {@link java.util.List} of {@link BraintreeNonce}s will be sent to {@link
+     * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *  @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
      *        payment methods will be ordered my most recently used.
@@ -97,9 +97,9 @@ public class PaymentMethodClient {
     }
 
     /**
-     * Retrieves the current list of {@link BraintreeNonce}s for the current customer.
+     * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
      * <p>
-     * When finished, the {@link java.util.List} of {@link BraintreeNonce}s will be sent to {@link
+     * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *
      * @param callback {@link GetPaymentMethodNoncesCallback}
@@ -117,7 +117,7 @@ public class PaymentMethodClient {
      * @param callback {@link DeletePaymentMethodNonceCallback}
      */
     // TODO: Investigate if this feature should be removed from Android or added to iOS for feature parity
-    public void deletePaymentMethod(final Context context, final BraintreeNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
+    public void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
         boolean usesClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
         if (!usesClientToken) {

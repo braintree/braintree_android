@@ -11,9 +11,9 @@ import org.json.JSONObject;
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 /**
- * {@link BraintreeNonce} representing a credit or debit card.
+ * {@link PaymentMethodNonce} representing a credit or debit card.
  */
-public class CardNonce extends BraintreeNonce {
+public class CardNonce extends PaymentMethodNonce {
 
     static final String TYPE = "CreditCard";
     private static final String API_RESOURCE_KEY = "creditCards";

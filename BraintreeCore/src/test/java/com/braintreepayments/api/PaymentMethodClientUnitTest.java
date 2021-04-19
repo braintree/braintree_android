@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 public class PaymentMethodClientUnitTest {
 
     @Captor
-    ArgumentCaptor<List<BraintreeNonce>> paymentMethodNoncesCaptor;
+    ArgumentCaptor<List<PaymentMethodNonce>> paymentMethodNoncesCaptor;
 
     @Before
     public void beforeEach() {
@@ -75,7 +75,7 @@ public class PaymentMethodClientUnitTest {
 
         verify(callback).onResult(paymentMethodNoncesCaptor.capture(), (Exception) isNull());
 
-        List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
+        List<PaymentMethodNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
         assertEquals("ending in ••11", paymentMethodNonces.get(0).getDescription());
         assertEquals("123456-12345-12345-a-adfa", paymentMethodNonces.get(0).getString());
@@ -96,7 +96,7 @@ public class PaymentMethodClientUnitTest {
 
         verify(callback).onResult(paymentMethodNoncesCaptor.capture(), (Exception) isNull());
 
-        List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
+        List<PaymentMethodNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", paymentMethodNonces.get(1).getString());
         assertEquals("with email paypalaccount@example.com", paymentMethodNonces.get(1).getDescription());
@@ -117,7 +117,7 @@ public class PaymentMethodClientUnitTest {
 
         verify(callback).onResult(paymentMethodNoncesCaptor.capture(), (Exception) isNull());
 
-        List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
+        List<PaymentMethodNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
         assertEquals("fake-venmo-nonce", paymentMethodNonces.get(2).getString());
         assertEquals("VenmoAccount", paymentMethodNonces.get(2).getDescription());
@@ -137,7 +137,7 @@ public class PaymentMethodClientUnitTest {
 
         verify(callback).onResult(paymentMethodNoncesCaptor.capture(), (Exception) isNull());
 
-        List<BraintreeNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
+        List<PaymentMethodNonce> paymentMethodNonces = paymentMethodNoncesCaptor.getValue();
         assertEquals(0, paymentMethodNonces.size());
     }
 }

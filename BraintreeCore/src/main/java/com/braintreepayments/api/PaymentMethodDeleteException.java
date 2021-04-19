@@ -3,22 +3,22 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 /**
- * Error class thrown when a {@link PaymentMethodClient#deletePaymentMethod(Context, BraintreeNonce, DeletePaymentMethodNonceCallback)}
+ * Error class thrown when a {@link PaymentMethodClient#deletePaymentMethod(Context, PaymentMethodNonce, DeletePaymentMethodNonceCallback)}
  * fails to delete a payment method.
  */
 public class PaymentMethodDeleteException extends Exception {
 
-    private final BraintreeNonce mPaymentMethodNonce;
+    private final PaymentMethodNonce mPaymentMethodNonce;
 
-    PaymentMethodDeleteException(BraintreeNonce paymentMethodNonce, Exception exception) {
+    PaymentMethodDeleteException(PaymentMethodNonce paymentMethodNonce, Exception exception) {
         super(exception);
         mPaymentMethodNonce = paymentMethodNonce;
     }
 
     /**
-     * @return The {@link BraintreeNonce} that failed to be deleted.
+     * @return The {@link PaymentMethodNonce} that failed to be deleted.
      */
-    public BraintreeNonce getPaymentMethodNonce() {
+    public PaymentMethodNonce getPaymentMethodNonce() {
         return mPaymentMethodNonce;
     }
 }

@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -10,11 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link BraintreeNonce} representing a PayPal account.
+ * {@link PaymentMethodNonce} representing a PayPal account.
  *
- * @see BraintreeNonce
+ * @see PaymentMethodNonce
  */
-public class PayPalAccountNonce extends BraintreeNonce {
+public class PayPalAccountNonce extends PaymentMethodNonce {
 
     static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
@@ -176,7 +175,7 @@ public class PayPalAccountNonce extends BraintreeNonce {
     }
 
     /**
-     * @return The type of this {@link BraintreeNonce} (always "PayPal")
+     * @return The type of this {@link PaymentMethodNonce} (always "PayPal")
      */
     public String getTypeLabel() {
         return "PayPal";
