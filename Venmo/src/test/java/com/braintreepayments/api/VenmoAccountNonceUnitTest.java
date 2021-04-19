@@ -51,6 +51,7 @@ public class VenmoAccountNonceUnitTest {
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
+        assertEquals(PaymentMethodType.VENMO, parceled.getType());
         assertEquals(NONCE, parceled.getString());
         assertEquals(USERNAME, parceled.getDescription());
         assertEquals(USERNAME, parceled.getUsername());

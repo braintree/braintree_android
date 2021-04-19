@@ -22,6 +22,7 @@ public class PayPalAccountNonceUnitTest {
         PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
 
         assertNotNull(payPalAccountNonce);
+        assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
         assertEquals("fake-authenticate-url", payPalAccountNonce.getAuthenticateUrl());
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
@@ -51,6 +52,7 @@ public class PayPalAccountNonceUnitTest {
         PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(response);
 
         assertNotNull(payPalAccountNonce);
+        assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
@@ -89,6 +91,7 @@ public class PayPalAccountNonceUnitTest {
 
         PayPalAccountNonce parceled = PayPalAccountNonce.CREATOR.createFromParcel(parcel);
 
+        assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
@@ -127,6 +130,7 @@ public class PayPalAccountNonceUnitTest {
 
         assertNull(parceled.getCreditFinancing());
 
+        assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
         assertEquals("with email paypalaccount@example.com", parceled.getDescription());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());

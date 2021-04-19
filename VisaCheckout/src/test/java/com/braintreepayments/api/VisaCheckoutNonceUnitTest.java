@@ -25,6 +25,7 @@ public class VisaCheckoutNonceUnitTest {
         VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(
                 Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
+        assertEquals(PaymentMethodType.VISA_CHECKOUT, visaCheckoutNonce.getType());
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
@@ -96,6 +97,7 @@ public class VisaCheckoutNonceUnitTest {
         parcel.setDataPosition(0);
         VisaCheckoutNonce actual = VisaCheckoutNonce.CREATOR.createFromParcel(parcel);
 
+        assertEquals(PaymentMethodType.VISA_CHECKOUT, actual.getType());
         assertEquals(visaCheckoutNonce.getString(), actual.getString());
         assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
