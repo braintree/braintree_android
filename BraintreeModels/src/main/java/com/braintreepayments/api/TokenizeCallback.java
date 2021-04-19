@@ -9,7 +9,7 @@ import org.json.JSONObject;
 interface TokenizeCallback {
 
     /**
-     * @param tokenizationResponse parsed {@link PaymentMethodNonce} from the HTTP request.
+     * @param tokenizationResponse JSON object created from the tokenization response.
      * @param exception error that caused the request to fail.
      */
     void onResult(JSONObject tokenizationResponse, Exception exception);
