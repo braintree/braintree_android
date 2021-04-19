@@ -55,7 +55,7 @@ public class PaymentMethodNonce implements Parcelable {
      * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
      */
     public String getDescription() {
-        // TODO: Localize
+        // TODO: find a way to localize this, or move to Drop-In
         return mDescription;
     }
 

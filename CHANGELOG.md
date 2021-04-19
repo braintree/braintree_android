@@ -2,8 +2,8 @@
 
 ## unreleased
 
-* Add `BraintreeNonce` result type for `GetPaymentMethodNoncesCallback`
-* Add static factory constructors for converting a `BraintreeNonce` into: `CardNonce`, `PayPalAccountNonce`, `VenmoAccountNonce`, `LocalPaymentNonce`, `GooglePayNonce`, and `VisaCheckoutNonce`
+* Add `PaymentMethodType` enum
+* Add `PaymentMethodNonce#getType()` method
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
@@ -15,7 +15,6 @@
   * Return an `IllegalArgumentException` instead of `GoogleApiClientException` to `GooglePayIsReadyToPayCallback#onResult()` when activity is null
   * Refactor `GetPaymentMethodNoncesCallback` to have a single `onResult()` method instead of `success()` and `failure()`
   * Remove `Context` parameter from `PaymentMethodClient#getPaymentMethodNonces`
-  * Remove `PaymentMethodNonce` base class in favor of a `PaymentMethodNonce` interface type
   * Rename `PaymentMethodNonce#getNonce()` to `getString()`
   * Move `VenmoAccountNonce` to `Venmo` module
   * Move `AuthenticationInsight` to `Card` module
@@ -31,6 +30,8 @@
   * Move `VisaCheckoutAddress` to `VisaCheckout` module
   * Move `VisaCheckoutNonce` to `VisaCheckout` module
   * Move `VisaCheckoutUserData` to `VisaCheckout` module
+  * Remove `PaymentMethodNonce#getTypeLabel()` method
+  * Remove `PaymentMethodNoncesCallback`
 
 ## 4.0.0-beta2
 
