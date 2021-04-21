@@ -29,6 +29,7 @@ public class VenmoClient {
     static final String EXTRA_BRAINTREE_DATA = "com.braintreepayments.api.EXTRA_BRAINTREE_DATA";
     static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
+    static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     private final BraintreeClient braintreeClient;
     private final TokenizationClient tokenizationClient;
@@ -41,10 +42,10 @@ public class VenmoClient {
 
     @VisibleForTesting
     VenmoClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
-       this.braintreeClient = braintreeClient;
-       this.tokenizationClient = tokenizationClient;
-       this.sharedPrefsWriter = sharedPrefsWriter;
-       this.deviceInspector = deviceInspector;
+        this.braintreeClient = braintreeClient;
+        this.tokenizationClient = tokenizationClient;
+        this.sharedPrefsWriter = sharedPrefsWriter;
+        this.deviceInspector = deviceInspector;
     }
 
     /**
@@ -64,15 +65,16 @@ public class VenmoClient {
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoTokenizeAccountCallback#onResult(Exception)}
+     *
      * @param activity Android FragmentActivity
-     * @param request {@link VenmoRequest}
+     * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoTokenizeAccountCallback}
      */
     public void tokenizeVenmoAccount(final FragmentActivity activity, final VenmoRequest request, final VenmoTokenizeAccountCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (configuration == null) {
                     callback.onResult(error);
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
@@ -101,7 +103,8 @@ public class VenmoClient {
                 try {
                     params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
                     JSONObject input = new JSONObject();
-                    input.put("paymentMethodUsage", "MULTI_USE");
+//                    input.put("paymentMethodUsage", "MULTI_USE");
+                    input.put("paymentMethodUsage", "SINGLE_USE");
                     input.put("merchantProfileId", venmoProfileId);
                     input.put("customerClient", "MOBILE_APP");
                     input.put("intent", "CONTINUE");
@@ -111,67 +114,119 @@ public class VenmoClient {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                final String finalVenmoProfileId = venmoProfileId;
                 braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
-                       Log.d("SUCCESS", "we succeeded");
+                        String paymentContextId = parsePaymentContextId(responseBody);
+                        startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, paymentContextId);
                     }
 
                     @Override
                     public void failure(Exception exception) {
-                        Log.d("FAILURE", "we failed");
+                        startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, null);
                     }
                 });
-
-//                sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
-//
-//                activity.startActivityForResult(getLaunchIntent(configuration, venmoProfileId),
-//                        BraintreeRequestCodes.VENMO);
-//                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
             }
         });
     }
 
+    private void startVenmoActivityForResult(FragmentActivity activity, VenmoRequest request, Configuration configuration, String venmoProfileId, @Nullable String paymentContextId) {
+        sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
+        sharedPrefsWriter.persistVenmoPaymentContextId(activity, paymentContextId);
+
+        Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
+        activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+    }
+
+    private static String parsePaymentContextId(String createPaymentContextResponse) {
+        String paymentContextId = null;
+        try {
+            JSONObject data = new JSONObject(createPaymentContextResponse).getJSONObject("data");
+            JSONObject createVenmoPaymentContext = data.getJSONObject("createVenmoPaymentContext");
+            JSONObject venmoPaymentContext = createVenmoPaymentContext.getJSONObject("venmoPaymentContext");
+            paymentContextId = venmoPaymentContext.getString("id");
+        } catch (JSONException ignored) { /* do nothing */ }
+
+        return paymentContextId;
+    }
+
     /**
-     * @param context Android Context
+     * @param context    Android Context
      * @param resultCode a code associated with the Activity result
-     * @param data Android Intent
-     * @param callback {@link VenmoOnActivityResultCallback}
+     * @param data       Android Intent
+     * @param callback   {@link VenmoOnActivityResultCallback}
      */
     public void onActivityResult(final Context context, int resultCode, Intent data, final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
-            String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
+            String paymentContextId = sharedPrefsWriter.getVenmoPaymentContextId(context);
+            if (paymentContextId != null) {
+                JSONObject params = new JSONObject();
+                try {
+                    params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName } } }");
+                    JSONObject variables = new JSONObject();
+                    variables.put("id", paymentContextId);
+                    params.put("variables", variables);
 
-            boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-            boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
+                    braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                JSONObject data = new JSONObject(responseBody).getJSONObject("data");
+                                VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
+                            } catch (JSONException exception) {
+                                callback.onResult(null, exception);
+                            }
+                        }
 
-            if (shouldVault && isClientToken) {
-                VenmoAccount venmoAccount = new VenmoAccount();
-                venmoAccount.setNonce(nonce);
+                        @Override
+                        public void failure(Exception exception) {
+                            callback.onResult(null, exception);
+                        }
+                    });
 
-                tokenizationClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
-                    @Override
-                    public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                       if (tokenizationResponse != null) {
-                           try {
-                               VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(tokenizationResponse);
-                               callback.onResult(venmoAccountNonce, null);
-                               braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
-                           } catch (JSONException e) {
-                               callback.onResult(null, e);
-                           }
-                       } else {
-                           callback.onResult(null, exception);
-                           braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
-                       }
-                    }
-                });
+                } catch (JSONException exception) {
+                    callback.onResult(null, exception);
+                }
+
             } else {
-                String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
-                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
-                callback.onResult(venmoAccountNonce, null);
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
+                String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
+
+
+                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
+
+                if (shouldVault && isClientToken) {
+                    VenmoAccount venmoAccount = new VenmoAccount();
+                    venmoAccount.setNonce(nonce);
+
+                    tokenizationClient.tokenize(venmoAccount, new TokenizeCallback() {
+                        @Override
+                        public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                            if (tokenizationResponse != null) {
+                                try {
+                                    VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(tokenizationResponse);
+                                    callback.onResult(venmoAccountNonce, null);
+                                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                                } catch (JSONException e) {
+                                    callback.onResult(null, e);
+                                }
+                            } else {
+                                callback.onResult(null, exception);
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                            }
+                        }
+                    });
+                } else {
+                    String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
+                    VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
+                    callback.onResult(venmoAccountNonce, null);
+                }
             }
+
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
             callback.onResult(null, new UserCanceledException("User canceled Venmo."));
@@ -182,11 +237,15 @@ public class VenmoClient {
         return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    private Intent getLaunchIntent(Configuration configuration, String profileId) {
+    private Intent getLaunchIntent(Configuration configuration, String profileId, String paymentContextId) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, profileId)
                 .putExtra(EXTRA_ACCESS_TOKEN, configuration.getVenmoAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, configuration.getVenmoEnvironment());
+
+        if (paymentContextId != null) {
+            venmoIntent.putExtra(EXTRA_RESOURCE_ID, paymentContextId);
+        }
 
         try {
             JSONObject braintreeData = new JSONObject();
@@ -199,7 +258,8 @@ public class VenmoClient {
 
             braintreeData.put(META_KEY, meta);
             venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return venmoIntent;
     }
