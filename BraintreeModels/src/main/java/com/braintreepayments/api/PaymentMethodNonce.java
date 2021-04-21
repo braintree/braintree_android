@@ -88,7 +88,7 @@ public class PaymentMethodNonce implements Parcelable {
         }
     };
 
-    static @PaymentMethodType int paymentMethodTypeFromString(String typeString) {
+    private static @PaymentMethodType int paymentMethodTypeFromString(String typeString) {
         switch (typeString) {
             case "CreditCard":
                 return PaymentMethodType.CARD;
