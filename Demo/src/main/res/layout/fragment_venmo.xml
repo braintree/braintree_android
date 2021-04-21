@@ -17,6 +17,6 @@
         android:contentDescription="@string/bt_descriptor_pay_with_venmo"
         android:padding="10dp"
         android:src="@drawable/logo_venmo"
-        android:visibility="gone" />
+        />
 
 </LinearLayout>
