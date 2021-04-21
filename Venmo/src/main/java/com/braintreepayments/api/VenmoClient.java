@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -91,15 +92,42 @@ public class VenmoClient {
                     return;
                 }
 
-                sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
-
                 String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
                     venmoProfileId = configuration.getVenmoMerchantId();
                 }
-                activity.startActivityForResult(getLaunchIntent(configuration, venmoProfileId),
-                        BraintreeRequestCodes.VENMO);
-                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+
+                JSONObject params = new JSONObject();
+                try {
+                    params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
+                    JSONObject input = new JSONObject();
+                    input.put("paymentMethodUsage", "MULTI_USE");
+                    input.put("merchantProfileId", venmoProfileId);
+                    input.put("customerClient", "MOBILE_APP");
+                    input.put("intent", "CONTINUE");
+                    JSONObject variables = new JSONObject();
+                    variables.put("input", input);
+                    params.put("variables", variables);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                       Log.d("SUCCESS", "we succeeded");
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        Log.d("FAILURE", "we failed");
+                    }
+                });
+
+//                sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
+//
+//                activity.startActivityForResult(getLaunchIntent(configuration, venmoProfileId),
+//                        BraintreeRequestCodes.VENMO);
+//                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
             }
         });
     }
