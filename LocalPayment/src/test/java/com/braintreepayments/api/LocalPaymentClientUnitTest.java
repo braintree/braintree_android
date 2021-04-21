@@ -470,7 +470,6 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentNonce localPaymentNonce = resultCaptor.getValue();
         assertEquals(PaymentMethodType.LOCAL_PAYMENT, localPaymentNonce.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", localPaymentNonce.getString());
-        assertEquals("PayPal", localPaymentNonce.getDescription());
         assertEquals("084afbf1db15445587d30bc120a23b09", localPaymentNonce.getClientMetadataId());
         assertEquals("jon@getbraintree.com", localPaymentNonce.getEmail());
         assertEquals("Jon", localPaymentNonce.getGivenName());

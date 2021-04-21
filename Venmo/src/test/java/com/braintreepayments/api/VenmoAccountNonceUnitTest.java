@@ -22,7 +22,6 @@ public class VenmoAccountNonceUnitTest {
         VenmoAccountNonce venmoAccountNonce =
             VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
 
-        assertEquals("venmojoe", venmoAccountNonce.getDescription());
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
         assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
@@ -31,11 +30,6 @@ public class VenmoAccountNonceUnitTest {
     @Test
     public void getNonce_returnsNonce() {
         assertEquals(NONCE, VENMO_NONCE.getString());
-    }
-
-    @Test
-    public void getDescription_returnsUsername() {
-        assertEquals(USERNAME, VENMO_NONCE.getDescription());
     }
 
     @Test
@@ -53,7 +47,6 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals(PaymentMethodType.VENMO, parceled.getType());
         assertEquals(NONCE, parceled.getString());
-        assertEquals(USERNAME, parceled.getDescription());
         assertEquals(USERNAME, parceled.getUsername());
     }
 }

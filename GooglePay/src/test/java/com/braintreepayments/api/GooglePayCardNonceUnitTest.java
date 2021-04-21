@@ -30,7 +30,6 @@ public class GooglePayCardNonceUnitTest {
 
         assertEquals(PaymentMethodType.GOOGLE_PAY, googlePayCardNonce.getType());
         assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
-        assertEquals("MasterCard 0276", googlePayCardNonce.getDescription());
         assertEquals("Visa", googlePayCardNonce.getCardType());
         assertEquals("11", googlePayCardNonce.getLastTwo());
         assertEquals("1234", googlePayCardNonce.getLastFour());
@@ -104,7 +103,6 @@ public class GooglePayCardNonceUnitTest {
 
         assertEquals(PaymentMethodType.GOOGLE_PAY, googlePayCardNonce.getType());
         assertEquals("fake-google-pay-nonce", parceled.getString());
-        assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("11", parceled.getLastTwo());
         assertEquals("1234", parceled.getLastFour());

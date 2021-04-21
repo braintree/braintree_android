@@ -27,7 +27,6 @@ public class CardNonceUnitTest {
 
         assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
-        assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
@@ -41,7 +40,6 @@ public class CardNonceUnitTest {
         assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
-        assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getThreeDSecureInfo());
@@ -71,7 +69,6 @@ public class CardNonceUnitTest {
         assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
-        assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getThreeDSecureInfo());
@@ -106,7 +103,6 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getBin());
         assertNotNull(cardNonce.getBinData());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
-        assertEquals("", cardNonce.getDescription());
         assertFalse(cardNonce.isDefault());
         assertNull(cardNonce.getAuthenticationInsight());
         assertEquals("", cardNonce.getExpirationMonth());
@@ -121,7 +117,6 @@ public class CardNonceUnitTest {
         assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Unknown", cardNonce.getCardType());
         assertEquals("tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz", cardNonce.getString());
-        assertEquals("", cardNonce.getDescription());
         assertEquals("", cardNonce.getLastTwo());
         assertEquals("", cardNonce.getLastFour());
         assertEquals("", cardNonce.getExpirationMonth());
@@ -155,7 +150,6 @@ public class CardNonceUnitTest {
         assertEquals(PaymentMethodType.CARD, cardNonce.getType());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("123456-12345-12345-a-adfa", parceled.getString());
-        assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
         assertEquals("1111", parceled.getLastFour());
         assertEquals("01", cardNonce.getExpirationMonth());

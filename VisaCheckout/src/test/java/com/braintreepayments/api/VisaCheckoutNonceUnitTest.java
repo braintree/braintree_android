@@ -29,7 +29,6 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
-        assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
         assertFalse(visaCheckoutNonce.isDefault());
         assertEquals("callId", visaCheckoutNonce.getCallId());
 
@@ -99,7 +98,6 @@ public class VisaCheckoutNonceUnitTest {
 
         assertEquals(PaymentMethodType.VISA_CHECKOUT, actual.getType());
         assertEquals(visaCheckoutNonce.getString(), actual.getString());
-        assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
         assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());

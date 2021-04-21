@@ -106,7 +106,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             String description,
             boolean isDefault
     ) {
-        super(nonce, description, isDefault, PaymentMethodType.GOOGLE_PAY);
+        super(nonce, isDefault, PaymentMethodType.GOOGLE_PAY);
         mCardType = cardType;
         mLastTwo = lastTwo;
         mLastFour = lastFour;

@@ -55,7 +55,6 @@ public class PaymentMethodNonceFormatter {
 
     private static String convertGooglePayNonceToString(GooglePayCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
-                "Card Description: " + nonce.getDescription() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing Address: " + formatGooglePayAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping Address: " + formatGooglePayAddress(nonce.getShippingAddress()) + "\n" +

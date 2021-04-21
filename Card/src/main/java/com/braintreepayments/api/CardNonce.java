@@ -151,7 +151,7 @@ public class CardNonce extends PaymentMethodNonce {
     }
 
     private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, PaymentMethodType.CARD);
+        super(nonce, isDefault, PaymentMethodType.CARD);
         mCardType = cardType;
         mLastTwo = lastTwo;
         mLastFour = lastFour;

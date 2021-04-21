@@ -20,7 +20,6 @@ public class LocalPaymentNonceUnitTest {
 
         assertNotNull(result);
         assertEquals(PaymentMethodType.LOCAL_PAYMENT, result.getType());
-        assertEquals("PayPal", result.getDescription());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getString());
         assertEquals("jon@getbraintree.com", result.getEmail());
         assertEquals("836486 of 22321 Park Lake", result.getShippingAddress().getStreetAddress());
@@ -47,7 +46,6 @@ public class LocalPaymentNonceUnitTest {
 
         assertNotNull(parceled);
         assertEquals(PaymentMethodType.LOCAL_PAYMENT, result.getType());
-        assertEquals("PayPal", parceled.getDescription());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.getString());
         assertEquals("jon@getbraintree.com", parceled.getEmail());
         assertEquals("836486 of 22321 Park Lake", parceled.getShippingAddress().getStreetAddress());

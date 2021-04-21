@@ -411,7 +411,6 @@ public class VenmoClientUnitTest {
 
         VenmoAccountNonce result = captor.getValue();
         assertEquals("123456-12345-12345-a-adfa", result.getString());
-        assertEquals("username", result.getDescription());
         assertEquals("username", result.getUsername());
     }
 

@@ -41,7 +41,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     }
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-        super(nonce, username, isDefault, PaymentMethodType.VENMO);
+        super(nonce, isDefault, PaymentMethodType.VENMO);
         mUsername = username;
     }
 

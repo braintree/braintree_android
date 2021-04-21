@@ -32,6 +32,7 @@
   * Move `VisaCheckoutUserData` to `VisaCheckout` module
   * Remove `PaymentMethodNonce#getTypeLabel()` method
   * Remove `PaymentMethodNoncesCallback`
+  * Remove `PaymentMethodNonce#getDescription()` method
 
 ## 4.0.0-beta2
 

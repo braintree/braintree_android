@@ -180,7 +180,6 @@ public class CardClientTest {
                 assertEquals("", cardNonce.getLastTwo());
                 assertNotNull(cardNonce.getThreeDSecureInfo());
                 assertFalse(cardNonce.isDefault());
-                assertEquals("", cardNonce.getDescription());
                 assertNotNull(cardNonce.getString());
 
                 countDownLatch.countDown();

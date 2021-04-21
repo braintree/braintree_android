@@ -16,10 +16,8 @@ public class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String mNonce;
-    private final String mDescription;
     private final boolean mDefault;
 
     private @PaymentMethodType final int mType;
@@ -29,15 +27,13 @@ public class PaymentMethodNonce implements Parcelable {
         int type = paymentMethodTypeFromString(typeString);
 
         String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = inputJson.getString(DESCRIPTION_KEY);
         boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        return new PaymentMethodNonce(nonce, description, isDefault, type);
+        return new PaymentMethodNonce(nonce, isDefault, type);
     }
 
-    PaymentMethodNonce(String nonce, String description, boolean isDefault, @PaymentMethodType int type) {
+    PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type) {
         mNonce = nonce;
-        mDescription = description;
         mDefault = isDefault;
         mType = type;
     }
@@ -49,14 +45,6 @@ public class PaymentMethodNonce implements Parcelable {
      */
     public String getString() {
         return mNonce;
-    }
-
-    /**
-     * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
-     */
-    public String getDescription() {
-        // TODO: find a way to localize this, or move to Drop-In
-        return mDescription;
     }
 
     /**
@@ -78,14 +66,12 @@ public class PaymentMethodNonce implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mNonce);
-        dest.writeString(mDescription);
         dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
         dest.writeInt(mType);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
-        mDescription = in.readString();
         mDefault = in.readByte() > 0;
         mType = in.readInt();
     }

@@ -89,7 +89,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     }
 
     private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, PaymentMethodType.LOCAL_PAYMENT);
+        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;

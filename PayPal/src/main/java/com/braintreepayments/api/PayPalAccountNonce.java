@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -49,8 +48,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private final PayPalCreditFinancing mCreditFinancing;
     private final String mAuthenticateUrl;
 
-    private final String mDescription;
-
     static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         boolean getShippingAddressFromTopLevel = false;
 
@@ -69,7 +66,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         }
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = json.getString(DESCRIPTION_KEY);
         boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         String authenticateUrl = Json.optString(json, "authenticateUrl", null);
@@ -122,11 +118,11 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, description, isDefault);
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault);
     }
 
-    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description, boolean isDefault) {
-        super(nonce, description, isDefault, PaymentMethodType.PAYPAL);
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.PAYPAL);
         mClientMetadataId = clientMetadataId;
         mBillingAddress = billingAddress;
         mShippingAddress = shippingAddress;
@@ -137,7 +133,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         mPayerId = payerId;
         mCreditFinancing = creditFinancing;
         mAuthenticateUrl = authenticateUrl;
-        mDescription = description;
     }
 
     /**
@@ -145,19 +140,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
      */
     public String getEmail() {
         return mEmail;
-    }
-
-    /**
-     * @return The description of this PayPal account for displaying to a customer, either email or
-     * 'PayPal'
-     */
-    @Override
-    public String getDescription() {
-        if (TextUtils.equals(mDescription, "PayPal") && !TextUtils.isEmpty(getEmail())) {
-            return getEmail();
-        } else {
-            return mDescription;
-        }
     }
 
     /**
@@ -239,7 +221,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         dest.writeString(mPayerId);
         dest.writeParcelable(mCreditFinancing, flags);
         dest.writeString(mAuthenticateUrl);
-        dest.writeString(mDescription);
     }
 
     private PayPalAccountNonce(Parcel in) {
@@ -254,7 +235,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         mPayerId = in.readString();
         mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
         mAuthenticateUrl = in.readString();
-        mDescription = in.readString();
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {
