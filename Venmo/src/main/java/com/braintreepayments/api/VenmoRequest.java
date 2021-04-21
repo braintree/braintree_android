@@ -8,6 +8,12 @@ public class VenmoRequest {
     private boolean shouldVault;
     private String profileId;
 
+    private @VenmoPaymentMethodUsage String paymentMethodUsage;
+
+    public VenmoRequest() {
+        paymentMethodUsage = VenmoPaymentMethodUsage.MULTI_USE;
+    }
+
     /**
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
      *                    Vaulting will only occur if a client token with a customer ID is being used.
@@ -40,6 +46,21 @@ public class VenmoRequest {
      */
     public String getProfileId() {
         return profileId;
+    }
+
+    /**
+     * @return {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
+     */
+    public @VenmoPaymentMethodUsage String getPaymentMethodUsage() {
+        return paymentMethodUsage;
+    }
+
+    /**
+     * Set {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
+     * Defaults to {@link VenmoPaymentMethodUsage#MULTI_USE}
+     */
+    public void setPaymentMethodUsage(@VenmoPaymentMethodUsage String paymentMethodUsage) {
+        this.paymentMethodUsage = paymentMethodUsage;
     }
 }
 

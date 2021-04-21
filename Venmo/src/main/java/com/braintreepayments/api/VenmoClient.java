@@ -103,8 +103,7 @@ public class VenmoClient {
                 try {
                     params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
                     JSONObject input = new JSONObject();
-//                    input.put("paymentMethodUsage", "MULTI_USE");
-                    input.put("paymentMethodUsage", "SINGLE_USE");
+                    input.put("paymentMethodUsage", request.getPaymentMethodUsage());
                     input.put("merchantProfileId", venmoProfileId);
                     input.put("customerClient", "MOBILE_APP");
                     input.put("intent", "CONTINUE");
@@ -175,7 +174,8 @@ public class VenmoClient {
                         public void success(String responseBody) {
                             try {
                                 JSONObject data = new JSONObject(responseBody).getJSONObject("data");
-                                VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
+                                VenmoAccountNonce nonce = VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
+                                callback.onResult(nonce, null);
                             } catch (JSONException exception) {
                                 callback.onResult(null, exception);
                             }
