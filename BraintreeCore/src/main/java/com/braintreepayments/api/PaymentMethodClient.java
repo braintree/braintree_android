@@ -67,7 +67,7 @@ public class PaymentMethodClient {
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
      *  @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
-     *        payment methods will be ordered my most recently used.
+     *        payment methods will be ordered by most recently added.
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
     public void getPaymentMethodNonces(boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
