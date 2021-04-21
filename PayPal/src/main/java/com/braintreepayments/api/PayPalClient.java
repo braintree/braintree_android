@@ -239,22 +239,23 @@ public class PayPalClient {
                             payPalAccount.setIntent(payPalIntent);
                         }
 
-                        tokenizationClient.tokenize(payPalAccount, new PaymentMethodNonceCallback() {
+                        tokenizationClient.tokenize(payPalAccount, new TokenizeCallback() {
                             @Override
-                            public void success(PaymentMethodNonce paymentMethodNonce) {
-                                if (paymentMethodNonce instanceof PayPalAccountNonce) {
-                                    PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
+                            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                                if (tokenizationResponse != null) {
+                                    try {
+                                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
+                                        if (payPalAccountNonce.getCreditFinancing() != null) {
+                                            braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                        }
+                                        callback.onResult(payPalAccountNonce, null);
 
-                                    if (payPalAccountNonce.getCreditFinancing() != null) {
-                                        braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                    } catch (JSONException e) {
+                                        callback.onResult(null, e);
                                     }
-                                    callback.onResult(payPalAccountNonce, null);
+                                } else {
+                                    callback.onResult(null, exception);
                                 }
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                callback.onResult(null, exception);
                             }
                         });
 

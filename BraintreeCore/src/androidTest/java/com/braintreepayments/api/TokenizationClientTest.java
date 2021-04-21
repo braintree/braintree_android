@@ -42,17 +42,21 @@ public class TokenizationClientTest {
         PayPalAccount paypalAccount = new PayPalAccount();
         paypalAccount.setUrlResponseData(urlResponseData);
 
-        tokenizationClient.tokenize(paypalAccount, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(paypalAccount, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
-                latch.countDown();
-            }
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
 
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
+                try {
+                    PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
+                    assertIsANonce(payPalAccountNonce.getString());
+                    assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
+                    latch.countDown();
+                } catch (JSONException e) {
+                    fail("This should not fail");
+                }
             }
         });
 

@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,10 +50,20 @@ public class ThreeDSecureClientTest {
         card.setNumber("4000000000000051");
         card.setExpirationDate("12/20");
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                String nonce = paymentMethodNonce.getNonce();
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
+                CardNonce cardNonce = null;
+                try {
+                    cardNonce = new CardNonce(tokenizationResponse);
+                } catch (JSONException e) {
+                    fail("This should not fail");
+                }
+                String nonce = cardNonce.getString();
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 request.setNonce(nonce);
@@ -62,7 +74,7 @@ public class ThreeDSecureClientTest {
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                         CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
-                        assertIsANonce(cardNonce.getNonce());
+                        assertIsANonce(cardNonce.getString());
                         assertEquals("51", cardNonce.getLastTwo());
 
                         ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
@@ -72,11 +84,6 @@ public class ThreeDSecureClientTest {
                         mCountDownLatch.countDown();
                     }
                 });
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 

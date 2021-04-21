@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -13,34 +14,22 @@ import static junit.framework.Assert.assertEquals;
 public class VenmoAccountNonceUnitTest {
 
     private static final String NONCE = "nonce";
-    private static final String DESCRIPTION = "description";
     private static final String USERNAME = "username";
-    private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, DESCRIPTION, USERNAME);
+    private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, USERNAME, false);
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.
-                fromJson(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE);
+        VenmoAccountNonce venmoAccountNonce =
+            VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
 
-        assertEquals("venmojoe", venmoAccountNonce.getDescription());
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
-        assertEquals("fake-venmo-nonce", venmoAccountNonce.getNonce());
-        assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
-    }
-
-    @Test
-    public void getTypeLabel_returnsPayWithVenmo() {
-        assertEquals("Venmo", VENMO_NONCE.getTypeLabel());
+        assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
+        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
     }
 
     @Test
     public void getNonce_returnsNonce() {
-        assertEquals(NONCE, VENMO_NONCE.getNonce());
-    }
-
-    @Test
-    public void getDescription_returnsDescription() {
-        assertEquals(DESCRIPTION, VENMO_NONCE.getDescription());
+        assertEquals(NONCE, VENMO_NONCE.getString());
     }
 
     @Test
@@ -56,8 +45,8 @@ public class VenmoAccountNonceUnitTest {
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(NONCE, parceled.getNonce());
-        assertEquals(DESCRIPTION, parceled.getDescription());
+        assertEquals(PaymentMethodType.VENMO, parceled.getType());
+        assertEquals(NONCE, parceled.getString());
         assertEquals(USERNAME, parceled.getUsername());
     }
 }

@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Add `PaymentMethodType` enum
+* Add `PaymentMethodNonce#getType()` method
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
@@ -11,6 +13,26 @@
   * Make `VisaCheckoutAccount` package-private
   * Make `VenmoAccount` package-private
   * Return an `IllegalArgumentException` instead of `GoogleApiClientException` to `GooglePayIsReadyToPayCallback#onResult()` when activity is null
+  * Refactor `GetPaymentMethodNoncesCallback` to have a single `onResult()` method instead of `success()` and `failure()`
+  * Remove `Context` parameter from `PaymentMethodClient#getPaymentMethodNonces`
+  * Rename `PaymentMethodNonce#getNonce()` to `getString()`
+  * Move `VenmoAccountNonce` to `Venmo` module
+  * Move `AuthenticationInsight` to `Card` module
+  * Move `BinData` to `Card` module
+  * Move `Card` to `Card` module
+  * Move `CardNonce` to `Card` module
+  * Move `ThreeDSecureInfo` to `Card` module
+  * Move `PayPalAccountNonce` to `PayPal` module
+  * Move `PayPalCreditFinancing` to `PayPal` module
+  * Move `PayPalCreditFinancingAmount` to `PayPal` module
+  * Move `UnionPayCapabilities` to `UnionPay` module
+  * Move `UnionPayCard` to `UnionPay` module
+  * Move `VisaCheckoutAddress` to `VisaCheckout` module
+  * Move `VisaCheckoutNonce` to `VisaCheckout` module
+  * Move `VisaCheckoutUserData` to `VisaCheckout` module
+  * Remove `PaymentMethodNonce#getTypeLabel()` method
+  * Remove `PaymentMethodNoncesCallback`
+  * Remove `PaymentMethodNonce#getDescription()` method
 
 ## 4.0.0-beta2
 

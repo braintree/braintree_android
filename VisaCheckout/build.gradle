@@ -32,6 +32,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
     api(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

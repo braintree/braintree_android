@@ -7,6 +7,9 @@ import com.visa.checkout.Environment;
 import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -97,17 +100,21 @@ public class VisaCheckoutClient {
      * @param callback {@link VisaCheckoutTokenizeCallback}
      */
     public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
-        tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(new VisaCheckoutAccount(visaPaymentSummary), new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                callback.onResult(paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
-            }
-
-            @Override
-            public void failure(Exception e) {
-                callback.onResult(null, e);
-                braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (tokenizationResponse != null) {
+                    try {
+                        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(tokenizationResponse);
+                        callback.onResult(visaCheckoutNonce, null);
+                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
+                    callback.onResult(null, exception);
+                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                }
             }
         });
     }

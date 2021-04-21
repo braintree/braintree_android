@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
@@ -48,19 +51,25 @@ public class CardClient {
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                dataCollector.collectRiskData(context, paymentMethodNonce);
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (tokenizationResponse != null) {
+                    try {
+                        CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
+                        dataCollector.collectRiskData(context, cardNonce);
 
-                callback.onResult((CardNonce) paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent("card.nonce-received");
-            }
+                        callback.onResult(cardNonce, null);
+                        braintreeClient.sendAnalyticsEvent("card.nonce-received");
 
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                        braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                    }
+                } else {
+                    callback.onResult(null, exception);
+                    braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                }
             }
         });
     }

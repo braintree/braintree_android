@@ -6,102 +6,64 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.List;
-
-import static com.braintreepayments.api.PaymentMethodNonce.parsePaymentMethodNonces;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class PaymentMethodNonceUnitTest {
 
     @Test
-    public void parsePaymentMethods_parsesCards() throws JSONException {
-        List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE);
+    public void constructor_parsesCardFromPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHOD_CARD));
 
-        assertTrue(paymentMethodNonces.get(0) instanceof CardNonce);
-        assertEquals("Visa", paymentMethodNonces.get(0).getTypeLabel());
-        assertEquals("123456-12345-12345-a-adfa", paymentMethodNonces.get(0).getNonce());
-        assertEquals("ending in ••11", paymentMethodNonces.get(0).getDescription());
-        assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
-        assertTrue(paymentMethodNonces.get(0).isDefault());
+        assertTrue(nonce.isDefault());
+        assertEquals(PaymentMethodType.CARD, nonce.getType());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getString());
     }
 
     @Test
-    public void parsePaymentMethods_parsesPayPal() throws JSONException {
-        List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE);
+    public void constructor_parsesPayPalFromPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT));
 
-        assertTrue(paymentMethodNonces.get(1) instanceof PayPalAccountNonce);
-        assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", paymentMethodNonces.get(1).getNonce());
-        assertEquals("with email paypalaccount@example.com", paymentMethodNonces.get(1).getDescription());
-        assertFalse(paymentMethodNonces.get(1).isDefault());
+        assertFalse(nonce.isDefault());
+        assertEquals(PaymentMethodType.PAYPAL, nonce.getType());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getString());
     }
 
     @Test
-    public void parsePaymentMethods_parsesVenmoAccountNonce() throws JSONException {
-        List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE);
+    public void constructor_parsesVenmoFromPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHOD_VENMO_PLAIN_OBJECT));
 
-        assertTrue(paymentMethodNonces.get(2) instanceof VenmoAccountNonce);
-        assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
-        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(2).getNonce());
-        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(2)).getUsername());
+        assertFalse(nonce.isDefault());
+        assertEquals(PaymentMethodType.VENMO, nonce.getType());
+        assertEquals("fake-venmo-nonce", nonce.getString());
     }
 
     @Test
-    public void parsePaymentMethods_doesNotParseGooglePayCardNonces() throws JSONException {
-        List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_GOOGLE_PAY_RESPONSE);
+    public void constructor_parsesVisaCheckoutFromPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.VISA_CHECKOUT_NONCE_PLAIN_OBJECT));
 
-        assertEquals(0, paymentMethodNonces.size());
+        assertFalse(nonce.isDefault());
+        assertEquals(PaymentMethodType.VISA_CHECKOUT, nonce.getType());
+        assertEquals("123456-12345-12345-a-adfa", nonce.getString());
     }
 
     @Test
-    public void parsePaymentMethod_parsesCards() throws JSONException {
-        JSONObject card = new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
+    public void constructor_parsesLocalPaymentPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.LOCAL_PAYMENT_PLAIN_OBJECT));
 
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(card, CardNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof CardNonce);
-        assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
+        assertFalse(nonce.isDefault());
+        assertEquals(PaymentMethodType.PAYPAL, nonce.getType());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getString());
     }
 
     @Test
-    public void parsePaymentMethod_parsesPayPal() throws JSONException {
-        JSONObject paypal = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT);
+    public void constructor_parsesGooglePayPlainJSONObject() throws JSONException {
+        PaymentMethodNonce nonce = PaymentMethodNonce.fromJSON(new JSONObject(Fixtures.GOOGLE_PAY_PLAIN_OBJECT));
 
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(paypal, PayPalAccountNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
-        assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
-    }
-
-    @Test
-    public void parsePaymentMethod_parsesCardResponses() throws JSONException {
-        JSONObject card = new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
-
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(card, CardNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof CardNonce);
-        assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
-    }
-
-    @Test
-    public void parsePaymentMethod_parsesPayPalResponses() throws JSONException {
-        JSONObject paypal = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
-
-        PaymentMethodNonce paymentMethodNonce = PaymentMethodNonce.parsePaymentMethodNonces(paypal, PayPalAccountNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
-        assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
-
-        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
-        assertNotNull(payPalAccountNonce.getCreditFinancing());
-        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
+        assertFalse(nonce.isDefault());
+        assertEquals(PaymentMethodType.GOOGLE_PAY, nonce.getType());
+        assertEquals("fake-google-pay-nonce", nonce.getString());
     }
 }

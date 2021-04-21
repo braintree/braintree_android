@@ -22,15 +22,14 @@ public class VisaCheckoutNonceUnitTest {
 
     @Test
     public void fromJson_createsVisaCheckoutNonce() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(
-                Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(
+                Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
+        assertEquals(PaymentMethodType.VISA_CHECKOUT, visaCheckoutNonce.getType());
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getNonce());
-        assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
+        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
         assertFalse(visaCheckoutNonce.isDefault());
-        assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
         assertEquals("callId", visaCheckoutNonce.getCallId());
 
         assertNotNull(visaCheckoutNonce.getBillingAddress());
@@ -83,22 +82,22 @@ public class VisaCheckoutNonceUnitTest {
         visaCheckoutCardsJson.put(0, visaCheckoutNonceJson);
         visaCheckoutResponseJson.put("visaCheckoutCards", visaCheckoutCardsJson);
 
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(visaCheckoutResponseJson.toString());
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(visaCheckoutResponseJson);
 
         assertEquals("", visaCheckoutNonce.getCallId());
     }
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
         Parcel parcel = Parcel.obtain();
         visaCheckoutNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         VisaCheckoutNonce actual = VisaCheckoutNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(visaCheckoutNonce.getNonce(), actual.getNonce());
-        assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
+        assertEquals(PaymentMethodType.VISA_CHECKOUT, actual.getType());
+        assertEquals(visaCheckoutNonce.getString(), actual.getString());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
         assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());

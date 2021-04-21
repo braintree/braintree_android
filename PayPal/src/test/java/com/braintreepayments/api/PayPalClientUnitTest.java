@@ -359,7 +359,7 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
@@ -405,7 +405,7 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
@@ -485,12 +485,9 @@ public class PayPalClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenPayPalCreditPresent_sendsAnalyticsEvents() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
-        when(payPalAccountNonce.getCreditFinancing()).thenReturn(mock(PayPalCreditFinancing.class));
-
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(payPalAccountNonce)
+                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

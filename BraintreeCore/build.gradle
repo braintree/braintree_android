@@ -55,6 +55,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.work:work-testing:2.4.0'
+    androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
 

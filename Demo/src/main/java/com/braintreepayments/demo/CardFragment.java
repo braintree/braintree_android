@@ -20,12 +20,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
@@ -343,7 +343,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(activity)) {
             mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
-            String nonce = paymentMethodNonce.getNonce();
+            String nonce = paymentMethodNonce.getString();
 
             americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
                 if (rewardsBalance != null) {
@@ -410,7 +410,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setAmount("10");
         threeDSecureRequest.setEmail("test@email.com");
         threeDSecureRequest.setBillingAddress(billingAddress);
-        threeDSecureRequest.setNonce(cardNonce.getNonce());
+        threeDSecureRequest.setNonce(cardNonce.getString());
         threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);

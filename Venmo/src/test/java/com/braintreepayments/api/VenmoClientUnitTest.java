@@ -16,13 +16,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ACCESS_TOKEN;
 import static com.braintreepayments.api.VenmoClient.EXTRA_BRAINTREE_DATA;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_PAYMENT_METHOD_NONCE;
 import static com.braintreepayments.api.VenmoClient.EXTRA_USERNAME;
-import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -410,8 +410,7 @@ public class VenmoClientUnitTest {
         verify(onActivityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         VenmoAccountNonce result = captor.getValue();
-        assertEquals("123456-12345-12345-a-adfa", result.getNonce());
-        assertEquals("username", result.getDescription());
+        assertEquals("123456-12345-12345-a-adfa", result.getString());
         assertEquals("username", result.getUsername());
     }
 
@@ -459,7 +458,7 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
-        verify(tokenizationClient).tokenize(accountBuilderCaptor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
 
         VenmoAccount venmoAccount = accountBuilderCaptor.getValue();
         JSONObject venmoJSON = new JSONObject(venmoAccount.buildJSON());
@@ -479,11 +478,11 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
 
-        verify(tokenizationClient, never()).tokenize(any(VenmoAccount.class), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient, never()).tokenize(any(VenmoAccount.class), any(TokenizeCallback.class));
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws InvalidArgumentException {
+    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -495,19 +494,18 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
-        tokenizeNonceCallback.success(venmoAccountNonce);
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
 
-        verify(onActivityResultCallback).onResult(venmoAccountNonce, null);
+        verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException {
+    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -519,13 +517,12 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
-        VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
-        tokenizeNonceCallback.success(venmoAccountNonce);
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
@@ -546,13 +543,13 @@ public class VenmoClientUnitTest {
                 .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "nonce");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         Exception authException = new AuthorizationException("Bad fingerprint");
-        tokenizeNonceCallback.failure(authException);
+        tokenizeNonceCallback.onResult(null, authException);
 
         verify(onActivityResultCallback).onResult(null, authException);
     }
@@ -573,13 +570,13 @@ public class VenmoClientUnitTest {
                 .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "nonce");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
 
-        PaymentMethodNonceCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         Exception authException = new AuthorizationException("Bad fingerprint");
-        tokenizeNonceCallback.failure(authException);
+        tokenizeNonceCallback.onResult(null, authException);
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }

@@ -1,11 +1,11 @@
 package com.braintreepayments.demo;
 
 import com.braintreepayments.api.BinData;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VisaCheckoutAddress;
@@ -55,7 +55,6 @@ public class PaymentMethodNonceFormatter {
 
     private static String convertGooglePayNonceToString(GooglePayCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
-                "Card Description: " + nonce.getDescription() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing Address: " + formatGooglePayAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping Address: " + formatGooglePayAddress(nonce.getShippingAddress()) + "\n" +

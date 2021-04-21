@@ -155,7 +155,7 @@ public class DataCollector {
 
                         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                                 .setApplicationGuid(payPalDataCollector.getPayPalInstallationGUID(context))
-                                .setClientMetadataId(paymentMethodNonce.getNonce())
+                                .setClientMetadataId(paymentMethodNonce.getString())
                                 .setDisableBeacon(true)
                                 .setAdditionalData(additionalProperties);
 

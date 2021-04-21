@@ -1338,6 +1338,24 @@ object Fixtures {
     """
     // endregion
 
+    // language=JSON
+    const val PAYMENT_METHOD_CARD = """
+       {
+         "type": "CreditCard",
+         "nonce": "123456-12345-12345-a-adfa",
+         "description": "ending in ••11",
+         "default": true,
+         "isLocked": false,
+         "securityQuestions": [],
+         "details":
+         {
+           "cardType": "Visa",
+           "lastTwo": "11",
+           "lastFour": "1111"
+         }
+       }
+    """
+
     // region Payment Methods
     // language=JSON
     const val PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE = """
@@ -1398,6 +1416,54 @@ object Fixtures {
               }
             }
           ]
+        }
+    """
+
+    // language=JSON
+    const val TOKENIZE_CARD_SUCCESS_RESPONSE = """
+        {
+          "creditCards": [
+            {
+              "type": "CreditCard",
+              "nonce": "3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1",
+              "description": "ending in ••11",
+              "consumed": false,
+              "threeDSecureInfo": null,
+              "details": {
+                "bin": "411111",
+                "lastTwo": "11",
+                "lastFour": "1111",
+                "cardType": "Visa",
+                "cardholderName": null,
+                "expirationYear": "2022",
+                "expirationMonth": "02"
+              },
+              "binData": {
+                "prepaid": "Unknown",
+                "healthcare": "Unknown",
+                "debit": "Unknown",
+                "durbinRegulated": "Unknown",
+                "commercial": "Unknown",
+                "payroll": "Unknown",
+                "issuingBank": "Unknown",
+                "countryOfIssuance": "Unknown",
+                "productId": "Unknown"
+              }
+            }
+          ]
+        }
+    """
+
+    // language=JSON
+    const val GOOGLE_PAY_PLAIN_OBJECT = """
+        {
+          "type": "AndroidPayCard",
+          "nonce": "fake-google-pay-nonce",
+          "description": "Google Pay",
+          "details": {
+            "cardType": "Visa",
+            "lastTwo": "11"
+          }
         }
     """
 
@@ -1482,6 +1548,34 @@ object Fixtures {
         }
     """
 
+    const val LOCAL_PAYMENT_PLAIN_OBJECT = """
+        {
+          "type": "PayPalAccount",
+          "nonce": "e11c9c39-d6a4-0305-791d-bfe680ef2d5d",
+          "description": "PayPal",
+          "consumed": false,
+          "details": {
+            "correlationId": "084afbf1db15445587d30bc120a23b09",
+            "payerInfo": {
+              "email": "jon@getbraintree.com",
+              "firstName": "Jon",
+              "lastName": "Doe",
+              "payerId": "9KQSUZTL7YZQ4",
+              "shippingAddress": {
+                "recipientName": "Jon Doe",
+                "line1": "836486 of 22321 Park Lake",
+                "line2": "Apt B",
+                "city": "Den Haag",
+                "state": "CA",
+                "postalCode": "2585 GJ",
+                "countryCode": "NL"
+              },
+              "countryCode": "NL"
+            }
+          }
+        }
+    """
+
     // language=JSON
     const val PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE = """
         {
@@ -1557,6 +1651,36 @@ object Fixtures {
                   "totalInterest": {
                     "currency": "USD",
                     "value": "0.00"
+                  }
+                }
+              }
+            }
+          ]
+        }
+    """
+
+    // language=JSON
+    const val PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITH_DEFAULT_DESCRIPTION = """
+        {
+          "paypalAccounts": [
+            {
+              "authenticateUrl": "fake-authenticate-url",
+              "type": "PayPalAccount",
+              "nonce": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+              "description": "PayPal",
+              "default": false,
+              "isLocked": false,
+              "securityQuestions": [],
+              "details": {
+                "email": "paypalaccount@example.com",
+                "payerInfo": {
+                  "accountAddress": {
+                    "street1": "123 Fake St.",
+                    "street2": "Apt. 3",
+                    "city": "Oakland",
+                    "state": "CA",
+                    "postalCode": "94602",
+                    "country": "US"
                   }
                 }
               }
@@ -1694,6 +1818,19 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYMENT_METHOD_VENMO_PLAIN_OBJECT = """
+        {
+          "type": "VenmoAccount",
+          "nonce": "fake-venmo-nonce",
+          "description": "VenmoAccount",
+          "details": {
+            "cardType": "Visa",
+            "username": "happy-venmo-joe"
+          }
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE = """
         {
           "visaCheckoutCards":[{
@@ -1750,6 +1887,64 @@ object Fixtures {
           }]
         }
     """
+
+    // language=JSON
+    const val VISA_CHECKOUT_NONCE_PLAIN_OBJECT = """
+        {
+            "type": "VisaCheckoutCard",
+            "nonce": "123456-12345-12345-a-adfa",
+            "description": "ending in ••11",
+            "default": false,
+            "details":
+            {
+              "cardType": "Visa",
+              "lastTwo": "11"
+            },
+            "billingAddress": {
+              "firstName": "billingFirstName",
+              "lastName": "billingLastName",
+              "streetAddress": "billingStreetAddress",
+              "extendedAddress": "billingExtendedAddress",
+              "locality": "billingLocality",
+              "region": "billingRegion",
+              "postalCode": "billingPostalCode",
+              "countryCode": "billingCountryCode",
+              "phoneNumber": "phoneNumber"
+            },
+            "shippingAddress": {
+              "firstName": "shippingFirstName",
+              "lastName": "shippingLastName",
+              "streetAddress": "shippingStreetAddress",
+              "extendedAddress": "shippingExtendedAddress",
+              "locality": "shippingLocality",
+              "region": "shippingRegion",
+              "postalCode": "shippingPostalCode",
+              "countryCode": "shippingCountryCode",
+              "phoneNumber": "phoneNumber"
+            },
+            "userData": {
+              "userFirstName": "userFirstName",
+              "userLastName": "userLastName",
+              "userFullName": "userFullName",
+              "userName": "userUserName",
+              "userEmail": "userEmail"
+            },
+            "callId": "callId",
+            "binData": {
+              "prepaid": "Unknown",
+              "healthcare": "Yes",
+              "debit": "No",
+              "durbinRegulated": "Unknown",
+              "commercial": "Unknown",
+              "payroll": "Unknown",
+              "issuingBank": "Unknown",
+              "countryOfIssuance": "Something",
+              "productId": "123"
+            }
+        
+        }
+    """
+
     // endregion
 
     // region PayPal

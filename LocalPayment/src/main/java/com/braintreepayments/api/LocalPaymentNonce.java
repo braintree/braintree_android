@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,9 +10,13 @@ import org.json.JSONObject;
  *
  * @see PaymentMethodNonce
  */
-public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable {
+public class LocalPaymentNonce extends PaymentMethodNonce {
 
-    static final String API_RESOURCE_KEY = "paypalAccounts";
+    private static final String API_RESOURCE_KEY = "paypalAccounts";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
@@ -28,70 +31,74 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
     private static final String TYPE_KEY = "type";
 
-    private String mClientMetadataId;
-    private PostalAddress mBillingAddress;
-    private PostalAddress mShippingAddress;
-    private String mGivenName;
-    private String mSurname;
-    private String mPhone;
-    private String mEmail;
-    private String mPayerId;
-    private String mType;
+    private final String mClientMetadataId;
+    private final PostalAddress mBillingAddress;
+    private final PostalAddress mShippingAddress;
+    private final String mGivenName;
+    private final String mSurname;
+    private final String mPhone;
+    private final String mEmail;
+    private final String mPayerId;
+    private final String mType;
 
-    /**
-     * Convert an API response to a {@link LocalPaymentNonce}.
-     *
-     * @param json Raw JSON representation of a {@link LocalPaymentNonce}.
-     * @return {@link LocalPaymentNonce} for use in payment method selection UIs.
-     */
-    static LocalPaymentNonce fromJson(String json) throws JSONException {
-        LocalPaymentNonce localPaymentNonce = new LocalPaymentNonce();
-        localPaymentNonce.fromJson(LocalPaymentNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
-
-        return localPaymentNonce;
-    }
-
-    /**
-     * Generates a {@link LocalPaymentNonce} from the {@link JSONObject}.
-     *
-     * @param json {@link JSONObject} that holds properties for {@link LocalPaymentNonce}.
-     * @throws JSONException if object could not be constructed from JSON.
-     */
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
-
+    static LocalPaymentNonce fromJSON(JSONObject inputJson) throws JSONException {
+        JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
-        mEmail = Json.optString(details, EMAIL_KEY, null);
-        mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
-        mType = Json.optString(json, TYPE_KEY, "PayPalAccount");
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String email = Json.optString(details, EMAIL_KEY, null);
+        String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
+        String type = Json.optString(json, TYPE_KEY, "PayPalAccount");
 
+        PostalAddress billingAddress;
+        PostalAddress shippingAddress;
+        String givenName = null;
+        String surname = null;
+        String phone = null;
+        String payerId = null;
         try {
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
 
-            JSONObject billingAddress;
+            JSONObject billingAddressJson;
             if (payerInfo.has(ACCOUNT_ADDRESS_KEY)) {
-                billingAddress = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
+                billingAddressJson = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
             } else {
-                billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+                billingAddressJson = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
             }
 
-            JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
+            JSONObject shippingAddressJson = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
 
-            mBillingAddress = PostalAddressParser.fromJson(billingAddress);
-            mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
+            billingAddress = PostalAddressParser.fromJson(billingAddressJson);
+            shippingAddress = PostalAddressParser.fromJson(shippingAddressJson);
 
-            mGivenName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
-            mSurname = Json.optString(payerInfo, LAST_NAME_KEY, "");
-            mPhone = Json.optString(payerInfo, PHONE_KEY, "");
-            mPayerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
+            givenName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
+            surname = Json.optString(payerInfo, LAST_NAME_KEY, "");
+            phone = Json.optString(payerInfo, PHONE_KEY, "");
+            payerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
-            if(mEmail == null) {
-                mEmail = Json.optString(payerInfo, EMAIL_KEY, null);
+            if(email == null) {
+                email = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
-            mBillingAddress = new PostalAddress();
-            mShippingAddress = new PostalAddress();
+            billingAddress = new PostalAddress();
+            shippingAddress = new PostalAddress();
         }
+
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, description, isDefault);
+    }
+
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT);
+        mClientMetadataId = clientMetadataId;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mGivenName = givenName;
+        mSurname = surname;
+        mPhone = phone;
+        mEmail = email;
+        mPayerId = payerId;
+        mType = type;
     }
 
     /**
@@ -99,22 +106,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
      */
     public String getEmail() {
         return mEmail;
-    }
-
-    /**
-     * @return The description of this local payment for displaying to a customer
-     */
-    @Override
-    public String getDescription() {
-        return super.getDescription();
-    }
-
-    /**
-     * @return The type of this {@link PaymentMethodNonce}
-     */
-    @Override
-    public String getTypeLabel() {
-        return mType;
     }
 
     /**
@@ -165,8 +156,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable 
     public String getPayerId(){
         return mPayerId;
     }
-
-    LocalPaymentNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

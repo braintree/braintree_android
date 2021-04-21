@@ -122,22 +122,26 @@ public class VenmoClient {
                 VenmoAccount venmoAccount = new VenmoAccount();
                 venmoAccount.setNonce(nonce);
 
-                tokenizationClient.tokenize(venmoAccount, new PaymentMethodNonceCallback() {
+                tokenizationClient.tokenize(venmoAccount, new TokenizeCallback() {
                     @Override
-                    public void success(PaymentMethodNonce paymentMethodNonce) {
-                        callback.onResult((VenmoAccountNonce) paymentMethodNonce, null);
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
-                    }
-
-                    @Override
-                    public void failure(Exception exception) {
-                        callback.onResult(null, exception);
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                    public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                       if (tokenizationResponse != null) {
+                           try {
+                               VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(tokenizationResponse);
+                               callback.onResult(venmoAccountNonce, null);
+                               braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                           } catch (JSONException e) {
+                               callback.onResult(null, e);
+                           }
+                       } else {
+                           callback.onResult(null, exception);
+                           braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                       }
                     }
                 });
             } else {
                 String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
-                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
+                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
                 callback.onResult(venmoAccountNonce, null);
             }
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {

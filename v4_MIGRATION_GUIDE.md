@@ -95,7 +95,7 @@ public class AmericanExpressActivity extends AppCompatActivity {
   }
 
   private void getAmexRewardsBalance(CardNonce cardNonce) {
-    String nonceString = cardNonce.getNonce();
+    String nonceString = cardNonce.getString();
     americanExpressClient.getRewardsBalance(nonceString, "USD", (rewardsBalance, error) -> {
       if (rewardsBalance != null) {
         // display rewards amount to user
@@ -147,7 +147,7 @@ public class CardActivity extends AppCompatActivity {
     cardClient.tokenize(this, card, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
-        String nonce = cardNonce.getNonce();
+        String nonce = cardNonce.getString();
       } else {
         // handle error
       }
@@ -235,7 +235,7 @@ public class LocalPaymentActivity extends AppCompatActivity {
       localPaymentClient.onBrowserSwitchResult(this, browserSwitchResult, (localPaymentNonce, error) -> {
         if (localPaymentNonce) {
           // send this nonce to your server
-          String nonce = localPaymentNonce.getNonce();
+          String nonce = localPaymentNonce.getString();
         } else {
           // handle result
         }
@@ -345,7 +345,7 @@ public class GooglePayActivity extends AppCompatActivity {
       googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
         if (paymentMethodNonce != null) {
           // send this nonce to your server
-          String nonce = paymentMethodNonce.getNonce();
+          String nonce = paymentMethodNonce.getString();
         } else {
           // handle error
         }
@@ -395,7 +395,7 @@ public class PayPalActivity extends AppCompatActivity {
       payPalClient.onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
         if (payPalAccountNonce != null) {
           // Send nonce to server
-          String nonce = payPalNonce.getNonce();
+          String nonce = payPalNonce.getString();
         } else {
           // handle error
         }
@@ -514,7 +514,7 @@ public class VisaCheckoutActivity extends AppCompatActivity {
     visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
       if (paymentMethodNonce != null) {
         // send this nonce to your server
-        String nonce = paymentMethodNonce.getNonce();
+        String nonce = paymentMethodNonce.getString();
       } else {
         // handle error
       }
@@ -530,7 +530,6 @@ The Union Pay feature is now supported by implementing the following dependencie
 ```groovy
 dependencies {
   implementation 'com.braintreepayments.api:union-pay:4.0.0-beta2'
-  implementation 'com.braintreepayments.api:card:4.0.0-beta2'
 }
 ```
 
@@ -586,7 +585,7 @@ public class UnionPayActivity extends AppCompatActivity {
     unionPayClient.tokenize(unionPayCard, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
-        String nonce = cardNonce.getNonce();
+        String nonce = cardNonce.getString();
       } else {
         // handle error
       }
@@ -645,7 +644,7 @@ public class VenmoActivity extends AppCompatActivity {
       venmoClient.onActivityResult(this, resultCode, data, (venmoAccountNonce, error) -> {
         if (venmoAccountNonce != null) {
           // send nonce to server
-          String nonce = venmoAccountNonce.getNonce();
+          String nonce = venmoAccountNonce.getString();
         } else {
           // handle error
         }
@@ -762,7 +761,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     threeDSecureRequest.setAmount("10");
     threeDSecureRequest.setEmail("test@email.com");
     threeDSecureRequest.setBillingAddress(billingAddress);
-    threeDSecureRequest.setNonce(cardNonce.getNonce());
+    threeDSecureRequest.setNonce(cardNonce.getString());
     threeDSecureRequest.setShippingMethod(ThreeDSecureShippingMethod.GROUND);
     threeDSecureRequest.setAdditionalInformation(additionalInformation);
 
@@ -779,7 +778,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
     if (threeDSecureResult != null) {
       // send this nonce to your server
-      String nonce = threeDSecureResult.getTokenizedCard().getNonce();
+      String nonce = threeDSecureResult.getTokenizedCard().getString();
     } else {
       // handle error
     }

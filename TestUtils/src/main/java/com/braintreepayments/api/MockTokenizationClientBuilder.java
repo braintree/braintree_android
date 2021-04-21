@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import org.json.JSONObject;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -10,10 +11,10 @@ import static org.mockito.Mockito.mock;
 public class MockTokenizationClientBuilder {
 
     private Exception error;
-    private PaymentMethodNonce successNonce;
+    private JSONObject successResponse;
 
-    public MockTokenizationClientBuilder successNonce(PaymentMethodNonce successNonce) {
-        this.successNonce = successNonce;
+    public MockTokenizationClientBuilder successResponse(JSONObject successResponse) {
+        this.successResponse = successResponse;
         return this;
     }
 
@@ -27,16 +28,12 @@ public class MockTokenizationClientBuilder {
 
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                PaymentMethodNonceCallback listener = (PaymentMethodNonceCallback) invocation.getArguments()[1];
-                if (successNonce != null) {
-                    listener.success(successNonce);
-                } else if (error != null) {
-                    listener.failure(error);
-                }
+            public Void answer(InvocationOnMock invocation) {
+                TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
+                listener.onResult(successResponse, error);
                 return null;
             }
-        }).when(tokenizationClient).tokenize(any(PaymentMethod.class), any(PaymentMethodNonceCallback.class));
+        }).when(tokenizationClient).tokenize(any(PaymentMethod.class), any(TokenizeCallback.class));
 
         return tokenizationClient;
     }

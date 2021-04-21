@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -23,7 +24,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class PaymentMethodTest {
+public class PaymentMethodClientTest {
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
@@ -52,37 +53,34 @@ public class PaymentMethodTest {
         card.setExpirationMonth("12");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
+                sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(error);
                         assertNotNull(paymentMethodNonces);
                         assertEquals(1, paymentMethodNonces.size());
 
-                        CardNonce cardNonce = (CardNonce) paymentMethodNonces.get(0);
+                        PaymentMethodNonce paymentMethodNonce = paymentMethodNonces.get(0);
 
-                        assertIsANonce(cardNonce.getNonce());
-                        assertEquals("11", cardNonce.getLastTwo());
+                        assertIsANonce(paymentMethodNonce.getString());
 
-                        sut.deletePaymentMethod(mActivity, cardNonce, new DeletePaymentMethodNonceCallback() {
+                        sut.deletePaymentMethod(mActivity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {
                             @Override
                             public void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error) {
                                 assertNull(error);
-                                CardNonce cardNonce = (CardNonce) deletedNonce;
-                                assertEquals("11", cardNonce.getLastTwo());
+                                assertEquals(PaymentMethodType.CARD, deletedNonce.getType());
                                 latch.countDown();
                             }
                         });
                     }
                 });
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 
@@ -103,10 +101,14 @@ public class PaymentMethodTest {
         card.setExpirationMonth("04");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(final PaymentMethodNonce paymentMethodNonce) {
-                sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (exception != null) {
+                    fail(exception.getMessage());
+                }
+
+                sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
                     @Override
                     public void onResult(@Nullable List<PaymentMethodNonce> paymentMethodNonces, @Nullable Exception error) {
                         assertNull(paymentMethodNonces);
@@ -117,11 +119,6 @@ public class PaymentMethodTest {
                         latch.countDown();
                     }
                 });
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail(exception.getMessage());
             }
         });
 

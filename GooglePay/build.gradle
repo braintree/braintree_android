@@ -38,6 +38,8 @@ dependencies {
     api 'com.google.android.gms:play-services-wallet:16.0.1'
 
     api project(':BraintreeCore')
+    api project(':PayPal')
+    api project(':Card')
 
     testImplementation project(':TestUtils')
     testImplementation 'androidx.test:rules:1.2.0'

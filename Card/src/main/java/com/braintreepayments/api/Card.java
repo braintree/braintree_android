@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Use to construct a card tokenization request.
  */
-public class Card extends BaseCard implements Parcelable {
+public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
 
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";

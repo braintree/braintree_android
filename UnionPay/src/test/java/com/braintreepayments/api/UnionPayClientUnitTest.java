@@ -53,16 +53,16 @@ public class UnionPayClientUnitTest {
     }
 
     @Test
-    public void tokenize_sendsAnalyticsEventOnTokenizeResult() {
+    public void tokenize_sendsAnalyticsEventOnTokenizeResult() throws JSONException {
         UnionPayCard unionPayCard = new UnionPayCard();
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
-        callback.success(mock(CardNonce.class));
+        TokenizeCallback callback = captor.getValue();
+        callback.onResult(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-received");
     }
@@ -73,12 +73,12 @@ public class UnionPayClientUnitTest {
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
+        TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
-        callback.failure(error);
+        callback.onResult(null, error);
 
         verify(unionPayTokenizeCallback).onResult(null, error);
     }
@@ -89,12 +89,12 @@ public class UnionPayClientUnitTest {
         UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
-        ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
         verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
 
-        PaymentMethodNonceCallback callback = captor.getValue();
+        TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
-        callback.failure(error);
+        callback.onResult(null, error);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-failed");
     }

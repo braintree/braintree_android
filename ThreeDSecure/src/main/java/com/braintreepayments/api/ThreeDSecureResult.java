@@ -35,9 +35,7 @@ public class ThreeDSecureResult implements Parcelable {
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
         if (cardJson != null) {
-            CardNonce cardNonce = new CardNonce();
-            cardNonce.fromJson(cardJson);
-            result.mTokenizedCard = cardNonce;
+            result.mTokenizedCard = CardNonce.fromJSON(cardJson);
         }
 
         if (json.has(ERRORS_KEY)) {

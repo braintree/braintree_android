@@ -41,7 +41,7 @@ public class TokenizationClientUnitTest {
     @Test
     public void tokenize_whenBraintreeClientReferenceIsNull_doesNothing() {
         Card card = mock(Card.class);
-        PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
+        TokenizeCallback callback = mock(TokenizeCallback.class);
 
         TokenizationClient sut = new TokenizationClient(new WeakReference<BraintreeClient>(null));
         sut.tokenize(card, callback);
@@ -145,12 +145,11 @@ public class TokenizationClientUnitTest {
         Card card = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, new PaymentMethodNonceCallback() {
+        sut.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
-            @Override
-            public void failure(Exception exception) {}
+            }
         });
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.success");
@@ -166,12 +165,11 @@ public class TokenizationClientUnitTest {
         Card card = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, new PaymentMethodNonceCallback() {
+        sut.tokenize(card, new TokenizeCallback() {
             @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {}
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
-            @Override
-            public void failure(Exception exception) {}
+            }
         });
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.failure");
@@ -187,10 +185,10 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
         Card card = new Card();
-        PaymentMethodNonceCallback callback = mock(PaymentMethodNonceCallback.class);
+        TokenizeCallback callback = mock(TokenizeCallback.class);
 
         sut.tokenize(card, callback);
-        verify(callback).failure(configError);
+        verify(callback).onResult(null, configError);
     }
 
     @Test

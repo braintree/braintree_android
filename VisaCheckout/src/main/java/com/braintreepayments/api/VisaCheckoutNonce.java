@@ -1,21 +1,25 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
+
 /**
  * {@link PaymentMethodNonce} representing a Visa Checkout card.
  * @see PaymentMethodNonce
  */
-public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable {
+public class VisaCheckoutNonce extends PaymentMethodNonce {
 
     static final String TYPE = "VisaCheckoutCard";
-    static final String API_RESOURCE_KEY = "visaCheckoutCards";
+    private static final String API_RESOURCE_KEY = "visaCheckoutCards";
+
+    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -25,40 +29,47 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private static final String USER_DATA_KEY = "userData";
     private static final String CALL_ID_KEY = "callId";
 
-    private String mLastTwo;
-    private String mCardType;
-    private VisaCheckoutAddress mBillingAddress;
-    private VisaCheckoutAddress mShippingAddress;
-    private VisaCheckoutUserData mUserData;
-    private String mCallId;
-    private BinData mBinData;
+    private final String mLastTwo;
+    private final String mCardType;
+    private final VisaCheckoutAddress mBillingAddress;
+    private final VisaCheckoutAddress mShippingAddress;
+    private final VisaCheckoutUserData mUserData;
+    private final String mCallId;
+    private final BinData mBinData;
 
-    /**
-     * Convert an API response to a {@link VisaCheckoutNonce}.
-     *
-     * @param json Raw JSON response from Braintree of a {@link VisaCheckoutNonce}.
-     * @return {@link VisaCheckoutNonce}.
-     * @throws JSONException when parsing the response fails.
-     */
-    static VisaCheckoutNonce fromJson(String json) throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
-        visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
-
-        return visaCheckoutNonce;
-    }
-
-    @Override
-    void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
+    static VisaCheckoutNonce fromJSON(JSONObject inputJson) throws JSONException {
+        JSONObject json;
+        if (inputJson.has(API_RESOURCE_KEY)) {
+            json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
+        } else {
+            json = inputJson;
+        }
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
-        mLastTwo = details.getString(LAST_TWO_KEY);
-        mCardType = details.getString(CARD_TYPE_KEY);
-        mBillingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
-        mShippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
-        mUserData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
-        mCallId = Json.optString(json, CALL_ID_KEY, "");
-        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+        String lastTwo = details.getString(LAST_TWO_KEY);
+        String cardType = details.getString(CARD_TYPE_KEY);
+        VisaCheckoutAddress billingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
+        VisaCheckoutAddress shippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
+        VisaCheckoutUserData userData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
+        String callId = Json.optString(json, CALL_ID_KEY, "");
+        BinData binData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+
+        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, description, isDefault);
+    }
+
+    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT);
+        mLastTwo = lastTwo;
+        mCardType = cardType;
+        mBillingAddress = billingAddress;
+        mShippingAddress = shippingAddress;
+        mUserData = userData;
+        mCallId = callId;
+        mBinData = binData;
     }
 
     /**
@@ -103,19 +114,12 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return mCallId;
     }
 
-    @Override
-    public String getTypeLabel() {
-        return "Visa Checkout";
-    }
-
     /**
      * @return The BIN data for the card number associated with {@link VisaCheckoutNonce}
      */
     public BinData getBinData() {
         return mBinData;
     }
-
-    VisaCheckoutNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

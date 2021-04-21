@@ -268,7 +268,7 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult result = captor.getValue();
         CardNonce cardNonce = result.getTokenizedCard();
-        assertIsANonce(cardNonce.getNonce());
+        assertIsANonce(cardNonce.getString());
         assertEquals("11", cardNonce.getLastTwo());
         assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
     }

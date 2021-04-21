@@ -6,6 +6,8 @@ import com.visa.checkout.Profile.ProfileBuilder;
 import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -24,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -138,12 +141,9 @@ public class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws Exception {
-        VisaCheckoutNonce visaCheckoutNonce =
-                VisaCheckoutNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
-
+    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(visaCheckoutNonce)
+                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -154,16 +154,13 @@ public class VisaCheckoutClientUnitTest {
         VisaCheckoutTokenizeCallback listener = mock(VisaCheckoutTokenizeCallback.class);
         sut.tokenize(visaPaymentSummary, listener);
 
-        verify(listener).onResult(visaCheckoutNonce, null);
+        verify(listener).onResult(any(VisaCheckoutNonce.class), (Exception) isNull());
     }
 
     @Test
-    public void tokenize_whenSuccessful_sendsAnalyticEvent() throws Exception {
-        VisaCheckoutNonce visaCheckoutNonce =
-                VisaCheckoutNonce.fromJson(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
-
+    public void tokenize_whenSuccessful_sendsAnalyticEvent() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successNonce(visaCheckoutNonce)
+                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -178,7 +175,7 @@ public class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenFailure_postsException() throws Exception {
+    public void tokenize_whenFailure_postsException() {
         Exception tokenizeError = new Exception("Mock Failure");
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
                 .error(tokenizeError)
@@ -196,7 +193,7 @@ public class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenFailure_sendsAnalyticEvent() throws Exception {
+    public void tokenize_whenFailure_sendsAnalyticEvent() {
         Exception tokenizeError = new Exception("Mock Failure");
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
                 .error(tokenizeError)
