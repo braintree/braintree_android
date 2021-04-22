@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
  */
 class PayPalDataCollectorRequest {
 
-    private String mApplicationGuid;
-    private String mClientMetadataId;
-    private boolean mDisableBeacon;
-    private HashMap<String,String> mAdditionalData;
+    private String applicationGuid;
+    private String clientMetadataId;
+    private boolean disableBeacon;
+    private HashMap<String,String> additionalData;
 
     /**
      * @param additionalData Additional data that should be associated with the data collection.
      */
     PayPalDataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
-        mAdditionalData = additionalData;
+        this.additionalData = additionalData;
 
         return this;
     }
@@ -28,7 +28,7 @@ class PayPalDataCollectorRequest {
      *                        There is a 36 character length limit on this value.
      */
     PayPalDataCollectorRequest setApplicationGuid(String applicationGuid) {
-        this.mApplicationGuid = applicationGuid;
+        this.applicationGuid = applicationGuid;
 
         return this;
     }
@@ -37,7 +37,7 @@ class PayPalDataCollectorRequest {
      * @param clientMetadataId The desired pairing ID, trimmed to 32 characters.
      */
     PayPalDataCollectorRequest setClientMetadataId(@NonNull String clientMetadataId) {
-        this.mClientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));
+        this.clientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));
 
         return this;
     }
@@ -46,24 +46,24 @@ class PayPalDataCollectorRequest {
      * @param disableBeacon Indicates if the beacon feature should be disabled.
      */
     PayPalDataCollectorRequest setDisableBeacon(boolean disableBeacon) {
-        mDisableBeacon = disableBeacon;
+        this.disableBeacon = disableBeacon;
 
         return this;
     }
 
     HashMap<String, String> getAdditionalData() {
-        return mAdditionalData;
+        return additionalData;
     }
 
     String getApplicationGuid() {
-        return mApplicationGuid;
+        return applicationGuid;
     }
 
     String getClientMetadataId() {
-        return mClientMetadataId;
+        return clientMetadataId;
     }
 
     boolean isDisableBeacon() {
-        return mDisableBeacon;
+        return disableBeacon;
     }
 }
