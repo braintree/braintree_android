@@ -29,13 +29,13 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private static final String USER_DATA_KEY = "userData";
     private static final String CALL_ID_KEY = "callId";
 
-    private final String mLastTwo;
-    private final String mCardType;
-    private final VisaCheckoutAddress mBillingAddress;
-    private final VisaCheckoutAddress mShippingAddress;
-    private final VisaCheckoutUserData mUserData;
-    private final String mCallId;
-    private final BinData mBinData;
+    private final String lastTwo;
+    private final String cardType;
+    private final VisaCheckoutAddress billingAddress;
+    private final VisaCheckoutAddress shippingAddress;
+    private final VisaCheckoutUserData userData;
+    private final String callId;
+    private final BinData binData;
 
     static VisaCheckoutNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
@@ -63,85 +63,85 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
 
     private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT);
-        mLastTwo = lastTwo;
-        mCardType = cardType;
-        mBillingAddress = billingAddress;
-        mShippingAddress = shippingAddress;
-        mUserData = userData;
-        mCallId = callId;
-        mBinData = binData;
+        this.lastTwo = lastTwo;
+        this.cardType = cardType;
+        this.billingAddress = billingAddress;
+        this.shippingAddress = shippingAddress;
+        this.userData = userData;
+        this.callId = callId;
+        this.binData = binData;
     }
 
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
     public String getLastTwo() {
-        return mLastTwo;
+        return lastTwo;
     }
 
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
     public String getCardType() {
-        return mCardType;
+        return cardType;
     }
 
     /**
      * @return The user's billing address.
      */
     public VisaCheckoutAddress getBillingAddress() {
-        return mBillingAddress;
+        return billingAddress;
     }
 
     /**
      * @return The user's shipping address.
      */
     public VisaCheckoutAddress getShippingAddress() {
-        return mShippingAddress;
+        return shippingAddress;
     }
 
     /**
      * @return The user's data.
      */
     public VisaCheckoutUserData getUserData() {
-        return mUserData;
+        return userData;
     }
 
     /**
      * @return The Call ID from the VisaPaymentSummary.
      */
     public String getCallId() {
-        return mCallId;
+        return callId;
     }
 
     /**
      * @return The BIN data for the card number associated with {@link VisaCheckoutNonce}
      */
     public BinData getBinData() {
-        return mBinData;
+        return binData;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mLastTwo);
-        dest.writeString(mCardType);
-        dest.writeParcelable(mBillingAddress, flags);
-        dest.writeParcelable(mShippingAddress, flags);
-        dest.writeParcelable(mUserData, flags);
-        dest.writeString(mCallId);
-        dest.writeParcelable(mBinData, flags);
+        dest.writeString(lastTwo);
+        dest.writeString(cardType);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeParcelable(shippingAddress, flags);
+        dest.writeParcelable(userData, flags);
+        dest.writeString(callId);
+        dest.writeParcelable(binData, flags);
     }
 
     protected VisaCheckoutNonce(Parcel in) {
         super(in);
-        mLastTwo = in.readString();
-        mCardType = in.readString();
-        mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
-        mShippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
-        mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
-        mCallId = in.readString();
-        mBinData = in.readParcelable(BinData.class.getClassLoader());
+        lastTwo = in.readString();
+        cardType = in.readString();
+        billingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
+        shippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
+        userData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
+        callId = in.readString();
+        binData = in.readParcelable(BinData.class.getClassLoader());
     }
 
     public static final Creator<VisaCheckoutNonce> CREATOR =
