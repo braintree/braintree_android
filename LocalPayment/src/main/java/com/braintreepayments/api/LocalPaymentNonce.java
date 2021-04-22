@@ -31,15 +31,15 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
     private static final String TYPE_KEY = "type";
 
-    private final String mClientMetadataId;
-    private final PostalAddress mBillingAddress;
-    private final PostalAddress mShippingAddress;
-    private final String mGivenName;
-    private final String mSurname;
-    private final String mPhone;
-    private final String mEmail;
-    private final String mPayerId;
-    private final String mType;
+    private final String clientMetadataId;
+    private final PostalAddress billingAddress;
+    private final PostalAddress shippingAddress;
+    private final String givenName;
+    private final String surname;
+    private final String phone;
+    private final String email;
+    private final String payerId;
+    private final String type;
 
     static LocalPaymentNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
@@ -90,98 +90,98 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
 
     private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT);
-        mClientMetadataId = clientMetadataId;
-        mBillingAddress = billingAddress;
-        mShippingAddress = shippingAddress;
-        mGivenName = givenName;
-        mSurname = surname;
-        mPhone = phone;
-        mEmail = email;
-        mPayerId = payerId;
-        mType = type;
+        this.clientMetadataId = clientMetadataId;
+        this.billingAddress = billingAddress;
+        this.shippingAddress = shippingAddress;
+        this.givenName = givenName;
+        this.surname = surname;
+        this.phone = phone;
+        this.email = email;
+        this.payerId = payerId;
+        this.type = type;
     }
 
     /**
      * @return The email address associated with this local payment
      */
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     /**
      * @return The billing address of the user if requested with additional scopes.
      */
     public PostalAddress getBillingAddress() {
-        return mBillingAddress;
+        return billingAddress;
     }
 
     /**
      * @return The shipping address of the user provided by checkout flows.
      */
     public PostalAddress getShippingAddress() {
-        return mShippingAddress;
+        return shippingAddress;
     }
 
     /**
      * @return The first name associated with the local payment.
      */
     public String getGivenName() {
-        return mGivenName;
+        return givenName;
     }
 
     /**
      * @return The last name associated with the local payment.
      */
     public String getSurname() {
-        return mSurname;
+        return surname;
     }
 
     /**
      * @return The phone number associated with the local payment.
      */
     public String getPhone() {
-        return mPhone;
+        return phone;
     }
 
     /**
      * @return The ClientMetadataId associated with this transaction.
      */
     public String getClientMetadataId(){
-        return mClientMetadataId;
+        return clientMetadataId;
     }
 
     /**
      * @return The Payer ID provided in local payment flows.
      */
     public String getPayerId(){
-        return mPayerId;
+        return payerId;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mClientMetadataId);
-        dest.writeParcelable(mBillingAddress, flags);
-        dest.writeParcelable(mShippingAddress, flags);
-        dest.writeString(mGivenName);
-        dest.writeString(mSurname);
-        dest.writeString(mEmail);
-        dest.writeString(mPhone);
-        dest.writeString(mPayerId);
-        dest.writeString(mType);
+        dest.writeString(clientMetadataId);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeParcelable(shippingAddress, flags);
+        dest.writeString(givenName);
+        dest.writeString(surname);
+        dest.writeString(email);
+        dest.writeString(phone);
+        dest.writeString(payerId);
+        dest.writeString(type);
     }
 
     private LocalPaymentNonce(Parcel in) {
         super(in);
-        mClientMetadataId = in.readString();
-        mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mGivenName = in.readString();
-        mSurname = in.readString();
-        mEmail = in.readString();
-        mPhone = in.readString();
-        mPayerId = in.readString();
-        mType = in.readString();
+        clientMetadataId = in.readString();
+        billingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        givenName = in.readString();
+        surname = in.readString();
+        email = in.readString();
+        phone = in.readString();
+        payerId = in.readString();
+        type = in.readString();
     }
 
     public static final Creator<LocalPaymentNonce> CREATOR = new Creator<LocalPaymentNonce>() {
