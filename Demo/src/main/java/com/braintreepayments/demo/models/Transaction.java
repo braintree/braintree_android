@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class Transaction {
 
     @SerializedName("message")
-    private String mMessage;
+    private String message;
 
     public String getMessage() {
-        return mMessage;
+        return message;
     }
 }

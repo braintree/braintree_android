@@ -27,7 +27,7 @@ public class CreateTransactionFragment extends Fragment {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
 
-    private ProgressBar mLoadingSpinner;
+    private ProgressBar loadingSpinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class CreateTransactionFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_transaction, container, false);
-        mLoadingSpinner = view.findViewById(R.id.loading_spinner);
+        loadingSpinner = view.findViewById(R.id.loading_spinner);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setTitle(R.string.processing_transaction);
@@ -99,7 +99,7 @@ public class CreateTransactionFragment extends Fragment {
 
     private void setStatus(int message) {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        mLoadingSpinner.setVisibility(View.GONE);
+        loadingSpinner.setVisibility(View.GONE);
         activity.setTitle(message);
         TextView status = activity.findViewById(R.id.transaction_status);
         status.setText(message);
@@ -108,7 +108,7 @@ public class CreateTransactionFragment extends Fragment {
 
     private void setMessage(String message) {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        mLoadingSpinner.setVisibility(View.GONE);
+        loadingSpinner.setVisibility(View.GONE);
         TextView textView = activity.findViewById(R.id.transaction_message);
         textView.setText(message);
         textView.setVisibility(View.VISIBLE);

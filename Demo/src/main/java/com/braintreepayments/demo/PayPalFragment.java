@@ -22,22 +22,22 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultR
 
 public class PayPalFragment extends BaseFragment {
 
-    private String mDeviceData;
+    private String deviceData;
     private PayPalClient payPalClient;
     private DataCollector dataCollector;
 
-    private Button mBillingAgreementButton;
-    private Button mSinglePaymentButton;
+    private Button billingAgreementButton;
+    private Button singlePaymentButton;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paypal, container, false);
-        mBillingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
-        mSinglePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
+        billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
+        singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
 
-        mBillingAgreementButton.setOnClickListener(this::launchBillingAgreement);
-        mSinglePaymentButton.setOnClickListener(this::launchSinglePayment);
+        billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
+        singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
         viewModel.getPayPalBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handlePayPalBrowserSwitchResult);
@@ -67,7 +67,7 @@ public class PayPalFragment extends BaseFragment {
 
             braintreeClient.getConfiguration((configuration, configError) -> {
                 if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> mDeviceData = deviceData);
+                    dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
                 }
                 if (isBillingAgreement) {
                     payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
@@ -92,7 +92,7 @@ public class PayPalFragment extends BaseFragment {
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
                 PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
-            action.setDeviceData(mDeviceData);
+            action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
         }

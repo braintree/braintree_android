@@ -9,7 +9,7 @@ import androidx.preference.EditTextPreference;
 
 public class SummaryEditTestPreference extends EditTextPreference {
 
-    private String mSummaryString;
+    private String summaryString;
 
     public SummaryEditTestPreference(Context context) {
         super(context);
@@ -33,7 +33,7 @@ public class SummaryEditTestPreference extends EditTextPreference {
     }
 
     private void init() {
-        mSummaryString = super.getSummary().toString();
+        summaryString = super.getSummary().toString();
     }
 
     /**
@@ -46,6 +46,6 @@ public class SummaryEditTestPreference extends EditTextPreference {
     @Override
     public CharSequence getSummary() {
         final CharSequence text = getText();
-        return String.format(mSummaryString, text == null ? "" : text);
+        return String.format(summaryString, text == null ? "" : text);
     }
 }

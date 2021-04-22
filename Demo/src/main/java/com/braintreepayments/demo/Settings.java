@@ -26,14 +26,14 @@ public class Settings {
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
     static final String PAYPAL_2FA_TOKENIZATION_KEY = "sandbox_bn8fp75g_f38w7q9kcr3zcspd";
 
-    private static SharedPreferences sSharedPreferences;
+    private static SharedPreferences sharedPreferences;
 
     public static SharedPreferences getPreferences(Context context) {
-        if (sSharedPreferences == null) {
-            sSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        if (sharedPreferences == null) {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         }
 
-        return sSharedPreferences;
+        return sharedPreferences;
     }
 
     public static String getEnvironment(Context context) {

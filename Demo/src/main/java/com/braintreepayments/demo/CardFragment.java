@@ -53,19 +53,19 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
-    private String mDeviceData;
-    private boolean mIsUnionPay;
-    private String mEnrollmentId;
-    private boolean mThreeDSecureRequested;
+    private String deviceData;
+    private boolean isUnionPay;
+    private String enrollmentId;
+    private boolean threeDSecureRequested;
 
-    private ProgressDialog mLoading;
-    private CardForm mCardForm;
-    private TextInputLayout mSmsCodeContainer;
-    private EditText mSmsCode;
-    private Button mSendSmsButton;
-    private Button mPurchaseButton;
+    private ProgressDialog loading;
+    private CardForm cardForm;
+    private TextInputLayout smsCodeContainer;
+    private EditText smsCode;
+    private Button sendSmsButton;
+    private Button purchaseButton;
 
-    private CardType mCardType;
+    private CardType cardType;
 
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
@@ -78,20 +78,20 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
-        mCardForm = view.findViewById(R.id.card_form);
-        mCardForm.setOnFormFieldFocusedListener(this);
-        mCardForm.setOnCardFormSubmitListener(this);
+        cardForm = view.findViewById(R.id.card_form);
+        cardForm.setOnFormFieldFocusedListener(this);
+        cardForm.setOnCardFormSubmitListener(this);
 
-        mSmsCodeContainer = view.findViewById(R.id.sms_code_container);
-        mSmsCode = view.findViewById(R.id.sms_code);
-        mSendSmsButton = view.findViewById(R.id.unionpay_enroll_button);
-        mPurchaseButton = view.findViewById(R.id.purchase_button);
+        smsCodeContainer = view.findViewById(R.id.sms_code_container);
+        smsCode = view.findViewById(R.id.sms_code);
+        sendSmsButton = view.findViewById(R.id.unionpay_enroll_button);
+        purchaseButton = view.findViewById(R.id.purchase_button);
 
-        mSendSmsButton.setOnClickListener(this::sendSms);
-        mPurchaseButton.setOnClickListener(this::onPurchase);
+        sendSmsButton.setOnClickListener(this::sendSms);
+        purchaseButton.setOnClickListener(this::onPurchase);
 
-        if (mIsUnionPay) {
-            mSendSmsButton.setVisibility(VISIBLE);
+        if (isUnionPay) {
+            sendSmsButton.setVisibility(VISIBLE);
         }
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
@@ -106,12 +106,12 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onCreate(onSaveInstanceState);
 
         if (onSaveInstanceState != null) {
-            mThreeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
-            mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
-            mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
+            threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
+            isUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
+            enrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
 
-            if (mIsUnionPay) {
-                mSendSmsButton.setVisibility(VISIBLE);
+            if (isUnionPay) {
+                sendSmsButton.setVisibility(VISIBLE);
             }
         }
     }
@@ -128,9 +128,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(EXTRA_THREE_D_SECURE_REQUESTED, mThreeDSecureRequested);
-        outState.putBoolean(EXTRA_UNIONPAY, mIsUnionPay);
-        outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, mEnrollmentId);
+        outState.putBoolean(EXTRA_THREE_D_SECURE_REQUESTED, threeDSecureRequested);
+        outState.putBoolean(EXTRA_UNIONPAY, isUnionPay);
+        outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, enrollmentId);
     }
 
     private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
@@ -142,10 +142,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             unionPayClient = new UnionPayClient(braintreeClient);
             dataCollector = new DataCollector(braintreeClient);
 
-            mPurchaseButton.setEnabled(true);
+            purchaseButton.setEnabled(true);
 
             braintreeClient.getConfiguration((configuration, configError) -> {
-                mCardForm.cardRequired(true)
+                cardForm.cardRequired(true)
                         .expirationRequired(true)
                         .cvvRequired(configuration.isCvvChallengePresent())
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
@@ -154,7 +154,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .setup(activity);
 
                 if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity, (deviceData, e) -> mDeviceData = deviceData);
+                    dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
                 }
             });
 
@@ -164,27 +164,27 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     @Override
     protected void handleError(Exception error) {
         super.handleError(error);
-        mThreeDSecureRequested = false;
+        threeDSecureRequested = false;
     }
 
     @Override
     public void onCancel(int requestCode) {
         super.onCancel(requestCode);
 
-        mThreeDSecureRequested = false;
+        threeDSecureRequested = false;
 
         Toast.makeText(getActivity(), "3DS canceled", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onCardFormFieldFocused(View field) {
-        if (!(field instanceof CardEditText) && !TextUtils.isEmpty(mCardForm.getCardNumber())) {
-            CardType cardType = CardType.forCardNumber(mCardForm.getCardNumber());
-            if (mCardType != cardType) {
-                mCardType = cardType;
+        if (!(field instanceof CardEditText) && !TextUtils.isEmpty(cardForm.getCardNumber())) {
+            CardType cardType = CardType.forCardNumber(cardForm.getCardNumber());
+            if (this.cardType != cardType) {
+                this.cardType = cardType;
 
                 if (!Settings.useTokenizationKey(getActivity().getApplicationContext())) {
-                    String cardNumber = mCardForm.getCardNumber();
+                    String cardNumber = cardForm.getCardNumber();
                     unionPayClient.fetchCapabilities(cardNumber, (capabilities, error) -> {
                         if (capabilities != null) {
                             handleUnionPayCapabilitiesFetched(capabilities);
@@ -198,20 +198,20 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     private void handleUnionPayCapabilitiesFetched(final UnionPayCapabilities capabilities) {
-        mSmsCodeContainer.setVisibility(GONE);
-        mSmsCode.setText("");
+        smsCodeContainer.setVisibility(GONE);
+        smsCode.setText("");
 
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         getBraintreeClient((braintreeClient) -> braintreeClient.getConfiguration((configuration, error) -> {
             if (capabilities.isUnionPay()) {
                 if (!capabilities.isSupported()) {
-                    mCardForm.setCardNumberError("Card not accepted");
+                    cardForm.setCardNumberError("Card not accepted");
                     return;
                 }
-                mIsUnionPay = true;
-                mEnrollmentId = null;
+                isUnionPay = true;
+                enrollmentId = null;
 
-                mCardForm.cardRequired(true)
+                cardForm.cardRequired(true)
                         .expirationRequired(true)
                         .cvvRequired(true)
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
@@ -219,11 +219,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .actionLabel(getString(R.string.purchase))
                         .setup(activity);
 
-                mSendSmsButton.setVisibility(VISIBLE);
+                sendSmsButton.setVisibility(VISIBLE);
             } else {
-                mIsUnionPay = false;
+                isUnionPay = false;
 
-                mCardForm.cardRequired(true)
+                cardForm.cardRequired(true)
                         .expirationRequired(true)
                         .cvvRequired(configuration.isCvvChallengePresent())
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
@@ -240,18 +240,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     public void sendSms(View v) {
         UnionPayCard unionPayCard = new UnionPayCard();
-        unionPayCard.setNumber(mCardForm.getCardNumber());
-        unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
-        unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
-        unionPayCard.setCvv(mCardForm.getCvv());
-        unionPayCard.setPostalCode(mCardForm.getPostalCode());
-        unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
-        unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
+        unionPayCard.setNumber(cardForm.getCardNumber());
+        unionPayCard.setExpirationMonth(cardForm.getExpirationMonth());
+        unionPayCard.setExpirationYear(cardForm.getExpirationYear());
+        unionPayCard.setCvv(cardForm.getCvv());
+        unionPayCard.setPostalCode(cardForm.getPostalCode());
+        unionPayCard.setMobileCountryCode(cardForm.getCountryCode());
+        unionPayCard.setMobilePhoneNumber(cardForm.getMobileNumber());
 
         unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
-            mEnrollmentId = enrollment.getId();
+            enrollmentId = enrollment.getId();
             if (enrollment.isSmsCodeRequired()) {
-                mSmsCodeContainer.setVisibility(VISIBLE);
+                smsCodeContainer.setVisibility(VISIBLE);
             } else {
                 onCardFormSubmit();
             }
@@ -265,17 +265,17 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     public void onPurchase(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
-        if (mIsUnionPay) {
+        if (isUnionPay) {
             UnionPayCard unionPayCard = new UnionPayCard();
-            unionPayCard.setNumber(mCardForm.getCardNumber());
-            unionPayCard.setExpirationMonth(mCardForm.getExpirationMonth());
-            unionPayCard.setExpirationYear(mCardForm.getExpirationYear());
-            unionPayCard.setCvv(mCardForm.getCvv());
-            unionPayCard.setPostalCode(mCardForm.getPostalCode());
-            unionPayCard.setMobileCountryCode(mCardForm.getCountryCode());
-            unionPayCard.setMobilePhoneNumber(mCardForm.getMobileNumber());
-            unionPayCard.setSmsCode(mSmsCode.getText().toString());
-            unionPayCard.setEnrollmentId(mEnrollmentId);
+            unionPayCard.setNumber(cardForm.getCardNumber());
+            unionPayCard.setExpirationMonth(cardForm.getExpirationMonth());
+            unionPayCard.setExpirationYear(cardForm.getExpirationYear());
+            unionPayCard.setCvv(cardForm.getCvv());
+            unionPayCard.setPostalCode(cardForm.getPostalCode());
+            unionPayCard.setMobileCountryCode(cardForm.getCountryCode());
+            unionPayCard.setMobilePhoneNumber(cardForm.getMobileNumber());
+            unionPayCard.setSmsCode(smsCode.getText().toString());
+            unionPayCard.setEnrollmentId(enrollmentId);
 
             unionPayClient.tokenize(unionPayCard, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
@@ -287,12 +287,12 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         } else {
             Card card = new Card();
-            card.setNumber(mCardForm.getCardNumber());
-            card.setExpirationMonth(mCardForm.getExpirationMonth());
-            card.setExpirationYear(mCardForm.getExpirationYear());
-            card.setCvv(mCardForm.getCvv());
+            card.setNumber(cardForm.getCardNumber());
+            card.setExpirationMonth(cardForm.getExpirationMonth());
+            card.setExpirationYear(cardForm.getExpirationYear());
+            card.setCvv(cardForm.getCvv());
             card.setValidate(false); // TODO GQL currently only returns the bin if validate = false
-            card.setPostalCode(mCardForm.getPostalCode());
+            card.setPostalCode(cardForm.getPostalCode());
 
             cardClient.tokenize(getActivity(), card, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
@@ -328,9 +328,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
-        if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(activity)) {
-            mThreeDSecureRequested = true;
-            mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
+        if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(activity)) {
+            threeDSecureRequested = true;
+            loading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
@@ -342,7 +342,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 }
             });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(activity)) {
-            mLoading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
+            loading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getString();
 
             americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
@@ -357,15 +357,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
             CardFragmentDirections.ActionCardFragmentToDisplayNonceFragment action =
                     CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
-            action.setDeviceData(mDeviceData);
+            action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
         }
     }
 
     private void safelyCloseLoadingView() {
-        if (mLoading != null && mLoading.isShowing()) {
-            mLoading.dismiss();
+        if (loading != null && loading.isShowing()) {
+            loading.dismiss();
         }
     }
 
