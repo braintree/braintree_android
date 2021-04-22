@@ -8,17 +8,17 @@ class VenmoAccount extends PaymentMethod {
     private static final String VENMO_ACCOUNT_KEY = "venmoAccount";
     private static final String NONCE_KEY = "nonce";
 
-    private String mNonce;
+    private String nonce;
 
     VenmoAccount() {}
 
     void setNonce(String nonce) {
-        mNonce = nonce;
+        this.nonce = nonce;
     }
 
     @Override
     protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(NONCE_KEY, mNonce);
+        paymentMethodNonceJson.put(NONCE_KEY, nonce);
         base.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
     }
 
