@@ -10,11 +10,11 @@ import com.google.android.gms.common.api.Status;
  */
 public class GooglePayException extends BraintreeException implements Parcelable {
 
-    private Status mStatus;
+    private Status status;
 
     GooglePayException(String message, Status status) {
         super(message);
-        mStatus = status;
+        this.status = status;
     }
 
     /**
@@ -23,7 +23,7 @@ public class GooglePayException extends BraintreeException implements Parcelable
      * @return {@link Status}
      */
     public Status getStatus() {
-        return mStatus;
+        return status;
     }
 
     @Override
@@ -34,12 +34,12 @@ public class GooglePayException extends BraintreeException implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getMessage());
-        dest.writeParcelable(mStatus, 0);
+        dest.writeParcelable(status, 0);
     }
 
     protected GooglePayException(Parcel in) {
         super(in.readString());
-        mStatus = in.readParcelable(Status.class.getClassLoader());
+        status = in.readParcelable(Status.class.getClassLoader());
     }
 
     public static final Creator<GooglePayException> CREATOR = new Creator<GooglePayException>() {

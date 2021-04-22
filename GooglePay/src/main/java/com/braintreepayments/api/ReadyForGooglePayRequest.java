@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentActivity;
  */
 public class ReadyForGooglePayRequest {
 
-    private boolean mExistingPaymentMethodRequired;
+    private boolean existingPaymentMethodRequired;
 
     /**
      * If set to true, then the {@link GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)}
@@ -18,10 +18,10 @@ public class ReadyForGooglePayRequest {
      *              card networks in order to be considered ready to pay with Google Pay
      */
     public void setExistingPaymentMethodRequired(boolean existingPaymentMethodRequired) {
-        mExistingPaymentMethodRequired = existingPaymentMethodRequired;
+        this.existingPaymentMethodRequired = existingPaymentMethodRequired;
     }
 
     public boolean isExistingPaymentMethodRequired() {
-        return mExistingPaymentMethodRequired;
+        return existingPaymentMethodRequired;
     }
 }

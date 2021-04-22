@@ -28,14 +28,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
-    private final String mCardType;
-    private final String mLastTwo;
-    private final String mLastFour;
-    private final String mEmail;
-    private Boolean mIsNetworkTokenized;
-    private final PostalAddress mBillingAddress;
-    private final PostalAddress mShippingAddress;
-    private final BinData mBinData;
+    private final String cardType;
+    private final String lastTwo;
+    private final String lastFour;
+    private final String email;
+    private Boolean isNetworkTokenized;
+    private final PostalAddress billingAddress;
+    private final PostalAddress shippingAddress;
+    private final BinData binData;
 
     static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject tokenPayload = new JSONObject(inputJson
@@ -107,14 +107,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             boolean isDefault
     ) {
         super(nonce, isDefault, PaymentMethodType.GOOGLE_PAY);
-        mCardType = cardType;
-        mLastTwo = lastTwo;
-        mLastFour = lastFour;
-        mEmail = email;
-        mIsNetworkTokenized = isNetworkTokenized;
-        mBillingAddress = billingAddress;
-        mShippingAddress = shippingAddress;
-        mBinData = binData;
+        this.cardType = cardType;
+        this.lastTwo = lastTwo;
+        this.lastFour = lastFour;
+        this.email = email;
+        this.isNetworkTokenized = isNetworkTokenized;
+        this.billingAddress = billingAddress;
+        this.shippingAddress = shippingAddress;
+        this.binData = binData;
     }
 
     static PostalAddress postalAddressFromJson(JSONObject json) {
@@ -147,21 +147,21 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
     public String getCardType() {
-        return mCardType;
+        return cardType;
     }
 
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
     public String getLastTwo() {
-        return mLastTwo;
+        return lastTwo;
     }
 
     /**
      * @return Last four digits of the user's underlying card, intended for display purposes.
      */
     public String getLastFour() {
-        return mLastFour;
+        return lastFour;
     }
 
     /**
@@ -169,14 +169,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
      */
     @Nullable
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     /**
      * @return true if the card is network tokenized.
      */
     public Boolean isNetworkTokenized() {
-        return mIsNetworkTokenized;
+        return isNetworkTokenized;
     }
 
     /**
@@ -184,7 +184,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
      */
     @Nullable
     public PostalAddress getBillingAddress() {
-        return mBillingAddress;
+        return billingAddress;
     }
 
     /**
@@ -192,37 +192,37 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
      */
     @Nullable
     public PostalAddress getShippingAddress() {
-        return mShippingAddress;
+        return shippingAddress;
     }
 
     /**
      * @return The BIN data for the card number associated with {@link GooglePayCardNonce}
      */
     public BinData getBinData() {
-        return mBinData;
+        return binData;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mCardType);
-        dest.writeString(mLastTwo);
-        dest.writeString(mLastFour);
-        dest.writeString(mEmail);
-        dest.writeParcelable(mBillingAddress, flags);
-        dest.writeParcelable(mShippingAddress, flags);
-        dest.writeParcelable(mBinData, flags);
+        dest.writeString(cardType);
+        dest.writeString(lastTwo);
+        dest.writeString(lastFour);
+        dest.writeString(email);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeParcelable(shippingAddress, flags);
+        dest.writeParcelable(binData, flags);
     }
 
     private GooglePayCardNonce(Parcel in) {
         super(in);
-        mCardType = in.readString();
-        mLastTwo = in.readString();
-        mLastFour = in.readString();
-        mEmail = in.readString();
-        mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mBinData = in.readParcelable(BinData.class.getClassLoader());
+        cardType = in.readString();
+        lastTwo = in.readString();
+        lastFour = in.readString();
+        email = in.readString();
+        billingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        binData = in.readParcelable(BinData.class.getClassLoader());
     }
 
     public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {
