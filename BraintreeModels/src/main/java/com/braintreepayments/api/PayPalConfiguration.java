@@ -18,14 +18,14 @@ class PayPalConfiguration {
     private static final String TOUCH_DISABLED_KEY = "touchDisabled";
     private static final String CURRENCY_ISO_CODE_KEY = "currencyIsoCode";
 
-    private String mDisplayName;
-    private String mClientId;
-    private String mPrivacyUrl;
-    private String mUserAgreementUrl;
-    private String mDirectBaseUrl;
-    private String mEnvironment;
-    private boolean mTouchDisabled;
-    private String mCurrencyIsoCode;
+    private String displayName;
+    private String clientId;
+    private String privacyUrl;
+    private String userAgreementUrl;
+    private String directBaseUrl;
+    private String environment;
+    private boolean touchDisabled;
+    private String currencyIsoCode;
 
     /**
      * Parse an {@link PayPalConfiguration} from json.
@@ -40,14 +40,14 @@ class PayPalConfiguration {
         }
 
         PayPalConfiguration payPalConfiguration = new PayPalConfiguration();
-        payPalConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, null);
-        payPalConfiguration.mClientId = Json.optString(json, CLIENT_ID_KEY, null);
-        payPalConfiguration.mPrivacyUrl = Json.optString(json, PRIVACY_URL_KEY, null);
-        payPalConfiguration.mUserAgreementUrl = Json.optString(json, USER_AGREEMENT_URL_KEY, null);
-        payPalConfiguration.mDirectBaseUrl = Json.optString(json, DIRECT_BASE_URL_KEY, null);
-        payPalConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
-        payPalConfiguration.mTouchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
-        payPalConfiguration.mCurrencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
+        payPalConfiguration.displayName = Json.optString(json, DISPLAY_NAME_KEY, null);
+        payPalConfiguration.clientId = Json.optString(json, CLIENT_ID_KEY, null);
+        payPalConfiguration.privacyUrl = Json.optString(json, PRIVACY_URL_KEY, null);
+        payPalConfiguration.userAgreementUrl = Json.optString(json, USER_AGREEMENT_URL_KEY, null);
+        payPalConfiguration.directBaseUrl = Json.optString(json, DIRECT_BASE_URL_KEY, null);
+        payPalConfiguration.environment = Json.optString(json, ENVIRONMENT_KEY, null);
+        payPalConfiguration.touchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
+        payPalConfiguration.currencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
 
         return payPalConfiguration;
     }
@@ -56,55 +56,55 @@ class PayPalConfiguration {
      * @return the PayPal app display name.
      */
     String getDisplayName() {
-        return mDisplayName;
+        return displayName;
     }
 
     /**
      * @return the PayPal app client id.
      */
     String getClientId() {
-        return mClientId;
+        return clientId;
     }
 
     /**
      * @return the PayPal app privacy url.
      */
     String getPrivacyUrl() {
-        return mPrivacyUrl;
+        return privacyUrl;
     }
 
     /**
      * @return the PayPal app user agreement url.
      */
     String getUserAgreementUrl() {
-        return mUserAgreementUrl;
+        return userAgreementUrl;
     }
 
     /**
      * @return the url for custom PayPal environments.
      */
     String getDirectBaseUrl() {
-        return (TextUtils.isEmpty(mDirectBaseUrl) ? null : mDirectBaseUrl + "/v1/");
+        return (TextUtils.isEmpty(directBaseUrl) ? null : directBaseUrl + "/v1/");
     }
 
     /**
      * @return the current environment for PayPal.
      */
     String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     /**
      * @return {@code true} if PayPal touch is currently disabled, {@code false} otherwise.
      */
     boolean isTouchDisabled() {
-        return mTouchDisabled;
+        return touchDisabled;
     }
 
     /**
      * @return the PayPal currency code.
      */
     String getCurrencyIsoCode() {
-        return mCurrencyIsoCode;
+        return currencyIsoCode;
     }
 }

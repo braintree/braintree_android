@@ -16,8 +16,8 @@ class ClientToken extends Authorization {
     private static final String CONFIG_URL_KEY = "configUrl";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
-    private String mConfigUrl;
-    private String mAuthorizationFingerprint;
+    private String configUrl;
+    private String authorizationFingerprint;
 
     /**
      * Create a new {@link ClientToken} instance from a client token
@@ -31,8 +31,8 @@ class ClientToken extends Authorization {
             clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
 
             JSONObject jsonObject = new JSONObject(clientTokenString);
-            mConfigUrl = jsonObject.getString(CONFIG_URL_KEY);
-            mAuthorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY);
+            configUrl = jsonObject.getString(CONFIG_URL_KEY);
+            authorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY);
         } catch (NullPointerException | JSONException e) {
             throw new InvalidArgumentException("Client token was invalid");
         }
@@ -40,19 +40,19 @@ class ClientToken extends Authorization {
 
     @Override
     String getConfigUrl() {
-        return mConfigUrl;
+        return configUrl;
     }
 
     @Override
     String getBearer() {
-        return mAuthorizationFingerprint;
+        return authorizationFingerprint;
     }
 
     /**
      * @return The authorizationFingerprint for the current session
      */
     String getAuthorizationFingerprint() {
-        return mAuthorizationFingerprint;
+        return authorizationFingerprint;
     }
 
     /**
@@ -80,14 +80,14 @@ class ClientToken extends Authorization {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mConfigUrl);
-        dest.writeString(mAuthorizationFingerprint);
+        dest.writeString(configUrl);
+        dest.writeString(authorizationFingerprint);
     }
 
     protected ClientToken(Parcel in) {
         super(in);
-        mConfigUrl = in.readString();
-        mAuthorizationFingerprint = in.readString();
+        configUrl = in.readString();
+        authorizationFingerprint = in.readString();
     }
 
     public static final Creator<ClientToken> CREATOR = new Creator<ClientToken>() {

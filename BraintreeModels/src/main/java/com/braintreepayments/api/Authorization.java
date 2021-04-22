@@ -11,10 +11,10 @@ import androidx.annotation.Nullable;
  */
 abstract class Authorization implements Parcelable {
 
-    private final String mRawValue;
+    private final String rawValue;
 
     Authorization(String rawValue) {
-        mRawValue = rawValue;
+        this.rawValue = rawValue;
     }
 
     /**
@@ -52,7 +52,7 @@ abstract class Authorization implements Parcelable {
      */
     @Override
     public String toString() {
-        return mRawValue;
+        return rawValue;
     }
 
     private static boolean isTokenizationKey(String tokenizationKey) {
@@ -69,10 +69,10 @@ abstract class Authorization implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(mRawValue);
+        parcel.writeString(rawValue);
     }
 
     public Authorization(Parcel in) {
-        mRawValue = in.readString();
+        rawValue = in.readString();
     }
 }

@@ -14,11 +14,11 @@ class PayPalUAT extends Authorization {
 
     private static final String EXTERNAL_ID_STRING = "external_id";
 
-    private String mConfigUrl;
-    private String mPayPalUrl;
-    private String mBraintreeMerchantID;
-    private String mToken;
-    private Environment mEnvironment;
+    private String configUrl;
+    private String payPalUrl;
+    private String braintreeMerchantID;
+    private String token;
+    private Environment environment;
 
     enum Environment {
         STAGING,
@@ -34,7 +34,7 @@ class PayPalUAT extends Authorization {
     PayPalUAT(String uatString) throws InvalidArgumentException {
         super(uatString);
 
-        mToken = uatString;
+        token = uatString;
 
         try {
             String decodedUATString = decodeUATString(uatString);
@@ -44,19 +44,19 @@ class PayPalUAT extends Authorization {
 
             for (int i = 0; i < externalIDs.length(); i++) {
                 if (externalIDs.getString(i).startsWith("Braintree:")) {
-                    mBraintreeMerchantID = externalIDs.getString(i).split(":")[1];
+                    braintreeMerchantID = externalIDs.getString(i).split(":")[1];
                     break;
                 }
             }
 
-            if (TextUtils.isEmpty(mBraintreeMerchantID)) {
+            if (TextUtils.isEmpty(braintreeMerchantID)) {
                 throw new IllegalArgumentException("Missing Braintree merchant account ID.");
             }
 
             if (jsonObject.has("iss")) {
-                mPayPalUrl = jsonObject.getString("iss");
-                mEnvironment = determineIssuerEnv();
-                mConfigUrl = generateConfigUrl();
+                payPalUrl = jsonObject.getString("iss");
+                environment = determineIssuerEnv();
+                configUrl = generateConfigUrl();
             } else {
                 throw new IllegalArgumentException("Does not contain issuer, or \"iss\" key.");
             }
@@ -72,17 +72,17 @@ class PayPalUAT extends Authorization {
 
     private String generateConfigUrl() {
         String baseBraintreeURL;
-        if (mEnvironment == Environment.STAGING || mEnvironment == Environment.SANDBOX) {
+        if (environment == Environment.STAGING || environment == Environment.SANDBOX) {
             baseBraintreeURL = "https://api.sandbox.braintreegateway.com:443/merchants/";
         } else {
             baseBraintreeURL = "https://api.braintreegateway.com:443/merchants/";
         }
 
-        return baseBraintreeURL + mBraintreeMerchantID + "/client_api/v1/configuration";
+        return baseBraintreeURL + braintreeMerchantID + "/client_api/v1/configuration";
     }
 
     private Environment determineIssuerEnv() throws IllegalArgumentException {
-        switch (mPayPalUrl) {
+        switch (payPalUrl) {
             case "https://api.paypal.com":
                 return Environment.PRODUCTION;
             case "https://api.sandbox.paypal.com":
@@ -90,32 +90,32 @@ class PayPalUAT extends Authorization {
             case "https://api.msmaster.qa.paypal.com":
                 return Environment.STAGING;
             default:
-                throw new IllegalArgumentException("PayPal issuer URL missing or unknown: " + mPayPalUrl);
+                throw new IllegalArgumentException("PayPal issuer URL missing or unknown: " + payPalUrl);
         }
     }
 
     @Override
     String getConfigUrl() {
-        return mConfigUrl;
+        return configUrl;
     }
 
     @Override
     String getBearer() {
-        return mToken;
+        return token;
     }
 
     /**
      * @return The base PayPal URL
      */
     String getPayPalURL() {
-        return mPayPalUrl;
+        return payPalUrl;
     }
 
     /**
      * @return The environment context of the provided PayPal UAT
      */
     Environment getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     @Override
@@ -126,18 +126,18 @@ class PayPalUAT extends Authorization {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mConfigUrl);
-        dest.writeString(mPayPalUrl);
-        dest.writeString(mToken);
-        dest.writeString(mBraintreeMerchantID);
+        dest.writeString(configUrl);
+        dest.writeString(payPalUrl);
+        dest.writeString(token);
+        dest.writeString(braintreeMerchantID);
     }
 
     protected PayPalUAT(Parcel in) {
         super(in);
-        mConfigUrl = in.readString();
-        mPayPalUrl = in.readString();
-        mToken = in.readString();
-        mBraintreeMerchantID = in.readString();
+        configUrl = in.readString();
+        payPalUrl = in.readString();
+        token = in.readString();
+        braintreeMerchantID = in.readString();
     }
 
     public static final Creator<PayPalUAT> CREATOR = new Creator<PayPalUAT>() {

@@ -11,7 +11,7 @@ class AnalyticsConfiguration {
 
     private static final String URL_KEY = "url";
 
-    private String mUrl;
+    private String url;
 
     /**
      * Parse an {@link AnalyticsConfiguration} from json.
@@ -26,7 +26,7 @@ class AnalyticsConfiguration {
         }
 
         AnalyticsConfiguration analyticsConfiguration = new AnalyticsConfiguration();
-        analyticsConfiguration.mUrl = Json.optString(json, URL_KEY, null);
+        analyticsConfiguration.url = Json.optString(json, URL_KEY, null);
 
         return analyticsConfiguration;
     }
@@ -35,13 +35,13 @@ class AnalyticsConfiguration {
      * @return {@link String} url of the Braintree analytics service.
      */
     String getUrl() {
-        return mUrl;
+        return url;
     }
 
     /**
      * @return {@code true} if analytics are enabled, {@code false} otherwise.
      */
     boolean isEnabled() {
-        return !TextUtils.isEmpty(mUrl);
+        return !TextUtils.isEmpty(url);
     }
 }

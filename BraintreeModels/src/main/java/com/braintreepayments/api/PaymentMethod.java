@@ -19,11 +19,11 @@ public abstract class PaymentMethod {
     private static final String VALIDATE_KEY = "validate";
     private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
 
-    private String mIntegration = getDefaultIntegration();
-    private String mSource = getDefaultSource();
-    private boolean mValidate;
-    private boolean mValidateSet;
-    private String mSessionId;
+    private String integration = getDefaultIntegration();
+    private String source = getDefaultSource();
+    private boolean validate;
+    private boolean validateSet;
+    private String sessionId;
 
     public PaymentMethod() {}
 
@@ -34,7 +34,7 @@ public abstract class PaymentMethod {
      * @param integration the current integration style.
      */
     void setIntegration(String integration) {
-        mIntegration = integration;
+        this.integration = integration;
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class PaymentMethod {
      * @param source the source of the payment method.
      */
     void setSource(String source) {
-        mSource = source;
+        this.source = source;
     }
 
     /**
@@ -53,8 +53,8 @@ public abstract class PaymentMethod {
      *   will be validated when used by a server side library for a Braintree gateway action.
      */
     public void setValidate(boolean validate) {
-        mValidate = validate;
-        mValidateSet = true;
+        this.validate = validate;
+        validateSet = true;
     }
 
     /**
@@ -63,7 +63,7 @@ public abstract class PaymentMethod {
      * values ignored.
      */
     void setSessionId(String sessionId) {
-        mSessionId = sessionId;
+        this.sessionId = sessionId;
     }
 
     /**
@@ -76,13 +76,13 @@ public abstract class PaymentMethod {
 
         try {
             base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
-                    .sessionId(mSessionId)
-                    .source(mSource)
-                    .integration(mIntegration)
+                    .sessionId(sessionId)
+                    .source(source)
+                    .integration(integration)
                     .build());
 
-            if (mValidateSet) {
-                optionsJson.put(VALIDATE_KEY, mValidate);
+            if (validateSet) {
+                optionsJson.put(VALIDATE_KEY, validate);
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
 
@@ -104,14 +104,14 @@ public abstract class PaymentMethod {
 
         try {
             base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, new MetadataBuilder()
-                    .sessionId(mSessionId)
-                    .source(mSource)
-                    .integration(mIntegration)
+                    .sessionId(sessionId)
+                    .source(source)
+                    .integration(integration)
                     .build());
 
             JSONObject optionsJson = new JSONObject();
-            if (mValidateSet) {
-                optionsJson.put(VALIDATE_KEY, mValidate);
+            if (validateSet) {
+                optionsJson.put(VALIDATE_KEY, validate);
             } else {
                 if (authorization instanceof ClientToken) {
                     optionsJson.put(VALIDATE_KEY, true);
@@ -131,19 +131,19 @@ public abstract class PaymentMethod {
     }
 
     protected PaymentMethod(Parcel in) {
-        mIntegration = in.readString();
-        mSource = in.readString();
-        mValidate = in.readByte() > 0;
-        mValidateSet = in.readByte() > 0;
-        mSessionId = in.readString();
+        integration = in.readString();
+        source = in.readString();
+        validate = in.readByte() > 0;
+        validateSet = in.readByte() > 0;
+        sessionId = in.readString();
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mIntegration);
-        dest.writeString(mSource);
-        dest.writeByte(mValidate ? (byte) 1 : 0);
-        dest.writeByte(mValidateSet ? (byte) 1 : 0);
-        dest.writeString(mSessionId);
+        dest.writeString(integration);
+        dest.writeString(source);
+        dest.writeByte(validate ? (byte) 1 : 0);
+        dest.writeByte(validateSet ? (byte) 1 : 0);
+        dest.writeString(sessionId);
     }
 
     protected String getDefaultSource() {
