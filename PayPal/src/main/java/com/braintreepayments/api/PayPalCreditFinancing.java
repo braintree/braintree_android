@@ -18,12 +18,12 @@ public class PayPalCreditFinancing implements Parcelable {
     private static final String TOTAL_COST_KEY = "totalCost";
     private static final String TOTAL_INTEREST_KEY = "totalInterest";
 
-    private boolean mCardAmountImmutable;
-    private PayPalCreditFinancingAmount mMonthlyPayment;
-    private boolean mPayerAcceptance;
-    private int mTerm;
-    private PayPalCreditFinancingAmount mTotalCost;
-    private PayPalCreditFinancingAmount mTotalInterest;
+    private boolean cardAmountImmutable;
+    private PayPalCreditFinancingAmount monthlyPayment;
+    private boolean payerAcceptance;
+    private int term;
+    private PayPalCreditFinancingAmount totalCost;
+    private PayPalCreditFinancingAmount totalInterest;
 
     private PayPalCreditFinancing() {}
 
@@ -34,12 +34,12 @@ public class PayPalCreditFinancing implements Parcelable {
             return result;
         }
 
-        result.mCardAmountImmutable = creditFinancing.optBoolean(CARD_AMOUNT_IMMUTABLE_KEY, false);
-        result.mMonthlyPayment = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(MONTHLY_PAYMENT_KEY));
-        result.mPayerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false);
-        result.mTerm = creditFinancing.optInt(TERM_KEY, 0);
-        result.mTotalCost = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_COST_KEY));
-        result.mTotalInterest = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_INTEREST_KEY));
+        result.cardAmountImmutable = creditFinancing.optBoolean(CARD_AMOUNT_IMMUTABLE_KEY, false);
+        result.monthlyPayment = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(MONTHLY_PAYMENT_KEY));
+        result.payerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false);
+        result.term = creditFinancing.optInt(TERM_KEY, 0);
+        result.totalCost = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_COST_KEY));
+        result.totalInterest = PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_INTEREST_KEY));
 
         return result;
     }
@@ -48,42 +48,42 @@ public class PayPalCreditFinancing implements Parcelable {
      * @return Length of financing terms in months.
      */
     public int getTerm() {
-        return mTerm;
+        return term;
     }
 
     /**
      * @return Indicates whether the card amount is editable after payer's acceptance on PayPal side.
      */
     public boolean isCardAmountImmutable() {
-        return mCardAmountImmutable;
+        return cardAmountImmutable;
     }
 
     /**
      * @return Estimated amount per month that the customer will need to pay including fees and interest.
      */
     public PayPalCreditFinancingAmount getMonthlyPayment() {
-        return mMonthlyPayment;
+        return monthlyPayment;
     }
 
     /**
      * @return Status of whether the customer ultimately was approved for and chose to make the payment using the approved installment credit.
      */
     public boolean hasPayerAcceptance() {
-        return mPayerAcceptance;
+        return payerAcceptance;
     }
 
     /**
      * @return Estimated total payment amount including interest and fees the user will pay during the lifetime of the loan.
      */
     public PayPalCreditFinancingAmount getTotalCost() {
-        return mTotalCost;
+        return totalCost;
     }
 
     /**
      * @return Estimated interest or fees amount the payer will have to pay during the lifetime of the loan.
      */
     public PayPalCreditFinancingAmount getTotalInterest() {
-        return mTotalInterest;
+        return totalInterest;
     }
 
     @Override
@@ -93,21 +93,21 @@ public class PayPalCreditFinancing implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(mCardAmountImmutable? (byte) 1:0);
-        dest.writeParcelable(mMonthlyPayment, flags);
-        dest.writeByte(mPayerAcceptance? (byte) 1:0);
-        dest.writeInt(mTerm);
-        dest.writeParcelable(mTotalCost, flags);
-        dest.writeParcelable(mTotalInterest, flags);
+        dest.writeByte(cardAmountImmutable ? (byte) 1:0);
+        dest.writeParcelable(monthlyPayment, flags);
+        dest.writeByte(payerAcceptance ? (byte) 1:0);
+        dest.writeInt(term);
+        dest.writeParcelable(totalCost, flags);
+        dest.writeParcelable(totalInterest, flags);
     }
 
     private PayPalCreditFinancing(Parcel in) {
-        mCardAmountImmutable = in.readByte() != 0;
-        mMonthlyPayment = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
-        mPayerAcceptance = in.readByte() != 0;
-        mTerm = in.readInt();
-        mTotalCost = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
-        mTotalInterest = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
+        cardAmountImmutable = in.readByte() != 0;
+        monthlyPayment = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
+        payerAcceptance = in.readByte() != 0;
+        term = in.readInt();
+        totalCost = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
+        totalInterest = in.readParcelable(PayPalCreditFinancingAmount.class.getClassLoader());
     }
 
     public static final Creator<PayPalCreditFinancing> CREATOR = new Creator<PayPalCreditFinancing>() {

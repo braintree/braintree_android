@@ -34,14 +34,14 @@ public class PayPalLineItem {
     private static final String UNIT_TAX_AMOUNT_KEY = "unit_tax_amount";
     private static final String URL_KEY = "url";
 
-    private String mDescription;
-    private String mKind;
-    private String mName;
-    private String mProductCode;
-    private String mQuantity;
-    private String mUnitAmount;
-    private String mUnitTaxAmount;
-    private String mUrl;
+    private String description;
+    private String kind;
+    private String name;
+    private String productCode;
+    private String quantity;
+    private String unitAmount;
+    private String unitTaxAmount;
+    private String url;
 
     /**
      * Constructs a line item for PayPal checkout flows. All parameters are required.
@@ -55,10 +55,10 @@ public class PayPalLineItem {
                           @NonNull String name,
                           @NonNull String quantity,
                           @NonNull String unitAmount) {
-        mKind = kind;
-        mName = name;
-        mQuantity = quantity;
-        mUnitAmount = unitAmount;
+        this.kind = kind;
+        this.name = name;
+        this.quantity = quantity;
+        this.unitAmount = unitAmount;
     }
 
     /**
@@ -67,7 +67,7 @@ public class PayPalLineItem {
      * @param description The description to display.
      */
     public void setDescription(@NonNull String description) {
-        mDescription = description;
+        this.description = description;
     }
 
     /**
@@ -76,7 +76,7 @@ public class PayPalLineItem {
      * @param kind The {@link PayPalLineItemKind} kind.
      */
     public void setKind(@NonNull @PayPalLineItemKind String kind) {
-        mKind = kind;
+        this.kind = kind;
     }
 
     /**
@@ -85,7 +85,7 @@ public class PayPalLineItem {
      * @param name The name to display
      */
     public void setName(@NonNull String name) {
-        mName = name;
+        this.name = name;
     }
 
     /**
@@ -94,7 +94,7 @@ public class PayPalLineItem {
      * @param productCode The product code.
      */
     public void setProductCode(@NonNull String productCode) {
-        mProductCode = productCode;
+        this.productCode = productCode;
     }
 
     /**
@@ -103,7 +103,7 @@ public class PayPalLineItem {
      * @param quantity The quantity.
      */
     public void setQuantity(@NonNull String quantity) {
-        mQuantity = quantity;
+        this.quantity = quantity;
     }
 
     /**
@@ -112,7 +112,7 @@ public class PayPalLineItem {
      * @param unitAmount The unit amount.
      */
     public void setUnitAmount(@NonNull String unitAmount) {
-        mUnitAmount = unitAmount;
+        this.unitAmount = unitAmount;
     }
 
     /**
@@ -121,7 +121,7 @@ public class PayPalLineItem {
      * @param unitTaxAmount The unit tax amount.
      */
     public void setUnitTaxAmount(@NonNull String unitTaxAmount) {
-        mUnitTaxAmount = unitTaxAmount;
+        this.unitTaxAmount = unitTaxAmount;
     }
 
     /**
@@ -130,53 +130,53 @@ public class PayPalLineItem {
      * @param url The URL with additional information.
      */
     public void setUrl(@NonNull String url) {
-        mUrl = url;
+        this.url = url;
     }
 
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     @PayPalLineItemKind
     public String getKind() {
-        return mKind;
+        return kind;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public String getProductCode() {
-        return mProductCode;
+        return productCode;
     }
 
     public String getQuantity() {
-        return mQuantity;
+        return quantity;
     }
 
     public String getUnitAmount() {
-        return mUnitAmount;
+        return unitAmount;
     }
 
     public String getUnitTaxAmount() {
-        return mUnitTaxAmount;
+        return unitTaxAmount;
     }
 
     public String getUrl() {
-        return mUrl;
+        return url;
     }
 
     public JSONObject toJson() {
         try {
             return new JSONObject()
-                    .putOpt(DESCRIPTION_KEY, mDescription)
-                    .putOpt(KIND_KEY, mKind)
-                    .putOpt(NAME_KEY, mName)
-                    .putOpt(PRODUCT_CODE_KEY, mProductCode)
-                    .putOpt(QUANTITY_KEY, mQuantity)
-                    .putOpt(UNIT_AMOUNT_KEY, mUnitAmount)
-                    .putOpt(UNIT_TAX_AMOUNT_KEY, mUnitTaxAmount)
-                    .putOpt(URL_KEY, mUrl);
+                    .putOpt(DESCRIPTION_KEY, description)
+                    .putOpt(KIND_KEY, kind)
+                    .putOpt(NAME_KEY, name)
+                    .putOpt(PRODUCT_CODE_KEY, productCode)
+                    .putOpt(QUANTITY_KEY, quantity)
+                    .putOpt(UNIT_AMOUNT_KEY, unitAmount)
+                    .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
+                    .putOpt(URL_KEY, url);
         } catch (JSONException ignored) {
         }
 

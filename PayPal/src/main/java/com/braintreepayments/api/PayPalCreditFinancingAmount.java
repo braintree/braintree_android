@@ -14,8 +14,8 @@ public class PayPalCreditFinancingAmount implements Parcelable {
     private static final String CURRENCY_KEY = "currency";
     private static final String VALUE_KEY = "value";
 
-    private String mCurrency;
-    private String mValue;
+    private String currency;
+    private String value;
 
     private PayPalCreditFinancingAmount() {}
 
@@ -26,8 +26,8 @@ public class PayPalCreditFinancingAmount implements Parcelable {
             return result;
         }
 
-        result.mCurrency = Json.optString(amount, CURRENCY_KEY, null);
-        result.mValue = Json.optString(amount, VALUE_KEY, null);
+        result.currency = Json.optString(amount, CURRENCY_KEY, null);
+        result.value = Json.optString(amount, VALUE_KEY, null);
 
         return result;
     }
@@ -37,7 +37,7 @@ public class PayPalCreditFinancingAmount implements Parcelable {
      */
     @Nullable
     public String getCurrency() {
-        return mCurrency;
+        return currency;
     }
 
     /**
@@ -45,12 +45,12 @@ public class PayPalCreditFinancingAmount implements Parcelable {
      */
     @Nullable
     public String getValue() {
-        return mValue;
+        return value;
     }
 
     @Override
     public String toString() {
-        return String.format("%s %s", mValue, mCurrency);
+        return String.format("%s %s", value, currency);
     }
 
     @Override
@@ -60,13 +60,13 @@ public class PayPalCreditFinancingAmount implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mCurrency);
-        dest.writeString(mValue);
+        dest.writeString(currency);
+        dest.writeString(value);
     }
 
     private PayPalCreditFinancingAmount(Parcel in) {
-        mCurrency = in.readString();
-        mValue = in.readString();
+        currency = in.readString();
+        value = in.readString();
     }
 
     public static final Creator<PayPalCreditFinancingAmount> CREATOR = new Creator<PayPalCreditFinancingAmount>() {

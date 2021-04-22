@@ -37,16 +37,16 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
 
-    private final String mClientMetadataId;
-    private final PostalAddress mBillingAddress;
-    private final PostalAddress mShippingAddress;
-    private final String mFirstName;
-    private final String mLastName;
-    private final String mPhone;
-    private final String mEmail;
-    private final String mPayerId;
-    private final PayPalCreditFinancing mCreditFinancing;
-    private final String mAuthenticateUrl;
+    private final String clientMetadataId;
+    private final PostalAddress billingAddress;
+    private final PostalAddress shippingAddress;
+    private final String firstName;
+    private final String lastName;
+    private final String phone;
+    private final String email;
+    private final String payerId;
+    private final PayPalCreditFinancing creditFinancing;
+    private final String authenticateUrl;
 
     static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         boolean getShippingAddressFromTopLevel = false;
@@ -123,72 +123,72 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
 
     private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.PAYPAL);
-        mClientMetadataId = clientMetadataId;
-        mBillingAddress = billingAddress;
-        mShippingAddress = shippingAddress;
-        mFirstName = firstName;
-        mLastName = lastName;
-        mPhone = phone;
-        mEmail = email;
-        mPayerId = payerId;
-        mCreditFinancing = creditFinancing;
-        mAuthenticateUrl = authenticateUrl;
+        this.clientMetadataId = clientMetadataId;
+        this.billingAddress = billingAddress;
+        this.shippingAddress = shippingAddress;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.email = email;
+        this.payerId = payerId;
+        this.creditFinancing = creditFinancing;
+        this.authenticateUrl = authenticateUrl;
     }
 
     /**
      * @return The email address associated with this PayPal account
      */
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     /**
      * @return The billing address of the user if requested with additional scopes.
      */
     public PostalAddress getBillingAddress() {
-        return mBillingAddress;
+        return billingAddress;
     }
 
     /**
      * @return The shipping address of the user provided by checkout flows.
      */
     public PostalAddress getShippingAddress() {
-        return mShippingAddress;
+        return shippingAddress;
     }
 
     /**
      * @return The first name associated with the PayPal account.
      */
     public String getFirstName() {
-        return mFirstName;
+        return firstName;
     }
 
     /**
      * @return The last name associated with the PayPal account.
      */
     public String getLastName() {
-        return mLastName;
+        return lastName;
     }
 
     /**
      * @return The phone number associated with the PayPal account.
      */
     public String getPhone() {
-        return mPhone;
+        return phone;
     }
 
     /**
      * @return The ClientMetadataId associated with this transaction.
      */
     public String getClientMetadataId() {
-        return mClientMetadataId;
+        return clientMetadataId;
     }
 
     /**
      * @return The Payer ID provided in checkout flows.
      */
     public String getPayerId() {
-        return mPayerId;
+        return payerId;
     }
 
     /**
@@ -196,7 +196,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
      */
     @Nullable
     public PayPalCreditFinancing getCreditFinancing() {
-        return mCreditFinancing;
+        return creditFinancing;
     }
 
     /**
@@ -205,36 +205,36 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
      */
     @Nullable
     public String getAuthenticateUrl() {
-        return mAuthenticateUrl;
+        return authenticateUrl;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mClientMetadataId);
-        dest.writeParcelable(mBillingAddress, flags);
-        dest.writeParcelable(mShippingAddress, flags);
-        dest.writeString(mFirstName);
-        dest.writeString(mLastName);
-        dest.writeString(mEmail);
-        dest.writeString(mPhone);
-        dest.writeString(mPayerId);
-        dest.writeParcelable(mCreditFinancing, flags);
-        dest.writeString(mAuthenticateUrl);
+        dest.writeString(clientMetadataId);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeParcelable(shippingAddress, flags);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(email);
+        dest.writeString(phone);
+        dest.writeString(payerId);
+        dest.writeParcelable(creditFinancing, flags);
+        dest.writeString(authenticateUrl);
     }
 
     private PayPalAccountNonce(Parcel in) {
         super(in);
-        mClientMetadataId = in.readString();
-        mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
-        mFirstName = in.readString();
-        mLastName = in.readString();
-        mEmail = in.readString();
-        mPhone = in.readString();
-        mPayerId = in.readString();
-        mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
-        mAuthenticateUrl = in.readString();
+        clientMetadataId = in.readString();
+        billingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        firstName = in.readString();
+        lastName = in.readString();
+        email = in.readString();
+        phone = in.readString();
+        payerId = in.readString();
+        creditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
+        authenticateUrl = in.readString();
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {

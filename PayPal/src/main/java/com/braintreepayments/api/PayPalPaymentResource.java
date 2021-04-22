@@ -13,10 +13,10 @@ class PayPalPaymentResource {
     private static final String AGREEMENT_SETUP_KEY = "agreementSetup";
     private static final String APPROVAL_URL_KEY = "approvalUrl";
 
-    private String mRedirectUrl;
+    private String redirectUrl;
 
     private void redirectUrl(String redirectUrl) {
-        mRedirectUrl = redirectUrl;
+        this.redirectUrl = redirectUrl;
     }
 
     /**
@@ -25,7 +25,7 @@ class PayPalPaymentResource {
      * @return a redirect URL string containing an EC token
      */
     String getRedirectUrl() {
-        return mRedirectUrl;
+        return redirectUrl;
     }
 
     /**
