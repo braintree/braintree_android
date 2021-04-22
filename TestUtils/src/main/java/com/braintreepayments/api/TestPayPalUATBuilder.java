@@ -14,19 +14,19 @@ import java.util.Date;
 
 public class TestPayPalUATBuilder {
 
-    private static String mCachedPayPalUAT;
-    private static Date mTimestamp;
+    private static String cachedPayPalUAT;
+    private static Date timestamp;
 
     public String build() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -30);
 
-        if (mTimestamp == null || mTimestamp.before(calendar.getTime())) {
-            mCachedPayPalUAT = fetchUAT();
-            mTimestamp = new Date();
+        if (timestamp == null || timestamp.before(calendar.getTime())) {
+            cachedPayPalUAT = fetchUAT();
+            timestamp = new Date();
         }
 
-        return mCachedPayPalUAT;
+        return cachedPayPalUAT;
     }
 
     public String fetchUAT() {

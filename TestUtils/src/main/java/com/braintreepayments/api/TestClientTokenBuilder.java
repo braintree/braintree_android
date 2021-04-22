@@ -15,25 +15,25 @@ import java.util.UUID;
 
 public class TestClientTokenBuilder {
 
-    private static String mCachedClientToken;
-    private static Date mTimestamp;
+    private static String cachedClientToken;
+    private static Date timestamp;
 
-    private boolean mWithCustomerId;
-    private boolean mWithCvvVerification;
-    private boolean mWithPostalCodeVerification;
+    private boolean withCustomerId;
+    private boolean withCvvVerification;
+    private boolean withPostalCodeVerification;
 
     public TestClientTokenBuilder withCustomerId() {
-        mWithCustomerId = true;
+        withCustomerId = true;
         return this;
     }
 
     public TestClientTokenBuilder withCvvVerification() {
-        mWithCvvVerification = true;
+        withCvvVerification = true;
         return this;
     }
 
     public TestClientTokenBuilder withPostalCodeVerification() {
-        mWithPostalCodeVerification = true;
+        withPostalCodeVerification = true;
         return this;
     }
 
@@ -41,19 +41,19 @@ public class TestClientTokenBuilder {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -30);
 
-        if (mTimestamp == null || mTimestamp.before(calendar.getTime())) {
-            mCachedClientToken = fetchClientToken();
-            mTimestamp = new Date();
+        if (timestamp == null || timestamp.before(calendar.getTime())) {
+            cachedClientToken = fetchClientToken();
+            timestamp = new Date();
         }
 
-        return mCachedClientToken;
+        return cachedClientToken;
     }
 
     private String fetchClientToken() {
         try {
 
             URL url;
-            if (mWithCustomerId) {
+            if (withCustomerId) {
                 url = new URL("https://braintree-sample-merchant.herokuapp.com/client_token?customer_id=" + UUID.randomUUID().toString());
             } else {
                 url = new URL("https://braintree-sample-merchant.herokuapp.com/client_token");
