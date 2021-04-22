@@ -26,20 +26,20 @@ public class ErrorWithResponse extends Exception implements Parcelable {
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
 
-    private int mStatusCode;
-    private String mMessage;
-    private String mOriginalResponse;
-    private List<BraintreeError> mFieldErrors;
+    private int statusCode;
+    private String message;
+    private String originalResponse;
+    private List<BraintreeError> fieldErrors;
 
     ErrorWithResponse(int statusCode, String jsonString) {
-        mStatusCode = statusCode;
-        mOriginalResponse = jsonString;
+        this.statusCode = statusCode;
+        originalResponse = jsonString;
 
         try {
             parseJson(jsonString);
         } catch (JSONException e) {
-            mMessage = "Parsing error response failed";
-            mFieldErrors = new ArrayList<>();
+            message = "Parsing error response failed";
+            fieldErrors = new ArrayList<>();
         }
     }
 
@@ -47,7 +47,7 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     static ErrorWithResponse fromJson(String json) throws JSONException {
         ErrorWithResponse errorWithResponse = new ErrorWithResponse();
-        errorWithResponse.mOriginalResponse = json;
+        errorWithResponse.originalResponse = json;
         errorWithResponse.parseJson(json);
 
         return errorWithResponse;
@@ -55,22 +55,22 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     static ErrorWithResponse fromGraphQLJson(String json) {
         ErrorWithResponse errorWithResponse = new ErrorWithResponse();
-        errorWithResponse.mOriginalResponse = json;
-        errorWithResponse.mStatusCode = 422;
+        errorWithResponse.originalResponse = json;
+        errorWithResponse.statusCode = 422;
 
         try {
             JSONArray errors = new JSONObject(json).getJSONArray(Keys.ERRORS);
 
-            errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(errors);
+            errorWithResponse.fieldErrors = BraintreeError.fromGraphQLJsonArray(errors);
 
-            if (errorWithResponse.mFieldErrors.isEmpty()) {
-                errorWithResponse.mMessage = errors.getJSONObject(0).getString(Keys.MESSAGE);
+            if (errorWithResponse.fieldErrors.isEmpty()) {
+                errorWithResponse.message = errors.getJSONObject(0).getString(Keys.MESSAGE);
             } else {
-                errorWithResponse.mMessage = ErrorMessages.USER;
+                errorWithResponse.message = ErrorMessages.USER;
             }
         } catch (JSONException e) {
-            errorWithResponse.mMessage = "Parsing error response failed";
-            errorWithResponse.mFieldErrors = new ArrayList<>();
+            errorWithResponse.message = "Parsing error response failed";
+            errorWithResponse.fieldErrors = new ArrayList<>();
         }
 
         return errorWithResponse;
@@ -78,15 +78,15 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     private void parseJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
-        mMessage = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY);
-        mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
+        message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY);
+        fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
     }
 
     /**
      * @return HTTP status code from the Braintree gateway.
      */
     public int getStatusCode() {
-        return mStatusCode;
+        return statusCode;
     }
 
     /**
@@ -94,21 +94,21 @@ public class ErrorWithResponse extends Exception implements Parcelable {
      */
     @Override
     public String getMessage() {
-        return mMessage;
+        return message;
     }
 
     /**
      * @return The full error response as a {@link String}.
      */
     public String getErrorResponse() {
-        return mOriginalResponse;
+        return originalResponse;
     }
 
     /**
      * @return All the field errors.
      */
     public List<BraintreeError> getFieldErrors() {
-        return mFieldErrors;
+        return fieldErrors;
     }
 
     /**
@@ -120,8 +120,8 @@ public class ErrorWithResponse extends Exception implements Parcelable {
     @Nullable
     public BraintreeError errorFor(String field) {
         BraintreeError returnError;
-        if (mFieldErrors != null) {
-            for (BraintreeError error : mFieldErrors) {
+        if (fieldErrors != null) {
+            for (BraintreeError error : fieldErrors) {
                 if (error.getField().equals(field)) {
                     return error;
                 } else if (error.getFieldErrors() != null) {
@@ -137,8 +137,8 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     @Override
     public String toString() {
-        return "ErrorWithResponse (" + mStatusCode + "): " + mMessage + "\n" +
-                mFieldErrors.toString();
+        return "ErrorWithResponse (" + statusCode + "): " + message + "\n" +
+                fieldErrors.toString();
     }
 
     @Override
@@ -148,17 +148,17 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mStatusCode);
-        dest.writeString(mMessage);
-        dest.writeString(mOriginalResponse);
-        dest.writeTypedList(mFieldErrors);
+        dest.writeInt(statusCode);
+        dest.writeString(message);
+        dest.writeString(originalResponse);
+        dest.writeTypedList(fieldErrors);
     }
 
     protected ErrorWithResponse(Parcel in) {
-        mStatusCode = in.readInt();
-        mMessage = in.readString();
-        mOriginalResponse = in.readString();
-        mFieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
+        statusCode = in.readInt();
+        message = in.readString();
+        originalResponse = in.readString();
+        fieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
     }
 
     public static final Creator<ErrorWithResponse> CREATOR = new Creator<ErrorWithResponse>() {
