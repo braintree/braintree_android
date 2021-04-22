@@ -23,16 +23,16 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     protected static final String PHONE_NUMBER_KEY = "phoneNumber";
     protected static final String BILLING_ADDRESS_KEY = "billingAddress";
 
-    private String mGivenName;
-    private String mSurname;
-    private String mStreetAddress;
-    private String mExtendedAddress;
-    private String mLine3;
-    private String mLocality;
-    private String mRegion;
-    private String mPostalCode;
-    private String mCountryCodeAlpha2;
-    private String mPhoneNumber;
+    private String givenName;
+    private String surname;
+    private String streetAddress;
+    private String extendedAddress;
+    private String line3;
+    private String locality;
+    private String region;
+    private String postalCode;
+    private String countryCodeAlpha2;
+    private String phoneNumber;
 
     public ThreeDSecurePostalAddress() {}
 
@@ -42,7 +42,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param givenName Given name associated with the address.
      */
     public void setGivenName(String givenName) {
-        mGivenName = givenName;
+        this.givenName = givenName;
     }
 
     /**
@@ -51,7 +51,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param surname Surname associated with the address.
      */
     public void setSurname(String surname) {
-        mSurname = surname;
+        this.surname = surname;
     }
 
     /**
@@ -60,7 +60,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param streetAddress Line 1 of the Address (eg. number, street, etc).
      * */
     public void setStreetAddress(String streetAddress) {
-        mStreetAddress = streetAddress;
+        this.streetAddress = streetAddress;
     }
 
     /**
@@ -69,7 +69,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param extendedAddress Line 2 of the Address (eg. suite, apt #, etc.).
      * */
     public void setExtendedAddress(String extendedAddress) {
-        mExtendedAddress = extendedAddress;
+        this.extendedAddress = extendedAddress;
     }
 
     /**
@@ -78,7 +78,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param line3 Line 3 of the Address (eg. suite, apt #, etc.).
      * */
     public void setLine3(String line3) {
-        mLine3 = line3;
+        this.line3 = line3;
     }
 
     /**
@@ -87,7 +87,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param locality City name.
      * */
     public void setLocality(String locality) {
-        mLocality = locality;
+        this.locality = locality;
     }
 
     /**
@@ -96,7 +96,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country subdivision code of up to three letters.
      * */
     public void setRegion(String region) {
-        mRegion = region;
+        this.region = region;
     }
 
     /**
@@ -106,7 +106,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param postalCode Zip code or equivalent is usually required for countries that have them.
      * */
     public void setPostalCode(String postalCode) {
-        mPostalCode = postalCode;
+        this.postalCode = postalCode;
     }
 
     /**
@@ -115,7 +115,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param countryCodeAlpha2 2 letter country code.
      * */
     public void setCountryCodeAlpha2(String countryCodeAlpha2) {
-        mCountryCodeAlpha2 = countryCodeAlpha2;
+        this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
     /**
@@ -124,104 +124,104 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * @param phoneNumber The phone number associated with the address. Only numbers. Remove dashes, parentheses and other characters.
      * */
     public void setPhoneNumber(String phoneNumber) {
-        mPhoneNumber = phoneNumber;
+        this.phoneNumber = phoneNumber;
     }
 
     /**
      * @return Given name associated with the address.
      */
     public String getGivenName() {
-        return mGivenName;
+        return givenName;
     }
 
     /**
      * @return Surname associated with the address.
      */
     public String getSurname() {
-        return mSurname;
+        return surname;
     }
 
     /**
      * @return Line 1 of the Address (eg. number, street, etc).
      */
     public String getStreetAddress() {
-        return mStreetAddress;
+        return streetAddress;
     }
 
     /**
      * @return Line 2 of the Address (eg. suite, apt #, etc.).
      */
     public String getExtendedAddress() {
-        return mExtendedAddress;
+        return extendedAddress;
     }
 
     /**
      * @return Line 3 of the Address (eg. suite, apt #, etc.).
      */
     public String getLine3() {
-        return mLine3;
+        return line3;
     }
 
     /**
      * @return City name.
      */
     public String getLocality() {
-        return mLocality;
+        return locality;
     }
 
     /**
      * @return The user's region.
      */
     public String getRegion() {
-        return mRegion;
+        return region;
     }
 
     /**
      * @return Zip code or equivalent.
      */
     public String getPostalCode() {
-        return mPostalCode;
+        return postalCode;
     }
 
     /**
      * @return 2 letter country code.
      */
     public String getCountryCodeAlpha2() {
-        return mCountryCodeAlpha2;
+        return countryCodeAlpha2;
     }
 
     /**
      * @return The phone number associated with the address.
      */
     public String getPhoneNumber() {
-        return mPhoneNumber;
+        return phoneNumber;
     }
 
     public ThreeDSecurePostalAddress(Parcel in) {
-        mGivenName = in.readString();
-        mSurname = in.readString();
-        mStreetAddress = in.readString();
-        mExtendedAddress = in.readString();
-        mLine3 = in.readString();
-        mLocality = in.readString();
-        mRegion = in.readString();
-        mPostalCode = in.readString();
-        mCountryCodeAlpha2 = in.readString();
-        mPhoneNumber = in.readString();
+        givenName = in.readString();
+        surname = in.readString();
+        streetAddress = in.readString();
+        extendedAddress = in.readString();
+        line3 = in.readString();
+        locality = in.readString();
+        region = in.readString();
+        postalCode = in.readString();
+        countryCodeAlpha2 = in.readString();
+        phoneNumber = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mGivenName);
-        dest.writeString(mSurname);
-        dest.writeString(mStreetAddress);
-        dest.writeString(mExtendedAddress);
-        dest.writeString(mLine3);
-        dest.writeString(mLocality);
-        dest.writeString(mRegion);
-        dest.writeString(mPostalCode);
-        dest.writeString(mCountryCodeAlpha2);
-        dest.writeString(mPhoneNumber);
+        dest.writeString(givenName);
+        dest.writeString(surname);
+        dest.writeString(streetAddress);
+        dest.writeString(extendedAddress);
+        dest.writeString(line3);
+        dest.writeString(locality);
+        dest.writeString(region);
+        dest.writeString(postalCode);
+        dest.writeString(countryCodeAlpha2);
+        dest.writeString(phoneNumber);
     }
 
     @Override
@@ -249,17 +249,17 @@ public class ThreeDSecurePostalAddress implements Parcelable {
         JSONObject billingAddress = new JSONObject();
 
         try {
-            base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mGivenName);
-            base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mSurname);
-            base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mPhoneNumber);
+            base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, givenName);
+            base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, surname);
+            base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, phoneNumber);
 
-            billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mExtendedAddress);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.LINE_3_KEY, mLine3);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mLocality);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mRegion);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mCountryCodeAlpha2);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, streetAddress);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, extendedAddress);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.LINE_3_KEY, line3);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, locality);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, region);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, postalCode);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, countryCodeAlpha2);
 
             if (billingAddress.length() != 0) {
                 base.putOpt(ThreeDSecurePostalAddress.BILLING_ADDRESS_KEY, billingAddress);
