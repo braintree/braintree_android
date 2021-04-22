@@ -33,15 +33,15 @@ public class BinData implements Parcelable {
     private static final String COUNTRY_OF_ISSUANCE_KEY = "countryOfIssuance";
     private static final String PRODUCT_ID_KEY = "productId";
 
-    private String mPrepaid;
-    private String mHealthcare;
-    private String mDebit;
-    private String mDurbinRegulated;
-    private String mCommercial;
-    private String mPayroll;
-    private String mIssuingBank;
-    private String mCountryOfIssuance;
-    private String mProductId;
+    private String prepaid;
+    private String healthcare;
+    private String debit;
+    private String durbinRegulated;
+    private String commercial;
+    private String payroll;
+    private String issuingBank;
+    private String countryOfIssuance;
+    private String productId;
 
     protected static BinData fromJson(JSONObject json) {
         if (json == null) {
@@ -49,16 +49,16 @@ public class BinData implements Parcelable {
         }
 
         BinData binData = new BinData();
-        binData.mPrepaid = Json.optString(json, PREPAID_KEY, UNKNOWN);
-        binData.mHealthcare = Json.optString(json, HEALTHCARE_KEY, UNKNOWN);
-        binData.mDebit = Json.optString(json, DEBIT_KEY, UNKNOWN);
-        binData.mDurbinRegulated = Json.optString(json, DURBIN_REGULATED_KEY, UNKNOWN);
-        binData.mCommercial = Json.optString(json, COMMERCIAL_KEY, UNKNOWN);
-        binData.mPayroll = Json.optString(json, PAYROLL_KEY, UNKNOWN);
+        binData.prepaid = Json.optString(json, PREPAID_KEY, UNKNOWN);
+        binData.healthcare = Json.optString(json, HEALTHCARE_KEY, UNKNOWN);
+        binData.debit = Json.optString(json, DEBIT_KEY, UNKNOWN);
+        binData.durbinRegulated = Json.optString(json, DURBIN_REGULATED_KEY, UNKNOWN);
+        binData.commercial = Json.optString(json, COMMERCIAL_KEY, UNKNOWN);
+        binData.payroll = Json.optString(json, PAYROLL_KEY, UNKNOWN);
 
-        binData.mIssuingBank = convertNullToUnknown(json, ISSUING_BANK_KEY);
-        binData.mCountryOfIssuance = convertNullToUnknown(json, COUNTRY_OF_ISSUANCE_KEY);
-        binData.mProductId = convertNullToUnknown(json, PRODUCT_ID_KEY);
+        binData.issuingBank = convertNullToUnknown(json, ISSUING_BANK_KEY);
+        binData.countryOfIssuance = convertNullToUnknown(json, COUNTRY_OF_ISSUANCE_KEY);
+        binData.productId = convertNullToUnknown(json, PRODUCT_ID_KEY);
 
         return binData;
     }
@@ -76,7 +76,7 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getPrepaid() {
-        return mPrepaid;
+        return prepaid;
     }
 
     /**
@@ -84,7 +84,7 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getHealthcare() {
-        return mHealthcare;
+        return healthcare;
     }
 
     /**
@@ -92,7 +92,7 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getDebit() {
-        return mDebit;
+        return debit;
     }
 
     /**
@@ -100,7 +100,7 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getDurbinRegulated() {
-        return mDurbinRegulated;
+        return durbinRegulated;
     }
 
     /**
@@ -108,7 +108,7 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getCommercial() {
-        return mCommercial;
+        return commercial;
     }
 
     /**
@@ -116,28 +116,28 @@ public class BinData implements Parcelable {
      */
     @BinType
     public String getPayroll() {
-        return mPayroll;
+        return payroll;
     }
 
     /**
      * @return The bank that issued the credit card.
      */
     public String getIssuingBank() {
-        return mIssuingBank;
+        return issuingBank;
     }
 
     /**
      * @return The country that issued the credit card.
      */
     public String getCountryOfIssuance() {
-        return mCountryOfIssuance;
+        return countryOfIssuance;
     }
 
     /**
      * @return The code for the product type of the card (e.g. `D` (Visa Signature Preferred), `G` (Visa Business)).
      */
     public String getProductId() {
-        return mProductId;
+        return productId;
     }
 
     public BinData() {}
@@ -149,27 +149,27 @@ public class BinData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int i) {
-        dest.writeString(mPrepaid);
-        dest.writeString(mHealthcare);
-        dest.writeString(mDebit);
-        dest.writeString(mDurbinRegulated);
-        dest.writeString(mCommercial);
-        dest.writeString(mPayroll);
-        dest.writeString(mIssuingBank);
-        dest.writeString(mCountryOfIssuance);
-        dest.writeString(mProductId);
+        dest.writeString(prepaid);
+        dest.writeString(healthcare);
+        dest.writeString(debit);
+        dest.writeString(durbinRegulated);
+        dest.writeString(commercial);
+        dest.writeString(payroll);
+        dest.writeString(issuingBank);
+        dest.writeString(countryOfIssuance);
+        dest.writeString(productId);
     }
 
     private BinData(Parcel in) {
-        mPrepaid = in.readString();
-        mHealthcare = in.readString();
-        mDebit = in.readString();
-        mDurbinRegulated = in.readString();
-        mCommercial = in.readString();
-        mPayroll = in.readString();
-        mIssuingBank = in.readString();
-        mCountryOfIssuance = in.readString();
-        mProductId = in.readString();
+        prepaid = in.readString();
+        healthcare = in.readString();
+        debit = in.readString();
+        durbinRegulated = in.readString();
+        commercial = in.readString();
+        payroll = in.readString();
+        issuingBank = in.readString();
+        countryOfIssuance = in.readString();
+        productId = in.readString();
     }
 
     public static final Creator<BinData> CREATOR = new Creator<BinData>() {

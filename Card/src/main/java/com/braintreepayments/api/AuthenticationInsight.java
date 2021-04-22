@@ -13,7 +13,7 @@ public class AuthenticationInsight implements Parcelable {
     private static final String GRAPHQL_REGULATION_ENVIRONMENT_KEY = "customerAuthenticationRegulationEnvironment";
     private static final String REST_REGULATION_ENVIRONMENT_KEY = "regulationEnvironment";
 
-    private String mRegulationEnvironment;
+    private String regulationEnvironment;
 
     static AuthenticationInsight fromJson(JSONObject json) {
         if (json == null) {
@@ -37,7 +37,7 @@ public class AuthenticationInsight implements Parcelable {
             regulationEnv = regulationEnv.toLowerCase();
         }
 
-        authInsight.mRegulationEnvironment = regulationEnv;
+        authInsight.regulationEnvironment = regulationEnv;
 
         return authInsight;
     }
@@ -51,7 +51,7 @@ public class AuthenticationInsight implements Parcelable {
      * for possible values.
      */
     public String getRegulationEnvironment() {
-        return mRegulationEnvironment;
+        return regulationEnvironment;
     }
 
     public AuthenticationInsight() {}
@@ -63,11 +63,11 @@ public class AuthenticationInsight implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mRegulationEnvironment);
+        dest.writeString(regulationEnvironment);
     }
 
     private AuthenticationInsight(Parcel in) {
-        mRegulationEnvironment = in.readString();
+        regulationEnvironment = in.readString();
     }
 
     public static final Creator<AuthenticationInsight> CREATOR = new Creator<AuthenticationInsight>() {

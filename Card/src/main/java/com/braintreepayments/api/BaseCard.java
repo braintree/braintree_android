@@ -30,20 +30,20 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     static final String REGION_KEY = "region";
     static final String STREET_ADDRESS_KEY = "streetAddress";
 
-    protected String mCardholderName;
-    protected String mNumber;
-    protected String mCompany;
-    protected String mCountryCode;
-    protected String mCvv;
-    protected String mExpirationMonth;
-    protected String mExpirationYear;
-    protected String mExtendedAddress;
-    protected String mFirstName;
-    protected String mLastName;
-    protected String mLocality;
-    protected String mPostalCode;
-    protected String mRegion;
-    protected String mStreetAddress;
+    protected String cardholderName;
+    protected String number;
+    protected String company;
+    protected String countryCode;
+    protected String cvv;
+    protected String expirationMonth;
+    protected String expirationYear;
+    protected String extendedAddress;
+    protected String firstName;
+    protected String lastName;
+    protected String locality;
+    protected String postalCode;
+    protected String region;
+    protected String streetAddress;
 
     public BaseCard() {}
 
@@ -52,9 +52,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setNumber(String number) {
         if (TextUtils.isEmpty(number)) {
-            mNumber = null;
+            this.number = null;
         } else {
-            mNumber = number;
+            this.number = number;
         }
     }
 
@@ -63,9 +63,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setCvv(String cvv) {
         if (TextUtils.isEmpty(cvv)) {
-            mCvv = null;
+            this.cvv = null;
         } else {
-            mCvv = cvv;
+            this.cvv = cvv;
         }
     }
 
@@ -74,9 +74,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setExpirationMonth(String expirationMonth) {
         if (TextUtils.isEmpty(expirationMonth)) {
-            mExpirationMonth = null;
+            this.expirationMonth = null;
         } else {
-            mExpirationMonth = expirationMonth;
+            this.expirationMonth = expirationMonth;
         }
     }
 
@@ -85,9 +85,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setExpirationYear(String expirationYear) {
         if (TextUtils.isEmpty(expirationYear)) {
-            mExpirationYear = null;
+            this.expirationYear = null;
         } else {
-            mExpirationYear = expirationYear;
+            this.expirationYear = expirationYear;
         }
     }
 
@@ -96,15 +96,15 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setExpirationDate(String expirationDate) {
         if (TextUtils.isEmpty(expirationDate)) {
-            mExpirationMonth = null;
-            mExpirationYear = null;
+            expirationMonth = null;
+            expirationYear = null;
         } else {
             String[] splitExpiration = expirationDate.split("/");
 
-            mExpirationMonth = splitExpiration[0];
+            expirationMonth = splitExpiration[0];
 
             if (splitExpiration.length > 1) {
-                mExpirationYear = splitExpiration[1];
+                expirationYear = splitExpiration[1];
             }
         }
     }
@@ -114,9 +114,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setCardholderName(String cardholderName) {
         if (TextUtils.isEmpty(cardholderName)) {
-            mCardholderName = null;
+            this.cardholderName = null;
         } else {
-            mCardholderName = cardholderName;
+            this.cardholderName = cardholderName;
         }
     }
 
@@ -125,9 +125,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setFirstName(String firstName) {
         if (TextUtils.isEmpty(firstName)) {
-            mFirstName = null;
+            this.firstName = null;
         } else {
-            mFirstName = firstName;
+            this.firstName = firstName;
         }
     }
 
@@ -136,9 +136,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setLastName(String lastName) {
         if (TextUtils.isEmpty(lastName)) {
-            mLastName = null;
+            this.lastName = null;
         } else {
-            mLastName = lastName;
+            this.lastName = lastName;
         }
     }
 
@@ -147,9 +147,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setCompany(String company) {
         if (TextUtils.isEmpty(company)) {
-            mCompany = null;
+            this.company = null;
         } else {
-            mCompany = company;
+            this.company = company;
         }
     }
 
@@ -158,9 +158,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setCountryCode(String countryCode) {
         if (TextUtils.isEmpty(countryCode)) {
-            mCountryCode = null;
+            this.countryCode = null;
         } else {
-            mCountryCode = countryCode;
+            this.countryCode = countryCode;
         }
     }
 
@@ -169,9 +169,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setLocality(String locality) {
         if (TextUtils.isEmpty(locality)) {
-            mLocality = null;
+            this.locality = null;
         } else {
-            mLocality = locality;
+            this.locality = locality;
         }
     }
 
@@ -180,9 +180,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setPostalCode(String postalCode) {
         if (TextUtils.isEmpty(postalCode)) {
-            mPostalCode = null;
+            this.postalCode = null;
         } else {
-            mPostalCode = postalCode;
+            this.postalCode = postalCode;
         }
     }
 
@@ -191,9 +191,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setRegion(String region) {
         if (TextUtils.isEmpty(region)) {
-            mRegion = null;
+            this.region = null;
         } else {
-            mRegion = region;
+            this.region = region;
         }
     }
 
@@ -202,9 +202,9 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setStreetAddress(String streetAddress) {
         if (TextUtils.isEmpty(streetAddress)) {
-            mStreetAddress = null;
+            this.streetAddress = null;
         } else {
-            mStreetAddress = streetAddress;
+            this.streetAddress = streetAddress;
         }
     }
 
@@ -213,33 +213,33 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
      */
     public void setExtendedAddress(String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
-            mExtendedAddress = null;
+            this.extendedAddress = null;
         } else {
-            mExtendedAddress = extendedAddress;
+            this.extendedAddress = extendedAddress;
         }
     }
 
     @Override
     protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(NUMBER_KEY, mNumber);
-        paymentMethodNonceJson.put(CVV_KEY, mCvv);
-        paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
-        paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, mExpirationYear);
+        paymentMethodNonceJson.put(NUMBER_KEY, number);
+        paymentMethodNonceJson.put(CVV_KEY, cvv);
+        paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
+        paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, expirationYear);
 
-        paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, mCardholderName);
+        paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, cardholderName);
 
         JSONObject billingAddressJson = new JSONObject();
-        billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
-        billingAddressJson.put(LAST_NAME_KEY, mLastName);
-        billingAddressJson.put(COMPANY_KEY, mCompany);
-        billingAddressJson.put(LOCALITY_KEY, mLocality);
-        billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
-        billingAddressJson.put(REGION_KEY, mRegion);
-        billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
-        billingAddressJson.put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+        billingAddressJson.put(FIRST_NAME_KEY, firstName);
+        billingAddressJson.put(LAST_NAME_KEY, lastName);
+        billingAddressJson.put(COMPANY_KEY, company);
+        billingAddressJson.put(LOCALITY_KEY, locality);
+        billingAddressJson.put(POSTAL_CODE_KEY, postalCode);
+        billingAddressJson.put(REGION_KEY, region);
+        billingAddressJson.put(STREET_ADDRESS_KEY, streetAddress);
+        billingAddressJson.put(EXTENDED_ADDRESS_KEY, extendedAddress);
 
-        if (mCountryCode != null) {
-            billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCode);
+        if (countryCode != null) {
+            billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, countryCode);
         }
 
         if (billingAddressJson.length() > 0) {
@@ -266,38 +266,38 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     protected BaseCard(Parcel in) {
         super(in);
-        mNumber = in.readString();
-        mCvv = in.readString();
-        mExpirationMonth = in.readString();
-        mExpirationYear = in.readString();
-        mCardholderName = in.readString();
-        mFirstName = in.readString();
-        mLastName = in.readString();
-        mCompany = in.readString();
-        mCountryCode = in.readString();
-        mLocality = in.readString();
-        mPostalCode = in.readString();
-        mRegion = in.readString();
-        mStreetAddress = in.readString();
-        mExtendedAddress = in.readString();
+        number = in.readString();
+        cvv = in.readString();
+        expirationMonth = in.readString();
+        expirationYear = in.readString();
+        cardholderName = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        company = in.readString();
+        countryCode = in.readString();
+        locality = in.readString();
+        postalCode = in.readString();
+        region = in.readString();
+        streetAddress = in.readString();
+        extendedAddress = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mNumber);
-        dest.writeString(mCvv);
-        dest.writeString(mExpirationMonth);
-        dest.writeString(mExpirationYear);
-        dest.writeString(mCardholderName);
-        dest.writeString(mFirstName);
-        dest.writeString(mLastName);
-        dest.writeString(mCompany);
-        dest.writeString(mCountryCode);
-        dest.writeString(mLocality);
-        dest.writeString(mPostalCode);
-        dest.writeString(mRegion);
-        dest.writeString(mStreetAddress);
-        dest.writeString(mExtendedAddress);
+        dest.writeString(number);
+        dest.writeString(cvv);
+        dest.writeString(expirationMonth);
+        dest.writeString(expirationYear);
+        dest.writeString(cardholderName);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(company);
+        dest.writeString(countryCode);
+        dest.writeString(locality);
+        dest.writeString(postalCode);
+        dest.writeString(region);
+        dest.writeString(streetAddress);
+        dest.writeString(extendedAddress);
     }
 }
