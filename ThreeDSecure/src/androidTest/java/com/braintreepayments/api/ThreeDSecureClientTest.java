@@ -59,7 +59,7 @@ public class ThreeDSecureClientTest {
 
                 CardNonce cardNonce = null;
                 try {
-                    cardNonce = new CardNonce(tokenizationResponse);
+                    cardNonce = CardNonce.fromJSON(tokenizationResponse);
                 } catch (JSONException e) {
                     fail("This should not fail");
                 }
