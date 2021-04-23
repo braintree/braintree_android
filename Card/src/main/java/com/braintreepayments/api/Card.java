@@ -78,6 +78,20 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     }
 
     @Override
+    JSONObject buildTokenizationJSON() {
+        JSONObject json = super.buildTokenizationJSON();
+        if (mAuthenticationInsightRequested) {
+            try {
+                json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+                json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, mAuthenticationInsightRequested);
+            } catch (JSONException exception) {
+                exception.printStackTrace();
+            }
+        }
+        return json;
+    }
+
+    @Override
     protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         super.buildJSON(json, paymentMethodNonceJson);
 

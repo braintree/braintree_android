@@ -26,6 +26,32 @@ class PayPalAccount extends PaymentMethod {
         super();
     }
 
+    @Override
+    JSONObject buildTokenizationJSON() {
+        JSONObject json = super.buildTokenizationJSON();
+        JSONObject paymentMethodNonceJson = new JSONObject();
+
+        try {
+            paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
+            paymentMethodNonceJson.put(INTENT_KEY, mIntent);
+
+            Iterator<String> urlResponseDataKeyIterator = mUrlResponseData.keys();
+            while (urlResponseDataKeyIterator.hasNext()) {
+                String key = urlResponseDataKeyIterator.next();
+                paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
+            }
+
+            if (mMerchantAccountId != null) {
+                json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+            }
+            json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
+
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+        return json;
+    }
+
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *

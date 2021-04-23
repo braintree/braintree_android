@@ -12,6 +12,9 @@ import org.json.JSONObject;
  */
 public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
+    static final String OPTIONS_KEY = "options";
+    static final String VALIDATE_KEY = "validate";
+
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
     static final String COMPANY_KEY = "company";
@@ -45,7 +48,8 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     protected String region;
     protected String streetAddress;
 
-    public BaseCard() {}
+    public BaseCard() {
+    }
 
     /**
      * @param number The card number.
@@ -209,7 +213,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     /**
-     * @param extendedAddress  address of the card.
+     * @param extendedAddress address of the card.
      */
     public void setExtendedAddress(String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
@@ -217,6 +221,50 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
         } else {
             this.extendedAddress = extendedAddress;
         }
+    }
+
+    @Override
+    JSONObject buildTokenizationJSON() {
+        JSONObject json = super.buildTokenizationJSON();
+
+        JSONObject paymentMethodNonceJson = new JSONObject();
+        try {
+            if (hasValueForValidate()) {
+                JSONObject optionsJson = new JSONObject();
+                optionsJson.put(VALIDATE_KEY, getValidate());
+                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+            }
+
+            paymentMethodNonceJson.put(NUMBER_KEY, mNumber);
+            paymentMethodNonceJson.put(CVV_KEY, mCvv);
+            paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
+            paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, mExpirationYear);
+
+            paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, mCardholderName);
+
+            JSONObject billingAddressJson = new JSONObject();
+            billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
+            billingAddressJson.put(LAST_NAME_KEY, mLastName);
+            billingAddressJson.put(COMPANY_KEY, mCompany);
+            billingAddressJson.put(LOCALITY_KEY, mLocality);
+            billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
+            billingAddressJson.put(REGION_KEY, mRegion);
+            billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
+            billingAddressJson.put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+
+            if (mCountryCode != null) {
+                billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCode);
+            }
+
+            if (billingAddressJson.length() > 0) {
+                paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
+            }
+            json.put(CREDIT_CARD_KEY, paymentMethodNonceJson);
+
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+        return json;
     }
 
     @Override

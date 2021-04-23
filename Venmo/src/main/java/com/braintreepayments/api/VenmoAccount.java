@@ -12,6 +12,19 @@ class VenmoAccount extends PaymentMethod {
 
     VenmoAccount() {}
 
+    @Override
+    JSONObject buildTokenizationJSON() {
+        JSONObject json = super.buildTokenizationJSON();
+        JSONObject paymentMethodNonceJson = new JSONObject();
+        try {
+            paymentMethodNonceJson.put(NONCE_KEY, mNonce);
+            json.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+        return json;
+    }
+
     void setNonce(String nonce) {
         this.nonce = nonce;
     }

@@ -96,6 +96,30 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     }
 
     @Override
+    JSONObject buildTokenizationJSON() {
+        JSONObject json = super.buildTokenizationJSON();
+
+        try {
+            JSONObject paymentMethodNonceJson = json.getJSONObject(BaseCard.CREDIT_CARD_KEY);
+            JSONObject options = paymentMethodNonceJson.optJSONObject(OPTIONS_KEY);
+            if (options == null) {
+                options = new JSONObject();
+                paymentMethodNonceJson.put(OPTIONS_KEY, options);
+            }
+            JSONObject unionPayEnrollment = new JSONObject();
+            unionPayEnrollment.put(SMS_CODE_KEY, mSmsCode);
+            unionPayEnrollment.put(ENROLLMENT_ID_KEY, mEnrollmentId);
+            options.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
+
+            json.put(UNIONPAY_KEY, paymentMethodNonceJson);
+
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+        return json;
+    }
+
+    @Override
     protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         super.buildJSON(json, paymentMethodNonceJson);
 

@@ -98,7 +98,7 @@ class TokenizationClient {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
-        braintreeClient.sendPOST(url, paymentMethod.buildJSON(), new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, paymentMethod.buildTokenizationJSON().toString(), new HttpResponseCallback() {
 
             @Override
             public void success(String responseBody) {

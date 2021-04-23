@@ -57,6 +57,14 @@ public abstract class PaymentMethod {
         validateSet = true;
     }
 
+    boolean getValidate() {
+        return mValidate;
+    }
+
+    boolean hasValueForValidate() {
+        return mValidateSet;
+    }
+
     /**
      * @param sessionId sets the session id associated with this request. The session is a uuid.
      * This field is automatically set at the point of tokenization, and any previous
@@ -64,6 +72,29 @@ public abstract class PaymentMethod {
      */
     void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+
+    JSONObject buildTokenizationJSON() {
+        JSONObject base = new JSONObject();
+//        JSONObject optionsJson = new JSONObject();
+//        JSONObject paymentMethodNonceJson = new JSONObject();
+
+        try {
+            base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
+                    .sessionId(mSessionId)
+                    .source(mSource)
+                    .integration(mIntegration)
+                    .build());
+
+//            if (mValidateSet) {
+//                optionsJson.put(VALIDATE_KEY, mValidate);
+//                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+//            }
+//
+//            buildJSON(base, paymentMethodNonceJson);
+        } catch (JSONException ignored) {}
+        return base;
     }
 
     /**
