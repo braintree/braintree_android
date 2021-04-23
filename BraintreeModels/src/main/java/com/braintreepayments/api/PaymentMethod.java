@@ -81,7 +81,7 @@ public abstract class PaymentMethod {
     }
 
 
-    JSONObject buildTokenizationJSON() {
+    JSONObject buildJSON() {
         JSONObject base = new JSONObject();
         try {
             base.put(MetadataBuilder.META_KEY, new MetadataBuilder()

@@ -40,7 +40,7 @@ public class VisaCheckoutAccountUnitTest {
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(null);
-        JSONObject json = visaCheckoutAccount.buildTokenizationJSON();
+        JSONObject json = visaCheckoutAccount.buildJSON();
 
         JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }
@@ -52,7 +52,7 @@ public class VisaCheckoutAccountUnitTest {
         when(visaPaymentSummary.getEncPaymentData()).thenReturn("stubbedEncPaymentData");
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(visaPaymentSummary);
-        JSONObject json = visaCheckoutAccount.buildTokenizationJSON();
+        JSONObject json = visaCheckoutAccount.buildJSON();
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();

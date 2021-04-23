@@ -89,7 +89,7 @@ public class UnionPayCardUnitTest {
         UnionPayCard sut = new UnionPayCard();
         sut.setSmsCode("mySmsCode");
 
-        JSONObject jsonObject = sut.buildTokenizationJSON();
+        JSONObject jsonObject = sut.buildJSON();
         assertEquals("mySmsCode", jsonObject.getJSONObject("creditCard")
                 .getJSONObject("options")
                 .getJSONObject("unionPayEnrollment")
@@ -101,7 +101,7 @@ public class UnionPayCardUnitTest {
         UnionPayCard sut = new UnionPayCard();
         sut.setEnrollmentId("myEnrollmentId");
 
-        JSONObject jsonObject = sut.buildTokenizationJSON();
+        JSONObject jsonObject = sut.buildJSON();
         assertEquals("myEnrollmentId", jsonObject.getJSONObject("creditCard")
                 .getJSONObject("options")
                 .getJSONObject("unionPayEnrollment")
@@ -129,7 +129,7 @@ public class UnionPayCardUnitTest {
         sut.setMobilePhoneNumber("");
         sut.setSmsCode("");
 
-        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject json = sut.buildJSON();
         assertEquals("{\"options\":{\"unionPayEnrollment\":{}}}",
             json.getJSONObject(CREDIT_CARD_KEY).toString());
         assertFalse(json.has(BILLING_ADDRESS_KEY));
@@ -175,7 +175,7 @@ public class UnionPayCardUnitTest {
         sut.setSessionId("session-id");
         sut.setSource("source");
 
-        JSONObject tokenizePayload = sut.buildTokenizationJSON();
+        JSONObject tokenizePayload = sut.buildJSON();
 
         JSONObject creditCard = tokenizePayload.getJSONObject("creditCard");
         assertEquals("card-number", creditCard.getString("number"));
@@ -197,10 +197,10 @@ public class UnionPayCardUnitTest {
         UnionPayCard unionPayCardValidateFalse = new UnionPayCard();
         unionPayCardValidateFalse.setValidate(false);
 
-        JSONObject optionsValidateTrue = unionPayCardValidateTrue.buildTokenizationJSON()
+        JSONObject optionsValidateTrue = unionPayCardValidateTrue.buildJSON()
                 .getJSONObject("creditCard")
                 .getJSONObject("options");
-        JSONObject optionsValidateFalse = unionPayCardValidateFalse.buildTokenizationJSON()
+        JSONObject optionsValidateFalse = unionPayCardValidateFalse.buildJSON()
                 .getJSONObject("creditCard")
                 .getJSONObject("options");
 
@@ -219,7 +219,7 @@ public class UnionPayCardUnitTest {
         sut.setSmsCode("smsCode");
         sut.setValidate(true);
 
-        JSONObject tokenizePayload = sut.buildTokenizationJSON();
+        JSONObject tokenizePayload = sut.buildJSON();
         JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
         JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
         JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
@@ -244,7 +244,7 @@ public class UnionPayCardUnitTest {
         sut.setEnrollmentId("enrollmentId");
         sut.setValidate(true);
 
-        JSONObject tokenizePayload = sut.buildTokenizationJSON();
+        JSONObject tokenizePayload = sut.buildJSON();
         JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
         JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
         JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
@@ -265,7 +265,7 @@ public class UnionPayCardUnitTest {
         sut.setNumber("some-card-number");
         sut.setCvv("123");
 
-        JSONObject unionPayEnrollmentPayload = sut.buildTokenizationJSON();
+        JSONObject unionPayEnrollmentPayload = sut.buildJSON();
         assertFalse(unionPayEnrollmentPayload.has("cvv"));
     }
 

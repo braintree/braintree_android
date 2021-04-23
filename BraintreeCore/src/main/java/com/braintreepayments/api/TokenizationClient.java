@@ -68,7 +68,7 @@ class TokenizationClient {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final JSONObject payload;
         try {
-            payload = graphQLTokenizable.buildGraphQLTokenizationJSON();
+            payload = graphQLTokenizable.buildGraphQLJSON();
         } catch (BraintreeException e) {
             callback.onResult(null, e);
             return;
@@ -98,7 +98,7 @@ class TokenizationClient {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
-        braintreeClient.sendPOST(url, paymentMethod.buildTokenizationJSON().toString(), new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
 
             @Override
             public void success(String responseBody) {

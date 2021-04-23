@@ -224,8 +224,8 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     @Override
-    JSONObject buildTokenizationJSON() {
-        JSONObject json = super.buildTokenizationJSON();
+    JSONObject buildJSON() {
+        JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
         try {

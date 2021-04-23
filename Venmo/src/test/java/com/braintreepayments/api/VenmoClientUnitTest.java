@@ -461,7 +461,7 @@ public class VenmoClientUnitTest {
         verify(tokenizationClient).tokenize(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
 
         VenmoAccount venmoAccount = accountBuilderCaptor.getValue();
-        JSONObject venmoJSON = venmoAccount.buildTokenizationJSON();
+        JSONObject venmoJSON = venmoAccount.buildJSON();
         assertEquals("sample-nonce", venmoJSON.getJSONObject("venmoAccount").getString("nonce"));
     }
 

@@ -24,7 +24,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     private boolean authenticationInsightRequested;
 
     @Override
-    public JSONObject buildGraphQLTokenizationJSON() throws BraintreeException {
+    public JSONObject buildGraphQLJSON() throws BraintreeException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();
@@ -97,8 +97,8 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     }
 
     @Override
-    JSONObject buildTokenizationJSON() {
-        JSONObject json = super.buildTokenizationJSON();
+    JSONObject buildJSON() {
+        JSONObject json = super.buildJSON();
         if (mAuthenticationInsightRequested) {
             try {
                 json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);

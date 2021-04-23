@@ -18,7 +18,7 @@ public class VenmoAccountUnitTest {
         sut.setNonce("some-nonce");
         sut.setValidate(true);
 
-        JSONObject fullJson = sut.buildTokenizationJSON();
+        JSONObject fullJson = sut.buildJSON();
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");
         assertEquals("some-nonce", venmoAccountJson.getString("nonce"));
 

@@ -32,8 +32,8 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildTokenizationJSON() {
-        JSONObject json = super.buildTokenizationJSON();
+    JSONObject buildJSON() {
+        JSONObject json = super.buildJSON();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
         try {
