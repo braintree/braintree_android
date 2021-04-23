@@ -16,7 +16,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
 
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
@@ -45,7 +44,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = json.getString(DESCRIPTION_KEY);
         boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
         String email = Json.optString(details, EMAIL_KEY, null);
         String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
@@ -85,10 +83,10 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             shippingAddress = new PostalAddress();
         }
 
-        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, description, isDefault);
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, isDefault);
     }
 
-    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description, boolean isDefault) {
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;

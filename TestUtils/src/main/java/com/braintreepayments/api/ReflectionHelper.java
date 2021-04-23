@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 public class ReflectionHelper {
 
@@ -23,17 +22,5 @@ public class ReflectionHelper {
         Field field = findField(fieldName, src);
         field.setAccessible(true);
         return field.get(src);
-    }
-
-    public static void setField(String fieldName, Object src, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field field = findField(fieldName, src);
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        field.set(src, value);
     }
 }

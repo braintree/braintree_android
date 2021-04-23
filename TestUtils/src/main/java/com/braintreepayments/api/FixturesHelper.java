@@ -5,6 +5,7 @@ import android.util.Base64;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class FixturesHelper {
 
@@ -17,6 +18,6 @@ public class FixturesHelper {
     }
 
     public static InputStream streamFromString(String string) throws UnsupportedEncodingException {
-        return new ByteArrayInputStream(string.getBytes("UTF-8"));
+        return new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
     }
 }

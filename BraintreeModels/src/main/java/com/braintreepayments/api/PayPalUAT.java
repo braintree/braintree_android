@@ -14,10 +14,10 @@ class PayPalUAT extends Authorization {
 
     private static final String EXTERNAL_ID_STRING = "external_id";
 
-    private String configUrl;
-    private String payPalUrl;
+    private final String configUrl;
+    private final String payPalUrl;
     private String braintreeMerchantID;
-    private String token;
+    private final String token;
     private Environment environment;
 
     enum Environment {

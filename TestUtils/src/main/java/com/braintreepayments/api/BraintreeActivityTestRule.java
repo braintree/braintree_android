@@ -21,12 +21,6 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         init();
     }
 
-    public BraintreeActivityTestRule(Class<T> activityClass, boolean initialTouchMode,
-            boolean launchActivity) {
-        super(activityClass, initialTouchMode, launchActivity);
-        init();
-    }
-
     @SuppressWarnings("MissingPermission")
     @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {

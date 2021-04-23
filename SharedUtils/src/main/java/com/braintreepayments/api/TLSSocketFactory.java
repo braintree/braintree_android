@@ -23,7 +23,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 class TLSSocketFactory extends SSLSocketFactory {
 
-    private SSLSocketFactory internalSSLSocketFactory;
+    private final SSLSocketFactory internalSSLSocketFactory;
 
     static TLSSocketFactory newInstance() throws SSLException {
         return new TLSSocketFactory();

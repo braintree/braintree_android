@@ -25,16 +25,14 @@ class DeviceInspector {
     private static final int VENMO_PUBLIC_KEY_HASH_CODE = -129711843;
 
     private final AppHelper appHelper;
-    private final ManifestValidator manifestValidator;
 
     DeviceInspector() {
-        this(new AppHelper(), new ManifestValidator());
+        this(new AppHelper());
     }
 
     @VisibleForTesting
-    DeviceInspector(AppHelper appHelper, ManifestValidator manifestValidator) {
+    DeviceInspector(AppHelper appHelper) {
         this.appHelper = appHelper;
-        this.manifestValidator = manifestValidator;
     }
 
     boolean isPayPalInstalled(Context context) {
@@ -65,14 +63,10 @@ class DeviceInspector {
 
     @VisibleForTesting
     boolean isDeviceEmulator(String buildProduct, String buildManufacturer, String buildFingerprint) {
-        if ("google_sdk".equalsIgnoreCase(buildProduct) ||
+        return "google_sdk".equalsIgnoreCase(buildProduct) ||
                 "sdk".equalsIgnoreCase(buildProduct) ||
                 "Genymotion".equalsIgnoreCase(buildManufacturer) ||
-                buildFingerprint.contains("generic")) {
-            return true;
-        } else {
-            return false;
-        }
+                buildFingerprint.contains("generic");
     }
 
     String getAppName(Context context) {

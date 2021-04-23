@@ -5,10 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Base64;
 
-import com.braintreepayments.api.BraintreeSharedPreferences;
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.Configuration;
-
 public class SharedPreferencesHelper {
 
     public static SharedPreferences getSharedPreferences(Context context) {

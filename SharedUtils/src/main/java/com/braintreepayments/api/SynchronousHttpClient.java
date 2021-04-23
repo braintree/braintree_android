@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory;
 class SynchronousHttpClient {
 
     private SSLSocketFactory socketFactory;
-    private HttpResponseParser parser;
+    private final HttpResponseParser parser;
 
     SynchronousHttpClient(SSLSocketFactory socketFactory, HttpResponseParser parser) {
         this.parser = parser;

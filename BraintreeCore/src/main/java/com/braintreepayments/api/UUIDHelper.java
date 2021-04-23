@@ -10,7 +10,7 @@ class UUIDHelper {
     private static final String BRAINTREE_UUID_KEY = "braintreeUUID";
 
     /**
-     * @param context
+     * @param context Android Context
      * @return A persistent UUID for this application install.
      */
     static String getPersistentUUID(Context context) {

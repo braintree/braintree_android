@@ -24,7 +24,7 @@ class SignatureVerification {
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
      * impersonating other apps.
      *
-     * @param context
+     * @param context Android Context
      * @param packageName the package name of the app to verify.
      * @param certificateSubject the expected certificate subject of the app.
      * @param certificateIssuer the expected certificate issuer of the app.
