@@ -41,14 +41,14 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class VisaCheckoutClientUnitTest {
 
     @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    public PowerMockRule powerMockRule = new PowerMockRule();
 
-    private Configuration mConfigurationWithVisaCheckout;
+    private Configuration configurationWithVisaCheckout;
     private VisaPaymentSummary visaPaymentSummary;
 
     @Before
     public void setup() throws Exception {
-        mConfigurationWithVisaCheckout = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT);
+        configurationWithVisaCheckout = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT);
 
         visaPaymentSummary = PowerMockito.mock(VisaPaymentSummary.class);
         when(visaPaymentSummary.getCallId()).thenReturn("stubbedCallId");
@@ -147,7 +147,7 @@ public class VisaCheckoutClientUnitTest {
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(mConfigurationWithVisaCheckout)
+                .configuration(configurationWithVisaCheckout)
                 .build();
         VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
 
@@ -164,7 +164,7 @@ public class VisaCheckoutClientUnitTest {
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(mConfigurationWithVisaCheckout)
+                .configuration(configurationWithVisaCheckout)
                 .build();
         VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
 
@@ -182,7 +182,7 @@ public class VisaCheckoutClientUnitTest {
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(mConfigurationWithVisaCheckout)
+                .configuration(configurationWithVisaCheckout)
                 .build();
         VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
 
@@ -200,7 +200,7 @@ public class VisaCheckoutClientUnitTest {
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(mConfigurationWithVisaCheckout)
+                .configuration(configurationWithVisaCheckout)
                 .build();
         VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
 

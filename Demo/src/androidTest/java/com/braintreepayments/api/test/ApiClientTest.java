@@ -24,13 +24,13 @@ import static junit.framework.Assert.fail;
 
 public class ApiClientTest {
 
-    private CountDownLatch mCountDownLatch;
-    private ApiClient mApiClient;
+    private CountDownLatch countDownLatch;
+    private ApiClient apiClient;
 
     @Before
     public void setup() {
-        mCountDownLatch = new CountDownLatch(1);
-        mApiClient = new RestAdapter.Builder()
+        countDownLatch = new CountDownLatch(1);
+        apiClient = new RestAdapter.Builder()
                 .setEndpoint(Settings.getSandboxUrl())
                 .setRequestInterceptor(new ApiClientRequestInterceptor())
                 .setLogLevel(LogLevel.FULL)
@@ -40,11 +40,11 @@ public class ApiClientTest {
 
     @Test(timeout = 10000)
     public void getClientToken_returnsAClientToken() throws InterruptedException {
-        mApiClient.getClientToken(null, null, new Callback<ClientToken>() {
+        apiClient.getClientToken(null, null, new Callback<ClientToken>() {
             @Override
             public void success(ClientToken clientToken, Response response) {
                 assertNotNull(clientToken.getClientToken());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -53,16 +53,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void getClientToken_returnsAClientTokenForACustomer() throws InterruptedException {
-        mApiClient.getClientToken("customer", null, new Callback<ClientToken>() {
+        apiClient.getClientToken("customer", null, new Callback<ClientToken>() {
             @Override
             public void success(ClientToken clientToken, Response response) {
                 assertNotNull(clientToken.getClientToken());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -71,16 +71,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void getClientToken_returnsAClientTokenForAMerchantAccount() throws InterruptedException {
-        mApiClient.getClientToken(null, "fake_switch_usd", new Callback<ClientToken>() {
+        apiClient.getClientToken(null, "fake_switch_usd", new Callback<ClientToken>() {
             @Override
             public void success(ClientToken clientToken, Response response) {
                 assertNotNull(clientToken.getClientToken());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -89,16 +89,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_createsATransaction() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", new Callback<Transaction>() {
+        apiClient.createTransaction("fake-valid-nonce", new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
                 assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -107,16 +107,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_createsATransactionWhenMerchantAccountIsNull() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", null, new Callback<Transaction>() {
+        apiClient.createTransaction("fake-valid-nonce", null, new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
                 assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -125,16 +125,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_createsATransactionWhenMerchantAccountIsEmpty() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", "", new Callback<Transaction>() {
+        apiClient.createTransaction("fake-valid-nonce", "", new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
                 assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -143,16 +143,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_failsWhenNonceIsAlreadyConsumed() throws InterruptedException {
-        mApiClient.createTransaction("fake-consumed-nonce", new Callback<Transaction>() {
+        apiClient.createTransaction("fake-consumed-nonce", new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
                 assertEquals("Cannot use a payment_method_nonce more than once.", transaction.getMessage());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -161,16 +161,16 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_failsWhenThreeDSecureIsRequired() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", null, true, new Callback<Transaction>() {
+        apiClient.createTransaction("fake-valid-nonce", null, true, new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
                 assertEquals("Gateway Rejected: three_d_secure", transaction.getMessage());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
@@ -179,17 +179,17 @@ public class ApiClientTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
     public void createTransaction_createsAUnionPayTransaction() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-unionpay-credit-nonce", "fake_switch_usd",
+        apiClient.createTransaction("fake-valid-unionpay-credit-nonce", "fake_switch_usd",
                 new Callback<Transaction>() {
                     @Override
                     public void success(Transaction transaction, Response response) {
                         assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
 
                     @Override
@@ -198,6 +198,6 @@ public class ApiClientTest {
                     }
                 });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

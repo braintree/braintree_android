@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertNotNull;
 public class BraintreeClientTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
     private TestActivity activity;
@@ -25,7 +25,7 @@ public class BraintreeClientTest {
 
     @Before
     public void setUp() {
-        activity = mActivityTestRule.getActivity();
+        activity = activityTestRule.getActivity();
         countDownLatch = new CountDownLatch(1);
     }
 

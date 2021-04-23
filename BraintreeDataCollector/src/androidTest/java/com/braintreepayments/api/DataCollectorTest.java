@@ -28,21 +28,21 @@ import static junit.framework.Assert.fail;
 public class DataCollectorTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private AppCompatActivity mActivity;
-    private CountDownLatch mCountDownLatch;
+    private AppCompatActivity activity;
+    private CountDownLatch countDownLatch;
 
     @Before
     public void beforeEach() {
-        mActivity = mActivityTestRule.getActivity();
-        mCountDownLatch = new CountDownLatch(1);
+        activity = activityTestRule.getActivity();
+        countDownLatch = new CountDownLatch(1);
     }
 
     @After
     public void afterEach() {
-        SharedPreferencesHelper.clearConfigurationCacheOverride(mActivity);
+        SharedPreferencesHelper.clearConfigurationCacheOverride(activity);
     }
 
     @Test(timeout = 10000)
@@ -52,12 +52,12 @@ public class DataCollectorTest {
                 .buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
-        SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, new DataCollectorCallback() {
+        sut.collectDeviceData(activity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -66,14 +66,14 @@ public class DataCollectorTest {
                     assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
                     assertEquals("500000", json.getString("fraud_merchant_id"));
                     assertNotNull(json.getString("correlation_id"));
-                    mCountDownLatch.countDown();
+                    countDownLatch.countDown();
                 } catch (JSONException e) {
                     fail(e.getMessage());
                 }
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -84,12 +84,12 @@ public class DataCollectorTest {
                 .buildConfiguration();
 
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, "600001", new DataCollectorCallback() {
+        sut.collectDeviceData(activity, "600001", new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -98,14 +98,14 @@ public class DataCollectorTest {
                     assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
                     assertEquals("600001", json.getString("fraud_merchant_id"));
                     assertNotNull(json.getString("correlation_id"));
-                    mCountDownLatch.countDown();
+                    countDownLatch.countDown();
                 } catch (JSONException e) {
                     fail(e.getMessage());
                 }
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -113,12 +113,12 @@ public class DataCollectorTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
-        SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, new DataCollectorCallback() {
+        sut.collectDeviceData(activity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -127,13 +127,13 @@ public class DataCollectorTest {
                     assertNull(Json.optString(json, "device_session_id", null));
                     assertNull(Json.optString(json, "fraud_merchant_id", null));
                     assertNotNull(json.getString("correlation_id"));
-                    mCountDownLatch.countDown();
+                    countDownLatch.countDown();
                 } catch (JSONException e) {
                     fail(e.getMessage());
                 }
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

@@ -13,33 +13,33 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class JsonTest {
 
-    private JSONObject mJson;
+    private JSONObject json;
 
     @Before
     public void setup() throws JSONException {
-        mJson = new JSONObject("{\"key\":null}");
+        json = new JSONObject("{\"key\":null}");
     }
 
     @Test
     public void android_optString_returnsIncorrectNullValue() {
-        assertEquals("null", mJson.optString("key"));
-        assertEquals("null", mJson.optString("key", null));
+        assertEquals("null", json.optString("key"));
+        assertEquals("null", json.optString("key", null));
     }
 
     @Test
     public void optString_returnsCorrectNullValue() {
-        assertEquals(null, Json.optString(mJson, "key", null));
+        assertEquals(null, Json.optString(json, "key", null));
     }
 
     @Test
     public void optString_returnsFallback() {
-        assertEquals("fallback", Json.optString(mJson, "key", "fallback"));
+        assertEquals("fallback", Json.optString(json, "key", "fallback"));
     }
 
     @Test
     public void optString_returnsValue() throws JSONException {
-        mJson = new JSONObject("{\"key\":\"value\"}");
+        json = new JSONObject("{\"key\":\"value\"}");
 
-        assertEquals("value", Json.optString(mJson, "key", "value"));
+        assertEquals("value", Json.optString(json, "key", "value"));
     }
 }

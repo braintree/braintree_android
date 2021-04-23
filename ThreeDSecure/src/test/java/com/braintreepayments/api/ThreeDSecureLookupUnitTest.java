@@ -17,79 +17,79 @@ import static org.junit.Assert.assertFalse;
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureLookupUnitTest {
 
-    private ThreeDSecureLookup mLookupWithoutVersion;
-    private ThreeDSecureLookup mLookupWithVersion1;
-    private ThreeDSecureLookup mLookupWithVersion2;
-    private ThreeDSecureLookup mLookupWithoutAcsURL;
+    private ThreeDSecureLookup lookupWithoutVersion;
+    private ThreeDSecureLookup lookupWithVersion1;
+    private ThreeDSecureLookup lookupWithVersion2;
+    private ThreeDSecureLookup lookupWithoutAcsURL;
 
     @Before
     public void setUp() throws JSONException {
         JSONObject lookupWithoutVersionJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE).getJSONObject("lookup");
-        mLookupWithoutVersion = ThreeDSecureLookup.fromJson(lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
+        lookupWithoutVersion = ThreeDSecureLookup.fromJson(lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
 
         JSONObject lookupVersionOneJSON = new JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE).getJSONObject("lookup");
-        mLookupWithVersion1 = ThreeDSecureLookup.fromJson(lookupVersionOneJSON.toString());
+        lookupWithVersion1 = ThreeDSecureLookup.fromJson(lookupVersionOneJSON.toString());
 
         JSONObject lookupVersionTwoJSON = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE).getJSONObject("lookup");
-        mLookupWithVersion2 = ThreeDSecureLookup.fromJson(lookupVersionTwoJSON.toString());
+        lookupWithVersion2 = ThreeDSecureLookup.fromJson(lookupVersionTwoJSON.toString());
 
         JSONObject lookupWithoutAcsURLJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL).getJSONObject("lookup");
-        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(lookupWithoutAcsURLJSON.toString());
+        lookupWithoutAcsURL = ThreeDSecureLookup.fromJson(lookupWithoutAcsURLJSON.toString());
     }
 
     @Test
     public void fromJson_parsesCorrectly() {
-        assertEquals("https://acs-url/", mLookupWithoutVersion.getAcsUrl());
-        assertEquals("merchant-descriptor", mLookupWithoutVersion.getMd());
-        assertEquals("https://term-url/", mLookupWithoutVersion.getTermUrl());
-        assertEquals("sample-pareq", mLookupWithoutVersion.getPareq());
-        assertEquals("", mLookupWithoutVersion.getThreeDSecureVersion());
-        assertEquals("sample-transaction-id", mLookupWithoutVersion.getTransactionId());
-        assertTrue(mLookupWithoutVersion.requiresUserAuthentication());
+        assertEquals("https://acs-url/", lookupWithoutVersion.getAcsUrl());
+        assertEquals("merchant-descriptor", lookupWithoutVersion.getMd());
+        assertEquals("https://term-url/", lookupWithoutVersion.getTermUrl());
+        assertEquals("sample-pareq", lookupWithoutVersion.getPareq());
+        assertEquals("", lookupWithoutVersion.getThreeDSecureVersion());
+        assertEquals("sample-transaction-id", lookupWithoutVersion.getTransactionId());
+        assertTrue(lookupWithoutVersion.requiresUserAuthentication());
     }
 
     @Test
     public void fromJson_whenLookupVersion1_parsesCorrectly() {
-        assertEquals("https://acs-url/", mLookupWithVersion1.getAcsUrl());
-        assertEquals("merchant-descriptor", mLookupWithVersion1.getMd());
-        assertEquals("https://term-url/", mLookupWithVersion1.getTermUrl());
-        assertEquals("pareq", mLookupWithVersion1.getPareq());
-        assertEquals("1.0.2", mLookupWithVersion1.getThreeDSecureVersion());
-        assertEquals("some-transaction-id", mLookupWithVersion1.getTransactionId());
+        assertEquals("https://acs-url/", lookupWithVersion1.getAcsUrl());
+        assertEquals("merchant-descriptor", lookupWithVersion1.getMd());
+        assertEquals("https://term-url/", lookupWithVersion1.getTermUrl());
+        assertEquals("pareq", lookupWithVersion1.getPareq());
+        assertEquals("1.0.2", lookupWithVersion1.getThreeDSecureVersion());
+        assertEquals("some-transaction-id", lookupWithVersion1.getTransactionId());
     }
 
     @Test
     public void fromJson_whenLookupVersion2_parsesCorrectly() {
-        assertEquals("https://acs-url/", mLookupWithVersion2.getAcsUrl());
-        assertEquals("merchant-descriptor", mLookupWithVersion2.getMd());
-        assertEquals("https://term-url/", mLookupWithVersion2.getTermUrl());
-        assertEquals("pareq", mLookupWithVersion2.getPareq());
-        assertEquals("2.1.0", mLookupWithVersion2.getThreeDSecureVersion());
-        assertEquals("some-transaction-id", mLookupWithVersion2.getTransactionId());
+        assertEquals("https://acs-url/", lookupWithVersion2.getAcsUrl());
+        assertEquals("merchant-descriptor", lookupWithVersion2.getMd());
+        assertEquals("https://term-url/", lookupWithVersion2.getTermUrl());
+        assertEquals("pareq", lookupWithVersion2.getPareq());
+        assertEquals("2.1.0", lookupWithVersion2.getThreeDSecureVersion());
+        assertEquals("some-transaction-id", lookupWithVersion2.getTransactionId());
     }
 
     @Test
     public void fromJson_whenNoAcsURL_parsesCorrectly() {
-        assertNull(mLookupWithoutAcsURL.getAcsUrl());
-        assertEquals("merchant-descriptor", mLookupWithoutAcsURL.getMd());
-        assertEquals("https://term-url/", mLookupWithoutAcsURL.getTermUrl());
-        assertEquals("pareq", mLookupWithoutAcsURL.getPareq());
-        assertFalse(mLookupWithoutAcsURL.requiresUserAuthentication());
+        assertNull(lookupWithoutAcsURL.getAcsUrl());
+        assertEquals("merchant-descriptor", lookupWithoutAcsURL.getMd());
+        assertEquals("https://term-url/", lookupWithoutAcsURL.getTermUrl());
+        assertEquals("pareq", lookupWithoutAcsURL.getPareq());
+        assertFalse(lookupWithoutAcsURL.requiresUserAuthentication());
     }
 
     @Test
     public void isParcelable() {
         Parcel parcel = Parcel.obtain();
-        mLookupWithVersion1.writeToParcel(parcel, 0);
+        lookupWithVersion1.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
         ThreeDSecureLookup parceled = ThreeDSecureLookup.CREATOR.createFromParcel(parcel);
 
-        assertEquals(mLookupWithVersion1.getAcsUrl(), parceled.getAcsUrl());
-        assertEquals(mLookupWithVersion1.getMd(), parceled.getMd());
-        assertEquals(mLookupWithVersion1.getTermUrl(), parceled.getTermUrl());
-        assertEquals(mLookupWithVersion1.getPareq(), parceled.getPareq());
-        assertEquals(mLookupWithVersion1.getThreeDSecureVersion(), parceled.getThreeDSecureVersion());
-        assertEquals(mLookupWithVersion1.getTransactionId(), parceled.getTransactionId());
+        assertEquals(lookupWithVersion1.getAcsUrl(), parceled.getAcsUrl());
+        assertEquals(lookupWithVersion1.getMd(), parceled.getMd());
+        assertEquals(lookupWithVersion1.getTermUrl(), parceled.getTermUrl());
+        assertEquals(lookupWithVersion1.getPareq(), parceled.getPareq());
+        assertEquals(lookupWithVersion1.getThreeDSecureVersion(), parceled.getThreeDSecureVersion());
+        assertEquals(lookupWithVersion1.getTransactionId(), parceled.getTransactionId());
     }
 }

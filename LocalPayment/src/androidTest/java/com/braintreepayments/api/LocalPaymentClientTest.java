@@ -17,15 +17,15 @@ import static junit.framework.Assert.assertNotNull;
 public class LocalPaymentClientTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private CountDownLatch mCountDownLatch;
+    private CountDownLatch countDownLatch;
     private BraintreeClient braintreeClient;
 
     @Before
     public void setUp() throws InvalidArgumentException {
-        mCountDownLatch = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
 
         braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), "sandbox_f252zhq7_hh4cpc39zq4rgjcg");
     }
@@ -55,10 +55,10 @@ public class LocalPaymentClientTest {
             public void onResult(@Nullable LocalPaymentTransaction transaction, @Nullable Exception error) {
                 assertNotNull(transaction.getApprovalUrl());
                 assertNotNull(transaction.getPaymentId());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

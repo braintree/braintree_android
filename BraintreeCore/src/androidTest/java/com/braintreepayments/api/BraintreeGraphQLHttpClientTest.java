@@ -19,11 +19,11 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeGraphQLHttpClientTest {
 
-    private CountDownLatch mCountDownLatch;
+    private CountDownLatch countDownLatch;
 
     @Before
     public void setup() {
-        mCountDownLatch = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
     }
 
     @Test(timeout = 5000)
@@ -34,18 +34,18 @@ public class BraintreeGraphQLHttpClientTest {
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
             public void failure(Exception exception) {
                 // Make sure SSL handshake is successful
                 assertFalse(exception instanceof SSLException);
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 5000)
@@ -56,17 +56,17 @@ public class BraintreeGraphQLHttpClientTest {
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
 
             @Override
             public void failure(Exception exception) {
                 // Make sure SSL handshake is successful
                 assertFalse(exception instanceof SSLException);
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

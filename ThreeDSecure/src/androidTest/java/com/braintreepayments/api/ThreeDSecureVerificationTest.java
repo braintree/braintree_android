@@ -31,16 +31,16 @@ public class ThreeDSecureVerificationTest {
     private static final String TEST_AMOUNT = "1";
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private AppCompatActivity mActivity;
-    private CountDownLatch mCountDownLatch;
+    private AppCompatActivity activity;
+    private CountDownLatch countDownLatch;
 
     @Before
     public void setUp() {
-        mActivity = mActivityTestRule.getActivity();
-        mCountDownLatch = new CountDownLatch(1);
+        activity = activityTestRule.getActivity();
+        countDownLatch = new CountDownLatch(1);
     }
 
     @Test(timeout = 10000)
@@ -68,7 +68,7 @@ public class ThreeDSecureVerificationTest {
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
@@ -80,7 +80,7 @@ public class ThreeDSecureVerificationTest {
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
                             assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            mCountDownLatch.countDown();
+                            countDownLatch.countDown();
                         }
                     });
                 } catch (JSONException e) {
@@ -89,7 +89,7 @@ public class ThreeDSecureVerificationTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -118,7 +118,7 @@ public class ThreeDSecureVerificationTest {
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
@@ -130,7 +130,7 @@ public class ThreeDSecureVerificationTest {
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
                             assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            mCountDownLatch.countDown();
+                            countDownLatch.countDown();
                         }
                     });
                 } catch (JSONException e) {
@@ -139,7 +139,7 @@ public class ThreeDSecureVerificationTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -166,14 +166,14 @@ public class ThreeDSecureVerificationTest {
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                             assertTrue(error instanceof AuthorizationException);
                             assertEquals(
                                     "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
                                     error.getMessage());
-                            mCountDownLatch.countDown();
+                            countDownLatch.countDown();
                         }
                     });
                 } catch (JSONException e) {
@@ -182,7 +182,7 @@ public class ThreeDSecureVerificationTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -208,7 +208,7 @@ public class ThreeDSecureVerificationTest {
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
@@ -223,7 +223,7 @@ public class ThreeDSecureVerificationTest {
 
                             assertEquals("lookup_error", cardNonce.getThreeDSecureInfo().getStatus());
 
-                            mCountDownLatch.countDown();
+                            countDownLatch.countDown();
                         }
                     });
                 } catch (JSONException e) {
@@ -232,7 +232,7 @@ public class ThreeDSecureVerificationTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -258,7 +258,7 @@ public class ThreeDSecureVerificationTest {
                     request.setNonce(cardNonce.getString());
                     request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                             CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
@@ -271,7 +271,7 @@ public class ThreeDSecureVerificationTest {
                             assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
                             assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            mCountDownLatch.countDown();
+                            countDownLatch.countDown();
                         }
                     });
                 } catch (JSONException e) {
@@ -280,7 +280,7 @@ public class ThreeDSecureVerificationTest {
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     /* helpers */
@@ -290,6 +290,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     private BraintreeClient getBraintreeClient(String authorization) throws InvalidArgumentException {
-        return new BraintreeClient(mActivity, authorization);
+        return new BraintreeClient(activity, authorization);
     }
 }

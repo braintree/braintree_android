@@ -23,18 +23,18 @@ import static org.junit.Assert.fail;
 public class ThreeDSecureClientTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private AppCompatActivity mActivity;
-    private CountDownLatch mCountDownLatch;
+    private AppCompatActivity activity;
+    private CountDownLatch countDownLatch;
 
     private ThreeDSecureClient threeDSecureClient;
 
     @Before
     public void setUp() {
-        mActivity = mActivityTestRule.getActivity();
-        mCountDownLatch = new CountDownLatch(1);
+        activity = activityTestRule.getActivity();
+        countDownLatch = new CountDownLatch(1);
     }
 
     @Test(timeout = 10000)
@@ -42,7 +42,7 @@ public class ThreeDSecureClientTest {
             throws InterruptedException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().build();
 
-        BraintreeClient braintreeClient = new BraintreeClient(mActivity, clientToken);
+        BraintreeClient braintreeClient = new BraintreeClient(activity, clientToken);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
@@ -69,7 +69,7 @@ public class ThreeDSecureClientTest {
                 request.setNonce(nonce);
                 request.setAmount("5");
 
-                threeDSecureClient.performVerification(mActivity, request, new ThreeDSecureResultCallback() {
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
                     @Override
                     public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                         CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
@@ -81,12 +81,12 @@ public class ThreeDSecureClientTest {
                         assertFalse(threeDSecureInfo.isLiabilityShifted());
                         assertFalse(threeDSecureInfo.isLiabilityShiftPossible());
                         assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

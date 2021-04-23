@@ -30,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 public class GooglePayCapabilitiesUnitTest {
 
     @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    public PowerMockRule powerMockRule = new PowerMockRule();
 
     @Test
     public void isGooglePayEnabled_whenConfigurationEnabledAndApiAvailable_returnsTrue() throws JSONException {
