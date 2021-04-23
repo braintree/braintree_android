@@ -546,7 +546,7 @@ public class PayPalClientUnitTest {
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof PayPalBrowserSwitchException);
-        assertEquals("User cancelled.", exception.getMessage());
+        assertEquals("User canceled.", exception.getMessage());
     }
 
     @Test
