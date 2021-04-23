@@ -84,19 +84,4 @@ public class TestHelper {
         onDevice(withText("OK")).perform(click());
         onDevice().pressBack();
     }
-
-    protected void fillInExpiration() {
-        fillInExpiration("04", ExpirationDateHelper.validExpirationYear());
-    }
-
-    protected void fillInExpiration(String month, String year) {
-        try {
-            onDevice(withText("Expiration Date")).perform(click());
-            onDevice(withText(month)).perform(click());
-            onDevice(withText(year)).perform(click());
-            onDevice().pressBack();
-        } catch (RuntimeException e) {
-            fillInExpiration();
-        }
-    }
 }
