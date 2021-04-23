@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PreferredPaymentMethodsClientResultTest {
+public class PreferredPaymentMethodsClientResultUnitTest {
 
     @Test
     public void fromJson_whenApiDetectsPayPalPreferred_setsPayPalPreferredToTrue() {

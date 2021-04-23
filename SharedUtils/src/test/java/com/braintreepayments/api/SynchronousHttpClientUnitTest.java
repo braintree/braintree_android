@@ -33,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ TLSSocketFactory.class })
-public class SynchronousHttpClientTest {
+public class SynchronousHttpClientUnitTest {
 
     HttpRequest httpRequest;
     BaseHttpResponseParser httpResponseParser;

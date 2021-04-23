@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureV1BrowserSwitchHelperTest {
+public class ThreeDSecureV1BrowserSwitchHelperUnitTest {
 
     private ThreeDSecureLookup threeDSecureLookup;
 

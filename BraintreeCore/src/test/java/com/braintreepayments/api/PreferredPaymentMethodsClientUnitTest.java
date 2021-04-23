@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class PreferredPaymentMethodsClientTest {
+public class PreferredPaymentMethodsClientUnitTest {
 
     private CountDownLatch countDownLatch;
     private Context context;

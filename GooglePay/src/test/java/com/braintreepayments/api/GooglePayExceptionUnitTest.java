@@ -11,7 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-public class GooglePayExceptionTest {
+public class GooglePayExceptionUnitTest {
 
     @Test
     public void testGooglePayException_isSerializable() {

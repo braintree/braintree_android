@@ -11,7 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-public class MetadataBuilderTest {
+public class MetadataBuilderUnitTest {
 
     @Test
     public void build_correctlyBuildsMetadata() throws JSONException {

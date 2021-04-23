@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
-public class AuthenticationInsightTest {
+public class AuthenticationInsightUnitTest {
     @Test
     public void fromJson_successfullyParsesPSDTWO() throws JSONException {
         JSONObject response = new JSONObject()

@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ThreadSchedulerTest {
+public class ThreadSchedulerUnitTest {
 
     Handler mainThreadHandler;
     ExecutorService backgroundThreadPool;

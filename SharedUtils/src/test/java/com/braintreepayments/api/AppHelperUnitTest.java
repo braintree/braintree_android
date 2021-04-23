@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AppHelperTest {
+public class AppHelperUnitTest {
 
     private Context context;
     private PackageManager packageManager;
