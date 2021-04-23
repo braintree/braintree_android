@@ -37,11 +37,11 @@ public class BaseHttpResponseParserTest {
     @RunWith(Parameterized.class)
     public static class HttpSuccessTest {
 
-        final private int responseCode;
-        final private String contentEncoding;
-        final private InputStream inputStream;
+        private final int responseCode;
+        private final String contentEncoding;
+        private final InputStream inputStream;
 
-        final private String expectedResult;
+        private final String expectedResult;
 
         public HttpSuccessTest(int responseCode, String contentEncoding, InputStream inputStream, String expectedResult) {
             this.responseCode = responseCode;
@@ -77,12 +77,12 @@ public class BaseHttpResponseParserTest {
     @RunWith(Parameterized.class)
     public static class HttpErrorTest {
 
-        final private int responseCode;
-        final private String contentEncoding;
-        final private InputStream errorStream;
+        private final int responseCode;
+        private final String contentEncoding;
+        private final InputStream errorStream;
 
-        final private String expectedMessage;
-        final private Class<Exception> expectedExceptionClass;
+        private final String expectedMessage;
+        private final Class<Exception> expectedExceptionClass;
 
         public HttpErrorTest(int responseCode, String contentEncoding, InputStream errorStream, Class<Exception> expectedExceptionClass, String expectedMessage) {
             this.responseCode = responseCode;

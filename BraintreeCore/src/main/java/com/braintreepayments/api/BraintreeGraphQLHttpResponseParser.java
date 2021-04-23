@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
  */
 class BraintreeGraphQLHttpResponseParser implements HttpResponseParser {
 
-    final private HttpResponseParser baseParser;
+    private final HttpResponseParser baseParser;
 
     BraintreeGraphQLHttpResponseParser() {
         this(new BaseHttpResponseParser());

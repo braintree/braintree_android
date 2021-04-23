@@ -9,7 +9,7 @@ import java.net.HttpURLConnection;
  */
 class BraintreeHttpResponseParser implements HttpResponseParser {
 
-    final private HttpResponseParser baseParser;
+    private final HttpResponseParser baseParser;
 
     BraintreeHttpResponseParser() {
         this(new BaseHttpResponseParser());
