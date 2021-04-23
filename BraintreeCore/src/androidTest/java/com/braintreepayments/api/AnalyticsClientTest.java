@@ -49,7 +49,7 @@ public class AnalyticsClientTest {
                 context, "sessionId", "custom", "event.started");
 
         AnalyticsClient sut = new AnalyticsClient(authorization);
-        UUID workSpecId = sut.sendEventAndReturnId(event, configuration, context);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
@@ -71,7 +71,7 @@ public class AnalyticsClientTest {
                 context, "sessionId", "custom", "event.started");
 
         AnalyticsClient sut = new AnalyticsClient(authorization);
-        UUID workSpecId = sut.sendEventAndReturnId(event, configuration, context);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);

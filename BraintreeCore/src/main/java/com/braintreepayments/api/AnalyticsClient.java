@@ -54,12 +54,12 @@ class AnalyticsClient {
         this.deviceInspector = deviceInspector;
     }
 
-    void sendEvent(AnalyticsEvent event, Configuration configuration, Context context) {
-        sendEventAndReturnId(event, configuration, context);
+    void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {
+        sendEventAndReturnId(context, configuration, event);
     }
 
     @VisibleForTesting
-    UUID sendEventAndReturnId(AnalyticsEvent event, Configuration configuration, Context context) {
+    UUID sendEventAndReturnId(Context context, Configuration configuration, AnalyticsEvent event) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         Context applicationContext = context.getApplicationContext();

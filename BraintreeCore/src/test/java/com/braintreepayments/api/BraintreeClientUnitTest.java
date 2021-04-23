@@ -219,7 +219,7 @@ public class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started");
 
         ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
-        verify(analyticsClient).sendEvent(captor.capture(), same(configuration), same(applicationContext));
+        verify(analyticsClient).sendEvent(same(applicationContext), same(configuration), captor.capture());
 
         AnalyticsEvent event = captor.getValue();
         assertEquals("sessionId", event.metadata.getString("sessionId"));
