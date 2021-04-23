@@ -5,8 +5,6 @@ import android.content.res.Resources;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.GraphQLQueryHelper;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

@@ -45,12 +45,12 @@ public class GooglePayRequestUnitTest {
         request.setGoogleMerchantId("google-merchant-id");
         request.setGoogleMerchantName("google-merchant-name");
 
-        assertEquals(true, request.getAllowPrepaidCards().booleanValue());
+        assertTrue(request.getAllowPrepaidCards());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, request.getBillingAddressFormat().intValue());
-        assertEquals(true, request.isBillingAddressRequired().booleanValue());
-        assertEquals(true, request.isEmailRequired().booleanValue());
-        assertEquals(true, request.isPhoneNumberRequired().booleanValue());
-        assertEquals(true, request.isShippingAddressRequired().booleanValue());
+        assertTrue(request.isBillingAddressRequired());
+        assertTrue(request.isEmailRequired());
+        assertTrue(request.isPhoneNumberRequired());
+        assertTrue(request.isShippingAddressRequired());
         assertEquals(shippingAddressRequirements, request.getShippingAddressRequirements());
         assertEquals(transactionInfo, request.getTransactionInfo());
         assertEquals("PRODUCTION", request.getEnvironment());
@@ -121,7 +121,7 @@ public class GooglePayRequestUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly_allFieldsPopulated_null() throws NoSuchFieldException {
+    public void parcelsCorrectly_allFieldsPopulated_null() {
         GooglePayRequest request = new GooglePayRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()

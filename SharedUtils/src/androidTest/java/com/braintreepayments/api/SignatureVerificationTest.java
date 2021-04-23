@@ -8,8 +8,6 @@ import android.util.Log;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.SignatureVerification;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

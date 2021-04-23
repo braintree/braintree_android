@@ -46,7 +46,7 @@ public class ThreeDSecureV2TextBoxCustomizationUnitTest {
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV2TextBoxCustomization actual = (ThreeDSecureV2TextBoxCustomization) ThreeDSecureV2TextBoxCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV2TextBoxCustomization actual = ThreeDSecureV2TextBoxCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("#FFFFFF", actual.getBorderColor());
         assertEquals(10, actual.getBorderWidth());

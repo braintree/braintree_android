@@ -2,11 +2,6 @@ package com.braintreepayments.api;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.BaseHttpResponseParser;
-import com.braintreepayments.api.HttpClient;
-import com.braintreepayments.api.HttpRequest;
-import com.braintreepayments.api.HttpResponseCallback;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

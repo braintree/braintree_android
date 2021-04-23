@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class JsonTest {
@@ -28,7 +29,7 @@ public class JsonTest {
 
     @Test
     public void optString_returnsCorrectNullValue() {
-        assertEquals(null, Json.optString(json, "key", null));
+        assertNull(Json.optString(json, "key", null));
     }
 
     @Test

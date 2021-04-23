@@ -28,8 +28,6 @@ import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_SIGNATURE_VERI
 import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureVerificationTest extends TestHelper {

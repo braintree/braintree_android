@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.PreferredPaymentMethodsResult;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
