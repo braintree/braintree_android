@@ -114,4 +114,5 @@
 
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>
+    <string name="autofill">Autofill</string>
 </resources>

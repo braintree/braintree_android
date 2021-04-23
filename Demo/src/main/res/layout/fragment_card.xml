@@ -51,7 +51,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="Autofill" />
+                android:text="@string/autofill" />
 
             <Button
                 android:id="@+id/purchase_button"
