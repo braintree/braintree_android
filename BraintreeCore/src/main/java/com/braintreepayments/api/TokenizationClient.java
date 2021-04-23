@@ -66,15 +66,15 @@ class TokenizationClient {
 
     private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final GraphQLTokenizable graphQLTokenizable, final TokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
-        final String payload;
+        final JSONObject payload;
         try {
-            payload = graphQLTokenizable.buildGraphQL(braintreeClient.getAuthorization());
+            payload = graphQLTokenizable.buildGraphQLTokenizationJSON();
         } catch (BraintreeException e) {
             callback.onResult(null, e);
             return;
         }
 
-        braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
+        braintreeClient.sendGraphQLPOST(payload.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 try {

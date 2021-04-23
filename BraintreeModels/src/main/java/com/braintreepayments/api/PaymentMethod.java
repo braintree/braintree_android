@@ -25,7 +25,8 @@ public abstract class PaymentMethod {
     private boolean validateSet;
     private String sessionId;
 
-    public PaymentMethod() {}
+    public PaymentMethod() {
+    }
 
     /**
      * Sets the integration method associated with the tokenization call for analytics use.
@@ -48,9 +49,9 @@ public abstract class PaymentMethod {
 
     /**
      * @param validate Flag to denote when the associated {@link PaymentMethodNonce}
-     *   will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
-     *   will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
-     *   will be validated when used by a server side library for a Braintree gateway action.
+     *                 will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
+     *                 will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
+     *                 will be validated when used by a server side library for a Braintree gateway action.
      */
     public void setValidate(boolean validate) {
         this.validate = validate;
@@ -67,11 +68,19 @@ public abstract class PaymentMethod {
 
     /**
      * @param sessionId sets the session id associated with this request. The session is a uuid.
-     * This field is automatically set at the point of tokenization, and any previous
-     * values ignored.
+     *                  This field is automatically set at the point of tokenization, and any previous
+     *                  values ignored.
      */
     void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    JSONObject buildMetadataJSON() {
+        return new MetadataBuilder()
+                .sessionId(mSessionId)
+                .source(mSource)
+                .integration(mIntegration)
+                .build();
     }
 
 
@@ -93,7 +102,8 @@ public abstract class PaymentMethod {
 //            }
 //
 //            buildJSON(base, paymentMethodNonceJson);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return base;
     }
 
@@ -118,7 +128,8 @@ public abstract class PaymentMethod {
             }
 
             buildJSON(base, paymentMethodNonceJson);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return base.toString();
     }
@@ -156,7 +167,8 @@ public abstract class PaymentMethod {
             buildGraphQL(base, variables);
 
             base.put(Keys.VARIABLES, variables);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return base.toString();
     }

@@ -14,12 +14,70 @@ import org.json.JSONObject;
  */
 public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
 
+    private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
+
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
     private static final String AUTHENTICATION_INSIGHT_INPUT_KEY = "authenticationInsightInput";
 
     private String merchantAccountId;
     private boolean authenticationInsightRequested;
+
+    @Override
+    public JSONObject buildGraphQLTokenizationJSON() throws BraintreeException {
+        JSONObject base = new JSONObject();
+        JSONObject input = new JSONObject();
+        JSONObject variables = new JSONObject();
+
+        try {
+            base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, buildMetadataJSON());
+
+            JSONObject optionsJson = new JSONObject();
+            if (hasValueForValidate()) {
+                optionsJson.put(VALIDATE_KEY, getValidate());
+            }
+            input.put(OPTIONS_KEY, optionsJson);
+            variables.put(Keys.INPUT, input);
+
+            if (TextUtils.isEmpty(mMerchantAccountId) && mAuthenticationInsightRequested) {
+                throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
+            }
+
+            if (mAuthenticationInsightRequested) {
+                variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId));
+            }
+
+            base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
+            base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
+
+            JSONObject creditCard = new JSONObject()
+                    .put(NUMBER_KEY, mNumber)
+                    .put(EXPIRATION_MONTH_KEY, mExpirationMonth)
+                    .put(EXPIRATION_YEAR_KEY, mExpirationYear)
+                    .put(CVV_KEY, mCvv)
+                    .put(CARDHOLDER_NAME_KEY, mCardholderName);
+
+            JSONObject billingAddress = new JSONObject()
+                    .put(FIRST_NAME_KEY, mFirstName)
+                    .put(LAST_NAME_KEY, mLastName)
+                    .put(COMPANY_KEY, mCompany)
+                    .put(COUNTRY_CODE_KEY, mCountryCode)
+                    .put(LOCALITY_KEY, mLocality)
+                    .put(POSTAL_CODE_KEY, mPostalCode)
+                    .put(REGION_KEY, mRegion)
+                    .put(STREET_ADDRESS_KEY, mStreetAddress)
+                    .put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+
+            if (billingAddress.length() > 0) {
+                creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
+            }
+
+            input.put(CREDIT_CARD_KEY, creditCard);
+            base.put(Keys.VARIABLES, variables);
+        } catch (JSONException ignored) {}
+
+        return base;
+    }
 
     protected void buildGraphQL(JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
         JSONObject input = variables.getJSONObject(Keys.INPUT);
