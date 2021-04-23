@@ -15,10 +15,7 @@ public abstract class PaymentMethod {
 
     protected static final String OPTIONS_KEY = "options";
     protected static final String OPERATION_NAME_KEY = "operationName";
-
-    private static final String VALIDATE_KEY = "validate";
-    private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
-
+    
     private String integration = getDefaultIntegration();
     private String source = getDefaultSource();
     private boolean validate;
@@ -86,91 +83,15 @@ public abstract class PaymentMethod {
 
     JSONObject buildTokenizationJSON() {
         JSONObject base = new JSONObject();
-//        JSONObject optionsJson = new JSONObject();
-//        JSONObject paymentMethodNonceJson = new JSONObject();
-
         try {
             base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
-                    .sessionId(mSessionId)
-                    .source(mSource)
-                    .integration(mIntegration)
+                    .sessionId(sessionId)
+                    .source(source)
+                    .integration(integration)
                     .build());
-
-//            if (mValidateSet) {
-//                optionsJson.put(VALIDATE_KEY, mValidate);
-//                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-//            }
-//
-//            buildJSON(base, paymentMethodNonceJson);
         } catch (JSONException ignored) {
         }
         return base;
-    }
-
-    /**
-     * @return String representation of {@link PaymentMethodNonce} for API use.
-     */
-    public String buildJSON() {
-        JSONObject base = new JSONObject();
-        JSONObject optionsJson = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
-
-        try {
-            base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
-                    .sessionId(sessionId)
-                    .source(source)
-                    .integration(integration)
-                    .build());
-
-            if (validateSet) {
-                optionsJson.put(VALIDATE_KEY, validate);
-                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-            }
-
-            buildJSON(base, paymentMethodNonceJson);
-        } catch (JSONException ignored) {
-        }
-
-        return base.toString();
-    }
-
-    /**
-     * @param authorization The current authorization being used.
-     * @return String representation of a GraphQL request for {@link PaymentMethodNonce}.
-     * @throws BraintreeException Thrown if resources cannot be accessed.
-     */
-    public String buildGraphQL(Authorization authorization) throws BraintreeException {
-        JSONObject base = new JSONObject();
-        JSONObject input = new JSONObject();
-        JSONObject variables = new JSONObject();
-
-        try {
-            base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, new MetadataBuilder()
-                    .sessionId(sessionId)
-                    .source(source)
-                    .integration(integration)
-                    .build());
-
-            JSONObject optionsJson = new JSONObject();
-            if (validateSet) {
-                optionsJson.put(VALIDATE_KEY, validate);
-            } else {
-                if (authorization instanceof ClientToken) {
-                    optionsJson.put(VALIDATE_KEY, true);
-                } else if (authorization instanceof TokenizationKey) {
-                    optionsJson.put(VALIDATE_KEY, false);
-                }
-            }
-            input.put(OPTIONS_KEY, optionsJson);
-            variables.put(Keys.INPUT, input);
-
-            buildGraphQL(base, variables);
-
-            base.put(Keys.VARIABLES, variables);
-        } catch (JSONException ignored) {
-        }
-
-        return base.toString();
     }
 
     protected PaymentMethod(Parcel in) {
@@ -196,11 +117,6 @@ public abstract class PaymentMethod {
     protected String getDefaultIntegration() {
         return "custom";
     }
-
-    protected abstract void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
-
-    protected abstract void buildGraphQL(JSONObject base, JSONObject input) throws BraintreeException,
-            JSONException;
 
     public abstract String getApiPath();
 

@@ -79,45 +79,6 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
         return base;
     }
 
-    protected void buildGraphQL(JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
-        JSONObject input = variables.getJSONObject(Keys.INPUT);
-
-        if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
-            throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
-        }
-
-        if (authenticationInsightRequested) {
-            variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId));
-        }
-
-        base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
-        base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
-
-        JSONObject creditCard = new JSONObject()
-                .put(NUMBER_KEY, number)
-                .put(EXPIRATION_MONTH_KEY, expirationMonth)
-                .put(EXPIRATION_YEAR_KEY, expirationYear)
-                .put(CVV_KEY, cvv)
-                .put(CARDHOLDER_NAME_KEY, cardholderName);
-
-        JSONObject billingAddress = new JSONObject()
-                .put(FIRST_NAME_KEY, firstName)
-                .put(LAST_NAME_KEY, lastName)
-                .put(COMPANY_KEY, company)
-                .put(COUNTRY_CODE_KEY, countryCode)
-                .put(LOCALITY_KEY, locality)
-                .put(POSTAL_CODE_KEY, postalCode)
-                .put(REGION_KEY, region)
-                .put(STREET_ADDRESS_KEY, streetAddress)
-                .put(EXTENDED_ADDRESS_KEY, extendedAddress);
-
-        if (billingAddress.length() > 0) {
-            creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
-        }
-
-        input.put(CREDIT_CARD_KEY, creditCard);
-    }
-
     public Card() {
     }
 
@@ -147,16 +108,6 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
             }
         }
         return json;
-    }
-
-    @Override
-    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.buildJSON(json, paymentMethodNonceJson);
-
-        if (authenticationInsightRequested) {
-            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
-            json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
-        }
     }
 
     @Override

@@ -26,8 +26,7 @@ public class PayPalAccountUnitTest {
         sut.setSource("paypal-sdk");
         sut.setMerchantAccountId("alt_merchant_account_id");
 
-        String json = sut.buildJSON();
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = sut.buildTokenizationJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
         JSONObject jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY);
 
@@ -44,8 +43,8 @@ public class PayPalAccountUnitTest {
         PayPalAccount sut = new PayPalAccount();
         sut.setSource("paypal-app");
 
-        String json = sut.buildJSON();
-        JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
+        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
         assertEquals("paypal-app", metadata.getString("source"));
@@ -56,8 +55,8 @@ public class PayPalAccountUnitTest {
         PayPalAccount sut = new PayPalAccount();
         sut.setIntegration("test-integration");
 
-        String json = sut.buildJSON();
-        JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
+        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("test-integration", metadata.getString("integration"));
     }
@@ -67,8 +66,8 @@ public class PayPalAccountUnitTest {
         PayPalAccount sut = new PayPalAccount();
         sut.setValidate(true);
 
-        String json = sut.buildJSON();
-        JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
+        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
 
         assertTrue(builtAccount.getJSONObject("options").getBoolean("validate"));
     }
@@ -77,8 +76,8 @@ public class PayPalAccountUnitTest {
     public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
 
-        String json = sut.buildJSON();
-        JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
+        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
 
         assertFalse(builtAccount.keys().hasNext());
     }
@@ -90,24 +89,21 @@ public class PayPalAccountUnitTest {
                 .put("data2", "data2")
                 .put("data3", "data3");
 
-        JSONObject base = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
-
         PayPalAccount sut = new PayPalAccount();
         sut.setUrlResponseData(urlResponseData);
 
-        sut.buildJSON(base, paymentMethodNonceJson);
+        JSONObject json = sut.buildTokenizationJSON();
+        JSONObject paymentMethodNonceJson = json.getJSONObject(PayPalAccount.PAYPAL_ACCOUNT_KEY);
 
         JSONAssert.assertEquals(urlResponseData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
-        JSONAssert.assertEquals(paymentMethodNonceJson, base.getJSONObject("paypalAccount"),
+        JSONAssert.assertEquals(paymentMethodNonceJson, json.getJSONObject("paypalAccount"),
                 JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test
     public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
-        String json = sut.buildJSON();
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = sut.buildTokenizationJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
 
         assertFalse(jsonAccount.has("intent"));

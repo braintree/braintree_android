@@ -48,17 +48,6 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(CALL_ID, callId);
-        paymentMethodNonceJson.put(ENCRYPTED_KEY, encryptedKey);
-        paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, encryptedPaymentData);
-        base.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson);
-    }
-
-    @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {}
-
-    @Override
     public String getApiPath() {
         return "visa_checkout_cards";
     }

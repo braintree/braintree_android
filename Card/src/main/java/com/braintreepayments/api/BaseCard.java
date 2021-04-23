@@ -268,36 +268,6 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     @Override
-    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(NUMBER_KEY, number);
-        paymentMethodNonceJson.put(CVV_KEY, cvv);
-        paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
-        paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, expirationYear);
-
-        paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, cardholderName);
-
-        JSONObject billingAddressJson = new JSONObject();
-        billingAddressJson.put(FIRST_NAME_KEY, firstName);
-        billingAddressJson.put(LAST_NAME_KEY, lastName);
-        billingAddressJson.put(COMPANY_KEY, company);
-        billingAddressJson.put(LOCALITY_KEY, locality);
-        billingAddressJson.put(POSTAL_CODE_KEY, postalCode);
-        billingAddressJson.put(REGION_KEY, region);
-        billingAddressJson.put(STREET_ADDRESS_KEY, streetAddress);
-        billingAddressJson.put(EXTENDED_ADDRESS_KEY, extendedAddress);
-
-        if (countryCode != null) {
-            billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, countryCode);
-        }
-
-        if (billingAddressJson.length() > 0) {
-            paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
-        }
-
-        json.put(CREDIT_CARD_KEY, paymentMethodNonceJson);
-    }
-
-    @Override
     public String getApiPath() {
         return "credit_cards";
     }

@@ -84,7 +84,7 @@ public class TokenizationClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
-        assertEquals(card.buildGraphQL(authorization), captor.getValue());
+        assertEquals(card.buildGraphQLTokenizationJSON().toString(), captor.getValue());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TokenizationClientUnitTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
-        assertEquals(card.buildJSON(), captor.getValue());
+        assertEquals(card.buildTokenizationJSON().toString(), captor.getValue());
     }
 
     @Test

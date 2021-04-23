@@ -37,14 +37,12 @@ public class VisaCheckoutAccountUnitTest {
 
     @Test
     public void build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() throws JSONException {
-        JSONObject base = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(null);
-        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
+        JSONObject json = visaCheckoutAccount.buildTokenizationJSON();
 
-        JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }
 
     @Test
@@ -53,11 +51,8 @@ public class VisaCheckoutAccountUnitTest {
         when(visaPaymentSummary.getEncKey()).thenReturn("stubbedEncKey");
         when(visaPaymentSummary.getEncPaymentData()).thenReturn("stubbedEncPaymentData");
 
-        JSONObject base = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
-
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(visaPaymentSummary);
-        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
+        JSONObject json = visaCheckoutAccount.buildTokenizationJSON();
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();
@@ -66,7 +61,7 @@ public class VisaCheckoutAccountUnitTest {
         expectedPaymentMethodNonce.put("encryptedPaymentData", "stubbedEncPaymentData");
         expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
 
-        JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }
 
     @Test

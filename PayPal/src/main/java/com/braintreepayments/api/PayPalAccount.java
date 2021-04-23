@@ -95,28 +95,6 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
-        paymentMethodNonceJson.put(INTENT_KEY, intent);
-
-        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
-        while (urlResponseDataKeyIterator.hasNext()) {
-            String key = urlResponseDataKeyIterator.next();
-            paymentMethodNonceJson.put(key, urlResponseData.get(key));
-        }
-
-        if (merchantAccountId != null) {
-            base.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
-        }
-
-        base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
-    }
-
-    @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {
-    }
-
-    @Override
     public String getApiPath() {
         return "paypal_accounts";
     }

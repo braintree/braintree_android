@@ -362,7 +362,7 @@ public class PayPalClientUnitTest {
         verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
-        JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
+        JSONObject tokenizePayload = payPalAccount.buildTokenizationJSON();
         assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
@@ -408,7 +408,7 @@ public class PayPalClientUnitTest {
         verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
-        JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
+        JSONObject tokenizePayload = payPalAccount.buildTokenizationJSON();
         assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
