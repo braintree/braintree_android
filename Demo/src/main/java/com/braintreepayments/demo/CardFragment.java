@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private EditText smsCode;
     private Button sendSmsButton;
     private Button purchaseButton;
+    private Button autofillButton;
 
     private CardType cardType;
 
@@ -86,9 +88,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         smsCode = view.findViewById(R.id.sms_code);
         sendSmsButton = view.findViewById(R.id.unionpay_enroll_button);
         purchaseButton = view.findViewById(R.id.purchase_button);
+        autofillButton = view.findViewById(R.id.autofill_button);
 
         sendSmsButton.setOnClickListener(this::sendSms);
         purchaseButton.setOnClickListener(this::onPurchase);
+        autofillButton.setOnClickListener(this::onAutofill);
 
         if (isUnionPay) {
             sendSmsButton.setVisibility(VISIBLE);
@@ -143,6 +147,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             dataCollector = new DataCollector(braintreeClient);
 
             purchaseButton.setEnabled(true);
+            autofillButton.setEnabled(true);
 
             braintreeClient.getConfiguration((configuration, configError) -> {
                 cardForm.cardRequired(true)
@@ -302,6 +307,14 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 }
             });
         }
+    }
+
+    public void onAutofill(View v) {
+        AutofillHelper autofillHelper = new AutofillHelper(cardForm);
+        autofillHelper.fillCardNumber("4111111111111111");
+        autofillHelper.fillExpirationDate("01/27");
+        autofillHelper.fillCVV("123");
+        autofillHelper.fillPostalCode("12345");
     }
 
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {

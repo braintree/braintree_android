@@ -85,18 +85,12 @@ public class TestHelper {
         onDevice().pressBack();
     }
 
-    protected void fillInExpiration() {
-        fillInExpiration("04", ExpirationDateHelper.validExpirationYear());
-    }
-
-    protected void fillInExpiration(String month, String year) {
-        try {
-            onDevice(withText("Expiration Date")).perform(click());
-            onDevice(withText(month)).perform(click());
-            onDevice(withText(year)).perform(click());
-            onDevice().pressBack();
-        } catch (RuntimeException e) {
-            fillInExpiration();
-        }
+    protected String validExpirationText() {
+        String expirationYear = ExpirationDateHelper.validExpirationYear();
+        int expirationYearLength = expirationYear.length();
+        // format MM/YY
+        return "01/" +
+            expirationYear.charAt(expirationYearLength - 2)
+            + expirationYear.charAt(expirationYearLength - 1);
     }
 }
