@@ -93,7 +93,7 @@ public class PayPalAccountUnitTest {
         sut.setUrlResponseData(urlResponseData);
 
         JSONObject json = sut.buildJSON();
-        JSONObject paymentMethodNonceJson = json.getJSONObject(PayPalAccount.PAYPAL_ACCOUNT_KEY);
+        JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
 
         JSONAssert.assertEquals(urlResponseData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
         JSONAssert.assertEquals(paymentMethodNonceJson, json.getJSONObject("paypalAccount"),
