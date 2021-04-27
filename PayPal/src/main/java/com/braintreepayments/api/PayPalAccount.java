@@ -32,17 +32,17 @@ class PayPalAccount extends PaymentMethod {
         JSONObject paymentMethodNonceJson = new JSONObject();
 
         try {
-            paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
-            paymentMethodNonceJson.put(INTENT_KEY, mIntent);
+            paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
+            paymentMethodNonceJson.put(INTENT_KEY, intent);
 
-            Iterator<String> urlResponseDataKeyIterator = mUrlResponseData.keys();
+            Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
             while (urlResponseDataKeyIterator.hasNext()) {
                 String key = urlResponseDataKeyIterator.next();
-                paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
+                paymentMethodNonceJson.put(key, urlResponseData.get(key));
             }
 
-            if (mMerchantAccountId != null) {
-                json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+            if (merchantAccountId != null) {
+                json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
             }
             json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
 

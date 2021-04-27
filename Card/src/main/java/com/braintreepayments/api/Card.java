@@ -39,34 +39,34 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
             input.put(OPTIONS_KEY, optionsJson);
             variables.put(Keys.INPUT, input);
 
-            if (TextUtils.isEmpty(mMerchantAccountId) && mAuthenticationInsightRequested) {
+            if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
                 throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
             }
 
-            if (mAuthenticationInsightRequested) {
-                variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId));
+            if (authenticationInsightRequested) {
+                variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId));
             }
 
             base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
             base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
             JSONObject creditCard = new JSONObject()
-                    .put(NUMBER_KEY, mNumber)
-                    .put(EXPIRATION_MONTH_KEY, mExpirationMonth)
-                    .put(EXPIRATION_YEAR_KEY, mExpirationYear)
-                    .put(CVV_KEY, mCvv)
-                    .put(CARDHOLDER_NAME_KEY, mCardholderName);
+                    .put(NUMBER_KEY, number)
+                    .put(EXPIRATION_MONTH_KEY, expirationMonth)
+                    .put(EXPIRATION_YEAR_KEY, expirationYear)
+                    .put(CVV_KEY, cvv)
+                    .put(CARDHOLDER_NAME_KEY, cardholderName);
 
             JSONObject billingAddress = new JSONObject()
-                    .put(FIRST_NAME_KEY, mFirstName)
-                    .put(LAST_NAME_KEY, mLastName)
-                    .put(COMPANY_KEY, mCompany)
-                    .put(COUNTRY_CODE_KEY, mCountryCode)
-                    .put(LOCALITY_KEY, mLocality)
-                    .put(POSTAL_CODE_KEY, mPostalCode)
-                    .put(REGION_KEY, mRegion)
-                    .put(STREET_ADDRESS_KEY, mStreetAddress)
-                    .put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+                    .put(FIRST_NAME_KEY, firstName)
+                    .put(LAST_NAME_KEY, lastName)
+                    .put(COMPANY_KEY, company)
+                    .put(COUNTRY_CODE_KEY, countryCode)
+                    .put(LOCALITY_KEY, locality)
+                    .put(POSTAL_CODE_KEY, postalCode)
+                    .put(REGION_KEY, region)
+                    .put(STREET_ADDRESS_KEY, streetAddress)
+                    .put(EXTENDED_ADDRESS_KEY, extendedAddress);
 
             if (billingAddress.length() > 0) {
                 creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
@@ -99,10 +99,10 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     @Override
     JSONObject buildJSON() {
         JSONObject json = super.buildJSON();
-        if (mAuthenticationInsightRequested) {
+        if (authenticationInsightRequested) {
             try {
-                json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
-                json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, mAuthenticationInsightRequested);
+                json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
+                json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
             } catch (JSONException exception) {
                 exception.printStackTrace();
             }

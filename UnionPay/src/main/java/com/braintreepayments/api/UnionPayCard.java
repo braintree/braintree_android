@@ -107,8 +107,8 @@ public class UnionPayCard extends BaseCard implements Parcelable {
                 paymentMethodNonceJson.put(OPTIONS_KEY, options);
             }
             JSONObject unionPayEnrollment = new JSONObject();
-            unionPayEnrollment.put(SMS_CODE_KEY, mSmsCode);
-            unionPayEnrollment.put(ENROLLMENT_ID_KEY, mEnrollmentId);
+            unionPayEnrollment.put(SMS_CODE_KEY, smsCode);
+            unionPayEnrollment.put(ENROLLMENT_ID_KEY, enrollmentId);
             options.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
 
             json.put(UNIONPAY_KEY, paymentMethodNonceJson);

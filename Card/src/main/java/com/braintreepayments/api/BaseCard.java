@@ -235,25 +235,25 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
 
-            paymentMethodNonceJson.put(NUMBER_KEY, mNumber);
-            paymentMethodNonceJson.put(CVV_KEY, mCvv);
-            paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
-            paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, mExpirationYear);
+            paymentMethodNonceJson.put(NUMBER_KEY, number);
+            paymentMethodNonceJson.put(CVV_KEY, cvv);
+            paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
+            paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, expirationYear);
 
-            paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, mCardholderName);
+            paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, cardholderName);
 
             JSONObject billingAddressJson = new JSONObject();
-            billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
-            billingAddressJson.put(LAST_NAME_KEY, mLastName);
-            billingAddressJson.put(COMPANY_KEY, mCompany);
-            billingAddressJson.put(LOCALITY_KEY, mLocality);
-            billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
-            billingAddressJson.put(REGION_KEY, mRegion);
-            billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
-            billingAddressJson.put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+            billingAddressJson.put(FIRST_NAME_KEY, firstName);
+            billingAddressJson.put(LAST_NAME_KEY, lastName);
+            billingAddressJson.put(COMPANY_KEY, company);
+            billingAddressJson.put(LOCALITY_KEY, locality);
+            billingAddressJson.put(POSTAL_CODE_KEY, postalCode);
+            billingAddressJson.put(REGION_KEY, region);
+            billingAddressJson.put(STREET_ADDRESS_KEY, streetAddress);
+            billingAddressJson.put(EXTENDED_ADDRESS_KEY, extendedAddress);
 
-            if (mCountryCode != null) {
-                billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCode);
+            if (countryCode != null) {
+                billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, countryCode);
             }
 
             if (billingAddressJson.length() > 0) {

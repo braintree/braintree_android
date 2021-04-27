@@ -56,11 +56,11 @@ public abstract class PaymentMethod {
     }
 
     boolean getValidate() {
-        return mValidate;
+        return validate;
     }
 
     boolean hasValueForValidate() {
-        return mValidateSet;
+        return validateSet;
     }
 
     /**
@@ -74,9 +74,9 @@ public abstract class PaymentMethod {
 
     JSONObject buildMetadataJSON() {
         return new MetadataBuilder()
-                .sessionId(mSessionId)
-                .source(mSource)
-                .integration(mIntegration)
+                .sessionId(sessionId)
+                .source(source)
+                .integration(integration)
                 .build();
     }
 
