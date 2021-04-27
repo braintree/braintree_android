@@ -84,4 +84,13 @@ public class TestHelper {
         onDevice(withText("OK")).perform(click());
         onDevice().pressBack();
     }
+
+    protected String validExpirationText() {
+        String expirationYear = ExpirationDateHelper.validExpirationYear();
+        int expirationYearLength = expirationYear.length();
+        // format MM/YY
+        return "01/" +
+            expirationYear.charAt(expirationYearLength - 2)
+            + expirationYear.charAt(expirationYearLength - 1);
+    }
 }

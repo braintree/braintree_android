@@ -48,7 +48,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_authenticates() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -66,7 +66,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_authenticationFailed() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_AUTHENTICATION_FAILED));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -79,7 +79,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_lookupError() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_LOOKUP_ERROR));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -95,7 +95,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenIssuerDoesNotParticipate_returnsASuccessfulAuthentication() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -112,7 +112,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenSignatureVerificationFails_returnsAFailedAuthentication() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVC")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -125,7 +125,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenRequired_requestsAuthentication() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -144,7 +144,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenCardinalReturnsError_returnsAnError() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_MPI_SERVICE_ERROR));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -157,7 +157,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenWebViewIsClosed_callsCancelListener() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -171,7 +171,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenBackIsPressed_callsCancelListener() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -185,7 +185,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_whenIssuerDown_returnsAnUnexpectedError() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_ISSUER_DOWN));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -198,7 +198,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test(timeout = 50000)
     public void threeDSecure_doesALookupAndReturnsACardAfterATimeout() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_LOOKUP_TIMEOUT));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -217,7 +217,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Test
     public void threeDSecure_automaticallyRedirectsBackToAppWith3DSResult() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());

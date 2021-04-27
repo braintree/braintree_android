@@ -47,7 +47,7 @@ public class CardTest extends TestHelper {
                 .commit();
 
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -66,7 +66,7 @@ public class CardTest extends TestHelper {
     @Test(timeout = 60000)
     public void tokenizesUnionPay() {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVN")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Country Code")).perform(setText("1"));
@@ -93,7 +93,7 @@ public class CardTest extends TestHelper {
     @Test(timeout = 60000)
     public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CVN")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Country Code")).perform(setText("1"));
@@ -115,7 +115,7 @@ public class CardTest extends TestHelper {
                 .commit();
 
         onDevice(withText("Card Number")).perform(setText("371260714673002"));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CID")).perform(setText("1234"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -133,7 +133,7 @@ public class CardTest extends TestHelper {
                 .commit();
 
         onDevice(withText("Card Number")).perform(setText("371544868764018"));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CID")).perform(setText("1234"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
@@ -151,7 +151,7 @@ public class CardTest extends TestHelper {
                 .commit();
 
         onDevice(withText("Card Number")).perform(setText("378267515471109"));
-        onDevice(withText("Expiration Date")).perform(setText("01/27"));
+        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
         onDevice(withText("CID")).perform(setText("1234"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
