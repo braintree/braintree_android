@@ -24,23 +24,23 @@ import androidx.annotation.Nullable;
  */
 public class GooglePayRequest implements Parcelable {
 
-    private TransactionInfo mTransactionInfo;
-    private Boolean mEmailRequired = null;
-    private Boolean mPhoneNumberRequired = null;
-    private Boolean mBillingAddressRequired = null;
-    private Integer mBillingAddressFormat;
-    private Boolean mShippingAddressRequired = null;
-    private ShippingAddressRequirements mShippingAddressRequirements;
-    private Boolean mAllowPrepaidCards = null;
-    private boolean mPayPalEnabled = true;
-    private HashMap<String, JSONObject> mAllowedPaymentMethods = new HashMap<>();
-    private HashMap<String, JSONObject> mTokenizationSpecifications = new HashMap<>();
-    private HashMap<String, JSONArray> mAllowedAuthMethods = new HashMap<>();
-    private HashMap<String, JSONArray> mAllowedCardNetworks = new HashMap<>();
-    private String mEnvironment;
-    private String mGoogleMerchantId;
-    private String mGoogleMerchantName;
-    private String mCountryCode;
+    private TransactionInfo transactionInfo;
+    private Boolean emailRequired = null;
+    private Boolean phoneNumberRequired = null;
+    private Boolean billingAddressRequired = null;
+    private Integer billingAddressFormat;
+    private Boolean shippingAddressRequired = null;
+    private ShippingAddressRequirements shippingAddressRequirements;
+    private Boolean allowPrepaidCards = null;
+    private boolean payPalEnabled = true;
+    private HashMap<String, JSONObject> allowedPaymentMethods = new HashMap<>();
+    private HashMap<String, JSONObject> tokenizationSpecifications = new HashMap<>();
+    private HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
+    private HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
+    private String environment;
+    private String googleMerchantId;
+    private String googleMerchantName;
+    private String countryCode;
 
     public GooglePayRequest() {
     }
@@ -51,7 +51,7 @@ public class GooglePayRequest implements Parcelable {
      * @param transactionInfo See {@link TransactionInfo}.
      */
     public void setTransactionInfo(TransactionInfo transactionInfo) {
-        mTransactionInfo = transactionInfo;
+        this.transactionInfo = transactionInfo;
     }
 
     /**
@@ -61,7 +61,7 @@ public class GooglePayRequest implements Parcelable {
      * @return {@link GooglePayRequest}
      */
     public void setEmailRequired(boolean emailRequired) {
-        mEmailRequired = emailRequired;
+        this.emailRequired = emailRequired;
     }
 
     /**
@@ -71,7 +71,7 @@ public class GooglePayRequest implements Parcelable {
      * billing address and shipping address, {@code false} otherwise.
      */
     public void setPhoneNumberRequired(boolean phoneNumberRequired) {
-        mPhoneNumberRequired = phoneNumberRequired;
+        this.phoneNumberRequired = phoneNumberRequired;
     }
 
     /**
@@ -81,7 +81,7 @@ public class GooglePayRequest implements Parcelable {
      * {@code false} otherwise.
      */
     public void setBillingAddressRequired(boolean billingAddressRequired) {
-        mBillingAddressRequired = billingAddressRequired;
+        this.billingAddressRequired = billingAddressRequired;
     }
 
     /**
@@ -90,7 +90,7 @@ public class GooglePayRequest implements Parcelable {
      * @param billingAddressFormat the billing address format to return. {@link BillingAddressFormat}
      */
     public void setBillingAddressFormat(@BillingAddressFormat int billingAddressFormat) {
-        mBillingAddressFormat = billingAddressFormat;
+        this.billingAddressFormat = billingAddressFormat;
     }
 
     /**
@@ -100,7 +100,7 @@ public class GooglePayRequest implements Parcelable {
      * {@code false} otherwise.
      */
     public void setShippingAddressRequired(boolean shippingAddressRequired) {
-        mShippingAddressRequired = shippingAddressRequired;
+        this.shippingAddressRequired = shippingAddressRequired;
     }
 
     /**
@@ -109,7 +109,7 @@ public class GooglePayRequest implements Parcelable {
      * @param shippingAddressRequirements the shipping address requirements. {@link ShippingAddressRequirements}
      */
     public void setShippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
-        mShippingAddressRequirements = shippingAddressRequirements;
+        this.shippingAddressRequirements = shippingAddressRequirements;
     }
 
     /**
@@ -118,7 +118,7 @@ public class GooglePayRequest implements Parcelable {
      * @param allowPrepaidCards {@code true} prepaid cards are allowed, {@code false} otherwise.
      */
     public void setAllowPrepaidCards(boolean allowPrepaidCards) {
-        mAllowPrepaidCards = allowPrepaidCards;
+        this.allowPrepaidCards = allowPrepaidCards;
     }
 
     /**
@@ -127,7 +127,7 @@ public class GooglePayRequest implements Parcelable {
      * @param enablePayPal {@code true} by default. Allows PayPal to be a payment method in Google Pay.
      */
     public void setPayPalEnabled(boolean enablePayPal) {
-        mPayPalEnabled = enablePayPal;
+        payPalEnabled = enablePayPal;
     }
 
     /**
@@ -136,7 +136,7 @@ public class GooglePayRequest implements Parcelable {
      * @param parameters Parameters to assign to the paymentMethod
      */
     public void setAllowedPaymentMethod(String paymentMethodType, JSONObject parameters) {
-        mAllowedPaymentMethods.put(paymentMethodType, parameters);
+        allowedPaymentMethods.put(paymentMethodType, parameters);
     }
 
     /**
@@ -145,7 +145,7 @@ public class GooglePayRequest implements Parcelable {
      * @param parameters The tokenizationSpecification parameters to attach
      */
     public void setTokenizationSpecificationForType(String paymentMethodType, JSONObject parameters) {
-        mTokenizationSpecifications.put(paymentMethodType, parameters);
+        tokenizationSpecifications.put(paymentMethodType, parameters);
     }
 
     /**
@@ -154,7 +154,7 @@ public class GooglePayRequest implements Parcelable {
      * @param authMethods the authMethods to allow the paymentMethodType to transact with
      */
     public void setAllowedAuthMethods(String paymentMethodType, JSONArray authMethods) {
-        mAllowedAuthMethods.put(paymentMethodType, authMethods);
+        allowedAuthMethods.put(paymentMethodType, authMethods);
     }
 
     /**
@@ -163,25 +163,25 @@ public class GooglePayRequest implements Parcelable {
      * @param cardNetworks the cardNetworks to allow the paymentMethodType to transact with
      */
     public void setAllowedCardNetworks(String paymentMethodType, JSONArray cardNetworks) {
-        mAllowedCardNetworks.put(paymentMethodType, cardNetworks);
+        allowedCardNetworks.put(paymentMethodType, cardNetworks);
     }
 
     /**
      * @param merchantId The merchant ID that Google Pay has provided.
      */
     public void setGoogleMerchantId(String merchantId) {
-        mGoogleMerchantId = merchantId;
+        googleMerchantId = merchantId;
     }
 
     /**
      * @param merchantName The merchant name that will be presented in Google Pay
      */
     public void setGoogleMerchantName(String merchantName) {
-        mGoogleMerchantName = merchantName;
+        googleMerchantName = merchantName;
     }
 
     public void setEnvironment(String environment) {
-        mEnvironment = "PRODUCTION".equals(environment.toUpperCase()) ? "PRODUCTION" : "TEST";
+        this.environment = "PRODUCTION".equals(environment.toUpperCase()) ? "PRODUCTION" : "TEST";
     }
 
     /**
@@ -193,7 +193,7 @@ public class GooglePayRequest implements Parcelable {
      * @param countryCode
      */
     public void setCountryCode(String countryCode) {
-        mCountryCode = countryCode;
+        this.countryCode = countryCode;
     }
 
     /**
@@ -210,7 +210,7 @@ public class GooglePayRequest implements Parcelable {
         ArrayList<String> allowedCountryCodeList;
 
         if (isShippingAddressRequired()) {
-            allowedCountryCodeList = mShippingAddressRequirements.getAllowedCountryCodes();
+            allowedCountryCodeList = shippingAddressRequirements.getAllowedCountryCodes();
 
             if (allowedCountryCodeList != null && allowedCountryCodeList.size() > 0) {
                 try {
@@ -229,19 +229,19 @@ public class GooglePayRequest implements Parcelable {
                     .put("totalPrice", transactionInfo.getTotalPrice())
                     .put("currencyCode", transactionInfo.getCurrencyCode());
 
-            if (mCountryCode != null) {
-                transactionInfoJson.put("countryCode", mCountryCode);
+            if (countryCode != null) {
+                transactionInfoJson.put("countryCode", countryCode);
             }
 
         } catch (JSONException ignored) {
         }
 
-        for (Map.Entry<String, JSONObject> pm : mAllowedPaymentMethods.entrySet()) {
+        for (Map.Entry<String, JSONObject> pm : this.allowedPaymentMethods.entrySet()) {
             try {
                 JSONObject paymentMethod = new JSONObject()
                         .put("type", pm.getKey())
                         .put("parameters", pm.getValue())
-                        .put("tokenizationSpecification", mTokenizationSpecifications.get(pm.getKey()));
+                        .put("tokenizationSpecification", tokenizationSpecifications.get(pm.getKey()));
 
                 if (pm.getKey() == "CARD") {
                     try {
@@ -287,7 +287,7 @@ public class GooglePayRequest implements Parcelable {
                     .put("allowedPaymentMethods", allowedPaymentMethods)
                     .put("emailRequired", isEmailRequired())
                     .put("shippingAddressRequired", isShippingAddressRequired())
-                    .put("environment", mEnvironment)
+                    .put("environment", environment)
                     .put("merchantInfo", merchantInfo)
                     .put("transactionInfo", transactionInfoJson);
 
@@ -314,83 +314,83 @@ public class GooglePayRequest implements Parcelable {
 
     public String billingAddressFormatToString() {
         String format = "MIN";
-        if (mBillingAddressFormat != null &&
-                mBillingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
+        if (billingAddressFormat != null &&
+                billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
             format = "FULL";
         }
         return format;
     }
 
     public TransactionInfo getTransactionInfo() {
-        return mTransactionInfo;
+        return transactionInfo;
     }
 
     @Nullable
     public Boolean isEmailRequired() {
-        return mEmailRequired;
+        return emailRequired;
     }
 
     @Nullable
     public Boolean isPhoneNumberRequired() {
-        return mPhoneNumberRequired;
+        return phoneNumberRequired;
     }
 
     @Nullable
     public Boolean isBillingAddressRequired() {
-        return mBillingAddressRequired;
+        return billingAddressRequired;
     }
 
     @Nullable
     @BillingAddressFormat
     public Integer getBillingAddressFormat() {
-        return mBillingAddressFormat;
+        return billingAddressFormat;
     }
 
     @Nullable
     public Boolean isShippingAddressRequired() {
-        return mShippingAddressRequired;
+        return shippingAddressRequired;
     }
 
     @Nullable
     public ShippingAddressRequirements getShippingAddressRequirements() {
-        return mShippingAddressRequirements;
+        return shippingAddressRequirements;
     }
 
     @Nullable
     public Boolean getAllowPrepaidCards() {
-        return mAllowPrepaidCards;
+        return allowPrepaidCards;
     }
 
     public Boolean isPayPalEnabled() {
-        return mPayPalEnabled;
+        return payPalEnabled;
     }
 
     public JSONObject getAllowedPaymentMethod(String type) {
-        return mAllowedPaymentMethods.get(type);
+        return allowedPaymentMethods.get(type);
     }
 
     public JSONObject getTokenizationSpecificationForType(String type) {
-        return mTokenizationSpecifications.get(type);
+        return tokenizationSpecifications.get(type);
     }
 
     public JSONArray getAllowedAuthMethodsForType(String type) {
-        return mAllowedAuthMethods.get(type);
+        return allowedAuthMethods.get(type);
     }
 
     public JSONArray getAllowedCardNetworksForType(String type) {
-        return mAllowedCardNetworks.get(type);
+        return allowedCardNetworks.get(type);
     }
 
     public String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     public String getGoogleMerchantId() {
-        return mGoogleMerchantId;
+        return googleMerchantId;
     }
 
     public String getGoogleMerchantName() {
-        return mGoogleMerchantName;
+        return googleMerchantName;
     }
 
     @Override
@@ -400,45 +400,45 @@ public class GooglePayRequest implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mTransactionInfo, flags);
-        dest.writeByte((byte) (mEmailRequired == null ? 0 : mEmailRequired ? 1 : 2));
-        dest.writeByte((byte) (mPhoneNumberRequired == null ? 0 : mPhoneNumberRequired ? 1 : 2));
-        dest.writeByte((byte) (mBillingAddressRequired == null ? 0 : mBillingAddressRequired ? 1 : 2));
-        if (mBillingAddressFormat == null) {
+        dest.writeParcelable(transactionInfo, flags);
+        dest.writeByte((byte) (emailRequired == null ? 0 : emailRequired ? 1 : 2));
+        dest.writeByte((byte) (phoneNumberRequired == null ? 0 : phoneNumberRequired ? 1 : 2));
+        dest.writeByte((byte) (billingAddressRequired == null ? 0 : billingAddressRequired ? 1 : 2));
+        if (billingAddressFormat == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
-            dest.writeInt(mBillingAddressFormat);
+            dest.writeInt(billingAddressFormat);
         }
-        dest.writeByte((byte) (mShippingAddressRequired == null ? 0 : mShippingAddressRequired ? 1 : 2));
-        dest.writeParcelable(mShippingAddressRequirements, flags);
-        dest.writeByte((byte) (mAllowPrepaidCards == null ? 0 : mAllowPrepaidCards ? 1 : 2));
-        dest.writeString(mEnvironment);
-        dest.writeString(mGoogleMerchantId);
-        dest.writeString(mGoogleMerchantName);
+        dest.writeByte((byte) (shippingAddressRequired == null ? 0 : shippingAddressRequired ? 1 : 2));
+        dest.writeParcelable(shippingAddressRequirements, flags);
+        dest.writeByte((byte) (allowPrepaidCards == null ? 0 : allowPrepaidCards ? 1 : 2));
+        dest.writeString(environment);
+        dest.writeString(googleMerchantId);
+        dest.writeString(googleMerchantName);
     }
 
     protected GooglePayRequest(Parcel in) {
-        mTransactionInfo = in.readParcelable(TransactionInfo.class.getClassLoader());
+        transactionInfo = in.readParcelable(TransactionInfo.class.getClassLoader());
         byte emailRequired = in.readByte();
-        mEmailRequired = emailRequired == 0 ? null : emailRequired == 1;
+        this.emailRequired = emailRequired == 0 ? null : emailRequired == 1;
         byte phoneNumberRequired = in.readByte();
-        mPhoneNumberRequired = phoneNumberRequired == 0 ? null : phoneNumberRequired == 1;
+        this.phoneNumberRequired = phoneNumberRequired == 0 ? null : phoneNumberRequired == 1;
         byte billingAddressRequired = in.readByte();
-        mBillingAddressRequired = billingAddressRequired == 0 ? null : billingAddressRequired == 1;
+        this.billingAddressRequired = billingAddressRequired == 0 ? null : billingAddressRequired == 1;
         if (in.readByte() == 0) {
-            mBillingAddressFormat = null;
+            billingAddressFormat = null;
         } else {
-            mBillingAddressFormat = in.readInt();
+            billingAddressFormat = in.readInt();
         }
         byte shippingAddressRequired = in.readByte();
-        mShippingAddressRequired = shippingAddressRequired == 0 ? null : shippingAddressRequired == 1;
-        mShippingAddressRequirements = in.readParcelable(ShippingAddressRequirements.class.getClassLoader());
+        this.shippingAddressRequired = shippingAddressRequired == 0 ? null : shippingAddressRequired == 1;
+        shippingAddressRequirements = in.readParcelable(ShippingAddressRequirements.class.getClassLoader());
         byte allowPrepaidCards = in.readByte();
-        mAllowPrepaidCards = allowPrepaidCards == 0 ? null : allowPrepaidCards == 1;
-        mEnvironment = in.readString();
-        mGoogleMerchantId = in.readString();
-        mGoogleMerchantName = in.readString();
+        this.allowPrepaidCards = allowPrepaidCards == 0 ? null : allowPrepaidCards == 1;
+        environment = in.readString();
+        googleMerchantId = in.readString();
+        googleMerchantName = in.readString();
     }
 
     public static final Creator<GooglePayRequest> CREATOR = new Creator<GooglePayRequest>() {

@@ -14,9 +14,9 @@ class VisaCheckoutAccount extends PaymentMethod {
     private static final String ENCRYPTED_PAYMENT_DATA = "encryptedPaymentData";
     private static final String VISA_CHECKOUT_KEY = "visaCheckoutCard";
 
-    private String mCallId;
-    private String mEncryptedKey;
-    private String mEncryptedPaymentData;
+    private String callId;
+    private String encryptedKey;
+    private String encryptedPaymentData;
 
     /**
      * @param visaPaymentSummary returned from Visa Checkout after a successful payment.
@@ -26,16 +26,16 @@ class VisaCheckoutAccount extends PaymentMethod {
             return;
         }
 
-        mCallId = visaPaymentSummary.getCallId();
-        mEncryptedKey = visaPaymentSummary.getEncKey();
-        mEncryptedPaymentData = visaPaymentSummary.getEncPaymentData();
+        callId = visaPaymentSummary.getCallId();
+        encryptedKey = visaPaymentSummary.getEncKey();
+        encryptedPaymentData = visaPaymentSummary.getEncPaymentData();
     }
 
     @Override
     protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(CALL_ID, mCallId);
-        paymentMethodNonceJson.put(ENCRYPTED_KEY, mEncryptedKey);
-        paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, mEncryptedPaymentData);
+        paymentMethodNonceJson.put(CALL_ID, callId);
+        paymentMethodNonceJson.put(ENCRYPTED_KEY, encryptedKey);
+        paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, encryptedPaymentData);
         base.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson);
     }
 

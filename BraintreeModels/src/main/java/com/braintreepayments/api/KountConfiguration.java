@@ -11,7 +11,7 @@ class KountConfiguration {
 
     private final static String KOUNT_MERCHANT_ID_KEY = "kountMerchantId";
 
-    private String mKountMerchantId;
+    private String kountMerchantId;
 
     /**
      * Parse a {@link KountConfiguration} from json.
@@ -26,7 +26,7 @@ class KountConfiguration {
         }
 
         KountConfiguration kountConfiguration = new KountConfiguration();
-        kountConfiguration.mKountMerchantId = Json.optString(json, KOUNT_MERCHANT_ID_KEY, "");
+        kountConfiguration.kountMerchantId = Json.optString(json, KOUNT_MERCHANT_ID_KEY, "");
 
         return kountConfiguration;
     }
@@ -35,13 +35,13 @@ class KountConfiguration {
      * @return {@code true} if Kount is enabled, {@code false} otherwise.
      */
     boolean isEnabled() {
-        return !TextUtils.isEmpty(mKountMerchantId);
+        return !TextUtils.isEmpty(kountMerchantId);
     }
 
     /**
      * @return the Kount Merchant Id.
      */
     String getKountMerchantId() {
-        return mKountMerchantId;
+        return kountMerchantId;
     }
 }

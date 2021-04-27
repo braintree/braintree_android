@@ -17,8 +17,8 @@ public class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
-    private final String mNonce;
-    private final boolean mDefault;
+    private final String nonce;
+    private final boolean isDefault;
 
     private @PaymentMethodType final int mType;
 
@@ -33,8 +33,8 @@ public class PaymentMethodNonce implements Parcelable {
     }
 
     PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type) {
-        mNonce = nonce;
-        mDefault = isDefault;
+        this.nonce = nonce;
+        this.isDefault = isDefault;
         mType = type;
     }
 
@@ -44,14 +44,14 @@ public class PaymentMethodNonce implements Parcelable {
      *          actions.
      */
     public String getString() {
-        return mNonce;
+        return nonce;
     }
 
     /**
      * @return {@code true} if this payment method is the default for the current customer, {@code false} otherwise
      */
     public boolean isDefault() {
-        return mDefault;
+        return isDefault;
     }
 
     @PaymentMethodType int getType() {
@@ -65,14 +65,14 @@ public class PaymentMethodNonce implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mNonce);
-        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
+        dest.writeString(nonce);
+        dest.writeByte(isDefault ? (byte) 1 : (byte) 0);
         dest.writeInt(mType);
     }
 
     protected PaymentMethodNonce(Parcel in) {
-        mNonce = in.readString();
-        mDefault = in.readByte() > 0;
+        nonce = in.readString();
+        isDefault = in.readByte() > 0;
         mType = in.readInt();
     }
 

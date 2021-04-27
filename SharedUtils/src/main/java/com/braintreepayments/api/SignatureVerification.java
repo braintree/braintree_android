@@ -18,7 +18,7 @@ class SignatureVerification {
     /**
      * Used to disable signature verification for development and test.
      */
-    static boolean sEnableSignatureVerification = true;
+    static boolean enableSignatureVerification = true;
 
     /**
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
@@ -34,7 +34,7 @@ class SignatureVerification {
     @SuppressLint("PackageManagerGetSignatures")
     static boolean isSignatureValid(Context context, String packageName,
             String certificateSubject, String certificateIssuer, int publicKeyHashCode) {
-        if (!sEnableSignatureVerification) {
+        if (!enableSignatureVerification) {
             return true;
         }
 

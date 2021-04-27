@@ -19,10 +19,10 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     private static final String SMS_CODE_KEY = "smsCode";
     private static final String ENROLLMENT_ID_KEY = "id";
 
-    private String mMobileCountryCode;
-    private String mMobilePhoneNumber;
-    private String mSmsCode;
-    private String mEnrollmentId;
+    private String mobileCountryCode;
+    private String mobilePhoneNumber;
+    private String smsCode;
+    private String enrollmentId;
 
     public UnionPayCard() {}
 
@@ -31,9 +31,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
      */
     public void setMobileCountryCode(String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
-            mMobileCountryCode = null;
+            this.mobileCountryCode = null;
         } else {
-            mMobileCountryCode = mobileCountryCode;
+            this.mobileCountryCode = mobileCountryCode;
         }
     }
 
@@ -42,9 +42,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
      */
     public void setMobilePhoneNumber(String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
-            mMobilePhoneNumber = null;
+            this.mobilePhoneNumber = null;
         } else {
-            mMobilePhoneNumber = mobilePhoneNumber;
+            this.mobilePhoneNumber = mobilePhoneNumber;
         }
     }
 
@@ -53,9 +53,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
      */
     public void setSmsCode(String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
-            mSmsCode = null;
+            this.smsCode = null;
         } else {
-            mSmsCode = smsCode;
+            this.smsCode = smsCode;
         }
     }
 
@@ -64,9 +64,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
      */
     public void setEnrollmentId(String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
-            mEnrollmentId = null;
+            this.enrollmentId = null;
         } else {
-            mEnrollmentId = enrollmentId;
+            this.enrollmentId = enrollmentId;
         }
     }
 
@@ -83,11 +83,11 @@ public class UnionPayCard extends BaseCard implements Parcelable {
 
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
-        unionPayEnrollment.put(NUMBER_KEY, mNumber);
-        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
-        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, mExpirationYear);
-        unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mMobileCountryCode);
-        unionPayEnrollment.put(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
+        unionPayEnrollment.put(NUMBER_KEY, number);
+        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, expirationMonth);
+        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, expirationYear);
+        unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mobileCountryCode);
+        unionPayEnrollment.put(MOBILE_PHONE_NUMBER_KEY, mobilePhoneNumber);
 
         JSONObject payload = new JSONObject();
         payload.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
@@ -105,8 +105,8 @@ public class UnionPayCard extends BaseCard implements Parcelable {
             paymentMethodNonceJson.put(OPTIONS_KEY, options);
         }
         JSONObject unionPayEnrollment = new JSONObject();
-        unionPayEnrollment.put(SMS_CODE_KEY, mSmsCode);
-        unionPayEnrollment.put(ENROLLMENT_ID_KEY, mEnrollmentId);
+        unionPayEnrollment.put(SMS_CODE_KEY, smsCode);
+        unionPayEnrollment.put(ENROLLMENT_ID_KEY, enrollmentId);
         options.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
 
         json.put(UNIONPAY_KEY, paymentMethodNonceJson);
@@ -118,18 +118,18 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mMobileCountryCode);
-        dest.writeString(mMobilePhoneNumber);
-        dest.writeString(mSmsCode);
-        dest.writeString(mEnrollmentId);
+        dest.writeString(mobileCountryCode);
+        dest.writeString(mobilePhoneNumber);
+        dest.writeString(smsCode);
+        dest.writeString(enrollmentId);
     }
 
     protected UnionPayCard(Parcel in) {
         super(in);
-        mMobileCountryCode = in.readString();
-        mMobilePhoneNumber = in.readString();
-        mSmsCode = in.readString();
-        mEnrollmentId = in.readString();
+        mobileCountryCode = in.readString();
+        mobilePhoneNumber = in.readString();
+        smsCode = in.readString();
+        enrollmentId = in.readString();
     }
 
     public static final Creator<UnionPayCard> CREATOR = new Creator<UnionPayCard>() {

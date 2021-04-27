@@ -5,18 +5,18 @@ import org.json.JSONObject;
 
 public abstract class JSONBuilder {
 
-    protected JSONObject mJsonBody;
+    protected JSONObject jsonBody;
 
     protected JSONBuilder(JSONObject json) {
-        mJsonBody = json;
+        jsonBody = json;
     }
 
     public JSONBuilder() {
-        mJsonBody = new JSONObject();
+        jsonBody = new JSONObject();
     }
 
     public String build() {
-        return mJsonBody.toString();
+        return jsonBody.toString();
     }
 
     public void put(Object value) {
@@ -32,7 +32,7 @@ public abstract class JSONBuilder {
 
     public void put(String key, Object value) {
         try {
-            mJsonBody.put(key, value);
+            jsonBody.put(key, value);
         } catch (JSONException ignored) {}
     }
 }

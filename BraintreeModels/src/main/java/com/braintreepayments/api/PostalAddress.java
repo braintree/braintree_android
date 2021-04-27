@@ -9,89 +9,89 @@ import android.text.TextUtils;
  */
 public class PostalAddress implements Parcelable {
 
-    private String mRecipientName;
-    private String mPhoneNumber;
-    private String mStreetAddress;
-    private String mExtendedAddress;
-    private String mLocality;
-    private String mRegion;
-    private String mPostalCode;
-    private String mSortingCode;
-    private String mCountryCodeAlpha2;
+    private String recipientName;
+    private String phoneNumber;
+    private String streetAddress;
+    private String extendedAddress;
+    private String locality;
+    private String region;
+    private String postalCode;
+    private String sortingCode;
+    private String countryCodeAlpha2;
 
     public PostalAddress() {
     }
 
     public void setRecipientName(String name) {
-        mRecipientName = name;
+        recipientName = name;
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        mPhoneNumber = phoneNumber;
+        this.phoneNumber = phoneNumber;
     }
 
     public void setStreetAddress(String streetAddress) {
-        mStreetAddress = streetAddress;
+        this.streetAddress = streetAddress;
     }
 
     public void setExtendedAddress(String extendedAddress) {
-        mExtendedAddress = extendedAddress;
+        this.extendedAddress = extendedAddress;
     }
 
     public void setLocality(String locality) {
-        mLocality = locality;
+        this.locality = locality;
     }
 
     public void setRegion(String region) {
-        mRegion = region;
+        this.region = region;
     }
 
     public void setPostalCode(String postalCode) {
-        mPostalCode = postalCode;
+        this.postalCode = postalCode;
     }
 
     public void setSortingCode(String sortingCode) {
-        mSortingCode = sortingCode;
+        this.sortingCode = sortingCode;
     }
 
     public void setCountryCodeAlpha2(String countryCodeAlpha2) {
-        mCountryCodeAlpha2 = countryCodeAlpha2;
+        this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
     public String getRecipientName() {
-        return mRecipientName;
+        return recipientName;
     }
 
     public String getPhoneNumber() {
-        return mPhoneNumber;
+        return phoneNumber;
     }
 
     public String getStreetAddress() {
-        return mStreetAddress;
+        return streetAddress;
     }
 
     public String getExtendedAddress() {
-        return mExtendedAddress;
+        return extendedAddress;
     }
 
     public String getLocality() {
-        return mLocality;
+        return locality;
     }
 
     public String getRegion() {
-        return mRegion;
+        return region;
     }
 
     public String getPostalCode() {
-        return mPostalCode;
+        return postalCode;
     }
 
     public String getSortingCode() {
-        return mSortingCode;
+        return sortingCode;
     }
 
     public String getCountryCodeAlpha2() {
-        return mCountryCodeAlpha2;
+        return countryCodeAlpha2;
     }
 
     /**
@@ -100,13 +100,13 @@ public class PostalAddress implements Parcelable {
      * @return {@code true} if the country code is {@code null} or empty, {@code false} otherwise.
      */
     public boolean isEmpty() {
-        return TextUtils.isEmpty(mCountryCodeAlpha2);
+        return TextUtils.isEmpty(countryCodeAlpha2);
     }
 
     @Override
     public String toString() {
-        return String.format("%s\n%s\n%s\n%s, %s\n%s %s", mRecipientName, mStreetAddress,
-                mExtendedAddress, mLocality, mRegion, mPostalCode, mCountryCodeAlpha2);
+        return String.format("%s\n%s\n%s\n%s, %s\n%s %s", recipientName, streetAddress,
+                extendedAddress, locality, region, postalCode, countryCodeAlpha2);
     }
 
     @Override
@@ -116,27 +116,27 @@ public class PostalAddress implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mStreetAddress);
-        dest.writeString(mExtendedAddress);
-        dest.writeString(mLocality);
-        dest.writeString(mRegion);
-        dest.writeString(mPostalCode);
-        dest.writeString(mCountryCodeAlpha2);
-        dest.writeString(mRecipientName);
-        dest.writeString(mPhoneNumber);
-        dest.writeString(mSortingCode);
+        dest.writeString(streetAddress);
+        dest.writeString(extendedAddress);
+        dest.writeString(locality);
+        dest.writeString(region);
+        dest.writeString(postalCode);
+        dest.writeString(countryCodeAlpha2);
+        dest.writeString(recipientName);
+        dest.writeString(phoneNumber);
+        dest.writeString(sortingCode);
     }
 
     private PostalAddress(Parcel in) {
-        mStreetAddress = in.readString();
-        mExtendedAddress = in.readString();
-        mLocality = in.readString();
-        mRegion = in.readString();
-        mPostalCode = in.readString();
-        mCountryCodeAlpha2 = in.readString();
-        mRecipientName = in.readString();
-        mPhoneNumber = in.readString();
-        mSortingCode = in.readString();
+        streetAddress = in.readString();
+        extendedAddress = in.readString();
+        locality = in.readString();
+        region = in.readString();
+        postalCode = in.readString();
+        countryCodeAlpha2 = in.readString();
+        recipientName = in.readString();
+        phoneNumber = in.readString();
+        sortingCode = in.readString();
     }
 
     public static final Creator<PostalAddress> CREATOR = new Creator<PostalAddress>() {

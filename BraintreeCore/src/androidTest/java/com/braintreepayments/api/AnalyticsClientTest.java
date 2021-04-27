@@ -23,14 +23,14 @@ import static org.junit.Assert.assertEquals;
 public class AnalyticsClientTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
     private TestActivity activity;
 
     @Before
     public void setUp() {
-        activity = mActivityTestRule.getActivity();
+        activity = activityTestRule.getActivity();
 
         androidx.work.Configuration workManagerConfig = new androidx.work.Configuration.Builder()
                 .setMinimumLoggingLevel(Log.DEBUG)

@@ -21,9 +21,9 @@ public class BraintreeError implements Parcelable {
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
 
-    private String mField;
-    private String mMessage;
-    private List<BraintreeError> mFieldErrors;
+    private String field;
+    private String message;
+    private List<BraintreeError> fieldErrors;
 
     static List<BraintreeError> fromJsonArray(JSONArray json) {
         if (json == null) {
@@ -72,9 +72,9 @@ public class BraintreeError implements Parcelable {
 
     static BraintreeError fromJson(JSONObject json) {
         BraintreeError error = new BraintreeError();
-        error.mField = Json.optString(json, FIELD_KEY, null);
-        error.mMessage = Json.optString(json, MESSAGE_KEY, null);
-        error.mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
+        error.field = Json.optString(json, FIELD_KEY, null);
+        error.message = Json.optString(json, MESSAGE_KEY, null);
+        error.fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
 
         return error;
     }
@@ -84,9 +84,9 @@ public class BraintreeError implements Parcelable {
 
         if (inputPath.size() == 1) {
             BraintreeError error = new BraintreeError();
-            error.mField = field;
-            error.mMessage = errorJSON.getString(Keys.MESSAGE);
-            error.mFieldErrors = new ArrayList<>();
+            error.field = field;
+            error.message = errorJSON.getString(Keys.MESSAGE);
+            error.fieldErrors = new ArrayList<>();
 
             errors.add(error);
             return;
@@ -96,20 +96,20 @@ public class BraintreeError implements Parcelable {
         List<String> nestedInputPath = inputPath.subList(1, inputPath.size());
 
         for (BraintreeError error : errors) {
-            if (error.mField.equals(field)) {
+            if (error.field.equals(field)) {
                 nestedError = error;
             }
         }
 
         if (nestedError == null) {
             nestedError = new BraintreeError();
-            nestedError.mField = field;
-            nestedError.mFieldErrors = new ArrayList<>();
+            nestedError.field = field;
+            nestedError.fieldErrors = new ArrayList<>();
 
             errors.add(nestedError);
         }
 
-        addGraphQLFieldError(nestedInputPath, errorJSON, nestedError.mFieldErrors);
+        addGraphQLFieldError(nestedInputPath, errorJSON, nestedError.fieldErrors);
     }
 
     /**
@@ -117,21 +117,21 @@ public class BraintreeError implements Parcelable {
      */
     @Nullable
     public String getMessage() {
-        return mMessage;
+        return message;
     }
 
     /**
      * @return Field name this object represents.
      */
     public String getField() {
-        return mField;
+        return field;
     }
 
     /**
      * @return {@link BraintreeError} objects for any errors nested under this field.
      */
     public List<BraintreeError> getFieldErrors() {
-        return mFieldErrors;
+        return fieldErrors;
     }
 
     /**
@@ -143,8 +143,8 @@ public class BraintreeError implements Parcelable {
     @Nullable
     public BraintreeError errorFor(String field) {
         BraintreeError returnError;
-        if (mFieldErrors != null) {
-            for (BraintreeError error : mFieldErrors) {
+        if (fieldErrors != null) {
+            for (BraintreeError error : fieldErrors) {
                 if (error.getField().equals(field)) {
                     return error;
                 } else if (error.getFieldErrors() != null) {
@@ -159,8 +159,8 @@ public class BraintreeError implements Parcelable {
     }
 
     public String toString() {
-        return "BraintreeError for " + mField + ": " + mMessage + " -> " +
-                (mFieldErrors != null ? mFieldErrors.toString() : "");
+        return "BraintreeError for " + field + ": " + message + " -> " +
+                (fieldErrors != null ? fieldErrors.toString() : "");
     }
 
     BraintreeError() {}
@@ -172,15 +172,15 @@ public class BraintreeError implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mField);
-        dest.writeString(mMessage);
-        dest.writeTypedList(mFieldErrors);
+        dest.writeString(field);
+        dest.writeString(message);
+        dest.writeTypedList(fieldErrors);
     }
 
     protected BraintreeError(Parcel in) {
-        mField = in.readString();
-        mMessage = in.readString();
-        mFieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
+        field = in.readString();
+        message = in.readString();
+        fieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
     }
 
     public static final Creator<BraintreeError> CREATOR = new Creator<BraintreeError>() {

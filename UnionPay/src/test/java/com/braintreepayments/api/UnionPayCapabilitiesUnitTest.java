@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.UnionPayCapabilities;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -18,7 +16,7 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class UnionPayCapabilitiesUnitTest {
 
-    public UnionPayCapabilities mUnionPayCapabilities;
+    public UnionPayCapabilities unionPayCapabilities;
 
     @Before
     public void setup() {
@@ -33,29 +31,29 @@ public class UnionPayCapabilitiesUnitTest {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mUnionPayCapabilities = UnionPayCapabilities.fromJson(unionPayCapabilitiesJson.toString());
+        unionPayCapabilities = UnionPayCapabilities.fromJson(unionPayCapabilitiesJson.toString());
     }
 
     @Test
     public void constructor_creates() {
-        assertTrue(mUnionPayCapabilities.isUnionPay());
-        assertFalse(mUnionPayCapabilities.isDebit());
-        assertTrue(mUnionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(mUnionPayCapabilities.isSupported());
+        assertTrue(unionPayCapabilities.isUnionPay());
+        assertFalse(unionPayCapabilities.isDebit());
+        assertTrue(unionPayCapabilities.supportsTwoStepAuthAndCapture());
+        assertFalse(unionPayCapabilities.isSupported());
     }
 
     @Test
     public void parcelsCorrectly() {
         Parcel parcel = Parcel.obtain();
 
-        mUnionPayCapabilities.writeToParcel(parcel, 0);
+        unionPayCapabilities.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
         UnionPayCapabilities actual = new UnionPayCapabilities(parcel);
-        assertEquals(mUnionPayCapabilities.isUnionPay(), actual.isUnionPay());
-        assertEquals(mUnionPayCapabilities.isDebit(), actual.isDebit());
-        assertEquals(mUnionPayCapabilities.supportsTwoStepAuthAndCapture(), actual.supportsTwoStepAuthAndCapture());
-        assertEquals(mUnionPayCapabilities.isSupported(), actual.isSupported());
+        assertEquals(unionPayCapabilities.isUnionPay(), actual.isUnionPay());
+        assertEquals(unionPayCapabilities.isDebit(), actual.isDebit());
+        assertEquals(unionPayCapabilities.supportsTwoStepAuthAndCapture(), actual.supportsTwoStepAuthAndCapture());
+        assertEquals(unionPayCapabilities.isSupported(), actual.isSupported());
     }
 
     @Test

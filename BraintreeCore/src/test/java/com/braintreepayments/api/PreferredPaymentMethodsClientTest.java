@@ -22,7 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class PreferredPaymentMethodsClientTest {
 
-    private CountDownLatch mCountDownLatch;
+    private CountDownLatch countDownLatch;
     private Context context;
     private Context applicationContext;
 
@@ -33,7 +33,7 @@ public class PreferredPaymentMethodsClientTest {
 
     @Before
     public void setUp() throws JSONException {
-        mCountDownLatch = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
 
         context = mock(Context.class);
         applicationContext = mock(Context.class);
@@ -59,11 +59,11 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -80,11 +80,11 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.true");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -99,11 +99,11 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.false");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -123,11 +123,11 @@ public class PreferredPaymentMethodsClientTest {
                 verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
                 String expectedQuery = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
                 assertEquals(expectedQuery, captor.getValue());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -143,11 +143,11 @@ public class PreferredPaymentMethodsClientTest {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-disabled");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -164,11 +164,11 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.true");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -185,11 +185,11 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.false");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test
@@ -205,10 +205,10 @@ public class PreferredPaymentMethodsClientTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-error");
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }

@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class PaymentMethodToken {
 
     @SerializedName("token")
-    private String mToken;
+    private String token;
 
     public String getToken() {
-        return mToken;
+        return token;
     }
 }

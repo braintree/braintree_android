@@ -5,17 +5,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Contains the remote Visa Checkout configuration for the Braintree SDK.
  */
 class VisaCheckoutConfiguration {
 
-    private boolean mIsEnabled;
-    private String mApiKey;
-    private String mExternalClientId;
-    private List<String> mCardBrands;
+    private boolean isEnabled;
+    private String apiKey;
+    private String externalClientId;
+    private List<String> cardBrands;
 
     static VisaCheckoutConfiguration fromJson(JSONObject json) {
         VisaCheckoutConfiguration visaCheckoutConfiguration = new VisaCheckoutConfiguration();
@@ -24,10 +23,10 @@ class VisaCheckoutConfiguration {
             json = new JSONObject();
         }
 
-        visaCheckoutConfiguration.mApiKey = Json.optString(json, "apikey", "");
-        visaCheckoutConfiguration.mIsEnabled = !visaCheckoutConfiguration.mApiKey.equals("");
-        visaCheckoutConfiguration.mExternalClientId = Json.optString(json, "externalClientId", "");
-        visaCheckoutConfiguration.mCardBrands = supportedCardTypesToAcceptedCardBrands(
+        visaCheckoutConfiguration.apiKey = Json.optString(json, "apikey", "");
+        visaCheckoutConfiguration.isEnabled = !visaCheckoutConfiguration.apiKey.equals("");
+        visaCheckoutConfiguration.externalClientId = Json.optString(json, "externalClientId", "");
+        visaCheckoutConfiguration.cardBrands = supportedCardTypesToAcceptedCardBrands(
                 CardConfiguration.fromJson(json).getSupportedCardTypes());
 
         return visaCheckoutConfiguration;
@@ -40,28 +39,28 @@ class VisaCheckoutConfiguration {
      * @return boolean if Visa Checkout SDK is available, and configuration is enabled.
      */
     boolean isEnabled() {
-        return mIsEnabled;
+        return isEnabled;
     }
 
     /**
      * @return The Visa Checkout External Client Id associated with this merchant's Visa Checkout configuration.
      */
     String getExternalClientId() {
-        return mExternalClientId;
+        return externalClientId;
     }
 
     /**
      * @return The Visa Checkout API Key associated with this merchant's Visa Checkout configuration.
      */
     String getApiKey() {
-        return mApiKey;
+        return apiKey;
     }
 
     /**
      * @return The accepted card brands for Visa Checkout.
      */
     List<String> getAcceptedCardBrands() {
-        return mCardBrands;
+        return cardBrands;
     }
 
     private static List<String> supportedCardTypesToAcceptedCardBrands(List<String> supportedCardTypes) {

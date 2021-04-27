@@ -31,11 +31,11 @@ import static junit.framework.Assert.assertTrue;
 public class UnionPayClientTest {
 
     private UnionPayClient unionPayClient;
-    private CountDownLatch mCountDownLatch;
+    private CountDownLatch countDownLatch;
 
     @Before
     public void setUp() throws InvalidArgumentException {
-        mCountDownLatch = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
         BraintreeClient braintreeClient =
                 new BraintreeClient(ApplicationProvider.getApplicationContext(), new TestClientTokenBuilder().build());
         unionPayClient = new UnionPayClient(braintreeClient, null);
@@ -49,11 +49,11 @@ public class UnionPayClientTest {
                 assertTrue(capabilities.supportsTwoStepAuthAndCapture());
                 assertTrue(capabilities.isDebit());
                 assertTrue(capabilities.isUnionPay());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -64,11 +64,11 @@ public class UnionPayClientTest {
                 assertTrue(capabilities.supportsTwoStepAuthAndCapture());
                 assertFalse(capabilities.isDebit());
                 assertTrue(capabilities.isUnionPay());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -110,11 +110,11 @@ public class UnionPayClientTest {
                 assertFalse(capabilities.supportsTwoStepAuthAndCapture());
                 assertTrue(capabilities.isDebit());
                 assertTrue(capabilities.isUnionPay());
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -136,13 +136,13 @@ public class UnionPayClientTest {
                     public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                         assertFalse(TextUtils.isEmpty(enrollment.getId()));
                         assertTrue(enrollment.isSmsCodeRequired());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -164,13 +164,13 @@ public class UnionPayClientTest {
                     public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                         assertTrue(error instanceof ErrorWithResponse);
                         assertEquals("UnionPay Enrollment is invalid", error.getMessage());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -194,13 +194,13 @@ public class UnionPayClientTest {
                         assertNull(error);
                         assertNotNull(enrollment.getId());
                         assertFalse(enrollment.isSmsCodeRequired());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Ignore("Sample merchant account is not set up for Union Pay")
@@ -225,13 +225,13 @@ public class UnionPayClientTest {
                     public void onResult(CardNonce cardNonce, Exception error) {
                         assertIsANonce(cardNonce.getString());
                         assertEquals("32", cardNonce.getLastTwo());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Ignore("Sample merchant account is not set up for Union Pay")
@@ -257,13 +257,13 @@ public class UnionPayClientTest {
                     public void onResult(CardNonce cardNonce, Exception error) {
                         assertIsANonce(cardNonce.getString());
                         assertEquals("32", cardNonce.getLastTwo());
-                        mCountDownLatch.countDown();
+                        countDownLatch.countDown();
                     }
                 });
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     private void assertSupported(final String cardNumber, final boolean expected) throws InterruptedException {

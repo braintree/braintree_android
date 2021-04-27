@@ -21,7 +21,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";
 
-    private final String mUsername;
+    private final String username;
 
     static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
@@ -42,25 +42,25 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.VENMO);
-        mUsername = username;
+        this.username = username;
     }
 
     /**
      * @return the Venmo username
      */
     public String getUsername() {
-        return mUsername;
+        return username;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mUsername);
+        dest.writeString(username);
     }
 
     private VenmoAccountNonce(Parcel in) {
         super(in);
-        mUsername = in.readString();
+        username = in.readString();
     }
 
     public static final Creator<VenmoAccountNonce> CREATOR = new Creator<VenmoAccountNonce>() {

@@ -8,8 +8,8 @@ import android.os.Parcelable;
  */
 public class ThreeDSecureV1UiCustomization implements Parcelable {
 
-    private String mRedirectButtonText;
-    private String mRedirectDescription;
+    private String redirectButtonText;
+    private String redirectDescription;
 
     public ThreeDSecureV1UiCustomization() {}
 
@@ -19,7 +19,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      * @param text The text to display in the button.
      */
     public void setRedirectButtonText(String text) {
-        mRedirectButtonText = text;
+        redirectButtonText = text;
     }
 
     /**
@@ -28,21 +28,21 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      * @param text The text to display below the button.
      */
     public void setRedirectDescription(String text) {
-        mRedirectDescription = text;
+        redirectDescription = text;
     }
 
     /**
      * @return Text displayed in the Redirect button after a 3DS1 challenge is completed in browser.
      */
     public String getRedirectButtonText() {
-        return mRedirectButtonText;
+        return redirectButtonText;
     }
 
     /**
      * @return Text displayed below the Redirect button after a 3DS1 challenge is completed in browser.
      */
     public String getRedirectDescription() {
-        return mRedirectDescription;
+        return redirectDescription;
     }
 
     @Override
@@ -52,13 +52,13 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mRedirectButtonText);
-        dest.writeString(mRedirectDescription);
+        dest.writeString(redirectButtonText);
+        dest.writeString(redirectDescription);
     }
 
     private ThreeDSecureV1UiCustomization(Parcel in) {
-        mRedirectButtonText = in.readString();
-        mRedirectDescription = in.readString();
+        redirectButtonText = in.readString();
+        redirectDescription = in.readString();
     }
 
     public static final Creator<ThreeDSecureV1UiCustomization> CREATOR = new Creator<ThreeDSecureV1UiCustomization>() {

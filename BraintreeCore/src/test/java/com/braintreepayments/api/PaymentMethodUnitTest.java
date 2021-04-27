@@ -28,14 +28,14 @@ import static org.mockito.Mockito.when;
 public class PaymentMethodUnitTest {
 
     private Context context;
-    private CardNonce mCardNonce;
+    private CardNonce cardNonce;
 
     @Before
     public void setup() {
         context = ApplicationProvider.getApplicationContext();
-        mCardNonce = mock(CardNonce.class);
+        cardNonce = mock(CardNonce.class);
 
-        when(mCardNonce.getString()).thenReturn("im-a-card-nonce");
+        when(cardNonce.getString()).thenReturn("im-a-card-nonce");
     }
 
     @Test
@@ -171,7 +171,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
@@ -193,14 +193,14 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
 
         PaymentMethodDeleteException paymentMethodDeleteException = (PaymentMethodDeleteException)captor.getValue();
         PaymentMethodNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();
-        assertEquals(mCardNonce, paymentMethodNonce);
+        assertEquals(cardNonce, paymentMethodNonce);
     }
 
     @Test
@@ -213,7 +213,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
         verify(braintreeClient).sendAnalyticsEvent("delete-payment-methods.failed");
     }
@@ -228,7 +228,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
         verify(braintreeClient).sendAnalyticsEvent("delete-payment-methods.succeeded");
     }
@@ -243,9 +243,9 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
-        verify(callback).onResult(mCardNonce, null);
+        verify(callback).onResult(cardNonce, null);
     }
 
     @Test
@@ -263,7 +263,7 @@ public class PaymentMethodUnitTest {
         PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
-        sut.deletePaymentMethod(context, mCardNonce, callback);
+        sut.deletePaymentMethod(context, cardNonce, callback);
 
         verify(braintreeClient).getIntegrationType();
 
@@ -278,7 +278,7 @@ public class PaymentMethodUnitTest {
 
         JSONObject metadata = graphQlRequest.getJSONObject("clientSdkMetadata");
 
-        assertEquals(mCardNonce.getString(), graphQlRequest.getJSONObject("variables")
+        assertEquals(cardNonce.getString(), graphQlRequest.getJSONObject("variables")
                 .getJSONObject("input").getString("singleUseTokenId"));
 
         assertEquals("DeletePaymentMethodFromSingleUseToken", graphQlRequest

@@ -12,8 +12,8 @@ class BraintreeApiConfiguration {
     private static final String ACCESS_TOKEN_KEY = "accessToken";
     private static final String URL_KEY = "url";
 
-    private String mAccessToken;
-    private String mUrl;
+    private String accessToken;
+    private String url;
 
     static BraintreeApiConfiguration fromJson(JSONObject json) {
         if (json == null) {
@@ -21,8 +21,8 @@ class BraintreeApiConfiguration {
         }
 
         BraintreeApiConfiguration braintreeApiConfiguration = new BraintreeApiConfiguration();
-        braintreeApiConfiguration.mAccessToken = Json.optString(json, ACCESS_TOKEN_KEY, "");
-        braintreeApiConfiguration.mUrl = Json.optString(json, URL_KEY, "");
+        braintreeApiConfiguration.accessToken = Json.optString(json, ACCESS_TOKEN_KEY, "");
+        braintreeApiConfiguration.url = Json.optString(json, URL_KEY, "");
 
         return braintreeApiConfiguration;
     }
@@ -31,20 +31,20 @@ class BraintreeApiConfiguration {
      * @return The Access Token for Braintree API.
      */
     String getAccessToken() {
-        return mAccessToken;
+        return accessToken;
     }
 
     /**
      * @return the base url for accessing Braintree API.
      */
     String getUrl() {
-        return mUrl;
+        return url;
     }
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
      */
     boolean isEnabled() {
-        return !TextUtils.isEmpty(mAccessToken);
+        return !TextUtils.isEmpty(accessToken);
     }
 }

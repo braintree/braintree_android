@@ -22,14 +22,14 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     private static final String REWARDS_AMOUNT_KEY = "rewardsAmount";
     private static final String REWARDS_UNIT_KEY = "rewardsUnit";
 
-    private String mErrorCode;
-    private String mErrorMessage;
-    private String mConversionRate;
-    private String mCurrencyAmount;
-    private String mCurrencyIsoCode;
-    private String mRequestId;
-    private String mRewardsAmount;
-    private String mRewardsUnit;
+    private String errorCode;
+    private String errorMessage;
+    private String conversionRate;
+    private String currencyAmount;
+    private String currencyIsoCode;
+    private String requestId;
+    private String rewardsAmount;
+    private String rewardsUnit;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for American Express rewards balance.
@@ -45,16 +45,16 @@ public class AmericanExpressRewardsBalance implements Parcelable {
 
         if (json.has(ERROR_KEY)) {
             JSONObject errorJson = json.getJSONObject(ERROR_KEY);
-            rewardsBalance.mErrorMessage = errorJson.getString(ERROR_MESSAGE_KEY);
-            rewardsBalance.mErrorCode = errorJson.getString(ERROR_CODE_KEY);
+            rewardsBalance.errorMessage = errorJson.getString(ERROR_MESSAGE_KEY);
+            rewardsBalance.errorCode = errorJson.getString(ERROR_CODE_KEY);
         }
 
-        rewardsBalance.mConversionRate = Json.optString(json, CONVERSION_RATE_KEY, null);
-        rewardsBalance.mCurrencyAmount = Json.optString(json, CURRENCY_AMOUNT_KEY, null);
-        rewardsBalance.mCurrencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
-        rewardsBalance.mRequestId = Json.optString(json, REQUEST_ID_KEY, null);
-        rewardsBalance.mRewardsAmount = Json.optString(json, REWARDS_AMOUNT_KEY, null);
-        rewardsBalance.mRewardsUnit = Json.optString(json, REWARDS_UNIT_KEY, null);
+        rewardsBalance.conversionRate = Json.optString(json, CONVERSION_RATE_KEY, null);
+        rewardsBalance.currencyAmount = Json.optString(json, CURRENCY_AMOUNT_KEY, null);
+        rewardsBalance.currencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
+        rewardsBalance.requestId = Json.optString(json, REQUEST_ID_KEY, null);
+        rewardsBalance.rewardsAmount = Json.optString(json, REWARDS_AMOUNT_KEY, null);
+        rewardsBalance.rewardsUnit = Json.optString(json, REWARDS_UNIT_KEY, null);
 
         return rewardsBalance;
     }
@@ -64,7 +64,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getErrorCode() {
-        return mErrorCode;
+        return errorCode;
     }
 
     /**
@@ -72,7 +72,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getErrorMessage() {
-        return mErrorMessage;
+        return errorMessage;
     }
 
     /**
@@ -80,7 +80,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getConversionRate() {
-        return mConversionRate;
+        return conversionRate;
     }
 
     /**
@@ -88,7 +88,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getCurrencyAmount() {
-        return mCurrencyAmount;
+        return currencyAmount;
     }
 
     /**
@@ -96,7 +96,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getCurrencyIsoCode() {
-        return mCurrencyIsoCode;
+        return currencyIsoCode;
     }
 
     /**
@@ -104,7 +104,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getRequestId() {
-        return mRequestId;
+        return requestId;
     }
 
     /**
@@ -112,7 +112,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getRewardsAmount() {
-        return mRewardsAmount;
+        return rewardsAmount;
     }
 
     /**
@@ -120,7 +120,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      */
     @Nullable
     public String getRewardsUnit() {
-        return mRewardsUnit;
+        return rewardsUnit;
     }
 
     private AmericanExpressRewardsBalance() {}
@@ -132,25 +132,25 @@ public class AmericanExpressRewardsBalance implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mErrorCode);
-        dest.writeString(mErrorMessage);
-        dest.writeString(mConversionRate);
-        dest.writeString(mCurrencyAmount);
-        dest.writeString(mCurrencyIsoCode);
-        dest.writeString(mRequestId);
-        dest.writeString(mRewardsAmount);
-        dest.writeString(mRewardsUnit);
+        dest.writeString(errorCode);
+        dest.writeString(errorMessage);
+        dest.writeString(conversionRate);
+        dest.writeString(currencyAmount);
+        dest.writeString(currencyIsoCode);
+        dest.writeString(requestId);
+        dest.writeString(rewardsAmount);
+        dest.writeString(rewardsUnit);
     }
 
     private AmericanExpressRewardsBalance(Parcel in) {
-        mErrorCode = in.readString();
-        mErrorMessage = in.readString();
-        mConversionRate = in.readString();
-        mCurrencyAmount = in.readString();
-        mCurrencyIsoCode = in.readString();
-        mRequestId = in.readString();
-        mRewardsAmount = in.readString();
-        mRewardsUnit = in.readString();
+        errorCode = in.readString();
+        errorMessage = in.readString();
+        conversionRate = in.readString();
+        currencyAmount = in.readString();
+        currencyIsoCode = in.readString();
+        requestId = in.readString();
+        rewardsAmount = in.readString();
+        rewardsUnit = in.readString();
     }
 
     public static final Creator<AmericanExpressRewardsBalance> CREATOR =

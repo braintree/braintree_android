@@ -9,14 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
-import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.PreferredPaymentMethodsClient;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoRequest;
@@ -26,11 +23,11 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultR
 
 public class PreferredPaymentMethodsFragment extends BaseFragment {
 
-    private Button mPreferredPaymentMethodsButton;
-    private TextView mPreferredPaymentMethodsTextView;
-    private Button mBillingAgreementButton;
-    private Button mSinglePaymentButton;
-    private Button mVenmoButton;
+    private Button preferredPaymentMethodsButton;
+    private TextView preferredPaymentMethodsTextView;
+    private Button billingAgreementButton;
+    private Button singlePaymentButton;
+    private Button venmoButton;
 
     private PayPalClient payPalClient;
     private VenmoClient venmoClient;
@@ -40,16 +37,16 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_preferred_payment_methods, container, false);
-        mPreferredPaymentMethodsTextView = view.findViewById(R.id.preferred_payment_methods_text_view);
-        mPreferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods_button);
-        mBillingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
-        mSinglePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
-        mVenmoButton = view.findViewById(R.id.venmo_button);
+        preferredPaymentMethodsTextView = view.findViewById(R.id.preferred_payment_methods_text_view);
+        preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods_button);
+        billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
+        singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
+        venmoButton = view.findViewById(R.id.venmo_button);
 
-        mPreferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
-        mBillingAgreementButton.setOnClickListener(this::launchSinglePayment);
-        mSinglePaymentButton.setOnClickListener(this::launchBillingAgreement);
-        mVenmoButton.setOnClickListener(this::launchVenmo);
+        preferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
+        billingAgreementButton.setOnClickListener(this::launchSinglePayment);
+        singlePaymentButton.setOnClickListener(this::launchBillingAgreement);
+        venmoButton.setOnClickListener(this::launchVenmo);
         return view;
     }
 
@@ -64,15 +61,15 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
     public void launchPreferredPaymentMethods(View v) {
         initializeFeatureClients(error -> {
-            mPreferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
+            preferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
             preferredPaymentMethodsClient.fetchPreferredPaymentMethods(getActivity(), result -> {
                 String formatString = "PayPal Preferred: %b\nVenmo Preferred: %b";
-                mPreferredPaymentMethodsTextView.setText(
+                preferredPaymentMethodsTextView.setText(
                         String.format(formatString, result.isPayPalPreferred(), result.isVenmoPreferred()));
 
-                mBillingAgreementButton.setEnabled(result.isPayPalPreferred());
-                mSinglePaymentButton.setEnabled(result.isPayPalPreferred());
-                mVenmoButton.setEnabled(result.isVenmoPreferred());
+                billingAgreementButton.setEnabled(result.isPayPalPreferred());
+                singlePaymentButton.setEnabled(result.isPayPalPreferred());
+                venmoButton.setEnabled(result.isVenmoPreferred());
             });
         });
     }

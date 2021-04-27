@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class Nonce {
 
     @SerializedName("nonce")
-    private String mNonce;
+    private String nonce;
 
     public String getNonce() {
-        return mNonce;
+        return nonce;
     }
 }

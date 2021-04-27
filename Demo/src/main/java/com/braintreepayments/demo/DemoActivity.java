@@ -43,8 +43,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private AppBarConfiguration appBarConfiguration;
 
-    protected String mAuthorization;
-    protected String mCustomerId;
+    protected String authorization;
+    protected String customerId;
     private DemoViewModel viewModel;
 
     @Override
@@ -55,8 +55,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
         authProvider = new DemoAuthorizationProvider();
         if (savedInstanceState != null) {
-            mAuthorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
-            mCustomerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);
+            authorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
+            customerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);
         }
 
         setupActionBar();
@@ -87,9 +87,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             callback.onResult(braintreeClient);
             return;
         }
-        if (mAuthorization != null) {
+        if (authorization != null) {
             try {
-                braintreeClient = new BraintreeClient(this, mAuthorization);
+                braintreeClient = new BraintreeClient(this, authorization);
                 callback.onResult(braintreeClient);
             } catch (InvalidArgumentException e) {
                 showDialog(e.getMessage());
@@ -99,9 +99,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
         authProvider.fetchAuthorization(this, (authorization, error) -> {
             if (authorization != null) {
-                mAuthorization = authorization;
+                this.authorization = authorization;
                 try {
-                    braintreeClient = new BraintreeClient(DemoActivity.this, mAuthorization);
+                    braintreeClient = new BraintreeClient(DemoActivity.this, this.authorization);
                     callback.onResult(braintreeClient);
                 } catch (InvalidArgumentException e) {
                     showDialog(e.getMessage());
@@ -130,9 +130,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAuthorization != null) {
-            outState.putString(EXTRA_AUTHORIZATION, mAuthorization);
-            outState.putString(EXTRA_CUSTOMER_ID, mCustomerId);
+        if (authorization != null) {
+            outState.putString(EXTRA_AUTHORIZATION, authorization);
+            outState.putString(EXTRA_CUSTOMER_ID, customerId);
         }
     }
 
@@ -149,9 +149,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void handleAuthorizationState() {
-        if (mAuthorization == null ||
-                (Settings.useTokenizationKey(this) && !mAuthorization.equals(Settings.getTokenizationKey(this))) ||
-                !TextUtils.equals(mCustomerId, Settings.getCustomerId(this))) {
+        if (authorization == null ||
+                (Settings.useTokenizationKey(this) && !authorization.equals(Settings.getTokenizationKey(this))) ||
+                !TextUtils.equals(customerId, Settings.getCustomerId(this))) {
             performReset();
         }
     }
@@ -192,9 +192,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private void performReset() {
         setProgressBarIndeterminateVisibility(true);
 
-        mAuthorization = null;
+        authorization = null;
         braintreeClient = null;
-        mCustomerId = Settings.getCustomerId(this);
+        customerId = Settings.getCustomerId(this);
     }
 
     public void showDialog(String message) {

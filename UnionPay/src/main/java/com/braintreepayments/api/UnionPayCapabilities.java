@@ -18,10 +18,10 @@ public class UnionPayCapabilities implements Parcelable {
     private static final String SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY = "supportsTwoStepAuthAndCapture";
     private static final String IS_SUPPORTED_KEY = "isSupported";
 
-    private boolean mIsUnionPay;
-    private boolean mIsDebit;
-    private boolean mSupportsTwoStepAuthAndCapture;
-    private boolean mIsSupported;
+    private boolean isUnionPay;
+    private boolean isDebit;
+    private boolean supportsTwoStepAuthAndCapture;
+    private boolean isSupported;
 
     @NonNull
     public static UnionPayCapabilities fromJson(@NonNull String jsonString) {
@@ -29,14 +29,14 @@ public class UnionPayCapabilities implements Parcelable {
 
         try {
             JSONObject json = new JSONObject(jsonString);
-            unionPayCapabilities.mIsUnionPay = json.optBoolean(IS_UNIONPAY_KEY);
-            unionPayCapabilities.mIsDebit = json.optBoolean(IS_DEBIT_KEY);
+            unionPayCapabilities.isUnionPay = json.optBoolean(IS_UNIONPAY_KEY);
+            unionPayCapabilities.isDebit = json.optBoolean(IS_DEBIT_KEY);
 
             if (json.has(UNIONPAY_KEY)) {
                 JSONObject unionPay = json.getJSONObject(UNIONPAY_KEY);
-                unionPayCapabilities.mSupportsTwoStepAuthAndCapture = unionPay.optBoolean(
+                unionPayCapabilities.supportsTwoStepAuthAndCapture = unionPay.optBoolean(
                         SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY);
-                unionPayCapabilities.mIsSupported = unionPay.optBoolean(IS_SUPPORTED_KEY);
+                unionPayCapabilities.isSupported = unionPay.optBoolean(IS_SUPPORTED_KEY);
             }
         } catch (JSONException ignored) {}
 
@@ -47,21 +47,21 @@ public class UnionPayCapabilities implements Parcelable {
      * @return true if this card is a UnionPay card.
      */
     public boolean isUnionPay() {
-        return mIsUnionPay;
+        return isUnionPay;
     }
 
     /**
      * @return true if this card ia a debit card.
      */
     public boolean isDebit() {
-        return mIsDebit;
+        return isDebit;
     }
 
     /**
      * @return true if this card allows for an authorization, but settling the transaction later.
      */
     public boolean supportsTwoStepAuthAndCapture() {
-        return mSupportsTwoStepAuthAndCapture;
+        return supportsTwoStepAuthAndCapture;
     }
 
     /**
@@ -69,7 +69,7 @@ public class UnionPayCapabilities implements Parcelable {
      * If Braintree cannot process this card, the customer should be informed.
      */
     public boolean isSupported() {
-        return mIsSupported;
+        return isSupported;
     }
 
     private UnionPayCapabilities() {}
@@ -80,18 +80,18 @@ public class UnionPayCapabilities implements Parcelable {
     }
 
     public UnionPayCapabilities(Parcel in) {
-        mIsUnionPay = in.readByte() > 0;
-        mIsDebit = in.readByte() > 0;
-        mSupportsTwoStepAuthAndCapture = in.readByte() > 0;
-        mIsSupported = in.readByte() > 0;
+        isUnionPay = in.readByte() > 0;
+        isDebit = in.readByte() > 0;
+        supportsTwoStepAuthAndCapture = in.readByte() > 0;
+        isSupported = in.readByte() > 0;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(mIsUnionPay ? (byte) 1 : 0);
-        dest.writeByte(mIsDebit ? (byte) 1 : 0);
-        dest.writeByte(mSupportsTwoStepAuthAndCapture ? (byte) 1 : 0);
-        dest.writeByte(mIsSupported ? (byte) 1 : 0);
+        dest.writeByte(isUnionPay ? (byte) 1 : 0);
+        dest.writeByte(isDebit ? (byte) 1 : 0);
+        dest.writeByte(supportsTwoStepAuthAndCapture ? (byte) 1 : 0);
+        dest.writeByte(isSupported ? (byte) 1 : 0);
     }
 
     public static final Creator<UnionPayCapabilities> CREATOR = new Creator<UnionPayCapabilities>() {

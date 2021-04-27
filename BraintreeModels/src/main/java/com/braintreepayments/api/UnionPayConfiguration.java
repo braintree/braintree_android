@@ -7,7 +7,7 @@ class UnionPayConfiguration {
 
     private static final String ENABLED = "enabled";
 
-    private boolean mEnabled;
+    private boolean enabled;
 
     static UnionPayConfiguration fromJson(JSONObject json) {
         if (json == null) {
@@ -15,7 +15,7 @@ class UnionPayConfiguration {
         }
 
         UnionPayConfiguration unionPayConfiguration = new UnionPayConfiguration();
-        unionPayConfiguration.mEnabled = json.optBoolean(ENABLED, false);
+        unionPayConfiguration.enabled = json.optBoolean(ENABLED, false);
 
         return unionPayConfiguration;
     }
@@ -26,6 +26,6 @@ class UnionPayConfiguration {
      * @return boolean if UnionPay is enabled, and available to be used
      */
     boolean isEnabled() {
-        return mEnabled;
+        return enabled;
     }
 }

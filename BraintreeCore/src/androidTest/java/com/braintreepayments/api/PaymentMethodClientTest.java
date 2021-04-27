@@ -27,14 +27,14 @@ import static junit.framework.Assert.fail;
 public class PaymentMethodClientTest {
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private AppCompatActivity mActivity;
+    private AppCompatActivity activity;
 
     @Before
     public void setUp() {
-        mActivity = mActivityTestRule.getActivity();
+        activity = activityTestRule.getActivity();
     }
 
     // TODO: investigate
@@ -44,7 +44,7 @@ public class PaymentMethodClientTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final String clientToken = new TestClientTokenBuilder().withCustomerId().build();
 
-        final BraintreeClient braintreeClient = new BraintreeClient(mActivity, clientToken);
+        final BraintreeClient braintreeClient = new BraintreeClient(activity, clientToken);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
@@ -71,7 +71,7 @@ public class PaymentMethodClientTest {
 
                         assertIsANonce(paymentMethodNonce.getString());
 
-                        sut.deletePaymentMethod(mActivity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {
+                        sut.deletePaymentMethod(activity, paymentMethodNonce, new DeletePaymentMethodNonceCallback() {
                             @Override
                             public void onResult(@Nullable PaymentMethodNonce deletedNonce, @Nullable Exception error) {
                                 assertNull(error);
@@ -92,7 +92,7 @@ public class PaymentMethodClientTest {
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final BraintreeClient braintreeClient = new BraintreeClient(mActivity, Fixtures.TOKENIZATION_KEY);
+        final BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 

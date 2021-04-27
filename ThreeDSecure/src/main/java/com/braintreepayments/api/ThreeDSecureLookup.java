@@ -20,12 +20,12 @@ public class ThreeDSecureLookup implements Parcelable {
     private static final String THREE_D_SECURE_VERSION_KEY = "threeDSecureVersion";
     private static final String TRANSACTION_ID_KEY = "transactionId";
 
-    private String mAcsUrl;
-    private String mMd;
-    private String mTermUrl;
-    private String mPareq;
-    private String mThreeDSecureVersion;
-    private String mTransactionId;
+    private String acsUrl;
+    private String md;
+    private String termUrl;
+    private String pareq;
+    private String threeDSecureVersion;
+    private String transactionId;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
@@ -40,16 +40,16 @@ public class ThreeDSecureLookup implements Parcelable {
 
         JSONObject json = new JSONObject(jsonString);
         if (json.isNull(ACS_URL_KEY)) {
-            lookup.mAcsUrl = null;
+            lookup.acsUrl = null;
         } else {
-            lookup.mAcsUrl = json.getString(ACS_URL_KEY);
+            lookup.acsUrl = json.getString(ACS_URL_KEY);
         }
 
-        lookup.mMd = json.getString(MD_KEY);
-        lookup.mTermUrl = json.getString(TERM_URL_KEY);
-        lookup.mPareq = json.getString(PA_REQ_KEY);
-        lookup.mThreeDSecureVersion = Json.optString(json, THREE_D_SECURE_VERSION_KEY, "");
-        lookup.mTransactionId = Json.optString(json, TRANSACTION_ID_KEY, "");
+        lookup.md = json.getString(MD_KEY);
+        lookup.termUrl = json.getString(TERM_URL_KEY);
+        lookup.pareq = json.getString(PA_REQ_KEY);
+        lookup.threeDSecureVersion = Json.optString(json, THREE_D_SECURE_VERSION_KEY, "");
+        lookup.transactionId = Json.optString(json, TRANSACTION_ID_KEY, "");
 
         return lookup;
     }
@@ -59,42 +59,42 @@ public class ThreeDSecureLookup implements Parcelable {
      * authentication will be performed.
      */
     public String getAcsUrl() {
-        return mAcsUrl;
+        return acsUrl;
     }
 
     /**
      * @return The merchant descriptor from a 3D Secure lookup
      */
     public String getMd() {
-        return mMd;
+        return md;
     }
 
     /**
      * @return The term url to be used for 3D Secure authentication
      */
     public String getTermUrl() {
-        return mTermUrl;
+        return termUrl;
     }
 
     /**
      * @return The pareq to be used for 3D Secure authentication
      */
     public String getPareq() {
-        return mPareq;
+        return pareq;
     }
 
     /**
      * @return The version of 3D Secure this merchant is using
      */
     public String getThreeDSecureVersion() {
-        return mThreeDSecureVersion;
+        return threeDSecureVersion;
     }
 
     /**
      * @return The transaction ID for this 3D Secure lookup
      */
     public String getTransactionId() {
-        return mTransactionId;
+        return transactionId;
     }
 
     /**
@@ -103,7 +103,7 @@ public class ThreeDSecureLookup implements Parcelable {
      * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult, ThreeDSecureResultCallback)}
      */
     public boolean requiresUserAuthentication() {
-        return mAcsUrl != null;
+        return acsUrl != null;
     }
 
     public ThreeDSecureLookup() {}
@@ -115,21 +115,21 @@ public class ThreeDSecureLookup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mAcsUrl);
-        dest.writeString(mMd);
-        dest.writeString(mTermUrl);
-        dest.writeString(mPareq);
-        dest.writeString(mThreeDSecureVersion);
-        dest.writeString(mTransactionId);
+        dest.writeString(acsUrl);
+        dest.writeString(md);
+        dest.writeString(termUrl);
+        dest.writeString(pareq);
+        dest.writeString(threeDSecureVersion);
+        dest.writeString(transactionId);
     }
 
     private ThreeDSecureLookup(Parcel in) {
-        mAcsUrl = in.readString();
-        mMd = in.readString();
-        mTermUrl = in.readString();
-        mPareq = in.readString();
-        mThreeDSecureVersion = in.readString();
-        mTransactionId = in.readString();
+        acsUrl = in.readString();
+        md = in.readString();
+        termUrl = in.readString();
+        pareq = in.readString();
+        threeDSecureVersion = in.readString();
+        transactionId = in.readString();
     }
 
     public static final Creator<ThreeDSecureLookup> CREATOR = new Creator<ThreeDSecureLookup>() {

@@ -17,10 +17,10 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String LOOKUP_KEY = "lookup";
 
-    private CardNonce mTokenizedCard;
-    private String mErrorMessage;
+    private CardNonce tokenizedCard;
+    private String errorMessage;
 
-    private ThreeDSecureLookup mLookup;
+    private ThreeDSecureLookup lookup;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
@@ -35,20 +35,20 @@ public class ThreeDSecureResult implements Parcelable {
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
         if (cardJson != null) {
-            result.mTokenizedCard = CardNonce.fromJSON(cardJson);
+            result.tokenizedCard = CardNonce.fromJSON(cardJson);
         }
 
         if (json.has(ERRORS_KEY)) {
             // 3DS v2
-            result.mErrorMessage = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
+            result.errorMessage = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
         } else if (json.has(ERROR_KEY)) {
             // 3DS v1
-            result.mErrorMessage = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
+            result.errorMessage = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
         }
 
         if (json.has(LOOKUP_KEY)) {
             String lookupJson = json.getJSONObject(LOOKUP_KEY).toString();
-            result.mLookup = ThreeDSecureLookup.fromJson(lookupJson);
+            result.lookup = ThreeDSecureLookup.fromJson(lookupJson);
         }
 
         return result;
@@ -59,26 +59,26 @@ public class ThreeDSecureResult implements Parcelable {
      * authentication
      */
     public CardNonce getTokenizedCard() {
-        return mTokenizedCard;
+        return tokenizedCard;
     }
 
     void setTokenizedCard(CardNonce cardNonce) {
-        mTokenizedCard = cardNonce;
+        tokenizedCard = cardNonce;
     }
 
     /**
      * @return Message describing potential errors that occurred during the authentication
      */
     public String getErrorMessage() {
-        return mErrorMessage;
+        return errorMessage;
     }
 
     boolean hasError() {
-        return (mErrorMessage != null && mErrorMessage.length() > 0);
+        return (errorMessage != null && errorMessage.length() > 0);
     }
 
     ThreeDSecureLookup getLookup() {
-        return mLookup;
+        return lookup;
     }
 
     ThreeDSecureResult() {
@@ -91,15 +91,15 @@ public class ThreeDSecureResult implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mTokenizedCard, flags);
-        dest.writeString(mErrorMessage);
-        dest.writeParcelable(mLookup, flags);
+        dest.writeParcelable(tokenizedCard, flags);
+        dest.writeString(errorMessage);
+        dest.writeParcelable(lookup, flags);
     }
 
     private ThreeDSecureResult(Parcel in) {
-        mTokenizedCard = in.readParcelable(CardNonce.class.getClassLoader());
-        mErrorMessage = in.readString();
-        mLookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
+        tokenizedCard = in.readParcelable(CardNonce.class.getClassLoader());
+        errorMessage = in.readString();
+        lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureResult> CREATOR =

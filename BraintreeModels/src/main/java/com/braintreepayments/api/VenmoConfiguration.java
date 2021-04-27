@@ -13,9 +13,9 @@ class VenmoConfiguration {
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String MERCHANT_ID_KEY = "merchantId";
 
-    private String mAccessToken;
-    private String mEnvironment;
-    private String mMerchantId;
+    private String accessToken;
+    private String environment;
+    private String merchantId;
 
     /**
      * Parses the Venmo configuration from json.
@@ -30,9 +30,9 @@ class VenmoConfiguration {
         }
 
         VenmoConfiguration venmoConfiguration = new VenmoConfiguration();
-        venmoConfiguration.mAccessToken = Json.optString(json, ACCESS_TOKEN_KEY, "");
-        venmoConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, "");
-        venmoConfiguration.mMerchantId = Json.optString(json, MERCHANT_ID_KEY, "");
+        venmoConfiguration.accessToken = Json.optString(json, ACCESS_TOKEN_KEY, "");
+        venmoConfiguration.environment = Json.optString(json, ENVIRONMENT_KEY, "");
+        venmoConfiguration.merchantId = Json.optString(json, MERCHANT_ID_KEY, "");
 
         return venmoConfiguration;
     }
@@ -41,24 +41,24 @@ class VenmoConfiguration {
      * @return The access token to use with Venmo.
      */
     String getAccessToken() {
-        return mAccessToken;
+        return accessToken;
     }
 
     /**
      * @return The merchant Id associated with this merchant's Venmo integration.
      */
     String getMerchantId() {
-        return mMerchantId;
+        return merchantId;
     }
 
     /**
      * @return The Venmo environment the merchant is running in.
      */
     String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     boolean isAccessTokenValid() {
-        return !TextUtils.isEmpty(mAccessToken);
+        return !TextUtils.isEmpty(accessToken);
     }
 }

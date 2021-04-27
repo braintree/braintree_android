@@ -27,20 +27,20 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String CREDIT = "credit";
     public static final String DEBIT = "debit";
 
-    private String mNonce;
-    private String mAmount;
-    private String mMobilePhoneNumber;
-    private String mEmail;
-    private @ThreeDSecureShippingMethod int mShippingMethod;
-    private ThreeDSecurePostalAddress mBillingAddress;
-    private @ThreeDSecureVersion String mVersionRequested = VERSION_2;
-    private @ThreeDSecureAccountType String mAccountType;
-    private ThreeDSecureAdditionalInformation mAdditionalInformation;
-    private boolean mChallengeRequested = false;
-    private boolean mDataOnlyRequested = false;
-    private boolean mExemptionRequested = false;
-    private ThreeDSecureV2UiCustomization mV2UiCustomization;
-    private ThreeDSecureV1UiCustomization mV1UiCustomization;
+    private String nonce;
+    private String amount;
+    private String mobilePhoneNumber;
+    private String email;
+    private @ThreeDSecureShippingMethod int shippingMethod;
+    private ThreeDSecurePostalAddress billingAddress;
+    private @ThreeDSecureVersion String versionRequested = VERSION_2;
+    private @ThreeDSecureAccountType String accountType;
+    private ThreeDSecureAdditionalInformation additionalInformation;
+    private boolean challengeRequested = false;
+    private boolean dataOnlyRequested = false;
+    private boolean exemptionRequested = false;
+    private ThreeDSecureV2UiCustomization v2UiCustomization;
+    private ThreeDSecureV1UiCustomization v1UiCustomization;
 
     /**
      * Set the nonce
@@ -48,7 +48,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      */
     public void setNonce(String nonce) {
-        mNonce = nonce;
+        this.nonce = nonce;
     }
 
     /**
@@ -57,7 +57,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
      */
     public void setAmount(String amount) {
-        mAmount = amount;
+        this.amount = amount;
     }
 
     /**
@@ -66,7 +66,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
      */
     public void setMobilePhoneNumber(String mobilePhoneNumber) {
-        mMobilePhoneNumber = mobilePhoneNumber;
+        this.mobilePhoneNumber = mobilePhoneNumber;
     }
 
     /**
@@ -75,7 +75,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param email The email used for verification.
      */
     public void setEmail(String email) {
-        mEmail = email;
+        this.email = email;
     }
 
     /**
@@ -91,7 +91,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
     public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
-        mShippingMethod = shippingMethod;
+        this.shippingMethod = shippingMethod;
     }
 
     /**
@@ -100,7 +100,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param billingAddress The billing address used for verification.
      */
     public void setBillingAddress(ThreeDSecurePostalAddress billingAddress) {
-        mBillingAddress = billingAddress;
+        this.billingAddress = billingAddress;
     }
 
     /**
@@ -116,7 +116,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
     public void setVersionRequested(@ThreeDSecureVersion String versionRequested) {
-        mVersionRequested = versionRequested;
+        this.versionRequested = versionRequested;
     }
 
     /**
@@ -127,7 +127,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
      */
     public void setAccountType(@ThreeDSecureAccountType String accountType) {
-        mAccountType = accountType;
+        this.accountType = accountType;
     }
 
     /**
@@ -136,7 +136,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param additionalInformation Additional information.
      */
     public void setAdditionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
-        mAdditionalInformation = additionalInformation;
+        this.additionalInformation = additionalInformation;
     }
 
     /**
@@ -145,11 +145,11 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param challengeRequested decides if a challenge will be forced.
      */
     public void setChallengeRequested(boolean challengeRequested) {
-        mChallengeRequested = challengeRequested;
+        this.challengeRequested = challengeRequested;
     }
 
     public void setDataOnlyRequested(boolean dataOnlyRequested) {
-        mDataOnlyRequested = dataOnlyRequested;
+        this.dataOnlyRequested = dataOnlyRequested;
     }
 
     /**
@@ -158,7 +158,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param exemptionRequested decides if a exemption will be requested.
      */
     public void setExemptionRequested(boolean exemptionRequested) {
-        mExemptionRequested = exemptionRequested;
+        this.exemptionRequested = exemptionRequested;
     }
 
     /**
@@ -168,7 +168,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
     public void setV2UiCustomization(ThreeDSecureV2UiCustomization v2UiCustomization) {
-        mV2UiCustomization = v2UiCustomization;
+        this.v2UiCustomization = v2UiCustomization;
     }
 
     /**
@@ -177,63 +177,63 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
      */
     public void setV1UiCustomization(ThreeDSecureV1UiCustomization v1UiCustomization) {
-        mV1UiCustomization = v1UiCustomization;
+        this.v1UiCustomization = v1UiCustomization;
     }
 
     /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
-        return mNonce;
+        return nonce;
     }
 
     /**
      * @return The amount to use for 3D Secure verification
      */
     public String getAmount() {
-        return mAmount;
+        return amount;
     }
 
     /**
      * @return The mobile phone number to use for 3D Secure verification
      */
     public String getMobilePhoneNumber() {
-        return mMobilePhoneNumber;
+        return mobilePhoneNumber;
     }
 
     /**
      * @return The email to use for 3D Secure verification
      */
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     /**
      * @return The shipping method to use for 3D Secure verification
      */
     public @ThreeDSecureShippingMethod int getShippingMethod() {
-        return mShippingMethod;
+        return shippingMethod;
     }
 
     /**
      * @return The billing address to use for 3D Secure verification
      */
     public ThreeDSecurePostalAddress getBillingAddress() {
-        return mBillingAddress;
+        return billingAddress;
     }
 
     /**
      * @return The requested ThreeDSecure version
      */
     public @ThreeDSecureVersion String getVersionRequested() {
-        return mVersionRequested;
+        return versionRequested;
     }
 
     /**
      * @return The account type
      */
     public @ThreeDSecureAccountType String getAccountType() {
-        return mAccountType;
+        return accountType;
     }
 
     /**
@@ -242,39 +242,39 @@ public class ThreeDSecureRequest implements Parcelable {
      * {@link ThreeDSecureRequest#VERSION_2} requests.
      */
     public ThreeDSecureAdditionalInformation getAdditionalInformation() {
-        return mAdditionalInformation;
+        return additionalInformation;
     }
 
     /**
      * @return If a challenge has been requested
      */
     public boolean isChallengeRequested() {
-        return mChallengeRequested;
+        return challengeRequested;
     }
 
     public boolean isDataOnlyRequested() {
-        return mDataOnlyRequested;
+        return dataOnlyRequested;
     }
 
     /**
      * @return If a exemption has been requested
      */
     public boolean isExemptionRequested() {
-        return mExemptionRequested;
+        return exemptionRequested;
     }
 
     /**
      * @return The UI customization for 3DS2 challenge views.
      */
     public ThreeDSecureV2UiCustomization getV2UiCustomization() {
-        return mV2UiCustomization;
+        return v2UiCustomization;
     }
 
     /**
      * @return The UI customization for 3DS1 challenge views.
      */
     public ThreeDSecureV1UiCustomization getV1UiCustomization() {
-        return mV1UiCustomization;
+        return v1UiCustomization;
     }
 
     public ThreeDSecureRequest() {}
@@ -286,37 +286,37 @@ public class ThreeDSecureRequest implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mNonce);
-        dest.writeString(mAmount);
-        dest.writeString(mMobilePhoneNumber);
-        dest.writeString(mEmail);
-        dest.writeInt(mShippingMethod);
-        dest.writeParcelable(mBillingAddress, flags);
-        dest.writeString(mVersionRequested);
-        dest.writeParcelable(mAdditionalInformation, flags);
-        dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
-        dest.writeByte(mDataOnlyRequested ? (byte) 1 : 0);
-        dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
-        dest.writeParcelable(mV2UiCustomization, flags);
-        dest.writeParcelable(mV1UiCustomization, flags);
-        dest.writeString(mAccountType);
+        dest.writeString(nonce);
+        dest.writeString(amount);
+        dest.writeString(mobilePhoneNumber);
+        dest.writeString(email);
+        dest.writeInt(shippingMethod);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeString(versionRequested);
+        dest.writeParcelable(additionalInformation, flags);
+        dest.writeByte(challengeRequested ? (byte) 1 : 0);
+        dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
+        dest.writeByte(exemptionRequested ? (byte) 1 : 0);
+        dest.writeParcelable(v2UiCustomization, flags);
+        dest.writeParcelable(v1UiCustomization, flags);
+        dest.writeString(accountType);
     }
 
     public ThreeDSecureRequest(Parcel in) {
-        mNonce = in.readString();
-        mAmount = in.readString();
-        mMobilePhoneNumber = in.readString();
-        mEmail = in.readString();
-        mShippingMethod = in.readInt();
-        mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
-        mVersionRequested = in.readString();
-        mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
-        mChallengeRequested = in.readByte() > 0;
-        mDataOnlyRequested = in.readByte() > 0;
-        mExemptionRequested = in.readByte() > 0;
-        mV2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
-        mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
-        mAccountType = in.readString();
+        nonce = in.readString();
+        amount = in.readString();
+        mobilePhoneNumber = in.readString();
+        email = in.readString();
+        shippingMethod = in.readInt();
+        billingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
+        versionRequested = in.readString();
+        additionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
+        challengeRequested = in.readByte() > 0;
+        dataOnlyRequested = in.readByte() > 0;
+        exemptionRequested = in.readByte() > 0;
+        v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
+        v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
+        accountType = in.readString();
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -344,9 +344,9 @@ public class ThreeDSecureRequest implements Parcelable {
         }
 
         try {
-            base.put("amount", mAmount);
+            base.put("amount", amount);
             base.put("additional_info", additionalInfo);
-            base.putOpt("account_type", mAccountType);
+            base.putOpt("account_type", accountType);
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
             additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
@@ -369,9 +369,9 @@ public class ThreeDSecureRequest implements Parcelable {
                 base.putOpt("df_reference_id", dfReferenceId);
             }
 
-            base.put("challenge_requested", mChallengeRequested);
-            base.put("data_only_requested", mDataOnlyRequested);
-            base.put("exemption_requested", mExemptionRequested);
+            base.put("challenge_requested", challengeRequested);
+            base.put("data_only_requested", dataOnlyRequested);
+            base.put("exemption_requested", exemptionRequested);
         } catch (JSONException ignored) {
         }
 
@@ -379,7 +379,7 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     private String getShippingMethodAsString() {
-        switch (mShippingMethod) {
+        switch (shippingMethod) {
             case ThreeDSecureShippingMethod.SAME_DAY:
                 return "01";
             case ThreeDSecureShippingMethod.EXPEDITED:

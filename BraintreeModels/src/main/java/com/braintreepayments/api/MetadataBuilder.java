@@ -15,18 +15,18 @@ class MetadataBuilder {
     private static final String VERSION_KEY = "version";
     private static final String PLATFORM_KEY = "platform";
 
-    private JSONObject mJson;
+    private JSONObject json;
 
     MetadataBuilder() {
-        mJson = new JSONObject();
+        json = new JSONObject();
         try {
-            mJson.put(PLATFORM_KEY, "android");
+            json.put(PLATFORM_KEY, "android");
         } catch (JSONException ignored) {}
     }
 
     MetadataBuilder source(String source) {
         try {
-            mJson.put(SOURCE_KEY, source);
+            json.put(SOURCE_KEY, source);
         } catch (JSONException ignored) {}
 
         return this;
@@ -34,7 +34,7 @@ class MetadataBuilder {
 
     MetadataBuilder integration(String integration) {
         try {
-            mJson.put(INTEGRATION_KEY, integration);
+            json.put(INTEGRATION_KEY, integration);
         } catch (JSONException ignored) {}
 
         return this;
@@ -42,7 +42,7 @@ class MetadataBuilder {
 
     MetadataBuilder sessionId(String sessionId) {
         try {
-            mJson.put(SESSION_ID_KEY, sessionId);
+            json.put(SESSION_ID_KEY, sessionId);
         } catch (JSONException ignored) {}
 
         return this;
@@ -50,18 +50,18 @@ class MetadataBuilder {
 
     MetadataBuilder version() {
         try {
-            mJson.put(VERSION_KEY, BuildConfig.VERSION_NAME);
+            json.put(VERSION_KEY, BuildConfig.VERSION_NAME);
         } catch (JSONException ignored) {}
 
         return this;
     }
 
     JSONObject build() {
-        return mJson;
+        return json;
     }
 
     @Override
     public String toString() {
-        return mJson.toString();
+        return json.toString();
     }
 }

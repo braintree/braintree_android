@@ -10,11 +10,11 @@ import org.json.JSONObject;
  */
 public class VisaCheckoutUserData implements Parcelable {
 
-    private String mUserFirstName;
-    private String mUserLastName;
-    private String mUserFullName;
-    private String mUsername;
-    private String mUserEmail;
+    private String userFirstName;
+    private String userLastName;
+    private String userFullName;
+    private String username;
+    private String userEmail;
 
     public static VisaCheckoutUserData fromJson(JSONObject json) {
         if (json == null) {
@@ -23,11 +23,11 @@ public class VisaCheckoutUserData implements Parcelable {
 
         VisaCheckoutUserData visaCheckoutUserData = new VisaCheckoutUserData();
 
-        visaCheckoutUserData.mUserFirstName = Json.optString(json, "userFirstName", "");
-        visaCheckoutUserData.mUserLastName = Json.optString(json, "userLastName", "");
-        visaCheckoutUserData.mUserFullName = Json.optString(json, "userFullName", "");
-        visaCheckoutUserData.mUsername = Json.optString(json, "userName", "");
-        visaCheckoutUserData.mUserEmail = Json.optString(json, "userEmail", "");
+        visaCheckoutUserData.userFirstName = Json.optString(json, "userFirstName", "");
+        visaCheckoutUserData.userLastName = Json.optString(json, "userLastName", "");
+        visaCheckoutUserData.userFullName = Json.optString(json, "userFullName", "");
+        visaCheckoutUserData.username = Json.optString(json, "userName", "");
+        visaCheckoutUserData.userEmail = Json.optString(json, "userEmail", "");
 
         return visaCheckoutUserData;
     }
@@ -38,52 +38,52 @@ public class VisaCheckoutUserData implements Parcelable {
      * @return The user's first name.
      */
     public String getUserFirstName() {
-        return mUserFirstName;
+        return userFirstName;
     }
 
     /**
      * @return The user's last name.
      */
     public String getUserLastName() {
-        return mUserLastName;
+        return userLastName;
     }
 
     /**
      * @return The user's full name.
      */
     public String getUserFullName() {
-        return mUserFullName;
+        return userFullName;
     }
 
     /**
      * @return The user's username.
      */
     public String getUsername() {
-        return mUsername;
+        return username;
     }
 
     /**
      * @return The user's email.
      */
     public String getUserEmail() {
-        return mUserEmail;
+        return userEmail;
     }
 
     public VisaCheckoutUserData(Parcel in) {
-        mUserFirstName = in.readString();
-        mUserLastName = in.readString();
-        mUserFullName = in.readString();
-        mUsername = in.readString();
-        mUserEmail = in.readString();
+        userFirstName = in.readString();
+        userLastName = in.readString();
+        userFullName = in.readString();
+        username = in.readString();
+        userEmail = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mUserFirstName);
-        dest.writeString(mUserLastName);
-        dest.writeString(mUserFullName);
-        dest.writeString(mUsername);
-        dest.writeString(mUserEmail);
+        dest.writeString(userFirstName);
+        dest.writeString(userLastName);
+        dest.writeString(userFullName);
+        dest.writeString(username);
+        dest.writeString(userEmail);
     }
 
     @Override

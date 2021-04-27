@@ -17,10 +17,10 @@ class PayPalAccount extends PaymentMethod {
     private static final String INTENT_KEY = "intent";
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchant_account_id";
 
-    private String mClientMetadataId;
-    private JSONObject mUrlResponseData = new JSONObject();
-    private String mIntent;
-    private String mMerchantAccountId;
+    private String clientMetadataId;
+    private JSONObject urlResponseData = new JSONObject();
+    private String intent;
+    private String merchantAccountId;
 
     PayPalAccount() {
         super();
@@ -33,7 +33,7 @@ class PayPalAccount extends PaymentMethod {
      *                         {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      */
     void setClientMetadataId(String clientMetadataId) {
-        mClientMetadataId = clientMetadataId;
+        this.clientMetadataId = clientMetadataId;
     }
 
     /**
@@ -46,7 +46,7 @@ class PayPalAccount extends PaymentMethod {
      */
     void setUrlResponseData(JSONObject urlResponseData) {
         if (urlResponseData != null) {
-            mUrlResponseData = urlResponseData;
+            this.urlResponseData = urlResponseData;
         }
     }
 
@@ -56,7 +56,7 @@ class PayPalAccount extends PaymentMethod {
      * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
      */
     void setIntent(@PayPalPaymentIntent String intent) {
-        mIntent = intent;
+        this.intent = intent;
     }
 
     /**
@@ -65,22 +65,22 @@ class PayPalAccount extends PaymentMethod {
      * @param merchantAccountId String merchant account id
      */
     void setMerchantAccountId(String merchantAccountId) {
-        mMerchantAccountId = merchantAccountId;
+        this.merchantAccountId = merchantAccountId;
     }
 
     @Override
     protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
-        paymentMethodNonceJson.put(INTENT_KEY, mIntent);
+        paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
+        paymentMethodNonceJson.put(INTENT_KEY, intent);
 
-        Iterator<String> urlResponseDataKeyIterator = mUrlResponseData.keys();
+        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
         while (urlResponseDataKeyIterator.hasNext()) {
             String key = urlResponseDataKeyIterator.next();
-            paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
+            paymentMethodNonceJson.put(key, urlResponseData.get(key));
         }
 
-        if (mMerchantAccountId != null) {
-            base.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+        if (merchantAccountId != null) {
+            base.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
         }
 
         base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);

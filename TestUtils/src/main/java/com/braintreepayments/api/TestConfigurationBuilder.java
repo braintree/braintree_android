@@ -177,49 +177,49 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
     public TestVenmoConfigurationBuilder payWithVenmo() {
         try {
-            return new TestVenmoConfigurationBuilder(mJsonBody.getJSONObject("payWithVenmo"));
+            return new TestVenmoConfigurationBuilder(jsonBody.getJSONObject("payWithVenmo"));
         } catch (JSONException ignored) {}
         return new TestVenmoConfigurationBuilder();
     }
 
     public TestGooglePayConfigurationBuilder googlePay() {
         try {
-            return new TestGooglePayConfigurationBuilder(mJsonBody.getJSONObject("androidPay"));
+            return new TestGooglePayConfigurationBuilder(jsonBody.getJSONObject("androidPay"));
         } catch (JSONException ignored) {}
         return new TestGooglePayConfigurationBuilder();
     }
 
     public TestPayPalConfigurationBuilder paypal() {
         try {
-            return new TestPayPalConfigurationBuilder(mJsonBody.getJSONObject("paypal"));
+            return new TestPayPalConfigurationBuilder(jsonBody.getJSONObject("paypal"));
         } catch (JSONException ignored) {}
         return new TestPayPalConfigurationBuilder(true);
     }
 
     public TestKountConfigurationBuilder kount() {
         try {
-            return new TestKountConfigurationBuilder(mJsonBody.getJSONObject("kount"));
+            return new TestKountConfigurationBuilder(jsonBody.getJSONObject("kount"));
         } catch (JSONException ignored) {}
         return new TestKountConfigurationBuilder();
     }
 
     public TestVisaCheckoutConfigurationBuilder visaCheckout() {
         try {
-            return new TestVisaCheckoutConfigurationBuilder(mJsonBody.getJSONObject("visaCheckout"));
+            return new TestVisaCheckoutConfigurationBuilder(jsonBody.getJSONObject("visaCheckout"));
         } catch (JSONException ignored) {}
         return new TestVisaCheckoutConfigurationBuilder();
     }
 
     public TestGraphQLConfigurationBuilder graphQLConfigurationBuilder() {
         try {
-            return new TestGraphQLConfigurationBuilder(mJsonBody.getJSONObject("graphQL"));
+            return new TestGraphQLConfigurationBuilder(jsonBody.getJSONObject("graphQL"));
         } catch (JSONException ignored) {}
         return new TestGraphQLConfigurationBuilder();
     }
 
     public TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder() {
         try {
-            return new TestSamsungPayConfigurationBuilder(mJsonBody.getJSONObject("samsungPay"));
+            return new TestSamsungPayConfigurationBuilder(jsonBody.getJSONObject("samsungPay"));
         } catch (JSONException ignored) {}
         return new TestSamsungPayConfigurationBuilder();
     }

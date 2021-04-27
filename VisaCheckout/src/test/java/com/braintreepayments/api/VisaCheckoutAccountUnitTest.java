@@ -25,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class VisaCheckoutAccountUnitTest {
 
     @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    public PowerMockRule powerMockRule = new PowerMockRule();
 
     private VisaPaymentSummary visaPaymentSummary;
 

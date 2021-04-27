@@ -8,17 +8,17 @@ import android.content.Context;
  */
 public class PaymentMethodDeleteException extends Exception {
 
-    private final PaymentMethodNonce mPaymentMethodNonce;
+    private final PaymentMethodNonce paymentMethodNonce;
 
     PaymentMethodDeleteException(PaymentMethodNonce paymentMethodNonce, Exception exception) {
         super(exception);
-        mPaymentMethodNonce = paymentMethodNonce;
+        this.paymentMethodNonce = paymentMethodNonce;
     }
 
     /**
      * @return The {@link PaymentMethodNonce} that failed to be deleted.
      */
     public PaymentMethodNonce getPaymentMethodNonce() {
-        return mPaymentMethodNonce;
+        return paymentMethodNonce;
     }
 }

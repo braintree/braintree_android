@@ -11,46 +11,46 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureAdditionalInformation implements Parcelable {
 
-    private ThreeDSecurePostalAddress mShippingAddress;
-    private String mShippingMethodIndicator;
-    private String mProductCode;
-    private String mDeliveryTimeframe;
-    private String mDeliveryEmail;
-    private String mReorderIndicator;
-    private String mPreorderIndicator;
-    private String mPreorderDate;
-    private String mGiftCardAmount;
-    private String mGiftCardCurrencyCode;
-    private String mGiftCardCount;
-    private String mAccountAgeIndicator;
-    private String mAccountCreateDate;
-    private String mAccountChangeIndicator;
-    private String mAccountChangeDate;
-    private String mAccountPwdChangeIndicator;
-    private String mAccountPwdChangeDate;
-    private String mShippingAddressUsageIndicator;
-    private String mShippingAddressUsageDate;
-    private String mTransactionCountDay;
-    private String mTransactionCountYear;
-    private String mAddCardAttempts;
-    private String mAccountPurchases;
-    private String mFraudActivity;
-    private String mShippingNameIndicator;
-    private String mPaymentAccountIndicator;
-    private String mPaymentAccountAge;
-    private String mAddressMatch;
-    private String mAccountId;
-    private String mIpAddress;
-    private String mOrderDescription;
-    private String mTaxAmount;
-    private String mUserAgent;
-    private String mAuthenticationIndicator;
-    private String mInstallment;
-    private String mPurchaseDate;
-    private String mRecurringEnd;
-    private String mRecurringFrequency;
-    private String mSdkMaxTimeout;
-    private String mWorkPhoneNumber;
+    private ThreeDSecurePostalAddress shippingAddress;
+    private String shippingMethodIndicator;
+    private String productCode;
+    private String deliveryTimeframe;
+    private String deliveryEmail;
+    private String reorderIndicator;
+    private String preorderIndicator;
+    private String preorderDate;
+    private String giftCardAmount;
+    private String giftCardCurrencyCode;
+    private String giftCardCount;
+    private String accountAgeIndicator;
+    private String accountCreateDate;
+    private String accountChangeIndicator;
+    private String accountChangeDate;
+    private String accountPwdChangeIndicator;
+    private String accountPwdChangeDate;
+    private String shippingAddressUsageIndicator;
+    private String shippingAddressUsageDate;
+    private String transactionCountDay;
+    private String transactionCountYear;
+    private String addCardAttempts;
+    private String accountPurchases;
+    private String fraudActivity;
+    private String shippingNameIndicator;
+    private String paymentAccountIndicator;
+    private String paymentAccountAge;
+    private String addressMatch;
+    private String accountId;
+    private String ipAddress;
+    private String orderDescription;
+    private String taxAmount;
+    private String userAgent;
+    private String authenticationIndicator;
+    private String installment;
+    private String purchaseDate;
+    private String recurringEnd;
+    private String recurringFrequency;
+    private String sdkMaxTimeout;
+    private String workPhoneNumber;
 
     public ThreeDSecureAdditionalInformation() {}
 
@@ -61,7 +61,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      *
      * */
     public void setShippingAddress(ThreeDSecurePostalAddress shippingAddress) {
-        mShippingAddress = shippingAddress;
+        this.shippingAddress = shippingAddress;
     }
 
     /**
@@ -77,7 +77,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 07 Other
      */
     public void setShippingMethodIndicator(String shippingMethodIndicator) {
-        mShippingMethodIndicator = shippingMethodIndicator;
+        this.shippingMethodIndicator = shippingMethodIndicator;
     }
 
     /**
@@ -98,7 +98,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * TBD Other
      */
     public void setProductCode(String productCode) {
-        mProductCode = productCode;
+        this.productCode = productCode;
     }
 
     /**
@@ -111,14 +111,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 Two or more day shipping
      */
     public void setDeliveryTimeframe(String deliveryTimeframe) {
-        mDeliveryTimeframe = deliveryTimeframe;
+        this.deliveryTimeframe = deliveryTimeframe;
     }
 
     /**
      * Optional. For electronic delivery, email address to which the merchandise was delivered
      */
     public void setDeliveryEmail(String deliveryEmail) {
-        mDeliveryEmail = deliveryEmail;
+        this.deliveryEmail = deliveryEmail;
     }
 
     /**
@@ -129,7 +129,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Reordered
      */
     public void setReorderIndicator(String reorderIndicator) {
-        mReorderIndicator = reorderIndicator;
+        this.reorderIndicator = reorderIndicator;
     }
 
     /**
@@ -140,35 +140,35 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Future availability
      */
     public void setPreorderIndicator(String preorderIndicator) {
-        mPreorderIndicator = preorderIndicator;
+        this.preorderIndicator = preorderIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating expected date that a pre-ordered purchase will be available
      */
     public void setPreorderDate(String preorderDate) {
-        mPreorderDate = preorderDate;
+        this.preorderDate = preorderDate;
     }
 
     /**
      * Optional. The purchase amount total for prepaid gift cards in major units
      */
     public void setGiftCardAmount(String giftCardAmount) {
-        mGiftCardAmount = giftCardAmount;
+        this.giftCardAmount = giftCardAmount;
     }
 
     /**
      * Optional. ISO 4217 currency code for the gift card purchased
      */
     public void setGiftCardCurrencyCode(String giftCardCurrencyCode) {
-        mGiftCardCurrencyCode = giftCardCurrencyCode;
+        this.giftCardCurrencyCode = giftCardCurrencyCode;
     }
 
     /**
      * Optional. Total count of individual prepaid gift cards purchased
      */
     public void setGiftCardCount(String giftCardCount) {
-        mGiftCardCount = giftCardCount;
+        this.giftCardCount = giftCardCount;
     }
 
     /**
@@ -182,14 +182,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 05 More than 60 days
      */
     public void setAccountAgeIndicator(String accountAgeIndicator) {
-        mAccountAgeIndicator = accountAgeIndicator;
+        this.accountAgeIndicator = accountAgeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder opened the account.
      */
     public void setAccountCreateDate(String accountCreateDate) {
-        mAccountCreateDate = accountCreateDate;
+        this.accountCreateDate = accountCreateDate;
     }
 
     /**
@@ -202,14 +202,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 More than 60 days
      */
     public void setAccountChangeIndicator(String accountChangeIndicator) {
-        mAccountChangeIndicator = accountChangeIndicator;
+        this.accountChangeIndicator = accountChangeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder's account was last changed. This includes changes to the billing or shipping address, new payment accounts or new users added.
      */
     public void setAccountChangeDate(String accountChangeDate) {
-        mAccountChangeDate = accountChangeDate;
+        this.accountChangeDate = accountChangeDate;
     }
 
     /**
@@ -223,14 +223,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 05 More than 60 days
      */
     public void setAccountPwdChangeIndicator(String accountPwdChangeIndicator) {
-        mAccountPwdChangeIndicator = accountPwdChangeIndicator;
+        this.accountPwdChangeIndicator = accountPwdChangeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder last changed or reset password on account.
      */
     public void setAccountPwdChangeDate(String accountPwdChangeDate) {
-        mAccountPwdChangeDate = accountPwdChangeDate;
+        this.accountPwdChangeDate = accountPwdChangeDate;
     }
 
     /**
@@ -243,42 +243,42 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 More than 60 days
      */
     public void setShippingAddressUsageIndicator(String shippingAddressUsageIndicator) {
-        mShippingAddressUsageIndicator = shippingAddressUsageIndicator;
+        this.shippingAddressUsageIndicator = shippingAddressUsageIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date when the shipping address used for this transaction was first used.
      */
     public void setShippingAddressUsageDate(String shippingAddressUsageDate) {
-        mShippingAddressUsageDate = shippingAddressUsageDate;
+        this.shippingAddressUsageDate = shippingAddressUsageDate;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last 24 hours.
      */
     public void setTransactionCountDay(String transactionCountDay) {
-        mTransactionCountDay = transactionCountDay;
+        this.transactionCountDay = transactionCountDay;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last year.
      */
     public void setTransactionCountYear(String transactionCountYear) {
-        mTransactionCountYear = transactionCountYear;
+        this.transactionCountYear = transactionCountYear;
     }
 
     /**
      * Optional. Number of add card attempts in the last 24 hours.
      */
     public void setAddCardAttempts(String addCardAttempts) {
-        mAddCardAttempts = addCardAttempts;
+        this.addCardAttempts = addCardAttempts;
     }
 
     /**
      * Optional. Number of purchases with this cardholder account during the previous six months.
      */
     public void setAccountPurchases(String accountPurchases) {
-        mAccountPurchases = accountPurchases;
+        this.accountPurchases = accountPurchases;
     }
 
     /**
@@ -289,7 +289,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Suspicious activity observed
      */
     public void setFraudActivity(String fraudActivity) {
-        mFraudActivity = fraudActivity;
+        this.fraudActivity = fraudActivity;
     }
 
     /**
@@ -300,7 +300,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Account name different than shipping name
      */
     public void setShippingNameIndicator(String shippingNameIndicator) {
-        mShippingNameIndicator = shippingNameIndicator;
+        this.shippingNameIndicator = shippingNameIndicator;
     }
 
     /**
@@ -314,56 +314,56 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 05 More than 60 days
      */
     public void setPaymentAccountIndicator(String paymentAccountIndicator) {
-        mPaymentAccountIndicator = paymentAccountIndicator;
+        this.paymentAccountIndicator = paymentAccountIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the payment account was added to the cardholder account.
      */
     public void setPaymentAccountAge(String paymentAccountAge) {
-        mPaymentAccountAge = paymentAccountAge;
+        this.paymentAccountAge = paymentAccountAge;
     }
 
     /**
      * Optional. The 1-character value (Y/N) indicating whether cardholder billing and shipping addresses match.
      */
     public void setAddressMatch(String addressMatch) {
-        mAddressMatch = addressMatch;
+        this.addressMatch = addressMatch;
     }
 
     /**
      * Optional. Additional cardholder account information.
      */
     public void setAccountId(String accountId) {
-        mAccountId = accountId;
+        this.accountId = accountId;
     }
 
     /**
      * Optional. The IP address of the consumer. IPv4 and IPv6 are supported.
      */
     public void setIpAddress(String ipAddress) {
-        mIpAddress = ipAddress;
+        this.ipAddress = ipAddress;
     }
 
     /**
      * Optional. Brief description of items purchased.
      */
     public void setOrderDescription(String orderDescription) {
-        mOrderDescription = orderDescription;
+        this.orderDescription = orderDescription;
     }
 
     /**
      * Optional. Unformatted tax amount without any decimalization (ie. $123.67 = 12367).
      */
     public void setTaxAmount(String taxAmount) {
-        mTaxAmount = taxAmount;
+        this.taxAmount = taxAmount;
     }
 
     /**
      * Optional. The exact content of the HTTP user agent header.
      */
     public void setUserAgent(String userAgent) {
-        mUserAgent = userAgent;
+        this.userAgent = userAgent;
     }
 
     /**
@@ -374,416 +374,416 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 Installment transaction
      */
     public void setAuthenticationIndicator(String authenticationIndicator) {
-        mAuthenticationIndicator = authenticationIndicator;
+        this.authenticationIndicator = authenticationIndicator;
     }
 
     /**
      * Optional.  An integer value greater than 1 indicating the maximum number of permitted authorizations for installment payments.
      */
     public void setInstallment(String installment) {
-        mInstallment = installment;
+        this.installment = installment;
     }
 
     /**
      * Optional. The 14-digit number (format: YYYYMMDDHHMMSS) indicating the date in UTC of original purchase.
      */
     public void setPurchaseDate(String purchaseDate) {
-        mPurchaseDate = purchaseDate;
+        this.purchaseDate = purchaseDate;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date after which no further recurring authorizations should be performed..
      */
     public void setRecurringEnd(String recurringEnd) {
-        mRecurringEnd = recurringEnd;
+        this.recurringEnd = recurringEnd;
     }
 
     /**
      * Optional. Integer value indicating the minimum number of days between recurring authorizations. A frequency of monthly is indicated by the value 28. Multiple of 28 days will be used to indicate months (ex. 6 months = 168).
      */
     public void setRecurringFrequency(String recurringFrequency) {
-        mRecurringFrequency = recurringFrequency;
+        this.recurringFrequency = recurringFrequency;
     }
 
     /**
      * Optional. The 2-digit number of minutes (minimum 05) to set the maximum amount of time for all 3DS 2.0 messages to be communicated between all components.
      */
     public void setSdkMaxTimeout(String sdkMaxTimeout) {
-        mSdkMaxTimeout = sdkMaxTimeout;
+        this.sdkMaxTimeout = sdkMaxTimeout;
     }
 
     /**
      * Optional. The work phone number used for verification. Only numbers; remove dashes, parenthesis and other characters.
      */
     public void setWorkPhoneNumber(String workPhoneNumber) {
-        mWorkPhoneNumber = workPhoneNumber;
+        this.workPhoneNumber = workPhoneNumber;
     }
 
     /**
      * @return shipping address
      */
     public ThreeDSecurePostalAddress getShippingAddress() {
-        return mShippingAddress;
+        return shippingAddress;
     }
 
     /**
      * @return shipping method indicator
      */
     public String getShippingMethodIndicator() {
-        return mShippingMethodIndicator;
+        return shippingMethodIndicator;
     }
 
     /**
      * @return product code
      */
     public String getProductCode() {
-        return mProductCode;
+        return productCode;
     }
 
     /**
      * @return delivery time frame
      */
     public String getDeliveryTimeframe() {
-        return mDeliveryTimeframe;
+        return deliveryTimeframe;
     }
 
     /**
      * @return delivery email
      */
     public String getDeliveryEmail() {
-        return mDeliveryEmail;
+        return deliveryEmail;
     }
 
     /**
      * @return reorder indicator
      */
     public String getReorderIndicator() {
-        return mReorderIndicator;
+        return reorderIndicator;
     }
 
     /**
      * @return preorder indicator
      */
     public String getPreorderIndicator() {
-        return mPreorderIndicator;
+        return preorderIndicator;
     }
 
     /**
      * @return Preorder date
      */
     public String getPreorderDate() {
-        return mPreorderDate;
+        return preorderDate;
     }
 
     /**
      * @return Gift card amount
      */
     public String getGiftCardAmount() {
-        return mGiftCardAmount;
+        return giftCardAmount;
     }
 
     /**
      * @return Gift card currency code
      */
     public String getGiftCardCurrencyCode() {
-        return mGiftCardCurrencyCode;
+        return giftCardCurrencyCode;
     }
 
     /**
      * @return Gift card count
      */
     public String getGiftCardCount() {
-        return mGiftCardCount;
+        return giftCardCount;
     }
 
     /**
      * @return Account age indicator
      */
     public String getAccountAgeIndicator() {
-        return mAccountAgeIndicator;
+        return accountAgeIndicator;
     }
 
     /**
      * @return Account create date
      */
     public String getAccountCreateDate() {
-        return mAccountCreateDate;
+        return accountCreateDate;
     }
 
     /**
      * @return Account change indicator
      */
     public String getAccountChangeIndicator() {
-        return mAccountChangeIndicator;
+        return accountChangeIndicator;
     }
 
     /**
      * @return Account change date
      */
     public String getAccountChangeDate() {
-        return mAccountChangeDate;
+        return accountChangeDate;
     }
 
     /**
      * @return Account password change indicator
      */
     public String getAccountPwdChangeIndicator() {
-        return mAccountPwdChangeIndicator;
+        return accountPwdChangeIndicator;
     }
 
     /**
      * @return Account password change date
      */
     public String getAccountPwdChangeDate() {
-        return mAccountPwdChangeDate;
+        return accountPwdChangeDate;
     }
 
     /**
      * @return Shipping address usage indicator
      */
     public String getShippingAddressUsageIndicator() {
-        return mShippingAddressUsageIndicator;
+        return shippingAddressUsageIndicator;
     }
 
     /**
      * @return Shipping address usage date
      */
     public String getShippingAddressUsageDate() {
-        return mShippingAddressUsageDate;
+        return shippingAddressUsageDate;
     }
 
     /**
      * @return Transaction count day
      */
     public String getTransactionCountDay() {
-        return mTransactionCountDay;
+        return transactionCountDay;
     }
 
     /**
      * @return Transaction count year
      */
     public String getTransactionCountYear() {
-        return mTransactionCountYear;
+        return transactionCountYear;
     }
 
     /**
      * @return Add card attempts
      */
     public String getAddCardAttempts() {
-        return mAddCardAttempts;
+        return addCardAttempts;
     }
 
     /**
      * @return Account purchases
      */
     public String getAccountPurchases() {
-        return mAccountPurchases;
+        return accountPurchases;
     }
 
     /**
      * @return Fraud activity
      */
     public String getFraudActivity() {
-        return mFraudActivity;
+        return fraudActivity;
     }
 
     /**
      * @return Shipping name indicator
      */
     public String getShippingNameIndicator() {
-        return mShippingNameIndicator;
+        return shippingNameIndicator;
     }
 
     /**
      * @return Payment account indicator
      */
     public String getPaymentAccountIdicator() {
-        return mPaymentAccountIndicator;
+        return paymentAccountIndicator;
     }
 
     /**
      * @return Payment account age
      */
     public String getPaymentAccountAge() {
-        return mPaymentAccountAge;
+        return paymentAccountAge;
     }
 
     /**
      * @return Address match
      */
     public String getAddressMatch() {
-        return mAddressMatch;
+        return addressMatch;
     }
 
     /**
      * @return Account ID
      */
     public String getAccountId() {
-        return mAccountId;
+        return accountId;
     }
 
     /**
      * @return Ip address
      */
     public String getIpAddress() {
-        return mIpAddress;
+        return ipAddress;
     }
 
     /**
      * @return Order description
      */
     public String getOrderDescription() {
-        return mOrderDescription;
+        return orderDescription;
     }
 
     /**
      * @return Tax amount
      */
     public String getTaxAmount() {
-        return mTaxAmount;
+        return taxAmount;
     }
 
     /**
      * @return User agent
      */
     public String getUserAgent() {
-        return mUserAgent;
+        return userAgent;
     }
 
     /**
      * @return Authentication indicator
      */
     public String getAuthenticationIndicator() {
-        return mAuthenticationIndicator;
+        return authenticationIndicator;
     }
 
     /**
      * @return Installment
      */
     public String getInstallment() {
-        return mInstallment;
+        return installment;
     }
 
     /**
      * @return Purchase date
      */
     public String getPurchaseDate() {
-        return mPurchaseDate;
+        return purchaseDate;
     }
 
     /**
      * @return Recurring end
      */
     public String getRecurringEnd() {
-        return mRecurringEnd;
+        return recurringEnd;
     }
 
     /**
      * @return Recurring frequency
      */
     public String getRecurringFrequency() {
-        return mRecurringFrequency;
+        return recurringFrequency;
     }
 
     /**
      * @return SDK max timeout
      */
     public String getSdkMaxTimeout() {
-        return mSdkMaxTimeout;
+        return sdkMaxTimeout;
     }
 
     /**
      * @return Work phone number
      */
     public String getWorkPhoneNumber() {
-        return mWorkPhoneNumber;
+        return workPhoneNumber;
     }
 
     public ThreeDSecureAdditionalInformation(Parcel in) {
-        mShippingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
-        mShippingMethodIndicator = in.readString();
-        mProductCode = in.readString();
-        mDeliveryTimeframe = in.readString();
-        mDeliveryEmail = in.readString();
-        mReorderIndicator = in.readString();
-        mPreorderIndicator = in.readString();
-        mPreorderDate = in.readString();
-        mGiftCardAmount = in.readString();
-        mGiftCardCurrencyCode = in.readString();
-        mGiftCardCount = in.readString();
-        mAccountAgeIndicator = in.readString();
-        mAccountCreateDate = in.readString();
-        mAccountChangeIndicator = in.readString();
-        mAccountChangeDate = in.readString();
-        mAccountPwdChangeIndicator = in.readString();
-        mAccountPwdChangeDate = in.readString();
-        mShippingAddressUsageIndicator = in.readString();
-        mShippingAddressUsageDate = in.readString();
-        mTransactionCountDay = in.readString();
-        mTransactionCountYear = in.readString();
-        mAddCardAttempts = in.readString();
-        mAccountPurchases = in.readString();
-        mFraudActivity = in.readString();
-        mShippingNameIndicator = in.readString();
-        mPaymentAccountIndicator = in.readString();
-        mPaymentAccountAge = in.readString();
-        mAddressMatch = in.readString();
-        mAccountId = in.readString();
-        mIpAddress = in.readString();
-        mOrderDescription = in.readString();
-        mTaxAmount = in.readString();
-        mUserAgent = in.readString();
-        mAuthenticationIndicator = in.readString();
-        mInstallment = in.readString();
-        mPurchaseDate = in.readString();
-        mRecurringEnd = in.readString();
-        mRecurringFrequency = in.readString();
-        mSdkMaxTimeout = in.readString();
-        mWorkPhoneNumber = in.readString();
+        shippingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
+        shippingMethodIndicator = in.readString();
+        productCode = in.readString();
+        deliveryTimeframe = in.readString();
+        deliveryEmail = in.readString();
+        reorderIndicator = in.readString();
+        preorderIndicator = in.readString();
+        preorderDate = in.readString();
+        giftCardAmount = in.readString();
+        giftCardCurrencyCode = in.readString();
+        giftCardCount = in.readString();
+        accountAgeIndicator = in.readString();
+        accountCreateDate = in.readString();
+        accountChangeIndicator = in.readString();
+        accountChangeDate = in.readString();
+        accountPwdChangeIndicator = in.readString();
+        accountPwdChangeDate = in.readString();
+        shippingAddressUsageIndicator = in.readString();
+        shippingAddressUsageDate = in.readString();
+        transactionCountDay = in.readString();
+        transactionCountYear = in.readString();
+        addCardAttempts = in.readString();
+        accountPurchases = in.readString();
+        fraudActivity = in.readString();
+        shippingNameIndicator = in.readString();
+        paymentAccountIndicator = in.readString();
+        paymentAccountAge = in.readString();
+        addressMatch = in.readString();
+        accountId = in.readString();
+        ipAddress = in.readString();
+        orderDescription = in.readString();
+        taxAmount = in.readString();
+        userAgent = in.readString();
+        authenticationIndicator = in.readString();
+        installment = in.readString();
+        purchaseDate = in.readString();
+        recurringEnd = in.readString();
+        recurringFrequency = in.readString();
+        sdkMaxTimeout = in.readString();
+        workPhoneNumber = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mShippingAddress, flags);
-        dest.writeString(mShippingMethodIndicator);
-        dest.writeString(mProductCode);
-        dest.writeString(mDeliveryTimeframe);
-        dest.writeString(mDeliveryEmail);
-        dest.writeString(mReorderIndicator);
-        dest.writeString(mPreorderIndicator);
-        dest.writeString(mPreorderDate);
-        dest.writeString(mGiftCardAmount);
-        dest.writeString(mGiftCardCurrencyCode);
-        dest.writeString(mGiftCardCount);
-        dest.writeString(mAccountAgeIndicator);
-        dest.writeString(mAccountCreateDate);
-        dest.writeString(mAccountChangeIndicator);
-        dest.writeString(mAccountChangeDate);
-        dest.writeString(mAccountPwdChangeIndicator);
-        dest.writeString(mAccountPwdChangeDate);
-        dest.writeString(mShippingAddressUsageIndicator);
-        dest.writeString(mShippingAddressUsageDate);
-        dest.writeString(mTransactionCountDay);
-        dest.writeString(mTransactionCountYear);
-        dest.writeString(mAddCardAttempts);
-        dest.writeString(mAccountPurchases);
-        dest.writeString(mFraudActivity);
-        dest.writeString(mShippingNameIndicator);
-        dest.writeString(mPaymentAccountIndicator);
-        dest.writeString(mPaymentAccountAge);
-        dest.writeString(mAddressMatch);
-        dest.writeString(mAccountId);
-        dest.writeString(mIpAddress);
-        dest.writeString(mOrderDescription);
-        dest.writeString(mTaxAmount);
-        dest.writeString(mUserAgent);
-        dest.writeString(mAuthenticationIndicator);
-        dest.writeString(mInstallment);
-        dest.writeString(mPurchaseDate);
-        dest.writeString(mRecurringEnd);
-        dest.writeString(mRecurringFrequency);
-        dest.writeString(mSdkMaxTimeout);
-        dest.writeString(mWorkPhoneNumber);
+        dest.writeParcelable(shippingAddress, flags);
+        dest.writeString(shippingMethodIndicator);
+        dest.writeString(productCode);
+        dest.writeString(deliveryTimeframe);
+        dest.writeString(deliveryEmail);
+        dest.writeString(reorderIndicator);
+        dest.writeString(preorderIndicator);
+        dest.writeString(preorderDate);
+        dest.writeString(giftCardAmount);
+        dest.writeString(giftCardCurrencyCode);
+        dest.writeString(giftCardCount);
+        dest.writeString(accountAgeIndicator);
+        dest.writeString(accountCreateDate);
+        dest.writeString(accountChangeIndicator);
+        dest.writeString(accountChangeDate);
+        dest.writeString(accountPwdChangeIndicator);
+        dest.writeString(accountPwdChangeDate);
+        dest.writeString(shippingAddressUsageIndicator);
+        dest.writeString(shippingAddressUsageDate);
+        dest.writeString(transactionCountDay);
+        dest.writeString(transactionCountYear);
+        dest.writeString(addCardAttempts);
+        dest.writeString(accountPurchases);
+        dest.writeString(fraudActivity);
+        dest.writeString(shippingNameIndicator);
+        dest.writeString(paymentAccountIndicator);
+        dest.writeString(paymentAccountAge);
+        dest.writeString(addressMatch);
+        dest.writeString(accountId);
+        dest.writeString(ipAddress);
+        dest.writeString(orderDescription);
+        dest.writeString(taxAmount);
+        dest.writeString(userAgent);
+        dest.writeString(authenticationIndicator);
+        dest.writeString(installment);
+        dest.writeString(purchaseDate);
+        dest.writeString(recurringEnd);
+        dest.writeString(recurringFrequency);
+        dest.writeString(sdkMaxTimeout);
+        dest.writeString(workPhoneNumber);
     }
 
     @Override
@@ -809,59 +809,59 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     public JSONObject toJson() {
         JSONObject additionalInformation = new JSONObject();
         try {
-            if (mShippingAddress != null) {
-                additionalInformation.putOpt("shipping_given_name", mShippingAddress.getGivenName());
-                additionalInformation.putOpt("shipping_surname", mShippingAddress.getSurname());
-                additionalInformation.putOpt("shipping_phone", mShippingAddress.getPhoneNumber());
+            if (shippingAddress != null) {
+                additionalInformation.putOpt("shipping_given_name", shippingAddress.getGivenName());
+                additionalInformation.putOpt("shipping_surname", shippingAddress.getSurname());
+                additionalInformation.putOpt("shipping_phone", shippingAddress.getPhoneNumber());
 
-                additionalInformation.putOpt("shipping_line1", mShippingAddress.getStreetAddress());
-                additionalInformation.putOpt("shipping_line2", mShippingAddress.getExtendedAddress());
-                additionalInformation.putOpt("shipping_line3", mShippingAddress.getLine3());
-                additionalInformation.putOpt("shipping_city", mShippingAddress.getLocality());
-                additionalInformation.putOpt("shipping_state", mShippingAddress.getRegion());
-                additionalInformation.putOpt("shipping_postal_code", mShippingAddress.getPostalCode());
-                additionalInformation.putOpt("shipping_country_code", mShippingAddress.getCountryCodeAlpha2());
+                additionalInformation.putOpt("shipping_line1", shippingAddress.getStreetAddress());
+                additionalInformation.putOpt("shipping_line2", shippingAddress.getExtendedAddress());
+                additionalInformation.putOpt("shipping_line3", shippingAddress.getLine3());
+                additionalInformation.putOpt("shipping_city", shippingAddress.getLocality());
+                additionalInformation.putOpt("shipping_state", shippingAddress.getRegion());
+                additionalInformation.putOpt("shipping_postal_code", shippingAddress.getPostalCode());
+                additionalInformation.putOpt("shipping_country_code", shippingAddress.getCountryCodeAlpha2());
             }
 
-            additionalInformation.putOpt("shipping_method_indicator", mShippingMethodIndicator);
-            additionalInformation.putOpt("product_code", mProductCode);
-            additionalInformation.putOpt("delivery_timeframe", mDeliveryTimeframe);
-            additionalInformation.putOpt("delivery_email", mDeliveryEmail);
-            additionalInformation.putOpt("reorder_indicator", mReorderIndicator);
-            additionalInformation.putOpt("preorder_indicator", mPreorderIndicator);
-            additionalInformation.putOpt("preorder_date", mPreorderDate);
-            additionalInformation.putOpt("gift_card_amount", mGiftCardAmount);
-            additionalInformation.putOpt("gift_card_currency_code", mGiftCardCurrencyCode);
-            additionalInformation.putOpt("gift_card_count", mGiftCardCount);
-            additionalInformation.putOpt("account_age_indicator", mAccountAgeIndicator);
-            additionalInformation.putOpt("account_create_date", mAccountCreateDate);
-            additionalInformation.putOpt("account_change_indicator", mAccountChangeIndicator);
-            additionalInformation.putOpt("account_change_date", mAccountChangeDate);
-            additionalInformation.putOpt("account_pwd_change_indicator", mAccountPwdChangeIndicator);
-            additionalInformation.putOpt("account_pwd_change_date", mAccountPwdChangeDate);
-            additionalInformation.putOpt("shipping_address_usage_indicator", mShippingAddressUsageIndicator);
-            additionalInformation.putOpt("shipping_address_usage_date", mShippingAddressUsageDate);
-            additionalInformation.putOpt("transaction_count_day", mTransactionCountDay);
-            additionalInformation.putOpt("transaction_count_year", mTransactionCountYear);
-            additionalInformation.putOpt("add_card_attempts", mAddCardAttempts);
-            additionalInformation.putOpt("account_purchases", mAccountPurchases);
-            additionalInformation.putOpt("fraud_activity", mFraudActivity);
-            additionalInformation.putOpt("shipping_name_indicator", mShippingNameIndicator);
-            additionalInformation.putOpt("payment_account_indicator", mPaymentAccountIndicator);
-            additionalInformation.putOpt("payment_account_age", mPaymentAccountAge);
-            additionalInformation.putOpt("address_match", mAddressMatch);
-            additionalInformation.putOpt("account_id", mAccountId);
-            additionalInformation.putOpt("ip_address", mIpAddress);
-            additionalInformation.putOpt("order_description", mOrderDescription);
-            additionalInformation.putOpt("tax_amount", mTaxAmount);
-            additionalInformation.putOpt("user_agent", mUserAgent);
-            additionalInformation.putOpt("authentication_indicator", mAuthenticationIndicator);
-            additionalInformation.putOpt("installment", mInstallment);
-            additionalInformation.putOpt("purchase_date", mPurchaseDate);
-            additionalInformation.putOpt("recurring_end", mRecurringEnd);
-            additionalInformation.putOpt("recurring_frequency", mRecurringFrequency);
-            additionalInformation.putOpt("sdk_max_timeout", mSdkMaxTimeout);
-            additionalInformation.putOpt("work_phone_number", mWorkPhoneNumber);
+            additionalInformation.putOpt("shipping_method_indicator", shippingMethodIndicator);
+            additionalInformation.putOpt("product_code", productCode);
+            additionalInformation.putOpt("delivery_timeframe", deliveryTimeframe);
+            additionalInformation.putOpt("delivery_email", deliveryEmail);
+            additionalInformation.putOpt("reorder_indicator", reorderIndicator);
+            additionalInformation.putOpt("preorder_indicator", preorderIndicator);
+            additionalInformation.putOpt("preorder_date", preorderDate);
+            additionalInformation.putOpt("gift_card_amount", giftCardAmount);
+            additionalInformation.putOpt("gift_card_currency_code", giftCardCurrencyCode);
+            additionalInformation.putOpt("gift_card_count", giftCardCount);
+            additionalInformation.putOpt("account_age_indicator", accountAgeIndicator);
+            additionalInformation.putOpt("account_create_date", accountCreateDate);
+            additionalInformation.putOpt("account_change_indicator", accountChangeIndicator);
+            additionalInformation.putOpt("account_change_date", accountChangeDate);
+            additionalInformation.putOpt("account_pwd_change_indicator", accountPwdChangeIndicator);
+            additionalInformation.putOpt("account_pwd_change_date", accountPwdChangeDate);
+            additionalInformation.putOpt("shipping_address_usage_indicator", shippingAddressUsageIndicator);
+            additionalInformation.putOpt("shipping_address_usage_date", shippingAddressUsageDate);
+            additionalInformation.putOpt("transaction_count_day", transactionCountDay);
+            additionalInformation.putOpt("transaction_count_year", transactionCountYear);
+            additionalInformation.putOpt("add_card_attempts", addCardAttempts);
+            additionalInformation.putOpt("account_purchases", accountPurchases);
+            additionalInformation.putOpt("fraud_activity", fraudActivity);
+            additionalInformation.putOpt("shipping_name_indicator", shippingNameIndicator);
+            additionalInformation.putOpt("payment_account_indicator", paymentAccountIndicator);
+            additionalInformation.putOpt("payment_account_age", paymentAccountAge);
+            additionalInformation.putOpt("address_match", addressMatch);
+            additionalInformation.putOpt("account_id", accountId);
+            additionalInformation.putOpt("ip_address", ipAddress);
+            additionalInformation.putOpt("order_description", orderDescription);
+            additionalInformation.putOpt("tax_amount", taxAmount);
+            additionalInformation.putOpt("user_agent", userAgent);
+            additionalInformation.putOpt("authentication_indicator", authenticationIndicator);
+            additionalInformation.putOpt("installment", installment);
+            additionalInformation.putOpt("purchase_date", purchaseDate);
+            additionalInformation.putOpt("recurring_end", recurringEnd);
+            additionalInformation.putOpt("recurring_frequency", recurringFrequency);
+            additionalInformation.putOpt("sdk_max_timeout", sdkMaxTimeout);
+            additionalInformation.putOpt("work_phone_number", workPhoneNumber);
         } catch (JSONException ignored) {}
 
         return additionalInformation;

@@ -15,8 +15,8 @@ import java.util.Set;
  */
 class GraphQLConfiguration {
 
-    private String mUrl;
-    private Set<String> mFeatures;
+    private String url;
+    private Set<String> features;
 
     /**
      * Parse a {@link GraphQLConfiguration} from json.
@@ -31,8 +31,8 @@ class GraphQLConfiguration {
         }
 
         GraphQLConfiguration graphQLConfiguration = new GraphQLConfiguration();
-        graphQLConfiguration.mUrl = Json.optString(json, Keys.URL, "");
-        graphQLConfiguration.mFeatures = parseJsonFeatures(json.optJSONArray(Keys.FEATURES));
+        graphQLConfiguration.url = Json.optString(json, Keys.URL, "");
+        graphQLConfiguration.features = parseJsonFeatures(json.optJSONArray(Keys.FEATURES));
 
         return graphQLConfiguration;
     }
@@ -41,14 +41,14 @@ class GraphQLConfiguration {
      * @return {@code true} if GraphQL is enabled, {@code false} otherwise.
      */
     boolean isEnabled() {
-        return !TextUtils.isEmpty(mUrl);
+        return !TextUtils.isEmpty(url);
     }
 
     /**
      * @return the GraphQL url.
      */
     String getUrl() {
-        return mUrl;
+        return url;
     }
 
     /**
@@ -58,7 +58,7 @@ class GraphQLConfiguration {
      * @return {@code true} if GraphQL is enabled and the feature is enabled, {@code false} otherwise.
      */
     boolean isFeatureEnabled(String feature) {
-        return isEnabled() && mFeatures.contains(feature);
+        return isEnabled() && features.contains(feature);
     }
 
     private static Set<String> parseJsonFeatures(JSONArray jsonArray) {

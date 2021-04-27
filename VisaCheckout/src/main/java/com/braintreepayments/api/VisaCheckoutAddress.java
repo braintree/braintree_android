@@ -10,15 +10,15 @@ import org.json.JSONObject;
  */
 public class VisaCheckoutAddress implements Parcelable {
 
-    private String mFirstName;
-    private String mLastName;
-    private String mStreetAddress;
-    private String mExtendedAddress;
-    private String mLocality;
-    private String mRegion;
-    private String mPostalCode;
-    private String mCountryCode;
-    private String mPhoneNumber;
+    private String firstName;
+    private String lastName;
+    private String streetAddress;
+    private String extendedAddress;
+    private String locality;
+    private String region;
+    private String postalCode;
+    private String countryCode;
+    private String phoneNumber;
 
     public static VisaCheckoutAddress fromJson(JSONObject json) {
         if (json == null) {
@@ -27,15 +27,15 @@ public class VisaCheckoutAddress implements Parcelable {
 
         VisaCheckoutAddress visaCheckoutAddress = new VisaCheckoutAddress();
 
-        visaCheckoutAddress.mFirstName = Json.optString(json, "firstName", "");
-        visaCheckoutAddress.mLastName = Json.optString(json, "lastName", "");
-        visaCheckoutAddress.mStreetAddress = Json.optString(json, "streetAddress", "");
-        visaCheckoutAddress.mExtendedAddress = Json.optString(json, "extendedAddress", "");
-        visaCheckoutAddress.mLocality = Json.optString(json, "locality", "");
-        visaCheckoutAddress.mRegion = Json.optString(json, "region", "");
-        visaCheckoutAddress.mPostalCode = Json.optString(json, "postalCode", "");
-        visaCheckoutAddress.mCountryCode = Json.optString(json, "countryCode", "");
-        visaCheckoutAddress.mPhoneNumber = Json.optString(json, "phoneNumber", "");
+        visaCheckoutAddress.firstName = Json.optString(json, "firstName", "");
+        visaCheckoutAddress.lastName = Json.optString(json, "lastName", "");
+        visaCheckoutAddress.streetAddress = Json.optString(json, "streetAddress", "");
+        visaCheckoutAddress.extendedAddress = Json.optString(json, "extendedAddress", "");
+        visaCheckoutAddress.locality = Json.optString(json, "locality", "");
+        visaCheckoutAddress.region = Json.optString(json, "region", "");
+        visaCheckoutAddress.postalCode = Json.optString(json, "postalCode", "");
+        visaCheckoutAddress.countryCode = Json.optString(json, "countryCode", "");
+        visaCheckoutAddress.phoneNumber = Json.optString(json, "phoneNumber", "");
 
         return visaCheckoutAddress;
     }
@@ -46,88 +46,88 @@ public class VisaCheckoutAddress implements Parcelable {
      * @return The user's first name.
      */
     public String getFirstName() {
-        return mFirstName;
+        return firstName;
     }
 
     /**
      * @return The user's last name.
      */
     public String getLastName() {
-        return mLastName;
+        return lastName;
     }
 
     /**
      * @return The user's street address.
      */
     public String getStreetAddress() {
-        return mStreetAddress;
+        return streetAddress;
     }
 
     /**
      * @return The user's extended address.
      */
     public String getExtendedAddress() {
-        return mExtendedAddress;
+        return extendedAddress;
     }
 
     /**
      * @return The user's locality.
      */
     public String getLocality() {
-        return mLocality;
+        return locality;
     }
 
     /**
      * @return The user's region.
      */
     public String getRegion() {
-        return mRegion;
+        return region;
     }
 
     /**
      * @return The user's postal code.
      */
     public String getPostalCode() {
-        return mPostalCode;
+        return postalCode;
     }
 
     /**
      * @return The user's country code.
      */
     public String getCountryCode() {
-        return mCountryCode;
+        return countryCode;
     }
 
     /**
      * @return The user's phone number.
      */
     public String getPhoneNumber() {
-        return mPhoneNumber;
+        return phoneNumber;
     }
 
     public VisaCheckoutAddress(Parcel in) {
-        mFirstName = in.readString();
-        mLastName = in.readString();
-        mStreetAddress = in.readString();
-        mExtendedAddress = in.readString();
-        mLocality = in.readString();
-        mRegion = in.readString();
-        mPostalCode = in.readString();
-        mCountryCode = in.readString();
-        mPhoneNumber = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        streetAddress = in.readString();
+        extendedAddress = in.readString();
+        locality = in.readString();
+        region = in.readString();
+        postalCode = in.readString();
+        countryCode = in.readString();
+        phoneNumber = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mFirstName);
-        dest.writeString(mLastName);
-        dest.writeString(mStreetAddress);
-        dest.writeString(mExtendedAddress);
-        dest.writeString(mLocality);
-        dest.writeString(mRegion);
-        dest.writeString(mPostalCode);
-        dest.writeString(mCountryCode);
-        dest.writeString(mPhoneNumber);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(streetAddress);
+        dest.writeString(extendedAddress);
+        dest.writeString(locality);
+        dest.writeString(region);
+        dest.writeString(postalCode);
+        dest.writeString(countryCode);
+        dest.writeString(phoneNumber);
     }
 
     @Override

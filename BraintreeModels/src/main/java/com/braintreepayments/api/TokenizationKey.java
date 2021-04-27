@@ -9,35 +9,35 @@ class TokenizationKey extends Authorization implements Parcelable {
 
     static final String MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
-    private final String mEnvironment;
-    private final String mMerchantId;
-    private final String mUrl;
+    private final String environment;
+    private final String merchantId;
+    private final String url;
 
     TokenizationKey(String tokenizationKey) throws InvalidArgumentException {
         super(tokenizationKey);
 
         String[] tokenizationKeyParts = tokenizationKey.split("_", 3);
-        mEnvironment = tokenizationKeyParts[0];
-        mMerchantId = tokenizationKeyParts[2];
-        mUrl = BraintreeEnvironment.getUrl(mEnvironment) + "merchants/" +
-                mMerchantId + "/client_api/";
+        environment = tokenizationKeyParts[0];
+        merchantId = tokenizationKeyParts[2];
+        url = BraintreeEnvironment.getUrl(environment) + "merchants/" +
+                merchantId + "/client_api/";
     }
 
     String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     String getMerchantId() {
-        return mMerchantId;
+        return merchantId;
     }
 
     String getUrl() {
-        return mUrl;
+        return url;
     }
 
     @Override
     String getConfigUrl() {
-        return mUrl + "v1/configuration";
+        return url + "v1/configuration";
     }
 
     @Override
@@ -77,16 +77,16 @@ class TokenizationKey extends Authorization implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mEnvironment);
-        dest.writeString(mMerchantId);
-        dest.writeString(mUrl);
+        dest.writeString(environment);
+        dest.writeString(merchantId);
+        dest.writeString(url);
     }
 
     protected TokenizationKey(Parcel in) {
         super(in);
-        mEnvironment = in.readString();
-        mMerchantId = in.readString();
-        mUrl = in.readString();
+        environment = in.readString();
+        merchantId = in.readString();
+        url = in.readString();
     }
 
     public static final Creator<TokenizationKey> CREATOR = new Creator<TokenizationKey>() {

@@ -14,7 +14,7 @@ import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPrefere
 @SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends AppCompatActivity> extends ActivityTestRule<T> {
 
-    private KeyguardLock mKeyguardLock;
+    private KeyguardLock keyguardLock;
 
     public BraintreeActivityTestRule(Class<T> activityClass) {
         super(activityClass);
@@ -32,9 +32,9 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     private void init() {
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
 
-        mKeyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+        keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
-        mKeyguardLock.disableKeyguard();
+        keyguardLock.disableKeyguard();
     }
 
     @SuppressWarnings("MissingPermission")
@@ -45,6 +45,6 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
 
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
 
-        mKeyguardLock.reenableKeyguard();
+        keyguardLock.reenableKeyguard();
     }
 }

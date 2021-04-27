@@ -10,11 +10,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureV1BrowserSwitchHelperTest {
 
-    private ThreeDSecureLookup mThreeDSecureLookup;
+    private ThreeDSecureLookup threeDSecureLookup;
 
     @Before
     public void setup() throws Exception {
-        mThreeDSecureLookup = ThreeDSecureLookup.fromJson("{\n" +
+        threeDSecureLookup = ThreeDSecureLookup.fromJson("{\n" +
                 "\"acsUrl\": \"https://acs.com\",\n" +
                 "\"md\": \"m d\",\n" +
                 "\"termUrl\": \"https://terms.com\",\n" +
@@ -30,7 +30,7 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         String assetsUrl = "https://assets.com";
 
         ThreeDSecureV1BrowserSwitchHelper sut = new ThreeDSecureV1BrowserSwitchHelper();
-        String actualUrl = sut.getUrl(urlScheme, assetsUrl, null, mThreeDSecureLookup);
+        String actualUrl = sut.getUrl(urlScheme, assetsUrl, null, threeDSecureLookup);
         String expectedUrl = "https://assets.com/mobile/three-d-secure-redirect/0.2.0/index.html?" +
                 "AcsUrl=https%3A%2F%2Facs.com&" +
                 "PaReq=pa.req&" +
@@ -55,7 +55,7 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         request.setV1UiCustomization(v1UiCustomization);
 
         ThreeDSecureV1BrowserSwitchHelper sut = new ThreeDSecureV1BrowserSwitchHelper();
-        String actualUrl = sut.getUrl(urlScheme, assetsUrl, request, mThreeDSecureLookup);
+        String actualUrl = sut.getUrl(urlScheme, assetsUrl, request, threeDSecureLookup);
         String expectedUrl = "https://assets.com/mobile/three-d-secure-redirect/0.2.0/index.html?" +
                 "AcsUrl=https%3A%2F%2Facs.com&" +
                 "PaReq=pa.req&" +

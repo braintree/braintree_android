@@ -40,16 +40,16 @@ public class CardNonce extends PaymentMethodNonce {
     private static final String EXPIRATION_YEAR_KEY = "expirationYear";
     private static final String CARDHOLDER_NAME_KEY = "cardholderName";
 
-    private final String mCardType;
-    private final String mLastTwo;
-    private final String mLastFour;
-    private final ThreeDSecureInfo mThreeDSecureInfo;
-    private final String mBin;
-    private final BinData mBinData;
-    private final AuthenticationInsight mAuthenticationInsight;
-    private final String mExpirationMonth;
-    private final String mExpirationYear;
-    private final String mCardholderName;
+    private final String cardType;
+    private final String lastTwo;
+    private final String lastFour;
+    private final ThreeDSecureInfo threeDSecureInfo;
+    private final String bin;
+    private final BinData binData;
+    private final AuthenticationInsight authenticationInsight;
+    private final String expirationMonth;
+    private final String expirationYear;
+    private final String cardholderName;
 
     /**
      * Parse card nonce from plain JSON object.
@@ -152,58 +152,58 @@ public class CardNonce extends PaymentMethodNonce {
 
     private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, String description, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.CARD);
-        mCardType = cardType;
-        mLastTwo = lastTwo;
-        mLastFour = lastFour;
-        mThreeDSecureInfo = threeDSecureInfo;
-        mBin = bin;
-        mBinData = binData;
-        mAuthenticationInsight = authenticationInsight;
-        mExpirationMonth = expirationMonth;
-        mExpirationYear = expirationYear;
-        mCardholderName = cardholderName;
+        this.cardType = cardType;
+        this.lastTwo = lastTwo;
+        this.lastFour = lastFour;
+        this.threeDSecureInfo = threeDSecureInfo;
+        this.bin = bin;
+        this.binData = binData;
+        this.authenticationInsight = authenticationInsight;
+        this.expirationMonth = expirationMonth;
+        this.expirationYear = expirationYear;
+        this.cardholderName = cardholderName;
     }
 
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
     public String getCardType() {
-        return mCardType;
+        return cardType;
     }
 
     /**
      * @return Last two digits of the card, intended for display purposes.
      */
     public String getLastTwo() {
-        return mLastTwo;
+        return lastTwo;
     }
 
     /**
      * @return Last four digits of the card.
      */
     public String getLastFour() {
-        return mLastFour;
+        return lastFour;
     }
 
     /**
      * @return The expiration month of the card.
      */
     public String getExpirationMonth() {
-        return mExpirationMonth;
+        return expirationMonth;
     }
 
     /**
      * @return The expiration year of the card.
      */
     public String getExpirationYear() {
-        return mExpirationYear;
+        return expirationYear;
     }
 
     /**
      * @return The name of the cardholder.
      */
     public String getCardholderName() {
-        return mCardholderName;
+        return cardholderName;
     }
 
     /**
@@ -211,21 +211,21 @@ public class CardNonce extends PaymentMethodNonce {
      * {@code null}
      */
     public ThreeDSecureInfo getThreeDSecureInfo() {
-        return mThreeDSecureInfo;
+        return threeDSecureInfo;
     }
 
     /**
      * @return BIN of the card.
      */
     public String getBin() {
-        return mBin;
+        return bin;
     }
 
     /**
      * @return The BIN data for the card number associated with {@link CardNonce}
      */
     public BinData getBinData() {
-        return mBinData;
+        return binData;
     }
 
     /**
@@ -235,36 +235,36 @@ public class CardNonce extends PaymentMethodNonce {
      * 3D Secure authentication.
      */
     public AuthenticationInsight getAuthenticationInsight() {
-        return mAuthenticationInsight;
+        return authenticationInsight;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mCardType);
-        dest.writeString(mLastTwo);
-        dest.writeString(mLastFour);
-        dest.writeString(mBin);
-        dest.writeParcelable(mBinData, flags);
-        dest.writeParcelable(mThreeDSecureInfo, flags);
-        dest.writeParcelable(mAuthenticationInsight, flags);
-        dest.writeString(mExpirationMonth);
-        dest.writeString(mExpirationYear);
-        dest.writeString(mCardholderName);
+        dest.writeString(cardType);
+        dest.writeString(lastTwo);
+        dest.writeString(lastFour);
+        dest.writeString(bin);
+        dest.writeParcelable(binData, flags);
+        dest.writeParcelable(threeDSecureInfo, flags);
+        dest.writeParcelable(authenticationInsight, flags);
+        dest.writeString(expirationMonth);
+        dest.writeString(expirationYear);
+        dest.writeString(cardholderName);
     }
 
     protected CardNonce(Parcel in) {
         super(in);
-        mCardType = in.readString();
-        mLastTwo = in.readString();
-        mLastFour = in.readString();
-        mBin = in.readString();
-        mBinData = in.readParcelable(BinData.class.getClassLoader());
-        mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
-        mAuthenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
-        mExpirationMonth = in.readString();
-        mExpirationYear = in.readString();
-        mCardholderName = in.readString();
+        cardType = in.readString();
+        lastTwo = in.readString();
+        lastFour = in.readString();
+        bin = in.readString();
+        binData = in.readParcelable(BinData.class.getClassLoader());
+        threeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
+        authenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
+        expirationMonth = in.readString();
+        expirationYear = in.readString();
+        cardholderName = in.readString();
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {

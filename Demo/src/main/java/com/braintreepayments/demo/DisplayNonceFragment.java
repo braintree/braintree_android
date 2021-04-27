@@ -19,13 +19,13 @@ import com.braintreepayments.api.PaymentMethodNonce;
  */
 public class DisplayNonceFragment extends Fragment {
 
-    private PaymentMethodNonce mNonce;
+    private PaymentMethodNonce nonce;
 
-    private TextView mNonceString;
-    private TextView mNonceDetails;
-    private TextView mDeviceData;
+    private TextView nonceString;
+    private TextView nonceDetails;
+    private TextView deviceData;
 
-    private Button mCreateTransactionButton;
+    private Button createTransactionButton;
 
     public DisplayNonceFragment() { }
 
@@ -38,12 +38,12 @@ public class DisplayNonceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_display_nonce, container, false);
-        mNonceString = view.findViewById(R.id.nonce);
-        mNonceDetails = view.findViewById(R.id.nonce_details);
-        mDeviceData = view.findViewById(R.id.device_data);
-        mCreateTransactionButton = view.findViewById(R.id.create_transaction);
+        nonceString = view.findViewById(R.id.nonce);
+        nonceDetails = view.findViewById(R.id.nonce_details);
+        deviceData = view.findViewById(R.id.device_data);
+        createTransactionButton = view.findViewById(R.id.create_transaction);
 
-        mCreateTransactionButton.setOnClickListener(this::createTransaction);
+        createTransactionButton.setOnClickListener(this::createTransaction);
 
         DisplayNonceFragmentArgs args = DisplayNonceFragmentArgs.fromBundle(getArguments());
         displayNonce(args.getPaymentMethodNonce(), args.getDeviceData());
@@ -51,19 +51,19 @@ public class DisplayNonceFragment extends Fragment {
     }
 
     private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
-        mNonce = paymentMethodNonce;
-        mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getString()));
+        nonce = paymentMethodNonce;
+        nonceString.setText(getString(R.string.nonce_placeholder, nonce.getString()));
 
-        String details = PaymentMethodNonceFormatter.convertToString(mNonce);
-        mNonceDetails.setText(details);
+        String details = PaymentMethodNonceFormatter.convertToString(nonce);
+        nonceDetails.setText(details);
 
-        mDeviceData.setText(getString(R.string.device_data_placeholder, deviceData));
+        this.deviceData.setText(getString(R.string.device_data_placeholder, deviceData));
     }
 
     public void createTransaction(View v) {
-        mCreateTransactionButton.setEnabled(false);
+        createTransactionButton.setEnabled(false);
 
-        NavDirections action = DisplayNonceFragmentDirections.actionDisplayNonceFragmentToCreateTransactionFragment(mNonce);
+        NavDirections action = DisplayNonceFragmentDirections.actionDisplayNonceFragmentToCreateTransactionFragment(nonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 }

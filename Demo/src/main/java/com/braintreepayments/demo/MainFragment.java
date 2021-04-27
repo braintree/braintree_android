@@ -21,36 +21,36 @@ public class MainFragment extends BaseFragment {
 
     private static final String KEY_NONCE = "nonce";
 
-    private PaymentMethodNonce mNonce;
+    private PaymentMethodNonce nonce;
 
-    private Button mGooglePayButton;
-    private Button mCardsButton;
-    private Button mPayPalButton;
-    private Button mVenmoButton;
-    private Button mVisaCheckoutButton;
-    private Button mLocalPaymentsButton;
-    private Button mPreferredPaymentMethods;
+    private Button googlePayButton;
+    private Button cardsButton;
+    private Button payPalButton;
+    private Button venmoButton;
+    private Button visaCheckoutButton;
+    private Button localPaymentsButton;
+    private Button preferredPaymentMethods;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mGooglePayButton = view.findViewById(R.id.google_pay);
-        mCardsButton = view.findViewById(R.id.card);
-        mPayPalButton = view.findViewById(R.id.paypal);
-        mVenmoButton = view.findViewById(R.id.venmo);
-        mVisaCheckoutButton = view.findViewById(R.id.visa_checkout);
-        mLocalPaymentsButton = view.findViewById(R.id.local_payment);
-        mPreferredPaymentMethods = view.findViewById(R.id.preferred_payment_methods);
+        googlePayButton = view.findViewById(R.id.google_pay);
+        cardsButton = view.findViewById(R.id.card);
+        payPalButton = view.findViewById(R.id.paypal);
+        venmoButton = view.findViewById(R.id.venmo);
+        visaCheckoutButton = view.findViewById(R.id.visa_checkout);
+        localPaymentsButton = view.findViewById(R.id.local_payment);
+        preferredPaymentMethods = view.findViewById(R.id.preferred_payment_methods);
 
-        mCardsButton.setOnClickListener(this::launchCards);
-        mPayPalButton.setOnClickListener(this::launchPayPal);
-        mLocalPaymentsButton.setOnClickListener(this::launchLocalPayment);
-        mGooglePayButton.setOnClickListener(this::launchGooglePay);
-        mVisaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
-        mVenmoButton.setOnClickListener(this::launchVenmo);
-        mPreferredPaymentMethods.setOnClickListener(this::launchPreferredPaymentMethods);
+        cardsButton.setOnClickListener(this::launchCards);
+        payPalButton.setOnClickListener(this::launchPayPal);
+        localPaymentsButton.setOnClickListener(this::launchLocalPayment);
+        googlePayButton.setOnClickListener(this::launchGooglePay);
+        visaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
+        venmoButton.setOnClickListener(this::launchVenmo);
+        preferredPaymentMethods.setOnClickListener(this::launchPreferredPaymentMethods);
 
         return view;
     }
@@ -61,7 +61,7 @@ public class MainFragment extends BaseFragment {
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_NONCE)) {
-                mNonce = savedInstanceState.getParcelable(KEY_NONCE);
+                nonce = savedInstanceState.getParcelable(KEY_NONCE);
             }
         }
     }
@@ -69,8 +69,8 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mNonce != null) {
-            outState.putParcelable(KEY_NONCE, mNonce);
+        if (nonce != null) {
+            outState.putParcelable(KEY_NONCE, nonce);
         }
     }
 

@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.VisaCheckoutUserData;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -16,11 +14,11 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutUserDataUnitTest {
 
-    private JSONObject mSampleUserData;
+    private JSONObject sampleUserData;
 
     @Before
     public void setup() throws JSONException {
-       mSampleUserData = new JSONObject()
+       sampleUserData = new JSONObject()
                .put("userFirstName", "userFirstName")
                .put("userLastName", "userLastName")
                .put("userFullName", "userFullName")
@@ -30,7 +28,7 @@ public class VisaCheckoutUserDataUnitTest {
 
     @Test
     public void fromJson_whenValid_returnsPopulatedObject() {
-        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(mSampleUserData);
+        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData);
 
         assertEquals("userFirstName", visaCheckoutUserData.getUserFirstName());
         assertEquals("userLastName", visaCheckoutUserData.getUserLastName());
@@ -52,7 +50,7 @@ public class VisaCheckoutUserDataUnitTest {
 
     @Test
     public void parcelsCorrectly() {
-        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(mSampleUserData);
+        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData);
 
         Parcel parcel = Parcel.obtain();
         visaCheckoutUserData.writeToParcel(parcel, 0);

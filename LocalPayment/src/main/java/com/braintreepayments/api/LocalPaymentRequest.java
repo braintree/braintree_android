@@ -29,38 +29,38 @@ public class LocalPaymentRequest {
     private static final String PAYMENT_TYPE_COUNTRY_CODE_KEY = "paymentTypeCountryCode";
     private static final String BIC_KEY = "bic";
 
-    private PostalAddress mAddress;
-    private String mAmount;
-    private String mCurrencyCode;
-    private String mEmail;
-    private String mGivenName;
-    private String mMerchantAccountId;
-    private String mPaymentType;
-    private String mPaymentTypeCountryCode;
-    private String mPhone;
-    private boolean mShippingAddressRequired;
-    private String mSurname;
-    private String mBankIdentificationCode;
+    private PostalAddress address;
+    private String amount;
+    private String currencyCode;
+    private String email;
+    private String givenName;
+    private String merchantAccountId;
+    private String paymentType;
+    private String paymentTypeCountryCode;
+    private String phone;
+    private boolean shippingAddressRequired;
+    private String surname;
+    private String bankIdentificationCode;
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
      */
     public void setAddress(PostalAddress address) {
-        mAddress = address;
+        this.address = address;
     }
 
     /**
      * @param amount Optional - The amount for the transaction.
      */
     public void setAmount(String amount) {
-        mAmount = amount;
+        this.amount = amount;
     }
 
     /**
      * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
      */
     public void setBic(String bankIdentificationCode) {
-        mBankIdentificationCode = bankIdentificationCode;
+        this.bankIdentificationCode = bankIdentificationCode;
     }
 
 
@@ -69,35 +69,35 @@ public class LocalPaymentRequest {
      * currency code if not set.
      */
     public void setCurrencyCode(String currencyCode) {
-        mCurrencyCode = currencyCode;
+        this.currencyCode = currencyCode;
     }
 
     /**
      * @param email Optional - Payer email of the customer.
      */
     public void setEmail(String email) {
-        mEmail = email;
+        this.email = email;
     }
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
      */
     public void setGivenName(String givenName) {
-        mGivenName = givenName;
+        this.givenName = givenName;
     }
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
      */
     public void setMerchantAccountId(String merchantAccountId) {
-        mMerchantAccountId = merchantAccountId;
+        this.merchantAccountId = merchantAccountId;
     }
 
     /**
      * @param paymentType - The type of payment
      */
     public void setPaymentType(String paymentType) {
-        mPaymentType = paymentType;
+        this.paymentType = paymentType;
     }
 
     /**
@@ -108,14 +108,14 @@ public class LocalPaymentRequest {
      *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
      */
     public void setPaymentTypeCountryCode(String paymentTypeCountryCode) {
-        mPaymentTypeCountryCode = paymentTypeCountryCode;
+        this.paymentTypeCountryCode = paymentTypeCountryCode;
     }
 
     /**
      * @param phone Optional - Phone number of the customer.
      */
     public void setPhone(String phone) {
-        mPhone = phone;
+        this.phone = phone;
     }
 
     /**
@@ -123,62 +123,62 @@ public class LocalPaymentRequest {
      *                                this should be false. Defaults to false.
      */
     public void setShippingAddressRequired(boolean shippingAddressRequired) {
-        mShippingAddressRequired = shippingAddressRequired;
+        this.shippingAddressRequired = shippingAddressRequired;
     }
 
     /**
      * @param surname Optional - Surname (last name) of the customer.
      */
     public void setSurname(String surname) {
-        mSurname = surname;
+        this.surname = surname;
     }
 
     public PostalAddress getAddress() {
-        return mAddress;
+        return address;
     }
 
     public String getAmount() {
-        return mAmount;
+        return amount;
     }
 
     public String getBic() {
-        return mBankIdentificationCode;
+        return bankIdentificationCode;
     }
 
     public String getCurrencyCode() {
-        return mCurrencyCode;
+        return currencyCode;
     }
 
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     public String getGivenName() {
-        return mGivenName;
+        return givenName;
     }
 
     public String getMerchantAccountId() {
-        return mMerchantAccountId;
+        return merchantAccountId;
     }
 
     public String getPaymentType() {
-        return mPaymentType;
+        return paymentType;
     }
 
     public String getPaymentTypeCountryCode() {
-        return mPaymentTypeCountryCode;
+        return paymentTypeCountryCode;
     }
 
     public String getPhone() {
-        return mPhone;
+        return phone;
     }
 
     public boolean isShippingAddressRequired() {
-        return mShippingAddressRequired;
+        return shippingAddressRequired;
     }
 
     public String getSurname() {
-        return mSurname;
+        return surname;
     }
 
     public String build(String returnUrl, String cancelUrl) {
@@ -187,28 +187,28 @@ public class LocalPaymentRequest {
                     .put(INTENT_KEY, "sale")
                     .put(RETURN_URL_KEY, returnUrl)
                     .put(CANCEL_URL_KEY, cancelUrl)
-                    .put(FUNDING_SOURCE_KEY, mPaymentType)
-                    .put(AMOUNT_KEY, mAmount)
-                    .put(CURRENCY_CODE_KEY, mCurrencyCode)
-                    .put(GIVEN_NAME_KEY, mGivenName)
-                    .put(SURNAME_KEY, mSurname)
-                    .put(EMAIL_KEY, mEmail)
-                    .put(PHONE_KEY, mPhone)
-                    .put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId)
-                    .putOpt(PAYMENT_TYPE_COUNTRY_CODE_KEY, mPaymentTypeCountryCode)
-                    .putOpt(BIC_KEY, mBankIdentificationCode);
+                    .put(FUNDING_SOURCE_KEY, paymentType)
+                    .put(AMOUNT_KEY, amount)
+                    .put(CURRENCY_CODE_KEY, currencyCode)
+                    .put(GIVEN_NAME_KEY, givenName)
+                    .put(SURNAME_KEY, surname)
+                    .put(EMAIL_KEY, email)
+                    .put(PHONE_KEY, phone)
+                    .put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId)
+                    .putOpt(PAYMENT_TYPE_COUNTRY_CODE_KEY, paymentTypeCountryCode)
+                    .putOpt(BIC_KEY, bankIdentificationCode);
 
-            if (mAddress != null) {
-                payload.put(STREET_ADDRESS_KEY, mAddress.getStreetAddress())
-                        .put(EXTENDED_ADDRESS_KEY, mAddress.getExtendedAddress())
-                        .put(LOCALITY_KEY, mAddress.getLocality())
-                        .put(REGION_KEY, mAddress.getRegion())
-                        .put(POSTAL_CODE_KEY, mAddress.getPostalCode())
-                        .put(COUNTRY_CODE_KEY, mAddress.getCountryCodeAlpha2());
+            if (address != null) {
+                payload.put(STREET_ADDRESS_KEY, address.getStreetAddress())
+                        .put(EXTENDED_ADDRESS_KEY, address.getExtendedAddress())
+                        .put(LOCALITY_KEY, address.getLocality())
+                        .put(REGION_KEY, address.getRegion())
+                        .put(POSTAL_CODE_KEY, address.getPostalCode())
+                        .put(COUNTRY_CODE_KEY, address.getCountryCodeAlpha2());
             }
 
             JSONObject experienceProfile = new JSONObject();
-            experienceProfile.put(NO_SHIPPING_KEY, !mShippingAddressRequired);
+            experienceProfile.put(NO_SHIPPING_KEY, !shippingAddressRequired);
             payload.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
 
             return payload.toString();

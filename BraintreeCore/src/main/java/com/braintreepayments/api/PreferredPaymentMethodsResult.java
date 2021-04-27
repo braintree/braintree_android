@@ -8,8 +8,8 @@ import org.json.JSONObject;
  *  This class is currently in beta and may change in future releases.
  */
 public class PreferredPaymentMethodsResult {
-    private boolean mPayPalPreferred;
-    private boolean mVenmoPreferred;
+    private boolean payPalPreferred;
+    private boolean venmoPreferred;
 
     PreferredPaymentMethodsResult() {}
 
@@ -31,12 +31,12 @@ public class PreferredPaymentMethodsResult {
     }
 
     public PreferredPaymentMethodsResult isPayPalPreferred(boolean payPalPreferred) {
-        mPayPalPreferred = payPalPreferred;
+        this.payPalPreferred = payPalPreferred;
         return this;
     }
 
     public PreferredPaymentMethodsResult isVenmoPreferred(boolean venmoPreferred) {
-        mVenmoPreferred = venmoPreferred;
+        this.venmoPreferred = venmoPreferred;
         return this;
     }
 
@@ -45,7 +45,7 @@ public class PreferredPaymentMethodsResult {
      * @return True if PayPal is a preferred payment method. False otherwise.
      */
     public boolean isPayPalPreferred() {
-        return mPayPalPreferred;
+        return payPalPreferred;
     }
 
     /**
@@ -53,7 +53,7 @@ public class PreferredPaymentMethodsResult {
      * @return True if Venmo app is installed. False otherwise.
      */
     public boolean isVenmoPreferred() {
-        return mVenmoPreferred;
+        return venmoPreferred;
     }
 
     private static JSONObject getObjectAtKeyPath(JSONObject obj, String keyPath) throws JSONException {

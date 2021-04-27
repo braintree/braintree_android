@@ -19,37 +19,37 @@ import static junit.framework.Assert.assertNull;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalInstallationIdentifierTest {
 
-    private SharedPreferences mPrefs;
+    private SharedPreferences prefs;
 
     @Before
     public void setup() {
-        mPrefs = ApplicationProvider.getApplicationContext().getSharedPreferences("com.braintreepayments.api.paypal", Context.MODE_PRIVATE);
-        mPrefs.edit().clear().apply();
+        prefs = ApplicationProvider.getApplicationContext().getSharedPreferences("com.braintreepayments.api.paypal", Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
     }
 
     @Test
     public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() {
         PayPalInstallationIdentifier sut = new PayPalInstallationIdentifier();
 
-        assertNull(mPrefs.getString("InstallationGUID", null));
+        assertNull(prefs.getString("InstallationGUID", null));
 
         assertNotNull(sut.getInstallationGUID(ApplicationProvider.getApplicationContext()));
 
-        assertNotNull(mPrefs.getString("InstallationGUID", null));
+        assertNotNull(prefs.getString("InstallationGUID", null));
     }
 
     @Test
     public void getInstallationGUID_returnsExistingGUIDWhenOneExist() {
         PayPalInstallationIdentifier sut = new PayPalInstallationIdentifier();
 
-        mPrefs.edit()
+        prefs.edit()
                 .putString("InstallationGUID", UUID.randomUUID().toString())
                 .apply();
-        String existingGUID = mPrefs.getString("InstallationGUID", null);
+        String existingGUID = prefs.getString("InstallationGUID", null);
         assertNotNull(existingGUID);
 
         assertEquals(existingGUID, sut.getInstallationGUID(ApplicationProvider.getApplicationContext()));
 
-        assertEquals(existingGUID, mPrefs.getString("InstallationGUID", null));
+        assertEquals(existingGUID, prefs.getString("InstallationGUID", null));
     }
 }

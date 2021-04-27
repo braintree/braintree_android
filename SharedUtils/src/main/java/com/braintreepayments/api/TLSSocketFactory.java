@@ -23,7 +23,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 class TLSSocketFactory extends SSLSocketFactory {
 
-    private SSLSocketFactory mInternalSSLSocketFactory;
+    private SSLSocketFactory internalSSLSocketFactory;
 
     static TLSSocketFactory newInstance() throws SSLException {
         return new TLSSocketFactory();
@@ -33,7 +33,7 @@ class TLSSocketFactory extends SSLSocketFactory {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, null, null); // use system security providers
-            mInternalSSLSocketFactory = sslContext.getSocketFactory();
+            internalSSLSocketFactory = sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new SSLException(e.getMessage());
         }
@@ -64,7 +64,7 @@ class TLSSocketFactory extends SSLSocketFactory {
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, tmf.getTrustManagers(), null);
-            mInternalSSLSocketFactory = sslContext.getSocketFactory();
+            internalSSLSocketFactory = sslContext.getSocketFactory();
         } catch (Exception e) {
             throw new SSLException(e.getMessage());
         } finally {
@@ -76,42 +76,42 @@ class TLSSocketFactory extends SSLSocketFactory {
 
     @Override
     public String[] getDefaultCipherSuites() {
-        return mInternalSSLSocketFactory.getDefaultCipherSuites();
+        return internalSSLSocketFactory.getDefaultCipherSuites();
     }
 
     @Override
     public String[] getSupportedCipherSuites() {
-        return mInternalSSLSocketFactory.getSupportedCipherSuites();
+        return internalSSLSocketFactory.getSupportedCipherSuites();
     }
 
     @Override
     public Socket createSocket(Socket s, String host, int port, boolean autoClose)
             throws IOException {
-        return enableTLSOnSocket(mInternalSSLSocketFactory.createSocket(s, host, port, autoClose));
+        return enableTLSOnSocket(internalSSLSocketFactory.createSocket(s, host, port, autoClose));
     }
 
     @Override
     public Socket createSocket(String host, int port) throws IOException {
-        return enableTLSOnSocket(mInternalSSLSocketFactory.createSocket(host, port));
+        return enableTLSOnSocket(internalSSLSocketFactory.createSocket(host, port));
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
             throws IOException {
         return enableTLSOnSocket(
-                mInternalSSLSocketFactory.createSocket(host, port, localHost, localPort));
+                internalSSLSocketFactory.createSocket(host, port, localHost, localPort));
     }
 
     @Override
     public Socket createSocket(InetAddress host, int port) throws IOException {
-        return enableTLSOnSocket(mInternalSSLSocketFactory.createSocket(host, port));
+        return enableTLSOnSocket(internalSSLSocketFactory.createSocket(host, port));
     }
 
     @Override
     public Socket createSocket(InetAddress address, int port, InetAddress localAddress,
             int localPort) throws IOException {
         return enableTLSOnSocket(
-                mInternalSSLSocketFactory.createSocket(address, port, localAddress, localPort));
+                internalSSLSocketFactory.createSocket(address, port, localAddress, localPort));
     }
 
     private Socket enableTLSOnSocket(Socket socket) {

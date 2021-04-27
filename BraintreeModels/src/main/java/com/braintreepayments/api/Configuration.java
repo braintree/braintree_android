@@ -37,27 +37,27 @@ public class Configuration {
     private static final String SAMSUNG_PAY_KEY = "samsungPay";
     private static final String CARDINAL_AUTHENTICATION_JWT = "cardinalAuthenticationJWT";
 
-    private final String mAssetsUrl;
-    private final String mConfigurationString;
-    private final String mClientApiUrl;
-    private final Set<String> mChallenges = new HashSet<>();
-    private final String mEnvironment;
-    private final String mMerchantId;
-    private final String mMerchantAccountId;
-    private final BraintreeApiConfiguration mBraintreeApiConfiguration;
-    private final AnalyticsConfiguration mAnalyticsConfiguration;
-    private final CardConfiguration mCardConfiguration;
-    private final boolean mPaypalEnabled;
-    private final PayPalConfiguration mPayPalConfiguration;
-    private final GooglePayConfiguration mGooglePayConfiguration;
-    private final boolean mThreeDSecureEnabled;
-    private final VenmoConfiguration mVenmoConfiguration;
-    private final KountConfiguration mKountConfiguration;
-    private final UnionPayConfiguration mUnionPayConfiguration;
-    private final VisaCheckoutConfiguration mVisaCheckoutConfiguration;
-    private final GraphQLConfiguration mGraphQLConfiguration;
-    private final SamsungPayConfiguration mSamsungPayConfiguration;
-    private final String mCardinalAuthenticationJwt;
+    private final String assetsUrl;
+    private final String configurationString;
+    private final String clientApiUrl;
+    private final Set<String> challenges = new HashSet<>();
+    private final String environment;
+    private final String merchantId;
+    private final String merchantAccountId;
+    private final BraintreeApiConfiguration braintreeApiConfiguration;
+    private final AnalyticsConfiguration analyticsConfiguration;
+    private final CardConfiguration cardConfiguration;
+    private final boolean paypalEnabled;
+    private final PayPalConfiguration payPalConfiguration;
+    private final GooglePayConfiguration googlePayConfiguration;
+    private final boolean threeDSecureEnabled;
+    private final VenmoConfiguration venmoConfiguration;
+    private final KountConfiguration kountConfiguration;
+    private final UnionPayConfiguration unionPayConfiguration;
+    private final VisaCheckoutConfiguration visaCheckoutConfiguration;
+    private final GraphQLConfiguration graphQLConfiguration;
+    private final SamsungPayConfiguration samsungPayConfiguration;
+    private final String cardinalAuthenticationJwt;
 
     /**
      * Creates a new {@link Configuration} instance from a json string.
@@ -74,103 +74,103 @@ public class Configuration {
             throw new JSONException("Configuration cannot be null");
         }
 
-        mConfigurationString = configurationString;
+        this.configurationString = configurationString;
         JSONObject json = new JSONObject(configurationString);
 
-        mAssetsUrl = Json.optString(json, ASSETS_URL_KEY, "");
-        mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
+        assetsUrl = Json.optString(json, ASSETS_URL_KEY, "");
+        clientApiUrl = json.getString(CLIENT_API_URL_KEY);
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
-        mEnvironment = json.getString(ENVIRONMENT_KEY);
-        mMerchantId = json.getString(MERCHANT_ID_KEY);
-        mMerchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
-        mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
-        mBraintreeApiConfiguration = BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY));
-        mCardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
-        mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
-        mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
-        mGooglePayConfiguration = GooglePayConfiguration.fromJson(json.optJSONObject(GOOGLE_PAY_KEY));
-        mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
-        mVenmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
-        mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
-        mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
-        mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
-        mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
-        mSamsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
-        mCardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
+        environment = json.getString(ENVIRONMENT_KEY);
+        merchantId = json.getString(MERCHANT_ID_KEY);
+        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
+        analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
+        braintreeApiConfiguration = BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY));
+        cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
+        paypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
+        payPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
+        googlePayConfiguration = GooglePayConfiguration.fromJson(json.optJSONObject(GOOGLE_PAY_KEY));
+        threeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
+        venmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
+        kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
+        unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
+        visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
+        graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
+        samsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
+        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
     }
 
     public String toJson() {
-        return mConfigurationString;
+        return configurationString;
     }
 
     /**
      * @return The assets URL of the current environment.
      */
     public String getAssetsUrl() {
-        return mAssetsUrl;
+        return assetsUrl;
     }
 
     /**
      * @return The url of the Braintree client API for the current environment.
      */
     public String getClientApiUrl() {
-        return mClientApiUrl;
+        return clientApiUrl;
     }
 
     /**
      * @return {@code true} if cvv is required for card transactions, {@code false} otherwise.
      */
     public boolean isCvvChallengePresent() {
-        return mChallenges.contains("cvv");
+        return challenges.contains("cvv");
     }
 
     /**
      * @return {@code true} if postal code is required for card transactions, {@code false} otherwise.
      */
     public boolean isPostalCodeChallengePresent() {
-        return mChallenges.contains("postal_code");
+        return challenges.contains("postal_code");
     }
 
     /**
      * @return {@code true} if fraud device data collection should occur; {@code false} otherwise.
      */
     boolean isFraudDataCollectionEnabled() {
-        return mCardConfiguration.isFraudDataCollectionEnabled();
+        return cardConfiguration.isFraudDataCollectionEnabled();
     }
 
     /**
      * @return {@code true} if Venmo is enabled for the merchant account; {@code false} otherwise.
      */
     public boolean isVenmoEnabled() {
-        return mVenmoConfiguration.isAccessTokenValid();
+        return venmoConfiguration.isAccessTokenValid();
     }
 
     /**
      * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
      */
     String getVenmoAccessToken() {
-        return mVenmoConfiguration.getAccessToken();
+        return venmoConfiguration.getAccessToken();
     }
 
     /**
      * @return the Venmo merchant id used by the Venmo app to authorize payment.
      */
     String getVenmoMerchantId() {
-        return mVenmoConfiguration.getMerchantId();
+        return venmoConfiguration.getMerchantId();
     }
 
     /**
      * @return the Venmo environment used to handle this payment.
      */
     String getVenmoEnvironment() {
-        return mVenmoConfiguration.getEnvironment();
+        return venmoConfiguration.getEnvironment();
     }
 
     /**
      * @return {@code true} if GraphQL is enabled for the merchant account; {@code false} otherwise.
      */
     boolean isGraphQLEnabled() {
-        return mGraphQLConfiguration.isEnabled();
+        return graphQLConfiguration.isEnabled();
     }
 
     /**
@@ -185,28 +185,28 @@ public class Configuration {
      * @return {@code true} if Kount is enabled for the merchant account; {@code false} otherwise.
      */
     boolean isKountEnabled() {
-        return mKountConfiguration.isEnabled();
+        return kountConfiguration.isEnabled();
     }
 
     /**
      * @return the Kount merchant id set in the Gateway.
      */
     String getKountMerchantId() {
-        return mKountConfiguration.getKountMerchantId();
+        return kountConfiguration.getKountMerchantId();
     }
 
     /**
      * @return {@code true} if UnionPay is enabled for the merchant account; {@code false} otherwise.
      */
     public boolean isUnionPayEnabled() {
-        return mUnionPayConfiguration.isEnabled();
+        return unionPayConfiguration.isEnabled();
     }
 
     /**
      * @return The current environment.
      */
     public String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 
     /**
@@ -214,105 +214,105 @@ public class Configuration {
      *         {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
-        return mPaypalEnabled;
+        return paypalEnabled;
     }
 
     /**
      * @return the PayPal app display name.
      */
     String getPayPalDisplayName() {
-        return mPayPalConfiguration.getDisplayName();
+        return payPalConfiguration.getDisplayName();
     }
 
     /**
      * @return the PayPal app client id.
      */
     String getPayPalClientId() {
-        return mPayPalConfiguration.getClientId();
+        return payPalConfiguration.getClientId();
     }
 
     /**
      * @return the PayPal app privacy url.
      */
     public String getPayPalPrivacyUrl() {
-        return mPayPalConfiguration.getPrivacyUrl();
+        return payPalConfiguration.getPrivacyUrl();
     }
 
     /**
      * @return the PayPal app user agreement url.
      */
     public String getPayPalUserAgreementUrl() {
-        return mPayPalConfiguration.getUserAgreementUrl();
+        return payPalConfiguration.getUserAgreementUrl();
     }
 
     /**
      * @return the url for custom PayPal environments.
      */
     public String getPayPalDirectBaseUrl() {
-        return mPayPalConfiguration.getDirectBaseUrl();
+        return payPalConfiguration.getDirectBaseUrl();
     }
 
     /**
      * @return the current environment for PayPal.
      */
     String getPayPalEnvironment() {
-        return mPayPalConfiguration.getEnvironment();
+        return payPalConfiguration.getEnvironment();
     }
 
     /**
      * @return {@code true} if PayPal touch is currently disabled, {@code false} otherwise.
      */
     boolean isPayPalTouchDisabled() {
-        return mPayPalConfiguration.isTouchDisabled();
+        return payPalConfiguration.isTouchDisabled();
     }
 
     /**
      * @return the PayPal currency code.
      */
     String getPayPalCurrencyIsoCode() {
-        return mPayPalConfiguration.getCurrencyIsoCode();
+        return payPalConfiguration.getCurrencyIsoCode();
     }
 
     /**
      * @return {@code true} if Google Payment is enabled and supported in the current environment; {@code false} otherwise.
      */
     public boolean isGooglePayEnabled() {
-        return mGooglePayConfiguration.isEnabled();
+        return googlePayConfiguration.isEnabled();
     }
 
     /**
      * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
      */
     String getGooglePayAuthorizationFingerprint() {
-        return mGooglePayConfiguration.getGoogleAuthorizationFingerprint();
+        return googlePayConfiguration.getGoogleAuthorizationFingerprint();
     }
 
     /**
      * @return the current Google Pay environment.
      */
     String getGooglePayEnvironment() {
-        return mGooglePayConfiguration.getEnvironment();
+        return googlePayConfiguration.getEnvironment();
     }
 
     /**
      * @return the Google Pay display name to show to the user.
      */
     String getGooglePayDisplayName() {
-        return mGooglePayConfiguration.getDisplayName();
+        return googlePayConfiguration.getDisplayName();
     }
 
     /**
      * @return a list of supported card networks for Google Pay.
      */
     List<String> getGooglePaySupportedNetworks() {
-        return mGooglePayConfiguration.getSupportedNetworks();
+        return googlePayConfiguration.getSupportedNetworks();
     }
 
     /**
      * @return the PayPal Client ID used by Google Pay.
      */
     String getGooglePayPayPalClientId() {
-        return mGooglePayConfiguration.getPaypalClientId();
+        return googlePayConfiguration.getPaypalClientId();
     }
 
     /**
@@ -320,63 +320,63 @@ public class Configuration {
      *         {@code false} otherwise.
      */
     public boolean isThreeDSecureEnabled() {
-        return mThreeDSecureEnabled;
+        return threeDSecureEnabled;
     }
 
     /**
      * @return the current Braintree merchant id.
      */
     public String getMerchantId() {
-        return mMerchantId;
+        return merchantId;
     }
 
     /**
      * @return the current Braintree merchant account id.
      */
     public String getMerchantAccountId() {
-        return mMerchantAccountId;
+        return merchantAccountId;
     }
 
     /**
      * @return {@link String} url of the Braintree analytics service.
      */
     String getAnalyticsUrl() {
-        return mAnalyticsConfiguration.getUrl();
+        return analyticsConfiguration.getUrl();
     }
 
     /**
      * @return {@code true} if analytics are enabled, {@code false} otherwise.
      */
     boolean isAnalyticsEnabled() {
-        return mAnalyticsConfiguration.isEnabled();
+        return analyticsConfiguration.isEnabled();
     }
 
     /**
      * @return {@code true} if Visa Checkout is enabled for the merchant account; {@code false} otherwise.
      */
     public boolean isVisaCheckoutEnabled() {
-        return mVisaCheckoutConfiguration.isEnabled();
+        return visaCheckoutConfiguration.isEnabled();
     }
 
     /**
      * @return the Visa Checkout supported networks enabled for the merchant account.
      */
     List<String> getVisaCheckoutSupportedNetworks() {
-        return mVisaCheckoutConfiguration.getAcceptedCardBrands();
+        return visaCheckoutConfiguration.getAcceptedCardBrands();
     }
 
     /**
      * @return the Visa Checkout API key configured in the Braintree Control Panel.
      */
     String getVisaCheckoutApiKey() {
-        return mVisaCheckoutConfiguration.getApiKey();
+        return visaCheckoutConfiguration.getApiKey();
     }
 
     /**
      * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
      */
     String getVisaCheckoutExternalClientId() {
-        return mVisaCheckoutConfiguration.getExternalClientId();
+        return visaCheckoutConfiguration.getExternalClientId();
     }
 
     /**
@@ -386,62 +386,62 @@ public class Configuration {
      * @return {@code true} if GraphQL is enabled and the feature is enabled, {@code false} otherwise.
      */
     boolean isGraphQLFeatureEnabled(String feature) {
-        return mGraphQLConfiguration.isFeatureEnabled(feature);
+        return graphQLConfiguration.isFeatureEnabled(feature);
     }
 
     /**
      * @return the GraphQL url.
      */
     String getGraphQLUrl() {
-        return mGraphQLConfiguration.getUrl();
+        return graphQLConfiguration.getUrl();
     }
 
     /**
      * @return {@code true} if Samsung Pay is enabled; {@code false} otherwise.
      */
     public boolean isSamsungPayEnabled() {
-        return mSamsungPayConfiguration.isEnabled();
+        return samsungPayConfiguration.isEnabled();
     }
 
     /**
      * @return the merchant display name for Samsung Pay.
      */
     String getSamsungPayMerchantDisplayName() {
-        return mSamsungPayConfiguration.getMerchantDisplayName();
+        return samsungPayConfiguration.getMerchantDisplayName();
     }
 
     /**
      * @return the Samsung Pay service id associated with the merchant.
      */
     String getSamsungPayServiceId() {
-        return mSamsungPayConfiguration.getServiceId();
+        return samsungPayConfiguration.getServiceId();
     }
 
     /**
      * @return a list of card brands supported by Samsung Pay.
      */
     List<String> getSamsungPaySupportedCardBrands() {
-        return new ArrayList<>(mSamsungPayConfiguration.getSupportedCardBrands());
+        return new ArrayList<>(samsungPayConfiguration.getSupportedCardBrands());
     }
 
     /**
      * @return the authorization to use with Samsung Pay.
      */
     String getSamsungPayAuthorization() {
-        return mSamsungPayConfiguration.getSamsungAuthorization();
+        return samsungPayConfiguration.getSamsungAuthorization();
     }
 
     /**
      * @return the Braintree environment Samsung Pay should interact with.
      */
     String getSamsungPayEnvironment() {
-        return mSamsungPayConfiguration.getEnvironment();
+        return samsungPayConfiguration.getEnvironment();
     }
 
     private void parseJsonChallenges(JSONArray jsonArray) {
         if (jsonArray != null) {
             for (int i = 0; i < jsonArray.length(); i++) {
-                mChallenges.add(jsonArray.optString(i, ""));
+                challenges.add(jsonArray.optString(i, ""));
             }
         }
     }
@@ -450,34 +450,34 @@ public class Configuration {
      * @return the JWT for Cardinal
      */
     public String getCardinalAuthenticationJwt() {
-        return mCardinalAuthenticationJwt;
+        return cardinalAuthenticationJwt;
     }
 
     /**
      * @return The Access Token for Braintree API.
      */
     String getBraintreeApiAccessToken() {
-        return mBraintreeApiConfiguration.getAccessToken();
+        return braintreeApiConfiguration.getAccessToken();
     }
 
     /**
      * @return the base url for accessing Braintree API.
      */
     String getBraintreeApiUrl() {
-        return mBraintreeApiConfiguration.getUrl();
+        return braintreeApiConfiguration.getUrl();
     }
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
      */
     boolean isBraintreeApiEnabled() {
-        return mBraintreeApiConfiguration.isEnabled();
+        return braintreeApiConfiguration.isEnabled();
     }
 
     /**
      * @return a {@link List<String>} of card types supported by the merchant.
      */
     List<String> getSupportedCardTypes() {
-        return mCardConfiguration.getSupportedCardTypes();
+        return cardConfiguration.getSupportedCardTypes();
     }
 }

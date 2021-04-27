@@ -23,11 +23,11 @@ class SamsungPayConfiguration {
     private static final String SAMSUNG_AUTHORIZATION_KEY = "samsungAuthorization";
     private static final String ENVIRONMENT = "environment";
 
-    private final List<String> mSupportedCardBrands = new ArrayList<>();
-    private String mMerchantDisplayName;
-    private String mServiceId;
-    private String mSamsungAuthorization;
-    private String mEnvironment;
+    private final List<String> supportedCardBrands = new ArrayList<>();
+    private String merchantDisplayName;
+    private String serviceId;
+    private String samsungAuthorization;
+    private String environment;
 
     static SamsungPayConfiguration fromJson(JSONObject json) {
         SamsungPayConfiguration configuration = new SamsungPayConfiguration();
@@ -36,18 +36,18 @@ class SamsungPayConfiguration {
             json = new JSONObject();
         }
 
-        configuration.mMerchantDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
-        configuration.mServiceId = Json.optString(json, SERVICE_ID_KEY, "");
+        configuration.merchantDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
+        configuration.serviceId = Json.optString(json, SERVICE_ID_KEY, "");
 
         try {
             JSONArray supportedCardBrands = json.getJSONArray(SUPPORTED_CARD_BRANDS_KEY);
             for (int i = 0; i < supportedCardBrands.length(); i++) {
-                configuration.mSupportedCardBrands.add(supportedCardBrands.getString(i));
+                configuration.supportedCardBrands.add(supportedCardBrands.getString(i));
             }
         } catch (JSONException ignored) {}
 
-        configuration.mSamsungAuthorization = Json.optString(json, SAMSUNG_AUTHORIZATION_KEY, "");
-        configuration.mEnvironment = Json.optString(json, ENVIRONMENT, "");
+        configuration.samsungAuthorization = Json.optString(json, SAMSUNG_AUTHORIZATION_KEY, "");
+        configuration.environment = Json.optString(json, ENVIRONMENT, "");
 
         return configuration;
     }
@@ -56,7 +56,7 @@ class SamsungPayConfiguration {
      * @return {@code true} if Samsung Pay is enabled, {@code false} otherwise.
      */
     boolean isEnabled() {
-        return !TextUtils.isEmpty(mSamsungAuthorization);
+        return !TextUtils.isEmpty(samsungAuthorization);
     }
 
     /**
@@ -64,7 +64,7 @@ class SamsungPayConfiguration {
      */
     @NonNull
     String getMerchantDisplayName() {
-        return mMerchantDisplayName;
+        return merchantDisplayName;
     }
 
     /**
@@ -72,7 +72,7 @@ class SamsungPayConfiguration {
      */
     @NonNull
     String getServiceId() {
-        return mServiceId;
+        return serviceId;
     }
 
     /**
@@ -80,7 +80,7 @@ class SamsungPayConfiguration {
      */
     @NonNull
     List<String> getSupportedCardBrands() {
-        return Collections.unmodifiableList(mSupportedCardBrands);
+        return Collections.unmodifiableList(supportedCardBrands);
     }
 
     /**
@@ -88,13 +88,13 @@ class SamsungPayConfiguration {
      */
     @NonNull
     String getSamsungAuthorization() {
-        return mSamsungAuthorization;
+        return samsungAuthorization;
     }
 
     /**
      * @return the Braintree environment Samsung Pay should interact with.
      */
     String getEnvironment() {
-        return mEnvironment;
+        return environment;
     }
 }

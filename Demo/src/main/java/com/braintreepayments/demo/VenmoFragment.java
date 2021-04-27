@@ -25,7 +25,7 @@ import com.braintreepayments.api.VenmoRequest;
 
 public class VenmoFragment extends BaseFragment {
 
-    private ImageButton mVenmoButton;
+    private ImageButton venmoButton;
     private VenmoClient venmoClient;
 
 
@@ -33,8 +33,8 @@ public class VenmoFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_venmo, container, false);
-        mVenmoButton = view.findViewById(R.id.venmo_button);
-        mVenmoButton.setOnClickListener(this::launchVenmo);
+        venmoButton = view.findViewById(R.id.venmo_button);
+        venmoButton.setOnClickListener(this::launchVenmo);
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
         viewModel.getVenmoActivityResult().observe(getViewLifecycleOwner(), this::handleVenmoActivityResult);

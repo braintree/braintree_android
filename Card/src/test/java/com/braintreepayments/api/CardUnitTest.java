@@ -608,6 +608,6 @@ public class CardUnitTest {
 
         Card actual = Card.CREATOR.createFromParcel(parcel);
 
-        assertEquals("USA", ReflectionHelper.getField("mCountryCode", actual));
+        assertEquals("USA", ReflectionHelper.getField("countryCode", actual));
     }
 }

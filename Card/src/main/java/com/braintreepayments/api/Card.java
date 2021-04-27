@@ -18,40 +18,40 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
     private static final String AUTHENTICATION_INSIGHT_INPUT_KEY = "authenticationInsightInput";
 
-    private String mMerchantAccountId;
-    private boolean mAuthenticationInsightRequested;
+    private String merchantAccountId;
+    private boolean authenticationInsightRequested;
 
     protected void buildGraphQL(JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
         JSONObject input = variables.getJSONObject(Keys.INPUT);
 
-        if (TextUtils.isEmpty(mMerchantAccountId) && mAuthenticationInsightRequested) {
+        if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
             throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
         }
 
-        if (mAuthenticationInsightRequested) {
-            variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId));
+        if (authenticationInsightRequested) {
+            variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId));
         }
 
         base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
         base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
         JSONObject creditCard = new JSONObject()
-                .put(NUMBER_KEY, mNumber)
-                .put(EXPIRATION_MONTH_KEY, mExpirationMonth)
-                .put(EXPIRATION_YEAR_KEY, mExpirationYear)
-                .put(CVV_KEY, mCvv)
-                .put(CARDHOLDER_NAME_KEY, mCardholderName);
+                .put(NUMBER_KEY, number)
+                .put(EXPIRATION_MONTH_KEY, expirationMonth)
+                .put(EXPIRATION_YEAR_KEY, expirationYear)
+                .put(CVV_KEY, cvv)
+                .put(CARDHOLDER_NAME_KEY, cardholderName);
 
         JSONObject billingAddress = new JSONObject()
-                .put(FIRST_NAME_KEY, mFirstName)
-                .put(LAST_NAME_KEY, mLastName)
-                .put(COMPANY_KEY, mCompany)
-                .put(COUNTRY_CODE_KEY, mCountryCode)
-                .put(LOCALITY_KEY, mLocality)
-                .put(POSTAL_CODE_KEY, mPostalCode)
-                .put(REGION_KEY, mRegion)
-                .put(STREET_ADDRESS_KEY, mStreetAddress)
-                .put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+                .put(FIRST_NAME_KEY, firstName)
+                .put(LAST_NAME_KEY, lastName)
+                .put(COMPANY_KEY, company)
+                .put(COUNTRY_CODE_KEY, countryCode)
+                .put(LOCALITY_KEY, locality)
+                .put(POSTAL_CODE_KEY, postalCode)
+                .put(REGION_KEY, region)
+                .put(STREET_ADDRESS_KEY, streetAddress)
+                .put(EXTENDED_ADDRESS_KEY, extendedAddress);
 
         if (billingAddress.length() > 0) {
             creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
@@ -67,37 +67,37 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
      * @param id The merchant account id used to generate the authentication insight.
      */
     public void setMerchantAccountId(String id) {
-        mMerchantAccountId = TextUtils.isEmpty(id) ? null : id;
+        merchantAccountId = TextUtils.isEmpty(id) ? null : id;
     }
 
     /**
      * @param requested If authentication insight will be requested.
      */
     public void setAuthenticationInsightRequested(boolean requested) {
-        mAuthenticationInsightRequested = requested;
+        authenticationInsightRequested = requested;
     }
 
     @Override
     protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         super.buildJSON(json, paymentMethodNonceJson);
 
-        if (mAuthenticationInsightRequested) {
-            json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
-            json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, mAuthenticationInsightRequested);
+        if (authenticationInsightRequested) {
+            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
+            json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
         }
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mMerchantAccountId);
-        dest.writeByte(mAuthenticationInsightRequested ? (byte) 1 : 0);
+        dest.writeString(merchantAccountId);
+        dest.writeByte(authenticationInsightRequested ? (byte) 1 : 0);
     }
 
     protected Card(Parcel in) {
         super(in);
-        mMerchantAccountId = in.readString();
-        mAuthenticationInsightRequested = in.readByte() > 0;
+        merchantAccountId = in.readString();
+        authenticationInsightRequested = in.readByte() > 0;
     }
 
     public static final Creator<Card> CREATOR = new Creator<Card>() {
@@ -116,7 +116,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("mutation TokenizeCreditCard($input: TokenizeCreditCardInput!");
 
-        if (mAuthenticationInsightRequested) {
+        if (authenticationInsightRequested) {
             stringBuilder.append(", $authenticationInsightInput: AuthenticationInsightInput!");
         }
 
@@ -143,7 +143,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
                 "      }" +
                 "    }");
 
-        if (mAuthenticationInsightRequested) {
+        if (authenticationInsightRequested) {
             stringBuilder.append("" +
                     "    authenticationInsight(input: $authenticationInsightInput) {" +
                     "      customerAuthenticationRegulationEnvironment" +

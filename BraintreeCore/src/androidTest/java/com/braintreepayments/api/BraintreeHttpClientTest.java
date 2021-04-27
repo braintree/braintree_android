@@ -2,13 +2,6 @@ package com.braintreepayments.api;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.BraintreeHttpClient;
-import com.braintreepayments.api.AuthorizationException;
-import com.braintreepayments.api.InvalidArgumentException;
-import com.braintreepayments.api.HttpResponseCallback;
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.Fixtures;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +14,11 @@ import static junit.framework.Assert.fail;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeHttpClientTest {
 
-    private CountDownLatch mCountDownLatch;
+    private CountDownLatch countDownLatch;
 
     @Before
     public void setup() {
-        mCountDownLatch = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
     }
 
     @Test(timeout = 10000)
@@ -43,11 +36,11 @@ public class BraintreeHttpClientTest {
             public void failure(Exception exception) {
                 // Make sure exception is due to authorization not SSL handshake
                 assertTrue(exception instanceof AuthorizationException);
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 
     @Test(timeout = 10000)
@@ -65,10 +58,10 @@ public class BraintreeHttpClientTest {
             public void failure(Exception exception) {
                 // Make sure exception is due to authorization not SSL handshake
                 assertTrue(exception instanceof AuthorizationException);
-                mCountDownLatch.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        countDownLatch.await();
     }
 }
