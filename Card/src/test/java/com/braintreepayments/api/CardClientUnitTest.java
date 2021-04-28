@@ -70,7 +70,7 @@ public class CardClientUnitTest {
                 .build();
 
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeGraphQLSuccessResponse(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
+                .tokenizeGraphQLSuccess(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -92,7 +92,7 @@ public class CardClientUnitTest {
                 .build();
 
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeRestSuccessResponse(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
+                .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -114,7 +114,7 @@ public class CardClientUnitTest {
                 .build();
 
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeGraphQLSuccessResponse(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
+                .tokenizeGraphQLSuccess(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -130,7 +130,7 @@ public class CardClientUnitTest {
                 .build();
 
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeRestSuccessResponse(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
+                .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -147,7 +147,7 @@ public class CardClientUnitTest {
 
         Exception error = new Exception();
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeGraphQLError(error)
+                .tokenizeGraphQLError(error)
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -164,7 +164,7 @@ public class CardClientUnitTest {
 
         Exception error = new Exception();
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeRestError(error)
+                .tokenizeRESTError(error)
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -181,7 +181,7 @@ public class CardClientUnitTest {
 
         Exception error = new Exception();
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeGraphQLError(error)
+                .tokenizeGraphQLError(error)
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
@@ -198,7 +198,7 @@ public class CardClientUnitTest {
 
         Exception error = new Exception();
         tokenizationClient = new MockTokenizationClientBuilder()
-                .setTokenizeRestError(error)
+                .tokenizeRESTError(error)
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
