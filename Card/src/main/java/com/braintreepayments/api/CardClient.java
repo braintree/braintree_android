@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -51,26 +52,58 @@ public class CardClient {
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (tokenizationResponse != null) {
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (error != null) {
+                    callback.onResult(null, error);
+                    return;
+                }
+
+                boolean shouldTokenizeViaGraphQL =
+                    configuration.isGraphQLFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS);
+
+                if (shouldTokenizeViaGraphQL) {
+                    card.setSessionId(braintreeClient.getSessionId());
                     try {
-                        CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                        dataCollector.collectRiskData(context, cardNonce);
-
-                        callback.onResult(cardNonce, null);
-                        braintreeClient.sendAnalyticsEvent("card.nonce-received");
-
-                    } catch (JSONException e) {
+                        JSONObject tokenizePayload = card.buildJSONForGraphQL();
+                        tokenizationClient.tokenizeGraphQL(tokenizePayload, new TokenizeCallback() {
+                            @Override
+                            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                                handleTokenizeResponse(context, tokenizationResponse, exception, callback);
+                            }
+                        });
+                    } catch (BraintreeException e) {
                         callback.onResult(null, e);
-                        braintreeClient.sendAnalyticsEvent("card.nonce-failed");
                     }
                 } else {
-                    callback.onResult(null, exception);
-                    braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                    tokenizationClient.tokenizeREST(card, new TokenizeCallback() {
+                        @Override
+                        public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                            handleTokenizeResponse(context, tokenizationResponse, exception, callback);
+                        }
+                    });
                 }
             }
         });
+    }
+
+    private void handleTokenizeResponse(Context context, JSONObject tokenizationResponse, Exception exception, CardTokenizeCallback callback) {
+        if (tokenizationResponse != null) {
+            try {
+                CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
+                dataCollector.collectRiskData(context, cardNonce);
+
+                callback.onResult(cardNonce, null);
+                braintreeClient.sendAnalyticsEvent("card.nonce-received");
+
+            } catch (JSONException e) {
+                callback.onResult(null, e);
+                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+            }
+        } else {
+            callback.onResult(null, exception);
+            braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+        }
     }
 }

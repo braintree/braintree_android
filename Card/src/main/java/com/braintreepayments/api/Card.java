@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Use to construct a card tokenization request.
  */
-public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
+public class Card extends BaseCard implements Parcelable {
 
     private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
 
@@ -25,8 +25,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
 
     private boolean shouldValidate;
 
-    @Override
-    public JSONObject buildJSONForGraphQL() throws BraintreeException {
+    JSONObject buildJSONForGraphQL() throws BraintreeException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();

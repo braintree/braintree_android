@@ -149,7 +149,7 @@ public class UnionPayClient {
      * @param callback {@link UnionPayTokenizeCallback}
      */
     public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
-        tokenizationClient.tokenize(unionPayCard, new TokenizeCallback() {
+        tokenizationClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
