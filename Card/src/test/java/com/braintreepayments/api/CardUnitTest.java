@@ -200,6 +200,14 @@ public class CardUnitTest {
     }
 
     @Test
+    public void build_whenValidateIsNotSet_defaultsToFalse() throws JSONException {
+        Card card = new Card();
+
+        JSONObject builtCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY);
+        assertFalse(builtCard.getJSONObject("options").getBoolean("validate"));
+    }
+
+    @Test
     public void build_includesValidateOptionWhenSetToTrue() throws JSONException {
         Card card = new Card();
         card.setShouldValidate(true);
@@ -222,14 +230,6 @@ public class CardUnitTest {
     }
 
     @Test
-    public void build_doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
-        Card card = new Card();
-
-        assertFalse(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
-        assertFalse(card.buildJSON().has(BILLING_ADDRESS_KEY));
-    }
-
-    @Test
     public void build_doesNotIncludeEmptyStrings() throws JSONException {
         Card card = new Card();
         card.setNumber("");
@@ -249,7 +249,8 @@ public class CardUnitTest {
         card.setRegion("");
         card.setCountryCode("");
 
-        assertFalse(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
+        assertEquals(1, card.buildJSON().getJSONObject(CREDIT_CARD_KEY).length());
+        assertTrue(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).has("options"));
         assertFalse(card.buildJSON().has(BILLING_ADDRESS_KEY));
     }
 
@@ -397,7 +398,7 @@ public class CardUnitTest {
     }
 
     @Test
-    public void buildGraphQL_whenValidateNotSet_doesNotIncludeValidateOption() throws Exception {
+    public void buildGraphQL_whenValidateNotSet_defaultsToFalse() throws Exception {
         Card card = new Card();
 
         JSONObject json = card.buildGraphQLJSON();
@@ -405,7 +406,7 @@ public class CardUnitTest {
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
-        assertFalse(jsonOptions.has("validate"));
+        assertFalse(jsonOptions.getBoolean("validate"));
     }
 
     @Test
@@ -432,14 +433,6 @@ public class CardUnitTest {
                 .getJSONObject(PaymentMethod.OPTIONS_KEY);
 
         assertFalse(jsonOptions.getBoolean("validate"));
-    }
-
-    @Test
-    public void buildGraphQL_doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
-        Card card = new Card();
-
-        assertFalse(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
-        assertFalse(card.buildJSON().has(BILLING_ADDRESS_KEY));
     }
 
     @Test

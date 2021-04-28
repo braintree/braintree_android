@@ -111,10 +111,10 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     JSONObject buildJSON() {
         JSONObject json = super.buildJSON();
 
-        JSONObject optionsJson = new JSONObject();
         try {
-            optionsJson.put(VALIDATE_KEY, shouldValidate);
             JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);
+            JSONObject optionsJson = new JSONObject();
+            optionsJson.put(VALIDATE_KEY, shouldValidate);
             paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
         } catch (JSONException exception) {
             exception.printStackTrace();
@@ -135,12 +135,14 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(merchantAccountId);
+        dest.writeByte(shouldValidate ? (byte) 1 : 0);
         dest.writeByte(authenticationInsightRequested ? (byte) 1 : 0);
     }
 
     protected Card(Parcel in) {
         super(in);
         merchantAccountId = in.readString();
+        shouldValidate = in.readByte() > 0;
         authenticationInsightRequested = in.readByte() > 0;
     }
 
