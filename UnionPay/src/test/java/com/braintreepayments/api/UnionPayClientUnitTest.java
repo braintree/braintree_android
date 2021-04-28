@@ -59,7 +59,7 @@ public class UnionPayClientUnitTest {
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
+        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         callback.onResult(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
@@ -74,7 +74,7 @@ public class UnionPayClientUnitTest {
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
+        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -90,7 +90,7 @@ public class UnionPayClientUnitTest {
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(same(unionPayCard), captor.capture());
+        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");

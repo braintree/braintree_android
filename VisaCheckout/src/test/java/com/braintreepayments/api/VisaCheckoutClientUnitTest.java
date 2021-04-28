@@ -143,7 +143,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
+                .setTokenizeRestSuccessResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -160,7 +160,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenSuccessful_sendsAnalyticEvent() throws JSONException {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
+                .setTokenizeRestSuccessResponse(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -178,7 +178,7 @@ public class VisaCheckoutClientUnitTest {
     public void tokenize_whenFailure_postsException() {
         Exception tokenizeError = new Exception("Mock Failure");
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .error(tokenizeError)
+                .setTokenizeRestError(tokenizeError)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -196,7 +196,7 @@ public class VisaCheckoutClientUnitTest {
     public void tokenize_whenFailure_sendsAnalyticEvent() {
         Exception tokenizeError = new Exception("Mock Failure");
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .error(tokenizeError)
+                .setTokenizeRestError(tokenizeError)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
