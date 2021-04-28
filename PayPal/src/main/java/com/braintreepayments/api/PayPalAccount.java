@@ -29,36 +29,27 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildJSON() {
+    JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
+
         JSONObject paymentMethodNonceJson = new JSONObject();
+        paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
+        paymentMethodNonceJson.put(INTENT_KEY, intent);
 
-        try {
-            paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
-            paymentMethodNonceJson.put(INTENT_KEY, intent);
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
 
-            JSONObject optionsJson = new JSONObject();
-            try {
-                optionsJson.put(VALIDATE_KEY, shouldValidate);
-                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-            } catch (JSONException exception) {
-                exception.printStackTrace();
-            }
-
-            Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
-            while (urlResponseDataKeyIterator.hasNext()) {
-                String key = urlResponseDataKeyIterator.next();
-                paymentMethodNonceJson.put(key, urlResponseData.get(key));
-            }
-
-            if (merchantAccountId != null) {
-                json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
-            }
-            json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
-
-        } catch (JSONException exception) {
-            exception.printStackTrace();
+        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
+        while (urlResponseDataKeyIterator.hasNext()) {
+            String key = urlResponseDataKeyIterator.next();
+            paymentMethodNonceJson.put(key, urlResponseData.get(key));
         }
+
+        if (merchantAccountId != null) {
+            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
+        }
+        json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
         return json;
     }
 

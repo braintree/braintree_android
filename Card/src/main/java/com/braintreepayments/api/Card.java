@@ -25,56 +25,53 @@ public class Card extends BaseCard implements Parcelable {
 
     private boolean shouldValidate;
 
-    JSONObject buildJSONForGraphQL() throws BraintreeException {
+    JSONObject buildJSONForGraphQL() throws BraintreeException, JSONException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();
 
-        try {
-            base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, buildMetadataJSON());
+        base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, buildMetadataJSON());
 
-            JSONObject optionsJson = new JSONObject();
-            optionsJson.put(VALIDATE_KEY, shouldValidate);
-            input.put(OPTIONS_KEY, optionsJson);
-            variables.put(Keys.INPUT, input);
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        input.put(OPTIONS_KEY, optionsJson);
+        variables.put(Keys.INPUT, input);
 
-            if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
-                throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
-            }
-
-            if (authenticationInsightRequested) {
-                variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId));
-            }
-
-            base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
-            base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
-
-            JSONObject creditCard = new JSONObject()
-                    .put(NUMBER_KEY, number)
-                    .put(EXPIRATION_MONTH_KEY, expirationMonth)
-                    .put(EXPIRATION_YEAR_KEY, expirationYear)
-                    .put(CVV_KEY, cvv)
-                    .put(CARDHOLDER_NAME_KEY, cardholderName);
-
-            JSONObject billingAddress = new JSONObject()
-                    .put(FIRST_NAME_KEY, firstName)
-                    .put(LAST_NAME_KEY, lastName)
-                    .put(COMPANY_KEY, company)
-                    .put(COUNTRY_CODE_KEY, countryCode)
-                    .put(LOCALITY_KEY, locality)
-                    .put(POSTAL_CODE_KEY, postalCode)
-                    .put(REGION_KEY, region)
-                    .put(STREET_ADDRESS_KEY, streetAddress)
-                    .put(EXTENDED_ADDRESS_KEY, extendedAddress);
-
-            if (billingAddress.length() > 0) {
-                creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
-            }
-
-            input.put(CREDIT_CARD_KEY, creditCard);
-            base.put(Keys.VARIABLES, variables);
-        } catch (JSONException ignored) {
+        if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
+            throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
         }
+
+        if (authenticationInsightRequested) {
+            variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId));
+        }
+
+        base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
+        base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
+
+        JSONObject creditCard = new JSONObject()
+                .put(NUMBER_KEY, number)
+                .put(EXPIRATION_MONTH_KEY, expirationMonth)
+                .put(EXPIRATION_YEAR_KEY, expirationYear)
+                .put(CVV_KEY, cvv)
+                .put(CARDHOLDER_NAME_KEY, cardholderName);
+
+        JSONObject billingAddress = new JSONObject()
+                .put(FIRST_NAME_KEY, firstName)
+                .put(LAST_NAME_KEY, lastName)
+                .put(COMPANY_KEY, company)
+                .put(COUNTRY_CODE_KEY, countryCode)
+                .put(LOCALITY_KEY, locality)
+                .put(POSTAL_CODE_KEY, postalCode)
+                .put(REGION_KEY, region)
+                .put(STREET_ADDRESS_KEY, streetAddress)
+                .put(EXTENDED_ADDRESS_KEY, extendedAddress);
+
+        if (billingAddress.length() > 0) {
+            creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
+        }
+
+        input.put(CREDIT_CARD_KEY, creditCard);
+        base.put(Keys.VARIABLES, variables);
 
         return base;
     }
@@ -107,25 +104,17 @@ public class Card extends BaseCard implements Parcelable {
     }
 
     @Override
-    JSONObject buildJSON() {
+    JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
-        try {
-            JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);
-            JSONObject optionsJson = new JSONObject();
-            optionsJson.put(VALIDATE_KEY, shouldValidate);
-            paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-        } catch (JSONException exception) {
-            exception.printStackTrace();
-        }
+        JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
 
         if (authenticationInsightRequested) {
-            try {
-                json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
-                json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
-            } catch (JSONException exception) {
-                exception.printStackTrace();
-            }
+            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
+            json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
         }
         return json;
     }

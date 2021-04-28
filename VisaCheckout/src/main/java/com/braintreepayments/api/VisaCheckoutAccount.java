@@ -32,18 +32,15 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildJSON() {
+    JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
-        JSONObject paymentMethodNonceJson = new JSONObject();
 
-        try {
-            paymentMethodNonceJson.put(CALL_ID, callId);
-            paymentMethodNonceJson.put(ENCRYPTED_KEY, encryptedKey);
-            paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, encryptedPaymentData);
-            json.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson);
-        } catch (JSONException exception) {
-            exception.printStackTrace();
-        }
+        JSONObject paymentMethodNonceJson = new JSONObject();
+        paymentMethodNonceJson.put(CALL_ID, callId);
+        paymentMethodNonceJson.put(ENCRYPTED_KEY, encryptedKey);
+        paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, encryptedPaymentData);
+
+        json.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson);
         return json;
     }
 

@@ -261,7 +261,7 @@ public class CardUnitTest {
     }
 
     @Test
-    public void buildJSON_whenAuthenticationInsightRequestedIsFalse_doesNotRequestsAuthenticationInsight() {
+    public void buildJSON_whenAuthenticationInsightRequestedIsFalse_doesNotRequestsAuthenticationInsight() throws JSONException {
         Card card = new Card();
         card.setAuthenticationInsightRequested(false);
 

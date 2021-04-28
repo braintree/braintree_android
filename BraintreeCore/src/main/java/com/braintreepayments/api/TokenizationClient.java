@@ -59,22 +59,27 @@ class TokenizationClient {
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
         paymentMethod.setSessionId(braintreeClient.getSessionId());
-        braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
 
-            @Override
-            public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                } catch (JSONException exception) {
+        try {
+            braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
+
+                @Override
+                public void success(String responseBody) {
+                    try {
+                        callback.onResult(new JSONObject(responseBody), null);
+                    } catch (JSONException exception) {
+                        callback.onResult(null, exception);
+                    }
+                }
+
+                @Override
+                public void failure(Exception exception) {
                     callback.onResult(null, exception);
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-            }
-        });
+            });
+        } catch (JSONException exception) {
+            callback.onResult(null, exception);
+        }
     }
 
     static String versionedPath(String path) {

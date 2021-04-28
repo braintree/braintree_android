@@ -14,24 +14,16 @@ class VenmoAccount extends PaymentMethod {
     VenmoAccount() {}
 
     @Override
-    JSONObject buildJSON() {
+    JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
         JSONObject paymentMethodNonceJson = new JSONObject();
-        try {
-            paymentMethodNonceJson.put(NONCE_KEY, nonce);
+        paymentMethodNonceJson.put(NONCE_KEY, nonce);
 
-            JSONObject optionsJson = new JSONObject();
-            try {
-                optionsJson.put(VALIDATE_KEY, shouldValidate);
-                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-            } catch (JSONException exception) {
-                exception.printStackTrace();
-            }
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
 
-            json.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
-        } catch (JSONException exception) {
-            exception.printStackTrace();
-        }
+        json.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
         return json;
     }
 

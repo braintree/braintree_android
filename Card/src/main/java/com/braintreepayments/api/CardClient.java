@@ -73,7 +73,7 @@ public class CardClient {
                                 handleTokenizeResponse(context, tokenizationResponse, exception, callback);
                             }
                         });
-                    } catch (BraintreeException e) {
+                    } catch (BraintreeException | JSONException e) {
                         callback.onResult(null, e);
                     }
                 } else {

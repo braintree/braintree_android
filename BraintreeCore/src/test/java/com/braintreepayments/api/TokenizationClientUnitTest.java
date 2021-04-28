@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
@@ -77,7 +76,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenizeGraphQL_tokenizesCardsWithGraphQL() throws BraintreeException, InvalidArgumentException {
+    public void tokenizeGraphQL_tokenizesCardsWithGraphQL() throws BraintreeException, InvalidArgumentException, JSONException {
         Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
@@ -97,7 +96,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenizeGraphQL_sendGraphQLAnalyticsEventWhenEnabled() throws BraintreeException {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventWhenEnabled() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .build();
@@ -126,7 +125,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnSuccess() throws BraintreeException {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnSuccess() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD)
@@ -146,7 +145,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnFailure() throws BraintreeException {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnFailure() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .sendGraphQLPOSTErrorResponse(ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR))

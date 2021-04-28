@@ -62,16 +62,9 @@ public abstract class PaymentMethod {
     }
 
 
-    JSONObject buildJSON() {
+    JSONObject buildJSON() throws JSONException {
         JSONObject base = new JSONObject();
-        try {
-            base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
-                    .sessionId(sessionId)
-                    .source(source)
-                    .integration(integration)
-                    .build());
-        } catch (JSONException ignored) {
-        }
+        base.put(MetadataBuilder.META_KEY, buildMetadataJSON());
         return base;
     }
 
