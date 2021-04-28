@@ -241,7 +241,7 @@ public class GooglePayRequest implements Parcelable {
                         .put("parameters", pm.getValue())
                         .put("tokenizationSpecification", tokenizationSpecifications.get(pm.getKey()));
 
-                if (pm.getKey().equals("CARD")) {
+                if ("CARD".equals(pm.getKey())) {
                     try {
                         pm.getValue().get("billingAddressParameters");
                     } catch (JSONException ignored) {
