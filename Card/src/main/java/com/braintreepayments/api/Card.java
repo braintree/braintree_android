@@ -26,7 +26,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     private boolean shouldValidate;
 
     @Override
-    public JSONObject buildGraphQLJSON() throws BraintreeException {
+    public JSONObject buildJSONForGraphQL() throws BraintreeException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();

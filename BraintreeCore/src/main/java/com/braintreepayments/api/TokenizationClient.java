@@ -68,7 +68,7 @@ class TokenizationClient {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final JSONObject payload;
         try {
-            payload = graphQLTokenizable.buildGraphQLJSON();
+            payload = graphQLTokenizable.buildJSONForGraphQL();
         } catch (BraintreeException e) {
             callback.onResult(null, e);
             return;
