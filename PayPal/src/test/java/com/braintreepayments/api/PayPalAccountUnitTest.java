@@ -79,7 +79,8 @@ public class PayPalAccountUnitTest {
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
 
-        assertFalse(builtAccount.keys().hasNext());
+        assertEquals(1, builtAccount.length());
+        assertTrue(builtAccount.has("options"));
     }
 
     @Test
@@ -95,9 +96,14 @@ public class PayPalAccountUnitTest {
         JSONObject json = sut.buildJSON();
         JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
 
-        JSONAssert.assertEquals(urlResponseData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
-        JSONAssert.assertEquals(paymentMethodNonceJson, json.getJSONObject("paypalAccount"),
-                JSONCompareMode.NON_EXTENSIBLE);
+        JSONObject expectedPaymentMethodNonceJSON = new JSONObject()
+                .put("data1", "data1")
+                .put("data2", "data2")
+                .put("data3", "data3")
+                .put("options", new JSONObject()
+                        .put("validate", false)
+                );
+        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test

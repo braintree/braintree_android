@@ -372,7 +372,10 @@ public class PayPalClientUnitTest {
                 .put("response", new JSONObject()
                         .put("webURL", approvalUrl))
                 .put("intent", "authorize")
-                .put("response_type", "web");
+                .put("response_type", "web")
+                .put("options", new JSONObject()
+                        .put("validate", false)
+                );
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
@@ -418,7 +421,10 @@ public class PayPalClientUnitTest {
                 .put("response", new JSONObject()
                         .put("webURL", approvalUrl))
                 .put("intent", "authorize")
-                .put("response_type", "web");
+                .put("response_type", "web")
+                .put("options", new JSONObject()
+                        .put("validate", false)
+                );
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
