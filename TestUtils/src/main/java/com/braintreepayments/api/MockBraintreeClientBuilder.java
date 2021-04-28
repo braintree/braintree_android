@@ -130,7 +130,7 @@ public class MockBraintreeClientBuilder {
 
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 ConfigurationCallback callback = (ConfigurationCallback) invocation.getArguments()[0];
                 if (configuration != null) {
                     callback.onResult(configuration, null);
@@ -169,7 +169,7 @@ public class MockBraintreeClientBuilder {
 
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
                 if (sendGraphQLPOSTSuccess != null) {
                     callback.success(sendGraphQLPOSTSuccess);

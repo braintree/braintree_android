@@ -16,14 +16,13 @@ class ClientToken extends Authorization {
     private static final String CONFIG_URL_KEY = "configUrl";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
-    private String configUrl;
-    private String authorizationFingerprint;
+    private final String configUrl;
+    private final String authorizationFingerprint;
 
     /**
      * Create a new {@link ClientToken} instance from a client token
      *
      * @param clientTokenString A client token from the Braintree Gateway
-     * @return {@link ClientToken} instance
      */
     ClientToken(String clientTokenString) throws InvalidArgumentException {
         super(clientTokenString);

@@ -46,7 +46,7 @@ public class ThreeDSecureV2LabelCustomizationUnitTest {
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV2LabelCustomization actual = (ThreeDSecureV2LabelCustomization) ThreeDSecureV2LabelCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV2LabelCustomization actual = ThreeDSecureV2LabelCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("#FFFFFF", actual.getHeadingTextColor());
         assertEquals("Times New Roman", actual.getHeadingTextFontName());

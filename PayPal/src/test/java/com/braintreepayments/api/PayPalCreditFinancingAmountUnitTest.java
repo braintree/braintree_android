@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.PayPalCreditFinancingAmount;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

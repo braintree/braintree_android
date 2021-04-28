@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 
-import com.braintreepayments.api.IntegrationType;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

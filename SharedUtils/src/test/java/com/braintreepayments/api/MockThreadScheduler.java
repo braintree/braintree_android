@@ -7,8 +7,8 @@ import java.util.List;
 
 class MockThreadScheduler implements Scheduler {
 
-    final private List<Runnable> mainThreadRunnables;
-    final private List<Runnable> backgroundThreadRunnables;
+    private final List<Runnable> mainThreadRunnables;
+    private final List<Runnable> backgroundThreadRunnables;
 
     MockThreadScheduler() {
         mainThreadRunnables = new ArrayList<>();

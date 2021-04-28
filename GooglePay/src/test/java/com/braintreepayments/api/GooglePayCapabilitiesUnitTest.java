@@ -33,7 +33,7 @@ public class GooglePayCapabilitiesUnitTest {
     public PowerMockRule powerMockRule = new PowerMockRule();
 
     @Test
-    public void isGooglePayEnabled_whenConfigurationEnabledAndApiAvailable_returnsTrue() throws JSONException {
+    public void isGooglePayEnabled_whenConfigurationEnabledAndApiAvailable_returnsTrue() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -51,7 +51,7 @@ public class GooglePayCapabilitiesUnitTest {
     }
 
     @Test
-    public void isGooglePayEnabled_whenConfigurationNotEnabled_returnsFalse() throws JSONException {
+    public void isGooglePayEnabled_whenConfigurationNotEnabled_returnsFalse() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -69,7 +69,7 @@ public class GooglePayCapabilitiesUnitTest {
     }
 
     @Test
-    public void isGooglePayEnabled_whenApiNotAvailable_returnsFalse() throws JSONException {
+    public void isGooglePayEnabled_whenApiNotAvailable_returnsFalse() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         Configuration configuration = new TestConfigurationBuilder()

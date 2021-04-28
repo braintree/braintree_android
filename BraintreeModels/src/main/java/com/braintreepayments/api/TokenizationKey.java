@@ -51,8 +51,8 @@ class TokenizationKey extends Authorization implements Parcelable {
         SANDBOX("sandbox", "https://api.sandbox.braintreegateway.com/"),
         PRODUCTION("production", "https://api.braintreegateway.com/");
 
-        private String mEnvironment;
-        private String mUrl;
+        private final String mEnvironment;
+        private final String mUrl;
 
         BraintreeEnvironment(String environment, String url) {
             mEnvironment = environment;

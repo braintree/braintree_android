@@ -33,10 +33,10 @@ public class GooglePayRequest implements Parcelable {
     private ShippingAddressRequirements shippingAddressRequirements;
     private Boolean allowPrepaidCards = null;
     private boolean payPalEnabled = true;
-    private HashMap<String, JSONObject> allowedPaymentMethods = new HashMap<>();
-    private HashMap<String, JSONObject> tokenizationSpecifications = new HashMap<>();
-    private HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
-    private HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
+    private final HashMap<String, JSONObject> allowedPaymentMethods = new HashMap<>();
+    private final HashMap<String, JSONObject> tokenizationSpecifications = new HashMap<>();
+    private final HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
+    private final HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
     private String environment;
     private String googleMerchantId;
     private String googleMerchantName;
@@ -58,7 +58,6 @@ public class GooglePayRequest implements Parcelable {
      * Optional.
      *
      * @param emailRequired {@code true} if the buyer's email address is required to be returned, {@code false} otherwise.
-     * @return {@link GooglePayRequest}
      */
     public void setEmailRequired(boolean emailRequired) {
         this.emailRequired = emailRequired;
@@ -190,7 +189,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * NOTE: to support Elo cards, country code must be set to "BR"
      *
-     * @param countryCode
+     * @param countryCode The country code where the transaction is processed
      */
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
@@ -206,7 +205,6 @@ public class GooglePayRequest implements Parcelable {
         TransactionInfo transactionInfo = getTransactionInfo();
         JSONArray allowedPaymentMethods = new JSONArray();
         JSONObject shippingAddressParameters = new JSONObject();
-        JSONArray allowedCountryCodes = new JSONArray();
         ArrayList<String> allowedCountryCodeList;
 
         if (isShippingAddressRequired()) {
@@ -243,7 +241,7 @@ public class GooglePayRequest implements Parcelable {
                         .put("parameters", pm.getValue())
                         .put("tokenizationSpecification", tokenizationSpecifications.get(pm.getKey()));
 
-                if (pm.getKey() == "CARD") {
+                if ("CARD".equals(pm.getKey())) {
                     try {
                         pm.getValue().get("billingAddressParameters");
                     } catch (JSONException ignored) {

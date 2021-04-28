@@ -347,7 +347,7 @@ public class GooglePayClient {
         return cardNetworkStrings;
     }
 
-    private JSONObject buildCardPaymentMethodParameters(GooglePayRequest request, Configuration configuration) {
+    private JSONObject buildCardPaymentMethodParameters(Configuration configuration, GooglePayRequest request) {
         JSONObject defaultParameters = new JSONObject();
 
         try {
@@ -500,7 +500,7 @@ public class GooglePayClient {
 
         if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
             request.setAllowedPaymentMethod(CARD_PAYMENT_TYPE,
-                    buildCardPaymentMethodParameters(request, configuration));
+                    buildCardPaymentMethodParameters(configuration, request));
         }
 
         if (request.getTokenizationSpecificationForType(CARD_PAYMENT_TYPE) == null) {

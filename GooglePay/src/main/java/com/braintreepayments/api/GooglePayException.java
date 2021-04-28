@@ -10,7 +10,7 @@ import com.google.android.gms.common.api.Status;
  */
 public class GooglePayException extends BraintreeException implements Parcelable {
 
-    private Status status;
+    private final Status status;
 
     GooglePayException(String message, Status status) {
         super(message);

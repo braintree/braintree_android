@@ -15,7 +15,7 @@ class MetadataBuilder {
     private static final String VERSION_KEY = "version";
     private static final String PLATFORM_KEY = "platform";
 
-    private JSONObject json;
+    private final JSONObject json;
 
     MetadataBuilder() {
         json = new JSONObject();

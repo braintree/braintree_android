@@ -598,7 +598,7 @@ public class CardUnitTest {
     }
 
     @Test
-    public void parcelsCountryCodeCorrectly() throws NoSuchFieldException, IllegalAccessException {
+    public void parcelsCountryCodeCorrectly() throws IllegalAccessException {
         Card card = new Card();
         card.setCountryCode("USA");
 

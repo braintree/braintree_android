@@ -79,7 +79,7 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV2UiCustomization actual = (ThreeDSecureV2UiCustomization) ThreeDSecureV2UiCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV2UiCustomization actual = ThreeDSecureV2UiCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("#FF0000", actual.getButtonCustomization().getBackgroundColor());
         assertEquals(5, actual.getButtonCustomization().getCornerRadius());

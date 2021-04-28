@@ -355,7 +355,7 @@ public class ThreeDSecureClient {
     public void onActivityResult(int resultCode, Intent data, ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {
-            callback.onResult(null, new BraintreeException("user cancelled"));
+            callback.onResult(null, new BraintreeException("user canceled"));
             return;
         }
 

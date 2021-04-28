@@ -93,7 +93,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(event, configuration, context);
+        sut.sendEvent(context, configuration, event);
 
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
         awaitTasksFinished(database);
@@ -111,7 +111,7 @@ public class AnalyticsClientUnitTest {
                 context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(event, configuration, context);
+        sut.sendEvent(context, configuration, event);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
@@ -125,7 +125,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        UUID workSpecId = sut.sendEventAndReturnId(event, configuration, context);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(WorkInfo.State.ENQUEUED, analyticsWorkerInfo.getState());

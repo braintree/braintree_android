@@ -74,12 +74,6 @@ public class PayPalAccountNonceUnitTest {
     }
 
     @Test
-    public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce =
-            PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITH_DEFAULT_DESCRIPTION));
-    }
-
-    @Test
     public void parcelsCorrectly_withAllValuesPresent() throws JSONException {
         PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
         Parcel parcel = Parcel.obtain();

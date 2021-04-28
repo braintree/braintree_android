@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class VisaCheckoutClient {
 
-    private BraintreeClient braintreeClient;
-    private TokenizationClient tokenizationClient;
+    private final BraintreeClient braintreeClient;
+    private final TokenizationClient tokenizationClient;
 
     public VisaCheckoutClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient));

@@ -47,7 +47,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_loadsConfigurationForTheCurrentEnvironment() throws JSONException {
+    public void loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
         ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
@@ -65,7 +65,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_savesFetchedConfigurationToCache() throws JSONException {
+    public void loadConfiguration_savesFetchedConfigurationToCache() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
@@ -85,7 +85,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() throws JSONException {
+    public void loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
         ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
@@ -123,7 +123,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws JSONException {
+    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
         Context context = mock(Context.class);
 

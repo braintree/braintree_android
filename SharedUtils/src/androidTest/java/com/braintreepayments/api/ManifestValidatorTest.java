@@ -5,10 +5,6 @@ import android.content.pm.ActivityInfo;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.ManifestValidator;
-import com.braintreepayments.api.ManifestTestActivity;
-import com.braintreepayments.api.MissingManifestTestActivity;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

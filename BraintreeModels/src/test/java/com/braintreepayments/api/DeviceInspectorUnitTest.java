@@ -34,7 +34,7 @@ public class DeviceInspectorUnitTest {
     public void isPayPalInstalled_forwardsResultFromAppHelper() {
         when(appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile")).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isPayPalInstalled(context));
     }
 
@@ -42,37 +42,37 @@ public class DeviceInspectorUnitTest {
     public void isVenmoInstalled_forwardsResultFromAppHelper() {
         when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isVenmoInstalled(context));
     }
 
     @Test
     public void detectEmulator_defaultsToFalse() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertFalse(sut.isDeviceEmulator("randomBuildProduct", "randomBuildManufacturer", "randomBuildFingerprint"));
     }
 
     @Test
     public void detectEmulator_whenBuildProductIsGoogleSdk_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceEmulator("google_sdk", "randomBuildManufacturer", "randomBuildFingerprint"));
     }
 
     @Test
     public void detectEmulator_whenBuildProductIsSdk_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceEmulator("sdk", "randomBuildManufacturer", "randomBuildFingerprint"));
     }
 
     @Test
     public void detectEmulator_whenBuildManufacturerIsGenymotion_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceEmulator("randomBuildProduct", "Genymotion", "randomBuildFingerprint"));
     }
 
     @Test
     public void detectEmulator_whenBuildFingerprintIsGeneric_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceEmulator("randomBuildProduct", "randomBuildManufacturer", "generic"));
     }
 
@@ -88,7 +88,7 @@ public class DeviceInspectorUnitTest {
 
         when(packageManager.getApplicationLabel(applicationInfo)).thenReturn("SampleAppName");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertEquals("SampleAppName", sut.getAppName(context));
     }
 
@@ -101,7 +101,7 @@ public class DeviceInspectorUnitTest {
 
         when(packageManager.getApplicationInfo("sample-package-name", 0)).thenThrow(new PackageManager.NameNotFoundException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertEquals("ApplicationNameUnknown", sut.getAppName(context));
     }
 
@@ -116,13 +116,13 @@ public class DeviceInspectorUnitTest {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes()));
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertFalse(sut.isDeviceRooted("", superUserApkFile, runtime));
     }
 
     @Test
     public void isDeviceRooted_whenBuildTagsIncludeTestKeys_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceRooted("test-keys", mock(File.class), mock(Runtime.class)));
     }
 
@@ -131,7 +131,7 @@ public class DeviceInspectorUnitTest {
         File superUserApkFile = mock(File.class);
         when(superUserApkFile.exists()).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceRooted("", superUserApkFile, mock(Runtime.class)));
     }
 
@@ -143,7 +143,7 @@ public class DeviceInspectorUnitTest {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("/path/to/su/command".getBytes()));
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertTrue(sut.isDeviceRooted("", mock(File.class), runtime));
     }
 
@@ -152,7 +152,7 @@ public class DeviceInspectorUnitTest {
         File superUserApkFile = mock(File.class);
         when(superUserApkFile.exists()).thenThrow(new SecurityException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertFalse(sut.isDeviceRooted("", superUserApkFile, mock(Runtime.class)));
     }
 
@@ -161,7 +161,7 @@ public class DeviceInspectorUnitTest {
         Runtime runtime = mock(Runtime.class);
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenThrow(new IOException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, manifestValidator);
+        DeviceInspector sut = new DeviceInspector(appHelper);
         assertFalse(sut.isDeviceRooted("", mock(File.class), runtime));
     }
 }

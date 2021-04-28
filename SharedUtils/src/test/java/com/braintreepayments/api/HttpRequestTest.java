@@ -119,9 +119,9 @@ public class HttpRequestTest {
     @RunWith(Parameterized.class)
     public static class GetURLTest {
 
-        final private String baseUrl;
-        final private String path;
-        final private URL expectedURL;
+        private final String baseUrl;
+        private final String path;
+        private final URL expectedURL;
 
         public GetURLTest(String baseUrl, String path, URL expectedURL) {
             this.baseUrl = baseUrl;

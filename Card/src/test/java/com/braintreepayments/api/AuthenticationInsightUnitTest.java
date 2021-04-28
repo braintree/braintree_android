@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.AuthenticationInsight;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -14,7 +12,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
-public class AuthenticationInsightTest {
+public class AuthenticationInsightUnitTest {
     @Test
     public void fromJson_successfullyParsesPSDTWO() throws JSONException {
         JSONObject response = new JSONObject()
@@ -53,7 +51,7 @@ public class AuthenticationInsightTest {
     public void createFromParcel_withNullRegulationEnvironment_setsRegulationEnvironmentToUnknown() {
         AuthenticationInsight insight = AuthenticationInsight.CREATOR.createFromParcel(Parcel.obtain());
 
-        assertEquals(null, insight.getRegulationEnvironment());
+        assertNull(insight.getRegulationEnvironment());
     }
 
     @Test

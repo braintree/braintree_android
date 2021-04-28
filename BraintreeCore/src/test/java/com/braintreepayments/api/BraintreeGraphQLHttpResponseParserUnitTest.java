@@ -13,7 +13,7 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BraintreeGraphQLHttpResponseParserTest {
+public class BraintreeGraphQLHttpResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
     private BaseHttpResponseParser baseParser;

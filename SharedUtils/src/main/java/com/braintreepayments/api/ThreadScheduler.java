@@ -10,8 +10,8 @@ import java.util.concurrent.Executors;
 
 class ThreadScheduler implements Scheduler {
 
-    final private Handler mainThreadHandler;
-    final private ExecutorService backgroundThreadService;
+    private final Handler mainThreadHandler;
+    private final ExecutorService backgroundThreadService;
 
     ThreadScheduler() {
         this(new Handler(Looper.getMainLooper()), Executors.newCachedThreadPool());

@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -20,7 +19,6 @@ public class CardNonce extends PaymentMethodNonce {
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
 
     private static final String DATA_KEY = "data";
     private static final String TOKEN_KEY = "token";
@@ -97,7 +95,6 @@ public class CardNonce extends PaymentMethodNonce {
     @NonNull
     private static CardNonce fromPlainJSONObject(JSONObject inputJson) throws JSONException {
         String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-        String description = inputJson.getString(DESCRIPTION_KEY);
         boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         JSONObject details = inputJson.getJSONObject(CARD_DETAILS_KEY);
@@ -112,7 +109,7 @@ public class CardNonce extends PaymentMethodNonce {
         String expirationYear = Json.optString(details, EXPIRATION_YEAR_KEY, "");
         String cardholderName = Json.optString(details, CARDHOLDER_NAME_KEY, "");
 
-        return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, description, isDefault);
+        return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
     }
 
     /**
@@ -136,21 +133,20 @@ public class CardNonce extends PaymentMethodNonce {
             String bin = Json.optString(creditCard, "bin", "");
             BinData binData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             String nonce = payload.getString(TOKEN_KEY);
-            String description = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
             boolean isDefault = false;
             AuthenticationInsight authenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
             String expirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
             String expirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
             String cardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
 
-            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, description, isDefault);
+            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
 
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
     }
 
-    private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, String description, boolean isDefault) {
+    private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
         super(nonce, isDefault, PaymentMethodType.CARD);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
