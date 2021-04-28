@@ -75,7 +75,7 @@ public class CardClientTest {
         Card card = new Card();
         card.setNumber(VISA);
         card.setExpirationDate("08/20");
-        card.setValidate(true);
+        card.setShouldValidate(true);
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -88,7 +88,7 @@ public class CardClientTest {
         Card card = new Card();
         card.setNumber(VISA);
         card.setExpirationDate("08/20");
-        card.setValidate(false);
+        card.setShouldValidate(false);
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -111,7 +111,7 @@ public class CardClientTest {
         Card card = new Card();
         card.setNumber(VISA);
         card.setExpirationDate("08/20");
-        card.setValidate(false);
+        card.setShouldValidate(false);
 
         assertTokenizationSuccessful(TOKENIZATION_KEY, card);
     }
@@ -123,7 +123,7 @@ public class CardClientTest {
         Card card = new Card();
         card.setNumber(VISA);
         card.setExpirationDate("08/20");
-        card.setValidate(true);
+        card.setShouldValidate(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
