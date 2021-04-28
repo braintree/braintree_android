@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import org.apache.tools.ant.types.Commandline;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -16,9 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +47,7 @@ public class CardClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenGraphQLEnabled_setsSessionIdOnCardBeforeTokenizing() throws JSONException {
+    public void tokenize_whenGraphQLEnabled_setsSessionIdOnCardBeforeTokenizing() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .build();
