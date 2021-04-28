@@ -64,7 +64,7 @@ public class PayPalAccountUnitTest {
     @Test
     public void includesValidateOptionWhenSet() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
-        sut.setValidate(true);
+        sut.setShouldValidate(true);
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);

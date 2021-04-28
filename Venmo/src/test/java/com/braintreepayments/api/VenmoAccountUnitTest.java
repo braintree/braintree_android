@@ -16,7 +16,7 @@ public class VenmoAccountUnitTest {
     public void correctlyBuildsVenmoVaultRequest() throws JSONException {
         VenmoAccount sut = new VenmoAccount();
         sut.setNonce("some-nonce");
-        sut.setValidate(true);
+        sut.setShouldValidate(true);
 
         JSONObject fullJson = sut.buildJSON();
         JSONObject venmoAccountJson = fullJson.getJSONObject("venmoAccount");

@@ -149,7 +149,6 @@ public class UnionPayCardUnitTest {
         sut.setIntegration("integration");
         sut.setSessionId("session-id");
         sut.setSource("source");
-        sut.setValidate(true);
 
         JSONObject unionPayEnrollment = sut.buildEnrollment().getJSONObject("unionPayEnrollment");
 
@@ -191,21 +190,12 @@ public class UnionPayCardUnitTest {
 
     @Test
     public void build_doesNotIncludeValidate() throws JSONException {
-        UnionPayCard unionPayCardValidateTrue = new UnionPayCard();
-        unionPayCardValidateTrue.setValidate(true);
-
-        UnionPayCard unionPayCardValidateFalse = new UnionPayCard();
-        unionPayCardValidateFalse.setValidate(false);
-
-        JSONObject optionsValidateTrue = unionPayCardValidateTrue.buildJSON()
-                .getJSONObject("creditCard")
-                .getJSONObject("options");
-        JSONObject optionsValidateFalse = unionPayCardValidateFalse.buildJSON()
+        UnionPayCard unionPayCard = new UnionPayCard();
+        JSONObject unionPayOptions = unionPayCard.buildJSON()
                 .getJSONObject("creditCard")
                 .getJSONObject("options");
 
-        assertFalse(optionsValidateTrue.has("validate"));
-        assertFalse(optionsValidateFalse.has("validate"));
+        assertFalse(unionPayOptions.has("validate"));
     }
 
     @Test
@@ -217,7 +207,6 @@ public class UnionPayCardUnitTest {
         sut.setCvv("cvv");
         sut.setEnrollmentId("enrollmentId");
         sut.setSmsCode("smsCode");
-        sut.setValidate(true);
 
         JSONObject tokenizePayload = sut.buildJSON();
         JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
@@ -242,7 +231,6 @@ public class UnionPayCardUnitTest {
         sut.setExpirationYear("expirationYear");
         sut.setCvv("cvv");
         sut.setEnrollmentId("enrollmentId");
-        sut.setValidate(true);
 
         JSONObject tokenizePayload = sut.buildJSON();
         JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");

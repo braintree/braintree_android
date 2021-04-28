@@ -70,17 +70,6 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         }
     }
 
-    /**
-     * @deprecated UnionPay enrollment performs validation. This value will not be used for UnionPay payment methods.
-     *
-     * @param validate Ignored
-     */
-    @Deprecated
-    @Override
-    public void setValidate(boolean validate) {
-        // prevent validation for union pay methods
-    }
-
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
         unionPayEnrollment.put(NUMBER_KEY, number);

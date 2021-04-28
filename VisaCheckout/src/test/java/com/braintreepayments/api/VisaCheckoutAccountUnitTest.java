@@ -21,7 +21,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
-@PrepareForTest({ VisaPaymentSummary.class })
+@PrepareForTest({VisaPaymentSummary.class})
 public class VisaCheckoutAccountUnitTest {
 
     @Rule
@@ -37,9 +37,17 @@ public class VisaCheckoutAccountUnitTest {
 
     @Test
     public void build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() throws JSONException {
-        JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
+        JSONObject expectedBase = new JSONObject()
+                .put("visaCheckoutCard", new JSONObject())
+                .put("_meta", new JSONObject()
+                        .put("source", "form")
+                        .put("integration", "custom")
+                        .put("sessionId", "1234")
+                        .put("platform", "android")
+                );
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(null);
+        visaCheckoutAccount.setSessionId("1234");
         JSONObject json = visaCheckoutAccount.buildJSON();
 
         JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
@@ -52,6 +60,7 @@ public class VisaCheckoutAccountUnitTest {
         when(visaPaymentSummary.getEncPaymentData()).thenReturn("stubbedEncPaymentData");
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(visaPaymentSummary);
+        visaCheckoutAccount.setSessionId("1234");
         JSONObject json = visaCheckoutAccount.buildJSON();
 
         JSONObject expectedBase = new JSONObject();
@@ -60,6 +69,13 @@ public class VisaCheckoutAccountUnitTest {
         expectedPaymentMethodNonce.put("encryptedKey", "stubbedEncKey");
         expectedPaymentMethodNonce.put("encryptedPaymentData", "stubbedEncPaymentData");
         expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
+
+        expectedBase.put("_meta", new JSONObject()
+                .put("source", "form")
+                .put("integration", "custom")
+                .put("sessionId", "1234")
+                .put("platform", "android")
+        );
 
         JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }

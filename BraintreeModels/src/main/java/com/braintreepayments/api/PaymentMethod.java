@@ -13,13 +13,13 @@ import org.json.JSONObject;
  */
 public abstract class PaymentMethod {
 
-    protected static final String OPTIONS_KEY = "options";
+    static final String OPTIONS_KEY = "options";
+    static final String VALIDATE_KEY = "validate";
+
     protected static final String OPERATION_NAME_KEY = "operationName";
     
     private String integration = getDefaultIntegration();
     private String source = getDefaultSource();
-    private boolean validate;
-    private boolean validateSet;
     private String sessionId;
 
     public PaymentMethod() {
@@ -42,25 +42,6 @@ public abstract class PaymentMethod {
      */
     void setSource(String source) {
         this.source = source;
-    }
-
-    /**
-     * @param validate Flag to denote when the associated {@link PaymentMethodNonce}
-     *                 will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
-     *                 will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
-     *                 will be validated when used by a server side library for a Braintree gateway action.
-     */
-    public void setValidate(boolean validate) {
-        this.validate = validate;
-        validateSet = true;
-    }
-
-    boolean getValidate() {
-        return validate;
-    }
-
-    boolean hasValueForValidate() {
-        return validateSet;
     }
 
     /**
@@ -97,16 +78,12 @@ public abstract class PaymentMethod {
     protected PaymentMethod(Parcel in) {
         integration = in.readString();
         source = in.readString();
-        validate = in.readByte() > 0;
-        validateSet = in.readByte() > 0;
         sessionId = in.readString();
     }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(integration);
         dest.writeString(source);
-        dest.writeByte(validate ? (byte) 1 : 0);
-        dest.writeByte(validateSet ? (byte) 1 : 0);
         dest.writeString(sessionId);
     }
 

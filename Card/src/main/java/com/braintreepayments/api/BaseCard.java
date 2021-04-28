@@ -12,9 +12,6 @@ import org.json.JSONObject;
  */
 public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
-    static final String OPTIONS_KEY = "options";
-    static final String VALIDATE_KEY = "validate";
-
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
     static final String COMPANY_KEY = "company";
@@ -229,11 +226,6 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
 
         JSONObject paymentMethodNonceJson = new JSONObject();
         try {
-            if (hasValueForValidate()) {
-                JSONObject optionsJson = new JSONObject();
-                optionsJson.put(VALIDATE_KEY, getValidate());
-                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
-            }
 
             paymentMethodNonceJson.put(NUMBER_KEY, number);
             paymentMethodNonceJson.put(CVV_KEY, cvv);

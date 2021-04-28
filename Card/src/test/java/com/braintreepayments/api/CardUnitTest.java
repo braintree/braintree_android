@@ -100,7 +100,7 @@ public class CardUnitTest {
         card.setCountryCode("USA");
         card.setIntegration("test-integration");
         card.setSource("test-source");
-        card.setValidate(true);
+        card.setShouldValidate(true);
         card.setSessionId("test-session-id");
         card.setMerchantAccountId("merchant-account-id");
         card.setAuthenticationInsightRequested(true);
@@ -202,7 +202,7 @@ public class CardUnitTest {
     @Test
     public void build_includesValidateOptionWhenSetToTrue() throws JSONException {
         Card card = new Card();
-        card.setValidate(true);
+        card.setShouldValidate(true);
 
         JSONObject builtCard = card.buildJSON()
                 .getJSONObject(CREDIT_CARD_KEY);
@@ -213,7 +213,7 @@ public class CardUnitTest {
     @Test
     public void build_includesValidateOptionWhenSetToFalse() throws JSONException {
         Card card = new Card();
-        card.setValidate(false);
+        card.setShouldValidate(false);
 
         JSONObject builtCard = card.buildJSON()
                 .getJSONObject(CREDIT_CARD_KEY);
@@ -293,7 +293,7 @@ public class CardUnitTest {
         card.setCountryCode("USA");
         card.setIntegration("test-integration");
         card.setSource("test-source");
-        card.setValidate(true);
+        card.setShouldValidate(true);
         card.setSessionId("test-session-id");
         card.setMerchantAccountId("merchant-account-id");
         card.setAuthenticationInsightRequested(true);
@@ -411,7 +411,7 @@ public class CardUnitTest {
     @Test
     public void buildGraphQL_whenValidateSetToTrue_includesValidationOptionTrue() throws Exception {
         Card card = new Card();
-        card.setValidate(true);
+        card.setShouldValidate(true);
 
         JSONObject json = card.buildGraphQLJSON();
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
@@ -424,7 +424,7 @@ public class CardUnitTest {
     @Test
     public void buildGraphQL_whenValidateSetToFalse_includesValidationOptionFalse() throws Exception {
         Card card = new Card();
-        card.setValidate(false);
+        card.setShouldValidate(false);
 
         JSONObject json = card.buildGraphQLJSON();
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
@@ -565,7 +565,7 @@ public class CardUnitTest {
         card.setCountryCode("USA");
         card.setIntegration("test-integration");
         card.setSource("test-source");
-        card.setValidate(true);
+        card.setShouldValidate(true);
         card.setSessionId("test-session-id");
         card.setMerchantAccountId("merchant-account-id");
         card.setAuthenticationInsightRequested(true);

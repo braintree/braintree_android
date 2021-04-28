@@ -23,6 +23,8 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     private String merchantAccountId;
     private boolean authenticationInsightRequested;
 
+    private boolean shouldValidate;
+
     @Override
     public JSONObject buildGraphQLJSON() throws BraintreeException {
         JSONObject base = new JSONObject();
@@ -33,9 +35,7 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
             base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, buildMetadataJSON());
 
             JSONObject optionsJson = new JSONObject();
-            if (hasValueForValidate()) {
-                optionsJson.put(VALIDATE_KEY, getValidate());
-            }
+            optionsJson.put(VALIDATE_KEY, shouldValidate);
             input.put(OPTIONS_KEY, optionsJson);
             variables.put(Keys.INPUT, input);
 
@@ -74,7 +74,8 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
 
             input.put(CREDIT_CARD_KEY, creditCard);
             base.put(Keys.VARIABLES, variables);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return base;
     }
@@ -90,6 +91,16 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     }
 
     /**
+     * @param shouldValidate Flag to denote when the associated {@link PaymentMethodNonce}
+     *                       will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
+     *                       will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
+     *                       will be validated when used by a server side library for a Braintree gateway action.
+     */
+    public void setShouldValidate(boolean shouldValidate) {
+        this.shouldValidate = shouldValidate;
+    }
+
+    /**
      * @param requested If authentication insight will be requested.
      */
     public void setAuthenticationInsightRequested(boolean requested) {
@@ -99,6 +110,16 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     @Override
     JSONObject buildJSON() {
         JSONObject json = super.buildJSON();
+
+        JSONObject optionsJson = new JSONObject();
+        try {
+            optionsJson.put(VALIDATE_KEY, shouldValidate);
+            JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);
+            paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+
         if (authenticationInsightRequested) {
             try {
                 json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
