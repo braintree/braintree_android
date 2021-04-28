@@ -4,8 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,28 +41,21 @@ public class ThreeDSecureClientTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         BraintreeClient braintreeClient = new BraintreeClient(activity, clientToken);
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         Card card = new Card();
         card.setNumber("4000000000000051");
         card.setExpirationDate("12/20");
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
-                CardNonce cardNonce = null;
-                try {
-                    cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
                 String nonce = cardNonce.getString();
-
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
                 request.setNonce(nonce);
                 request.setAmount("5");

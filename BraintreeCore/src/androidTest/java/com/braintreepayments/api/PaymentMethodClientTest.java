@@ -45,7 +45,7 @@ public class PaymentMethodClientTest {
         final String clientToken = new TestClientTokenBuilder().withCustomerId().build();
 
         final BraintreeClient braintreeClient = new BraintreeClient(activity, clientToken);
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         Card card = new Card();
@@ -53,11 +53,11 @@ public class PaymentMethodClientTest {
         card.setExpirationMonth("12");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
@@ -93,7 +93,7 @@ public class PaymentMethodClientTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
         Card card = new Card();
@@ -101,11 +101,11 @@ public class PaymentMethodClientTest {
         card.setExpirationMonth("04");
         card.setExpirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 sut.getPaymentMethodNonces(new GetPaymentMethodNoncesCallback() {
