@@ -35,6 +35,13 @@
   * Remove `PaymentMethodNoncesCallback`
   * Remove `PaymentMethodNonce#getDescription()` method
   * `BraintreeClient` constructor no longer throws `InvalidArgumentException`
+  * Make protected static member variables `OPTIONS_KEY`, `OPERATION_NAME_KEY` on `PaymentMethod` package-private
+  * Make `PaymentMethod` constructor package-private
+  * Remove `PaymentMethod#setValidate` method
+  * Make `PaymentMethod#buildJSON` package-private
+  * Remove `PaymentMethod#buildGraphQL()` method
+  * Make `PaymentMethod` `Parcelable` constructor package-private
+  * Make `PaymentMethod#writeToParcel()` method package-private
 
 ## 4.0.0-beta2
 

@@ -13,16 +13,15 @@ import org.json.JSONObject;
  */
 public abstract class PaymentMethod {
 
+    static final String OPERATION_NAME_KEY = "operationName";
     static final String OPTIONS_KEY = "options";
     static final String VALIDATE_KEY = "validate";
 
-    protected static final String OPERATION_NAME_KEY = "operationName";
-    
     private String integration = getDefaultIntegration();
     private String source = getDefaultSource();
     private String sessionId;
 
-    public PaymentMethod() {
+    PaymentMethod() {
     }
 
     /**
@@ -68,13 +67,13 @@ public abstract class PaymentMethod {
         return base;
     }
 
-    protected PaymentMethod(Parcel in) {
+    PaymentMethod(Parcel in) {
         integration = in.readString();
         source = in.readString();
         sessionId = in.readString();
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
+    void writeToParcel(Parcel dest, int flags) {
         dest.writeString(integration);
         dest.writeString(source);
         dest.writeString(sessionId);
