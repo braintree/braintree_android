@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Base class used to build various types of cards
  */
-public abstract class BaseCard extends PaymentMethod implements Parcelable {
+abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
@@ -45,7 +45,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     protected String region;
     protected String streetAddress;
 
-    public BaseCard() {
+    BaseCard() {
     }
 
     /**

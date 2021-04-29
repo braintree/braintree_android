@@ -46,6 +46,7 @@
   * Make `PaymentMethod#getDefaultIntegration()` method package-private
   * Make `getApiPath()` method package-private in `PaymentMethod` base class and subclasses
   * Remove `getResponsePaymentMethodType()` method from `PaymentMethod` base class and subclasses
+  * Make `BaseCard` class package-private
 
 ## 4.0.0-beta2
 
