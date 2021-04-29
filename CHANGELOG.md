@@ -42,6 +42,10 @@
   * Remove `PaymentMethod#buildGraphQL()` method
   * Make `PaymentMethod` `Parcelable` constructor package-private
   * Make `PaymentMethod#writeToParcel()` method package-private
+  * Make `PaymentMethod#getDefaultSource()` method package-private
+  * Make `PaymentMethod#getDefaultIntegration()` method package-private
+  * Make `getApiPath()` method package-private in `PaymentMethod` base class and subclasses
+  * Remove `getResponsePaymentMethodType()` method from `PaymentMethod` base class and subclasses
 
 ## 4.0.0-beta2
 

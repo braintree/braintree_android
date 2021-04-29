@@ -42,12 +42,7 @@ class VenmoAccount extends PaymentMethod {
     }
 
     @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "venmo_accounts";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return VenmoAccountNonce.TYPE;
     }
 }

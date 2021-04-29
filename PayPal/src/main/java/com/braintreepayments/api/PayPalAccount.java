@@ -106,12 +106,7 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "paypal_accounts";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return PayPalAccountNonce.TYPE;
     }
 }

@@ -45,12 +45,7 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "visa_checkout_cards";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return VisaCheckoutNonce.TYPE;
     }
 }

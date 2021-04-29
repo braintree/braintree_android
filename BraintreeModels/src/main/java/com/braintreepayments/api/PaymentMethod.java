@@ -79,15 +79,13 @@ public abstract class PaymentMethod {
         dest.writeString(sessionId);
     }
 
-    protected String getDefaultSource() {
+    String getDefaultSource() {
         return "form";
     }
 
-    protected String getDefaultIntegration() {
+    String getDefaultIntegration() {
         return "custom";
     }
 
-    public abstract String getApiPath();
-
-    public abstract String getResponsePaymentMethodType();
+    abstract String getApiPath();
 }
