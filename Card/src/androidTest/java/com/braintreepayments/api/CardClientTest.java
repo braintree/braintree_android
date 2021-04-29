@@ -262,6 +262,7 @@ public class CardClientTest {
         card.setNumber(VISA);
         card.setExpirationDate("08/20");
         card.setCountryCode("ABC");
+        card.setShouldValidate(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
