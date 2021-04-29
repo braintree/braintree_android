@@ -20,11 +20,6 @@ public class UnionPayCardUnitTest {
     }
 
     @Test
-    public void getResponsePaymentMethodType_returnsExpected() {
-        assertEquals("CreditCard", new UnionPayCard().getResponsePaymentMethodType());
-    }
-
-    @Test
     public void cardNumber_addsToJson() throws JSONException {
         UnionPayCard sut = new UnionPayCard();
         sut.setNumber("myCardNumber");

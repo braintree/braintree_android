@@ -84,10 +84,4 @@ public class VisaCheckoutAccountUnitTest {
     public void getApiPath_returnsCorrectApiPath() {
         assertEquals("visa_checkout_cards", new VisaCheckoutAccount(null).getApiPath());
     }
-
-    @Test
-    public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
-        assertEquals(VisaCheckoutNonce.TYPE,
-                new VisaCheckoutAccount(null).getResponsePaymentMethodType());
-    }
 }
