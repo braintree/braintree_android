@@ -290,7 +290,7 @@ dependencies {
 }
 ```
 
-Note: the following wallet enabled meta-data tag is now included by the SDK, and is not required in your `AndroidManifest.xml`:
+Note: The following wallet enabled meta-data tag is now included by the SDK and is **no longer required** in your `AndroidManifest.xml`:
 
 ```xml
 <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
