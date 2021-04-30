@@ -48,7 +48,6 @@ public class BraintreeClient {
      *
      * @param context       Android Context
      * @param authorization The tokenization key or client token to use.
-     * @throws InvalidArgumentException If the tokenization key or client token is not valid, or cannot be parsed.
      */
     public BraintreeClient(Context context, String authorization) {
         this(createDefaultParams(context, authorization));
