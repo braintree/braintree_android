@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -9,7 +7,7 @@ import androidx.annotation.Nullable;
 /**
  * Generic base class for Braintree authorization
  */
-abstract class Authorization implements Parcelable {
+abstract class Authorization {
 
     private final String rawValue;
 
@@ -58,10 +56,6 @@ abstract class Authorization implements Parcelable {
         return rawValue;
     }
 
-    boolean isValid() {
-        return true;
-    }
-
     private static boolean isTokenizationKey(String tokenizationKey) {
         return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
     }
@@ -72,14 +66,5 @@ abstract class Authorization implements Parcelable {
 
     private static boolean isClientToken(String clientToken) {
         return !TextUtils.isEmpty(clientToken) && clientToken.matches(ClientToken.BASE_64_MATCHER);
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(rawValue);
-    }
-
-    public Authorization(Parcel in) {
-        rawValue = in.readString();
     }
 }

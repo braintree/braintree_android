@@ -1,9 +1,6 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-class InvalidToken extends Authorization implements Parcelable {
+class InvalidToken extends Authorization {
 
     private final String errorMessage;
 
@@ -22,38 +19,7 @@ class InvalidToken extends Authorization implements Parcelable {
         return null;
     }
 
-    @Override
-    boolean isValid() {
-        return false;
-    }
-
     String getErrorMessage() {
         return errorMessage;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    protected InvalidToken(Parcel in) {
-        super(in);
-        errorMessage = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(errorMessage);
-    }
-
-    public static final Creator<InvalidToken> CREATOR = new Creator<InvalidToken>() {
-        public InvalidToken createFromParcel(Parcel source) {
-            return new InvalidToken(source);
-        }
-
-        public InvalidToken[] newArray(int size) {
-            return new InvalidToken[size];
-        }
-    };
 }

@@ -24,6 +24,12 @@ class ConfigurationLoader {
     }
 
     void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationCallback callback) {
+        if (authorization instanceof InvalidToken) {
+            String message = ((InvalidToken) authorization).getErrorMessage();
+            callback.onResult(null, new BraintreeException(message));
+            return;
+        }
+
         final String configUrl = Uri.parse(authorization.getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
