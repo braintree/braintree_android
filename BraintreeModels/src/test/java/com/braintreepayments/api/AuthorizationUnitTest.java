@@ -30,18 +30,24 @@ public class AuthorizationUnitTest {
         assertTrue(authorization instanceof PayPalUAT);
     }
 
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedNull() {
-        Authorization.fromString(null);
+    @Test
+    public void fromString_whenPassedNull_returnsInvalidToken() {
+        Authorization result = Authorization.fromString(null);
+
+        assertTrue(result instanceof InvalidToken);
     }
 
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedAnEmptyString() {
-        Authorization.fromString("");
+    @Test
+    public void fromString_whenPassedAnEmptyString_returnsInvalidToken() {
+        Authorization result = Authorization.fromString("");
+
+        assertTrue(result instanceof InvalidToken);
     }
 
-    @Test(expected = InvalidArgumentException.class)
-    public void fromString_throwsWhenPassedJunk() {
-        Authorization.fromString("not authorization");
+    @Test
+    public void fromString_whenPassedJunk_returnsInvalidToken() {
+        Authorization result = Authorization.fromString("not authorization");
+
+        assertTrue(result instanceof InvalidToken);
     }
 }

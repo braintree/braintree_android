@@ -1,8 +1,6 @@
 package com.braintreepayments.api;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
@@ -13,8 +11,6 @@ import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalUATUnitTest {
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void fromString_setsAllProperties() {
@@ -45,7 +41,7 @@ public class PayPalUATUnitTest {
     // error scenarios
 
     @Test
-    public void fromString_withMalformedUAT_shouldReturnAnInvalidToken() {
+    public void fromString_withMalformedUAT_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString("invalid.uat-without-signature");
 
         assertTrue(result instanceof InvalidToken);
@@ -54,34 +50,37 @@ public class PayPalUATUnitTest {
     }
 
     @Test
-    public void fromString_whenJSONSerializationFails_throwsException() {
-        exceptionRule.expect(InvalidArgumentException.class);
+    public void fromString_whenJSONSerializationFails_returnsAnInvalidToken() {
+        Authorization result = PayPalUAT.fromString(encodeUAT("{\"some_invalid_json\": "));
 
-        PayPalUAT.fromString(encodeUAT("{\"some_invalid_json\": "));
+        assertTrue(result instanceof InvalidToken);
     }
 
     @Test
-    public void fromString_whenNoBraintreeMerchantID_throwsException() {
-        exceptionRule.expect(InvalidArgumentException.class);
-        exceptionRule.expectMessage("PayPal UAT invalid: Missing Braintree merchant account ID.");
+    public void fromString_whenNoBraintreeMerchantID_returnsAnInvalidToken() {
+        Authorization result = PayPalUAT.fromString(encodeUAT("{\"iss\":\"paypal-url.com\", \"external_id\":[\"Faketree:my-merchant-id\"]}"));
 
-        PayPalUAT.fromString(encodeUAT("{\"iss\":\"paypal-url.com\", \"external_id\":[\"Faketree:my-merchant-id\"]}"));
+        assertTrue(result instanceof InvalidToken);
+        String expectedErrorMessage = "PayPal UAT invalid: Missing Braintree merchant account ID.";
+        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
     }
 
     @Test
-    public void fromString_whenNoIssuerPresent_throwsException() {
-        exceptionRule.expect(InvalidArgumentException.class);
-        exceptionRule.expectMessage("PayPal UAT invalid: Does not contain issuer, or \"iss\" key.");
+    public void fromString_whenNoIssuerPresent_returnsAnInvalidToken() {
+        Authorization result = PayPalUAT.fromString(encodeUAT("{\"external_id\":[\"Braintree:my-merchant-id\"]}"));
 
-        PayPalUAT.fromString(encodeUAT("{\"external_id\":[\"Braintree:my-merchant-id\"]}"));
+        assertTrue(result instanceof InvalidToken);
+        String expectedErrorMessage = "PayPal UAT invalid: Does not contain issuer, or \"iss\" key.";
+        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
     }
 
     @Test
-    public void fromString_whenPayPalURLUnknown_throwsException() {
-        exceptionRule.expect(InvalidArgumentException.class);
-        exceptionRule.expectMessage("PayPal issuer URL missing or unknown: fake-url.com");
+    public void fromString_whenPayPalURLUnknown_returnsAnInvalidToken() {
+        Authorization result = PayPalUAT.fromString(encodeUAT("{\"iss\":\"fake-url.com\", \"external_id\":[\"Braintree:my-merchant-id\"]}"));
 
-        PayPalUAT.fromString(encodeUAT("{\"iss\":\"fake-url.com\", \"external_id\":[\"Braintree:my-merchant-id\"]}"));
+        assertTrue(result instanceof InvalidToken);
+        String expectedErrorMessage = "PayPal UAT invalid: PayPal issuer URL missing or unknown: fake-url.com";
+        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
     }
 
     // Test Helpers
