@@ -22,18 +22,21 @@ abstract class Authorization implements Parcelable {
      *
      * @param authorizationString Given string to transform into an {@link Authorization}.
      * @return {@link Authorization}
-     * @throws InvalidArgumentException This method will throw this exception type if the string
-     * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
-    static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
-        if (isTokenizationKey(authorizationString)) {
-            return new TokenizationKey(authorizationString);
-        } else if (isPayPalUAT(authorizationString)){
-            return new PayPalUAT(authorizationString);
-        } else if (isClientToken(authorizationString)) {
-            return new ClientToken(authorizationString);
-        } else {
-            throw new InvalidArgumentException("Authorization provided is invalid: " + authorizationString);
+    static Authorization fromString(@Nullable String authorizationString) {
+        try {
+            if (isTokenizationKey(authorizationString)) {
+                return new TokenizationKey(authorizationString);
+            } else if (isPayPalUAT(authorizationString)){
+                return new PayPalUAT(authorizationString);
+            } else if (isClientToken(authorizationString)) {
+                return new ClientToken(authorizationString);
+            } else {
+                String errorMessage = "Authorization provided is invalid: " + authorizationString;
+                return new InvalidToken(authorizationString, errorMessage);
+            }
+        } catch (InvalidArgumentException error) {
+            return new InvalidToken(authorizationString, error.getMessage());
         }
     }
 
@@ -53,6 +56,10 @@ abstract class Authorization implements Parcelable {
     @Override
     public String toString() {
         return rawValue;
+    }
+
+    boolean isValid() {
+        return true;
     }
 
     private static boolean isTokenizationKey(String tokenizationKey) {

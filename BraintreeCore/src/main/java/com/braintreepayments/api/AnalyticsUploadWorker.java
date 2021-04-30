@@ -44,9 +44,7 @@ public class AnalyticsUploadWorker extends Worker {
     private static Authorization getAuthorizationFromData(Data inputData) {
         if (inputData != null) {
             String authString = inputData.getString(ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY);
-            try {
-                return Authorization.fromString(authString);
-            } catch (InvalidArgumentException e) { /* ignored */ }
+            return Authorization.fromString(authString);
         }
         return null;
     }

@@ -27,7 +27,7 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString) throws InvalidArgumentException {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString) {
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
@@ -50,7 +50,7 @@ public class BraintreeClient {
      * @param authorization The tokenization key or client token to use.
      * @throws InvalidArgumentException If the tokenization key or client token is not valid, or cannot be parsed.
      */
-    public BraintreeClient(Context context, String authorization) throws InvalidArgumentException {
+    public BraintreeClient(Context context, String authorization) {
         this(createDefaultParams(context, authorization));
     }
 
