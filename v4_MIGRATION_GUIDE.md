@@ -69,15 +69,11 @@ public class AmericanExpressActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      americanExpressClient = new AmericanExpressClient(braintreeClient);
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    americanExpressClient = new AmericanExpressClient(braintreeClient);
 
-      // you will also need a card client for tokenization in this example
-      cardClient = new CardClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    // you will also need a card client for tokenization in this example
+    cardClient = new CardClient(braintreeClient);
   }
 
   private void tokenizeCard() {
@@ -131,12 +127,8 @@ public class CardActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      cardClient = new CardClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    cardClient = new CardClient(braintreeClient);
   }
 
   private void tokenizeCard() {
@@ -179,12 +171,8 @@ public class PaymentsActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      dataCollector = new DataCollector(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    dataCollector = new DataCollector(braintreeClient);
   }
   
   private void collectDeviceData() {
@@ -218,12 +206,8 @@ public class LocalPaymentActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      localPaymentClient = new LocalPaymentClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    localPaymentClient = new LocalPaymentClient(braintreeClient);
   }
 
   @Override
@@ -309,12 +293,8 @@ public class GooglePayActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      googlePayClient = new GooglePayClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    googlePayClient = new GooglePayClient(braintreeClient);
   }
 
   private void checkIfGooglePayIsAvailable() {
@@ -384,12 +364,8 @@ public class PayPalActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      payPalClient = new PayPalClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    payPalClient = new PayPalClient(braintreeClient);
   }
 
   @Override
@@ -481,12 +457,8 @@ public class VisaCheckoutActivity extends AppCompatActivity {
     setContentView(R.layout.visa_checkout_activity);
     checkoutButton = (CheckoutButton) findViewById(R.id.visa_checkout_button);
 
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
   }
  
   private void getVisaCheckoutProfile() {
@@ -552,12 +524,8 @@ public class UnionPayActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      unionPayClient = new UnionPayClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    unionPayClient = new UnionPayClient(braintreeClient);
   }
   
   private void fetchUnionPayCapabilities() {
@@ -623,12 +591,8 @@ public class VenmoActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      venmoClient = new VenmoClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    venmoClient = new VenmoClient(braintreeClient);
   }
 
   // The authorizeAccount() method has been replaced with tokenizeVenmoAccount()
@@ -698,15 +662,11 @@ public class ThreeDSecureActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    try {
-      braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-      threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-      // you will also need a card client for tokenization in this example
-      cardClient = new CardClient(braintreeClient);
-    } catch (InvalidArgumentException e) {
-      // handle authorization error
-    }
+    // you will also need a card client for tokenization in this example
+    cardClient = new CardClient(braintreeClient);
   }
 
   @Override

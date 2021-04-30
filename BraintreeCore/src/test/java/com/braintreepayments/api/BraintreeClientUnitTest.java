@@ -79,12 +79,6 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void constructor_whenAuthStringIsInvalid_shouldThrow() {
-        new BraintreeClient(context, "invalid-auth-string");
-        fail("this should throw");
-    }
-
-    @Test
     public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
