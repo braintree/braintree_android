@@ -52,6 +52,7 @@ public class PaymentMethodClientTest {
         card.setNumber(VISA);
         card.setExpirationMonth("12");
         card.setExpirationYear(validExpirationYear());
+        card.setShouldValidate(true);
 
         cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
