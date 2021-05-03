@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Remove Bintray dependency for Cardinal SDK (fixes #373)
+* Remove Bintray dependency for Cardinal SDK (fixes #373 - [Cardinal bintray credentials can now be removed](https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v3#generate-a-client-token))
 
 ## 3.17.2
 
