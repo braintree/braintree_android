@@ -290,6 +290,12 @@ dependencies {
 }
 ```
 
+Note: The following wallet enabled metadata tag is now included by the SDK and is **no longer required** in your `AndroidManifest.xml`:
+
+```xml
+<meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
+```
+
 To use the feature, instantiate an `GooglePayClient`:
 
 ```java
