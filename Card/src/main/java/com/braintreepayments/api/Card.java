@@ -87,10 +87,10 @@ public class Card extends BaseCard implements Parcelable {
     }
 
     /**
-     * @param shouldValidate Flag to denote when the associated {@link PaymentMethodNonce}
-     *                       will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
-     *                       will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
-     *                       will be validated when used by a server side library for a Braintree gateway action. Defaults to false.
+     * @param shouldValidate Flag to denote if the associated {@link Card} will be validated. Defaults to false.
+     *                       <p>
+     *                       Use this flag with caution. Enabling validation may result in adding a card to the Braintree vault.
+     *                       The circumstances that determine if a Card will be vaulted are not documented.
      */
     public void setShouldValidate(boolean shouldValidate) {
         this.shouldValidate = shouldValidate;
