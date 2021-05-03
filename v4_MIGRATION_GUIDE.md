@@ -670,7 +670,7 @@ dependencies {
 }
 ```
 
-Additionally, add the following Maven repository and (non-sensitive) credentials to your app-level gradle:
+The Cardinal SDK is now bundled as an aar, so the following Maven repository and (non-sensitive) credentials **can be removed** from your app-level gradle:
 
 ```groovy
 repositories {
