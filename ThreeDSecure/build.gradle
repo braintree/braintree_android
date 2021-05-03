@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-2'
+    api(group: 'org.jfrog.cardinalcommerce.gradle', name: 'cardinalmobilesdk', version: '2.2.5-2', ext: 'aar')
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
 }

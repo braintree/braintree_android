@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Remove Bintray dependency for Cardinal SDK
+
 ## 3.17.2
 
 * Bump Cardinal version to `2.2.5-2`
