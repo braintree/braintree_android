@@ -26,7 +26,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void postRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
+    public void postRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
@@ -48,7 +48,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void postRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
+    public void postRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
