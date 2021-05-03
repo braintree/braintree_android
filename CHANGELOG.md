@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.17.4
 
 * Revert release 3.17.3 (local repository does not propagate MPI aar file)
 

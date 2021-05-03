@@ -28,7 +28,7 @@ allprojects {
     }
 }
 
-version '3.17.4-SNAPSHOT'
+version '3.17.4'
 ext {
     compileSdkVersion = 30
     minSdkVersion = 21
