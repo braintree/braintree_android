@@ -32,7 +32,7 @@ public class ClientTokenUnitTest {
     public void fromString_returnsInvalidTokenWhenGivenRandomJson() {
         Authorization result = ClientToken.fromString(Fixtures.RANDOM_JSON);
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test

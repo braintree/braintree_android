@@ -31,10 +31,10 @@ abstract class Authorization {
                 return new ClientToken(authorizationString);
             } else {
                 String errorMessage = "Authorization provided is invalid: " + authorizationString;
-                return new InvalidToken(authorizationString, errorMessage);
+                return new InvalidAuthorization(authorizationString, errorMessage);
             }
         } catch (InvalidArgumentException error) {
-            return new InvalidToken(authorizationString, error.getMessage());
+            return new InvalidAuthorization(authorizationString, error.getMessage());
         }
     }
 

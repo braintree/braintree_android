@@ -124,7 +124,7 @@ public class ConfigurationLoaderUnitTest {
 
     @Test
     public void loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
         ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);

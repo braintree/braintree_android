@@ -24,8 +24,8 @@ class ConfigurationLoader {
     }
 
     void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationCallback callback) {
-        if (authorization instanceof InvalidToken) {
-            String message = ((InvalidToken) authorization).getErrorMessage();
+        if (authorization instanceof InvalidAuthorization) {
+            String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
             return;
         }

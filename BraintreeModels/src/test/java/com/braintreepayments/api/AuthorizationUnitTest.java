@@ -34,20 +34,20 @@ public class AuthorizationUnitTest {
     public void fromString_whenPassedNull_returnsInvalidToken() {
         Authorization result = Authorization.fromString(null);
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test
     public void fromString_whenPassedAnEmptyString_returnsInvalidToken() {
         Authorization result = Authorization.fromString("");
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test
     public void fromString_whenPassedJunk_returnsInvalidToken() {
         Authorization result = Authorization.fromString("not authorization");
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 }

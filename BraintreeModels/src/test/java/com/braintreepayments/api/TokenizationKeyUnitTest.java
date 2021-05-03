@@ -25,7 +25,7 @@ public class TokenizationKeyUnitTest {
     public void fromString_returnsInvalidTokenForNonTokenizationKeys() {
         Authorization result = Authorization.fromString("{}");
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TokenizationKeyUnitTest {
     public void fromString_returnsInvalidTokenForInvalidEnvironments() {
         Authorization result = Authorization.fromString("test_fjajdkd_integration_merchant_id");
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test

@@ -99,7 +99,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfigurationAndCallback_withInvalidToken_forwardsExceptionToCallback() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
         BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
@@ -113,7 +113,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withDataAndConfigurationAndCallback_withInvalidToken_forwardsExceptionToCallback() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
         BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
         sut.post("sample/path",  configuration, httpResponseCallback);
@@ -127,7 +127,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfiguration_withInvalidToken_throwsBraintreeException() throws Exception {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
         BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
 

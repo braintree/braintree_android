@@ -44,43 +44,43 @@ public class PayPalUATUnitTest {
     public void fromString_withMalformedUAT_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString("invalid.uat-without-signature");
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
         String expectedErrorMessage = "Authorization provided is invalid: invalid.uat-without-signature";
-        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
+        assertEquals(expectedErrorMessage, ((InvalidAuthorization) result).getErrorMessage());
     }
 
     @Test
     public void fromString_whenJSONSerializationFails_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString(encodeUAT("{\"some_invalid_json\": "));
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
     }
 
     @Test
     public void fromString_whenNoBraintreeMerchantID_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString(encodeUAT("{\"iss\":\"paypal-url.com\", \"external_id\":[\"Faketree:my-merchant-id\"]}"));
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
         String expectedErrorMessage = "PayPal UAT invalid: Missing Braintree merchant account ID.";
-        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
+        assertEquals(expectedErrorMessage, ((InvalidAuthorization) result).getErrorMessage());
     }
 
     @Test
     public void fromString_whenNoIssuerPresent_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString(encodeUAT("{\"external_id\":[\"Braintree:my-merchant-id\"]}"));
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
         String expectedErrorMessage = "PayPal UAT invalid: Does not contain issuer, or \"iss\" key.";
-        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
+        assertEquals(expectedErrorMessage, ((InvalidAuthorization) result).getErrorMessage());
     }
 
     @Test
     public void fromString_whenPayPalURLUnknown_returnsAnInvalidToken() {
         Authorization result = PayPalUAT.fromString(encodeUAT("{\"iss\":\"fake-url.com\", \"external_id\":[\"Braintree:my-merchant-id\"]}"));
 
-        assertTrue(result instanceof InvalidToken);
+        assertTrue(result instanceof InvalidAuthorization);
         String expectedErrorMessage = "PayPal UAT invalid: PayPal issuer URL missing or unknown: fake-url.com";
-        assertEquals(expectedErrorMessage, ((InvalidToken) result).getErrorMessage());
+        assertEquals(expectedErrorMessage, ((InvalidAuthorization) result).getErrorMessage());
     }
 
     // Test Helpers

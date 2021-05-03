@@ -1,10 +1,10 @@
 package com.braintreepayments.api;
 
-class InvalidToken extends Authorization {
+class InvalidAuthorization extends Authorization {
 
     private final String errorMessage;
 
-    InvalidToken(String rawValue, String errorMessage) {
+    InvalidAuthorization(String rawValue, String errorMessage) {
         super(rawValue);
         this.errorMessage = errorMessage;
     }

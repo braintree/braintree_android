@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.net.Uri;
-import android.view.WindowManager;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -69,8 +68,8 @@ class BraintreeHttpClient {
      * @param retryStrategy retry strategy
      */
     void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
-        if (authorization instanceof InvalidToken) {
-            String message = ((InvalidToken) authorization).getErrorMessage();
+        if (authorization instanceof InvalidAuthorization) {
+            String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.failure(new BraintreeException(message));
             return;
         }
@@ -119,8 +118,8 @@ class BraintreeHttpClient {
      * @param configuration configuration for the Braintree Android SDK.
      */
     void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
-        if (authorization instanceof InvalidToken) {
-            String message = ((InvalidToken) authorization).getErrorMessage();
+        if (authorization instanceof InvalidAuthorization) {
+            String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.failure(new BraintreeException(message));
             return;
         }
@@ -173,8 +172,8 @@ class BraintreeHttpClient {
      * @return the HTTP response body
      */
     String post(String path, String data, Configuration configuration) throws Exception {
-        if (authorization instanceof InvalidToken) {
-            String message = ((InvalidToken) authorization).getErrorMessage();
+        if (authorization instanceof InvalidAuthorization) {
+            String message = ((InvalidAuthorization) authorization).getErrorMessage();
             throw new BraintreeException(message);
         }
 

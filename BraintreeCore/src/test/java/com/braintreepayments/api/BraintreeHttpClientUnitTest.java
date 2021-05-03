@@ -136,7 +136,7 @@ public class BraintreeHttpClientUnitTest {
 
     @Test
     public void get_withInvalidToken_forwardsExceptionToCallback() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
         BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
@@ -231,7 +231,7 @@ public class BraintreeHttpClientUnitTest {
 
     @Test
     public void postSync_withInvalidToken_throwsBraintreeException() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
         BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
@@ -346,7 +346,7 @@ public class BraintreeHttpClientUnitTest {
 
     @Test
     public void postAsync_withInvalidToken_forwardsExceptionToCallback() {
-        Authorization authorization = new InvalidToken("invalid", "token invalid");
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
         BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
