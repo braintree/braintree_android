@@ -47,7 +47,7 @@ public class BraintreeClient {
      * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
      *
      * @param context       Android Context
-     * @param authorization The tokenization key or client token to use.
+     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned in the {@link HttpResponseCallback}.
      */
     public BraintreeClient(Context context, String authorization) {
         this(createDefaultParams(context, authorization));
