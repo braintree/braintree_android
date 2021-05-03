@@ -36,6 +36,10 @@
   * Remove `PaymentMethodNoncesCallback`
   * Remove `PaymentMethodNonce#getDescription()` method
 
+## 3.17.3
+
+* Remove Bintray dependency for Cardinal SDK (fixes #373 - [Cardinal bintray credentials can now be removed](https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v3#generate-a-client-token))
+
 ## 4.0.0-beta2
 
 * Add `setCountryCode` to `GooglePayRequest`
