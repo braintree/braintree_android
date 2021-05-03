@@ -61,24 +61,6 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void constructor_whenAuthStringIsValidTokenizationKey_shouldNotThrow() {
-        BraintreeClient sut = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
-        assertNotNull(sut);
-    }
-
-    @Test
-    public void constructor_whenAuthStringIsValidClientToken_shouldNotThrow() {
-        BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_CLIENT_TOKEN);
-        assertNotNull(sut);
-    }
-
-    @Test
-    public void constructor_whenAuthStringIsValidPayPalUAT_shouldNotThrow() {
-        BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_PAYPAL_UAT);
-        assertNotNull(sut);
-    }
-
-    @Test
     public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
