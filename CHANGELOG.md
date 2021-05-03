@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Remove Bintray dependency for Cardinal SDK
+* Remove Bintray dependency for Cardinal SDK (fixes #373)
 
 ## 3.17.2
 
