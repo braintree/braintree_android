@@ -5,6 +5,7 @@
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
 * Add wallet enabled metadata tag to `AndroidManifest.xml` in `google-pay` module 
+* Remove Bintray dependency for Cardinal SDK
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
