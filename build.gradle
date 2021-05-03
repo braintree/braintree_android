@@ -48,12 +48,14 @@ nexusStaging {
     password = System.env['SONATYPE_PASSWORD']
 }
 
-repositories {
-    maven {
-        url "https://cardinalcommerce.bintray.com/android"
-        credentials {
-            username 'braintree-team-sdk@cardinalcommerce'
-            password '220cc9476025679c4e5c843666c27d97cfb0f951'
+subprojects {
+    repositories {
+        maven {
+            url "https://cardinalcommerce.bintray.com/android"
+            credentials {
+                username 'braintree-team-sdk@cardinalcommerce'
+                password '220cc9476025679c4e5c843666c27d97cfb0f951'
+            }
         }
     }
 }
