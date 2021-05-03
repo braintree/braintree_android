@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Revert release 3.17.3
+* Revert release 3.17.3 (local repository does not propagate MPI aar file)
 
 ## ~3.17.3~
 
