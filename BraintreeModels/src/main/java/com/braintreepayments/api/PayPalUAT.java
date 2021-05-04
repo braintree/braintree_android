@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -117,36 +116,4 @@ class PayPalUAT extends Authorization {
     Environment getEnvironment() {
         return environment;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(configUrl);
-        dest.writeString(payPalUrl);
-        dest.writeString(token);
-        dest.writeString(braintreeMerchantID);
-    }
-
-    protected PayPalUAT(Parcel in) {
-        super(in);
-        configUrl = in.readString();
-        payPalUrl = in.readString();
-        token = in.readString();
-        braintreeMerchantID = in.readString();
-    }
-
-    public static final Creator<PayPalUAT> CREATOR = new Creator<PayPalUAT>() {
-        public PayPalUAT createFromParcel(Parcel source) {
-            return new PayPalUAT(source);
-        }
-
-        public PayPalUAT[] newArray(int size) {
-            return new PayPalUAT[size];
-        }
-    };
 }

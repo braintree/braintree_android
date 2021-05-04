@@ -123,6 +123,20 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
+    public void loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
+        Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
+
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
+        sut.loadConfiguration(context, authorization, callback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(callback).onResult((Configuration) isNull(), captor.capture());
+
+        BraintreeException exception = captor.getValue();
+        assertEquals("token invalid", exception.getMessage());
+    }
+
+    @Test
     public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
         Context context = mock(Context.class);

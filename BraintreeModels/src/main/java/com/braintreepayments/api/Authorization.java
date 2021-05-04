@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -9,7 +7,7 @@ import androidx.annotation.Nullable;
 /**
  * Generic base class for Braintree authorization
  */
-abstract class Authorization implements Parcelable {
+abstract class Authorization {
 
     private final String rawValue;
 
@@ -18,22 +16,28 @@ abstract class Authorization implements Parcelable {
     }
 
     /**
-     * Returns an {@link Authorization} of the correct type for a given {@link String}.
+     * Returns an {@link Authorization} of the correct type for a given {@link String}. If an
+     * invalid authorization string is provided, an {@link InvalidAuthorization} will be returned.
+     * Requests with an {@link InvalidAuthorization} will return a {@link BraintreeException} to the
+     * {@link HttpResponseCallback}.
      *
      * @param authorizationString Given string to transform into an {@link Authorization}.
      * @return {@link Authorization}
-     * @throws InvalidArgumentException This method will throw this exception type if the string
-     * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
-    static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
-        if (isTokenizationKey(authorizationString)) {
-            return new TokenizationKey(authorizationString);
-        } else if (isPayPalUAT(authorizationString)){
-            return new PayPalUAT(authorizationString);
-        } else if (isClientToken(authorizationString)) {
-            return new ClientToken(authorizationString);
-        } else {
-            throw new InvalidArgumentException("Authorization provided is invalid: " + authorizationString);
+    static Authorization fromString(@Nullable String authorizationString) {
+        try {
+            if (isTokenizationKey(authorizationString)) {
+                return new TokenizationKey(authorizationString);
+            } else if (isPayPalUAT(authorizationString)){
+                return new PayPalUAT(authorizationString);
+            } else if (isClientToken(authorizationString)) {
+                return new ClientToken(authorizationString);
+            } else {
+                String errorMessage = "Authorization provided is invalid: " + authorizationString;
+                return new InvalidAuthorization(authorizationString, errorMessage);
+            }
+        } catch (InvalidArgumentException error) {
+            return new InvalidAuthorization(authorizationString, error.getMessage());
         }
     }
 
@@ -65,14 +69,5 @@ abstract class Authorization implements Parcelable {
 
     private static boolean isClientToken(String clientToken) {
         return !TextUtils.isEmpty(clientToken) && clientToken.matches(ClientToken.BASE_64_MATCHER);
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(rawValue);
-    }
-
-    public Authorization(Parcel in) {
-        rawValue = in.readString();
     }
 }

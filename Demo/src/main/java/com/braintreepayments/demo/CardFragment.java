@@ -150,16 +150,20 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             autofillButton.setEnabled(true);
 
             braintreeClient.getConfiguration((configuration, configError) -> {
-                cardForm.cardRequired(true)
-                        .expirationRequired(true)
-                        .cvvRequired(configuration.isCvvChallengePresent())
-                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                        .mobileNumberRequired(false)
-                        .actionLabel(getString(R.string.purchase))
-                        .setup(activity);
+                if (configuration != null) {
+                    cardForm.cardRequired(true)
+                            .expirationRequired(true)
+                            .cvvRequired(configuration.isCvvChallengePresent())
+                            .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                            .mobileNumberRequired(false)
+                            .actionLabel(getString(R.string.purchase))
+                            .setup(activity);
 
-                if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
+                    if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                        dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
+                    }
+                } else {
+                    handleError(configError);
                 }
             });
 

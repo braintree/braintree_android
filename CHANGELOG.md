@@ -34,6 +34,7 @@
   * Remove `PaymentMethodNonce#getTypeLabel()` method
   * Remove `PaymentMethodNoncesCallback`
   * Remove `PaymentMethodNonce#getDescription()` method
+  * `BraintreeClient` constructor no longer throws `InvalidArgumentException`
 
 ## 4.0.0-beta2
 

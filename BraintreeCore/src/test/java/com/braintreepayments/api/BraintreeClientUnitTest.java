@@ -61,46 +61,6 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void constructor_whenAuthStringIsValidTokenizationKey_shouldNotThrow() {
-        try {
-            BraintreeClient sut = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
-            assertNotNull(sut);
-        } catch (InvalidArgumentException e) {
-            fail("this should not throw");
-        }
-    }
-
-    @Test
-    public void constructor_whenAuthStringIsValidClientToken_shouldNotThrow() {
-        try {
-            BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_CLIENT_TOKEN);
-            assertNotNull(sut);
-        } catch (InvalidArgumentException e) {
-            fail("this should not throw");
-        }
-    }
-
-    @Test
-    public void constructor_whenAuthStringIsValidPayPalUAT_shouldNotThrow() {
-        try {
-            BraintreeClient sut = new BraintreeClient(context, Fixtures.BASE64_PAYPAL_UAT);
-            assertNotNull(sut);
-        } catch (InvalidArgumentException e) {
-            fail("this should not throw");
-        }
-    }
-
-    @Test
-    public void constructor_whenAuthStringIsInvalid_shouldThrow() {
-        try {
-            new BraintreeClient(context, "invalid-auth-string");
-            fail("this should throw");
-        } catch (InvalidArgumentException e) {
-            assertEquals("Authorization provided is invalid: invalid-auth-string", e.getMessage());
-        }
-    }
-
-    @Test
     public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);

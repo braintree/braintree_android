@@ -1,11 +1,8 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.braintreepayments.api.models.BuildConfig;
 
-class TokenizationKey extends Authorization implements Parcelable {
+class TokenizationKey extends Authorization {
 
     static final String MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
@@ -68,34 +65,4 @@ class TokenizationKey extends Authorization implements Parcelable {
             throw new InvalidArgumentException("Tokenization Key contained invalid environment");
         }
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(environment);
-        dest.writeString(merchantId);
-        dest.writeString(url);
-    }
-
-    protected TokenizationKey(Parcel in) {
-        super(in);
-        environment = in.readString();
-        merchantId = in.readString();
-        url = in.readString();
-    }
-
-    public static final Creator<TokenizationKey> CREATOR = new Creator<TokenizationKey>() {
-        public TokenizationKey createFromParcel(Parcel source) {
-            return new TokenizationKey(source);
-        }
-
-        public TokenizationKey[] newArray(int size) {
-            return new TokenizationKey[size];
-        }
-    };
 }

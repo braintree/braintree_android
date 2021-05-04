@@ -25,7 +25,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.InvalidArgumentException;
 import com.braintreepayments.api.SignatureVerificationOverrides;
 
 import java.util.Arrays;
@@ -88,24 +87,16 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             return;
         }
         if (authorization != null) {
-            try {
-                braintreeClient = new BraintreeClient(this, authorization);
-                callback.onResult(braintreeClient);
-            } catch (InvalidArgumentException e) {
-                showDialog(e.getMessage());
-            }
+            braintreeClient = new BraintreeClient(this, authorization);
+            callback.onResult(braintreeClient);
             return;
         }
 
         authProvider.fetchAuthorization(this, (authorization, error) -> {
             if (authorization != null) {
                 this.authorization = authorization;
-                try {
-                    braintreeClient = new BraintreeClient(DemoActivity.this, this.authorization);
-                    callback.onResult(braintreeClient);
-                } catch (InvalidArgumentException e) {
-                    showDialog(e.getMessage());
-                }
+                braintreeClient = new BraintreeClient(DemoActivity.this, this.authorization);
+                callback.onResult(braintreeClient);
             } else if (error != null) {
                 showDialog(error.getMessage());
             }

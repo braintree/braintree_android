@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.os.Parcel;
 import android.util.Base64;
 
 import org.json.JSONException;
@@ -70,32 +69,4 @@ class ClientToken extends Authorization {
         }
         return null;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(configUrl);
-        dest.writeString(authorizationFingerprint);
-    }
-
-    protected ClientToken(Parcel in) {
-        super(in);
-        configUrl = in.readString();
-        authorizationFingerprint = in.readString();
-    }
-
-    public static final Creator<ClientToken> CREATOR = new Creator<ClientToken>() {
-        public ClientToken createFromParcel(Parcel source) {
-            return new ClientToken(source);
-        }
-
-        public ClientToken[] newArray(int size) {
-            return new ClientToken[size];
-        }
-    };
 }
