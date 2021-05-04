@@ -5,6 +5,7 @@
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
 * Add wallet enabled metadata tag to `AndroidManifest.xml` in `google-pay` module 
+* Add `GooglePayCardNonce#isThreeDSecureEligible()` method
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
