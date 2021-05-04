@@ -176,6 +176,11 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     }
 
     /**
+     * @return true if the card is eligible for 3D Secure verification, false otherwise.
+     */
+    public Boolean isThreeDSecureEligible() { return !isNetworkTokenized; }
+
+    /**
      * @return The user's billing address.
      */
     @Nullable

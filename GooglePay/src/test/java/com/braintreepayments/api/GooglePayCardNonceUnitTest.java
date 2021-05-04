@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.api.Assertions.assertBinDataEqual;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayCardNonceUnitTest {
@@ -111,6 +112,20 @@ public class GooglePayCardNonceUnitTest {
         assertPostalAddress(shippingPostalAddress, parceled.getShippingAddress());
 
         assertBinDataEqual(googlePayCardNonce.getBinData(), parceled.getBinData());
+    }
+
+    @Test
+    public void isThreeDSecureEligible_whenNonNetworkTokenized_returnsTrue() {
+        GooglePayCardNonce sut = new GooglePayCardNonce(
+                "Visa", "34", "1234", "sample@user.com", false, null, null, null, null, false);
+        assertTrue(sut.isThreeDSecureEligible());
+    }
+
+    @Test
+    public void isThreeDSecureEligible_whenIsNetworkTokenized_returnsFalse() {
+        GooglePayCardNonce sut = new GooglePayCardNonce(
+                "Visa", "78", "5678", "sample@user.com", true, null, null, null, null, false);
+        assertFalse(sut.isThreeDSecureEligible());
     }
 
     private PostalAddress getPostalAddressObject(JSONObject address) {
