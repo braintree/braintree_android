@@ -94,6 +94,10 @@ public class VenmoClient {
                     return;
                 }
 
+                if (request.getPaymentMethodUsage() == VenmoPaymentMethodUsage.UNSPECIFIED) {
+                    callback.onResult(new BraintreeException("Payment method usage must be set."));
+                }
+
                 String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
                     venmoProfileId = configuration.getVenmoMerchantId();
