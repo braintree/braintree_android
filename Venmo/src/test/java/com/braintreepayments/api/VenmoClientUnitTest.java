@@ -14,7 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static com.braintreepayments.api.FixturesHelper.base64Encode;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ACCESS_TOKEN;
@@ -22,6 +25,7 @@ import static com.braintreepayments.api.VenmoClient.EXTRA_BRAINTREE_DATA;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_PAYMENT_METHOD_NONCE;
+import static com.braintreepayments.api.VenmoClient.EXTRA_RESOURCE_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_USERNAME;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -152,7 +156,8 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_persitsPaymentContextIdIntoLocalStorage() {
+    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_persitsPaymentContextIdThenStartsVenmoActivity() throws JSONException {
+
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -171,7 +176,27 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
-        verify(sharedPrefsWriter).persistVenmoPaymentContextId(activity, "venmo-payment-context-id");
+        InOrder inOrder = Mockito.inOrder(sharedPrefsWriter, activity);
+        inOrder.verify(sharedPrefsWriter).persistVenmoPaymentContextId(activity, "venmo-payment-context-id");
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        inOrder.verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+
+        Intent intent = captor.getValue();
+        assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"), intent.getComponent());
+        assertEquals("sample-venmo-merchant", intent.getStringExtra(EXTRA_MERCHANT_ID));
+        assertEquals("access-token", intent.getStringExtra(EXTRA_ACCESS_TOKEN));
+        assertEquals("environment", intent.getStringExtra(EXTRA_ENVIRONMENT));
+        assertEquals("venmo-payment-context-id", intent.getStringExtra(EXTRA_RESOURCE_ID));
+
+        JSONObject expectedBraintreeData = new JSONObject()
+                .put("_meta", new JSONObject()
+                        .put("platform", "android")
+                        .put("sessionId", "session-id")
+                        .put("integration", "custom")
+                        .put("version", BuildConfig.VERSION_NAME)
+                );
+        JSONAssert.assertEquals(expectedBraintreeData, new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)), JSONCompareMode.STRICT);
     }
 
     @Test
