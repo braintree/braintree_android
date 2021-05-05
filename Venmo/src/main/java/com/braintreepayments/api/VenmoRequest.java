@@ -55,6 +55,18 @@ public class VenmoRequest {
         return paymentMethodUsage;
     }
 
+    String getPaymentMethodUsageAsString() {
+        switch (paymentMethodUsage) {
+            case VenmoPaymentMethodUsage.MULTI_USE:
+                return "MULTI_USE";
+            case VenmoPaymentMethodUsage.SINGLE_USE:
+                return "SINGLE_USE";
+            case VenmoPaymentMethodUsage.UNSPECIFIED:
+            default:
+                return null;
+        }
+    }
+
     /**
      * Set {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
      * Defaults to {@link VenmoPaymentMethodUsage#MULTI_USE}

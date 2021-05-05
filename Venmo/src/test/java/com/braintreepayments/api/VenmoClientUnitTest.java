@@ -116,6 +116,11 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_createsPaymentContextViaGraphQL() {
+
+    }
+
+    @Test
     public void tokenizeVenmoAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
