@@ -106,7 +106,7 @@ public class VenmoClient {
                 try {
                     params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
                     JSONObject input = new JSONObject();
-                    input.put("paymentMethodUsage", request.getPaymentMethodUsage());
+                    input.put("paymentMethodUsage", request.getPaymentMethodUsageAsString());
                     input.put("merchantProfileId", venmoProfileId);
                     input.put("customerClient", "MOBILE_APP");
                     input.put("intent", "CONTINUE");
@@ -114,7 +114,7 @@ public class VenmoClient {
                     variables.put("input", input);
                     params.put("variables", variables);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    callback.onResult(new BraintreeException("unexpected error"));
                 }
 
                 final String finalVenmoProfileId = venmoProfileId;

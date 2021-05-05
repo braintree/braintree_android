@@ -116,12 +116,66 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_createsPaymentContextViaGraphQL() {
+    public void tokenizeVenmoAccount_createsPaymentContextViaGraphQL() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .build();
 
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoRequest request = new VenmoRequest();
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+        request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
+
+        String graphQLBody = captor.getValue();
+        JSONObject graphQLJSON = new JSONObject(graphQLBody);
+
+        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
+        assertEquals(expectedQuery, graphQLJSON.getString("query"));
+
+        JSONObject variables = graphQLJSON.getJSONObject("variables");
+        JSONObject input = variables.getJSONObject("input");
+        assertEquals("SINGLE_USE", input.getString("paymentMethodUsage"));
+        assertEquals("sample-venmo-merchant", input.getString("merchantProfileId"));
+        assertEquals("MOBILE_APP", input.getString("customerClient"));
+        assertEquals("CONTINUE", input.getString("intent"));
     }
 
     @Test
-    public void tokenizeVenmoAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
+    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_persitsPaymentContextIdIntoLocalStorage() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoRequest request = new VenmoRequest();
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+        request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        verify(sharedPrefsWriter).persistVenmoPaymentContextId(activity, "venmo-payment-context-id");
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
