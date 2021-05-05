@@ -27,6 +27,16 @@ public class VenmoAccountNonceUnitTest {
     }
 
     @Test
+    public void fromJson_withPaymentMethodId_parsesResponse() throws JSONException {
+        VenmoAccountNonce venmoAccountNonce =
+                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
+
+        assertEquals("@sampleuser", venmoAccountNonce.getUsername());
+        assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
+        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
+    }
+
+    @Test
     public void getNonce_returnsNonce() {
         assertEquals(NONCE, VENMO_NONCE.getString());
     }

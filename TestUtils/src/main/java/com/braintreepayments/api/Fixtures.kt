@@ -1818,6 +1818,14 @@ object Fixtures {
     """
 
     // language=JSON
+    const val VENMO_PAYMENT_METHOD_CONTEXT_JSON = """
+        {
+          "paymentMethodId": "sample-payment-method-id",
+          "userName": "@sampleuser"
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHOD_VENMO_PLAIN_OBJECT = """
         {
           "type": "VenmoAccount",
