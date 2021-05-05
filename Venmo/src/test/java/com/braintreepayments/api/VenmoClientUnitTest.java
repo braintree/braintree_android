@@ -93,6 +93,29 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_whenPaymentMethodUsageUNSPECIFIED_postsExceptionToCallback() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        VenmoRequest request = new VenmoRequest();
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(venmoTokenizeAccountCallback).onResult(captor.capture());
+
+        BraintreeException error = captor.getValue();
+        assertEquals("Payment method usage must be set.", error.getMessage());
+    }
+
+    @Test
     public void tokenizeVenmoAccount_launchesVenmoWithCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
