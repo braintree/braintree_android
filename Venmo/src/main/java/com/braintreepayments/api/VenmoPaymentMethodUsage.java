@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.StringDef;
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,12 +9,13 @@ import java.lang.annotation.RetentionPolicy;
  * Enum representing different types of supported Braintree payment methods.
  */
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({
+@IntDef({
+        VenmoPaymentMethodUsage.UNSPECIFIED,
         VenmoPaymentMethodUsage.SINGLE_USE,
         VenmoPaymentMethodUsage.MULTI_USE
 })
 public @interface VenmoPaymentMethodUsage {
-    String SINGLE_USE = "SINGLE_USE";
-    String MULTI_USE = "MULTI_USE";
+    int UNSPECIFIED = 0;
+    int SINGLE_USE = 1;
+    int MULTI_USE = 2;
 }
-
