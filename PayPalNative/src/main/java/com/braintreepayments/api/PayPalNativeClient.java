@@ -1,11 +1,6 @@
 package com.braintreepayments.api;
 
-import android.net.Uri;
-
 import androidx.fragment.app.FragmentActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Used to tokenize PayPal accounts using PayPal Native UI. For more information see the
