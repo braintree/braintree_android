@@ -21,8 +21,7 @@ public class PayPalNativeClient {
 
                 String payPalClientId = configuration.getPayPalClientId();
                 if (payPalClientId == null) {
-                    // TODO: write error message explaining why PayPal Native couldn't be started
-                    callback.onResult(new BraintreeException("PayPal Native unavailable."));
+                    callback.onResult(new BraintreeException("PayPal Client ID is null. TODO: write error message explaining why PayPal Native couldn't be started"));
                     return;
                 }
 
@@ -35,6 +34,7 @@ public class PayPalNativeClient {
 
     private void startPayPalNativeCheckout(FragmentActivity activity, Configuration configuration, String payPalClientId, PayPalNativeFlowStartedCallback callback) {
         // TODO: configure and start paypal native checkout
+        callback.onResult(new BraintreeException("TODO: integrate native checkout with Braintree SDK."));
     }
 
     private static Exception createPayPalNotEnabledError() {

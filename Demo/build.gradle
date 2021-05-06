@@ -90,6 +90,7 @@ dependencies {
     implementation project(':UnionPay')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
+    implementation project(':PayPalNative')
 
     implementation 'com.squareup.okio:okio:1.13.0'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
