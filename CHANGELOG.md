@@ -5,9 +5,6 @@
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
 * Add wallet enabled metadata tag to `AndroidManifest.xml` in `google-pay` module 
-* Add `Card#setShouldValidate()` method
-* Add `PayPalAccount#setShouldValidate()` method
-* Add `VenmoAccount#setShouldValidate()` method
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`
@@ -40,7 +37,7 @@
   * `BraintreeClient` constructor no longer throws `InvalidArgumentException`
   * Make protected static member variables `OPTIONS_KEY`, `OPERATION_NAME_KEY` on `PaymentMethod` package-private
   * Make `PaymentMethod` constructor package-private
-  * Remove `setValidate` method from `PaymentMethod` base class and all subclasses
+  * Rename `setValidate` to `setShouldValidate` and move it from `PaymentMethod` base class to `Card`, `PayPalAccount` and `VenmoAccount` subclasses
   * Make `buildJSON()` package-private for `PaymentMethod` base class and all subclasses
   * Remove `buildGraphQL()` method from `PaymentMethod` base class and all subclasses
   * Make `PaymentMethod` `Parcelable` constructor package-private
