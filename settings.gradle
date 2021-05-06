@@ -1,3 +1,4 @@
+include ':PayPalNative'
 include ':VisaCheckout'
 include ':GooglePay'
 include ':BraintreeModels'
