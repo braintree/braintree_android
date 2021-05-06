@@ -2,6 +2,10 @@ package com.braintreepayments.api;
 
 import androidx.fragment.app.FragmentActivity;
 
+/**
+ * Used to tokenize PayPal accounts using PayPal Native UI. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/">documentation</a>
+ */
 public class PayPalNativeClient {
 
     private final BraintreeClient braintreeClient;
@@ -10,7 +14,7 @@ public class PayPalNativeClient {
         this.braintreeClient = braintreeClient;
     }
 
-    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalNativeFlowStartedCallback callback) {
+    public void tokenizePayPalAccount(final FragmentActivity activity, PayPalNativeCheckoutRequest request, final PayPalNativeFlowStartedCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(Configuration configuration, Exception error) {
