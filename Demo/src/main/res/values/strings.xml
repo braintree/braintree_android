@@ -18,6 +18,7 @@
     <string name="local_payment_button">Local Payment</string>
     <string name="preferred_payment_methods_button">Pref Payment Methods</string>
     <string name="cards">Credit or Debit Cards</string>
+    <string name="paypal_native">PayPal Native</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
     <string name="buy">Buy</string>
@@ -115,4 +116,5 @@
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>
     <string name="autofill">Autofill</string>
+    <string name="paypal_native_title">PayPal Native</string>
 </resources>

@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_mainFragment_to_preferredPaymentMethodsFragment"
             app:destination="@id/preferredPaymentMethodsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_payPalNativeFragment"
+            app:destination="@id/payPalNativeFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -139,5 +142,19 @@
         android:name="com.braintreepayments.demo.PreferredPaymentMethodsFragment"
         tools:layout="@layout/fragment_preferred_payment_methods"
         />
+    <fragment
+        android:id="@+id/payPalNativeFragment"
+        android:name="com.braintreepayments.demo.PayPalNativeFragment"
+        tools:layout="@layout/fragment_paypal_native">
+        <argument
+            android:name="shouldCollectDeviceData"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_payPalNativeFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
 
 </navigation>
