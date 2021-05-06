@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -157,7 +158,6 @@ public class VenmoClientUnitTest {
 
     @Test
     public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_persitsPaymentContextIdThenStartsVenmoActivity() throws JSONException {
-
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -551,6 +551,28 @@ public class VenmoClientUnitTest {
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
         verify(venmoTokenizeAccountCallback).onResult(graphQLError);
+    }
+
+    @Test
+    public void onActivityResult_withPaymentContextId_queriesGraphQLPaymentContext() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .build();
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        Intent intent = new Intent();
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
+
+        String payload = captor.getValue();
+        JSONObject jsonPayload = new JSONObject(payload);
+        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName } } }";
+        assertEquals(expectedQuery, jsonPayload.get("query"));
+        assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }
 
     @Test
