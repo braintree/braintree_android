@@ -10,27 +10,36 @@ public class PayPalNativeClient {
         this.braintreeClient = braintreeClient;
     }
 
-    public void tokenizePayPalAccount(final FragmentActivity activity) {
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalNativeFlowStartedCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(Configuration configuration, Exception error) {
                 if (error != null) {
-                    // TODO: callback error
+                    callback.onResult(createPayPalNotEnabledError());
                     return;
                 }
 
                 String payPalClientId = configuration.getPayPalClientId();
                 if (payPalClientId == null) {
-                    // TODO: callback error
+                    // TODO: write error message explaining why PayPal Native couldn't be started
+                    callback.onResult(new BraintreeException("PayPal Native unavailable."));
                     return;
                 }
 
-                startPayPalNativeCheckout(activity, configuration, payPalClientId);
+                // NOTE: the callback parameter is only necessary if PayPal Native XO needs
+                // to callback an error before starting the native UI
+                startPayPalNativeCheckout(activity, configuration, payPalClientId, callback);
             }
         });
     }
 
-    private void startPayPalNativeCheckout(FragmentActivity activity, Configuration configuration, String payPalClientId) {
+    private void startPayPalNativeCheckout(FragmentActivity activity, Configuration configuration, String payPalClientId, PayPalNativeFlowStartedCallback callback) {
         // TODO: configure and start paypal native checkout
+    }
+
+    private static Exception createPayPalNotEnabledError() {
+        return new BraintreeException("PayPal is not enabled. " +
+                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                "for more information.");
     }
 }
