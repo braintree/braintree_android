@@ -25,6 +25,7 @@ public class PayPalAccountUnitTest {
         sut.setClientMetadataId("correlation_id");
         sut.setSource("paypal-sdk");
         sut.setMerchantAccountId("alt_merchant_account_id");
+        sut.setPaymentType("single-payment");
 
         JSONObject jsonObject = sut.buildJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
@@ -36,6 +37,7 @@ public class PayPalAccountUnitTest {
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
         assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
+        assertFalse(jsonAccount.getJSONObject("options").getBoolean("validate"));
     }
 
     @Test
@@ -62,14 +64,25 @@ public class PayPalAccountUnitTest {
     }
 
     @Test
-    public void includesValidateOptionWhenSet() throws JSONException {
+    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse() throws JSONException {
         PayPalAccount sut = new PayPalAccount();
-        sut.setShouldValidate(true);
+        sut.setPaymentType("single-payment");
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
 
-        assertTrue(builtAccount.getJSONObject("options").getBoolean("validate"));
+        assertFalse(builtAccount.getJSONObject("options").getBoolean("validate"));
+    }
+
+    @Test
+    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate() throws JSONException {
+        PayPalAccount sut = new PayPalAccount();
+        sut.setPaymentType("billing-agreement");
+
+        JSONObject json = sut.buildJSON();
+        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
+
+        assertFalse(builtAccount.has("options"));
     }
 
     @Test
@@ -79,8 +92,7 @@ public class PayPalAccountUnitTest {
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
 
-        assertEquals(1, builtAccount.length());
-        assertTrue(builtAccount.has("options"));
+        assertEquals(0, builtAccount.length());
     }
 
     @Test
@@ -99,10 +111,7 @@ public class PayPalAccountUnitTest {
         JSONObject expectedPaymentMethodNonceJSON = new JSONObject()
                 .put("data1", "data1")
                 .put("data2", "data2")
-                .put("data3", "data3")
-                .put("options", new JSONObject()
-                        .put("validate", false)
-                );
+                .put("data3", "data3");
         JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
     }
 

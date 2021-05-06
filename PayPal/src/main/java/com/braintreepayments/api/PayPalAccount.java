@@ -21,8 +21,7 @@ class PayPalAccount extends PaymentMethod {
     private JSONObject urlResponseData = new JSONObject();
     private String intent;
     private String merchantAccountId;
-
-    private boolean shouldValidate;
+    private String paymentType;
 
     PayPalAccount() {
         super();
@@ -36,9 +35,11 @@ class PayPalAccount extends PaymentMethod {
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
         paymentMethodNonceJson.put(INTENT_KEY, intent);
 
-        JSONObject optionsJson = new JSONObject();
-        optionsJson.put(VALIDATE_KEY, shouldValidate);
-        paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+        if ("single-payment".equalsIgnoreCase(paymentType)) {
+            JSONObject optionsJson = new JSONObject();
+            optionsJson.put(VALIDATE_KEY, false);
+            paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+        }
 
         Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
         while (urlResponseDataKeyIterator.hasNext()) {
@@ -61,16 +62,6 @@ class PayPalAccount extends PaymentMethod {
      */
     void setClientMetadataId(String clientMetadataId) {
         this.clientMetadataId = clientMetadataId;
-    }
-
-    /**
-     * @param shouldValidate Flag to denote when the associated {@link PaymentMethodNonce}
-     *                       will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
-     *                       will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
-     *                       will be validated when used by a server side library for a Braintree gateway action.
-     */
-    public void setShouldValidate(boolean shouldValidate) {
-        this.shouldValidate = shouldValidate;
     }
 
     /**
@@ -103,6 +94,15 @@ class PayPalAccount extends PaymentMethod {
      */
     void setMerchantAccountId(String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
+    }
+
+    /**
+     * Payment type from original PayPal request.
+     *
+     * @param paymentType Either "billing-agreement" or "single-payment"
+     */
+    void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
     }
 
     @Override

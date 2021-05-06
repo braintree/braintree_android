@@ -230,6 +230,7 @@ public class PayPalClient {
                         payPalAccount.setIntent(payPalIntent);
                         payPalAccount.setSource("paypal-browser");
                         payPalAccount.setUrlResponseData(urlResponseData);
+                        payPalAccount.setPaymentType(paymentType);
 
                         if (merchantAccountId != null) {
                             payPalAccount.setMerchantAccountId(merchantAccountId);

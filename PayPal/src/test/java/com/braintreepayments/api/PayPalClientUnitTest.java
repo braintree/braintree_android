@@ -372,10 +372,7 @@ public class PayPalClientUnitTest {
                 .put("response", new JSONObject()
                         .put("webURL", approvalUrl))
                 .put("intent", "authorize")
-                .put("response_type", "web")
-                .put("options", new JSONObject()
-                        .put("validate", false)
-                );
+                .put("response_type", "web");
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
