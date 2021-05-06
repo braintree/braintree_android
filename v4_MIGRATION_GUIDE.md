@@ -148,7 +148,7 @@ public class CardActivity extends AppCompatActivity {
 }
 ```
 
-### Validate
+### Card Validation
 
 The `validate` property on `Card` has been renamed to `shouldValidate`.
 
