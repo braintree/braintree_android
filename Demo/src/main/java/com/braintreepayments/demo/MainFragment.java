@@ -30,6 +30,7 @@ public class MainFragment extends BaseFragment {
     private Button visaCheckoutButton;
     private Button localPaymentsButton;
     private Button preferredPaymentMethods;
+    private Button payPalNativeButton;
 
     @Nullable
     @Override
@@ -43,6 +44,7 @@ public class MainFragment extends BaseFragment {
         visaCheckoutButton = view.findViewById(R.id.visa_checkout);
         localPaymentsButton = view.findViewById(R.id.local_payment);
         preferredPaymentMethods = view.findViewById(R.id.preferred_payment_methods);
+        payPalNativeButton = view.findViewById(R.id.paypal_native);
 
         cardsButton.setOnClickListener(this::launchCards);
         payPalButton.setOnClickListener(this::launchPayPal);
@@ -51,6 +53,7 @@ public class MainFragment extends BaseFragment {
         visaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
         venmoButton.setOnClickListener(this::launchVenmo);
         preferredPaymentMethods.setOnClickListener(this::launchPreferredPaymentMethods);
+        payPalNativeButton.setOnClickListener(this::launchPayPalNative);
 
         return view;
     }
@@ -118,6 +121,14 @@ public class MainFragment extends BaseFragment {
     public void launchPreferredPaymentMethods(View v) {
         NavDirections action =
                 MainFragmentDirections.actionMainFragmentToPreferredPaymentMethodsFragment();
+        Navigation.findNavController(v).navigate(action);
+    }
+
+    public void launchPayPalNative(View v) {
+        MainFragmentDirections.ActionMainFragmentToPayPalNativeFragment action =
+            MainFragmentDirections.actionMainFragmentToPayPalNativeFragment();
+        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+
         Navigation.findNavController(v).navigate(action);
     }
 }
