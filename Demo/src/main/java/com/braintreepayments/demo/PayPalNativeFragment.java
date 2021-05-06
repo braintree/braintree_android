@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeClient;
 
 public class PayPalNativeFragment extends BaseFragment {
@@ -26,7 +27,9 @@ public class PayPalNativeFragment extends BaseFragment {
     }
 
     private void startPayPalNative() {
-        payPalNativeClient.tokenizePayPalAccount(getActivity(), error -> {
+        PayPalNativeCheckoutRequest nativeCheckoutRequest = new PayPalNativeCheckoutRequest();
+
+        payPalNativeClient.tokenizePayPalAccount(getActivity(), nativeCheckoutRequest, error -> {
             if (error != null) {
                 handleError(error);
             }
