@@ -597,7 +597,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_onGraphQLPostFailure_forwwardsExceptionToCallback() {
+    public void onActivityResult_onGraphQLPostFailure_forwardsExceptionToCallback() {
         BraintreeException graphQLError = new BraintreeException("graphQL error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -611,6 +611,38 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         verify(onActivityResultCallback).onResult(null, graphQLError);
+    }
+
+    @Test
+    public void onActivityResult_withPaymentContext_performsVaultRequestIfRequestPersisted()
+            throws InvalidArgumentException, JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+
+        VenmoRequest request = new VenmoRequest();
+        request.setProfileId(null);
+        request.setShouldVault(true);
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        Intent intent = new Intent();
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
+
+        ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
+        verify(tokenizationClient).tokenize(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
+
+        VenmoAccount venmoAccount = accountBuilderCaptor.getValue();
+        JSONObject venmoJSON = new JSONObject(venmoAccount.buildJSON());
+        assertEquals("payment-method-id", venmoJSON.getJSONObject("venmoAccount").getString("nonce"));
     }
 
     @Test
@@ -734,6 +766,32 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void onActivityResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws InvalidArgumentException, JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
+
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
+        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
+
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
+        verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
+    }
+
+    @Test
     public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
@@ -780,6 +838,35 @@ public class VenmoClientUnitTest {
         Exception authException = new AuthorizationException("Bad fingerprint");
         tokenizeNonceCallback.onResult(null, authException);
 
+        verify(onActivityResultCallback).onResult(null, authException);
+    }
+
+    @Test
+    public void onActivityResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() throws InvalidArgumentException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        Intent intent = new Intent();
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
+
+        ArgumentCaptor<TokenizeCallback> callbackCaptor =
+                ArgumentCaptor.forClass(TokenizeCallback.class);
+        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+
+        TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
+        Exception authException = new AuthorizationException("Bad fingerprint");
+        tokenizeNonceCallback.onResult(null, authException);
+
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
         verify(onActivityResultCallback).onResult(null, authException);
     }
 
