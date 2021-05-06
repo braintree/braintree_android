@@ -597,6 +597,23 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void onActivityResult_onGraphQLPostFailure_forwwardsExceptionToCallback() {
+        BraintreeException graphQLError = new BraintreeException("graphQL error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sendGraphQLPOSTErrorResponse(graphQLError)
+                .build();
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        Intent intent = new Intent();
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
+
+        verify(onActivityResultCallback).onResult(null, graphQLError);
+    }
+
+    @Test
     public void onActivityResult_postsPaymentMethodNonceOnSuccess() {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         Intent intent = new Intent()
