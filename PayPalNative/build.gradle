@@ -28,6 +28,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    implementation project(':PayPal')
     implementation 'androidx.appcompat:appcompat:1.2.0'
 }
 
