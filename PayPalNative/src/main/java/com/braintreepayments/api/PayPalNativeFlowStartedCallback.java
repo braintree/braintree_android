@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import androidx.fragment.app.FragmentActivity;
 
 /**
- * Callback for receiving result of
+ * Callback for receiving error when calling
  * {@link PayPalNativeClient#tokenizePayPalAccount(FragmentActivity, PayPalNativeFlowStartedCallback)}
  */
 public interface PayPalNativeFlowStartedCallback {
