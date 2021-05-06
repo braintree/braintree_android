@@ -576,6 +576,27 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void onActivityResult_onGraphQLPostSuccess_returnsNonceToCallback() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        Intent intent = new Intent();
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
+
+        ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
+        verify(onActivityResultCallback).onResult(captor.capture(), (Exception) isNull());
+
+        VenmoAccountNonce nonce = captor.getValue();
+        assertEquals("payment-method-id", nonce.getString());
+        assertEquals("@somebody", nonce.getUsername());
+    }
+
+    @Test
     public void onActivityResult_postsPaymentMethodNonceOnSuccess() {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         Intent intent = new Intent()

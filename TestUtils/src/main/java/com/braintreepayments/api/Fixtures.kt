@@ -1850,6 +1850,18 @@ object Fixtures {
     """
 
     // language=JSON
+    const val VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE = """
+        {
+            "data": {
+                "node": {
+                    "paymentMethodId": "payment-method-id",
+                    "userName": "@somebody"
+                }
+            }
+        }
+    """
+
+    // language=JSON
     const val VENMO_PAYMENT_METHOD_CONTEXT_JSON = """
         {
           "paymentMethodId": "sample-payment-method-id",
