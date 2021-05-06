@@ -28,6 +28,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }
 
 // region signing and publishing
