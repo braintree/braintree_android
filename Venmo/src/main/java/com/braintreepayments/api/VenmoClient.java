@@ -122,12 +122,16 @@ public class VenmoClient {
                     @Override
                     public void success(String responseBody) {
                         String paymentContextId = parsePaymentContextId(responseBody);
+                        if (paymentContextId == null || TextUtils.isEmpty(paymentContextId)) {
+                            callback.onResult(new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
+                            return;
+                        }
                         startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, paymentContextId);
                     }
 
                     @Override
                     public void failure(Exception exception) {
-                        startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, null);
+                        callback.onResult(exception);
                     }
                 });
             }

@@ -1834,6 +1834,22 @@ object Fixtures {
     """
 
     // language=JSON
+    const val VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID = """
+        {
+            "data": {
+                "createVenmoPaymentContext": {
+                    "venmoPaymentContext": {
+                        "id":""
+                    }
+                }
+            },
+            "extensions": {
+                "requestId":"878454c9-1ebf-4701-b855-fabbc8748282"
+            }
+        }
+    """
+
+    // language=JSON
     const val VENMO_PAYMENT_METHOD_CONTEXT_JSON = """
         {
           "paymentMethodId": "sample-payment-method-id",

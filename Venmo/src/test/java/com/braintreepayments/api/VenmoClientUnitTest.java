@@ -206,6 +206,7 @@ public class VenmoClientUnitTest {
                 .sessionId("session-id")
                 .integration("custom")
                 .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -309,6 +310,7 @@ public class VenmoClientUnitTest {
                 .sessionId("session-id")
                 .integration("custom")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -336,6 +338,7 @@ public class VenmoClientUnitTest {
                 .sessionId("session-id")
                 .integration("custom")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -364,6 +367,7 @@ public class VenmoClientUnitTest {
                 .sessionId("session-id")
                 .integration("custom")
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -408,6 +412,7 @@ public class VenmoClientUnitTest {
     public void tokenizeVenmoAccount_sendsAnalyticsEventWhenStarted() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -428,6 +433,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -447,6 +453,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -467,6 +474,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .authorization(Authorization.fromString("sandbox_tk_abcd"))
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
         VenmoRequest request = new VenmoRequest();
@@ -503,6 +511,46 @@ public class VenmoClientUnitTest {
         order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
         verify(venmoTokenizeAccountCallback).onResult(captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_whenPaymentContextIdIsNull_forwardsErrorToCallback() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
+                .build();
+
+        VenmoRequest request = new VenmoRequest();
+        request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        ArgumentCaptor<BraintreeException> captor =
+                ArgumentCaptor.forClass(BraintreeException.class);
+        verify(venmoTokenizeAccountCallback).onResult(captor.capture());
+        assertEquals("Failed to fetch a Venmo paymentContextId while constructing the requestURL.", captor.getValue().getMessage());
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_whenGraphQLError_forwardsErrorToCallback() {
+        BraintreeException graphQLError = new BraintreeException("GraphQL error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sendGraphQLPOSTErrorResponse(graphQLError)
+                .build();
+
+        VenmoRequest request = new VenmoRequest();
+        request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
+
+        verify(venmoTokenizeAccountCallback).onResult(graphQLError);
     }
 
     @Test
