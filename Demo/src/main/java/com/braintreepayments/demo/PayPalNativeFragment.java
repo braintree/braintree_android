@@ -5,15 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.Fragment;
-
 import com.braintreepayments.api.PayPalNativeClient;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PayPalNativeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PayPalNativeFragment extends BaseFragment {
 
     PayPalNativeClient payPalNativeClient;
