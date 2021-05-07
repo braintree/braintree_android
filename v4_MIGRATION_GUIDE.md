@@ -17,6 +17,7 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 1. [Local Payment](#local-payment)
 1. [Google Pay](#google-pay)
 1. [PayPal](#paypal)
+1. [Samsung Pay](#samsung-pay)
 1. [Visa Checkout](#visa-checkout)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
@@ -514,77 +515,13 @@ The `requestOneTimePayment` and `requestBillingAgreement` methods on `PayPalClie
 
 However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`.
 
+## Samsung Pay
+
+The Samsung Pay feature is not yet supported in v4.
+
 ## Visa Checkout
 
-The Visa Checkout feature is now supported in a single dependency:
-
-```groovy
-dependencies {
-  implementation 'com.braintreepayments.api:visa-checkout:4.0.0-beta2'
-}
-```
-
-To use the feature, instantiate a `VisaCheckoutClient`:
-
-```java
-package com.my.app;
-
-public class VisaCheckoutActivity extends AppCompatActivity {
-
-  private BraintreeClient braintreeClient;
-  private VisaCheckoutClient visaCheckoutClient;
-
-  private CheckoutButton checkoutButton;
-    
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.visa_checkout_activity);
-    checkoutButton = (CheckoutButton) findViewById(R.id.visa_checkout_button);
-
-    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-    visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
-  }
- 
-  private void getVisaCheckoutProfile() {
-    visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
-      if (profileBuilder != null) {
-        setupVisaCheckoutButton(profileBuilder.build());
-      } else {
-        // handle error
-      }
-    });
-  }
-
-  private void setupVisaCheckoutButton(Profile visaCheckoutProfile) {
-    PurchaseInfo purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-        .setDescription("Description")
-        .build();
-    checkoutButton.init(this, visaCheckoutProfile, purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
-      @Override
-      public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-        launchReadyHandler.launch();
-      }
-
-      @Override
-      public void onResult(VisaPaymentSummary visaPaymentSummary) {
-        processVisaPaymentSummary(visaPaymentSummary);
-      }
-    });
-  }
-
-  private void processVisaPaymentSummary(VisaPaymentSummary visaPaymentSummary) {
-    visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
-      if (paymentMethodNonce != null) {
-        // send this nonce to your server
-        String nonce = paymentMethodNonce.getString();
-      } else {
-        // handle error
-      }
-    });
-  }
-}
-```
+The Visa Checkout feature is not yet supported in v4.
 
 ## Union Pay
 
