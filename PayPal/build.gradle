@@ -33,7 +33,7 @@ dependencies {
     implementation project(':BraintreeDataCollector')
 
     implementation('com.paypal.checkout:android-sdk:0.1.0') {
-        exclude group: 'com.paypal.android.sdk'
+        exclude module: 'data-collector'
     }
 
     testImplementation 'org.robolectric:robolectric:4.1'
