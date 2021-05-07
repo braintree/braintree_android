@@ -8,6 +8,8 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 
 1. [Gradle](#gradle)
 1. [Browser Switch](#browser-switch)
+1. [BraintreeFragment](#braintree-fragment)
+1. [Event Handling](#event-handling)
 1. [American Express](#american-express)
 1. [Card](#card)
 1. [Data Collector](#data-collector)
@@ -43,6 +45,63 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
     </intent-filter>
 </activity>
 ``` 
+
+## BraintreeFragment
+
+In v4, we decoupled the Braintree SDK from Android to offer more integration flexibility. 
+`BraintreeFragment` has been replaced by a `Client` for each respective payment feature. 
+See the below payment method sections for examples of instantiating and using the feature clients. 
+
+## Event Handling
+
+In v3, there were several interfaces that would be called when events occurred: `PaymentMethodNonceCreatedListener`, `ConfigurationListener`, `BraintreeCancelListener`, and `BraintreeErrorListener`.
+In v4, these listeners have been replaced by a callback pattern. 
+
+### Handling `PaymentMethodNonce` Results
+
+For payment methods that do not require leaving the application, the result will be returned via the callback passed into the tokenization method. 
+For example, using the `CardClient`:
+
+```java
+cardClient.tokenize(activity, card, (cardNonce, error) -> {
+  // send cardNonce.getString() to your server or handle error
+});
+```
+
+For payment methods that require a browser switch, the result will be returned as a `BrowserSwitchResult` and should be handled by calling the feature client's `onBrowserSwitchResult()` method in `onResume()`.
+For example, using the `ThreeDSecureClient`:
+
+```java
+@Override
+protected void onResume() {
+  super.onResume();
+
+  BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(this);
+  if (browserSwitchResult != null) {
+    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
+      // send threeDSecureResult.getTokenizedCard().getString() to your server or handle error
+    }); 
+  }
+}
+```
+
+For payment methods that that require an app switch, the result should be handled by calling the feature client's `onActivityResult()` method from your Activity's `onActivityResult()` method.
+For example, using the `VenmoClient`:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+  venmoClient.onActivityResult(this, resultCode, data, (venmoAccountNonce, error) -> {
+    // send venmoAccountNonce.getString() to your server or handle error
+  });
+}
+```
+
+Full implementation examples can be found in the payment method feature sections below. 
+
+### Handling Errors
+
+ 
 
 ## American Express
 
