@@ -10,6 +10,7 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 1. [Browser Switch](#browser-switch)
 1. [BraintreeFragment](#braintree-fragment)
 1. [Event Handling](#event-handling)
+1. [Builder Patter](#builder-pattern)
 1. [American Express](#american-express)
 1. [Card](#card)
 1. [Data Collector](#data-collector)
@@ -99,9 +100,30 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 
 Full implementation examples can be found in the payment method feature sections below. 
 
+### Handling Cancellation 
+
+User cancellations will be returned as `BraintreeExceptions` with an error message indicating user cancellation to the callback of the invoked method. 
+
 ### Handling Errors
 
- 
+Errors will be returned to the callback of the invoked method.
+
+### Fetching Configuration
+
+If you need to fetch configuration, use `BraintreeClient#getConfiguration`.
+
+## Builder Pattern
+
+The builder pattern has been removed in v4 to allow for consistent object creation across Java and Kotlin. 
+Classes have been renamed without the `Builder` postfix, method chaining has been removed, and setters have been renamed with the `set` prefix.
+
+For example, `CardBuilder` in v3 becomes `Card` in v4:
+
+```java
+Card card = new Card();
+card.setNumber("4111111111111111");
+card.setExpirationDate("12/2022");
+```
 
 ## American Express
 
