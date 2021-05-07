@@ -102,7 +102,7 @@ Full implementation examples can be found in the payment method feature sections
 
 ### Handling Cancellation 
 
-User cancellations will be returned as `BraintreeExceptions` with an error message indicating user cancellation to the callback of the invoked method. 
+A user cancellations will be returned as a `BraintreeException` with an error message indicating user cancellation to the callback of the invoked method. 
 
 ### Handling Errors
 
