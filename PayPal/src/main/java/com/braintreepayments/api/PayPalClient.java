@@ -217,7 +217,7 @@ public class PayPalClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new BraintreeException("User Canceled PayPal"));
+                callback.onResult(null, new BraintreeException("User canceled PayPal."));
                 braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
             case BrowserSwitchStatus.SUCCESS:
