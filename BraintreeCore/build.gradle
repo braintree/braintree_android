@@ -49,7 +49,6 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.4.0'
 
     api 'com.braintreepayments.api:browser-switch:2.0.0-beta3'
-    api project(':BraintreeModels')
     api project(':SharedUtils')
 
     androidTestImplementation playServicesWallet
