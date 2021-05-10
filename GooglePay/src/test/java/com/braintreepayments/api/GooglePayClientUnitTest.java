@@ -1008,7 +1008,7 @@ public class GooglePayClientUnitTest {
     // region onActivityResult
 
     @Test
-    public void onActivityResult_sendsAnalyticsEventOnCancel() throws InvalidArgumentException {
+    public void onActivityResult_OnCancel_sendsAnalyticsAndReturnsErrorToCallback() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1031,10 +1031,16 @@ public class GooglePayClientUnitTest {
         sut.onActivityResult(RESULT_CANCELED, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(activityResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+
+        BraintreeException exception = captor.getValue();
+        assertEquals("User canceled Google Pay.", exception.getMessage());
     }
 
     @Test
-    public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() throws InvalidArgumentException {
+    public void onActivityResult_OnNonOkOrCanceledResult_sendsAnalyticsAndReturnsErrorToCallback() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1057,10 +1063,16 @@ public class GooglePayClientUnitTest {
         sut.onActivityResult(RESULT_FIRST_USER, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
+
+        ArgumentCaptor<GooglePayException> captor = ArgumentCaptor.forClass(GooglePayException.class);
+        verify(activityResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+
+        GooglePayException exception = captor.getValue();
+        assertEquals("An error was encountered during the Google Pay flow. See the status object in this exception for more details.", exception.getMessage());
     }
 
     @Test
-    public void onActivityResult_sendsAnalyticsEventOnOkResponse() throws InvalidArgumentException {
+    public void onActivityResult_OnOkResponse_sendsAnalytics() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
