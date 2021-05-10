@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -8,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Represents the parameters that are needed to start the PayPal Vault flow
  */
-public class PayPalVaultRequest extends PayPalRequest {
+public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
 
@@ -83,4 +85,32 @@ public class PayPalVaultRequest extends PayPalRequest {
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
         return parameters.toString();
     }
+
+    PayPalVaultRequest(Parcel in) {
+        super(in);
+        shouldOfferCredit = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeByte((byte) (shouldOfferCredit ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PayPalVaultRequest> CREATOR = new Creator<PayPalVaultRequest>() {
+        @Override
+        public PayPalVaultRequest createFromParcel(Parcel in) {
+            return new PayPalVaultRequest(in);
+        }
+
+        @Override
+        public PayPalVaultRequest[] newArray(int size) {
+            return new PayPalVaultRequest[size];
+        }
+    };
 }

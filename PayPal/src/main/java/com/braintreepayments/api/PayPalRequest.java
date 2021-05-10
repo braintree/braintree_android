@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -13,7 +16,7 @@ import java.util.Collection;
  * Represents the parameters that are needed to tokenize a PayPal account.
  * See {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
  */
-public abstract class PayPalRequest {
+public abstract class PayPalRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
     static final String ADDRESS_OVERRIDE_KEY = "address_override";
@@ -224,4 +227,32 @@ public abstract class PayPalRequest {
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mLocaleCode);
+        parcel.writeString(mBillingAgreementDescription);
+        parcel.writeByte((byte) (mShippingAddressRequired ? 1 : 0));
+        parcel.writeByte((byte) (mShippingAddressEditable ? 1 : 0));
+        parcel.writeParcelable(mShippingAddressOverride, i);
+        parcel.writeString(mLandingPageType);
+        parcel.writeString(mDisplayName);
+        parcel.writeString(mMerchantAccountId);
+    }
+
+    PayPalRequest(Parcel in) {
+        mLocaleCode = in.readString();
+        mBillingAgreementDescription = in.readString();
+        mShippingAddressRequired = in.readByte() != 0;
+        mShippingAddressEditable = in.readByte() != 0;
+        mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
+        mLandingPageType = in.readString();
+        mDisplayName = in.readString();
+        mMerchantAccountId = in.readString();
+    }
 }
