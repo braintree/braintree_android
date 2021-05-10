@@ -10,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Base class used to build various types of cards
  */
-public abstract class BaseCard extends PaymentMethod implements Parcelable {
+abstract class BaseCard extends PaymentMethod implements Parcelable {
 
     static final String BILLING_ADDRESS_KEY = "billingAddress";
     static final String CARDHOLDER_NAME_KEY = "cardholderName";
@@ -45,7 +45,8 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     protected String region;
     protected String streetAddress;
 
-    public BaseCard() {}
+    BaseCard() {
+    }
 
     /**
      * @param number The card number.
@@ -209,7 +210,7 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     /**
-     * @param extendedAddress  address of the card.
+     * @param extendedAddress address of the card.
      */
     public void setExtendedAddress(String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
@@ -220,7 +221,10 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     @Override
-    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+    JSONObject buildJSON() throws JSONException {
+        JSONObject json = super.buildJSON();
+
+        JSONObject paymentMethodNonceJson = new JSONObject();
         paymentMethodNonceJson.put(NUMBER_KEY, number);
         paymentMethodNonceJson.put(CVV_KEY, cvv);
         paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
@@ -245,18 +249,13 @@ public abstract class BaseCard extends PaymentMethod implements Parcelable {
         if (billingAddressJson.length() > 0) {
             paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
         }
-
         json.put(CREDIT_CARD_KEY, paymentMethodNonceJson);
+        return json;
     }
 
     @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "credit_cards";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return CardNonce.TYPE;
     }
 
     @Override

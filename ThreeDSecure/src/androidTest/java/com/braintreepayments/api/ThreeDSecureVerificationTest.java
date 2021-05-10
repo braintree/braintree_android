@@ -4,8 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,40 +50,35 @@ public class ThreeDSecureVerificationTest {
         card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                try {
-                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                    request.setNonce(cardNonce.getString());
-                    request.setAmount(TEST_AMOUNT);
+                request.setNonce(cardNonce.getString());
+                request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
-                        @Override
-                        public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-                            CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
-                            assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getString());
-                            assertEquals("51", cardNonce.getLastTwo());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                            assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getString());
+                        assertEquals("51", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            countDownLatch.countDown();
-                        }
-                    });
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
 
@@ -102,40 +95,35 @@ public class ThreeDSecureVerificationTest {
         card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                try {
-                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                    request.setNonce(cardNonce.getString());
-                    request.setAmount(TEST_AMOUNT);
+                request.setNonce(cardNonce.getString());
+                request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
-                        @Override
-                        public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-                            CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
-                            assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getString());
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getString());
 
-                            assertEquals("69", cardNonce.getLastTwo());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                            assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+                        assertEquals("69", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            countDownLatch.countDown();
-                        }
-                    });
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
 
@@ -150,35 +138,30 @@ public class ThreeDSecureVerificationTest {
         card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                try {
-                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                    request.setNonce(cardNonce.getString());
-                    request.setAmount(TEST_AMOUNT);
+                request.setNonce(cardNonce.getString());
+                request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
-                        @Override
-                        public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                            assertTrue(error instanceof AuthorizationException);
-                            assertEquals(
-                                    "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
-                                    error.getMessage());
-                            countDownLatch.countDown();
-                        }
-                    });
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        assertTrue(error instanceof AuthorizationException);
+                        assertEquals(
+                                "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                                error.getMessage());
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
 
@@ -192,43 +175,38 @@ public class ThreeDSecureVerificationTest {
         card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                try {
-                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                    request.setNonce(cardNonce.getString());
-                    request.setAmount(TEST_AMOUNT);
+                request.setNonce(cardNonce.getString());
+                request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
-                        @Override
-                        public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                            CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
-                            assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getString());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getString());
 
-                            assertEquals("77", cardNonce.getLastTwo());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                            assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+                        assertEquals("77", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            assertEquals("lookup_error", cardNonce.getThreeDSecureInfo().getStatus());
+                        assertEquals("lookup_error", cardNonce.getThreeDSecureInfo().getStatus());
 
-                            countDownLatch.countDown();
-                        }
-                    });
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
 
@@ -242,41 +220,36 @@ public class ThreeDSecureVerificationTest {
         card.setExpirationDate("12/20");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        tokenizationClient.tokenize(card, new TokenizeCallback() {
+        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
             @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
+            public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
+                if (error != null) {
+                    fail(error.getMessage());
                 }
 
                 ThreeDSecureRequest request = new ThreeDSecureRequest();
-                try {
-                    CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                    request.setNonce(cardNonce.getString());
-                    request.setAmount(TEST_AMOUNT);
+                request.setNonce(cardNonce.getString());
+                request.setAmount(TEST_AMOUNT);
 
-                    threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
-                        @Override
-                        public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                            CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
+                threeDSecureClient.performVerification(activity, request, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        CardNonce cardNonce = threeDSecureResult.getTokenizedCard();
 
-                            assertNotNull(cardNonce);
-                            assertIsANonce(cardNonce.getString());
+                        assertNotNull(cardNonce);
+                        assertIsANonce(cardNonce.getString());
 
-                            assertEquals("85", cardNonce.getLastTwo());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                            assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-                            assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
+                        assertEquals("85", cardNonce.getLastTwo());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                        assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                            countDownLatch.countDown();
-                        }
-                    });
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
 

@@ -1,9 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
-import com.braintreepayments.api.GraphQLConstants.Features;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,56 +22,14 @@ class TokenizationClient {
         this.braintreeClientRef = braintreeClientRef;
     }
 
-    /**
-     * Create a {@link PaymentMethodNonce} in the Braintree Gateway.
-     * <p>
-     * On completion, returns the {@link PaymentMethodNonce} to {@link TokenizeCallback}.
-     * <p>
-     * If creation fails validation, {@link TokenizeCallback#onResult(org.json.JSONObject, Exception)}
-     * will be called with the resulting {@link ErrorWithResponse}.
-     * <p>
-     * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * TokenizeCallback#onResult(org.json.JSONObject, Exception)} will be called with the {@link Exception} that occurred.
-     *
-     * @param paymentMethod {@link PaymentMethod} for the {@link PaymentMethodNonce}
-     *        to be created.
-     * @param callback {@link TokenizeCallback}
-     */
-    void tokenize(final PaymentMethod paymentMethod, final TokenizeCallback callback) {
+    void tokenizeGraphQL(final JSONObject tokenizePayload, final TokenizeCallback callback) {
         final BraintreeClient braintreeClient = braintreeClientRef.get();
         if (braintreeClient == null) {
             return;
         }
 
-        paymentMethod.setSessionId(braintreeClient.getSessionId());
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    if (paymentMethod instanceof GraphQLTokenizable &&
-                            configuration.isGraphQLFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
-                        tokenizeGraphQL(braintreeClient, (GraphQLTokenizable) paymentMethod, callback);
-                    } else {
-                        tokenizeRest(braintreeClient, paymentMethod, callback);
-                    }
-                } else {
-                    callback.onResult(null, error);
-                }
-            }
-        });
-    }
-
-    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final GraphQLTokenizable graphQLTokenizable, final TokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
-        final String payload;
-        try {
-            payload = graphQLTokenizable.buildGraphQL(braintreeClient.getAuthorization());
-        } catch (BraintreeException e) {
-            callback.onResult(null, e);
-            return;
-        }
-
-        braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
+        braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 try {
@@ -94,26 +49,37 @@ class TokenizationClient {
         });
     }
 
-    private static void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethod paymentMethod, final TokenizeCallback callback) {
+    void tokenizeREST(final PaymentMethod paymentMethod, final TokenizeCallback callback) {
+        final BraintreeClient braintreeClient = braintreeClientRef.get();
+        if (braintreeClient == null) {
+            return;
+        }
+
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
-        braintreeClient.sendPOST(url, paymentMethod.buildJSON(), new HttpResponseCallback() {
+        paymentMethod.setSessionId(braintreeClient.getSessionId());
 
-            @Override
-            public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                } catch (JSONException exception) {
+        try {
+            braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
+
+                @Override
+                public void success(String responseBody) {
+                    try {
+                        callback.onResult(new JSONObject(responseBody), null);
+                    } catch (JSONException exception) {
+                        callback.onResult(null, exception);
+                    }
+                }
+
+                @Override
+                public void failure(Exception exception) {
                     callback.onResult(null, exception);
                 }
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                callback.onResult(null, exception);
-            }
-        });
+            });
+        } catch (JSONException exception) {
+            callback.onResult(null, exception);
+        }
     }
 
     static String versionedPath(String path) {

@@ -21,7 +21,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
-@PrepareForTest({ VisaPaymentSummary.class })
+@PrepareForTest({VisaPaymentSummary.class})
 public class VisaCheckoutAccountUnitTest {
 
     @Rule
@@ -37,14 +37,20 @@ public class VisaCheckoutAccountUnitTest {
 
     @Test
     public void build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() throws JSONException {
-        JSONObject base = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
-        JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
+        JSONObject expectedBase = new JSONObject()
+                .put("visaCheckoutCard", new JSONObject())
+                .put("_meta", new JSONObject()
+                        .put("source", "form")
+                        .put("integration", "custom")
+                        .put("sessionId", "1234")
+                        .put("platform", "android")
+                );
 
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(null);
-        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
+        visaCheckoutAccount.setSessionId("1234");
+        JSONObject json = visaCheckoutAccount.buildJSON();
 
-        JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }
 
     @Test
@@ -53,11 +59,9 @@ public class VisaCheckoutAccountUnitTest {
         when(visaPaymentSummary.getEncKey()).thenReturn("stubbedEncKey");
         when(visaPaymentSummary.getEncPaymentData()).thenReturn("stubbedEncPaymentData");
 
-        JSONObject base = new JSONObject();
-        JSONObject paymentMethodNonceJson = new JSONObject();
-
         VisaCheckoutAccount visaCheckoutAccount = new VisaCheckoutAccount(visaPaymentSummary);
-        visaCheckoutAccount.buildJSON(base, paymentMethodNonceJson);
+        visaCheckoutAccount.setSessionId("1234");
+        JSONObject json = visaCheckoutAccount.buildJSON();
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();
@@ -66,17 +70,18 @@ public class VisaCheckoutAccountUnitTest {
         expectedPaymentMethodNonce.put("encryptedPaymentData", "stubbedEncPaymentData");
         expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
 
-        JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
+        expectedBase.put("_meta", new JSONObject()
+                .put("source", "form")
+                .put("integration", "custom")
+                .put("sessionId", "1234")
+                .put("platform", "android")
+        );
+
+        JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT);
     }
 
     @Test
     public void getApiPath_returnsCorrectApiPath() {
         assertEquals("visa_checkout_cards", new VisaCheckoutAccount(null).getApiPath());
-    }
-
-    @Test
-    public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
-        assertEquals(VisaCheckoutNonce.TYPE,
-                new VisaCheckoutAccount(null).getResponsePaymentMethodType());
     }
 }

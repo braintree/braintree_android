@@ -12,26 +12,22 @@ class VenmoAccount extends PaymentMethod {
 
     VenmoAccount() {}
 
+    @Override
+    JSONObject buildJSON() throws JSONException {
+        JSONObject json = super.buildJSON();
+        JSONObject paymentMethodNonceJson = new JSONObject();
+        paymentMethodNonceJson.put(NONCE_KEY, nonce);
+
+        json.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
+        return json;
+    }
+
     void setNonce(String nonce) {
         this.nonce = nonce;
     }
 
     @Override
-    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(NONCE_KEY, nonce);
-        base.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
-    }
-
-    @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {}
-
-    @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "venmo_accounts";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return VenmoAccountNonce.TYPE;
     }
 }

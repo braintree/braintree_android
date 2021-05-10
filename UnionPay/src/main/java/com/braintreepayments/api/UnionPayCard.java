@@ -70,17 +70,6 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         }
     }
 
-    /**
-     * @deprecated UnionPay enrollment performs validation. This value will not be used for UnionPay payment methods.
-     *
-     * @param validate Ignored
-     */
-    @Deprecated
-    @Override
-    public void setValidate(boolean validate) {
-        // prevent validation for union pay methods
-    }
-
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
         unionPayEnrollment.put(NUMBER_KEY, number);
@@ -96,9 +85,10 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     }
 
     @Override
-    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.buildJSON(json, paymentMethodNonceJson);
+    JSONObject buildJSON() throws JSONException {
+        JSONObject json = super.buildJSON();
 
+        JSONObject paymentMethodNonceJson = json.getJSONObject(BaseCard.CREDIT_CARD_KEY);
         JSONObject options = paymentMethodNonceJson.optJSONObject(OPTIONS_KEY);
         if (options == null) {
             options = new JSONObject();
@@ -110,10 +100,8 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         options.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
 
         json.put(UNIONPAY_KEY, paymentMethodNonceJson);
+        return json;
     }
-
-    @Override
-    protected void buildGraphQL(JSONObject base, JSONObject variables) {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

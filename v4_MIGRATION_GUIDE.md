@@ -148,6 +148,10 @@ public class CardActivity extends AppCompatActivity {
 }
 ```
 
+### Card Validation
+
+The `validate` property on `Card` has been renamed to `shouldValidate`.
+
 ## Data Collector
 
 The Data Collector feature is now supported in the following dependency:

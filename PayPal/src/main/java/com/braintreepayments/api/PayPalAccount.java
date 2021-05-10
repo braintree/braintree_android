@@ -21,9 +21,37 @@ class PayPalAccount extends PaymentMethod {
     private JSONObject urlResponseData = new JSONObject();
     private String intent;
     private String merchantAccountId;
+    private String paymentType;
 
     PayPalAccount() {
         super();
+    }
+
+    @Override
+    JSONObject buildJSON() throws JSONException {
+        JSONObject json = super.buildJSON();
+
+        JSONObject paymentMethodNonceJson = new JSONObject();
+        paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
+        paymentMethodNonceJson.put(INTENT_KEY, intent);
+
+        if ("single-payment".equalsIgnoreCase(paymentType)) {
+            JSONObject optionsJson = new JSONObject();
+            optionsJson.put(VALIDATE_KEY, false);
+            paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+        }
+
+        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
+        while (urlResponseDataKeyIterator.hasNext()) {
+            String key = urlResponseDataKeyIterator.next();
+            paymentMethodNonceJson.put(key, urlResponseData.get(key));
+        }
+
+        if (merchantAccountId != null) {
+            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
+        }
+        json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
+        return json;
     }
 
     /**
@@ -68,35 +96,17 @@ class PayPalAccount extends PaymentMethod {
         this.merchantAccountId = merchantAccountId;
     }
 
-    @Override
-    protected void buildJSON(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-        paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
-        paymentMethodNonceJson.put(INTENT_KEY, intent);
-
-        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
-        while (urlResponseDataKeyIterator.hasNext()) {
-            String key = urlResponseDataKeyIterator.next();
-            paymentMethodNonceJson.put(key, urlResponseData.get(key));
-        }
-
-        if (merchantAccountId != null) {
-            base.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
-        }
-
-        base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
+    /**
+     * Payment type from original PayPal request.
+     *
+     * @param paymentType Either "billing-agreement" or "single-payment"
+     */
+    void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
     }
 
     @Override
-    protected void buildGraphQL(JSONObject base, JSONObject input) {
-    }
-
-    @Override
-    public String getApiPath() {
+    String getApiPath() {
         return "paypal_accounts";
-    }
-
-    @Override
-    public String getResponsePaymentMethodType() {
-        return PayPalAccountNonce.TYPE;
     }
 }

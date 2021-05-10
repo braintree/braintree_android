@@ -359,10 +359,10 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
+        verify(tokenizationClient).tokenizeREST(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
-        JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
+        JSONObject tokenizePayload = payPalAccount.buildJSON();
         assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
@@ -405,10 +405,10 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
-        verify(tokenizationClient).tokenize(captor.capture(), any(TokenizeCallback.class));
+        verify(tokenizationClient).tokenizeREST(captor.capture(), any(TokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
-        JSONObject tokenizePayload = new JSONObject(payPalAccount.buildJSON());
+        JSONObject tokenizePayload = payPalAccount.buildJSON();
         assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
@@ -418,7 +418,10 @@ public class PayPalClientUnitTest {
                 .put("response", new JSONObject()
                         .put("webURL", approvalUrl))
                 .put("intent", "authorize")
-                .put("response_type", "web");
+                .put("response_type", "web")
+                .put("options", new JSONObject()
+                        .put("validate", false)
+                );
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
@@ -487,7 +490,7 @@ public class PayPalClientUnitTest {
     public void onBrowserSwitchResult_whenPayPalCreditPresent_sendsAnalyticsEvents() throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
-                .successResponse(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
+                .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

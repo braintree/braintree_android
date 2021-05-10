@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
 import java.lang.ref.WeakReference;
@@ -19,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -39,19 +42,19 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenBraintreeClientReferenceIsNull_doesNothing() {
+    public void tokenizeREST_whenBraintreeClientReferenceIsNull_doesNothing() {
         Card card = mock(Card.class);
         TokenizeCallback callback = mock(TokenizeCallback.class);
 
         TokenizationClient sut = new TokenizationClient(new WeakReference<BraintreeClient>(null));
-        sut.tokenize(card, callback);
+        sut.tokenizeREST(card, callback);
 
         verifyZeroInteractions(card);
         verifyZeroInteractions(callback);
     }
 
     @Test
-    public void tokenize_includesSessionIdInRequest() throws JSONException {
+    public void tokenizeREST_setsSessionIdBeforeTokenizing() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLDisabledConfig)
                 .sessionId("session-id")
@@ -59,16 +62,21 @@ public class TokenizationClientUnitTest {
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
-        sut.tokenize(new Card(), null);
+        Card card = spy(new Card());
+        sut.tokenizeREST(card, null);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
-        JSONObject data = new JSONObject(captor.getValue()).getJSONObject("_meta");
+        InOrder inOrder = Mockito.inOrder(card, braintreeClient);
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+
+        inOrder.verify(card).setSessionId("session-id");
+        inOrder.verify(braintreeClient).sendPOST(anyString(), bodyCaptor.capture(), any(HttpResponseCallback.class));
+
+        JSONObject data = new JSONObject(bodyCaptor.getValue()).getJSONObject("_meta");
         assertEquals("session-id", data.getString("sessionId"));
     }
 
     @Test
-    public void tokenize_tokenizesCardsWithGraphQLWhenEnabled() throws BraintreeException, InvalidArgumentException {
+    public void tokenizeGraphQL_tokenizesCardsWithGraphQL() throws BraintreeException, InvalidArgumentException, JSONException {
         Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
@@ -78,17 +86,17 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         Card card = new Card();
 
-        sut.tokenize(card, null);
+        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), null);
 
         verify(braintreeClient, never()).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
-        assertEquals(card.buildGraphQL(authorization), captor.getValue());
+        assertEquals(card.buildJSONForGraphQL().toString(), captor.getValue());
     }
 
     @Test
-    public void tokenize_sendGraphQLAnalyticsEventWhenEnabled() {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventWhenEnabled() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .build();
@@ -96,47 +104,28 @@ public class TokenizationClientUnitTest {
         Card card = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, null);
+        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), null);
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.started");
     }
 
     @Test
-    public void tokenize_tokenizesCardsWithRestWhenGraphQLIsDisabled() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(graphQLDisabledConfig)
-                .build();
-
-        Card card = new Card();
-
-        TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, null);
-
-        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
-
-        assertEquals(card.buildJSON(), captor.getValue());
-    }
-
-    @Test
-    public void tokenize_tokenizesNonCardPaymentMethodsWithRestWhenGraphQLIsEnabled() {
+    public void tokenizeREST_tokenizesPaymentMethodsWithREST() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .build();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
 
-        sut.tokenize(new PayPalAccount(), null);
-        sut.tokenize(new UnionPayCard(), null);
-        sut.tokenize(new VenmoAccount(), null);
+        sut.tokenizeREST(new PayPalAccount(), null);
+        sut.tokenizeREST(new UnionPayCard(), null);
+        sut.tokenizeREST(new VenmoAccount(), null);
 
         verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
     }
 
     @Test
-    public void tokenize_sendGraphQLAnalyticsEventOnSuccess() {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnSuccess() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD)
@@ -145,7 +134,7 @@ public class TokenizationClientUnitTest {
         Card card = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, new TokenizeCallback() {
+        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
@@ -156,7 +145,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenize_sendGraphQLAnalyticsEventOnFailure() {
+    public void tokenizeGraphQL_sendGraphQLAnalyticsEventOnFailure() throws BraintreeException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
                 .sendGraphQLPOSTErrorResponse(ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR))
@@ -165,7 +154,7 @@ public class TokenizationClientUnitTest {
         Card card = new Card();
 
         TokenizationClient sut = new TokenizationClient(braintreeClient);
-        sut.tokenize(card, new TokenizeCallback() {
+        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
 
@@ -173,22 +162,6 @@ public class TokenizationClientUnitTest {
         });
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.failure");
-    }
-
-    @Test
-    public void tokenize_propagatesConfigurationFetchError() {
-        Exception configError = new Exception("Configuration error.");
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configurationError(configError)
-                .build();
-
-        TokenizationClient sut = new TokenizationClient(braintreeClient);
-
-        Card card = new Card();
-        TokenizeCallback callback = mock(TokenizeCallback.class);
-
-        sut.tokenize(card, callback);
-        verify(callback).onResult(null, configError);
     }
 
     @Test

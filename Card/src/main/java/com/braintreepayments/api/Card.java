@@ -12,7 +12,9 @@ import org.json.JSONObject;
 /**
  * Use to construct a card tokenization request.
  */
-public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
+public class Card extends BaseCard implements Parcelable {
+
+    private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
 
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
@@ -21,8 +23,19 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     private String merchantAccountId;
     private boolean authenticationInsightRequested;
 
-    protected void buildGraphQL(JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
-        JSONObject input = variables.getJSONObject(Keys.INPUT);
+    private boolean shouldValidate;
+
+    JSONObject buildJSONForGraphQL() throws BraintreeException, JSONException {
+        JSONObject base = new JSONObject();
+        JSONObject input = new JSONObject();
+        JSONObject variables = new JSONObject();
+
+        base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, buildMetadataJSON());
+
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        input.put(OPTIONS_KEY, optionsJson);
+        variables.put(Keys.INPUT, input);
 
         if (TextUtils.isEmpty(merchantAccountId) && authenticationInsightRequested) {
             throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
@@ -58,6 +71,9 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
         }
 
         input.put(CREDIT_CARD_KEY, creditCard);
+        base.put(Keys.VARIABLES, variables);
+
+        return base;
     }
 
     public Card() {
@@ -71,6 +87,16 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     }
 
     /**
+     * @param shouldValidate Flag to denote if the associated {@link Card} will be validated. Defaults to false.
+     *                       <p>
+     *                       Use this flag with caution. Enabling validation may result in adding a card to the Braintree vault.
+     *                       The circumstances that determine if a Card will be vaulted are not documented.
+     */
+    public void setShouldValidate(boolean shouldValidate) {
+        this.shouldValidate = shouldValidate;
+    }
+
+    /**
      * @param requested If authentication insight will be requested.
      */
     public void setAuthenticationInsightRequested(boolean requested) {
@@ -78,25 +104,33 @@ public class Card extends BaseCard implements GraphQLTokenizable, Parcelable {
     }
 
     @Override
-    protected void buildJSON(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
-        super.buildJSON(json, paymentMethodNonceJson);
+    JSONObject buildJSON() throws JSONException {
+        JSONObject json = super.buildJSON();
+
+        JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put(VALIDATE_KEY, shouldValidate);
+        paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
 
         if (authenticationInsightRequested) {
             json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
             json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, authenticationInsightRequested);
         }
+        return json;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(merchantAccountId);
+        dest.writeByte(shouldValidate ? (byte) 1 : 0);
         dest.writeByte(authenticationInsightRequested ? (byte) 1 : 0);
     }
 
     protected Card(Parcel in) {
         super(in);
         merchantAccountId = in.readString();
+        shouldValidate = in.readByte() > 0;
         authenticationInsightRequested = in.readByte() > 0;
     }
 

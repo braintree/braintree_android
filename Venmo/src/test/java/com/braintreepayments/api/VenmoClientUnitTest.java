@@ -458,10 +458,10 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
-        verify(tokenizationClient).tokenize(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
+        verify(tokenizationClient).tokenizeREST(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
 
         VenmoAccount venmoAccount = accountBuilderCaptor.getValue();
-        JSONObject venmoJSON = new JSONObject(venmoAccount.buildJSON());
+        JSONObject venmoJSON = venmoAccount.buildJSON();
         assertEquals("sample-nonce", venmoJSON.getJSONObject("venmoAccount").getString("nonce"));
     }
 
@@ -478,7 +478,7 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
 
-        verify(tokenizationClient, never()).tokenize(any(VenmoAccount.class), any(TokenizeCallback.class));
+        verify(tokenizationClient, never()).tokenizeREST(any(VenmoAccount.class), any(TokenizeCallback.class));
     }
 
     @Test
@@ -496,7 +496,7 @@ public class VenmoClientUnitTest {
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =
                 ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+        verify(tokenizationClient).tokenizeREST(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
@@ -519,7 +519,7 @@ public class VenmoClientUnitTest {
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =
                 ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+        verify(tokenizationClient).tokenizeREST(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         tokenizeNonceCallback.onResult(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE), null);
@@ -545,7 +545,7 @@ public class VenmoClientUnitTest {
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =
                 ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+        verify(tokenizationClient).tokenizeREST(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         Exception authException = new AuthorizationException("Bad fingerprint");
@@ -572,7 +572,7 @@ public class VenmoClientUnitTest {
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =
                 ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenize(any(VenmoAccount.class), callbackCaptor.capture());
+        verify(tokenizationClient).tokenizeREST(any(VenmoAccount.class), callbackCaptor.capture());
 
         TokenizeCallback tokenizeNonceCallback = callbackCaptor.getValue();
         Exception authException = new AuthorizationException("Bad fingerprint");

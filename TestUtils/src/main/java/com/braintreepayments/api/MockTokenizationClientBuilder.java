@@ -10,16 +10,29 @@ import static org.mockito.Mockito.mock;
 
 public class MockTokenizationClientBuilder {
 
-    private Exception error;
-    private JSONObject successResponse;
+    private Exception tokenizeRESTError;
+    private JSONObject tokenizeRESTSuccess;
 
-    public MockTokenizationClientBuilder successResponse(JSONObject successResponse) {
-        this.successResponse = successResponse;
+    private Exception tokenizeGraphQLError;
+    private JSONObject tokenizeGraphQLSuccess;
+
+    public MockTokenizationClientBuilder tokenizeRESTError(Exception tokenizeRestError) {
+        this.tokenizeRESTError = tokenizeRestError;
         return this;
     }
 
-    public MockTokenizationClientBuilder error(Exception error) {
-        this.error = error;
+    public MockTokenizationClientBuilder tokenizeRESTSuccess(JSONObject tokenizeRestSuccess) {
+        this.tokenizeRESTSuccess = tokenizeRestSuccess;
+        return this;
+    }
+
+    public MockTokenizationClientBuilder tokenizeGraphQLError(Exception tokenizeGraphQLError) {
+        this.tokenizeGraphQLError = tokenizeGraphQLError;
+        return this;
+    }
+
+    public MockTokenizationClientBuilder tokenizeGraphQLSuccess(JSONObject tokenizeGraphQLSuccess) {
+        this.tokenizeGraphQLSuccess = tokenizeGraphQLSuccess;
         return this;
     }
 
@@ -30,10 +43,19 @@ public class MockTokenizationClientBuilder {
             @Override
             public Void answer(InvocationOnMock invocation) {
                 TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
-                listener.onResult(successResponse, error);
+                listener.onResult(tokenizeRESTSuccess, tokenizeRESTError);
                 return null;
             }
-        }).when(tokenizationClient).tokenize(any(PaymentMethod.class), any(TokenizeCallback.class));
+        }).when(tokenizationClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
+                listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError);
+                return null;
+            }
+        }).when(tokenizationClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
 
         return tokenizationClient;
     }
