@@ -325,7 +325,7 @@ public class ThreeDSecureClient {
         int status = browserSwitchResult.getStatus();
         switch (status) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new BraintreeException("user canceled"));
+                callback.onResult(null, new BraintreeException("User canceled 3DS."));
                 break;
             case BrowserSwitchStatus.SUCCESS:
             default:
@@ -355,7 +355,7 @@ public class ThreeDSecureClient {
     public void onActivityResult(int resultCode, Intent data, ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {
-            callback.onResult(null, new BraintreeException("user canceled"));
+            callback.onResult(null, new BraintreeException("User canceled 3DS."));
             return;
         }
 
@@ -379,7 +379,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                 break;
             case CANCEL:
-                callback.onResult(null, new BraintreeException("user canceled 3DS"));
+                callback.onResult(null, new BraintreeException("User canceled 3DS."));
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                 break;
         }

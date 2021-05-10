@@ -546,7 +546,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEvent() {
+    public void onActivityResult_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEventAndReturnsExceptionToCallback() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -558,9 +558,16 @@ public class ThreeDSecureV2UnitTest {
         Intent data = new Intent();
         data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
 
-        sut.onActivityResult(RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
+        ThreeDSecureResultCallback threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
+        sut.onActivityResult(RESULT_OK, data, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+
+        BraintreeException exception = captor.getValue();
+        assertEquals("User canceled 3DS.", exception.getMessage());
     }
 
     @Test
