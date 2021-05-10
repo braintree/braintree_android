@@ -111,7 +111,18 @@ Errors will be returned to the callback of the invoked method.
 
 ### Fetching Configuration
 
-If you need to fetch configuration, use `BraintreeClient#getConfiguration`.
+If you need to fetch configuration, use `BraintreeClient#getConfiguration()`.
+
+Previously, this was done via `BraintreeFragment`:
+
+```java
+braintreeFragment.addListener(new ConfigurationListener() {
+
+  void onConfigurationFeetched(Configuration configuration) {
+
+  }
+});
+```
 
 ## Builder Pattern
 
