@@ -42,6 +42,8 @@ android {
     }
 }
 
+def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.work:work-runtime:2.4.0'
@@ -50,14 +52,18 @@ dependencies {
     api project(':BraintreeModels')
     api project(':SharedUtils')
 
+    androidTestImplementation playServicesWallet
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.work:work-testing:2.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
+    androidTestImplementation project(':ThreeDSecure')
+    androidTestImplementation project(':BraintreeDataCollector')
 
     testImplementation 'androidx.work:work-testing:2.4.0'
     testImplementation 'org.robolectric:robolectric:4.1'
