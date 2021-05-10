@@ -435,6 +435,18 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void onActivityResult_forwardsExceptionToCallbackOnCancel() {
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_CANCELED, new Intent(), onActivityResultCallback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(onActivityResultCallback).onResult((VenmoAccountNonce) isNull(), captor.capture());
+
+        BraintreeException exception = captor.getValue();
+        assertEquals("User canceled Venmo.", exception.getMessage());
+    }
+
+    @Test
     public void onActivityResult_performsVaultRequestIfRequestPersisted()
             throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
