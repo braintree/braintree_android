@@ -269,7 +269,7 @@ public class VenmoClient {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 
-        tokenizationClient.tokenize(venmoAccount, new TokenizeCallback() {
+        tokenizationClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
