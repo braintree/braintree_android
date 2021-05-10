@@ -137,6 +137,10 @@ card.setNumber("4111111111111111");
 card.setExpirationDate("12/2022");
 ```
 
+Builder classes that have been renamed:
+- `CardBuilder` is now `Card`
+- `UnionPayCardBuilder` is now `UnionPayCard`
+
 ## American Express
 
 The American Express feature is now supported by implementing the following dependencies:
