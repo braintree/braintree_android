@@ -26,6 +26,7 @@ import static com.braintreepayments.api.VenmoClient.EXTRA_USERNAME;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.endsWith;
 import static org.mockito.Matchers.eq;
@@ -432,6 +433,19 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_CANCELED, new Intent(), onActivityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
+    }
+
+    @Test
+    public void onActivityResult_forwardsExceptionToCallbackOnCancel() {
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_CANCELED, new Intent(), onActivityResultCallback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(onActivityResultCallback).onResult((VenmoAccountNonce) isNull(), captor.capture());
+
+        BraintreeException exception = captor.getValue();
+        assertEquals("User canceled Venmo.", exception.getMessage());
+        assertTrue(exception instanceof BraintreeException);
     }
 
     @Test

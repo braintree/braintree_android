@@ -570,7 +570,7 @@ public class PayPalClientUnitTest {
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
-        assertEquals("User Canceled PayPal", exception.getMessage());
+        assertEquals("User canceled PayPal.", exception.getMessage());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }

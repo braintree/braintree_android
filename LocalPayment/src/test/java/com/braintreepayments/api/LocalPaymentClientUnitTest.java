@@ -525,7 +525,7 @@ public class LocalPaymentClientUnitTest {
 
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof BraintreeException);
-        assertEquals("user canceled", cancelException.getMessage());
+        assertEquals("User canceled Local Payment.", cancelException.getMessage());
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 
@@ -547,7 +547,7 @@ public class LocalPaymentClientUnitTest {
 
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof BraintreeException);
-        assertEquals("system canceled", cancelException.getMessage());
+        assertEquals("User canceled Local Payment.", cancelException.getMessage());
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 

@@ -249,6 +249,7 @@ public class GooglePayClient {
                     AutoResolveHelper.getStatusFromIntent(data)));
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             braintreeClient.sendAnalyticsEvent("google-payment.canceled");
+            callback.onResult(null, new BraintreeException("User canceled Google Pay."));
         }
     }
 
