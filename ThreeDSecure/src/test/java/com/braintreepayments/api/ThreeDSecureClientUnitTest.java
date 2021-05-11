@@ -249,7 +249,8 @@ public class ThreeDSecureClientUnitTest {
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
-        BraintreeException exception = captor.getValue();
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
         assertEquals("User canceled 3DS.", exception.getMessage());
     }
 
