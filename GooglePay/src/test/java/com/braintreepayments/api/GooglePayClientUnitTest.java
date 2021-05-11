@@ -1037,6 +1037,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeException exception = captor.getValue();
         assertEquals("User canceled Google Pay.", exception.getMessage());
+        assertTrue(exception instanceof BraintreeException);
     }
 
     @Test
@@ -1069,6 +1070,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayException exception = captor.getValue();
         assertEquals("An error was encountered during the Google Pay flow. See the status object in this exception for more details.", exception.getMessage());
+        assertTrue(exception instanceof BraintreeException);
     }
 
     @Test
