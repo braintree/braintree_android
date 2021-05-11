@@ -8,12 +8,16 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 
 1. [Gradle](#gradle)
 1. [Browser Switch](#browser-switch)
+1. [BraintreeFragment](#braintree-fragment)
+1. [Event Handling](#event-handling)
+1. [Builder Patter](#builder-pattern)
 1. [American Express](#american-express)
 1. [Card](#card)
 1. [Data Collector](#data-collector)
 1. [Local Payment](#local-payment)
 1. [Google Pay](#google-pay)
 1. [PayPal](#paypal)
+1. [Samsung Pay](#samsung-pay)
 1. [Visa Checkout](#visa-checkout)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
@@ -43,6 +47,99 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
     </intent-filter>
 </activity>
 ``` 
+
+## BraintreeFragment
+
+In v4, we decoupled the Braintree SDK from Android to offer more integration flexibility. 
+`BraintreeFragment` has been replaced by a `Client` for each respective payment feature. 
+See the below payment method sections for examples of instantiating and using the feature clients. 
+
+## Event Handling
+
+In v3, there were several interfaces that would be called when events occurred: `PaymentMethodNonceCreatedListener`, `ConfigurationListener`, `BraintreeCancelListener`, and `BraintreeErrorListener`.
+In v4, these listeners have been replaced by a callback pattern. 
+
+### Handling `PaymentMethodNonce` Results
+
+For payment methods that do not require leaving the application, the result will be returned via the callback passed into the tokenization method. 
+For example, using the `CardClient`:
+
+```java
+cardClient.tokenize(activity, card, (cardNonce, error) -> {
+  // send cardNonce.getString() to your server or handle error
+});
+```
+
+For payment methods that require a browser switch, the result will be returned as a `BrowserSwitchResult` and should be handled by calling the feature client's `onBrowserSwitchResult()` method in `onResume()`.
+For example, using the `ThreeDSecureClient`:
+
+```java
+@Override
+protected void onResume() {
+  super.onResume();
+
+  BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(this);
+  if (browserSwitchResult != null) {
+    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
+      // send threeDSecureResult.getTokenizedCard().getString() to your server or handle error
+    }); 
+  }
+}
+```
+
+For payment methods that that require an app switch, the result should be handled by calling the feature client's `onActivityResult()` method from your Activity's `onActivityResult()` method.
+For example, using the `VenmoClient`:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+  venmoClient.onActivityResult(this, resultCode, data, (venmoAccountNonce, error) -> {
+    // send venmoAccountNonce.getString() to your server or handle error
+  });
+}
+```
+
+Full implementation examples can be found in the payment method feature sections below. 
+
+### Handling Cancellation 
+
+All user cancellations will be returned as a `BraintreeException` with an error message indicating user cancellation to the callback of the invoked method. 
+
+### Handling Errors
+
+Errors will be returned to the callback of the invoked method.
+
+### Fetching Configuration
+
+If you need to fetch configuration, use `BraintreeClient#getConfiguration()`.
+
+Previously, this was done via `BraintreeFragment`:
+
+```java
+braintreeFragment.addListener(new ConfigurationListener() {
+
+  void onConfigurationFeetched(Configuration configuration) {
+
+  }
+});
+```
+
+## Builder Pattern
+
+The builder pattern has been removed in v4 to allow for consistent object creation across Java and Kotlin. 
+Classes have been renamed without the `Builder` postfix, method chaining has been removed, and setters have been renamed with the `set` prefix.
+
+For example, `CardBuilder` in v3 becomes `Card` in v4:
+
+```java
+Card card = new Card();
+card.setNumber("4111111111111111");
+card.setExpirationDate("12/2022");
+```
+
+Builder classes that have been renamed:
+- `CardBuilder` is now `Card`
+- `UnionPayCardBuilder` is now `UnionPayCard`
 
 ## American Express
 
@@ -433,77 +530,13 @@ The `requestOneTimePayment` and `requestBillingAgreement` methods on `PayPalClie
 
 However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`.
 
+## Samsung Pay
+
+Samsung Pay is not yet supported in v4.
+
 ## Visa Checkout
 
-The Visa Checkout feature is now supported in a single dependency:
-
-```groovy
-dependencies {
-  implementation 'com.braintreepayments.api:visa-checkout:4.0.0-beta2'
-}
-```
-
-To use the feature, instantiate a `VisaCheckoutClient`:
-
-```java
-package com.my.app;
-
-public class VisaCheckoutActivity extends AppCompatActivity {
-
-  private BraintreeClient braintreeClient;
-  private VisaCheckoutClient visaCheckoutClient;
-
-  private CheckoutButton checkoutButton;
-    
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.visa_checkout_activity);
-    checkoutButton = (CheckoutButton) findViewById(R.id.visa_checkout_button);
-
-    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-    visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
-  }
- 
-  private void getVisaCheckoutProfile() {
-    visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
-      if (profileBuilder != null) {
-        setupVisaCheckoutButton(profileBuilder.build());
-      } else {
-        // handle error
-      }
-    });
-  }
-
-  private void setupVisaCheckoutButton(Profile visaCheckoutProfile) {
-    PurchaseInfo purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-        .setDescription("Description")
-        .build();
-    checkoutButton.init(this, visaCheckoutProfile, purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
-      @Override
-      public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-        launchReadyHandler.launch();
-      }
-
-      @Override
-      public void onResult(VisaPaymentSummary visaPaymentSummary) {
-        processVisaPaymentSummary(visaPaymentSummary);
-      }
-    });
-  }
-
-  private void processVisaPaymentSummary(VisaPaymentSummary visaPaymentSummary) {
-    visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
-      if (paymentMethodNonce != null) {
-        // send this nonce to your server
-        String nonce = paymentMethodNonce.getString();
-      } else {
-        // handle error
-      }
-    });
-  }
-}
-```
+Visa Checkout is not yet supported in v4.
 
 ## Union Pay
 
