@@ -536,7 +536,7 @@ Samsung Pay is not yet supported in v4.
 
 ## Visa Checkout
 
-The Visa Checkout feature is not yet supported in v4.
+Visa Checkout is not yet supported in v4.
 
 ## Union Pay
 
