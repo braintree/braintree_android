@@ -532,7 +532,7 @@ However, `requestOneTimePayment` and `requestBillingAgreement` have been depreca
 
 ## Samsung Pay
 
-The Samsung Pay feature is not yet supported in v4.
+Samsung Pay is not yet supported in v4.
 
 ## Visa Checkout
 
