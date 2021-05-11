@@ -61,8 +61,6 @@ dependencies {
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
-    androidTestImplementation project(':ThreeDSecure')
-    androidTestImplementation project(':BraintreeDataCollector')
 
     testImplementation 'androidx.work:work-testing:2.4.0'
     testImplementation 'org.robolectric:robolectric:4.1'
