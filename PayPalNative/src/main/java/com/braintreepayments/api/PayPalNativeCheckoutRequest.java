@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public class PayPalNativeCheckoutRequest extends PayPalCheckoutRequest {
+public class PayPalNativeCheckoutRequest extends PayPalCheckoutRequest implements PayPalNativeRequest {
 
     /**
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).

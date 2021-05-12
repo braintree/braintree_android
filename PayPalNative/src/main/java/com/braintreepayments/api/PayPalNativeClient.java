@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -10,13 +11,22 @@ public class PayPalNativeClient {
 
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
+    private PayPalClient payPalClient;
 
     public PayPalNativeClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = new PayPalInternalClient(braintreeClient);
     }
 
-    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeFlowStartedCallback callback) {
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalNativeRequest request, final PayPalNativeFlowStartedCallback callback) {
+        if (request instanceof PayPalNativeCheckoutRequest) {
+            sendNativeCheckoutRequest(activity, (PayPalNativeCheckoutRequest) request, callback);
+        } else if (request instanceof PayPalNativeVaultRequest) {
+            sendVaultRequest(activity, (PayPalNativeVaultRequest) request, callback);
+        }
+    }
+
+    private void sendNativeCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeFlowStartedCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(Configuration configuration, Exception error) {
@@ -34,6 +44,17 @@ public class PayPalNativeClient {
                 // NOTE: the callback parameter is only necessary if PayPal Native XO needs
                 // to callback an error before starting the native UI
                 startPayPalNativeCheckout(activity, configuration, payPalClientId, request, callback);
+            }
+        });
+    }
+
+    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest payPalVaultRequest, final PayPalNativeFlowStartedCallback callback) {
+        //this one should default to the one we already have, once PayPalNative supports billing agreements, this should just default to native.
+        payPalClient = new PayPalClient(braintreeClient);
+        payPalClient.tokenizePayPalAccount(activity, payPalVaultRequest, new PayPalFlowStartedCallback() {
+            @Override
+            public void onResult(@Nullable Exception error) {
+                callback.onResult(error);
             }
         });
     }
@@ -60,7 +81,15 @@ public class PayPalNativeClient {
                 "for more information.");
     }
 
-    public void onActivityResumed(BrowserSwitchResult browserSwitchResult, PayPalNativeOnActivityResumedCallback callback) {
-
+    public void onActivityResumed(final BrowserSwitchResult browserSwitchResult, final PayPalNativeOnActivityResumedCallback callback) {
+        if (payPalClient != null) {
+            //it means it was a vault request
+            payPalClient.onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
+                @Override
+                public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
+                    callback.onResult(payPalAccountNonce, error);
+                }
+            });
+        }
     }
 }
