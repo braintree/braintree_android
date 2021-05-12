@@ -93,7 +93,7 @@ dependencies {
     implementation project(':PayPalNative')
 
     implementation 'com.squareup.okio:okio:1.13.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0' // upgrade required to avoid an OkHttp error on initialization
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
     implementation 'androidx.appcompat:appcompat:1.0.1'
