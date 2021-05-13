@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.0.0-beta3
 
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
