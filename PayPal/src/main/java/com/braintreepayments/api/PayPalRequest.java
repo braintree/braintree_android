@@ -39,6 +39,7 @@ public abstract class PayPalRequest implements Parcelable {
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String LINE_ITEMS_KEY = "line_items";
 
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {
@@ -62,13 +63,14 @@ public abstract class PayPalRequest implements Parcelable {
     private String mLandingPageType;
     private String mDisplayName;
     private String mMerchantAccountId;
-    private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
+    private final ArrayList<PayPalLineItem> mLineItems;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
      */
     public PayPalRequest() {
         mShippingAddressRequired = false;
+        mLineItems = new ArrayList<>();
     }
 
     /**
@@ -228,6 +230,18 @@ public abstract class PayPalRequest implements Parcelable {
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
+    protected PayPalRequest(Parcel in) {
+        mLocaleCode = in.readString();
+        mBillingAgreementDescription = in.readString();
+        mShippingAddressRequired = in.readByte() != 0;
+        mShippingAddressEditable = in.readByte() != 0;
+        mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
+        mLandingPageType = in.readString();
+        mDisplayName = in.readString();
+        mMerchantAccountId = in.readString();
+        mLineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -243,16 +257,6 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(mLandingPageType);
         parcel.writeString(mDisplayName);
         parcel.writeString(mMerchantAccountId);
-    }
-
-    PayPalRequest(Parcel in) {
-        mLocaleCode = in.readString();
-        mBillingAgreementDescription = in.readString();
-        mShippingAddressRequired = in.readByte() != 0;
-        mShippingAddressEditable = in.readByte() != 0;
-        mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
-        mLandingPageType = in.readString();
-        mDisplayName = in.readString();
-        mMerchantAccountId = in.readString();
+        parcel.writeTypedList(mLineItems);
     }
 }
