@@ -20,10 +20,10 @@
             android:text="@string/paypal_native_single_payment" />
 
         <Button
-            android:id="@+id/paypal_native_billing_agreement_button"
+            android:id="@+id/paypal_native_vault_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/paypal_native_billing_agreement" />
+            android:text="@string/paypal_native_vault" />
 
     </LinearLayout>
 

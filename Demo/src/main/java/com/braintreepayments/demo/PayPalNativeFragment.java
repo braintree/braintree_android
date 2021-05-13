@@ -12,12 +12,10 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalNativeVaultRequest;
 
 public class PayPalNativeFragment extends BaseFragment {
@@ -28,16 +26,16 @@ public class PayPalNativeFragment extends BaseFragment {
     private DataCollector dataCollector;
 
 
-    private Button billingAgreementButton;
+    private Button billingVaultButton;
     private Button singlePaymentButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_paypal_native, container, false);
-        billingAgreementButton = view.findViewById(R.id.paypal_native_billing_agreement_button);
+        billingVaultButton = view.findViewById(R.id.paypal_native_vault_button);
         singlePaymentButton = view.findViewById(R.id.paypal_native_single_payment_button);
 
-        billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
+        billingVaultButton.setOnClickListener(this::launchVault);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
@@ -45,14 +43,14 @@ public class PayPalNativeFragment extends BaseFragment {
         return view;
     }
 
-    public void launchSinglePayment(View v) {
+    private void launchSinglePayment(View v) {
         getBraintreeClient(braintreeClient -> {
             payPalNativeClient = new PayPalNativeClient(braintreeClient);
             startPayPalNative();
         });
     }
 
-    public void launchBillingAgreement(View v) {
+    private void launchVault(View v) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -96,7 +94,7 @@ public class PayPalNativeFragment extends BaseFragment {
     }
 
     private void startPayPalNative() {
-        PayPalNativeCheckoutRequest nativeCheckoutRequest = new PayPalNativeCheckoutRequest("1.0");
+        PayPalNativeCheckoutRequest nativeCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
 
         payPalNativeClient.tokenizePayPalAccount(getActivity(), nativeCheckoutRequest, error -> {
             if (error != null) {

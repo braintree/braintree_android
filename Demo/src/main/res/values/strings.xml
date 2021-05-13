@@ -84,7 +84,7 @@
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_native_single_payment">Native Single Payment</string>
-    <string name="paypal_native_billing_agreement">Native Billing Agreement</string>
+    <string name="paypal_native_vault">Native Vault</string>
     <string name="paypal_deferred_billing_agreement">Deferred Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>
