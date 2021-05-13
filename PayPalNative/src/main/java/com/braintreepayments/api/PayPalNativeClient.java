@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import org.json.JSONObject;
+
 /**
  * Used to tokenize PayPal accounts using PayPal Native UI. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/">documentation</a>
@@ -82,7 +84,15 @@ public class PayPalNativeClient {
     }
 
     public void onActivityResumed(final BrowserSwitchResult browserSwitchResult, final PayPalNativeOnActivityResumedCallback callback) {
-        if (payPalClient != null) {
+        if (browserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            return;
+        }
+        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+        String paymentType = Json.optString(metadata, "payment-type", "unknown");
+        boolean isVaultPayment = paymentType.equalsIgnoreCase("billing-agreement");
+
+        if (isVaultPayment) {
             //it means it was a vault request
             payPalClient.onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
                 @Override
