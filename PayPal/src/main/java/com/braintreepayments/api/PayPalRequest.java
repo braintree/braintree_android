@@ -39,7 +39,6 @@ public abstract class PayPalRequest implements Parcelable {
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String LINE_ITEMS_KEY = "line_items";
 
-
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {
