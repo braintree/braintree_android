@@ -52,9 +52,9 @@ public class LocalPaymentClientTest {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient);
         sut.startPayment(request, new LocalPaymentStartCallback() {
             @Override
-            public void onResult(@Nullable LocalPaymentTransaction transaction, @Nullable Exception error) {
-                assertNotNull(transaction.getApprovalUrl());
-                assertNotNull(transaction.getPaymentId());
+            public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
+                assertNotNull(localPaymentResult.getApprovalUrl());
+                assertNotNull(localPaymentResult.getPaymentId());
                 countDownLatch.countDown();
             }
         });

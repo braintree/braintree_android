@@ -3,6 +3,9 @@
 ## unreleased
 
 * Make `PayPalRequest` and subclasses `Parcelable`
+* Breaking Changes
+  * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
+  * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
 
 ## 4.0.0-beta3
 
