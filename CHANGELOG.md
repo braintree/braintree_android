@@ -2,8 +2,7 @@
 
 ## unreleased
 
-* Breaking Changes
-  * Make `PayPalRequest` and subclasses `Parcelable`
+* Make `PayPalRequest` and subclasses `Parcelable`
 
 ## 4.0.0-beta3
 
