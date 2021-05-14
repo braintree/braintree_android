@@ -176,8 +176,7 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
-        InOrder inOrder = Mockito.inOrder(sharedPrefsWriter, activity, braintreeClient);
-        inOrder.verify(sharedPrefsWriter).persistVenmoPaymentContextId(activity, "venmo-payment-context-id");
+        InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         inOrder.verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
@@ -561,11 +560,11 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .build();
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
 
         Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -584,11 +583,11 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
 
         Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
@@ -608,11 +607,11 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sendGraphQLPOSTErrorResponse(graphQLError)
                 .build();
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
 
         Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         verify(onActivityResultCallback).onResult(null, graphQLError);
@@ -635,12 +634,12 @@ public class VenmoClientUnitTest {
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
         Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
@@ -781,10 +780,12 @@ public class VenmoClientUnitTest {
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
-        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
+
+        Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =
                 ArgumentCaptor.forClass(TokenizeCallback.class);
@@ -857,11 +858,11 @@ public class VenmoClientUnitTest {
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
-        when(sharedPrefsWriter.getVenmoPaymentContextId(activity)).thenReturn("payment-context-id");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
 
         Intent intent = new Intent();
+        intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<TokenizeCallback> callbackCaptor =

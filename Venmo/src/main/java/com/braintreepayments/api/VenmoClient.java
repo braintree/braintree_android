@@ -143,7 +143,6 @@ public class VenmoClient {
 
     private void startVenmoActivityForResult(FragmentActivity activity, VenmoRequest request, Configuration configuration, String venmoProfileId, @Nullable String paymentContextId) {
         sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
-        sharedPrefsWriter.persistVenmoPaymentContextId(activity, paymentContextId);
 
         Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
         activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
@@ -171,7 +170,8 @@ public class VenmoClient {
     public void onActivityResult(final Context context, int resultCode, Intent data, final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
-            String paymentContextId = sharedPrefsWriter.getVenmoPaymentContextId(context);
+
+            String paymentContextId = data.getStringExtra(EXTRA_RESOURCE_ID);
             if (paymentContextId != null) {
                 JSONObject params = new JSONObject();
                 try {
