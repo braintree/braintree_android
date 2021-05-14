@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.StringDef;
@@ -14,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Represents the parameters that are needed to start the PayPal Checkout flow
  */
-public class PayPalCheckoutRequest extends PayPalRequest {
+public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
 
     /**
      * The call-to-action in the PayPal Checkout flow
@@ -225,4 +227,42 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
         return parameters.toString();
     }
+
+    PayPalCheckoutRequest(Parcel in) {
+        super(in);
+        intent = in.readString();
+        userAction = in.readString();
+        amount = in.readString();
+        currencyCode = in.readString();
+        shouldRequestBillingAgreement = in.readByte() != 0;
+        shouldOfferPayLater = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(intent);
+        dest.writeString(userAction);
+        dest.writeString(amount);
+        dest.writeString(currencyCode);
+        dest.writeByte((byte) (shouldRequestBillingAgreement ? 1 : 0));
+        dest.writeByte((byte) (shouldOfferPayLater ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PayPalCheckoutRequest> CREATOR = new Creator<PayPalCheckoutRequest>() {
+        @Override
+        public PayPalCheckoutRequest createFromParcel(Parcel in) {
+            return new PayPalCheckoutRequest(in);
+        }
+
+        @Override
+        public PayPalCheckoutRequest[] newArray(int size) {
+            return new PayPalCheckoutRequest[size];
+        }
+    };
 }

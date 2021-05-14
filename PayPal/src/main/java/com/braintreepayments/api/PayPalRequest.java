@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -13,7 +16,7 @@ import java.util.Collection;
  * Represents the parameters that are needed to tokenize a PayPal account.
  * See {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
  */
-public abstract class PayPalRequest {
+public abstract class PayPalRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
     static final String ADDRESS_OVERRIDE_KEY = "address_override";
@@ -51,21 +54,22 @@ public abstract class PayPalRequest {
      */
     public static final String LANDING_PAGE_TYPE_LOGIN = "login";
 
-    private String mLocaleCode;
-    private String mBillingAgreementDescription;
-    private boolean mShippingAddressRequired;
-    private boolean mShippingAddressEditable = false;
-    private PostalAddress mShippingAddressOverride;
-    private String mLandingPageType;
-    private String mDisplayName;
-    private String mMerchantAccountId;
-    private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
+    private String localeCode;
+    private String billingAgreementDescription;
+    private boolean shippingAddressRequired;
+    private boolean shippingAddressEditable = false;
+    private PostalAddress shippingAddressOverride;
+    private String landingPageType;
+    private String displayName;
+    private String merchantAccountId;
+    private final ArrayList<PayPalLineItem> lineItems;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
      */
     public PayPalRequest() {
-        mShippingAddressRequired = false;
+        shippingAddressRequired = false;
+        lineItems = new ArrayList<>();
     }
 
     /**
@@ -74,7 +78,7 @@ public abstract class PayPalRequest {
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
     public void setShippingAddressRequired(boolean shippingAddressRequired) {
-        mShippingAddressRequired = shippingAddressRequired;
+        this.shippingAddressRequired = shippingAddressRequired;
     }
 
     /**
@@ -85,7 +89,7 @@ public abstract class PayPalRequest {
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
     public void setShippingAddressEditable(boolean shippingAddressEditable) {
-        mShippingAddressEditable = shippingAddressEditable;
+        this.shippingAddressEditable = shippingAddressEditable;
     }
 
     /**
@@ -124,7 +128,7 @@ public abstract class PayPalRequest {
      * @param localeCode A locale code to use for the transaction.
      */
     public void setLocaleCode(String localeCode) {
-        mLocaleCode = localeCode;
+        this.localeCode = localeCode;
     }
 
     /**
@@ -133,7 +137,7 @@ public abstract class PayPalRequest {
      * @param displayName The name to be displayed in the PayPal flow.
      */
     public void setDisplayName(String displayName) {
-        mDisplayName = displayName;
+        this.displayName = displayName;
     }
 
     /**
@@ -142,7 +146,7 @@ public abstract class PayPalRequest {
      * @param description The description to display.
      */
     public void setBillingAgreementDescription(String description) {
-        mBillingAgreementDescription = description;
+        billingAgreementDescription = description;
     }
 
     /**
@@ -151,7 +155,7 @@ public abstract class PayPalRequest {
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
     public void setShippingAddressOverride(PostalAddress shippingAddressOverride) {
-        mShippingAddressOverride = shippingAddressOverride;
+        this.shippingAddressOverride = shippingAddressOverride;
     }
 
     /**
@@ -164,7 +168,7 @@ public abstract class PayPalRequest {
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
     public void setLandingPageType(@PayPalLandingPageType String landingPageType) {
-        mLandingPageType = landingPageType;
+        this.landingPageType = landingPageType;
     }
 
     /**
@@ -173,7 +177,7 @@ public abstract class PayPalRequest {
      * @param merchantAccountId the non-default merchant account Id.
      */
     public void setMerchantAccountId(String merchantAccountId) {
-        mMerchantAccountId = merchantAccountId;
+        this.merchantAccountId = merchantAccountId;
     }
 
     /**
@@ -182,46 +186,76 @@ public abstract class PayPalRequest {
      * @param lineItems a collection of {@link PayPalLineItem}
      */
     public void setLineItems(Collection<PayPalLineItem> lineItems) {
-        mLineItems.clear();
-        mLineItems.addAll(lineItems);
+        this.lineItems.clear();
+        this.lineItems.addAll(lineItems);
     }
 
     public String getLocaleCode() {
-        return mLocaleCode;
+        return localeCode;
     }
 
     public String getBillingAgreementDescription() {
-        return mBillingAgreementDescription;
+        return billingAgreementDescription;
     }
 
     public boolean isShippingAddressRequired() {
-        return mShippingAddressRequired;
+        return shippingAddressRequired;
     }
 
     public boolean isShippingAddressEditable() {
-        return mShippingAddressEditable;
+        return shippingAddressEditable;
     }
 
     public PostalAddress getShippingAddressOverride() {
-        return mShippingAddressOverride;
+        return shippingAddressOverride;
     }
 
     public String getDisplayName() {
-        return mDisplayName;
+        return displayName;
     }
 
     public String getMerchantAccountId() {
-        return mMerchantAccountId;
+        return merchantAccountId;
     }
 
     public ArrayList<PayPalLineItem> getLineItems() {
-        return mLineItems;
+        return lineItems;
     }
 
     @PayPalLandingPageType
     public String getLandingPageType() {
-        return mLandingPageType;
+        return landingPageType;
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
+
+    protected PayPalRequest(Parcel in) {
+        localeCode = in.readString();
+        billingAgreementDescription = in.readString();
+        shippingAddressRequired = in.readByte() != 0;
+        shippingAddressEditable = in.readByte() != 0;
+        shippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
+        landingPageType = in.readString();
+        displayName = in.readString();
+        merchantAccountId = in.readString();
+        lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(localeCode);
+        parcel.writeString(billingAgreementDescription);
+        parcel.writeByte((byte) (shippingAddressRequired ? 1 : 0));
+        parcel.writeByte((byte) (shippingAddressEditable ? 1 : 0));
+        parcel.writeParcelable(shippingAddressOverride, i);
+        parcel.writeString(landingPageType);
+        parcel.writeString(displayName);
+        parcel.writeString(merchantAccountId);
+        parcel.writeTypedList(lineItems);
+    }
 }

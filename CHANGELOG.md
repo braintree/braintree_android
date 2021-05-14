@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Make `PayPalRequest` and subclasses `Parcelable`
+
 ## 4.0.0-beta3
 
 * Add `PaymentMethodType` enum
