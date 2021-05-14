@@ -1,15 +1,15 @@
 package com.braintreepayments.api;
 
 /**
- * Local payment transaction information.
+ * Local payment result information.
  */
-public class LocalPaymentTransaction {
+public class LocalPaymentResult {
 
     private final LocalPaymentRequest request;
     private final String approvalUrl;
     private final String paymentId;
 
-    LocalPaymentTransaction(LocalPaymentRequest request, String approvalUrl, String paymentId) {
+    LocalPaymentResult(LocalPaymentRequest request, String approvalUrl, String paymentId) {
         this.request = request;
         this.approvalUrl = approvalUrl;
         this.paymentId = paymentId;

@@ -68,7 +68,7 @@ public class LocalPaymentFragment extends BaseFragment {
                 localPaymentClient.startPayment(request, (transaction, error) -> {
                     if (transaction != null) {
                         try {
-                            localPaymentClient.approveTransaction(getActivity(), transaction);
+                            localPaymentClient.approvePayment(getActivity(), transaction);
                         } catch (JSONException | BrowserSwitchException e) {
                             e.printStackTrace();
                         }
