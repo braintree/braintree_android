@@ -14,10 +14,10 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/paypal_native_single_payment_button"
+            android:id="@+id/paypal_native_checkout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/paypal_native_single_payment" />
+            android:text="@string/paypal_native_checkout" />
 
         <Button
             android:id="@+id/paypal_native_vault_button"

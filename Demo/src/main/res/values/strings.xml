@@ -83,7 +83,7 @@
     <string name="paypal_disable_signature_verification_summary">Allows app switch with a PayPal Wallet app that is not signed</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
-    <string name="paypal_native_single_payment">Native Single Payment</string>
+    <string name="paypal_native_checkout">Native Checkout</string>
     <string name="paypal_native_vault">Native Vault</string>
     <string name="paypal_deferred_billing_agreement">Deferred Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>
