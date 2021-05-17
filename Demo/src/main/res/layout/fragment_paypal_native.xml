@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PayPalNativeFragment"
-    >
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".PayPalNativeFragment">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/paypal_native_title"
         android:gravity="center"
-        android:textSize="20sp"
-        />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <Button
+            android:id="@+id/paypal_native_checkout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_native_checkout" />
+
+        <Button
+            android:id="@+id/paypal_native_vault_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_native_vault" />
+
+    </LinearLayout>
+
+</LinearLayout>
