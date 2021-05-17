@@ -20,7 +20,7 @@ public class PayPalNativeClient {
         this.internalPayPalClient = new PayPalInternalClient(braintreeClient);
     }
 
-    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalNativeRequest request, final PayPalNativeFlowStartedCallback callback) {
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeFlowStartedCallback callback) {
         if (request instanceof PayPalNativeCheckoutRequest) {
             sendNativeCheckoutRequest(activity, (PayPalNativeCheckoutRequest) request, callback);
         } else if (request instanceof PayPalNativeVaultRequest) {
