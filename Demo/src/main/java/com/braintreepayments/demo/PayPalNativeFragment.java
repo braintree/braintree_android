@@ -26,24 +26,24 @@ public class PayPalNativeFragment extends BaseFragment {
     private DataCollector dataCollector;
 
 
-    private Button billingVaultButton;
-    private Button singlePaymentButton;
+    private Button vaultButton;
+    private Button checkoutButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_paypal_native, container, false);
-        billingVaultButton = view.findViewById(R.id.paypal_native_vault_button);
-        singlePaymentButton = view.findViewById(R.id.paypal_native_single_payment_button);
+        vaultButton = view.findViewById(R.id.paypal_native_vault_button);
+        checkoutButton = view.findViewById(R.id.paypal_native_checkout_button);
 
-        billingVaultButton.setOnClickListener(this::launchVault);
-        singlePaymentButton.setOnClickListener(this::launchSinglePayment);
+        vaultButton.setOnClickListener(this::launchVault);
+        checkoutButton.setOnClickListener(this::launchCheckout);
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
         viewModel.getPayPalBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handlePayPalBrowserSwitchResult);
         return view;
     }
 
-    private void launchSinglePayment(View v) {
+    private void launchCheckout(View v) {
         getBraintreeClient(braintreeClient -> {
             payPalNativeClient = new PayPalNativeClient(braintreeClient);
             startPayPalNative();
