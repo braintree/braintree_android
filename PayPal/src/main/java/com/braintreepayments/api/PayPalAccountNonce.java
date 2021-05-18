@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -35,6 +36,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private static final String PHONE_KEY = "phone";
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
+    private static final String DESCRIPTION_KEY = "description";
 
     private final String clientMetadataId;
     private final PostalAddress billingAddress;
@@ -117,11 +119,16 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault);
+        String description = inputJson.getString(DESCRIPTION_KEY);
+        if (TextUtils.equals(description, "PayPal") && !TextUtils.isEmpty(email)) {
+            description = email;
+        }
+
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, description);
     }
 
-    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.PAYPAL);
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description) {
+        super(nonce, PaymentMethodType.PAYPAL, "PayPal", description);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

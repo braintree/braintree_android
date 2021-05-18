@@ -5,6 +5,8 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.IdentityScope;
+
 /**
  * {@link PaymentMethodNonce} representing a local payment.
  *
@@ -15,7 +17,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private static final String API_RESOURCE_KEY = "paypalAccounts";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
@@ -29,6 +30,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
     private static final String TYPE_KEY = "type";
+    private static final String DESCRIPTION_KEY = "description";
 
     private final String clientMetadataId;
     private final PostalAddress billingAddress;
@@ -44,7 +46,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
         JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
         JSONObject details = json.getJSONObject(DETAILS_KEY);
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
         String email = Json.optString(details, EMAIL_KEY, null);
         String clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
         String type = Json.optString(json, TYPE_KEY, "PayPalAccount");
@@ -83,11 +84,13 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             shippingAddress = new PostalAddress();
         }
 
-        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, isDefault);
+        String description = inputJson.getString(DESCRIPTION_KEY);
+
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, description);
     }
 
-    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT);
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, String description) {
+        super(nonce, PaymentMethodType.LOCAL_PAYMENT, type, description);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

@@ -141,7 +141,7 @@ public class VenmoClient {
                 });
             } else {
                 String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
-                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
+                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername);
                 callback.onResult(venmoAccountNonce, null);
             }
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {

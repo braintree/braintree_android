@@ -16,9 +16,12 @@ public class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
+    private static final String DESCRIPTION_KEY = "description";
 
     private final String nonce;
     private final boolean isDefault;
+    private final String typeLabel;
+    private final String description;
 
     private @PaymentMethodType final int mType;
 
@@ -28,14 +31,46 @@ public class PaymentMethodNonce implements Parcelable {
 
         String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
         boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String description = inputJson.optString(DESCRIPTION_KEY);
 
-        return new PaymentMethodNonce(nonce, isDefault, type);
+        String typeLabel = "";
+
+        switch (typeString) {
+            case "CreditCard":
+                JSONObject details = inputJson.optJSONObject("details");
+                if (details != null) {
+                    typeLabel = details.optString("cardType");
+                }
+                break;
+            case "PayPalAccount":
+                typeLabel = "PayPal";
+                break;
+            case "VisaCheckoutCard":
+                typeLabel = "Visa Checkout";
+                break;
+            case "VenmoAccount":
+                typeLabel = "Venmo";
+                break;
+            case "AndroidPayCard":
+                typeLabel = "Google Pay";
+                break;
+            default:
+                typeLabel = "Unknown";
+                break;
+        }
+        return new PaymentMethodNonce(nonce, isDefault, type, typeLabel, description);
     }
 
-    PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type) {
+    private PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type, String typeLabel, String description) {
         this.nonce = nonce;
         this.isDefault = isDefault;
         mType = type;
+        this.typeLabel = typeLabel;
+        this.description = description;
+    }
+
+    PaymentMethodNonce(String nonce, @PaymentMethodType int type, String typeLabel, String description) {
+        this(nonce, false, type, typeLabel, description);
     }
 
     /**
@@ -58,6 +93,14 @@ public class PaymentMethodNonce implements Parcelable {
         return mType;
     }
 
+    String getTypeLabel() {
+        return typeLabel;
+    }
+
+    String getDescription() {
+        return description;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -68,12 +111,16 @@ public class PaymentMethodNonce implements Parcelable {
         dest.writeString(nonce);
         dest.writeByte(isDefault ? (byte) 1 : (byte) 0);
         dest.writeInt(mType);
+        dest.writeString(typeLabel);
+        dest.writeString(description);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         nonce = in.readString();
         isDefault = in.readByte() > 0;
         mType = in.readInt();
+        typeLabel = in.readString();
+        description = in.readString();
     }
 
     public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {

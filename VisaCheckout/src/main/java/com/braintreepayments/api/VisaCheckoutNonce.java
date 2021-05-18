@@ -18,7 +18,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -27,6 +26,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private static final String SHIPPING_ADDRESS_KEY = "shippingAddress";
     private static final String USER_DATA_KEY = "userData";
     private static final String CALL_ID_KEY = "callId";
+    private static final String DESCRIPTION_KEY = "description";
 
     private final String lastTwo;
     private final String cardType;
@@ -54,13 +54,14 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         BinData binData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, isDefault);
+        String description = inputJson.getString(DESCRIPTION_KEY);
+
+        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, description);
     }
 
-    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT);
+    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description) {
+        super(nonce, PaymentMethodType.VISA_CHECKOUT, "Visa Checkout", description);
         this.lastTwo = lastTwo;
         this.cardType = cardType;
         this.billingAddress = billingAddress;
