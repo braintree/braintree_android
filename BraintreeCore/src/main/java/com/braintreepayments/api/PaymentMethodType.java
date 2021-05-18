@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
         PaymentMethodType.GOOGLE_PAY,
         PaymentMethodType.LOCAL_PAYMENT
 })
-@interface PaymentMethodType {
+public @interface PaymentMethodType {
     int UNKNOWN = -1;
     int CARD = 0;
     int PAYPAL = 1;

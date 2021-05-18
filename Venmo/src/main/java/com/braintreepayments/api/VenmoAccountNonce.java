@@ -37,11 +37,11 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
         String username = details.getString(VENMO_USERNAME_KEY);
 
-        return new VenmoAccountNonce(nonce, username, isDefault);
+        return new VenmoAccountNonce(nonce, username);
     }
 
-    VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VENMO);
+    VenmoAccountNonce(String nonce, String username) {
+        super(nonce, PaymentMethodType.VENMO, "Venmo", username);
         this.username = username;
     }
 

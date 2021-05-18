@@ -51,6 +51,7 @@ public class PaymentMethodClient {
         PaymentMethodNonce paymentMethodNonce;
         for(int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
+
             // TODO: leverage compileOnly gradle dependencies to return strongly-typed nonces (e.g. CardNonce, PayPalAccountNonce etc.)
             paymentMethodNonce = PaymentMethodNonce.fromJSON(json);
             if (paymentMethodNonce.getType() != PaymentMethodType.GOOGLE_PAY) {
