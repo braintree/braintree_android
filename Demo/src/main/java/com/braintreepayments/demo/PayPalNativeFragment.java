@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -66,7 +67,7 @@ public class PayPalNativeFragment extends BaseFragment {
                 if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
                     dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
                 }
-                payPalNativeClient.tokenizePayPalAccount(activity, createPayPalNativeVaultRequest(activity), payPalError -> {
+                payPalNativeClient.tokenizePayPalAccount(activity, createPayPalNativeVaultRequest(activity), (success, payPalError) -> {
                     if (payPalError != null) {
                         handleError(payPalError);
                     }
@@ -96,9 +97,19 @@ public class PayPalNativeFragment extends BaseFragment {
     private void startPayPalNative() {
         PayPalNativeCheckoutRequest nativeCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
 
-        payPalNativeClient.tokenizePayPalAccount(getActivity(), nativeCheckoutRequest, error -> {
+        payPalNativeClient.tokenizePayPalAccount(getActivity(), nativeCheckoutRequest, (paymentMethodNonce, error) -> {
             if (error != null) {
                 handleError(error);
+            }
+            if (paymentMethodNonce != null) {
+                Toast.makeText(getContext(), "Hello", Toast.LENGTH_LONG).show();
+                super.onPaymentMethodNonceCreated(paymentMethodNonce);
+
+                PayPalNativeFragmentDirections.ActionPayPalNativeFragmentToDisplayNonceFragment action =
+                        PayPalNativeFragmentDirections.actionPayPalNativeFragmentToDisplayNonceFragment(paymentMethodNonce);
+                action.setDeviceData(deviceData);
+
+                NavHostFragment.findNavController(this).navigate(action);
             }
         });
     }

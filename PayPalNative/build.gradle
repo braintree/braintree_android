@@ -30,6 +30,9 @@ dependencies {
     api project(':BraintreeCore')
     implementation project(':PayPal')
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation('com.paypal.checkout:android-sdk:0.1.0') {
+        exclude module: 'data-collector'
+    }
 }
 
 // region signing and publishing
