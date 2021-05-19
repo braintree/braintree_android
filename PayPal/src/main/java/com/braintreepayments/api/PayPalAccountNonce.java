@@ -66,6 +66,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         }
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         String authenticateUrl = Json.optString(json, "authenticateUrl", null);
 
@@ -122,11 +123,11 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             description = email;
         }
 
-        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, description);
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault, description);
     }
 
-    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, String description) {
-        super(nonce, PaymentMethodType.PAYPAL, "PayPal", description);
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault, String description) {
+        super(nonce, isDefault, PaymentMethodType.PAYPAL, "PayPal", description);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

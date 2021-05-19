@@ -61,16 +61,12 @@ public class PaymentMethodNonce implements Parcelable {
         return new PaymentMethodNonce(nonce, isDefault, type, typeLabel, description);
     }
 
-    private PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type, String typeLabel, String description) {
+    PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type, String typeLabel, String description) {
         this.nonce = nonce;
         this.isDefault = isDefault;
         this.type = type;
         this.typeLabel = typeLabel;
         this.description = description;
-    }
-
-    PaymentMethodNonce(String nonce, @PaymentMethodType int type, String typeLabel, String description) {
-        this(nonce, false, type, typeLabel, description);
     }
 
     /**
