@@ -82,7 +82,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             shippingAddress = new PostalAddress();
         }
 
-        String description = inputJson.getString(DESCRIPTION_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
 
         return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, description);
     }
