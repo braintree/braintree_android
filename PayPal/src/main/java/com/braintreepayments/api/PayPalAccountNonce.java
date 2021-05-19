@@ -118,7 +118,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        String description = inputJson.getString(DESCRIPTION_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
         if (TextUtils.equals(description, "PayPal") && !TextUtils.isEmpty(email)) {
             description = email;
         }
