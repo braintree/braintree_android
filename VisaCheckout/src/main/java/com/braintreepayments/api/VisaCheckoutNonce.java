@@ -14,7 +14,6 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class VisaCheckoutNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "VisaCheckoutCard";
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";

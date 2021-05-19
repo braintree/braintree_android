@@ -15,7 +15,6 @@ import org.json.JSONObject;
  */
 public class PayPalAccountNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
     private static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
     private static final String TOKENIZATION_DATA_KEY = "tokenizationData";
@@ -67,7 +66,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         }
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         String authenticateUrl = Json.optString(json, "authenticateUrl", null);
 
