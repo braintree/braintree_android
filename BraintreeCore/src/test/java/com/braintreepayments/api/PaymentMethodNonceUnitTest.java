@@ -20,6 +20,8 @@ public class PaymentMethodNonceUnitTest {
         assertTrue(nonce.isDefault());
         assertEquals(PaymentMethodType.CARD, nonce.getType());
         assertEquals("123456-12345-12345-a-adfa", nonce.getString());
+        assertEquals("ending in ••11", nonce.getDescription());
+        assertEquals("Visa", nonce.getTypeLabel());
     }
 
     @Test
@@ -29,6 +31,8 @@ public class PaymentMethodNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals(PaymentMethodType.PAYPAL, nonce.getType());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", nonce.getString());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        assertEquals("with email paypalaccount@example.com", nonce.getDescription());
     }
 
     @Test
@@ -38,6 +42,8 @@ public class PaymentMethodNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals(PaymentMethodType.VENMO, nonce.getType());
         assertEquals("fake-venmo-nonce", nonce.getString());
+        assertEquals("Venmo", nonce.getTypeLabel());
+        assertEquals("happy-venmo-joe", nonce.getDescription());
     }
 
     @Test
@@ -47,6 +53,8 @@ public class PaymentMethodNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals(PaymentMethodType.VISA_CHECKOUT, nonce.getType());
         assertEquals("123456-12345-12345-a-adfa", nonce.getString());
+        assertEquals("Visa Checkout", nonce.getTypeLabel());
+        assertEquals("ending in ••11", nonce.getDescription());
     }
 
     @Test
@@ -56,6 +64,8 @@ public class PaymentMethodNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals(PaymentMethodType.PAYPAL, nonce.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", nonce.getString());
+        assertEquals("PayPal", nonce.getTypeLabel());
+        assertEquals("PayPal", nonce.getDescription());
     }
 
     @Test
@@ -65,5 +75,7 @@ public class PaymentMethodNonceUnitTest {
         assertFalse(nonce.isDefault());
         assertEquals(PaymentMethodType.GOOGLE_PAY, nonce.getType());
         assertEquals("fake-google-pay-nonce", nonce.getString());
+        assertEquals("Google Pay", nonce.getTypeLabel());
+        assertEquals("Google Pay", nonce.getDescription());
     }
 }

@@ -35,9 +35,9 @@ public class PaymentMethodNonce implements Parcelable {
 
         String typeLabel = "";
 
+        JSONObject details = inputJson.optJSONObject("details");
         switch (typeString) {
             case "CreditCard":
-                JSONObject details = inputJson.optJSONObject("details");
                 if (details != null) {
                     typeLabel = details.optString("cardType");
                 }
@@ -50,6 +50,9 @@ public class PaymentMethodNonce implements Parcelable {
                 break;
             case "VenmoAccount":
                 typeLabel = "Venmo";
+                if (details != null) {
+                    description = details.optString("username");
+                }
                 break;
             case "AndroidPayCard":
                 typeLabel = "Google Pay";
