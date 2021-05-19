@@ -36,6 +36,7 @@ Next, read the [**full documentation**](https://developers.braintreepayments.com
 
 This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](http://developers.braintreepayments.com/guides/client-sdk/deprecation-policy).
 
+<!-- TODO: Update TBA dates when v4 GA releases. -->
 | Major version number | Status | Released | Deprecated | Unsupported |
 | -------------------- | ------ | -------- | ---------- | ----------- |
 | 4.x.x | Beta | March 2021 | TBA | TBA |
