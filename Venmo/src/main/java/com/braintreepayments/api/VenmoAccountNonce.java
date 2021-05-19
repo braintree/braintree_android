@@ -14,6 +14,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
 
     private static final String API_RESOURCE_KEY = "venmoAccounts";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";
@@ -29,15 +30,16 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         }
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
         String username = details.getString(VENMO_USERNAME_KEY);
 
-        return new VenmoAccountNonce(nonce, username);
+        return new VenmoAccountNonce(nonce, username, isDefault);
     }
 
-    VenmoAccountNonce(String nonce, String username) {
-        super(nonce, PaymentMethodType.VENMO, "Venmo", username);
+    VenmoAccountNonce(String nonce, String username, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.VENMO, "Venmo", username);
         this.username = username;
     }
 

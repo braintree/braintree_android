@@ -17,6 +17,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
@@ -53,14 +54,15 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         BinData binData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
         String description = inputJson.getString(DESCRIPTION_KEY);
 
-        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, description);
+        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, isDefault, description);
     }
 
-    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, String description) {
-        super(nonce, PaymentMethodType.VISA_CHECKOUT, "Visa Checkout", description);
+    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, boolean isDefault, String description) {
+        super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT, "Visa Checkout", description);
         this.lastTwo = lastTwo;
         this.cardType = cardType;
         this.billingAddress = billingAddress;
