@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;

@@ -88,7 +88,8 @@ public class PaymentMethodNonce implements Parcelable {
         return isDefault;
     }
 
-    @PaymentMethodType int getType() {
+    @PaymentMethodType
+    public int getType() {
         return type;
     }
 
