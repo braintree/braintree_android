@@ -56,7 +56,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        String description = inputJson.getString(DESCRIPTION_KEY);
+        String description = json.getString(DESCRIPTION_KEY);
 
         return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, isDefault, description);
     }
