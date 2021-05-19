@@ -5,8 +5,6 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.IdentityScope;
-
 /**
  * {@link PaymentMethodNonce} representing a local payment.
  *

@@ -26,7 +26,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private static final String IS_NETWORK_TOKENIZED_KEY = "isNetworkTokenized";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private final String cardType;
     private final String lastTwo;
@@ -85,7 +84,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         String lastFour = details.getString(LAST_FOUR_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
         boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
-
 
         String description = inputJson
                 .getJSONObject("paymentMethodData")

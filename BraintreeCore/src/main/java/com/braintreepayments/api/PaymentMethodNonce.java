@@ -23,7 +23,7 @@ public class PaymentMethodNonce implements Parcelable {
     private final String typeLabel;
     private final String description;
 
-    private @PaymentMethodType final int mType;
+    private @PaymentMethodType final int type;
 
     static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
         String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
@@ -64,7 +64,7 @@ public class PaymentMethodNonce implements Parcelable {
     private PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type, String typeLabel, String description) {
         this.nonce = nonce;
         this.isDefault = isDefault;
-        mType = type;
+        this.type = type;
         this.typeLabel = typeLabel;
         this.description = description;
     }
@@ -90,7 +90,7 @@ public class PaymentMethodNonce implements Parcelable {
     }
 
     @PaymentMethodType int getType() {
-        return mType;
+        return type;
     }
 
     String getTypeLabel() {
@@ -110,7 +110,7 @@ public class PaymentMethodNonce implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(nonce);
         dest.writeByte(isDefault ? (byte) 1 : (byte) 0);
-        dest.writeInt(mType);
+        dest.writeInt(type);
         dest.writeString(typeLabel);
         dest.writeString(description);
     }
@@ -118,7 +118,7 @@ public class PaymentMethodNonce implements Parcelable {
     protected PaymentMethodNonce(Parcel in) {
         nonce = in.readString();
         isDefault = in.readByte() > 0;
-        mType = in.readInt();
+        type = in.readInt();
         typeLabel = in.readString();
         description = in.readString();
     }
