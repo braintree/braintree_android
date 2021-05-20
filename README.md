@@ -41,7 +41,7 @@ This SDK abides by our Client SDK Deprecation Policy. For more information on th
 | -------------------- | ------ | -------- | ---------- | ----------- |
 | 4.x.x | Beta | March 2021 | TBA | TBA |
 | 3.x.x | Active | February 2019 | TBA | TBA |
-| 2.x.x | Inactive | November 2015 | March 2020 | March 2021 |
+| 2.x.x | Unsupported | November 2015 | March 2020 | March 2021 |
 
 Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
 
@@ -64,4 +64,3 @@ for personal support at any phase of integration
 ## License
 
 The Braintree Android SDK is open source and available under the MIT license. See the [LICENSE](LICENSE) file for more info.
-
