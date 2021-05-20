@@ -102,7 +102,6 @@ public class PayPalNativeFragment extends BaseFragment {
                 handleError(error);
             }
             if (paymentMethodNonce != null) {
-                Toast.makeText(getContext(), "Hello", Toast.LENGTH_LONG).show();
                 super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
                 PayPalNativeFragmentDirections.ActionPayPalNativeFragmentToDisplayNonceFragment action =
