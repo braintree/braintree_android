@@ -109,6 +109,8 @@ public class DataCollector {
      * @param context  Android Context
      * @param callback {@link DataCollectorCallback}
      */
+    // remove this if we have public methods in PayPalDataCollector?
+    // we can always add some methods back if we prune too much
     public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
         final JSONObject deviceData = new JSONObject();
 
@@ -128,6 +130,7 @@ public class DataCollector {
      * @param context Android Context
      * @return The client metadata id associated with the collected data.
      */
+    // remove this too or make it private?
     public String getPayPalClientMetadataId(Context context) {
         try {
             return payPalDataCollector.getClientMetadataId(context);
@@ -136,6 +139,7 @@ public class DataCollector {
         return "";
     }
 
+    // this method can be removed, we won't be using it
     void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override

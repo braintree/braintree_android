@@ -92,6 +92,7 @@ public class CardClient {
         if (tokenizationResponse != null) {
             try {
                 CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
+                // call to risk can be removed, we don't use this anymore
                 dataCollector.collectRiskData(context, cardNonce);
 
                 callback.onResult(cardNonce, null);

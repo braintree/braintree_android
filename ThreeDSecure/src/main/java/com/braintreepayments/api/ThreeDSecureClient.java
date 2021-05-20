@@ -188,6 +188,7 @@ public class ThreeDSecureClient {
     }
 
     /**
+     // Is this description correct? Can we make it clearer why I would use this over the other one above?
      * Initialize a challenge from a server side lookup call.
      *
      * @param activity Android FragmentActivity
