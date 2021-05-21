@@ -27,7 +27,7 @@ public class PayPalCreditFinancing implements Parcelable {
 
     private PayPalCreditFinancing() {}
 
-    public static PayPalCreditFinancing fromJson(JSONObject creditFinancing) throws JSONException {
+    static PayPalCreditFinancing fromJson(JSONObject creditFinancing) throws JSONException {
         PayPalCreditFinancing result = new PayPalCreditFinancing();
 
         if (creditFinancing == null) {
