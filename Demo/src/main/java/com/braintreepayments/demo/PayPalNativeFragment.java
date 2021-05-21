@@ -18,6 +18,8 @@ import com.braintreepayments.api.PayPalNativeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalNativeVaultRequest;
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalNativeCheckoutRequest;
+
 
 public class PayPalNativeFragment extends BaseFragment {
 
@@ -95,7 +97,7 @@ public class PayPalNativeFragment extends BaseFragment {
     }
 
     private void startPayPalNative() {
-        PayPalNativeCheckoutRequest nativeCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
+        PayPalNativeCheckoutRequest nativeCheckoutRequest = createPayPalNativeCheckoutRequest(getActivity(), "1.00");
 
         payPalNativeClient.tokenizePayPalAccount(getActivity(), nativeCheckoutRequest, (paymentMethodNonce, error) -> {
             if (error != null) {

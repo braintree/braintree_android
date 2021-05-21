@@ -41,7 +41,7 @@ public class PayPalNativeClient {
         this.tokenizationClient = new TokenizationClient(braintreeClient);
     }
 
-    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeFlowCallback callback) {
+    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeTokenizeCallback callback) {
         if (request instanceof PayPalNativeCheckoutRequest) {
             sendNativeCheckoutRequest(activity, (PayPalNativeCheckoutRequest) request, callback);
         } else if (request instanceof PayPalNativeVaultRequest) {
@@ -49,7 +49,7 @@ public class PayPalNativeClient {
         }
     }
 
-    private void sendNativeCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeFlowCallback callback) {
+    private void sendNativeCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeTokenizeCallback callback) {
         //This is copied from PayPal module.
         braintreeClient.sendAnalyticsEvent("paypal.native.single-payment.selected");
         if (request.getShouldOfferPayLater()) {
@@ -68,7 +68,7 @@ public class PayPalNativeClient {
 
                 String payPalClientId = configuration.getPayPalClientId();
                 if (payPalClientId == null) {
-                    callback.onResult(null, new BraintreeException("PayPal Client ID is null. TODO: write error message explaining why PayPal Native couldn't be started"));
+                    callback.onResult(null, new BraintreeException("Invalid PayPal Client ID"));
                     return;
                 }
 
@@ -79,7 +79,7 @@ public class PayPalNativeClient {
         });
     }
 
-    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest payPalVaultRequest, final PayPalNativeFlowCallback callback) {
+    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest payPalVaultRequest, final PayPalNativeTokenizeCallback callback) {
         //this one should default to the one we already have, once PayPalNative supports billing agreements, this should just default to native.
         payPalClient = new PayPalClient(braintreeClient);
         payPalClient.tokenizePayPalAccount(activity, payPalVaultRequest, new PayPalFlowStartedCallback() {
@@ -90,7 +90,7 @@ public class PayPalNativeClient {
         });
     }
 
-    private void startPayPalNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String payPalClientId, final PayPalNativeCheckoutRequest payPalRequest, final PayPalNativeFlowCallback callback) {
+    private void startPayPalNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String payPalClientId, final PayPalNativeCheckoutRequest payPalRequest, final PayPalNativeTokenizeCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
             public void onResult(final PayPalResponse payPalResponse, final Exception error) {
@@ -103,7 +103,7 @@ public class PayPalNativeClient {
         });
     }
 
-    private void startNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String clientId, final PayPalResponse payPalResponse, final PayPalNativeFlowCallback callback) {
+    private void startNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String clientId, final PayPalResponse payPalResponse, final PayPalNativeTokenizeCallback callback) {
         final String redirectUrl = getPayPalReturnUrl(activity);
         Environment environment = Environment.SANDBOX;
         if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
@@ -128,14 +128,14 @@ public class PayPalNativeClient {
                     @Override
                     public void onApprove(final Approval approval) {
                         braintreeClient.sendAnalyticsEvent("paypal.native.approved");
-                        approved(approval, payPalResponse, callback);
+                        handleNativeCheckoutApproval(approval, payPalResponse, callback);
                     }
                 },
                 new OnCancel() {
                     @Override
                     public void onCancel() {
                         braintreeClient.sendAnalyticsEvent("paypal.native.client_cancel");
-                        callback.onResult(null, new BraintreeException("User Cancelled"));
+                        callback.onResult(null, new BraintreeException("Canceled"));
                     }
                 },
                 new OnError() {
@@ -148,8 +148,7 @@ public class PayPalNativeClient {
         );
     }
 
-    //TODO: I copied all of this from PayPal client and adapted it. Is all of this necessary?
-    private void approved(final Approval approval, final PayPalResponse payPalResponse, final PayPalNativeFlowCallback callback) {
+    private void handleNativeCheckoutApproval(final Approval approval, final PayPalResponse payPalResponse, final PayPalNativeTokenizeCallback callback) {
         Uri deepLinkUri = Uri.parse(String.format(
                 "%s://onetouch/v1/success?paymentId=%s&token=%s&PayerID=%s",
                 braintreeClient.getReturnUrlScheme(),
@@ -160,9 +159,9 @@ public class PayPalNativeClient {
             JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, payPalResponse.getSuccessUrl(), payPalResponse.getApprovalUrl(), "token");
             PayPalAccount payPalAccount = new PayPalAccount();
             payPalAccount.setClientMetadataId(payPalResponse.getClientMetadataId());
-            payPalAccount.setSource("paypal-browser"); // paypal native throws error
+            payPalAccount.setSource("paypal-browser"); //TODO: check for valid sources
             payPalAccount.setUrlResponseData(urlResponseData);
-            payPalAccount.setPaymentType("single-payment"); // is this the correct way?
+            payPalAccount.setPaymentType("single-payment");
 
             if (payPalResponse.getMerchantAccountId() != null) {
                 payPalAccount.setMerchantAccountId(payPalResponse.getMerchantAccountId());
@@ -196,7 +195,6 @@ public class PayPalNativeClient {
     }
 
     private String getPayPalReturnUrl(Context context) {
-        //Shouldnt the configuration include the return URL of the client? why are generating this?
         if (context != null) {
             return String.format("%s://paypalpay", context.getPackageName().toLowerCase(Locale.ROOT)).replace("_", "");
         }
@@ -229,12 +227,10 @@ public class PayPalNativeClient {
         }
     }
 
-    //TODO:Does this apply to native?
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
-    //TODO: copied from PayPalClient, perhaps we can move it somewhere else?
     private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, BraintreeException {
         String status = uri.getLastPathSegment();
 

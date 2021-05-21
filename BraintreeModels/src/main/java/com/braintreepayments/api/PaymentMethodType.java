@@ -16,8 +16,7 @@ import java.lang.annotation.RetentionPolicy;
         PaymentMethodType.VENMO,
         PaymentMethodType.VISA_CHECKOUT,
         PaymentMethodType.GOOGLE_PAY,
-        PaymentMethodType.LOCAL_PAYMENT,
-        PaymentMethodType.PAYPAL_NATIVE
+        PaymentMethodType.LOCAL_PAYMENT
 })
 @interface PaymentMethodType {
     int UNKNOWN = -1;
@@ -27,6 +26,5 @@ import java.lang.annotation.RetentionPolicy;
     int VISA_CHECKOUT = 3;
     int GOOGLE_PAY = 4;
     int LOCAL_PAYMENT = 5;
-    int PAYPAL_NATIVE = 6;
 }
 

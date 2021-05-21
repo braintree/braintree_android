@@ -62,12 +62,18 @@ public class PayPalRequestFactory {
     }
 
     public static PayPalNativeCheckoutRequest createPayPalNativeCheckoutRequest(Context context, String amount) {
-        return (PayPalNativeCheckoutRequest) createPayPalCheckoutRequest(context, amount);
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(amount);
+        populateRequest(context, request);
+        return request;
     }
 
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
+        populateRequest(context, request);
+        return request;
+    }
 
+    private static void populateRequest(final Context context, final PayPalCheckoutRequest request) {
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
@@ -93,9 +99,8 @@ public class PayPalRequestFactory {
         if (Settings.usePayPalAddressOverride(context)) {
             PostalAddress shippingAddress = getShippingAddress();
             request.setShippingAddressOverride(shippingAddress);
+            request.setShippingAddressEditable(true);
         }
-
-        return request;
     }
 
     private static PostalAddress getShippingAddress() {
@@ -106,6 +111,7 @@ public class PayPalRequestFactory {
         shippingAddress.setLocality("San Francisco");
         shippingAddress.setRegion("CA");
         shippingAddress.setCountryCodeAlpha2("US");
+        shippingAddress.setPostalCode("94110");
         return shippingAddress;
     }
 }
