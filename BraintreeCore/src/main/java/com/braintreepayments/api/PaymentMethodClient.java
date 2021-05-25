@@ -20,10 +20,10 @@ public class PaymentMethodClient {
 
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
 
-    protected static final String SINGLE_USE_TOKEN_ID = "singleUseTokenId";
-    protected static final String VARIABLES = "variables";
-    protected static final String INPUT = "input";
-    protected static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
+    private static final String SINGLE_USE_TOKEN_ID = "singleUseTokenId";
+    private static final String VARIABLES = "variables";
+    private static final String INPUT = "input";
+    private static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
 
     private final BraintreeClient braintreeClient;
 
@@ -38,7 +38,7 @@ public class PaymentMethodClient {
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    private static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
         JSONArray paymentMethods =
             new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
 

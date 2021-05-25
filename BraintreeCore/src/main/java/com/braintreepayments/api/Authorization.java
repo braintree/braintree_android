@@ -59,15 +59,15 @@ abstract class Authorization {
         return rawValue;
     }
 
-    private static boolean isTokenizationKey(String tokenizationKey) {
+    static boolean isTokenizationKey(String tokenizationKey) {
         return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
     }
 
-    private static boolean isPayPalUAT(String payPalUAT) {
+    static boolean isPayPalUAT(String payPalUAT) {
         return !TextUtils.isEmpty(payPalUAT) && payPalUAT.matches(PayPalUAT.MATCHER);
     }
 
-    private static boolean isClientToken(String clientToken) {
+    static boolean isClientToken(String clientToken) {
         return !TextUtils.isEmpty(clientToken) && clientToken.matches(ClientToken.BASE_64_MATCHER);
     }
 }
