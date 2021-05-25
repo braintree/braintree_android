@@ -16,18 +16,18 @@ import java.util.List;
 /**
  * Class used to retrieve a customer's payment methods.
  */
-class PaymentMethodClient {
+public class PaymentMethodClient {
 
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
 
-    protected static final String SINGLE_USE_TOKEN_ID = "singleUseTokenId";
-    protected static final String VARIABLES = "variables";
-    protected static final String INPUT = "input";
-    protected static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
+    private static final String SINGLE_USE_TOKEN_ID = "singleUseTokenId";
+    private static final String VARIABLES = "variables";
+    private static final String INPUT = "input";
+    private static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
 
     private final BraintreeClient braintreeClient;
 
-    PaymentMethodClient(BraintreeClient braintreeClient) {
+    public PaymentMethodClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 
@@ -70,7 +70,7 @@ class PaymentMethodClient {
      *        payment methods will be ordered by most recently added.
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
-    void getPaymentMethodNonces(boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
+    public void getPaymentMethodNonces(boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
         final Uri uri = Uri.parse(TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT))
                 .buildUpon()
                 .appendQueryParameter("default_first", String.valueOf(defaultFirst))
@@ -105,7 +105,7 @@ class PaymentMethodClient {
      *
      * @param callback {@link GetPaymentMethodNoncesCallback}
      */
-    void getPaymentMethodNonces(GetPaymentMethodNoncesCallback callback) {
+    public void getPaymentMethodNonces(GetPaymentMethodNoncesCallback callback) {
         getPaymentMethodNonces(false, callback);
     }
 
@@ -118,7 +118,7 @@ class PaymentMethodClient {
      * @param callback {@link DeletePaymentMethodNonceCallback}
      */
     // TODO: Investigate if this feature should be removed from Android or added to iOS for feature parity
-    void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
+    public void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
         boolean usesClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
         if (!usesClientToken) {
