@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
  * common interface of all payment method nonces, and can be handled by a server interchangeably.
@@ -93,11 +92,17 @@ public class PaymentMethodNonce implements Parcelable {
         return type;
     }
 
-    String getTypeLabel() {
+    /**
+     * @return human-readable label that aligns with a {@link PaymentMethodNonce#getType()} property.
+     */
+    public String getTypeLabel() {
         return typeLabel;
     }
 
-    String getDescription() {
+    /**
+     * @return description of a {@link PaymentMethodNonce}.
+     */
+    public String getDescription() {
         return description;
     }
 
