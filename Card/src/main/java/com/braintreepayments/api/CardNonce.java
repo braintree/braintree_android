@@ -109,9 +109,8 @@ public class CardNonce extends PaymentMethodNonce {
         String expirationMonth = Json.optString(details, EXPIRATION_MONTH_KEY, "");
         String expirationYear = Json.optString(details, EXPIRATION_YEAR_KEY, "");
         String cardholderName = Json.optString(details, CARDHOLDER_NAME_KEY, "");
-        String description = inputJson.getString(DESCRIPTION_KEY);
 
-        return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault, description);
+        return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
     }
 
     /**
@@ -139,17 +138,16 @@ public class CardNonce extends PaymentMethodNonce {
             String expirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
             String expirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
             String cardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
-            String description = TextUtils.isEmpty(lastTwo) ? "" : "ending in ••" + lastTwo;
 
-            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false, description);
+            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false);
 
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
     }
 
-    private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault, String description) {
-        super(nonce, isDefault, PaymentMethodType.CARD, cardType, description);
+    private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.CARD, cardType, lastFour);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;

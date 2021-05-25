@@ -39,6 +39,7 @@ public class PaymentMethodNonce implements Parcelable {
             case "CreditCard":
                 if (details != null) {
                     typeLabel = details.optString("cardType");
+                    description = details.optString("lastFour");
                 }
                 break;
             case "PayPalAccount":

@@ -20,7 +20,7 @@ public class PaymentMethodNonceUnitTest {
         assertTrue(nonce.isDefault());
         assertEquals(PaymentMethodType.CARD, nonce.getType());
         assertEquals("123456-12345-12345-a-adfa", nonce.getString());
-        assertEquals("ending in ••11", nonce.getDescription());
+        assertEquals("1111", nonce.getDescription());
         assertEquals("Visa", nonce.getTypeLabel());
     }
 
