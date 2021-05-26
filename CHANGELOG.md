@@ -11,6 +11,8 @@
   * Make `UnionPayCapabilities#fromJson()` package-private
   * Make `PaymentMethodClient#parsePaymentMethodNonces()` package-private
   * Return `UserCanceledException` on user cancellation
+  * Remove `DataCollector#collectPayPalDeviceData()`
+  * Make `DataCollector#getPayPalClientMetadataId()` private
 
 ## 4.0.0-beta3
 

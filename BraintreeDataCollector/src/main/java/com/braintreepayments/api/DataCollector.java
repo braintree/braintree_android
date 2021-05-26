@@ -109,7 +109,7 @@ public class DataCollector {
      * @param context Android Context
      * @return The client metadata id associated with the collected data.
      */
-    public String getPayPalClientMetadataId(Context context) {
+    private String getPayPalClientMetadataId(Context context) {
         try {
             return payPalDataCollector.getClientMetadataId(context);
         } catch (NoClassDefFoundError ignored) {
