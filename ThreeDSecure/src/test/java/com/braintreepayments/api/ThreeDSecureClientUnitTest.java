@@ -250,7 +250,7 @@ public class ThreeDSecureClientUnitTest {
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
-        assertTrue(exception instanceof BraintreeException);
+        assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
     }
 
@@ -359,7 +359,7 @@ public class ThreeDSecureClientUnitTest {
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
-        assertTrue(exception instanceof BraintreeException);
+        assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
     }
 }

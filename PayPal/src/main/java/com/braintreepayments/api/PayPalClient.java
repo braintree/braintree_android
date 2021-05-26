@@ -217,7 +217,7 @@ public class PayPalClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new BraintreeException("User canceled PayPal."));
+                callback.onResult(null, new UserCanceledException("User canceled PayPal."));
                 braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
             case BrowserSwitchStatus.SUCCESS:
@@ -264,7 +264,7 @@ public class PayPalClient {
                     } else {
                         callback.onResult(null, new BraintreeException("Unknown error"));
                     }
-                } catch (JSONException | PayPalBrowserSwitchException e) {
+                } catch (JSONException | UserCanceledException | PayPalBrowserSwitchException e) {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
@@ -272,11 +272,11 @@ public class PayPalClient {
         }
     }
 
-    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, PayPalBrowserSwitchException {
+    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, UserCanceledException, PayPalBrowserSwitchException {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
-            throw new PayPalBrowserSwitchException("User canceled.");
+            throw new UserCanceledException("User canceled PayPal.");
         }
 
         String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
