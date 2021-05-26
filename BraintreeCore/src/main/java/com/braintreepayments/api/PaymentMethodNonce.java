@@ -44,6 +44,9 @@ public class PaymentMethodNonce implements Parcelable {
                 break;
             case "PayPalAccount":
                 typeLabel = "PayPal";
+                if (details != null) {
+                    description = details.optString("email");
+                }
                 break;
             case "VisaCheckoutCard":
                 typeLabel = "Visa Checkout";

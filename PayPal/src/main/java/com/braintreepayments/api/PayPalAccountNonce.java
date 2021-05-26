@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -118,16 +117,11 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        String description = json.getString(DESCRIPTION_KEY);
-        if (TextUtils.equals(description, "PayPal") && !TextUtils.isEmpty(email)) {
-            description = email;
-        }
-
-        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault, description);
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault);
     }
 
-    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault, String description) {
-        super(nonce, isDefault, PaymentMethodType.PAYPAL, "PayPal", description);
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.PAYPAL, "PayPal", email);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;
