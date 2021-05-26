@@ -104,25 +104,6 @@ public class DataCollector {
     }
 
     /**
-     * Collect PayPal device information for fraud identification purposes.
-     *
-     * @param context  Android Context
-     * @param callback {@link DataCollectorCallback}
-     */
-    public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
-        final JSONObject deviceData = new JSONObject();
-
-        try {
-            String clientMetadataId = getPayPalClientMetadataId(context);
-            if (!TextUtils.isEmpty(clientMetadataId)) {
-                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
-            }
-        } catch (JSONException ignored) {
-        }
-        callback.onResult(deviceData.toString(), null);
-    }
-
-    /**
      * Collect device information for fraud identification purposes from PayPal only.
      *
      * @param context Android Context

@@ -123,29 +123,6 @@ public class DataCollectorUnitTest {
     }
 
     @Test
-    public void collectPayPalDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws JSONException {
-        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
-
-        // test with kount enabled to ensure that no Kount data is collected
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(kountEnabledConfiguration)
-                .build();
-
-        DataCollector sut = new DataCollector(
-                braintreeClient, payPalDataCollector, kountDataCollector);
-
-        DataCollectorCallback callback = mock(DataCollectorCallback.class);
-        sut.collectPayPalDeviceData(context, callback);
-
-        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
-
-        String deviceData = deviceDataCaptor.getValue();
-        JSONObject json = new JSONObject(deviceData);
-        assertEquals("sample_correlation_id", json.getString("correlation_id"));
-    }
-
-    @Test
     public void collectRiskData_withTokenizationKey_requestsClientMetadataIdFromPayPal() throws JSONException, InvalidArgumentException {
         when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("sample_installation_guid");
         when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
