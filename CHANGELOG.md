@@ -10,6 +10,7 @@
   * Make `PayPalCreditFinancingAmount#fromJson()` package-private
   * Make `UnionPayCapabilities#fromJson()` package-private
   * Make `PaymentMethodClient#parsePaymentMethodNonces()` package-private
+  * Return `UserCanceledException` on user cancellation
 
 ## 4.0.0-beta3
 
