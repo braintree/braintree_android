@@ -34,6 +34,8 @@ public class GooglePayCardNonceUnitTest {
         assertEquals("11", googlePayCardNonce.getLastTwo());
         assertEquals("1234", googlePayCardNonce.getLastFour());
         assertEquals("android-user@example.com", googlePayCardNonce.getEmail());
+        assertEquals("Google Pay", googlePayCardNonce.getTypeLabel());
+        assertEquals("MasterCard 0276", googlePayCardNonce.getDescription());
         assertPostalAddress(billingPostalAddress, googlePayCardNonce.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, googlePayCardNonce.getShippingAddress());
         assertTrue(googlePayCardNonce.isNetworkTokenized());
@@ -107,6 +109,8 @@ public class GooglePayCardNonceUnitTest {
         assertEquals("11", parceled.getLastTwo());
         assertEquals("1234", parceled.getLastFour());
         assertEquals("android-user@example.com", parceled.getEmail());
+        assertEquals("Google Pay", parceled.getTypeLabel());
+        assertEquals("MasterCard 0276", parceled.getDescription());
         assertPostalAddress(billingPostalAddress, parceled.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, parceled.getShippingAddress());
 

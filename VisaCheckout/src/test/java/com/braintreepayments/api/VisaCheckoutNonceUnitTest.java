@@ -26,6 +26,8 @@ public class VisaCheckoutNonceUnitTest {
                 Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
         assertEquals(PaymentMethodType.VISA_CHECKOUT, visaCheckoutNonce.getType());
+        assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
+        assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
         assertEquals("11", visaCheckoutNonce.getLastTwo());
         assertEquals("Visa", visaCheckoutNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
@@ -97,6 +99,8 @@ public class VisaCheckoutNonceUnitTest {
         VisaCheckoutNonce actual = VisaCheckoutNonce.CREATOR.createFromParcel(parcel);
 
         assertEquals(PaymentMethodType.VISA_CHECKOUT, actual.getType());
+        assertEquals(visaCheckoutNonce.getTypeLabel(), actual.getTypeLabel());
+        assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
         assertEquals(visaCheckoutNonce.getString(), actual.getString());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
