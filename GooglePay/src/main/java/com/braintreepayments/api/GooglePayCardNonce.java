@@ -87,11 +87,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         String cardType = details.getString(CARD_TYPE_KEY);
         boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
 
-        String description = inputJson
-                .getJSONObject("paymentMethodData")
-                .get("description").toString();
-
-        return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault, description);
+        return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
     }
 
     GooglePayCardNonce(
@@ -104,10 +100,9 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             PostalAddress shippingAddress,
             BinData binData,
             String nonce,
-            boolean isDefault,
-            String description
+            boolean isDefault
     ) {
-        super(nonce, isDefault, PaymentMethodType.GOOGLE_PAY, "Google Pay", description);
+        super(nonce, isDefault, PaymentMethodType.GOOGLE_PAY, "Google Pay", "Google Pay");
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;
