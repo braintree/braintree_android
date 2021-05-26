@@ -50,6 +50,7 @@ public class PaymentMethodNonce implements Parcelable {
                 break;
             case "VisaCheckoutCard":
                 typeLabel = "Visa Checkout";
+                description = "Visa Checkout";
                 break;
             case "VenmoAccount":
                 typeLabel = "Venmo";
@@ -59,6 +60,7 @@ public class PaymentMethodNonce implements Parcelable {
                 break;
             case "AndroidPayCard":
                 typeLabel = "Google Pay";
+                description = "Google Pay";
                 break;
             default:
                 typeLabel = "Unknown";
