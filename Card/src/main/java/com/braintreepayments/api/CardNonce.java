@@ -37,7 +37,6 @@ public class CardNonce extends PaymentMethodNonce {
     private static final String EXPIRATION_MONTH_KEY = "expirationMonth";
     private static final String EXPIRATION_YEAR_KEY = "expirationYear";
     private static final String CARDHOLDER_NAME_KEY = "cardholderName";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String cardType;
     private final String lastTwo;

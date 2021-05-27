@@ -26,7 +26,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     private static final String SHIPPING_ADDRESS_KEY = "shippingAddress";
     private static final String USER_DATA_KEY = "userData";
     private static final String CALL_ID_KEY = "callId";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String lastTwo;
     private final String cardType;

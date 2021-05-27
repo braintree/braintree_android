@@ -84,13 +84,11 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             shippingAddress = new PostalAddress();
         }
 
-        String description = json.getString(DESCRIPTION_KEY);
-
-        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, isDefault, description);
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, isDefault);
     }
 
-    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault, String description) {
-        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT, type, description);
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault) {
+        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT, type, "");
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

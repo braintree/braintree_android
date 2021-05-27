@@ -34,7 +34,7 @@ public class LocalPaymentNonceUnitTest {
         assertEquals("9KQSUZTL7YZQ4", result.getPayerId());
         assertEquals("084afbf1db15445587d30bc120a23b09", result.getClientMetadataId());
         assertEquals("PayPalAccount", result.getTypeLabel());
-        assertEquals("PayPal", result.getDescription());
+        assertEquals("", result.getDescription());
     }
 
     @Test
@@ -62,6 +62,6 @@ public class LocalPaymentNonceUnitTest {
         assertEquals("9KQSUZTL7YZQ4", parceled.getPayerId());
         assertEquals("084afbf1db15445587d30bc120a23b09", parceled.getClientMetadataId());
         assertEquals("PayPalAccount", parceled.getTypeLabel());
-        assertEquals("PayPal", parceled.getDescription());
+        assertEquals("", parceled.getDescription());
     }
 }
