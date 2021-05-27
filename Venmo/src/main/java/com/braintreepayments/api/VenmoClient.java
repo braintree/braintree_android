@@ -123,7 +123,7 @@ public class VenmoClient {
                     @Override
                     public void success(String responseBody) {
                         String paymentContextId = parsePaymentContextId(responseBody);
-                        if (paymentContextId == null || TextUtils.isEmpty(paymentContextId)) {
+                        if (TextUtils.isEmpty(paymentContextId)) {
                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                             callback.onResult(new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
                             return;
