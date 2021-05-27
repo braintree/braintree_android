@@ -103,7 +103,7 @@ Full implementation examples can be found in the payment method feature sections
 
 ### Handling Cancellation 
 
-All user cancellations will be returned as a `UserCanceledException` with an error message indicating user cancellation to the callback of the invoked method. 
+When the customer cancels out of a payment flow, a `UserCanceledException` will be returned in the callback of the invoked method.
 
 ### Handling Errors
 
