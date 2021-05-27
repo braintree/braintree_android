@@ -29,7 +29,6 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
     private static final String TYPE_KEY = "type";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String clientMetadataId;
     private final PostalAddress billingAddress;
@@ -88,7 +87,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     }
 
     private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT, type, "");
+        super(nonce, isDefault, PaymentMethodType.LOCAL_PAYMENT, type, "Local Payment");
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;
