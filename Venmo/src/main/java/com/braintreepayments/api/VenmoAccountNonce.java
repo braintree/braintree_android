@@ -40,7 +40,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
             isDefault = false;
             nonce = json.getString(VENMO_PAYMENT_METHOD_ID_KEY);
             username = json.getString(VENMO_PAYMENT_METHOD_USERNAME_KEY);
-
         } else {
             nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
             isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
