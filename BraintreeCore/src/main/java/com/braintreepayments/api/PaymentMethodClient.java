@@ -10,8 +10,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class used to retrieve a customer's payment methods.
@@ -24,6 +27,13 @@ public class PaymentMethodClient {
     private static final String VARIABLES = "variables";
     private static final String INPUT = "input";
     private static final String CLIENT_SDK_META_DATA = "clientSdkMetadata";
+
+    // NOTE: for feature parity with 3.x, return only the following vaulted payment methods
+    private static final Set<Integer> supportedPaymentMethods = new HashSet<>(Arrays.asList(
+            PaymentMethodType.CARD,
+            PaymentMethodType.PAYPAL,
+            PaymentMethodType.VENMO,
+            PaymentMethodType.VISA_CHECKOUT));
 
     private final BraintreeClient braintreeClient;
 
@@ -38,9 +48,9 @@ public class PaymentMethodClient {
      * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException if parsing fails
      */
-    static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
+    private static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody) throws JSONException {
         JSONArray paymentMethods =
-            new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
+                new JSONObject(jsonBody).getJSONArray(PAYMENT_METHOD_NONCE_COLLECTION_KEY);
 
         if (paymentMethods == null) {
             return Collections.emptyList();
@@ -49,11 +59,10 @@ public class PaymentMethodClient {
         List<PaymentMethodNonce> paymentMethodNonces = new ArrayList<>();
         JSONObject json;
         PaymentMethodNonce paymentMethodNonce;
-        for(int i = 0; i < paymentMethods.length(); i++) {
+        for (int i = 0; i < paymentMethods.length(); i++) {
             json = paymentMethods.getJSONObject(i);
-            // TODO: leverage compileOnly gradle dependencies to return strongly-typed nonces (e.g. CardNonce, PayPalAccountNonce etc.)
             paymentMethodNonce = PaymentMethodNonce.fromJSON(json);
-            if (paymentMethodNonce.getType() != PaymentMethodType.GOOGLE_PAY) {
+            if (supportedPaymentMethods.contains(paymentMethodNonce.getType())) {
                 paymentMethodNonces.add(paymentMethodNonce);
             }
         }
@@ -66,9 +75,10 @@ public class PaymentMethodClient {
      * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * GetPaymentMethodNoncesCallback}
-     *  @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
-     *        payment methods will be ordered by most recently added.
-     * @param callback {@link GetPaymentMethodNoncesCallback}
+     *
+     * @param defaultFirst when {@code true} the customer's default payment method will be first in the list, otherwise
+     *                     payment methods will be ordered by most recently added.
+     * @param callback     {@link GetPaymentMethodNoncesCallback}
      */
     public void getPaymentMethodNonces(boolean defaultFirst, final GetPaymentMethodNoncesCallback callback) {
         final Uri uri = Uri.parse(TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT))
@@ -113,9 +123,9 @@ public class PaymentMethodClient {
      * Deletes a payment method that belongs to the current customer.
      * used to instantiate the {@link BraintreeClient}.
      *
-     * @param context Android Context
+     * @param context            Android Context
      * @param paymentMethodNonce The payment method nonce that references a vaulted payment method.
-     * @param callback {@link DeletePaymentMethodNonceCallback}
+     * @param callback           {@link DeletePaymentMethodNonceCallback}
      */
     // TODO: Investigate if this feature should be removed from Android or added to iOS for feature parity
     public void deletePaymentMethod(final Context context, final PaymentMethodNonce paymentMethodNonce, final DeletePaymentMethodNonceCallback callback) {
@@ -123,7 +133,7 @@ public class PaymentMethodClient {
 
         if (!usesClientToken) {
             Exception error =
-                new BraintreeException("A client token with a customer id must be used to delete a payment method nonce.");
+                    new BraintreeException("A client token with a customer id must be used to delete a payment method nonce.");
             callback.onResult(null, error);
             return;
         }
