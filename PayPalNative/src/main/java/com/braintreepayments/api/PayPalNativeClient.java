@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import com.paypal.checkout.PayPalCheckout;
@@ -32,14 +33,21 @@ public class PayPalNativeClient {
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
     private final TokenizationClient tokenizationClient;
+    private final PayPalClient payPalClient;
 
-    private PayPalClient payPalClient;
-
-    public PayPalNativeClient(BraintreeClient braintreeClient) {
-        this.braintreeClient = braintreeClient;
-        this.internalPayPalClient = new PayPalInternalClient(braintreeClient);
-        this.tokenizationClient = new TokenizationClient(braintreeClient);
+    public PayPalNativeClient(final BraintreeClient braintreeClient) {
+        this(braintreeClient, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient), new PayPalClient(braintreeClient));
     }
+
+    @VisibleForTesting
+    PayPalNativeClient(final BraintreeClient braintreeClient, final TokenizationClient tokenizationClient, final PayPalInternalClient internalPayPalClient, final PayPalClient payPalClient) {
+        this.braintreeClient = braintreeClient;
+        this.tokenizationClient = tokenizationClient;
+        this.internalPayPalClient = internalPayPalClient;
+        this.payPalClient = payPalClient;
+    }
+
+
 
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeTokenizeCallback callback) {
         if (request instanceof PayPalNativeCheckoutRequest) {
@@ -81,7 +89,6 @@ public class PayPalNativeClient {
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest payPalVaultRequest, final PayPalNativeTokenizeCallback callback) {
         //this one should default to the one we already have, once PayPalNative supports billing agreements, this should just default to native.
-        payPalClient = new PayPalClient(braintreeClient);
         payPalClient.tokenizePayPalAccount(activity, payPalVaultRequest, new PayPalFlowStartedCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
@@ -240,7 +247,7 @@ public class PayPalNativeClient {
 
         String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
         String responseXoToken = uri.getQueryParameter(tokenKey);
-        if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
+        if (responseXoToken != null && requestXoToken.equals(responseXoToken)) {
             JSONObject client = new JSONObject();
             client.put("environment", null);
 
