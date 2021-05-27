@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Enum representing different types of supported Braintree payment methods.
+ * Usage type for the tokenized Venmo account.
  */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
