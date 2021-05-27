@@ -15,7 +15,6 @@ public class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String nonce;
     private final boolean isDefault;
@@ -30,8 +29,7 @@ public class PaymentMethodNonce implements Parcelable {
 
         String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
         boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-        String description = inputJson.optString(DESCRIPTION_KEY);
-
+        String description = "";
         String typeLabel = "";
 
         JSONObject details = inputJson.optJSONObject("details");

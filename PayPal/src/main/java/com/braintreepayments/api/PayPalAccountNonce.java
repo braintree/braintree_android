@@ -34,7 +34,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private static final String PHONE_KEY = "phone";
     private static final String PAYER_ID_KEY = "payerId";
     private static final String CLIENT_METADATA_ID_KEY = "correlationId";
-    private static final String DESCRIPTION_KEY = "description";
 
     private final String clientMetadataId;
     private final PostalAddress billingAddress;
