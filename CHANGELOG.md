@@ -15,6 +15,7 @@
   * Make `PaymentMethodClient#parsePaymentMethodNonces()` package-private
   * Return `UserCanceledException` on user cancellation
   * Remove `PaymentMethodClient`
+  * Remove `PaymentMethodType`
   * Remove `PaymentMethodDeleteException`
   * Remove `GetPaymentMethodNoncesCallback`
   * Remove `DeletePaymentMethodNonceCallback`

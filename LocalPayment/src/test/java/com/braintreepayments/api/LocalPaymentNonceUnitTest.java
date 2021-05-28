@@ -19,7 +19,6 @@ public class LocalPaymentNonceUnitTest {
         LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
 
         assertNotNull(result);
-        assertEquals(PaymentMethodType.LOCAL_PAYMENT, result.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getString());
         assertEquals("jon@getbraintree.com", result.getEmail());
         assertEquals("836486 of 22321 Park Lake", result.getShippingAddress().getStreetAddress());
@@ -33,8 +32,6 @@ public class LocalPaymentNonceUnitTest {
         assertEquals("Doe", result.getSurname());
         assertEquals("9KQSUZTL7YZQ4", result.getPayerId());
         assertEquals("084afbf1db15445587d30bc120a23b09", result.getClientMetadataId());
-        assertEquals("PayPalAccount", result.getTypeLabel());
-        assertEquals("Local Payment", result.getDescription());
     }
 
     @Test
@@ -47,7 +44,6 @@ public class LocalPaymentNonceUnitTest {
         LocalPaymentNonce parceled = LocalPaymentNonce.CREATOR.createFromParcel(parcel);
 
         assertNotNull(parceled);
-        assertEquals(PaymentMethodType.LOCAL_PAYMENT, result.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.getString());
         assertEquals("jon@getbraintree.com", parceled.getEmail());
         assertEquals("836486 of 22321 Park Lake", parceled.getShippingAddress().getStreetAddress());
@@ -61,7 +57,5 @@ public class LocalPaymentNonceUnitTest {
         assertEquals("Doe", parceled.getSurname());
         assertEquals("9KQSUZTL7YZQ4", parceled.getPayerId());
         assertEquals("084afbf1db15445587d30bc120a23b09", parceled.getClientMetadataId());
-        assertEquals("PayPalAccount", parceled.getTypeLabel());
-        assertEquals("Local Payment", parceled.getDescription());
     }
 }
