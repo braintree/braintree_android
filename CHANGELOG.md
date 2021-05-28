@@ -17,6 +17,10 @@
   * Remove `DataCollector#collectPayPalDeviceData()`
   * Remove `DataCollector#collectRiskData()`
   * Make `DataCollector#getPayPalClientMetadataId()` private
+  * Remove `PaymentMethodClient`
+  * Remove `PaymentMethodDeleteException`
+  * Remove `GetPaymentMethodNoncesCallback`
+  * Remove `DeletePaymentMethodNonceCallback`
 
 ## 4.0.0-beta3
 
