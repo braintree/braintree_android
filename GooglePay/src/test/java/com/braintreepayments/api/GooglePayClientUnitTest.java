@@ -1032,12 +1032,12 @@ public class GooglePayClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
 
-        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(activityResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
 
-        BraintreeException exception = captor.getValue();
+        Exception exception = captor.getValue();
         assertEquals("User canceled Google Pay.", exception.getMessage());
-        assertTrue(exception instanceof BraintreeException);
+        assertTrue(exception instanceof UserCanceledException);
     }
 
     @Test

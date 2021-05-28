@@ -568,7 +568,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeException exception = captor.getValue();
         assertEquals("User canceled 3DS.", exception.getMessage());
-        assertTrue(exception instanceof BraintreeException);
+        assertTrue(exception instanceof UserCanceledException);
     }
 
     @Test

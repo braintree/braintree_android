@@ -146,7 +146,7 @@ public class VenmoClient {
             }
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
-            callback.onResult(null, new BraintreeException("User canceled Venmo."));
+            callback.onResult(null, new UserCanceledException("User canceled Venmo."));
         }
     }
 

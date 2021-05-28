@@ -146,7 +146,7 @@ public class LocalPaymentClient {
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
                 sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                callback.onResult(null, new BraintreeException("User canceled Local Payment."));
+                callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                 return;
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
@@ -160,7 +160,7 @@ public class LocalPaymentClient {
                 String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                    callback.onResult(null, new BraintreeException("User canceled Local Payment."));
+                    callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                     return;
                 }
                 JSONObject payload = new JSONObject();

@@ -548,8 +548,8 @@ public class PayPalClientUnitTest {
         verify(payPalBrowserSwitchResultCallback).onResult((PayPalAccountNonce) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
-        assertTrue(exception instanceof PayPalBrowserSwitchException);
-        assertEquals("User canceled.", exception.getMessage());
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled PayPal.", exception.getMessage());
     }
 
     @Test
@@ -569,7 +569,7 @@ public class PayPalClientUnitTest {
         verify(payPalBrowserSwitchResultCallback).onResult((PayPalAccountNonce) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
-        assertTrue(exception instanceof BraintreeException);
+        assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
