@@ -12,67 +12,12 @@ import org.json.JSONObject;
  */
 public class PaymentMethodNonce implements Parcelable {
 
-    private static final String PAYMENT_METHOD_TYPE_KEY = "type";
-    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-
     private final String nonce;
     private final boolean isDefault;
-    private final String typeLabel;
-    private final String description;
 
-    private @PaymentMethodType final int type;
-
-    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
-        String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-        int type = paymentMethodTypeFromString(typeString);
-
-        String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-        String description = "";
-        String typeLabel = "";
-
-        JSONObject details = inputJson.optJSONObject("details");
-        switch (typeString) {
-            case "CreditCard":
-                if (details != null) {
-                    typeLabel = details.optString("cardType");
-                    description = details.optString("lastFour");
-                }
-                break;
-            case "PayPalAccount":
-                typeLabel = "PayPal";
-                if (details != null) {
-                    description = details.optString("email");
-                }
-                break;
-            case "VisaCheckoutCard":
-                typeLabel = "Visa Checkout";
-                description = "Visa Checkout";
-                break;
-            case "VenmoAccount":
-                typeLabel = "Venmo";
-                if (details != null) {
-                    description = details.optString("username");
-                }
-                break;
-            case "AndroidPayCard":
-                typeLabel = "Google Pay";
-                description = "Google Pay";
-                break;
-            default:
-                typeLabel = "Unknown";
-                break;
-        }
-        return new PaymentMethodNonce(nonce, isDefault, type, typeLabel, description);
-    }
-
-    PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type, String typeLabel, String description) {
+    PaymentMethodNonce(String nonce, boolean isDefault) {
         this.nonce = nonce;
         this.isDefault = isDefault;
-        this.type = type;
-        this.typeLabel = typeLabel;
-        this.description = description;
     }
 
     /**
@@ -91,25 +36,6 @@ public class PaymentMethodNonce implements Parcelable {
         return isDefault;
     }
 
-    @PaymentMethodType
-    public int getType() {
-        return type;
-    }
-
-    /**
-     * @return human-readable label that aligns with a {@link PaymentMethodNonce#getType()} property.
-     */
-    public String getTypeLabel() {
-        return typeLabel;
-    }
-
-    /**
-     * @return description of a {@link PaymentMethodNonce}.
-     */
-    public String getDescription() {
-        return description;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -119,17 +45,11 @@ public class PaymentMethodNonce implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(nonce);
         dest.writeByte(isDefault ? (byte) 1 : (byte) 0);
-        dest.writeInt(type);
-        dest.writeString(typeLabel);
-        dest.writeString(description);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         nonce = in.readString();
         isDefault = in.readByte() > 0;
-        type = in.readInt();
-        typeLabel = in.readString();
-        description = in.readString();
     }
 
     public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
@@ -143,21 +63,4 @@ public class PaymentMethodNonce implements Parcelable {
             return new PaymentMethodNonce[size];
         }
     };
-
-    private static @PaymentMethodType int paymentMethodTypeFromString(String typeString) {
-        switch (typeString) {
-            case "CreditCard":
-                return PaymentMethodType.CARD;
-            case "PayPalAccount":
-                return PaymentMethodType.PAYPAL;
-            case "VisaCheckoutCard":
-                return PaymentMethodType.VISA_CHECKOUT;
-            case "VenmoAccount":
-                return PaymentMethodType.VENMO;
-            case "AndroidPayCard":
-                return PaymentMethodType.GOOGLE_PAY;
-            default:
-                return PaymentMethodType.UNKNOWN;
-        }
-    }
 }

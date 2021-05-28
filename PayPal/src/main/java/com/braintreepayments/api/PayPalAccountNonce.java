@@ -120,7 +120,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     }
 
     private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.PAYPAL, "PayPal", email);
+        super(nonce, isDefault);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

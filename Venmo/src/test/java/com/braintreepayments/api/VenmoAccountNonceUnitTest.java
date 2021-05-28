@@ -24,9 +24,6 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
-        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
-        assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
-        assertEquals("venmojoe", venmoAccountNonce.getDescription());
     }
 
     @Test
@@ -47,10 +44,7 @@ public class VenmoAccountNonceUnitTest {
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(PaymentMethodType.VENMO, parceled.getType());
         assertEquals(NONCE, parceled.getString());
         assertEquals(USERNAME, parceled.getUsername());
-        assertEquals("Venmo", parceled.getTypeLabel());
-        assertEquals(USERNAME, parceled.getDescription());
     }
 }

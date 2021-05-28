@@ -59,7 +59,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     }
 
     private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT, "Visa Checkout", "Visa Checkout");
+        super(nonce, isDefault);
         this.lastTwo = lastTwo;
         this.cardType = cardType;
         this.billingAddress = billingAddress;
