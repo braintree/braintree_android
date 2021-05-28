@@ -8,8 +8,13 @@ public class VenmoRequest {
     private boolean shouldVault;
     private String profileId;
 
-    private @VenmoPaymentMethodUsage int paymentMethodUsage;
+    private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
+    /**
+     * Request to tokenize an existing Venmo account.
+     *
+     * @param paymentMethodUsage {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
+     */
     public VenmoRequest(@VenmoPaymentMethodUsage int paymentMethodUsage) {
         this.paymentMethodUsage = paymentMethodUsage;
     }
@@ -64,14 +69,6 @@ public class VenmoRequest {
             default:
                 return null;
         }
-    }
-
-    /**
-     * Set {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
-     * Defaults to {@link VenmoPaymentMethodUsage#MULTI_USE}
-     */
-    public void setPaymentMethodUsage(@VenmoPaymentMethodUsage int paymentMethodUsage) {
-        this.paymentMethodUsage = paymentMethodUsage;
     }
 }
 
