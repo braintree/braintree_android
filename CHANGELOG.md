@@ -14,6 +14,10 @@
   * Make `UnionPayCapabilities#fromJson()` package-private
   * Make `PaymentMethodClient#parsePaymentMethodNonces()` package-private
   * Return `UserCanceledException` on user cancellation
+  * Remove `PaymentMethodClient`
+  * Remove `PaymentMethodDeleteException`
+  * Remove `GetPaymentMethodNoncesCallback`
+  * Remove `DeletePaymentMethodNonceCallback`
 
 ## 4.0.0-beta3
 
