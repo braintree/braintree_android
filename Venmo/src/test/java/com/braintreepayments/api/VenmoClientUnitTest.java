@@ -134,7 +134,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_persitsPaymentContextIdThenStartsVenmoActivityAndSendsAnalytics() throws JSONException {
+    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_startsVenmoActivityAndSendsAnalytics() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -407,7 +407,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_persistsIfVaultTrue() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_whenShouldVaultIsTrue_persistsVenmoVaultTrue() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -427,7 +427,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_persistsIfVaultFalse() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_whenShouldVaultIsFalse_persistsVenmoVaultFalse() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
@@ -447,7 +447,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_persistsFalseIfTokenizationKeyUsed() throws InvalidArgumentException {
+    public void tokenizeVenmoAccount_withTokenizationKey_persistsVenmoVaultFalse() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
