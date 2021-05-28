@@ -10,8 +10,8 @@ public class VenmoRequest {
 
     private @VenmoPaymentMethodUsage int paymentMethodUsage;
 
-    public VenmoRequest() {
-        paymentMethodUsage = VenmoPaymentMethodUsage.UNSPECIFIED;
+    public VenmoRequest(@VenmoPaymentMethodUsage int paymentMethodUsage) {
+        this.paymentMethodUsage = paymentMethodUsage;
     }
 
     /**
@@ -57,11 +57,10 @@ public class VenmoRequest {
 
     String getPaymentMethodUsageAsString() {
         switch (paymentMethodUsage) {
-            case VenmoPaymentMethodUsage.MULTI_USE:
-                return "MULTI_USE";
             case VenmoPaymentMethodUsage.SINGLE_USE:
                 return "SINGLE_USE";
-            case VenmoPaymentMethodUsage.UNSPECIFIED:
+            case VenmoPaymentMethodUsage.MULTI_USE:
+                return "MULTI_USE";
             default:
                 return null;
         }

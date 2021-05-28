@@ -98,29 +98,6 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenPaymentMethodUsageUNSPECIFIED_postsExceptionToCallback() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(venmoEnabledConfiguration)
-                .sessionId("session-id")
-                .integration("custom")
-                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
-                .build();
-
-        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
-
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
-
-        VenmoRequest request = new VenmoRequest();
-        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
-
-        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(venmoTokenizeAccountCallback).onResult(captor.capture());
-
-        BraintreeException error = captor.getValue();
-        assertEquals("Payment method usage must be set.", error.getMessage());
-    }
-
-    @Test
     public void tokenizeVenmoAccount_createsPaymentContextViaGraphQL() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -131,7 +108,7 @@ public class VenmoClientUnitTest {
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
         request.setShouldVault(false);
         request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -168,7 +145,7 @@ public class VenmoClientUnitTest {
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
         request.setShouldVault(false);
         request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -210,7 +187,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -246,7 +223,7 @@ public class VenmoClientUnitTest {
                 .configurationError(new Exception("Configuration fetching error"))
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -266,7 +243,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoDisabledConfiguration)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -286,7 +263,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -314,7 +291,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -342,7 +319,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("second-pwv-profile-id");
         request.setShouldVault(false);
 
@@ -371,7 +348,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -399,7 +376,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -416,7 +393,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -437,7 +414,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(true);
 
@@ -457,7 +434,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -478,7 +455,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -496,7 +473,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
 
@@ -521,7 +498,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -543,7 +520,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTErrorResponse(graphQLError)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setPaymentMethodUsage(VenmoPaymentMethodUsage.SINGLE_USE);
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -628,7 +605,7 @@ public class VenmoClientUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(true);
 
@@ -709,7 +686,7 @@ public class VenmoClientUnitTest {
                 .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
-        VenmoRequest request = new VenmoRequest();
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(true);
 

@@ -10,12 +10,10 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
-        VenmoPaymentMethodUsage.UNSPECIFIED,
         VenmoPaymentMethodUsage.SINGLE_USE,
         VenmoPaymentMethodUsage.MULTI_USE
 })
 public @interface VenmoPaymentMethodUsage {
-    int UNSPECIFIED = 0;
     int SINGLE_USE = 1;
     int MULTI_USE = 2;
 }
