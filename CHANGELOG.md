@@ -3,9 +3,6 @@
 ## unreleased
 
 * Make `PayPalRequest` and subclasses `Parcelable`
-* Add `PaymentMethodType` enum
-* Add `PaymentMethodNonce#getType()`
-* Make `PaymentMethodNonce#getTypeLabel()` and `PaymentMethodNonce#getDescription()` public
 * Breaking Changes
   * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
   * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
