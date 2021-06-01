@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +15,6 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class CardNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "CreditCard";
     private static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -133,13 +133,12 @@ public class CardNonce extends PaymentMethodNonce {
             String bin = Json.optString(creditCard, "bin", "");
             BinData binData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             String nonce = payload.getString(TOKEN_KEY);
-            boolean isDefault = false;
             AuthenticationInsight authenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
             String expirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
             String expirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
             String cardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
 
-            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
+            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false);
 
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
@@ -147,7 +146,7 @@ public class CardNonce extends PaymentMethodNonce {
     }
 
     private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.CARD);
+        super(nonce, isDefault);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;

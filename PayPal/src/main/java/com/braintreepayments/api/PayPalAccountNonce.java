@@ -14,7 +14,6 @@ import org.json.JSONObject;
  */
 public class PayPalAccountNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "PayPalAccount";
     static final String API_RESOURCE_KEY = "paypalAccounts";
     private static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
     private static final String TOKENIZATION_DATA_KEY = "tokenizationData";
@@ -121,7 +120,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     }
 
     private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.PAYPAL);
+        super(nonce, isDefault);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;

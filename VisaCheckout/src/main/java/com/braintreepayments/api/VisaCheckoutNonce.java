@@ -14,7 +14,6 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class VisaCheckoutNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "VisaCheckoutCard";
     private static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -60,7 +59,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     }
 
     private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VISA_CHECKOUT);
+        super(nonce, isDefault);
         this.lastTwo = lastTwo;
         this.cardType = cardType;
         this.billingAddress = billingAddress;

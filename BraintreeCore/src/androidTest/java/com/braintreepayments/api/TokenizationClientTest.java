@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.Assertions.assertIsANonce;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -31,7 +30,7 @@ public class TokenizationClientTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException, InvalidArgumentException {
+    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
@@ -52,7 +51,6 @@ public class TokenizationClientTest {
                 try {
                     PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
                     assertIsANonce(payPalAccountNonce.getString());
-                    assertEquals(PaymentMethodType.PAYPAL, payPalAccountNonce.getType());
                     latch.countDown();
                 } catch (JSONException e) {
                     fail("This should not fail");

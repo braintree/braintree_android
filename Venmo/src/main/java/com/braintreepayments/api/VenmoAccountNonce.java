@@ -12,9 +12,7 @@ import org.json.JSONObject;
  */
 public class VenmoAccountNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "VenmoAccount";
     private static final String API_RESOURCE_KEY = "venmoAccounts";
-
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
@@ -41,7 +39,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     }
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VENMO);
+        super(nonce, isDefault);
         this.username = username;
     }
 
