@@ -1485,23 +1485,6 @@ object Fixtures {
     """
 
     // language=JSON
-    const val PAYMENT_METHODS_GET_PAYMENT_METHODS_PAYMENT_METHODS_CLIENT_UNSUPPORTED = """
-        {
-          "paymentMethods": [
-            {
-              "type": "AndroidPayCard",
-              "nonce": "fake-google-pay-nonce",
-              "description": "Google Pay",
-              "details": {
-                "cardType": "Visa",
-                "lastTwo": "11"
-              }
-            }
-          ]
-        }
-    """
-
-    // language=JSON
     const val PAYMENT_METHODS_GET_PAYMENT_METHODS_EMPTY_RESPONSE = """
         {
           "paymentMethods": []
