@@ -141,6 +141,10 @@ Builder classes that have been renamed:
 - `CardBuilder` is now `Card`
 - `UnionPayCardBuilder` is now `UnionPayCard`
 
+## Fetching Payment Methods
+
+In `v3`, the `PaymentMethod` class could be used to retrieve a current list of `PaymentMethodNonce` objects for the current customer. In `v4`, that functionality will be moved to `drop-in`.
+
 ## American Express
 
 The American Express feature is now supported by implementing the following dependencies:
