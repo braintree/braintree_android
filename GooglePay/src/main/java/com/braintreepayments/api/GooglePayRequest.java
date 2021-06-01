@@ -25,13 +25,13 @@ import androidx.annotation.Nullable;
 public class GooglePayRequest implements Parcelable {
 
     private TransactionInfo transactionInfo;
-    private Boolean emailRequired = null;
-    private Boolean phoneNumberRequired = null;
-    private Boolean billingAddressRequired = null;
-    private Integer billingAddressFormat;
-    private Boolean shippingAddressRequired = null;
+    private boolean emailRequired;
+    private boolean phoneNumberRequired;
+    private boolean billingAddressRequired;
+    private int billingAddressFormat;
+    private boolean shippingAddressRequired;
     private ShippingAddressRequirements shippingAddressRequirements;
-    private Boolean allowPrepaidCards = null;
+    private boolean allowPrepaidCards;
     private boolean payPalEnabled = true;
     private final HashMap<String, JSONObject> allowedPaymentMethods = new HashMap<>();
     private final HashMap<String, JSONObject> tokenizationSpecifications = new HashMap<>();
@@ -312,8 +312,7 @@ public class GooglePayRequest implements Parcelable {
 
     public String billingAddressFormatToString() {
         String format = "MIN";
-        if (billingAddressFormat != null &&
-                billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
+        if (billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
             format = "FULL";
         }
         return format;
@@ -323,29 +322,24 @@ public class GooglePayRequest implements Parcelable {
         return transactionInfo;
     }
 
-    @Nullable
-    public Boolean isEmailRequired() {
+    public boolean isEmailRequired() {
         return emailRequired;
     }
 
-    @Nullable
-    public Boolean isPhoneNumberRequired() {
+    public boolean isPhoneNumberRequired() {
         return phoneNumberRequired;
     }
 
-    @Nullable
-    public Boolean isBillingAddressRequired() {
+    public boolean isBillingAddressRequired() {
         return billingAddressRequired;
     }
 
-    @Nullable
     @BillingAddressFormat
-    public Integer getBillingAddressFormat() {
+    public int getBillingAddressFormat() {
         return billingAddressFormat;
     }
 
-    @Nullable
-    public Boolean isShippingAddressRequired() {
+    public boolean isShippingAddressRequired() {
         return shippingAddressRequired;
     }
 
@@ -354,12 +348,11 @@ public class GooglePayRequest implements Parcelable {
         return shippingAddressRequirements;
     }
 
-    @Nullable
-    public Boolean getAllowPrepaidCards() {
+    public boolean getAllowPrepaidCards() {
         return allowPrepaidCards;
     }
 
-    public Boolean isPayPalEnabled() {
+    public boolean isPayPalEnabled() {
         return payPalEnabled;
     }
 
@@ -399,44 +392,34 @@ public class GooglePayRequest implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(transactionInfo, flags);
-        dest.writeByte((byte) (emailRequired == null ? 0 : emailRequired ? 1 : 2));
-        dest.writeByte((byte) (phoneNumberRequired == null ? 0 : phoneNumberRequired ? 1 : 2));
-        dest.writeByte((byte) (billingAddressRequired == null ? 0 : billingAddressRequired ? 1 : 2));
-        if (billingAddressFormat == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(billingAddressFormat);
-        }
-        dest.writeByte((byte) (shippingAddressRequired == null ? 0 : shippingAddressRequired ? 1 : 2));
+        dest.writeByte((byte) (emailRequired ? 1 : 0));
+        dest.writeByte((byte) (phoneNumberRequired ? 1 : 0));
+        dest.writeByte((byte) (billingAddressRequired ? 1 : 0));
+        dest.writeInt(billingAddressFormat);
+        dest.writeByte((byte) (shippingAddressRequired ? 1 : 0));
         dest.writeParcelable(shippingAddressRequirements, flags);
-        dest.writeByte((byte) (allowPrepaidCards == null ? 0 : allowPrepaidCards ? 1 : 2));
+        dest.writeByte((byte) (allowPrepaidCards ? 1 : 0));
+        dest.writeByte((byte) (payPalEnabled ? 1 : 0));
         dest.writeString(environment);
         dest.writeString(googleMerchantId);
         dest.writeString(googleMerchantName);
+        dest.writeString(countryCode);
     }
 
-    protected GooglePayRequest(Parcel in) {
+    GooglePayRequest(Parcel in) {
         transactionInfo = in.readParcelable(TransactionInfo.class.getClassLoader());
-        byte emailRequired = in.readByte();
-        this.emailRequired = emailRequired == 0 ? null : emailRequired == 1;
-        byte phoneNumberRequired = in.readByte();
-        this.phoneNumberRequired = phoneNumberRequired == 0 ? null : phoneNumberRequired == 1;
-        byte billingAddressRequired = in.readByte();
-        this.billingAddressRequired = billingAddressRequired == 0 ? null : billingAddressRequired == 1;
-        if (in.readByte() == 0) {
-            billingAddressFormat = null;
-        } else {
-            billingAddressFormat = in.readInt();
-        }
-        byte shippingAddressRequired = in.readByte();
-        this.shippingAddressRequired = shippingAddressRequired == 0 ? null : shippingAddressRequired == 1;
+        emailRequired = in.readByte() != 0;
+        phoneNumberRequired = in.readByte() != 0;
+        billingAddressRequired = in.readByte() != 0;
+        billingAddressFormat = in.readInt();
+        shippingAddressRequired = in.readByte() != 0;
         shippingAddressRequirements = in.readParcelable(ShippingAddressRequirements.class.getClassLoader());
-        byte allowPrepaidCards = in.readByte();
-        this.allowPrepaidCards = allowPrepaidCards == 0 ? null : allowPrepaidCards == 1;
+        allowPrepaidCards = in.readByte() != 0;
+        payPalEnabled = in.readByte() != 0;
         environment = in.readString();
         googleMerchantId = in.readString();
         googleMerchantName = in.readString();
+        countryCode = in.readString();
     }
 
     public static final Creator<GooglePayRequest> CREATOR = new Creator<GooglePayRequest>() {
