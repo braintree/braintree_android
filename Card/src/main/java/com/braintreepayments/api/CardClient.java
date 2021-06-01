@@ -70,7 +70,7 @@ public class CardClient {
                         tokenizationClient.tokenizeGraphQL(tokenizePayload, new TokenizeCallback() {
                             @Override
                             public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                                handleTokenizeResponse(context, tokenizationResponse, exception, callback);
+                                handleTokenizeResponse(tokenizationResponse, exception, callback);
                             }
                         });
                     } catch (BraintreeException | JSONException e) {
@@ -80,7 +80,7 @@ public class CardClient {
                     tokenizationClient.tokenizeREST(card, new TokenizeCallback() {
                         @Override
                         public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                            handleTokenizeResponse(context, tokenizationResponse, exception, callback);
+                            handleTokenizeResponse(tokenizationResponse, exception, callback);
                         }
                     });
                 }
@@ -88,11 +88,10 @@ public class CardClient {
         });
     }
 
-    private void handleTokenizeResponse(Context context, JSONObject tokenizationResponse, Exception exception, CardTokenizeCallback callback) {
+    private void handleTokenizeResponse(JSONObject tokenizationResponse, Exception exception, CardTokenizeCallback callback) {
         if (tokenizationResponse != null) {
             try {
                 CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-                dataCollector.collectRiskData(context, cardNonce);
 
                 callback.onResult(cardNonce, null);
                 braintreeClient.sendAnalyticsEvent("card.nonce-received");

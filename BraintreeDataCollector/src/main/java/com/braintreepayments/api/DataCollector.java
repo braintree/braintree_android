@@ -3,14 +3,11 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * DataCollector is used to collect device information to aid in fraud detection and prevention.
@@ -104,65 +101,16 @@ public class DataCollector {
     }
 
     /**
-     * Collect PayPal device information for fraud identification purposes.
-     *
-     * @param context  Android Context
-     * @param callback {@link DataCollectorCallback}
-     */
-    public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
-        final JSONObject deviceData = new JSONObject();
-
-        try {
-            String clientMetadataId = getPayPalClientMetadataId(context);
-            if (!TextUtils.isEmpty(clientMetadataId)) {
-                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
-            }
-        } catch (JSONException ignored) {
-        }
-        callback.onResult(deviceData.toString(), null);
-    }
-
-    /**
      * Collect device information for fraud identification purposes from PayPal only.
      *
      * @param context Android Context
      * @return The client metadata id associated with the collected data.
      */
-    public String getPayPalClientMetadataId(Context context) {
+    private String getPayPalClientMetadataId(Context context) {
         try {
             return payPalDataCollector.getClientMetadataId(context);
         } catch (NoClassDefFoundError ignored) {
         }
         return "";
-    }
-
-    void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    if (configuration.isFraudDataCollectionEnabled()) {
-                        HashMap<String, String> additionalProperties = new HashMap<>();
-                        additionalProperties.put("rda_tenant", "bt_card");
-                        additionalProperties.put("mid", configuration.getMerchantId());
-
-                        if (braintreeClient.getAuthorization() instanceof ClientToken) {
-                            String customerId = ((ClientToken) braintreeClient.getAuthorization()).getCustomerId();
-                            if (customerId != null) {
-                                additionalProperties.put("cid", customerId);
-                            }
-                        }
-
-                        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                                .setApplicationGuid(payPalDataCollector.getPayPalInstallationGUID(context))
-                                .setClientMetadataId(paymentMethodNonce.getString())
-                                .setDisableBeacon(true)
-                                .setAdditionalData(additionalProperties);
-
-                        payPalDataCollector.getClientMetadataId(context, request);
-                    }
-                }
-            }
-        });
     }
 }

@@ -309,7 +309,7 @@ public class GooglePayClient {
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_DISCOVER);
                     break;
                 case ELO_NETWORK:
-                    allowedNetworks.add(BraintreeWalletConstants.CARD_NETWORK_ELO);
+                    allowedNetworks.add(BraintreeGooglePayWalletConstants.CARD_NETWORK_ELO);
                     break;
                 default:
                     break;
@@ -339,7 +339,7 @@ public class GooglePayClient {
                 case WalletConstants.CARD_NETWORK_VISA:
                     cardNetworkStrings.put("VISA");
                     break;
-                case BraintreeWalletConstants.CARD_NETWORK_ELO:
+                case BraintreeGooglePayWalletConstants.CARD_NETWORK_ELO:
                     cardNetworkStrings.put("ELO");
                     cardNetworkStrings.put("ELO_DEBIT");
                     break;

@@ -6,7 +6,7 @@ import com.google.android.gms.wallet.WalletConstants;
  * Collection of constant values used by the Braintree SDK Google Payment module. Extends upon
  * com.google.android.gms.wallet.WalletConstants.
  */
-class BraintreeWalletConstants {
+class BraintreeGooglePayWalletConstants {
 
     /**
      * Card network Elo.
