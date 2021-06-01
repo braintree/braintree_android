@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -11,5 +12,5 @@ public interface GooglePayRequestPaymentCallback {
     /**
      * @param error an exception that occurred while initiating the Google Pay flow
      */
-    void onResult(Exception error);
+    void onResult(@Nullable Exception error);
 }

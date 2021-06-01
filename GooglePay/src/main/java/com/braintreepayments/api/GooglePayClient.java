@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,7 +48,7 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
 
-    public GooglePayClient(BraintreeClient braintreeClient) {
+    public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new GooglePayInternalClient());
     }
 
@@ -66,7 +67,7 @@ public class GooglePayClient {
      * @param activity Android FragmentActivity
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(final FragmentActivity activity, final GooglePayIsReadyToPayCallback callback) {
+    public void isReadyToPay(@NonNull final FragmentActivity activity, @NonNull final GooglePayIsReadyToPayCallback callback) {
         isReadyToPay(activity, null, callback);
     }
 
@@ -80,7 +81,7 @@ public class GooglePayClient {
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(final FragmentActivity activity, final ReadyForGooglePayRequest request, final GooglePayIsReadyToPayCallback callback) {
+    public void isReadyToPay(@NonNull final FragmentActivity activity, @NonNull final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
 
         try {
             Class.forName(PaymentsClient.class.getName());
@@ -141,7 +142,7 @@ public class GooglePayClient {
      *
      * @param callback {@link GooglePayGetTokenizationParametersCallback}
      */
-    public void getTokenizationParameters(final GooglePayGetTokenizationParametersCallback callback) {
+    public void getTokenizationParameters(@NonNull final GooglePayGetTokenizationParametersCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
@@ -157,7 +158,7 @@ public class GooglePayClient {
      * @param request The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayRequestPaymentCallback}
      */
-    public void requestPayment(final FragmentActivity activity, final GooglePayRequest request, final GooglePayRequestPaymentCallback callback) {
+    public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request, @NonNull final GooglePayRequestPaymentCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
@@ -237,7 +238,7 @@ public class GooglePayClient {
      * @param data Android Intent
      * @param callback {@link GooglePayOnActivityResultCallback}
      */
-    public void onActivityResult(int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
+    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
             tokenize(PaymentData.getFromIntent(data), callback);

@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 
 import java.util.Collection;
@@ -27,5 +29,5 @@ public interface GooglePayGetTokenizationParametersCallback {
      * @param allowedCardNetworks {@link Collection<Integer>} of card networks supported by the current
      *        Braintree merchant account.
      */
-    void onResult(PaymentMethodTokenizationParameters parameters, Collection<Integer> allowedCardNetworks);
+    void onResult(@Nullable PaymentMethodTokenizationParameters parameters, @Nullable Collection<Integer> allowedCardNetworks);
 }
