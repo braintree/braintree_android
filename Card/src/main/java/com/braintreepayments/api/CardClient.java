@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,7 +19,7 @@ public class CardClient {
     private final DataCollector dataCollector;
     private final TokenizationClient tokenizationClient;
 
-    public CardClient(BraintreeClient braintreeClient) {
+    public CardClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient), new DataCollector(braintreeClient));
     }
 
@@ -51,7 +52,7 @@ public class CardClient {
      * @param card {@link Card}
      * @param callback {@link CardTokenizeCallback}
      */
-    public void tokenize(final Context context, final Card card, final CardTokenizeCallback callback) {
+    public void tokenize(@NonNull final Context context, @NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

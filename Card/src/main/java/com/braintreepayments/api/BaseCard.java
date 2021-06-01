@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,7 +53,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param number The card number.
      */
-    public void setNumber(String number) {
+    public void setNumber(@NonNull String number) {
         if (TextUtils.isEmpty(number)) {
             this.number = null;
         } else {
@@ -62,7 +64,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param cvv The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
      */
-    public void setCvv(String cvv) {
+    public void setCvv(@NonNull String cvv) {
         if (TextUtils.isEmpty(cvv)) {
             this.cvv = null;
         } else {
@@ -73,7 +75,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param expirationMonth The expiration month of the card.
      */
-    public void setExpirationMonth(String expirationMonth) {
+    public void setExpirationMonth(@NonNull String expirationMonth) {
         if (TextUtils.isEmpty(expirationMonth)) {
             this.expirationMonth = null;
         } else {
@@ -84,7 +86,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param expirationYear The expiration year of the card.
      */
-    public void setExpirationYear(String expirationYear) {
+    public void setExpirationYear(@NonNull String expirationYear) {
         if (TextUtils.isEmpty(expirationYear)) {
             this.expirationYear = null;
         } else {
@@ -95,7 +97,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param expirationDate The expiration date of the card. May be in the form MM/YY or MM/YYYY.
      */
-    public void setExpirationDate(String expirationDate) {
+    public void setExpirationDate(@NonNull String expirationDate) {
         if (TextUtils.isEmpty(expirationDate)) {
             expirationMonth = null;
             expirationYear = null;
@@ -113,7 +115,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param cardholderName Name on the card.
      */
-    public void setCardholderName(String cardholderName) {
+    public void setCardholderName(@NonNull String cardholderName) {
         if (TextUtils.isEmpty(cardholderName)) {
             this.cardholderName = null;
         } else {
@@ -124,7 +126,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param firstName First name on the card.
      */
-    public void setFirstName(String firstName) {
+    public void setFirstName(@NonNull String firstName) {
         if (TextUtils.isEmpty(firstName)) {
             this.firstName = null;
         } else {
@@ -135,7 +137,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param lastName Last name on the card.
      */
-    public void setLastName(String lastName) {
+    public void setLastName(@NonNull String lastName) {
         if (TextUtils.isEmpty(lastName)) {
             this.lastName = null;
         } else {
@@ -146,7 +148,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param company Company associated with the card.
      */
-    public void setCompany(String company) {
+    public void setCompany(@NonNull String company) {
         if (TextUtils.isEmpty(company)) {
             this.company = null;
         } else {
@@ -157,7 +159,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param countryCode The ISO 3166-1 alpha-3 country code specified in the card's billing address.
      */
-    public void setCountryCode(String countryCode) {
+    public void setCountryCode(@NonNull String countryCode) {
         if (TextUtils.isEmpty(countryCode)) {
             this.countryCode = null;
         } else {
@@ -168,7 +170,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param locality Locality of the card.
      */
-    public void setLocality(String locality) {
+    public void setLocality(@NonNull String locality) {
         if (TextUtils.isEmpty(locality)) {
             this.locality = null;
         } else {
@@ -179,7 +181,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param postalCode Postal code of the card.
      */
-    public void setPostalCode(String postalCode) {
+    public void setPostalCode(@NonNull String postalCode) {
         if (TextUtils.isEmpty(postalCode)) {
             this.postalCode = null;
         } else {
@@ -190,7 +192,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param region Region of the card.
      */
-    public void setRegion(String region) {
+    public void setRegion(@NonNull String region) {
         if (TextUtils.isEmpty(region)) {
             this.region = null;
         } else {
@@ -201,7 +203,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param streetAddress Street address of the card.
      */
-    public void setStreetAddress(String streetAddress) {
+    public void setStreetAddress(@NonNull String streetAddress) {
         if (TextUtils.isEmpty(streetAddress)) {
             this.streetAddress = null;
         } else {
@@ -212,7 +214,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @param extendedAddress address of the card.
      */
-    public void setExtendedAddress(String extendedAddress) {
+    public void setExtendedAddress(@NonNull String extendedAddress) {
         if (TextUtils.isEmpty(extendedAddress)) {
             this.extendedAddress = null;
         } else {
