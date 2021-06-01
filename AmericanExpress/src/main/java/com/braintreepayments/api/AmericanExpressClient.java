@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 
 /**
@@ -24,7 +26,7 @@ public class AmericanExpressClient {
      * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
      * @param callback {@link AmericanExpressGetRewardsBalanceCallback}
      */
-    public void getRewardsBalance(String nonce, String currencyIsoCode, final AmericanExpressGetRewardsBalanceCallback callback) {
+    public void getRewardsBalance(@NonNull String nonce, @NonNull String currencyIsoCode, @NonNull final AmericanExpressGetRewardsBalanceCallback callback) {
         String getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)
                 .buildUpon()
                 .appendQueryParameter("paymentMethodNonce", nonce)

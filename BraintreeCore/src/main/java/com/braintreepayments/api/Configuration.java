@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -65,11 +66,11 @@ public class Configuration {
      * @param configurationString The json configuration string from Braintree.
      * @return {@link Configuration} instance.
      */
-    public static Configuration fromJson(@Nullable String configurationString) throws JSONException {
+    public static Configuration fromJson(@NonNull String configurationString) throws JSONException {
         return new Configuration(configurationString);
     }
 
-    protected Configuration(@Nullable String configurationString) throws JSONException {
+    Configuration(@NonNull String configurationString) throws JSONException {
         if (configurationString == null) {
             throw new JSONException("Configuration cannot be null");
         }

@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -16,12 +17,12 @@ public class PreferredPaymentMethodsClient {
     private final BraintreeClient braintreeClient;
     private final DeviceInspector deviceInspector;
 
-    public PreferredPaymentMethodsClient(BraintreeClient braintreeClient) {
+    public PreferredPaymentMethodsClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new DeviceInspector());
     }
 
     @VisibleForTesting
-    PreferredPaymentMethodsClient(BraintreeClient braintreeClient, DeviceInspector deviceInspector) {
+    PreferredPaymentMethodsClient(@NonNull BraintreeClient braintreeClient, @NonNull DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
         this.deviceInspector = deviceInspector;
     }
@@ -32,7 +33,7 @@ public class PreferredPaymentMethodsClient {
      * @param context Android Context
      * @param callback {@link PreferredPaymentMethodsCallback}
      */
-    public void fetchPreferredPaymentMethods(final Context context, final PreferredPaymentMethodsCallback callback) {
+    public void fetchPreferredPaymentMethods(@NonNull final Context context, @NonNull final PreferredPaymentMethodsCallback callback) {
 
         final Context applicationContext = context.getApplicationContext();
         final boolean isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext);

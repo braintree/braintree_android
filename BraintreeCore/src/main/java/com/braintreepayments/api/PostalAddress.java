@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 /**
  * Java object representing a postal address
  */
@@ -22,39 +24,39 @@ public class PostalAddress implements Parcelable {
     public PostalAddress() {
     }
 
-    public void setRecipientName(String name) {
+    public void setRecipientName(@NonNull String name) {
         recipientName = name;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(@NonNull String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setStreetAddress(String streetAddress) {
+    public void setStreetAddress(@NonNull String streetAddress) {
         this.streetAddress = streetAddress;
     }
 
-    public void setExtendedAddress(String extendedAddress) {
+    public void setExtendedAddress(@NonNull String extendedAddress) {
         this.extendedAddress = extendedAddress;
     }
 
-    public void setLocality(String locality) {
+    public void setLocality(@NonNull String locality) {
         this.locality = locality;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(@NonNull String region) {
         this.region = region;
     }
 
-    public void setPostalCode(String postalCode) {
+    public void setPostalCode(@NonNull String postalCode) {
         this.postalCode = postalCode;
     }
 
-    public void setSortingCode(String sortingCode) {
+    public void setSortingCode(@NonNull String sortingCode) {
         this.sortingCode = sortingCode;
     }
 
-    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
+    public void setCountryCodeAlpha2(@NonNull String countryCodeAlpha2) {
         this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
