@@ -11,7 +11,7 @@ public class VenmoRequest {
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
     /**
-     * Request to tokenize an existing Venmo account.
+     * Request to tokenize a Venmo account.
      *
      * @param paymentMethodUsage {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
      */
@@ -71,4 +71,3 @@ public class VenmoRequest {
         }
     }
 }
-
