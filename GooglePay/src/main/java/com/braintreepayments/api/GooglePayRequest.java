@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -16,8 +18,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.annotation.Nullable;
 
 /**
  * Represents the parameters that are needed to use the Google Pay API.
@@ -67,7 +67,7 @@ public class GooglePayRequest implements Parcelable {
      * Optional.
      *
      * @param phoneNumberRequired {@code true} if the buyer's phone number is required to be returned as part of the
-     * billing address and shipping address, {@code false} otherwise.
+     *                            billing address and shipping address, {@code false} otherwise.
      */
     public void setPhoneNumberRequired(boolean phoneNumberRequired) {
         this.phoneNumberRequired = phoneNumberRequired;
@@ -77,7 +77,7 @@ public class GooglePayRequest implements Parcelable {
      * Optional.
      *
      * @param billingAddressRequired {@code true} if the buyer's billing address is required to be returned,
-     * {@code false} otherwise.
+     *                               {@code false} otherwise.
      */
     public void setBillingAddressRequired(boolean billingAddressRequired) {
         this.billingAddressRequired = billingAddressRequired;
@@ -96,7 +96,7 @@ public class GooglePayRequest implements Parcelable {
      * Optional.
      *
      * @param shippingAddressRequired {@code true} if the buyer's shipping address is required to be returned,
-     * {@code false} otherwise.
+     *                                {@code false} otherwise.
      */
     public void setShippingAddressRequired(boolean shippingAddressRequired) {
         this.shippingAddressRequired = shippingAddressRequired;
@@ -123,6 +123,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * Defines if PayPal should be an available payment method in Google Pay.
      * Defaults to {@code true}.
+     *
      * @param enablePayPal {@code true} by default. Allows PayPal to be a payment method in Google Pay.
      */
     public void setPayPalEnabled(boolean enablePayPal) {
@@ -131,8 +132,9 @@ public class GooglePayRequest implements Parcelable {
 
     /**
      * Simple wrapper to assign given parameters to specified paymentMethod
+     *
      * @param paymentMethodType The paymentMethod to add to
-     * @param parameters Parameters to assign to the paymentMethod
+     * @param parameters        Parameters to assign to the paymentMethod
      */
     public void setAllowedPaymentMethod(String paymentMethodType, JSONObject parameters) {
         allowedPaymentMethods.put(paymentMethodType, parameters);
@@ -140,8 +142,9 @@ public class GooglePayRequest implements Parcelable {
 
     /**
      * Simple wrapper to configure the GooglePayRequest's tokenizationSpecification
+     *
      * @param paymentMethodType The paymentMethod to attached tokenizationSpecification parameters to
-     * @param parameters The tokenizationSpecification parameters to attach
+     * @param parameters        The tokenizationSpecification parameters to attach
      */
     public void setTokenizationSpecificationForType(String paymentMethodType, JSONObject parameters) {
         tokenizationSpecifications.put(paymentMethodType, parameters);
@@ -149,8 +152,9 @@ public class GooglePayRequest implements Parcelable {
 
     /**
      * Simple wrapper to configure the GooglePayRequest's allowedAuthMethods
+     *
      * @param paymentMethodType the paymentMethod to attach allowedAuthMethods to
-     * @param authMethods the authMethods to allow the paymentMethodType to transact with
+     * @param authMethods       the authMethods to allow the paymentMethodType to transact with
      */
     public void setAllowedAuthMethods(String paymentMethodType, JSONArray authMethods) {
         allowedAuthMethods.put(paymentMethodType, authMethods);
@@ -158,8 +162,9 @@ public class GooglePayRequest implements Parcelable {
 
     /**
      * Simple wrapper to configure the GooglePayRequest's cardNetworks
+     *
      * @param paymentMethodType the paymentMethod to attach cardNetworks to
-     * @param cardNetworks the cardNetworks to allow the paymentMethodType to transact with
+     * @param cardNetworks      the cardNetworks to allow the paymentMethodType to transact with
      */
     public void setAllowedCardNetworks(String paymentMethodType, JSONArray cardNetworks) {
         allowedCardNetworks.put(paymentMethodType, cardNetworks);
@@ -186,7 +191,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for
      * merchants based in European Economic Area (EEA) countries.
-     *
+     * <p>
      * NOTE: to support Elo cards, country code must be set to "BR"
      *
      * @param countryCode The country code where the transaction is processed
@@ -198,6 +203,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * Assemble all declared parts of a GooglePayRequest to a JSON string
      * for use in making requests against Google
+     *
      * @return String
      */
     public String toJson() {
@@ -213,11 +219,13 @@ public class GooglePayRequest implements Parcelable {
             if (allowedCountryCodeList != null && allowedCountryCodeList.size() > 0) {
                 try {
                     shippingAddressParameters.put("allowedCountryCodes", new JSONArray(allowedCountryCodeList));
-                } catch (JSONException ignored) { }
+                } catch (JSONException ignored) {
+                }
             }
             try {
                 shippingAddressParameters.put("phoneNumberRequired", isPhoneNumberRequired());
-            } catch (JSONException ignored) { }
+            } catch (JSONException ignored) {
+            }
         }
 
         try {
@@ -274,7 +282,8 @@ public class GooglePayRequest implements Parcelable {
             if (!TextUtils.isEmpty(getGoogleMerchantName())) {
                 merchantInfo.put("merchantName", getGoogleMerchantName());
             }
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         JSONObject json = new JSONObject();
 
@@ -318,56 +327,98 @@ public class GooglePayRequest implements Parcelable {
         return format;
     }
 
+    /**
+     * Details and the price of the transaction. Required.
+     *
+     * @return See {@link TransactionInfo}.
+     */
     public TransactionInfo getTransactionInfo() {
         return transactionInfo;
     }
 
+    /**
+     * @return If the buyer's email address is required to be returned.
+     */
     public boolean isEmailRequired() {
         return emailRequired;
     }
 
+    /**
+     * @return If the buyer's phone number is required to be returned as part of the
+     * billing address and shipping address.
+     */
     public boolean isPhoneNumberRequired() {
         return phoneNumberRequired;
     }
 
+    /**
+     * @return If the buyer's billing address is required to be returned.
+     */
     public boolean isBillingAddressRequired() {
         return billingAddressRequired;
     }
 
+    /**
+     * @return If the buyer's billing address is required to be returned.
+     */
     @BillingAddressFormat
     public int getBillingAddressFormat() {
         return billingAddressFormat;
     }
 
+    /**
+     * @return If the buyer's shipping address is required to be returned.
+     */
     public boolean isShippingAddressRequired() {
         return shippingAddressRequired;
     }
 
+    /**
+     * @return The shipping address requirements. See {@link ShippingAddressRequirements}.
+     */
     @Nullable
     public ShippingAddressRequirements getShippingAddressRequirements() {
         return shippingAddressRequirements;
     }
 
+    /**
+     * @return If prepaid cards are allowed.
+     */
     public boolean getAllowPrepaidCards() {
         return allowPrepaidCards;
     }
 
+    /**
+     * @return If PayPal should be an available payment method in Google Pay.
+     */
     public boolean isPayPalEnabled() {
         return payPalEnabled;
     }
 
+    /**
+     * @return Allowed payment methods for a given payment method type.
+     */
     public JSONObject getAllowedPaymentMethod(String type) {
         return allowedPaymentMethods.get(type);
     }
 
+    /**
+     * @return Tokenization specification for a given payment method type.
+     */
     public JSONObject getTokenizationSpecificationForType(String type) {
         return tokenizationSpecifications.get(type);
     }
 
+    /**
+     * @return Allowed authentication methods for a given payment method type.
+     */
     public JSONArray getAllowedAuthMethodsForType(String type) {
         return allowedAuthMethods.get(type);
     }
 
+    /**
+     * @return Allowed card networks for a given payment method type.
+     */
     public JSONArray getAllowedCardNetworksForType(String type) {
         return allowedCardNetworks.get(type);
     }
@@ -376,12 +427,25 @@ public class GooglePayRequest implements Parcelable {
         return environment;
     }
 
+    /**
+     * @return The merchant ID that Google Pay has provided.
+     */
     public String getGoogleMerchantId() {
         return googleMerchantId;
     }
 
+    /**
+     * @return The merchant name that will be presented in Google Pay.
+     */
     public String getGoogleMerchantName() {
         return googleMerchantName;
+    }
+
+    /**
+     * @return The country code where the transaction is processed.
+     */
+    public String getCountryCode() {
+        return countryCode;
     }
 
     @Override
