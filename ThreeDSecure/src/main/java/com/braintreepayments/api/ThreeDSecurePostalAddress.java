@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
@@ -44,7 +43,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param givenName Given name associated with the address.
      */
-    public void setGivenName(@NonNull String givenName) {
+    public void setGivenName(@Nullable String givenName) {
         this.givenName = givenName;
     }
 
@@ -53,7 +52,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param surname Surname associated with the address.
      */
-    public void setSurname(@NonNull String surname) {
+    public void setSurname(@Nullable String surname) {
         this.surname = surname;
     }
 
@@ -62,7 +61,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param streetAddress Line 1 of the Address (eg. number, street, etc).
      * */
-    public void setStreetAddress(@NonNull String streetAddress) {
+    public void setStreetAddress(@Nullable String streetAddress) {
         this.streetAddress = streetAddress;
     }
 
@@ -71,7 +70,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param extendedAddress Line 2 of the Address (eg. suite, apt #, etc.).
      * */
-    public void setExtendedAddress(@NonNull String extendedAddress) {
+    public void setExtendedAddress(@Nullable String extendedAddress) {
         this.extendedAddress = extendedAddress;
     }
 
@@ -80,7 +79,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param line3 Line 3 of the Address (eg. suite, apt #, etc.).
      * */
-    public void setLine3(@NonNull String line3) {
+    public void setLine3(@Nullable String line3) {
         this.line3 = line3;
     }
 
@@ -89,7 +88,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param locality City name.
      * */
-    public void setLocality(@NonNull String locality) {
+    public void setLocality(@Nullable String locality) {
         this.locality = locality;
     }
 
@@ -98,7 +97,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country subdivision code of up to three letters.
      * */
-    public void setRegion(@NonNull String region) {
+    public void setRegion(@Nullable String region) {
         this.region = region;
     }
 
@@ -108,7 +107,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param postalCode Zip code or equivalent is usually required for countries that have them.
      * */
-    public void setPostalCode(@NonNull String postalCode) {
+    public void setPostalCode(@Nullable String postalCode) {
         this.postalCode = postalCode;
     }
 
@@ -117,7 +116,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param countryCodeAlpha2 2 letter country code.
      * */
-    public void setCountryCodeAlpha2(@NonNull String countryCodeAlpha2) {
+    public void setCountryCodeAlpha2(@Nullable String countryCodeAlpha2) {
         this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
@@ -126,7 +125,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      *
      * @param phoneNumber The phone number associated with the address. Only numbers. Remove dashes, parentheses and other characters.
      * */
-    public void setPhoneNumber(@NonNull String phoneNumber) {
+    public void setPhoneNumber(@Nullable String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
