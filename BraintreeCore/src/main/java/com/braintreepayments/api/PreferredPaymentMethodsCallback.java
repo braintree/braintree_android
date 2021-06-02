@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -13,5 +14,5 @@ public interface PreferredPaymentMethodsCallback {
     /**
      * @param preferredPaymentMethodsResult {@link PreferredPaymentMethodsResult}
      */
-    void onResult(@Nullable PreferredPaymentMethodsResult preferredPaymentMethodsResult);
+    void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult);
 }
