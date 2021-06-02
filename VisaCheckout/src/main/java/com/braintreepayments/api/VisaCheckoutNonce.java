@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,6 +74,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
+    @Nullable
     public String getLastTwo() {
         return lastTwo;
     }
@@ -79,6 +82,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
+    @Nullable
     public String getCardType() {
         return cardType;
     }
@@ -86,6 +90,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return The user's billing address.
      */
+    @Nullable
     public VisaCheckoutAddress getBillingAddress() {
         return billingAddress;
     }
@@ -93,6 +98,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return The user's shipping address.
      */
+    @Nullable
     public VisaCheckoutAddress getShippingAddress() {
         return shippingAddress;
     }
@@ -100,6 +106,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return The user's data.
      */
+    @Nullable
     public VisaCheckoutUserData getUserData() {
         return userData;
     }
@@ -107,6 +114,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return The Call ID from the VisaPaymentSummary.
      */
+    @Nullable
     public String getCallId() {
         return callId;
     }
@@ -114,6 +122,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
     /**
      * @return The BIN data for the card number associated with {@link VisaCheckoutNonce}
      */
+    @Nullable
     public BinData getBinData() {
         return binData;
     }
