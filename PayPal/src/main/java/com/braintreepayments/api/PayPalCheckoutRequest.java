@@ -71,7 +71,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public void setCurrencyCode(@NonNull String currencyCode) {
+    public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
@@ -129,7 +129,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
-    @Nullable
+    @NonNull
     public String getAmount() {
         return amount;
     }
@@ -140,13 +140,13 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     }
 
     @PayPalPaymentIntent
-    @Nullable
+    @NonNull
     public String getIntent() {
         return intent;
     }
 
     @PayPalPaymentUserAction
-    @Nullable
+    @NonNull
     public String getUserAction() {
         return userAction;
     }
