@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {
@@ -25,7 +26,7 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
-        assertFalse(venmoAccountNonce.isDefault());
+        assertTrue(venmoAccountNonce.isDefault());
     }
 
     @Test
@@ -35,7 +36,6 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("@sampleuser", venmoAccountNonce.getUsername());
         assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
-        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
         assertFalse(venmoAccountNonce.isDefault());
     }
 
