@@ -40,14 +40,14 @@ class PayPalConfiguration {
         }
 
         PayPalConfiguration payPalConfiguration = new PayPalConfiguration();
-        payPalConfiguration.displayName = Json.optString(json, DISPLAY_NAME_KEY, null);
-        payPalConfiguration.clientId = Json.optString(json, CLIENT_ID_KEY, null);
-        payPalConfiguration.privacyUrl = Json.optString(json, PRIVACY_URL_KEY, null);
-        payPalConfiguration.userAgreementUrl = Json.optString(json, USER_AGREEMENT_URL_KEY, null);
-        payPalConfiguration.directBaseUrl = Json.optString(json, DIRECT_BASE_URL_KEY, null);
-        payPalConfiguration.environment = Json.optString(json, ENVIRONMENT_KEY, null);
+        payPalConfiguration.displayName = Json.optString(json, DISPLAY_NAME_KEY, "");
+        payPalConfiguration.clientId = Json.optString(json, CLIENT_ID_KEY, "");
+        payPalConfiguration.privacyUrl = Json.optString(json, PRIVACY_URL_KEY, "");
+        payPalConfiguration.userAgreementUrl = Json.optString(json, USER_AGREEMENT_URL_KEY, "");
+        payPalConfiguration.directBaseUrl = Json.optString(json, DIRECT_BASE_URL_KEY, "");
+        payPalConfiguration.environment = Json.optString(json, ENVIRONMENT_KEY, "");
         payPalConfiguration.touchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
-        payPalConfiguration.currencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
+        payPalConfiguration.currencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, "");
 
         return payPalConfiguration;
     }
@@ -84,7 +84,7 @@ class PayPalConfiguration {
      * @return the url for custom PayPal environments.
      */
     String getDirectBaseUrl() {
-        return (TextUtils.isEmpty(directBaseUrl) ? null : directBaseUrl + "/v1/");
+        return (TextUtils.isEmpty(directBaseUrl) ? "" : directBaseUrl + "/v1/");
     }
 
     /**

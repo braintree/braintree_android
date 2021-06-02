@@ -83,7 +83,7 @@ public class Configuration {
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         environment = json.getString(ENVIRONMENT_KEY);
         merchantId = json.getString(MERCHANT_ID_KEY);
-        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
+        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, "");
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
         braintreeApiConfiguration = BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY));
         cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
@@ -97,10 +97,10 @@ public class Configuration {
         visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
         samsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
-        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
+        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, "");
     }
 
-    @Nullable
+    @NonNull
     public String toJson() {
         return configurationString;
     }
@@ -108,7 +108,7 @@ public class Configuration {
     /**
      * @return The assets URL of the current environment.
      */
-    @Nullable
+    @NonNull
     public String getAssetsUrl() {
         return assetsUrl;
     }
@@ -116,7 +116,7 @@ public class Configuration {
     /**
      * @return The url of the Braintree client API for the current environment.
      */
-    @Nullable
+    @NonNull
     public String getClientApiUrl() {
         return clientApiUrl;
     }
@@ -209,7 +209,7 @@ public class Configuration {
     /**
      * @return The current environment.
      */
-    @Nullable
+    @NonNull
     public String getEnvironment() {
         return environment;
     }
@@ -239,7 +239,7 @@ public class Configuration {
     /**
      * @return the PayPal app privacy url.
      */
-    @Nullable
+    @NonNull
     public String getPayPalPrivacyUrl() {
         return payPalConfiguration.getPrivacyUrl();
     }
@@ -247,7 +247,7 @@ public class Configuration {
     /**
      * @return the PayPal app user agreement url.
      */
-    @Nullable
+    @NonNull
     public String getPayPalUserAgreementUrl() {
         return payPalConfiguration.getUserAgreementUrl();
     }
@@ -255,7 +255,7 @@ public class Configuration {
     /**
      * @return the url for custom PayPal environments.
      */
-    @Nullable
+    @NonNull
     public String getPayPalDirectBaseUrl() {
         return payPalConfiguration.getDirectBaseUrl();
     }
@@ -334,6 +334,7 @@ public class Configuration {
     /**
      * @return the current Braintree merchant id.
      */
+    @NonNull
     public String getMerchantId() {
         return merchantId;
     }
@@ -341,6 +342,7 @@ public class Configuration {
     /**
      * @return the current Braintree merchant account id.
      */
+    @NonNull
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
@@ -457,7 +459,7 @@ public class Configuration {
     /**
      * @return the JWT for Cardinal
      */
-    @Nullable
+    @NonNull
     public String getCardinalAuthenticationJwt() {
         return cardinalAuthenticationJwt;
     }
