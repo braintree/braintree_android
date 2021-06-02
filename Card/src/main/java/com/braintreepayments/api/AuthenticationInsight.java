@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONObject;
 
 /**
@@ -50,6 +52,7 @@ public class AuthenticationInsight implements Parcelable {
      * @see <a href="https://developers.braintreepayments.com/guides/3d-secure/advanced-options/android#authentication-insight">Documentation</a>
      * for possible values.
      */
+    @Nullable
     public String getRegulationEnvironment() {
         return regulationEnvironment;
     }

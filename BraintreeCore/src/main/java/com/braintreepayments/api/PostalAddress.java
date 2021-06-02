@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Java object representing a postal address
@@ -60,38 +61,47 @@ public class PostalAddress implements Parcelable {
         this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
+    @Nullable
     public String getRecipientName() {
         return recipientName;
     }
 
+    @Nullable
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    @Nullable
     public String getStreetAddress() {
         return streetAddress;
     }
 
+    @Nullable
     public String getExtendedAddress() {
         return extendedAddress;
     }
 
+    @Nullable
     public String getLocality() {
         return locality;
     }
 
+    @Nullable
     public String getRegion() {
         return region;
     }
 
+    @Nullable
     public String getPostalCode() {
         return postalCode;
     }
 
+    @Nullable
     public String getSortingCode() {
         return sortingCode;
     }
 
+    @Nullable
     public String getCountryCodeAlpha2() {
         return countryCodeAlpha2;
     }

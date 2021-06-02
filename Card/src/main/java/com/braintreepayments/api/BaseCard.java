@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -225,6 +226,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Name on the card.
      */
+    @Nullable
     public String getCardholderName() {
         return cardholderName;
     }
@@ -232,6 +234,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The card number.
      */
+    @Nullable
     public String getNumber() {
         return number;
     }
@@ -239,6 +242,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Company associated with the card.
      */
+    @Nullable
     public String getCompany() {
         return company;
     }
@@ -246,6 +250,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The ISO 3166-1 alpha-3 country code specified in the card's billing address.
      */
+    @Nullable
     public String getCountryCode() {
         return countryCode;
     }
@@ -253,6 +258,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
      */
+    @Nullable
     public String getCvv() {
         return cvv;
     }
@@ -260,6 +266,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The expiration month of the card.
      */
+    @Nullable
     public String getExpirationMonth() {
         return expirationMonth;
     }
@@ -267,6 +274,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The expiration year of the card.
      */
+    @Nullable
     public String getExpirationYear() {
         return expirationYear;
     }
@@ -274,6 +282,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return The extended address of the card.
      */
+    @Nullable
     public String getExtendedAddress() {
         return extendedAddress;
     }
@@ -281,6 +290,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return First name on the card.
      */
+    @Nullable
     public String getFirstName() {
         return firstName;
     }
@@ -288,6 +298,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Last name on the card.
      */
+    @Nullable
     public String getLastName() {
         return lastName;
     }
@@ -295,6 +306,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Locality of the card.
      */
+    @Nullable
     public String getLocality() {
         return locality;
     }
@@ -302,6 +314,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Postal code of the card.
      */
+    @Nullable
     public String getPostalCode() {
         return postalCode;
     }
@@ -309,6 +322,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Region of the card.
      */
+    @Nullable
     public String getRegion() {
         return region;
     }
@@ -316,6 +330,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     /**
      * @return Street address of the card.
      */
+    @Nullable
     public String getStreetAddress() {
         return streetAddress;
     }

@@ -16,7 +16,7 @@ public class AmericanExpressClient {
 
     private final BraintreeClient braintreeClient;
 
-    public AmericanExpressClient(BraintreeClient braintreeClient) {
+    public AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

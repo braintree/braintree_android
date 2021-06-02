@@ -3,8 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import androidx.annotation.NonNull;
 
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
@@ -15,7 +14,7 @@ public class PaymentMethodNonce implements Parcelable {
     private final String nonce;
     private final boolean isDefault;
 
-    PaymentMethodNonce(String nonce, boolean isDefault) {
+    PaymentMethodNonce(@NonNull String nonce, boolean isDefault) {
         this.nonce = nonce;
         this.isDefault = isDefault;
     }
@@ -25,6 +24,7 @@ public class PaymentMethodNonce implements Parcelable {
      *          represent this PaymentMethod for the purposes of creating transactions and other monetary
      *          actions.
      */
+    @NonNull
     public String getString() {
         return nonce;
     }

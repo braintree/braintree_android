@@ -70,7 +70,7 @@ public class Configuration {
         return new Configuration(configurationString);
     }
 
-    Configuration(@NonNull String configurationString) throws JSONException {
+    Configuration(String configurationString) throws JSONException {
         if (configurationString == null) {
             throw new JSONException("Configuration cannot be null");
         }
@@ -100,6 +100,7 @@ public class Configuration {
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
     }
 
+    @Nullable
     public String toJson() {
         return configurationString;
     }
@@ -107,6 +108,7 @@ public class Configuration {
     /**
      * @return The assets URL of the current environment.
      */
+    @Nullable
     public String getAssetsUrl() {
         return assetsUrl;
     }
@@ -114,6 +116,7 @@ public class Configuration {
     /**
      * @return The url of the Braintree client API for the current environment.
      */
+    @Nullable
     public String getClientApiUrl() {
         return clientApiUrl;
     }
@@ -206,6 +209,7 @@ public class Configuration {
     /**
      * @return The current environment.
      */
+    @Nullable
     public String getEnvironment() {
         return environment;
     }
@@ -235,6 +239,7 @@ public class Configuration {
     /**
      * @return the PayPal app privacy url.
      */
+    @Nullable
     public String getPayPalPrivacyUrl() {
         return payPalConfiguration.getPrivacyUrl();
     }
@@ -242,6 +247,7 @@ public class Configuration {
     /**
      * @return the PayPal app user agreement url.
      */
+    @Nullable
     public String getPayPalUserAgreementUrl() {
         return payPalConfiguration.getUserAgreementUrl();
     }
@@ -249,6 +255,7 @@ public class Configuration {
     /**
      * @return the url for custom PayPal environments.
      */
+    @Nullable
     public String getPayPalDirectBaseUrl() {
         return payPalConfiguration.getDirectBaseUrl();
     }
@@ -450,6 +457,7 @@ public class Configuration {
     /**
      * @return the JWT for Cardinal
      */
+    @Nullable
     public String getCardinalAuthenticationJwt() {
         return cardinalAuthenticationJwt;
     }
