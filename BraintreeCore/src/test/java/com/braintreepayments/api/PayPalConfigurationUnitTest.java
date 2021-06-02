@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -38,24 +39,24 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void fromJson_whenInputNull_returnsConfigWithDefaultValues() {
         PayPalConfiguration sut = PayPalConfiguration.fromJson(null);
-        assertEquals("", sut.getDisplayName());
-        assertEquals("", sut.getClientId());
-        assertEquals("", sut.getPrivacyUrl());
-        assertEquals("", sut.getUserAgreementUrl());
-        assertEquals("", sut.getDirectBaseUrl());
-        assertEquals("", sut.getEnvironment());
+        assertNull(sut.getDisplayName());
+        assertNull(sut.getClientId());
+        assertNull(sut.getPrivacyUrl());
+        assertNull(sut.getUserAgreementUrl());
+        assertNull(sut.getDirectBaseUrl());
+        assertNull(sut.getEnvironment());
         assertTrue(sut.isTouchDisabled());
     }
 
     @Test
     public void fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
         PayPalConfiguration sut = PayPalConfiguration.fromJson(new JSONObject());
-        assertEquals("", sut.getDisplayName());
-        assertEquals("", sut.getClientId());
-        assertEquals("", sut.getPrivacyUrl());
-        assertEquals("", sut.getUserAgreementUrl());
-        assertEquals("", sut.getDirectBaseUrl());
-        assertEquals("", sut.getEnvironment());
+        assertNull(sut.getDisplayName());
+        assertNull(sut.getClientId());
+        assertNull(sut.getPrivacyUrl());
+        assertNull(sut.getUserAgreementUrl());
+        assertNull(sut.getDirectBaseUrl());
+        assertNull(sut.getEnvironment());
         assertTrue(sut.isTouchDisabled());
     }
 }

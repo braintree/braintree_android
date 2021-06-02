@@ -239,7 +239,7 @@ public class Configuration {
     /**
      * @return the PayPal app privacy url.
      */
-    @NonNull
+    @Nullable
     public String getPayPalPrivacyUrl() {
         return payPalConfiguration.getPrivacyUrl();
     }
@@ -247,7 +247,7 @@ public class Configuration {
     /**
      * @return the PayPal app user agreement url.
      */
-    @NonNull
+    @Nullable
     public String getPayPalUserAgreementUrl() {
         return payPalConfiguration.getUserAgreementUrl();
     }
@@ -255,7 +255,7 @@ public class Configuration {
     /**
      * @return the url for custom PayPal environments.
      */
-    @NonNull
+    @Nullable
     public String getPayPalDirectBaseUrl() {
         return payPalConfiguration.getDirectBaseUrl();
     }
