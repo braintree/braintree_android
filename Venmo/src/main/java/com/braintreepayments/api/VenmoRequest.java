@@ -52,6 +52,7 @@ public class VenmoRequest {
     /**
      * @return The Venmo profile ID to be used during payment authorization.
      */
+    @Nullable
     public String getProfileId() {
         return profileId;
     }

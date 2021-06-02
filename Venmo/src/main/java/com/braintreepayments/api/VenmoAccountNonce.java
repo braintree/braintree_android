@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,6 +61,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     /**
      * @return the Venmo username
      */
+    @Nullable
     public String getUsername() {
         return username;
     }

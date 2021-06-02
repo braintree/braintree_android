@@ -293,7 +293,7 @@ public class VenmoClient {
      * @param context Application Context
      * @return true if the Venmo app is installed, false otherwise
      */
-    public boolean isVenmoAppSwitchAvailable(Context context) {
+    public boolean isVenmoAppSwitchAvailable(@NonNull Context context) {
         return deviceInspector.isVenmoAppSwitchAvailable(context);
     }
 }
