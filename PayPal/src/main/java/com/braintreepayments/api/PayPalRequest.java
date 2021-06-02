@@ -129,7 +129,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param localeCode A locale code to use for the transaction.
      */
-    public void setLocaleCode(@NonNull String localeCode) {
+    public void setLocaleCode(@Nullable String localeCode) {
         this.localeCode = localeCode;
     }
 
@@ -138,7 +138,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
-    public void setDisplayName(@NonNull String displayName) {
+    public void setDisplayName(@Nullable String displayName) {
         this.displayName = displayName;
     }
 
@@ -147,7 +147,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param description The description to display.
      */
-    public void setBillingAgreementDescription(@NonNull String description) {
+    public void setBillingAgreementDescription(@Nullable String description) {
         billingAgreementDescription = description;
     }
 
@@ -156,7 +156,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public void setShippingAddressOverride(@NonNull PostalAddress shippingAddressOverride) {
+    public void setShippingAddressOverride(@Nullable PostalAddress shippingAddressOverride) {
         this.shippingAddressOverride = shippingAddressOverride;
     }
 
@@ -169,7 +169,7 @@ public abstract class PayPalRequest implements Parcelable {
      *                        <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
-    public void setLandingPageType(@NonNull @PayPalLandingPageType String landingPageType) {
+    public void setLandingPageType(@Nullable @PayPalLandingPageType String landingPageType) {
         this.landingPageType = landingPageType;
     }
 
@@ -178,7 +178,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
-    public void setMerchantAccountId(@NonNull String merchantAccountId) {
+    public void setMerchantAccountId(@Nullable String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
     }
 
@@ -225,7 +225,7 @@ public abstract class PayPalRequest implements Parcelable {
         return merchantAccountId;
     }
 
-    @Nullable
+    @NonNull
     public ArrayList<PayPalLineItem> getLineItems() {
         return lineItems;
     }
