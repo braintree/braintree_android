@@ -1,11 +1,9 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 
 /**
- * Callback for receiving result of {@link CardClient#tokenize(Context, Card, CardTokenizeCallback)}.
+ * Callback for receiving result of {@link CardClient#tokenize(Card, CardTokenizeCallback)}.
  */
 public interface CardTokenizeCallback {
 

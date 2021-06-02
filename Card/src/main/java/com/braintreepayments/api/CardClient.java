@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -47,12 +45,10 @@ public class CardClient {
      * If an error not due to validation (server error, network issue, etc.) occurs, the
      * {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be invoked with
      * an {@link Exception} describing the error.
-     *
-     * @param context Android Context
-     * @param card {@link Card}
+     *  @param card {@link Card}
      * @param callback {@link CardTokenizeCallback}
      */
-    public void tokenize(@NonNull final Context context, @NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
+    public void tokenize(@NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

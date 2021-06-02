@@ -127,7 +127,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertTrue(error instanceof AuthorizationException);
@@ -170,7 +170,7 @@ public class CardClientTest {
         card.setCvv("123");
 
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
 
@@ -202,7 +202,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("CVV verification failed",
@@ -240,7 +240,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Postal code verification failed",
@@ -266,7 +266,7 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Country code (alpha3) is not an accepted country",
@@ -307,7 +307,7 @@ public class CardClientTest {
         CardClient sut = new CardClient(braintreeClient);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        sut.tokenize(mActivityTestRule.getActivity(), card, new CardTokenizeCallback() {
+        sut.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(CardNonce cardNonce, Exception error) {
 

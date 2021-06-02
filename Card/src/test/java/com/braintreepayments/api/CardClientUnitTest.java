@@ -56,7 +56,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
 
         Card card = spy(new Card());
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         InOrder inOrder = Mockito.inOrder(card, tokenizationClient);
         inOrder.verify(card).setSessionId("session-id");
@@ -76,7 +76,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
 
         Card card = new Card();
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
         verify(cardTokenizeCallback).onResult(captor.capture(), (Exception) isNull());
@@ -98,7 +98,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
 
         Card card = new Card();
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
         verify(cardTokenizeCallback).onResult(captor.capture(), (Exception) isNull());
@@ -118,7 +118,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }
@@ -134,7 +134,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }
@@ -151,7 +151,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(cardTokenizeCallback).onResult(null, error);
     }
@@ -168,7 +168,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(cardTokenizeCallback).onResult(null, error);
     }
@@ -185,7 +185,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");
     }
@@ -202,7 +202,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");
     }
@@ -215,7 +215,7 @@ public class CardClientUnitTest {
                 .build();
 
         CardClient sut = new CardClient(braintreeClient, tokenizationClient, dataCollector);
-        sut.tokenize(context, card, cardTokenizeCallback);
+        sut.tokenize(card, cardTokenizeCallback);
 
         verify(cardTokenizeCallback).onResult(null, configError);
     }

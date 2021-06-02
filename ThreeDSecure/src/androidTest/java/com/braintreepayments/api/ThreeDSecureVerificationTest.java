@@ -53,7 +53,7 @@ public class ThreeDSecureVerificationTest {
         CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {
@@ -98,7 +98,7 @@ public class ThreeDSecureVerificationTest {
         CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {
@@ -141,7 +141,7 @@ public class ThreeDSecureVerificationTest {
         CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {
@@ -178,7 +178,7 @@ public class ThreeDSecureVerificationTest {
         CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {
@@ -223,7 +223,7 @@ public class ThreeDSecureVerificationTest {
         CardClient cardClient = new CardClient(braintreeClient);
         final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {
