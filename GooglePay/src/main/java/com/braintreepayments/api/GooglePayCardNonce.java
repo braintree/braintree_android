@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,7 +141,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
-    @Nullable
+    @NonNull
     public String getCardType() {
         return cardType;
     }
@@ -149,7 +149,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
-    @Nullable
+    @NonNull
     public String getLastTwo() {
         return lastTwo;
     }
@@ -157,7 +157,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last four digits of the user's underlying card, intended for display purposes.
      */
-    @Nullable
+    @NonNull
     public String getLastFour() {
         return lastFour;
     }
@@ -165,7 +165,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The user's email address associated the Google Pay account.
      */
-    @Nullable
+    @NonNull
     public String getEmail() {
         return email;
     }
@@ -180,7 +180,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The user's billing address.
      */
-    @Nullable
+    @NonNull
     public PostalAddress getBillingAddress() {
         return billingAddress;
     }
@@ -188,7 +188,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The user's shipping address.
      */
-    @Nullable
+    @NonNull
     public PostalAddress getShippingAddress() {
         return shippingAddress;
     }
@@ -196,6 +196,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The BIN data for the card number associated with {@link GooglePayCardNonce}
      */
+    @NonNull
     public BinData getBinData() {
         return binData;
     }
