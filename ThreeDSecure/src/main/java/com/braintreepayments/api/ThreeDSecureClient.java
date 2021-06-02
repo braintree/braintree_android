@@ -328,6 +328,7 @@ public class ThreeDSecureClient {
      */
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final ThreeDSecureResultCallback callback) {
         // V1 flow
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;

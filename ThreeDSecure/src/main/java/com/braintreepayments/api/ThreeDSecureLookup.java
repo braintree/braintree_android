@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
@@ -67,7 +68,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return The merchant descriptor from a 3D Secure lookup
      */
-    @Nullable
+    @NonNull
     public String getMd() {
         return md;
     }
@@ -75,7 +76,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return The term url to be used for 3D Secure authentication
      */
-    @Nullable
+    @NonNull
     public String getTermUrl() {
         return termUrl;
     }
@@ -83,7 +84,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return The pareq to be used for 3D Secure authentication
      */
-    @Nullable
+    @NonNull
     public String getPareq() {
         return pareq;
     }
@@ -91,7 +92,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return The version of 3D Secure this merchant is using
      */
-    @Nullable
+    @NonNull
     public String getThreeDSecureVersion() {
         return threeDSecureVersion;
     }
@@ -99,7 +100,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return The transaction ID for this 3D Secure lookup
      */
-    @Nullable
+    @NonNull
     public String getTransactionId() {
         return transactionId;
     }
