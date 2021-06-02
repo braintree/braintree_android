@@ -270,7 +270,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     /**
-     * @return The extended Address address of the card.
+     * @return The extended address of the card.
      */
     public String getExtendedAddress() {
         return extendedAddress;
