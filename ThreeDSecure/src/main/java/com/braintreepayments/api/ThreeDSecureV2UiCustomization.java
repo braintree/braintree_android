@@ -5,7 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.models.enums.ButtonType;
@@ -45,7 +44,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * @param buttonCustomization {@link ThreeDSecureV2ButtonCustomization}
      * @param buttonType Button type
      */
-    public void setButtonCustomization(@NonNull ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
+    public void setButtonCustomization(@Nullable ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
         this.buttonType = buttonType;
         cardinalValue.setButtonCustomization(buttonCustomization.getCardinalButtonCustomization(), getCardinalButtonType(buttonType));
@@ -55,7 +54,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * Label customization options for 3D Secure 2 flows.
      * @param labelCustomization {@link ThreeDSecureV2LabelCustomization}
      */
-    public void setLabelCustomization(@NonNull ThreeDSecureV2LabelCustomization labelCustomization) {
+    public void setLabelCustomization(@Nullable ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
         cardinalValue.setLabelCustomization(labelCustomization.getCardinalLabelCustomization());
     }
@@ -64,7 +63,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * Text box customization options for 3D Secure 2 flows.
      * @param textBoxCustomization {@link ThreeDSecureV2TextBoxCustomization}
      */
-    public void setTextBoxCustomization(@NonNull ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
+    public void setTextBoxCustomization(@Nullable ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
         cardinalValue.setTextBoxCustomization(textBoxCustomization.getCardinalTextBoxCustomization());
     }
@@ -73,7 +72,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * Toolbar customization options for 3D Secure 2 flows.
      * @param toolbarCustomization {@link ThreeDSecureV2ToolbarCustomization}
      */
-    public void setToolbarCustomization(@NonNull ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
+    public void setToolbarCustomization(@Nullable ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
         cardinalValue.setToolbarCustomization(toolbarCustomization.getCardinalToolbarCustomization());
     }

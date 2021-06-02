@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
@@ -25,7 +24,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     /**
      * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void setHeadingTextColor(@NonNull String headingTextColor) {
+    public void setHeadingTextColor(@Nullable String headingTextColor) {
         this.headingTextColor = headingTextColor;
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
     }
@@ -33,7 +32,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     /**
      * @param headingTextFontName Font type for the heading label text.
      */
-    public void setHeadingTextFontName(@NonNull String headingTextFontName) {
+    public void setHeadingTextFontName(@Nullable String headingTextFontName) {
         this.headingTextFontName = headingTextFontName;
         cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
     }

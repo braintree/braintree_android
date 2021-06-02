@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -21,7 +20,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display in the button.
      */
-    public void setRedirectButtonText(@NonNull String text) {
+    public void setRedirectButtonText(@Nullable String text) {
         redirectButtonText = text;
     }
 
@@ -30,7 +29,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display below the button.
      */
-    public void setRedirectDescription(@NonNull String text) {
+    public void setRedirectDescription(@Nullable String text) {
         redirectDescription = text;
     }
 
