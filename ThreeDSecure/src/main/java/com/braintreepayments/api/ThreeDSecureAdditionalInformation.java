@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
@@ -63,7 +62,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * @param shippingAddress The shipping address used for verification.
      *
      * */
-    public void setShippingAddress(@NonNull ThreeDSecurePostalAddress shippingAddress) {
+    public void setShippingAddress(@Nullable ThreeDSecurePostalAddress shippingAddress) {
         this.shippingAddress = shippingAddress;
     }
 
@@ -79,7 +78,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 06 Travel and event tickets, not shipped
      * 07 Other
      */
-    public void setShippingMethodIndicator(@NonNull String shippingMethodIndicator) {
+    public void setShippingMethodIndicator(@Nullable String shippingMethodIndicator) {
         this.shippingMethodIndicator = shippingMethodIndicator;
     }
 
@@ -100,7 +99,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * ACC Accommodation Retail
      * TBD Other
      */
-    public void setProductCode(@NonNull String productCode) {
+    public void setProductCode(@Nullable String productCode) {
         this.productCode = productCode;
     }
 
@@ -113,14 +112,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 Overnight shipping
      * 04 Two or more day shipping
      */
-    public void setDeliveryTimeframe(@NonNull String deliveryTimeframe) {
+    public void setDeliveryTimeframe(@Nullable String deliveryTimeframe) {
         this.deliveryTimeframe = deliveryTimeframe;
     }
 
     /**
      * Optional. For electronic delivery, email address to which the merchandise was delivered
      */
-    public void setDeliveryEmail(@NonNull String deliveryEmail) {
+    public void setDeliveryEmail(@Nullable String deliveryEmail) {
         this.deliveryEmail = deliveryEmail;
     }
 
@@ -131,7 +130,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 First time ordered
      * 02 Reordered
      */
-    public void setReorderIndicator(@NonNull String reorderIndicator) {
+    public void setReorderIndicator(@Nullable String reorderIndicator) {
         this.reorderIndicator = reorderIndicator;
     }
 
@@ -142,35 +141,35 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 Merchandise available
      * 02 Future availability
      */
-    public void setPreorderIndicator(@NonNull String preorderIndicator) {
+    public void setPreorderIndicator(@Nullable String preorderIndicator) {
         this.preorderIndicator = preorderIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating expected date that a pre-ordered purchase will be available
      */
-    public void setPreorderDate(@NonNull String preorderDate) {
+    public void setPreorderDate(@Nullable String preorderDate) {
         this.preorderDate = preorderDate;
     }
 
     /**
      * Optional. The purchase amount total for prepaid gift cards in major units
      */
-    public void setGiftCardAmount(@NonNull String giftCardAmount) {
+    public void setGiftCardAmount(@Nullable String giftCardAmount) {
         this.giftCardAmount = giftCardAmount;
     }
 
     /**
      * Optional. ISO 4217 currency code for the gift card purchased
      */
-    public void setGiftCardCurrencyCode(@NonNull String giftCardCurrencyCode) {
+    public void setGiftCardCurrencyCode(@Nullable String giftCardCurrencyCode) {
         this.giftCardCurrencyCode = giftCardCurrencyCode;
     }
 
     /**
      * Optional. Total count of individual prepaid gift cards purchased
      */
-    public void setGiftCardCount(@NonNull String giftCardCount) {
+    public void setGiftCardCount(@Nullable String giftCardCount) {
         this.giftCardCount = giftCardCount;
     }
 
@@ -184,14 +183,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public void setAccountAgeIndicator(@NonNull String accountAgeIndicator) {
+    public void setAccountAgeIndicator(@Nullable String accountAgeIndicator) {
         this.accountAgeIndicator = accountAgeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder opened the account.
      */
-    public void setAccountCreateDate(@NonNull String accountCreateDate) {
+    public void setAccountCreateDate(@Nullable String accountCreateDate) {
         this.accountCreateDate = accountCreateDate;
     }
 
@@ -204,14 +203,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 30-60 days
      * 04 More than 60 days
      */
-    public void setAccountChangeIndicator(@NonNull String accountChangeIndicator) {
+    public void setAccountChangeIndicator(@Nullable String accountChangeIndicator) {
         this.accountChangeIndicator = accountChangeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder's account was last changed. This includes changes to the billing or shipping address, new payment accounts or new users added.
      */
-    public void setAccountChangeDate(@NonNull String accountChangeDate) {
+    public void setAccountChangeDate(@Nullable String accountChangeDate) {
         this.accountChangeDate = accountChangeDate;
     }
 
@@ -225,14 +224,14 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public void setAccountPwdChangeIndicator(@NonNull String accountPwdChangeIndicator) {
+    public void setAccountPwdChangeIndicator(@Nullable String accountPwdChangeIndicator) {
         this.accountPwdChangeIndicator = accountPwdChangeIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the cardholder last changed or reset password on account.
      */
-    public void setAccountPwdChangeDate(@NonNull String accountPwdChangeDate) {
+    public void setAccountPwdChangeDate(@Nullable String accountPwdChangeDate) {
         this.accountPwdChangeDate = accountPwdChangeDate;
     }
 
@@ -245,42 +244,42 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 03 30-60 days
      * 04 More than 60 days
      */
-    public void setShippingAddressUsageIndicator(@NonNull String shippingAddressUsageIndicator) {
+    public void setShippingAddressUsageIndicator(@Nullable String shippingAddressUsageIndicator) {
         this.shippingAddressUsageIndicator = shippingAddressUsageIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date when the shipping address used for this transaction was first used.
      */
-    public void setShippingAddressUsageDate(@NonNull String shippingAddressUsageDate) {
+    public void setShippingAddressUsageDate(@Nullable String shippingAddressUsageDate) {
         this.shippingAddressUsageDate = shippingAddressUsageDate;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last 24 hours.
      */
-    public void setTransactionCountDay(@NonNull String transactionCountDay) {
+    public void setTransactionCountDay(@Nullable String transactionCountDay) {
         this.transactionCountDay = transactionCountDay;
     }
 
     /**
      * Optional. Number of transactions (successful or abandoned) for this cardholder account within the last year.
      */
-    public void setTransactionCountYear(@NonNull String transactionCountYear) {
+    public void setTransactionCountYear(@Nullable String transactionCountYear) {
         this.transactionCountYear = transactionCountYear;
     }
 
     /**
      * Optional. Number of add card attempts in the last 24 hours.
      */
-    public void setAddCardAttempts(@NonNull String addCardAttempts) {
+    public void setAddCardAttempts(@Nullable String addCardAttempts) {
         this.addCardAttempts = addCardAttempts;
     }
 
     /**
      * Optional. Number of purchases with this cardholder account during the previous six months.
      */
-    public void setAccountPurchases(@NonNull String accountPurchases) {
+    public void setAccountPurchases(@Nullable String accountPurchases) {
         this.accountPurchases = accountPurchases;
     }
 
@@ -291,7 +290,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 No suspicious activity
      * 02 Suspicious activity observed
      */
-    public void setFraudActivity(@NonNull String fraudActivity) {
+    public void setFraudActivity(@Nullable String fraudActivity) {
         this.fraudActivity = fraudActivity;
     }
 
@@ -302,7 +301,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 01 Account name identical to shipping name
      * 02 Account name different than shipping name
      */
-    public void setShippingNameIndicator(@NonNull String shippingNameIndicator) {
+    public void setShippingNameIndicator(@Nullable String shippingNameIndicator) {
         this.shippingNameIndicator = shippingNameIndicator;
     }
 
@@ -316,56 +315,56 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 04 30-60 days
      * 05 More than 60 days
      */
-    public void setPaymentAccountIndicator(@NonNull String paymentAccountIndicator) {
+    public void setPaymentAccountIndicator(@Nullable String paymentAccountIndicator) {
         this.paymentAccountIndicator = paymentAccountIndicator;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date the payment account was added to the cardholder account.
      */
-    public void setPaymentAccountAge(@NonNull String paymentAccountAge) {
+    public void setPaymentAccountAge(@Nullable String paymentAccountAge) {
         this.paymentAccountAge = paymentAccountAge;
     }
 
     /**
      * Optional. The 1-character value (Y/N) indicating whether cardholder billing and shipping addresses match.
      */
-    public void setAddressMatch(@NonNull String addressMatch) {
+    public void setAddressMatch(@Nullable String addressMatch) {
         this.addressMatch = addressMatch;
     }
 
     /**
      * Optional. Additional cardholder account information.
      */
-    public void setAccountId(@NonNull String accountId) {
+    public void setAccountId(@Nullable String accountId) {
         this.accountId = accountId;
     }
 
     /**
      * Optional. The IP address of the consumer. IPv4 and IPv6 are supported.
      */
-    public void setIpAddress(@NonNull String ipAddress) {
+    public void setIpAddress(@Nullable String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
     /**
      * Optional. Brief description of items purchased.
      */
-    public void setOrderDescription(@NonNull String orderDescription) {
+    public void setOrderDescription(@Nullable String orderDescription) {
         this.orderDescription = orderDescription;
     }
 
     /**
      * Optional. Unformatted tax amount without any decimalization (ie. $123.67 = 12367).
      */
-    public void setTaxAmount(@NonNull String taxAmount) {
+    public void setTaxAmount(@Nullable String taxAmount) {
         this.taxAmount = taxAmount;
     }
 
     /**
      * Optional. The exact content of the HTTP user agent header.
      */
-    public void setUserAgent(@NonNull String userAgent) {
+    public void setUserAgent(@Nullable String userAgent) {
         this.userAgent = userAgent;
     }
 
@@ -376,49 +375,49 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * 02 Recurring transaction
      * 03 Installment transaction
      */
-    public void setAuthenticationIndicator(@NonNull String authenticationIndicator) {
+    public void setAuthenticationIndicator(@Nullable String authenticationIndicator) {
         this.authenticationIndicator = authenticationIndicator;
     }
 
     /**
      * Optional.  An integer value greater than 1 indicating the maximum number of permitted authorizations for installment payments.
      */
-    public void setInstallment(@NonNull String installment) {
+    public void setInstallment(@Nullable String installment) {
         this.installment = installment;
     }
 
     /**
      * Optional. The 14-digit number (format: YYYYMMDDHHMMSS) indicating the date in UTC of original purchase.
      */
-    public void setPurchaseDate(@NonNull String purchaseDate) {
+    public void setPurchaseDate(@Nullable String purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
 
     /**
      * Optional. The 8-digit number (format: YYYYMMDD) indicating the date after which no further recurring authorizations should be performed..
      */
-    public void setRecurringEnd(@NonNull String recurringEnd) {
+    public void setRecurringEnd(@Nullable String recurringEnd) {
         this.recurringEnd = recurringEnd;
     }
 
     /**
      * Optional. Integer value indicating the minimum number of days between recurring authorizations. A frequency of monthly is indicated by the value 28. Multiple of 28 days will be used to indicate months (ex. 6 months = 168).
      */
-    public void setRecurringFrequency(@NonNull String recurringFrequency) {
+    public void setRecurringFrequency(@Nullable String recurringFrequency) {
         this.recurringFrequency = recurringFrequency;
     }
 
     /**
      * Optional. The 2-digit number of minutes (minimum 05) to set the maximum amount of time for all 3DS 2.0 messages to be communicated between all components.
      */
-    public void setSdkMaxTimeout(@NonNull String sdkMaxTimeout) {
+    public void setSdkMaxTimeout(@Nullable String sdkMaxTimeout) {
         this.sdkMaxTimeout = sdkMaxTimeout;
     }
 
     /**
      * Optional. The work phone number used for verification. Only numbers; remove dashes, parenthesis and other characters.
      */
-    public void setWorkPhoneNumber(@NonNull String workPhoneNumber) {
+    public void setWorkPhoneNumber(@Nullable String workPhoneNumber) {
         this.workPhoneNumber = workPhoneNumber;
     }
 
