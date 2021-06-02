@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +76,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @return The mobile country code to use when sending the auth code via SMS.
      */
+    @Nullable
     public String getMobileCountryCode() {
         return mobileCountryCode;
     }
@@ -82,6 +84,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @return The mobile phone number to use when sending the auth code via SMS.
      */
+    @Nullable
     public String getMobilePhoneNumber() {
         return mobilePhoneNumber;
     }
@@ -89,6 +92,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @return The auth code sent to the user via SMS.
      */
+    @Nullable
     public String getSmsCode() {
         return smsCode;
     }
@@ -96,6 +100,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @return The UnionPay enrollment ID.
      */
+    @Nullable
     public String getEnrollmentId() {
         return enrollmentId;
     }
