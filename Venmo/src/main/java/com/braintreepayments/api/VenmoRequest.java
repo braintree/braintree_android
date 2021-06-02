@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 /**
  A VenmoRequest specifies options that contribute to the Venmo flow

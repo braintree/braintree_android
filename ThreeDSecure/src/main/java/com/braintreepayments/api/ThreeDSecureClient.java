@@ -206,7 +206,7 @@ public class ThreeDSecureClient {
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse, @NonNull final ThreeDSecureResultCallback callback) {
+    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, final ThreeDSecureRequest request, @NonNull final String lookupResponse, @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

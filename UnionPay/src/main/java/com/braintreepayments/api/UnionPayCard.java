@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
      */
-    public void setMobileCountryCode(@Nullable String mobileCountryCode) {
+    public void setMobileCountryCode(@NonNull String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             this.mobileCountryCode = null;
         } else {
