@@ -22,7 +22,7 @@ public class PreferredPaymentMethodsClient {
     }
 
     @VisibleForTesting
-    PreferredPaymentMethodsClient(@NonNull BraintreeClient braintreeClient, @NonNull DeviceInspector deviceInspector) {
+    PreferredPaymentMethodsClient(BraintreeClient braintreeClient, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
         this.deviceInspector = deviceInspector;
     }
