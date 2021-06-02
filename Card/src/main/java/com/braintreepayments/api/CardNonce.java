@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -163,7 +162,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
-    @Nullable
+    @NonNull
     public String getCardType() {
         return cardType;
     }
@@ -171,7 +170,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the card, intended for display purposes.
      */
-    @Nullable
+    @NonNull
     public String getLastTwo() {
         return lastTwo;
     }
@@ -179,7 +178,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Last four digits of the card.
      */
-    @Nullable
+    @NonNull
     public String getLastFour() {
         return lastFour;
     }
@@ -187,7 +186,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The expiration month of the card.
      */
-    @Nullable
+    @NonNull
     public String getExpirationMonth() {
         return expirationMonth;
     }
@@ -195,7 +194,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The expiration year of the card.
      */
-    @Nullable
+    @NonNull
     public String getExpirationYear() {
         return expirationYear;
     }
@@ -203,7 +202,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The name of the cardholder.
      */
-    @Nullable
+    @NonNull
     public String getCardholderName() {
         return cardholderName;
     }
@@ -212,7 +211,7 @@ public class CardNonce extends PaymentMethodNonce {
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
-    @Nullable
+    @NonNull
     public ThreeDSecureInfo getThreeDSecureInfo() {
         return threeDSecureInfo;
     }
@@ -220,7 +219,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return BIN of the card.
      */
-    @Nullable
+    @NonNull
     public String getBin() {
         return bin;
     }
@@ -228,7 +227,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The BIN data for the card number associated with {@link CardNonce}
      */
-    @Nullable
+    @NonNull
     public BinData getBinData() {
         return binData;
     }
