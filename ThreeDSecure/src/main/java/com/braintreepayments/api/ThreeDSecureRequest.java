@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
@@ -49,7 +48,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      */
-    public void setNonce(@NonNull String nonce) {
+    public void setNonce(@Nullable String nonce) {
         this.nonce = nonce;
     }
 
@@ -58,7 +57,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
      */
-    public void setAmount(@NonNull String amount) {
+    public void setAmount(@Nullable String amount) {
         this.amount = amount;
     }
 
@@ -67,7 +66,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
      */
-    public void setMobilePhoneNumber(@NonNull String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(@Nullable String mobilePhoneNumber) {
         this.mobilePhoneNumber = mobilePhoneNumber;
     }
 
@@ -76,7 +75,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param email The email used for verification.
      */
-    public void setEmail(@NonNull String email) {
+    public void setEmail(@Nullable String email) {
         this.email = email;
     }
 
@@ -101,7 +100,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param billingAddress The billing address used for verification.
      */
-    public void setBillingAddress(@NonNull ThreeDSecurePostalAddress billingAddress) {
+    public void setBillingAddress(@Nullable ThreeDSecurePostalAddress billingAddress) {
         this.billingAddress = billingAddress;
     }
 
@@ -117,7 +116,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
-    public void setVersionRequested(@NonNull @ThreeDSecureVersion String versionRequested) {
+    public void setVersionRequested(@Nullable @ThreeDSecureVersion String versionRequested) {
         this.versionRequested = versionRequested;
     }
 
@@ -128,7 +127,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
      */
-    public void setAccountType(@NonNull @ThreeDSecureAccountType String accountType) {
+    public void setAccountType(@Nullable @ThreeDSecureAccountType String accountType) {
         this.accountType = accountType;
     }
 
@@ -137,7 +136,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param additionalInformation Additional information.
      */
-    public void setAdditionalInformation(@NonNull ThreeDSecureAdditionalInformation additionalInformation) {
+    public void setAdditionalInformation(@Nullable ThreeDSecureAdditionalInformation additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 
@@ -169,7 +168,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
-    public void setV2UiCustomization(@NonNull ThreeDSecureV2UiCustomization v2UiCustomization) {
+    public void setV2UiCustomization(@Nullable ThreeDSecureV2UiCustomization v2UiCustomization) {
         this.v2UiCustomization = v2UiCustomization;
     }
 
@@ -178,7 +177,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
      */
-    public void setV1UiCustomization(@NonNull ThreeDSecureV1UiCustomization v1UiCustomization) {
+    public void setV1UiCustomization(@Nullable ThreeDSecureV1UiCustomization v1UiCustomization) {
         this.v1UiCustomization = v1UiCustomization;
     }
 
