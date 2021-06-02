@@ -83,7 +83,7 @@ public class Configuration {
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         environment = json.getString(ENVIRONMENT_KEY);
         merchantId = json.getString(MERCHANT_ID_KEY);
-        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, "");
+        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
         braintreeApiConfiguration = BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY));
         cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
@@ -342,7 +342,7 @@ public class Configuration {
     /**
      * @return the current Braintree merchant account id.
      */
-    @NonNull
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
