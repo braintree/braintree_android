@@ -20,7 +20,7 @@
   * Remove `PaymentMethodDeleteException`
   * Remove `GetPaymentMethodNoncesCallback`
   * Remove `DeletePaymentMethodNonceCallback`
-  * Update `GooglePayIsReadyToPayCallback` to expect a boolean primitive instead of a Boxed type
+  * Use primitives instead of boxed types where possible
 
 ## 4.0.0-beta3
 
