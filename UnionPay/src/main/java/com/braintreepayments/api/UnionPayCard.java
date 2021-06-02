@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
@@ -32,7 +31,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
      */
-    public void setMobileCountryCode(@NonNull String mobileCountryCode) {
+    public void setMobileCountryCode(@Nullable String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             this.mobileCountryCode = null;
         } else {
@@ -43,7 +42,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobilePhoneNumber The mobile phone number to use when sending the auth code via SMS.
      */
-    public void setMobilePhoneNumber(@NonNull String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(@Nullable String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
             this.mobilePhoneNumber = null;
         } else {
@@ -54,7 +53,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param smsCode The auth code sent to the user via SMS.
      */
-    public void setSmsCode(@NonNull String smsCode) {
+    public void setSmsCode(@Nullable String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
             this.smsCode = null;
         } else {
@@ -65,7 +64,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param enrollmentId The UnionPay enrollment ID
      */
-    public void setEnrollmentId(@NonNull String enrollmentId) {
+    public void setEnrollmentId(@Nullable String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
             this.enrollmentId = null;
         } else {
