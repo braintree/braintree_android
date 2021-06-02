@@ -110,6 +110,7 @@ public class VenmoClientUnitTest {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
         request.setShouldVault(false);
+        request.setDisplayName("display-name");
 
         VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
@@ -129,6 +130,7 @@ public class VenmoClientUnitTest {
         assertEquals("sample-venmo-merchant", input.getString("merchantProfileId"));
         assertEquals("MOBILE_APP", input.getString("customerClient"));
         assertEquals("CONTINUE", input.getString("intent"));
+        assertEquals("display-name", input.getString("displayName"));
     }
 
     @Test
