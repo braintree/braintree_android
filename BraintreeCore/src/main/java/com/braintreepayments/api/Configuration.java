@@ -97,7 +97,7 @@ public class Configuration {
         visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
         samsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
-        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, "");
+        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
     }
 
     @NonNull
@@ -459,7 +459,7 @@ public class Configuration {
     /**
      * @return the JWT for Cardinal
      */
-    @NonNull
+    @Nullable
     public String getCardinalAuthenticationJwt() {
         return cardinalAuthenticationJwt;
     }
