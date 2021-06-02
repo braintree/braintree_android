@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 /**
  * Union Pay enrollment information
@@ -18,7 +18,7 @@ public class UnionPayEnrollment {
     /**
      * @return the UnionPay enrollment ID
      */
-    @Nullable
+    @NonNull
     public String getId() {
         return id;
     }
