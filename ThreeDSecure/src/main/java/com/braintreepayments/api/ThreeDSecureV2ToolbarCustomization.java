@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
 
@@ -40,7 +41,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param buttonText Text for the button. For example, “Cancel”.
      */
-    public void setButtonText(String buttonText) {
+    public void setButtonText(@NonNull String buttonText) {
         this.buttonText = buttonText;
         cardinalToolbarCustomization.setButtonText(buttonText);
     }
@@ -48,6 +49,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getBackgroundColor() {
         return backgroundColor;
     }
@@ -55,6 +57,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @return Text for the header.
      */
+    @Nullable
     public String getHeaderText() {
         return headerText;
     }
@@ -62,6 +65,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @return Text for the button.
      */
+    @Nullable
     public String getButtonText() {
         return buttonText;
     }

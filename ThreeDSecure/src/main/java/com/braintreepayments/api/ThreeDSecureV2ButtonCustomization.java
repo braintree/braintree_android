@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 
@@ -39,6 +40,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getBackgroundColor() {
         return backgroundColor;
     }

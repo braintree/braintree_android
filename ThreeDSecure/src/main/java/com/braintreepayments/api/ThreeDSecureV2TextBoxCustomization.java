@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 
@@ -55,6 +56,7 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getBorderColor() {
         return borderColor;
     }

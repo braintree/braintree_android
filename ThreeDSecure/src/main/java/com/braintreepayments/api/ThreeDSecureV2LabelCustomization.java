@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 
@@ -48,6 +49,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getHeadingTextColor() {
         return headingTextColor;
     }
@@ -55,6 +57,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     /**
      * @return Font type for the heading label text.
      */
+    @Nullable
     public String getHeadingTextFontName() {
         return headingTextFontName;
     }

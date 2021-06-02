@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.models.enums.ButtonType;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
@@ -80,6 +81,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     /**
      * @return {@link ThreeDSecureV2ButtonCustomization}
      */
+    @Nullable
     public ThreeDSecureV2ButtonCustomization getButtonCustomization() {
         return buttonCustomization;
     }
@@ -87,6 +89,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     /**
      * @return {@link ThreeDSecureV2LabelCustomization}
      */
+    @Nullable
     public ThreeDSecureV2LabelCustomization getLabelCustomization() {
         return labelCustomization;
     }
@@ -94,6 +97,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     /**
      * @return {@link ThreeDSecureV2TextBoxCustomization}
      */
+    @Nullable
     public ThreeDSecureV2TextBoxCustomization getTextBoxCustomization() {
         return textBoxCustomization;
     }
@@ -101,6 +105,7 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     /**
      * @return {@link ThreeDSecureV2ToolbarCustomization}
      */
+    @Nullable
     public ThreeDSecureV2ToolbarCustomization getToolbarCustomization() {
         return toolbarCustomization;
     }

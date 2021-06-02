@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.Customization;
 
@@ -46,6 +47,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @return Font type for the UI element.
      */
+    @Nullable
     public String getTextFontName() {
         return textFontName;
     }
@@ -53,6 +55,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getTextColor() {
         return textColor;
     }
