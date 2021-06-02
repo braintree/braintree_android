@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.cardinalcommerce.shared.userinterfaces.Customization;
 
 /**
@@ -20,7 +22,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @param textFontName Font type for the UI element.
      */
-    public void setTextFontName(String textFontName) {
+    public void setTextFontName(@NonNull String textFontName) {
         this.textFontName = textFontName;
         cardinalValue.setTextFontName(textFontName);
     }
@@ -28,7 +30,7 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
     /**
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void setTextColor(String textColor) {
+    public void setTextColor(@NonNull String textColor) {
         this.textColor = textColor;
         cardinalValue.setTextColor(textColor);
     }

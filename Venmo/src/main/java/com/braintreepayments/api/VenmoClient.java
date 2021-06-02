@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,7 +36,7 @@ public class VenmoClient {
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
 
-    public VenmoClient(BraintreeClient braintreeClient) {
+    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
@@ -52,7 +53,7 @@ public class VenmoClient {
      *
      * @param activity used to open the Venmo's Google Play Store
      */
-    public void showVenmoInGooglePlayStore(FragmentActivity activity) {
+    public void showVenmoInGooglePlayStore(@NonNull FragmentActivity activity) {
         braintreeClient.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
@@ -69,7 +70,7 @@ public class VenmoClient {
      * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoTokenizeAccountCallback}
      */
-    public void tokenizeVenmoAccount(final FragmentActivity activity, final VenmoRequest request, final VenmoTokenizeAccountCallback callback) {
+    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -165,7 +166,7 @@ public class VenmoClient {
      * @param data       Android Intent
      * @param callback   {@link VenmoOnActivityResultCallback}
      */
-    public void onActivityResult(final Context context, int resultCode, Intent data, final VenmoOnActivityResultCallback callback) {
+    public void onActivityResult(@NonNull final Context context, int resultCode, @Nullable Intent data, @NonNull final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
 

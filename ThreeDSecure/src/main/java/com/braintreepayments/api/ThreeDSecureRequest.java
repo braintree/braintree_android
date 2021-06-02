@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -47,7 +48,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      */
-    public void setNonce(String nonce) {
+    public void setNonce(@NonNull String nonce) {
         this.nonce = nonce;
     }
 
@@ -56,7 +57,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
      */
-    public void setAmount(String amount) {
+    public void setAmount(@NonNull String amount) {
         this.amount = amount;
     }
 
@@ -65,7 +66,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
      */
-    public void setMobilePhoneNumber(String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(@NonNull String mobilePhoneNumber) {
         this.mobilePhoneNumber = mobilePhoneNumber;
     }
 
@@ -74,7 +75,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param email The email used for verification.
      */
-    public void setEmail(String email) {
+    public void setEmail(@NonNull String email) {
         this.email = email;
     }
 
@@ -90,7 +91,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
-    public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
+    public void setShippingMethod(@NonNull @ThreeDSecureShippingMethod int shippingMethod) {
         this.shippingMethod = shippingMethod;
     }
 
@@ -99,7 +100,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param billingAddress The billing address used for verification.
      */
-    public void setBillingAddress(ThreeDSecurePostalAddress billingAddress) {
+    public void setBillingAddress(@NonNull ThreeDSecurePostalAddress billingAddress) {
         this.billingAddress = billingAddress;
     }
 
@@ -115,7 +116,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      */
-    public void setVersionRequested(@ThreeDSecureVersion String versionRequested) {
+    public void setVersionRequested(@NonNull @ThreeDSecureVersion String versionRequested) {
         this.versionRequested = versionRequested;
     }
 
@@ -126,7 +127,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
      */
-    public void setAccountType(@ThreeDSecureAccountType String accountType) {
+    public void setAccountType(@NonNull @ThreeDSecureAccountType String accountType) {
         this.accountType = accountType;
     }
 
@@ -135,7 +136,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param additionalInformation Additional information.
      */
-    public void setAdditionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
+    public void setAdditionalInformation(@NonNull ThreeDSecureAdditionalInformation additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 
@@ -167,7 +168,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
-    public void setV2UiCustomization(ThreeDSecureV2UiCustomization v2UiCustomization) {
+    public void setV2UiCustomization(@NonNull ThreeDSecureV2UiCustomization v2UiCustomization) {
         this.v2UiCustomization = v2UiCustomization;
     }
 
@@ -176,7 +177,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
      */
-    public void setV1UiCustomization(ThreeDSecureV1UiCustomization v1UiCustomization) {
+    public void setV1UiCustomization(@NonNull ThreeDSecureV1UiCustomization v1UiCustomization) {
         this.v1UiCustomization = v1UiCustomization;
     }
 

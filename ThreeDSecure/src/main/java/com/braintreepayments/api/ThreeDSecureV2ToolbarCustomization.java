@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
 
 /**
@@ -22,7 +24,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void setBackgroundColor(String backgroundColor) {
+    public void setBackgroundColor(@NonNull String backgroundColor) {
         this.backgroundColor = backgroundColor;
         cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
     }
@@ -30,7 +32,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param headerText Text for the header.
      */
-    public void setHeaderText(String headerText) {
+    public void setHeaderText(@NonNull String headerText) {
         this.headerText = headerText;
         cardinalToolbarCustomization.setHeaderText(headerText);
     }

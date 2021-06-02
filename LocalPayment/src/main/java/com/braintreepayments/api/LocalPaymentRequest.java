@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,21 +47,21 @@ public class LocalPaymentRequest {
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
      */
-    public void setAddress(PostalAddress address) {
+    public void setAddress(@NonNull PostalAddress address) {
         this.address = address;
     }
 
     /**
      * @param amount Optional - The amount for the transaction.
      */
-    public void setAmount(String amount) {
+    public void setAmount(@NonNull String amount) {
         this.amount = amount;
     }
 
     /**
      * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
      */
-    public void setBic(String bankIdentificationCode) {
+    public void setBic(@NonNull String bankIdentificationCode) {
         this.bankIdentificationCode = bankIdentificationCode;
     }
 
@@ -68,35 +70,35 @@ public class LocalPaymentRequest {
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
      */
-    public void setCurrencyCode(String currencyCode) {
+    public void setCurrencyCode(@NonNull String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
     /**
      * @param email Optional - Payer email of the customer.
      */
-    public void setEmail(String email) {
+    public void setEmail(@NonNull String email) {
         this.email = email;
     }
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
      */
-    public void setGivenName(String givenName) {
+    public void setGivenName(@NonNull String givenName) {
         this.givenName = givenName;
     }
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
      */
-    public void setMerchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(@NonNull String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
     }
 
     /**
      * @param paymentType - The type of payment
      */
-    public void setPaymentType(String paymentType) {
+    public void setPaymentType(@NonNull String paymentType) {
         this.paymentType = paymentType;
     }
 
@@ -107,14 +109,14 @@ public class LocalPaymentRequest {
      *                               may determine which banks are presented to the customer.
      *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
      */
-    public void setPaymentTypeCountryCode(String paymentTypeCountryCode) {
+    public void setPaymentTypeCountryCode(@NonNull String paymentTypeCountryCode) {
         this.paymentTypeCountryCode = paymentTypeCountryCode;
     }
 
     /**
      * @param phone Optional - Phone number of the customer.
      */
-    public void setPhone(String phone) {
+    public void setPhone(@NonNull String phone) {
         this.phone = phone;
     }
 
@@ -129,7 +131,7 @@ public class LocalPaymentRequest {
     /**
      * @param surname Optional - Surname (last name) of the customer.
      */
-    public void setSurname(String surname) {
+    public void setSurname(@NonNull String surname) {
         this.surname = surname;
     }
 

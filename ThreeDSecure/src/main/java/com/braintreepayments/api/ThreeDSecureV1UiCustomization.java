@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 /**
  * UI Customization Options for 3D Secure 1 Flows.
  */
@@ -18,7 +20,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display in the button.
      */
-    public void setRedirectButtonText(String text) {
+    public void setRedirectButtonText(@NonNull String text) {
         redirectButtonText = text;
     }
 
@@ -27,7 +29,7 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
      *
      * @param text The text to display below the button.
      */
-    public void setRedirectDescription(String text) {
+    public void setRedirectDescription(@NonNull String text) {
         redirectDescription = text;
     }
 

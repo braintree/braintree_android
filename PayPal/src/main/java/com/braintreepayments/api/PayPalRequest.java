@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -127,7 +128,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param localeCode A locale code to use for the transaction.
      */
-    public void setLocaleCode(String localeCode) {
+    public void setLocaleCode(@NonNull String localeCode) {
         this.localeCode = localeCode;
     }
 
@@ -136,7 +137,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
-    public void setDisplayName(String displayName) {
+    public void setDisplayName(@NonNull String displayName) {
         this.displayName = displayName;
     }
 
@@ -145,7 +146,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param description The description to display.
      */
-    public void setBillingAgreementDescription(String description) {
+    public void setBillingAgreementDescription(@NonNull String description) {
         billingAgreementDescription = description;
     }
 
@@ -167,7 +168,7 @@ public abstract class PayPalRequest implements Parcelable {
      *                        <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
-    public void setLandingPageType(@PayPalLandingPageType String landingPageType) {
+    public void setLandingPageType(@NonNull @PayPalLandingPageType String landingPageType) {
         this.landingPageType = landingPageType;
     }
 
@@ -176,7 +177,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
-    public void setMerchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(@NonNull String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
     }
 
@@ -185,7 +186,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param lineItems a collection of {@link PayPalLineItem}
      */
-    public void setLineItems(Collection<PayPalLineItem> lineItems) {
+    public void setLineItems(@NonNull Collection<PayPalLineItem> lineItems) {
         this.lineItems.clear();
         this.lineItems.addAll(lineItems);
     }

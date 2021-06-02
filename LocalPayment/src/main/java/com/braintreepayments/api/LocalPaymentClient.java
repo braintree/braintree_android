@@ -132,7 +132,7 @@ public class LocalPaymentClient {
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
-    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, final LocalPaymentBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;
