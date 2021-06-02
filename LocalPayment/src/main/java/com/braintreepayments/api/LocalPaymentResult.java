@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 /**
  * Local payment result information.
  */
@@ -18,6 +20,7 @@ public class LocalPaymentResult {
     /**
      * @return The original request used to create the local payment transaction.
      */
+    @Nullable
     public LocalPaymentRequest getRequest() {
         return request;
     }
@@ -25,6 +28,7 @@ public class LocalPaymentResult {
     /**
      * @return The URL used for payment approval.
      */
+    @Nullable
     public String getApprovalUrl() {
         return approvalUrl;
     }
@@ -32,6 +36,7 @@ public class LocalPaymentResult {
     /**
      * @return The ID of the local payment after creation.
      */
+    @Nullable
     public String getPaymentId() {
         return paymentId;
     }

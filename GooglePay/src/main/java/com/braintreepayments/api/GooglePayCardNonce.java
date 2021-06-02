@@ -141,6 +141,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
+    @Nullable
     public String getCardType() {
         return cardType;
     }
@@ -148,6 +149,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
+    @Nullable
     public String getLastTwo() {
         return lastTwo;
     }
@@ -155,6 +157,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last four digits of the user's underlying card, intended for display purposes.
      */
+    @Nullable
     public String getLastFour() {
         return lastFour;
     }

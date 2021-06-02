@@ -199,6 +199,7 @@ public class PayPalClient {
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;

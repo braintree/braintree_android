@@ -401,6 +401,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed payment methods for a given payment method type.
      */
+    @Nullable
     public JSONObject getAllowedPaymentMethod(String type) {
         return allowedPaymentMethods.get(type);
     }
@@ -408,6 +409,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Tokenization specification for a given payment method type.
      */
+    @Nullable
     public JSONObject getTokenizationSpecificationForType(String type) {
         return tokenizationSpecifications.get(type);
     }
@@ -415,6 +417,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed authentication methods for a given payment method type.
      */
+    @Nullable
     public JSONArray getAllowedAuthMethodsForType(String type) {
         return allowedAuthMethods.get(type);
     }
@@ -422,10 +425,12 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed card networks for a given payment method type.
      */
+    @Nullable
     public JSONArray getAllowedCardNetworksForType(String type) {
         return allowedCardNetworks.get(type);
     }
 
+    @Nullable
     public String getEnvironment() {
         return environment;
     }
@@ -433,6 +438,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The merchant ID that Google Pay has provided.
      */
+    @Nullable
     public String getGoogleMerchantId() {
         return googleMerchantId;
     }
@@ -440,6 +446,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The merchant name that will be presented in Google Pay.
      */
+    @Nullable
     public String getGoogleMerchantName() {
         return googleMerchantName;
     }
@@ -447,6 +454,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The country code where the transaction is processed.
      */
+    @Nullable
     public String getCountryCode() {
         return countryCode;
     }

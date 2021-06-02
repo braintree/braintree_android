@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -155,7 +156,7 @@ public abstract class PayPalRequest implements Parcelable {
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public void setShippingAddressOverride(PostalAddress shippingAddressOverride) {
+    public void setShippingAddressOverride(@NonNull PostalAddress shippingAddressOverride) {
         this.shippingAddressOverride = shippingAddressOverride;
     }
 
@@ -191,10 +192,12 @@ public abstract class PayPalRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
+    @Nullable
     public String getLocaleCode() {
         return localeCode;
     }
 
+    @Nullable
     public String getBillingAgreementDescription() {
         return billingAgreementDescription;
     }
@@ -207,23 +210,28 @@ public abstract class PayPalRequest implements Parcelable {
         return shippingAddressEditable;
     }
 
+    @Nullable
     public PostalAddress getShippingAddressOverride() {
         return shippingAddressOverride;
     }
 
+    @Nullable
     public String getDisplayName() {
         return displayName;
     }
 
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
+    @Nullable
     public ArrayList<PayPalLineItem> getLineItems() {
         return lineItems;
     }
 
     @PayPalLandingPageType
+    @Nullable
     public String getLandingPageType() {
         return landingPageType;
     }

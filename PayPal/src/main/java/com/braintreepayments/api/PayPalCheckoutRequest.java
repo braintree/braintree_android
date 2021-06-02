@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONArray;
@@ -128,20 +129,24 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
+    @Nullable
     public String getAmount() {
         return amount;
     }
 
+    @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
     @PayPalPaymentIntent
+    @Nullable
     public String getIntent() {
         return intent;
     }
 
     @PayPalPaymentUserAction
+    @Nullable
     public String getUserAction() {
         return userAction;
     }

@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -136,35 +137,43 @@ public class PayPalLineItem implements Parcelable {
         this.url = url;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }
 
     @PayPalLineItemKind
+    @Nullable
     public String getKind() {
         return kind;
     }
 
+    @Nullable
     public String getName() {
         return name;
     }
 
+    @Nullable
     public String getProductCode() {
         return productCode;
     }
 
+    @Nullable
     public String getQuantity() {
         return quantity;
     }
 
+    @Nullable
     public String getUnitAmount() {
         return unitAmount;
     }
 
+    @Nullable
     public String getUnitTaxAmount() {
         return unitTaxAmount;
     }
 
+    @Nullable
     public String getUrl() {
         return url;
     }

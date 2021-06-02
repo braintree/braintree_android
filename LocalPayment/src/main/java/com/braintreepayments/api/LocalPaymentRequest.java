@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,42 +136,52 @@ public class LocalPaymentRequest {
         this.surname = surname;
     }
 
+    @Nullable
     public PostalAddress getAddress() {
         return address;
     }
 
+    @Nullable
     public String getAmount() {
         return amount;
     }
 
+    @Nullable
     public String getBic() {
         return bankIdentificationCode;
     }
 
+    @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
+    @Nullable
     public String getEmail() {
         return email;
     }
 
+    @Nullable
     public String getGivenName() {
         return givenName;
     }
 
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
+    @Nullable
     public String getPaymentType() {
         return paymentType;
     }
 
+    @Nullable
     public String getPaymentTypeCountryCode() {
         return paymentTypeCountryCode;
     }
 
+    @Nullable
     public String getPhone() {
         return phone;
     }
@@ -179,6 +190,7 @@ public class LocalPaymentRequest {
         return shippingAddressRequired;
     }
 
+    @Nullable
     public String getSurname() {
         return surname;
     }

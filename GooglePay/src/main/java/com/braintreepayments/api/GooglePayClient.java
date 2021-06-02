@@ -81,8 +81,7 @@ public class GooglePayClient {
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(@NonNull final FragmentActivity activity, @NonNull final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
-
+    public void isReadyToPay(@NonNull final FragmentActivity activity, @Nullable final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -93,11 +92,17 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(false, e);
+                    return;
+                }
+
                 if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(false, null);
                     return;
                 }
 
+                //noinspection ConstantConditions
                 if (activity == null) {
                     callback.onResult(false, new IllegalArgumentException("Activity cannot be null."));
                     return;
@@ -146,6 +151,10 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(null, null);
+                    return;
+                }
                 callback.onResult(getTokenizationParameters(configuration), getAllowedCardNetworks(configuration));
             }
         });
@@ -168,6 +177,7 @@ public class GooglePayClient {
             return;
         }
 
+        //noinspection ConstantConditions
         if (request == null) {
             callback.onResult(new BraintreeException("Cannot pass null GooglePayRequest to requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -183,6 +193,11 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(e);
+                    return;
+                }
+
                 if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(new BraintreeException("Google Pay is not enabled for your Braintree account," +
                             " or Google Play Services are not configured correctly."));

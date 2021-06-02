@@ -40,10 +40,15 @@ public class LocalPaymentClient {
      */
     public void startPayment(@NonNull final LocalPaymentRequest request, @NonNull final LocalPaymentStartCallback callback) {
         Exception exception = null;
+
+        //noinspection ConstantConditions
+        if (callback == null) {
+            throw new RuntimeException("A LocalPaymentCallback is required.");
+        }
+
+        //noinspection ConstantConditions
         if (request == null) {
             exception = new BraintreeException("A LocalPaymentRequest is required.");
-        } else if (callback == null) {
-            throw new RuntimeException("A LocalPaymentCallback is required.");
         } else if (request.getPaymentType() == null || request.getAmount() == null) {
             exception = new BraintreeException(
                     "LocalPaymentRequest is invalid, paymentType and amount are required.");
@@ -106,9 +111,13 @@ public class LocalPaymentClient {
      *                           and now has an approvalUrl and paymentId.
      */
     public void approvePayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) throws JSONException, BrowserSwitchException {
+        //noinspection ConstantConditions
         if (activity == null) {
             throw new RuntimeException("A FragmentActivity is required.");
-        } else if (localPaymentResult == null) {
+        }
+
+        //noinspection ConstantConditions
+        if (localPaymentResult == null) {
             throw new RuntimeException("A LocalPaymentTransaction is required.");
         }
 
@@ -133,6 +142,7 @@ public class LocalPaymentClient {
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;
