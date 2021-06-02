@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,6 +133,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Given name associated with the address.
      */
+    @Nullable
     public String getGivenName() {
         return givenName;
     }
@@ -139,6 +141,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Surname associated with the address.
      */
+    @Nullable
     public String getSurname() {
         return surname;
     }
@@ -146,6 +149,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Line 1 of the Address (eg. number, street, etc).
      */
+    @Nullable
     public String getStreetAddress() {
         return streetAddress;
     }
@@ -153,6 +157,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Line 2 of the Address (eg. suite, apt #, etc.).
      */
+    @Nullable
     public String getExtendedAddress() {
         return extendedAddress;
     }
@@ -160,6 +165,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Line 3 of the Address (eg. suite, apt #, etc.).
      */
+    @Nullable
     public String getLine3() {
         return line3;
     }
@@ -167,6 +173,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return City name.
      */
+    @Nullable
     public String getLocality() {
         return locality;
     }
@@ -174,6 +181,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return The user's region.
      */
+    @Nullable
     public String getRegion() {
         return region;
     }
@@ -181,6 +189,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return Zip code or equivalent.
      */
+    @Nullable
     public String getPostalCode() {
         return postalCode;
     }
@@ -188,6 +197,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return 2 letter country code.
      */
+    @Nullable
     public String getCountryCodeAlpha2() {
         return countryCodeAlpha2;
     }
@@ -195,6 +205,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * @return The phone number associated with the address.
      */
+    @Nullable
     public String getPhoneNumber() {
         return phoneNumber;
     }

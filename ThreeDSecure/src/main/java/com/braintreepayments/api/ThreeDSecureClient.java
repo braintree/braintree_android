@@ -68,6 +68,11 @@ public class ThreeDSecureClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (configuration == null) {
+                    callback.onResult(null, error);
+                    return;
+                }
+
                 if (!configuration.isThreeDSecureEnabled()) {
                     callback.onResult(null, new BraintreeException("Three D Secure is not enabled for this account. " +
                             "Please contact Braintree Support for assistance."));
@@ -154,6 +159,11 @@ public class ThreeDSecureClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration == null) {
+                    callback.onResult(null, null, error);
+                    return;
+
+                }
                 if (configuration.getCardinalAuthenticationJwt() == null) {
                     Exception authError = new BraintreeException("Merchant is not configured for 3DS 2.0. " +
                             "Please contact Braintree Support for assistance.");
@@ -206,7 +216,6 @@ public class ThreeDSecureClient {
                     startVerificationFlow(activity, configuration, request, result, callback);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
-                    return;
                 }
             }
         });
@@ -319,6 +328,7 @@ public class ThreeDSecureClient {
      */
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final ThreeDSecureResultCallback callback) {
         // V1 flow
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;

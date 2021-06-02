@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -91,7 +92,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
      */
-    public void setShippingMethod(@NonNull @ThreeDSecureShippingMethod int shippingMethod) {
+    public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
         this.shippingMethod = shippingMethod;
     }
 
@@ -184,6 +185,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The nonce to use for 3D Secure verification
      */
+    @Nullable
     public String getNonce() {
         return nonce;
     }
@@ -191,6 +193,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The amount to use for 3D Secure verification
      */
+    @Nullable
     public String getAmount() {
         return amount;
     }
@@ -198,6 +201,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The mobile phone number to use for 3D Secure verification
      */
+    @Nullable
     public String getMobilePhoneNumber() {
         return mobilePhoneNumber;
     }
@@ -205,6 +209,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The email to use for 3D Secure verification
      */
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -219,6 +224,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The billing address to use for 3D Secure verification
      */
+    @Nullable
     public ThreeDSecurePostalAddress getBillingAddress() {
         return billingAddress;
     }
@@ -226,6 +232,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The requested ThreeDSecure version
      */
+    @Nullable
     public @ThreeDSecureVersion String getVersionRequested() {
         return versionRequested;
     }
@@ -233,6 +240,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The account type
      */
+    @Nullable
     public @ThreeDSecureAccountType String getAccountType() {
         return accountType;
     }
@@ -242,6 +250,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * {@link ThreeDSecureAdditionalInformation} is only used for
      * {@link ThreeDSecureRequest#VERSION_2} requests.
      */
+    @Nullable
     public ThreeDSecureAdditionalInformation getAdditionalInformation() {
         return additionalInformation;
     }
@@ -267,6 +276,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI customization for 3DS2 challenge views.
      */
+    @Nullable
     public ThreeDSecureV2UiCustomization getV2UiCustomization() {
         return v2UiCustomization;
     }
@@ -274,6 +284,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI customization for 3DS1 challenge views.
      */
+    @Nullable
     public ThreeDSecureV1UiCustomization getV1UiCustomization() {
         return v1UiCustomization;
     }
