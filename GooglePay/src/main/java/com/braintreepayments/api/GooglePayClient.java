@@ -472,32 +472,7 @@ public class GooglePayClient {
         return json;
     }
 
-    private void setGooglePayRequestDefaults(Configuration configuration,
-                                             GooglePayRequest request) {
-        if (request.isEmailRequired() == null) {
-            request.setEmailRequired(false);
-        }
-
-        if (request.isPhoneNumberRequired() == null) {
-            request.setPhoneNumberRequired(false);
-        }
-
-        if (request.isBillingAddressRequired() == null) {
-            request.setBillingAddressRequired(false);
-        }
-
-        if (request.isBillingAddressRequired() &&
-                request.getBillingAddressFormat() == null) {
-            request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_MIN);
-        }
-
-        if (request.isShippingAddressRequired() == null) {
-            request.setShippingAddressRequired(false);
-        }
-
-        if (request.getAllowPrepaidCards() == null) {
-            request.setAllowPrepaidCards(true);
-        }
+    private void setGooglePayRequestDefaults(Configuration configuration, GooglePayRequest request) {
 
         if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
             request.setAllowedPaymentMethod(CARD_PAYMENT_TYPE,

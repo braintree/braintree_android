@@ -70,6 +70,34 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         }
     }
 
+    /**
+     * @return The mobile country code to use when sending the auth code via SMS.
+     */
+    public String getMobileCountryCode() {
+        return mobileCountryCode;
+    }
+
+    /**
+     * @return The mobile phone number to use when sending the auth code via SMS.
+     */
+    public String getMobilePhoneNumber() {
+        return mobilePhoneNumber;
+    }
+
+    /**
+     * @return The auth code sent to the user via SMS.
+     */
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    /**
+     * @return The UnionPay enrollment ID.
+     */
+    public String getEnrollmentId() {
+        return enrollmentId;
+    }
+
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
         unionPayEnrollment.put(NUMBER_KEY, number);

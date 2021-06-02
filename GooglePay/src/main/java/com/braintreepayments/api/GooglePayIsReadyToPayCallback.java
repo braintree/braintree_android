@@ -13,5 +13,5 @@ public interface GooglePayIsReadyToPayCallback {
      * @param isReadyToPay true if Google Pay is ready; false otherwise.
      * @param error an exception that occurred while checking if Google Pay is ready
      */
-    void onResult(Boolean isReadyToPay, Exception error);
+    void onResult(boolean isReadyToPay, Exception error);
 }

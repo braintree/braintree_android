@@ -2,13 +2,12 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import androidx.annotation.Nullable;
-
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
-import static java.lang.Boolean.FALSE;
 
 /**
  * {@link PaymentMethodNonce} representing a Google Pay card.
@@ -32,7 +31,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private final String lastTwo;
     private final String lastFour;
     private final String email;
-    private Boolean isNetworkTokenized;
+    private boolean isNetworkTokenized;
     private final PostalAddress billingAddress;
     private final PostalAddress shippingAddress;
     private final BinData binData;
@@ -85,7 +84,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         String lastTwo = details.getString(LAST_TWO_KEY);
         String lastFour = details.getString(LAST_FOUR_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
-        boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
+        boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, false);
 
         return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
     }
@@ -95,7 +94,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             String lastTwo,
             String lastFour,
             String email,
-            Boolean isNetworkTokenized,
+            boolean isNetworkTokenized,
             PostalAddress billingAddress,
             PostalAddress shippingAddress,
             BinData binData,
@@ -171,7 +170,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return true if the card is network tokenized.
      */
-    public Boolean isNetworkTokenized() {
+    public boolean isNetworkTokenized() {
         return isNetworkTokenized;
     }
 

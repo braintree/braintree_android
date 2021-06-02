@@ -103,6 +103,27 @@ public class Card extends BaseCard implements Parcelable {
         authenticationInsightRequested = requested;
     }
 
+    /**
+     * @return The merchant account id used to generate the authentication insight.
+     */
+    public String getMerchantAccountId() {
+        return merchantAccountId;
+    }
+
+    /**
+     * @return If authentication insight will be requested.
+     */
+    public boolean isAuthenticationInsightRequested() {
+        return authenticationInsightRequested;
+    }
+
+    /**
+     * @return If the associated card will be validated.
+     */
+    public boolean getShouldValidate() {
+        return shouldValidate;
+    }
+
     @Override
     JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();

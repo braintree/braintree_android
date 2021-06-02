@@ -220,6 +220,104 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         }
     }
 
+    /**
+     * @return Name on the card.
+     */
+    public String getCardholderName() {
+        return cardholderName;
+    }
+
+    /**
+     * @return The card number.
+     */
+    public String getNumber() {
+        return number;
+    }
+
+    /**
+     * @return Company associated with the card.
+     */
+    public String getCompany() {
+        return company;
+    }
+
+    /**
+     * @return The ISO 3166-1 alpha-3 country code specified in the card's billing address.
+     */
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    /**
+     * @return The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
+     */
+    public String getCvv() {
+        return cvv;
+    }
+
+    /**
+     * @return The expiration month of the card.
+     */
+    public String getExpirationMonth() {
+        return expirationMonth;
+    }
+
+    /**
+     * @return The expiration year of the card.
+     */
+    public String getExpirationYear() {
+        return expirationYear;
+    }
+
+    /**
+     * @return The extended address of the card.
+     */
+    public String getExtendedAddress() {
+        return extendedAddress;
+    }
+
+    /**
+     * @return First name on the card.
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     * @return Last name on the card.
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * @return Locality of the card.
+     */
+    public String getLocality() {
+        return locality;
+    }
+
+    /**
+     * @return Postal code of the card.
+     */
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    /**
+     * @return Region of the card.
+     */
+    public String getRegion() {
+        return region;
+    }
+
+    /**
+     * @return Street address of the card.
+     */
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
     @Override
     JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();

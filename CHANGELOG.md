@@ -3,6 +3,7 @@
 ## unreleased
 
 * Make `PayPalRequest` and subclasses `Parcelable`
+* Add getters to data classes to improve support for Kotlin synthesized properties
 * Breaking Changes
   * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
   * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
@@ -19,6 +20,7 @@
   * Remove `PaymentMethodDeleteException`
   * Remove `GetPaymentMethodNoncesCallback`
   * Remove `DeletePaymentMethodNonceCallback`
+  * Use primitives instead of boxed types where possible
 
 ## 4.0.0-beta3
 
