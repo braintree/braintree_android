@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.json.JSONObject;
 
@@ -47,7 +47,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's first name.
      */
-    @Nullable
+    @NonNull
     public String getFirstName() {
         return firstName;
     }
@@ -55,7 +55,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's last name.
      */
-    @Nullable
+    @NonNull
     public String getLastName() {
         return lastName;
     }
@@ -63,7 +63,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's street address.
      */
-    @Nullable
+    @NonNull
     public String getStreetAddress() {
         return streetAddress;
     }
@@ -71,7 +71,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's extended address.
      */
-    @Nullable
+    @NonNull
     public String getExtendedAddress() {
         return extendedAddress;
     }
@@ -79,7 +79,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's locality.
      */
-    @Nullable
+    @NonNull
     public String getLocality() {
         return locality;
     }
@@ -87,7 +87,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's region.
      */
-    @Nullable
+    @NonNull
     public String getRegion() {
         return region;
     }
@@ -95,7 +95,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's postal code.
      */
-    @Nullable
+    @NonNull
     public String getPostalCode() {
         return postalCode;
     }
@@ -103,7 +103,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's country code.
      */
-    @Nullable
+    @NonNull
     public String getCountryCode() {
         return countryCode;
     }
@@ -111,7 +111,7 @@ public class VisaCheckoutAddress implements Parcelable {
     /**
      * @return The user's phone number.
      */
-    @Nullable
+    @NonNull
     public String getPhoneNumber() {
         return phoneNumber;
     }
