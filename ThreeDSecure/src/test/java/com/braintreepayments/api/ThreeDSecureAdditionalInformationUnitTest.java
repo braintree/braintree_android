@@ -91,7 +91,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("account_purchases", postSerialized.getAccountPurchases());
         assertEquals("fraud_activity", postSerialized.getFraudActivity());
         assertEquals("shipping_name_indicator", postSerialized.getShippingNameIndicator());
-        assertEquals("payment_account_indicator", postSerialized.getPaymentAccountIdicator());
+        assertEquals("payment_account_indicator", postSerialized.getPaymentAccountIndicator());
         assertEquals("payment_account_age", postSerialized.getPaymentAccountAge());
         assertEquals("address_match", postSerialized.getAddressMatch());
         assertEquals("account_id", postSerialized.getAccountId());
