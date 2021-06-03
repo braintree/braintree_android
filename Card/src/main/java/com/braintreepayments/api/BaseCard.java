@@ -342,7 +342,6 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return expirationDate;
     }
 
-
     @Override
     JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
