@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.braintreepayments.api.*
-import com.braintreepayments.demo.BaseFragment
-import com.braintreepayments.demo.R
 import kotlinx.coroutines.launch
 
 /**
@@ -36,7 +34,7 @@ class CardFragmentKtx : BaseFragment() {
             card.expirationYear = "2022"
             card.cvv = "123"
 
-            val cardNonce: CardNonce = cardClient.awaitTokenize(requireActivity(), card)
+            val cardNonce: CardNonce = cardClient.tokenize(requireActivity(), card)
             print(cardNonce.string)
         }
     }
