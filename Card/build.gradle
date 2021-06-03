@@ -46,8 +46,8 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
+    testImplementation "androidx.core:core-ktx:+"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.5.10"
 }
 
