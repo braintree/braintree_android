@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-android'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
