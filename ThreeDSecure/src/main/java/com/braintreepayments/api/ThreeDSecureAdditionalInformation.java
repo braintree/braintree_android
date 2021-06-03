@@ -625,7 +625,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      * @return Payment account indicator
      */
     @Nullable
-    public String getPaymentAccountIdicator() {
+    public String getPaymentAccountIndicator() {
         return paymentAccountIndicator;
     }
 
