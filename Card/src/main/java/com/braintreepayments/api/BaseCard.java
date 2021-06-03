@@ -334,6 +334,13 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return streetAddress;
     }
 
+    // TODO: confirm this logic to allow for Kotlin synthesized property
+    @Nullable
+    public String getExpirationDate() {
+        return expirationMonth + "/" + expirationYear;
+    }
+
+
     @Override
     JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
