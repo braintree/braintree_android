@@ -111,7 +111,6 @@ class UnionPayCardUnitTest {
                 .getString("id"))
     }
 
-    // TODO: investigate this failure related to BaseCard properties
     @Test
     @Throws(JSONException::class)
     fun doesNotIncludeEmptyStrings() {

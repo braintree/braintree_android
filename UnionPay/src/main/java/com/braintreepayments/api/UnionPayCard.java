@@ -106,9 +106,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
 
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
-        unionPayEnrollment.put(NUMBER_KEY, number);
-        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, expirationMonth);
-        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, expirationYear);
+        unionPayEnrollment.put(NUMBER_KEY, getNumber());
+        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, getExpirationMonth());
+        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, getExpirationYear());
         unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mobileCountryCode);
         unionPayEnrollment.put(MOBILE_PHONE_NUMBER_KEY, mobilePhoneNumber);
 

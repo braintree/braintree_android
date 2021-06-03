@@ -9,7 +9,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFailsWith
 
-
 @RunWith(RobolectricTestRunner::class)
 class CardUnitTest {
 
@@ -226,7 +225,6 @@ class CardUnitTest {
         assertFalse(builtCard.getJSONObject("options").getBoolean("validate"))
     }
 
-    // TODO: investigate why this isn't using the underlying setters and how to update the logic to pass null instead of empty string
     @Test
     @Throws(JSONException::class)
     fun buildJSON_doesNotIncludeEmptyStrings() {
