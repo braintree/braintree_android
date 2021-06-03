@@ -32,7 +32,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
      */
-    public void setMobileCountryCode(@NonNull String mobileCountryCode) {
+    public void setMobileCountryCode(@Nullable String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             this.mobileCountryCode = null;
         } else {

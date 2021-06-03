@@ -125,8 +125,5 @@ afterEvaluate {
         }
     }
 }
-repositories {
-    mavenCentral()
-}
 
 // endregion
