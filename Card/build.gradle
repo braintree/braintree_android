@@ -3,6 +3,7 @@ plugins {
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -45,6 +46,9 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
 
 // region signing and publishing
@@ -123,6 +127,9 @@ afterEvaluate {
             }
         }
     }
+}
+repositories {
+    mavenCentral()
 }
 
 // endregion
