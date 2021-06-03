@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.models.enums.ButtonType;
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization;

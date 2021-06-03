@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 
