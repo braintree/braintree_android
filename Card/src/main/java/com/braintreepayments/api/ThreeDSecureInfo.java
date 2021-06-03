@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONObject;
 
 /**
@@ -87,6 +89,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Cardholder authentication verification value or "CAVV" is the main encrypted message issuers and card networks use to verify authentication has occured. Mastercard uses an "AVV" message which will also be returned in the cavv parameter.
      */
+    @Nullable
     public String getCavv() {
         return cavv;
     }
@@ -94,6 +97,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Directory Server Transaction ID is an ID used by the card brand's 3DS directory server.
      */
+    @Nullable
     public String getDsTransactionId() {
         return dsTransactionId;
     }
@@ -101,6 +105,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return The ecommerce indicator flag indicates the outcome of the 3DS authentication. Possible values are 00, 01, and 02 for Mastercard 05, 06, and 07 for all other cardbrands.
      */
+    @Nullable
     public String getEciFlag() {
         return eciFlag;
     }
@@ -113,6 +118,7 @@ public class ThreeDSecureInfo implements Parcelable {
      * `B` = Bypass
      * `E` = RequestFailure
      */
+    @Nullable
     public String getEnrolled() {
         return enrolled;
     }
@@ -136,6 +142,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return The 3D Secure status value.
      */
+    @Nullable
     public String getStatus() {
         return status;
     }
@@ -143,6 +150,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return The 3DS version used in the authentication, example "1.0.2" or "2.1.0".
      */
+    @Nullable
     public String getThreeDSecureVersion() {
         return threeDSecureVersion;
     }
@@ -157,6 +165,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Transaction identifier resulting from 3D Secure authentication. Uniquely identifies the transaction and sometimes required in the authorization message. This field will no longer be used in 3DS 2 authentications.
      */
+    @Nullable
     public String getXid() {
         return xid;
     }
@@ -164,6 +173,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Unique transaction identifier assigned by the Access Control Server (ACS) to identify a single transaction.
      */
+    @Nullable
     public String getAcsTransactionId() {
         return acsTransactionId;
     }
@@ -171,6 +181,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Unique identifier assigned to the 3D Secure authentication performed for this transaction.
      */
+    @Nullable
     public String getThreeDSecureAuthenticationId() {
         return threeDSecureAuthenticationId;
     }
@@ -179,6 +190,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return Unique transaction identifier assigned by the 3DS Server to identify a single transaction.
      */
+    @Nullable
     public String getThreeDSecureServerTransactionId() {
         return threeDSecureServerTransactionId;
     }
@@ -190,6 +202,7 @@ public class ThreeDSecureInfo implements Parcelable {
      * U – Unable to Complete Authentication
      * A – Successful Stand-In Attempts Transaction
      */
+    @Nullable
     public String getParesStatus() {
         return paresStatus;
     }
@@ -197,6 +210,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return On authentication, the transaction status result identifier.
      */
+    @Nullable
     public String getAuthenticationTransactionStatus() {
         return authenticationTransactionStatus;
     }
@@ -204,6 +218,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return On authentication, provides additional information as to why the transaction status has the specific value.
      */
+    @Nullable
     public String getAuthenticationTransactionStatusReason() {
         return authenticationTransactionStatusReason;
     }
@@ -211,6 +226,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return On lookup, the transaction status result identifier.
      */
+    @Nullable
     public String getLookupTransactionStatus() {
         return lookupTransactionStatus;
     }
@@ -218,6 +234,7 @@ public class ThreeDSecureInfo implements Parcelable {
     /**
      * @return On lookup, provides additional information as to why the transaction status has the specific value.
      */
+    @Nullable
     public String getLookupTransactionStatusReason() {
         return lookupTransactionStatusReason;
     }

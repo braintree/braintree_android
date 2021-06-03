@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +58,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true");
                 countDownLatch.countDown();
@@ -77,7 +79,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.true");
                 countDownLatch.countDown();
@@ -96,7 +98,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.false");
                 countDownLatch.countDown();
@@ -117,7 +119,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
                 verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
@@ -139,7 +141,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-disabled");
@@ -161,7 +163,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.true");
                 countDownLatch.countDown();
@@ -182,7 +184,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.false");
                 countDownLatch.countDown();
@@ -202,7 +204,7 @@ public class PreferredPaymentMethodsClientUnitTest {
         PreferredPaymentMethodsClient sut = new PreferredPaymentMethodsClient(braintreeClient, deviceInspector);
         sut.fetchPreferredPaymentMethods(context, new PreferredPaymentMethodsCallback() {
             @Override
-            public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
+            public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-error");
                 countDownLatch.countDown();

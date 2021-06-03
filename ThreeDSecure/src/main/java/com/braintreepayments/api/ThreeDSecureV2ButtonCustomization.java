@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 
 /**
@@ -21,7 +23,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void setBackgroundColor(String backgroundColor) {
+    public void setBackgroundColor(@Nullable String backgroundColor) {
         this.backgroundColor = backgroundColor;
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
     }
@@ -37,6 +39,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getBackgroundColor() {
         return backgroundColor;
     }

@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -22,7 +23,7 @@ public class DataCollector {
     private final PayPalDataCollector payPalDataCollector;
     private final KountDataCollector kountDataCollector;
 
-    public DataCollector(BraintreeClient braintreeClient) {
+    public DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient));
     }
 
@@ -39,7 +40,7 @@ public class DataCollector {
      * @param context  Android Context
      * @param callback {@link DataCollectorCallback}
      */
-    public void collectDeviceData(Context context, DataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull Context context, @NonNull DataCollectorCallback callback) {
         collectDeviceData(context, null, callback);
     }
 
@@ -55,7 +56,7 @@ public class DataCollector {
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
      * @param callback   {@link DataCollectorCallback}
      */
-    public void collectDeviceData(final Context context, final String merchantId, final DataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull final Context context, @Nullable final String merchantId, @NonNull final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {

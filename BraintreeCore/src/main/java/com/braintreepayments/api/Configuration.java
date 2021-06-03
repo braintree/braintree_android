@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -65,11 +66,11 @@ public class Configuration {
      * @param configurationString The json configuration string from Braintree.
      * @return {@link Configuration} instance.
      */
-    public static Configuration fromJson(@Nullable String configurationString) throws JSONException {
+    public static Configuration fromJson(@NonNull String configurationString) throws JSONException {
         return new Configuration(configurationString);
     }
 
-    protected Configuration(@Nullable String configurationString) throws JSONException {
+    Configuration(String configurationString) throws JSONException {
         if (configurationString == null) {
             throw new JSONException("Configuration cannot be null");
         }
@@ -99,6 +100,7 @@ public class Configuration {
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
     }
 
+    @NonNull
     public String toJson() {
         return configurationString;
     }
@@ -106,6 +108,7 @@ public class Configuration {
     /**
      * @return The assets URL of the current environment.
      */
+    @NonNull
     public String getAssetsUrl() {
         return assetsUrl;
     }
@@ -113,6 +116,7 @@ public class Configuration {
     /**
      * @return The url of the Braintree client API for the current environment.
      */
+    @NonNull
     public String getClientApiUrl() {
         return clientApiUrl;
     }
@@ -205,6 +209,7 @@ public class Configuration {
     /**
      * @return The current environment.
      */
+    @NonNull
     public String getEnvironment() {
         return environment;
     }
@@ -234,6 +239,7 @@ public class Configuration {
     /**
      * @return the PayPal app privacy url.
      */
+    @Nullable
     public String getPayPalPrivacyUrl() {
         return payPalConfiguration.getPrivacyUrl();
     }
@@ -241,6 +247,7 @@ public class Configuration {
     /**
      * @return the PayPal app user agreement url.
      */
+    @Nullable
     public String getPayPalUserAgreementUrl() {
         return payPalConfiguration.getUserAgreementUrl();
     }
@@ -248,6 +255,7 @@ public class Configuration {
     /**
      * @return the url for custom PayPal environments.
      */
+    @Nullable
     public String getPayPalDirectBaseUrl() {
         return payPalConfiguration.getDirectBaseUrl();
     }
@@ -326,6 +334,7 @@ public class Configuration {
     /**
      * @return the current Braintree merchant id.
      */
+    @NonNull
     public String getMerchantId() {
         return merchantId;
     }
@@ -333,6 +342,7 @@ public class Configuration {
     /**
      * @return the current Braintree merchant account id.
      */
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
@@ -449,6 +459,7 @@ public class Configuration {
     /**
      * @return the JWT for Cardinal
      */
+    @Nullable
     public String getCardinalAuthenticationJwt() {
         return cardinalAuthenticationJwt;
     }

@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 
 /**
@@ -30,7 +32,7 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @param borderColor Color code in Hex format. For example, the color code can be “#999999”.
      */
-    public void setBorderColor(String borderColor) {
+    public void setBorderColor(@Nullable String borderColor) {
         this.borderColor = borderColor;
         cardinalTextBoxCustomization.setBorderColor(borderColor);
     }
@@ -53,6 +55,7 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     /**
      * @return Color code in Hex format.
      */
+    @Nullable
     public String getBorderColor() {
         return borderColor;
     }

@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONArray;
@@ -56,7 +58,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
-    public PayPalCheckoutRequest(String amount) {
+    public PayPalCheckoutRequest(@NonNull String amount) {
         this.amount = amount;
     }
 
@@ -69,7 +71,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public void setCurrencyCode(String currencyCode) {
+    public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
@@ -85,7 +87,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
      * for more information
      */
-    public void setIntent(@PayPalPaymentIntent String intent) {
+    public void setIntent(@NonNull @PayPalPaymentIntent String intent) {
         this.intent = intent;
     }
 
@@ -104,7 +106,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *                   </ul>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
-    public void setUserAction(@PayPalPaymentUserAction String userAction) {
+    public void setUserAction(@NonNull @PayPalPaymentUserAction String userAction) {
         this.userAction = userAction;
     }
 
@@ -127,20 +129,24 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
+    @NonNull
     public String getAmount() {
         return amount;
     }
 
+    @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
     @PayPalPaymentIntent
+    @NonNull
     public String getIntent() {
         return intent;
     }
 
     @PayPalPaymentUserAction
+    @NonNull
     public String getUserAction() {
         return userAction;
     }

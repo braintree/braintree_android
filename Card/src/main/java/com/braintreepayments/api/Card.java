@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.braintreepayments.api.GraphQLConstants.Keys;
 
 import org.json.JSONException;
@@ -82,7 +84,7 @@ public class Card extends BaseCard implements Parcelable {
     /**
      * @param id The merchant account id used to generate the authentication insight.
      */
-    public void setMerchantAccountId(String id) {
+    public void setMerchantAccountId(@Nullable String id) {
         merchantAccountId = TextUtils.isEmpty(id) ? null : id;
     }
 
@@ -106,6 +108,7 @@ public class Card extends BaseCard implements Parcelable {
     /**
      * @return The merchant account id used to generate the authentication insight.
      */
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }

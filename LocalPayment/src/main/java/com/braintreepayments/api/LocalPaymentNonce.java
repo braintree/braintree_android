@@ -2,6 +2,9 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -102,6 +105,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The email address associated with this local payment
      */
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -109,6 +113,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The billing address of the user if requested with additional scopes.
      */
+    @NonNull
     public PostalAddress getBillingAddress() {
         return billingAddress;
     }
@@ -116,6 +121,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The shipping address of the user provided by checkout flows.
      */
+    @NonNull
     public PostalAddress getShippingAddress() {
         return shippingAddress;
     }
@@ -123,6 +129,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The first name associated with the local payment.
      */
+    @NonNull
     public String getGivenName() {
         return givenName;
     }
@@ -130,6 +137,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The last name associated with the local payment.
      */
+    @NonNull
     public String getSurname() {
         return surname;
     }
@@ -137,6 +145,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The phone number associated with the local payment.
      */
+    @NonNull
     public String getPhone() {
         return phone;
     }
@@ -144,6 +153,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The ClientMetadataId associated with this transaction.
      */
+    @Nullable
     public String getClientMetadataId(){
         return clientMetadataId;
     }
@@ -151,6 +161,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
     /**
      * @return The Payer ID provided in local payment flows.
      */
+    @NonNull
     public String getPayerId(){
         return payerId;
     }

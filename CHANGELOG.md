@@ -22,6 +22,8 @@
   * Remove `GetPaymentMethodNoncesCallback`
   * Remove `DeletePaymentMethodNonceCallback`
   * Use primitives instead of boxed types where possible
+  * Add nullability annotations to public methods
+  * Remove `Context` parameter from `CardClient#tokenize()` method
 
 ## 4.0.0-beta3
 

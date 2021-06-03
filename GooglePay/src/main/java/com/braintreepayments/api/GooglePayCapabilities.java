@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,7 +19,7 @@ public class GooglePayCapabilities {
      *         {@code false} otherwise. Note: this value only pertains to the Braintree configuration, to check if
      *         the user has Google Pay setup use {@link GooglePayClient#isReadyToPay(FragmentActivity, GooglePayIsReadyToPayCallback)}
      */
-    public static boolean isGooglePayEnabled(Context context, Configuration configuration) {
+    public static boolean isGooglePayEnabled(@NonNull Context context, @NonNull Configuration configuration) {
         try {
             Class.forName(Wallet.class.getName());
 

@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
@@ -136,6 +137,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The email address associated with this PayPal account
      */
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -143,6 +145,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The billing address of the user if requested with additional scopes.
      */
+    @NonNull
     public PostalAddress getBillingAddress() {
         return billingAddress;
     }
@@ -150,6 +153,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The shipping address of the user provided by checkout flows.
      */
+    @NonNull
     public PostalAddress getShippingAddress() {
         return shippingAddress;
     }
@@ -157,6 +161,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The first name associated with the PayPal account.
      */
+    @NonNull
     public String getFirstName() {
         return firstName;
     }
@@ -164,6 +169,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The last name associated with the PayPal account.
      */
+    @NonNull
     public String getLastName() {
         return lastName;
     }
@@ -171,6 +177,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The phone number associated with the PayPal account.
      */
+    @NonNull
     public String getPhone() {
         return phone;
     }
@@ -178,6 +185,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The ClientMetadataId associated with this transaction.
      */
+    @Nullable
     public String getClientMetadataId() {
         return clientMetadataId;
     }
@@ -185,6 +193,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     /**
      * @return The Payer ID provided in checkout flows.
      */
+    @NonNull
     public String getPayerId() {
         return payerId;
     }

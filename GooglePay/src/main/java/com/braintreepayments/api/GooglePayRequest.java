@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.wallet.ShippingAddressRequirements;
@@ -50,7 +51,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param transactionInfo See {@link TransactionInfo}.
      */
-    public void setTransactionInfo(TransactionInfo transactionInfo) {
+    public void setTransactionInfo(@Nullable TransactionInfo transactionInfo) {
         this.transactionInfo = transactionInfo;
     }
 
@@ -107,7 +108,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param shippingAddressRequirements the shipping address requirements. {@link ShippingAddressRequirements}
      */
-    public void setShippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
+    public void setShippingAddressRequirements(@Nullable ShippingAddressRequirements shippingAddressRequirements) {
         this.shippingAddressRequirements = shippingAddressRequirements;
     }
 
@@ -136,7 +137,7 @@ public class GooglePayRequest implements Parcelable {
      * @param paymentMethodType The paymentMethod to add to
      * @param parameters        Parameters to assign to the paymentMethod
      */
-    public void setAllowedPaymentMethod(String paymentMethodType, JSONObject parameters) {
+    public void setAllowedPaymentMethod(@NonNull String paymentMethodType, @NonNull JSONObject parameters) {
         allowedPaymentMethods.put(paymentMethodType, parameters);
     }
 
@@ -146,7 +147,7 @@ public class GooglePayRequest implements Parcelable {
      * @param paymentMethodType The paymentMethod to attached tokenizationSpecification parameters to
      * @param parameters        The tokenizationSpecification parameters to attach
      */
-    public void setTokenizationSpecificationForType(String paymentMethodType, JSONObject parameters) {
+    public void setTokenizationSpecificationForType(@NonNull String paymentMethodType, @NonNull JSONObject parameters) {
         tokenizationSpecifications.put(paymentMethodType, parameters);
     }
 
@@ -156,7 +157,7 @@ public class GooglePayRequest implements Parcelable {
      * @param paymentMethodType the paymentMethod to attach allowedAuthMethods to
      * @param authMethods       the authMethods to allow the paymentMethodType to transact with
      */
-    public void setAllowedAuthMethods(String paymentMethodType, JSONArray authMethods) {
+    public void setAllowedAuthMethods(@NonNull String paymentMethodType, @NonNull JSONArray authMethods) {
         allowedAuthMethods.put(paymentMethodType, authMethods);
     }
 
@@ -166,25 +167,25 @@ public class GooglePayRequest implements Parcelable {
      * @param paymentMethodType the paymentMethod to attach cardNetworks to
      * @param cardNetworks      the cardNetworks to allow the paymentMethodType to transact with
      */
-    public void setAllowedCardNetworks(String paymentMethodType, JSONArray cardNetworks) {
+    public void setAllowedCardNetworks(@NonNull String paymentMethodType, @NonNull JSONArray cardNetworks) {
         allowedCardNetworks.put(paymentMethodType, cardNetworks);
     }
 
     /**
      * @param merchantId The merchant ID that Google Pay has provided.
      */
-    public void setGoogleMerchantId(String merchantId) {
+    public void setGoogleMerchantId(@Nullable String merchantId) {
         googleMerchantId = merchantId;
     }
 
     /**
      * @param merchantName The merchant name that will be presented in Google Pay
      */
-    public void setGoogleMerchantName(String merchantName) {
+    public void setGoogleMerchantName(@Nullable String merchantName) {
         googleMerchantName = merchantName;
     }
 
-    public void setEnvironment(String environment) {
+    public void setEnvironment(@Nullable String environment) {
         this.environment = "PRODUCTION".equals(environment.toUpperCase()) ? "PRODUCTION" : "TEST";
     }
 
@@ -196,7 +197,7 @@ public class GooglePayRequest implements Parcelable {
      *
      * @param countryCode The country code where the transaction is processed
      */
-    public void setCountryCode(String countryCode) {
+    public void setCountryCode(@Nullable String countryCode) {
         this.countryCode = countryCode;
     }
 
@@ -398,6 +399,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed payment methods for a given payment method type.
      */
+    @Nullable
     public JSONObject getAllowedPaymentMethod(String type) {
         return allowedPaymentMethods.get(type);
     }
@@ -405,6 +407,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Tokenization specification for a given payment method type.
      */
+    @Nullable
     public JSONObject getTokenizationSpecificationForType(String type) {
         return tokenizationSpecifications.get(type);
     }
@@ -412,6 +415,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed authentication methods for a given payment method type.
      */
+    @Nullable
     public JSONArray getAllowedAuthMethodsForType(String type) {
         return allowedAuthMethods.get(type);
     }
@@ -419,10 +423,12 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return Allowed card networks for a given payment method type.
      */
+    @Nullable
     public JSONArray getAllowedCardNetworksForType(String type) {
         return allowedCardNetworks.get(type);
     }
 
+    @Nullable
     public String getEnvironment() {
         return environment;
     }
@@ -430,6 +436,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The merchant ID that Google Pay has provided.
      */
+    @Nullable
     public String getGoogleMerchantId() {
         return googleMerchantId;
     }
@@ -437,6 +444,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The merchant name that will be presented in Google Pay.
      */
+    @Nullable
     public String getGoogleMerchantName() {
         return googleMerchantName;
     }
@@ -444,6 +452,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return The country code where the transaction is processed.
      */
+    @Nullable
     public String getCountryCode() {
         return countryCode;
     }

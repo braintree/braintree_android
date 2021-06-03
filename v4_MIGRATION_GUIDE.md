@@ -65,7 +65,7 @@ For payment methods that do not require leaving the application, the result will
 For example, using the `CardClient`:
 
 ```java
-cardClient.tokenize(activity, card, (cardNonce, error) -> {
+cardClient.tokenize(card, (cardNonce, error) -> {
   // send cardNonce.getString() to your server or handle error
 });
 ```
@@ -182,7 +182,7 @@ public class AmericanExpressActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         getAmexRewardsBalance(cardNonce);
       } else {
@@ -237,7 +237,7 @@ public class CardActivity extends AppCompatActivity {
     card.setNumber("4111111111111111");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
         String nonce = cardNonce.getString();
@@ -740,7 +740,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022"); 
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         performThreeDSecureVerification(cardNonce);
       } else {
