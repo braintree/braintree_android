@@ -124,7 +124,7 @@ class ThreeDSecurePostalAddressUnitTest {
     fun testToJson_buildsEmptyParameters() {
         val address = ThreeDSecurePostalAddress()
         val jsonParams = address.toJson()
-        
+
         assertTrue(jsonParams.isNull("billingAddress"))
         assertTrue(jsonParams.isNull("firstName"))
         assertTrue(jsonParams.isNull("lastName"))
