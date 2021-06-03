@@ -228,7 +228,7 @@ class GooglePayRequestUnitTest {
         request.transactionInfo = info
         request.isShippingAddressRequired = true
         request.shippingAddressRequirements = nullyShippingAddressRequirements
-        
+
         val actual = request.toJson()
 
         JSONAssert.assertEquals(expected, actual, false)
