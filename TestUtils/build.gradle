@@ -27,6 +27,7 @@ dependencies {
     api 'androidx.test:runner:1.1.0'
     api 'androidx.test:rules:1.1.0'
     api 'androidx.appcompat:appcompat:1.0.1'
+    api "org.jetbrains.kotlin:kotlin-test-junit:1.5.10"
 
     implementation 'androidx.test.ext:junit:1.1.2'
 
