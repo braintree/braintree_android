@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
@@ -74,6 +76,9 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
+    testImplementation "androidx.core:core-ktx:+"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.5.10"
 }
 
 android.buildTypes.each { type ->
