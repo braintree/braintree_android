@@ -1818,6 +1818,58 @@ object Fixtures {
     """
 
     // language=JSON
+    const val VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE = """
+        {
+            "data": {
+                "createVenmoPaymentContext": {
+                    "venmoPaymentContext": {
+                        "id":"venmo-payment-context-id"
+                    }
+                }
+            },
+            "extensions": {
+                "requestId":"878454c9-1ebf-4701-b855-fabbc8748282"
+            }
+        }
+    """
+
+    // language=JSON
+    const val VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID = """
+        {
+            "data": {
+                "createVenmoPaymentContext": {
+                    "venmoPaymentContext": {
+                        "id":""
+                    }
+                }
+            },
+            "extensions": {
+                "requestId":"878454c9-1ebf-4701-b855-fabbc8748282"
+            }
+        }
+    """
+
+    // language=JSON
+    const val VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE = """
+        {
+            "data": {
+                "node": {
+                    "paymentMethodId": "payment-method-id",
+                    "userName": "@somebody"
+                }
+            }
+        }
+    """
+
+    // language=JSON
+    const val VENMO_PAYMENT_METHOD_CONTEXT_JSON = """
+        {
+          "paymentMethodId": "sample-payment-method-id",
+          "userName": "@sampleuser"
+        }
+    """
+
+    // language=JSON
     const val PAYMENT_METHOD_VENMO_PLAIN_OBJECT = """
         {
           "type": "VenmoAccount",

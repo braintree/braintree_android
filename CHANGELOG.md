@@ -4,6 +4,7 @@
 
 * Make `PayPalRequest` and subclasses `Parcelable`
 * Add getters to data classes to improve support for Kotlin synthesized properties
+* Add `displayName` property to `VenmoRequest`
 * Breaking Changes
   * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
   * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
@@ -29,6 +30,7 @@
 * Add wallet enabled metadata tag to `AndroidManifest.xml` in `google-pay` module 
 * Bump `browser-switch` to `2.0.0-beta3`
 * Callback `BraintreeException` on user cancellation of payment flows
+* Add `paymentMethodUsage` to `VenmoRequest`
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`

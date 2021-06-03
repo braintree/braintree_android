@@ -18,6 +18,7 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Configuration;
 import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.VenmoAccountNonce;
+import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoTokenizeAccountCallback;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoOnActivityResultCallback;
@@ -77,7 +78,7 @@ public class VenmoFragment extends BaseFragment {
                         @Override
                         public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                                VenmoRequest venmoRequest = new VenmoRequest();
+                                VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
                                 venmoRequest.setProfileId(null);
                                 venmoRequest.setShouldVault(shouldVault);
 
