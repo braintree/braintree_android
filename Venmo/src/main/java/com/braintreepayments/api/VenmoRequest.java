@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 /**
  A VenmoRequest specifies options that contribute to the Venmo flow
  */
@@ -7,6 +9,7 @@ public class VenmoRequest {
 
     private boolean shouldVault;
     private String profileId;
+    private String displayName;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
@@ -58,6 +61,21 @@ public class VenmoRequest {
      */
     public @VenmoPaymentMethodUsage int getPaymentMethodUsage() {
         return paymentMethodUsage;
+    }
+
+    /**
+     * @param displayName Optional. The business name that will be displayed in the Venmo app payment approval screen. Only used by merchants onboarded as PayFast channel partners.
+     */
+    public void setDisplayName(@Nullable String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * @return The business name that will be displayed in the Venmo app payment approval screen. Only used by merchants onboarded as PayFast channel partners.
+     */
+    @Nullable
+    public String getDisplayName() {
+        return displayName;
     }
 
     String getPaymentMethodUsageAsString() {

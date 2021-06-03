@@ -106,6 +106,9 @@ public class VenmoClient {
                     input.put("merchantProfileId", venmoProfileId);
                     input.put("customerClient", "MOBILE_APP");
                     input.put("intent", "CONTINUE");
+
+                    input.putOpt("displayName", request.getDisplayName());
+
                     JSONObject variables = new JSONObject();
                     variables.put("input", input);
                     params.put("variables", variables);
