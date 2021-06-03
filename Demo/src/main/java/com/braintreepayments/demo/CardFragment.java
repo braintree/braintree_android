@@ -371,8 +371,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             });
         } else {
 
-            CardFragmentDirections.ActionCardFragmentToDisplayNonceFragment action =
-                    CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
+            CardFragmentKtxDirections.ActionCardFragmentToDisplayNonceFragment action =
+                    CardFragmentKtxDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);

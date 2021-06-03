@@ -34,8 +34,8 @@
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
-        android:name="com.braintreepayments.demo.CardFragment"
-        tools:layout="@layout/fragment_card">
+        android:name="com.braintreepayments.demo.CardFragmentKtx"
+        tools:layout="@layout/fragment_card_ktx">
         <argument
             android:name="shouldCollectDeviceData"
             android:defaultValue="false"
