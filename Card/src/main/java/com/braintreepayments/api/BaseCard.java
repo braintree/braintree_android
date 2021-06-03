@@ -39,6 +39,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     private String cvv;
     private String expirationMonth;
     private String expirationYear;
+    private String expirationDate;
     private String extendedAddress;
     private String firstName;
     private String lastName;
@@ -101,6 +102,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         if (TextUtils.isEmpty(expirationDate)) {
             expirationMonth = null;
             expirationYear = null;
+            this.expirationDate = null;
         } else {
             String[] splitExpiration = expirationDate.split("/");
 
@@ -109,6 +111,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
             if (splitExpiration.length > 1) {
                 expirationYear = splitExpiration[1];
             }
+            this.expirationDate = expirationDate;
         }
     }
 
@@ -334,10 +337,9 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return streetAddress;
     }
 
-    // TODO: confirm this logic to allow for Kotlin synthesized property
     @Nullable
     public String getExpirationDate() {
-        return expirationMonth + "/" + expirationYear;
+        return expirationDate;
     }
 
 
