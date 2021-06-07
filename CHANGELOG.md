@@ -5,6 +5,7 @@
 * Make `PayPalRequest` and subclasses `Parcelable`
 * Add getters to data classes to improve support for Kotlin synthesized properties
 * Add `displayName` property to `VenmoRequest`
+* Bump `browser-switch` to `2.0.0`
 * Breaking Changes
   * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
   * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
