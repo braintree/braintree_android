@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.0.0
 
 * Make `PayPalRequest` and subclasses `Parcelable`
 * Add getters to data classes to improve support for Kotlin synthesized properties
@@ -26,6 +26,8 @@
   * Add nullability annotations to public methods
   * Remove `Context` parameter from `CardClient#tokenize()` method
   * Fix typo in `ThreeDSecureAdditionalInformation#getPaymentAccountIndicator()` method name
+
+**Note:** Includes all changes in [4.0.0-beta1](#400-beta1), [4.0.0-beta2](#400-beta2), and [4.0.0-beta3](#400-beta3)
 
 ## 4.0.0-beta3
 
