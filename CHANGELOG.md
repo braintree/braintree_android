@@ -1,5 +1,6 @@
 # Braintree Android SDK Release Notes
 
+
 ## unreleased
 
 * Make `PayPalRequest` and subclasses `Parcelable`
