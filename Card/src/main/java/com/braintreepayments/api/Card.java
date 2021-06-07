@@ -51,22 +51,22 @@ public class Card extends BaseCard implements Parcelable {
         base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
         JSONObject creditCard = new JSONObject()
-                .put(NUMBER_KEY, number)
-                .put(EXPIRATION_MONTH_KEY, expirationMonth)
-                .put(EXPIRATION_YEAR_KEY, expirationYear)
-                .put(CVV_KEY, cvv)
-                .put(CARDHOLDER_NAME_KEY, cardholderName);
+                .put(NUMBER_KEY, getNumber())
+                .put(EXPIRATION_MONTH_KEY, getExpirationMonth())
+                .put(EXPIRATION_YEAR_KEY, getExpirationYear())
+                .put(CVV_KEY, getCvv())
+                .put(CARDHOLDER_NAME_KEY, getCardholderName());
 
         JSONObject billingAddress = new JSONObject()
-                .put(FIRST_NAME_KEY, firstName)
-                .put(LAST_NAME_KEY, lastName)
-                .put(COMPANY_KEY, company)
-                .put(COUNTRY_CODE_KEY, countryCode)
-                .put(LOCALITY_KEY, locality)
-                .put(POSTAL_CODE_KEY, postalCode)
-                .put(REGION_KEY, region)
-                .put(STREET_ADDRESS_KEY, streetAddress)
-                .put(EXTENDED_ADDRESS_KEY, extendedAddress);
+                .put(FIRST_NAME_KEY, getFirstName())
+                .put(LAST_NAME_KEY, getLastName())
+                .put(COMPANY_KEY, getCompany())
+                .put(COUNTRY_CODE_KEY, getCountryCode())
+                .put(LOCALITY_KEY, getLocality())
+                .put(POSTAL_CODE_KEY, getPostalCode())
+                .put(REGION_KEY, getRegion())
+                .put(STREET_ADDRESS_KEY, getStreetAddress())
+                .put(EXTENDED_ADDRESS_KEY, getExtendedAddress());
 
         if (billingAddress.length() > 0) {
             creditCard.put(BILLING_ADDRESS_KEY, billingAddress);
