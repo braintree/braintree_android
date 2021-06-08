@@ -14,7 +14,7 @@ Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:braintree:4.0.0'
+  implementation 'com.braintreepayments.api:braintree:4.1.0'
 }
 ```
 
