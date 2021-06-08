@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to `2.2.5-3`
+
+**Note:** The credentials for integrating with 3DS have changed. If you are using 3DS please update the credentials in your app-level `build.gradle` see [v4 Migration Guide](/v4_MIGRATION_GUIDE.md#3d-secure) 
+
 ## 4.0.0
 
 * Make `PayPalRequest` and subclasses `Parcelable`
