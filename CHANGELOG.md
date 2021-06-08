@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to `2.2.5-3`
+
 ## 4.0.0
 
 * Make `PayPalRequest` and subclasses `Parcelable`
