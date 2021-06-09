@@ -18,14 +18,6 @@ dependencies {
 }
 ```
 
-To use the latest build from the `master` branch use:
-
-```groovy
-dependencies {
-  implementation 'com.braintreepayments.api:braintree:3.17.1-SNAPSHOT'
-}
-```
-
 ## Documentation
 
 Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v3) for instructions on basic setup and usage.
