@@ -36,11 +36,10 @@ Next, read the [**full documentation**](https://developers.braintreepayments.com
 
 This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](http://developers.braintreepayments.com/guides/client-sdk/deprecation-policy).
 
-<!-- TODO: Update TBA dates when v4 GA releases. -->
 | Major version number | Status | Released | Deprecated | Unsupported |
 | -------------------- | ------ | -------- | ---------- | ----------- |
-| 4.x.x | Beta | March 2021 | TBA | TBA |
-| 3.x.x | Active | February 2019 | TBA | TBA |
+| 4.x.x | Active | June 2021 | TBA | TBA |
+| 3.x.x | Deprecated | February 2019 | June 2021 | June 2022 |
 | 2.x.x | Unsupported | November 2015 | March 2020 | March 2021 |
 
 Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
