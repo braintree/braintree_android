@@ -872,4 +872,19 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
+
+    @Test
+    public void isReadyToPay_whenConfigurationFails_propagatesError() {
+        Exception configError = new Exception("configuration error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
+        sut.isReadyToPay(activity, callback);
+
+        verify(callback).onResult(false, configError);
+    }
 }
