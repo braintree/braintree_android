@@ -23,16 +23,16 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeGraphQLClientUnitTest {
 
-    private HttpClient httpClient;
-    private HttpResponseCallback httpResponseCallback;
+    private HTTPClient httpClient;
+    private HTTPResponseCallback httpResponseCallback;
 
     private Configuration configuration;
     private Authorization authorization;
 
     @Before
     public void beforeEach() throws JSONException {
-        httpClient = mock(HttpClient.class);
-        httpResponseCallback = mock(HttpResponseCallback.class);
+        httpClient = mock(HTTPClient.class);
+        httpResponseCallback = mock(HTTPResponseCallback.class);
 
         authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL);
@@ -43,10 +43,10 @@ public class BraintreeGraphQLClientUnitTest {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
 
-        HttpRequest httpRequest = captor.getValue();
+        HTTPRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());
@@ -62,10 +62,10 @@ public class BraintreeGraphQLClientUnitTest {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("data", configuration, httpResponseCallback);
 
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
 
-        HttpRequest httpRequest = captor.getValue();
+        HTTPRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());
@@ -78,16 +78,16 @@ public class BraintreeGraphQLClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfiguration_sendsHttpRequest() throws Exception {
-        when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample response");
+        when(httpClient.sendRequest(any(HTTPRequest.class))).thenReturn("sample response");
 
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         String result = sut.post("sample/path", "data", configuration);
         assertEquals("sample response", result);
 
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
         verify(httpClient).sendRequest(captor.capture());
 
-        HttpRequest httpRequest = captor.getValue();
+        HTTPRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());

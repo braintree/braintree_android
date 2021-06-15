@@ -10,16 +10,16 @@ import java.net.HttpURLConnection;
 /**
  * Class that handles parsing http responses for {@link BraintreeGraphQLClient}.
  */
-class BraintreeGraphQLResponseParser implements HttpResponseParser {
+class BraintreeGraphQLResponseParser implements HTTPResponseParser {
 
-    private final HttpResponseParser baseParser;
+    private final HTTPResponseParser baseParser;
 
     BraintreeGraphQLResponseParser() {
-        this(new BaseHttpResponseParser());
+        this(new BaseHTTPResponseParser());
     }
 
     @VisibleForTesting
-    BraintreeGraphQLResponseParser(HttpResponseParser baseParser) {
+    BraintreeGraphQLResponseParser(HTTPResponseParser baseParser) {
         this.baseParser = baseParser;
     }
 

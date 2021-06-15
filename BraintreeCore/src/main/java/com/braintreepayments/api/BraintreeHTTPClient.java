@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.HttpClient.RetryStrategy;
+import com.braintreepayments.api.HTTPClient.RetryStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,15 +21,15 @@ class BraintreeHTTPClient {
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static final String CLIENT_KEY_HEADER = "Client-Key";
 
-    private final HttpClient httpClient;
+    private final HTTPClient httpClient;
     private final Authorization authorization;
 
     BraintreeHTTPClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
+        this(authorization, new HTTPClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHTTPClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeHTTPClient(Authorization authorization, HTTPClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }
@@ -52,10 +52,10 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback {@link HttpResponseCallback}
+     * @param callback {@link HTTPResponseCallback}
      */
-    void get(String path, Configuration configuration, HttpResponseCallback callback) {
-        get(path, configuration, HttpClient.NO_RETRY, callback);
+    void get(String path, Configuration configuration, HTTPResponseCallback callback) {
+        get(path, configuration, HTTPClient.NO_RETRY, callback);
     }
 
     /**
@@ -64,10 +64,10 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback {@link HttpResponseCallback}
+     * @param callback {@link HTTPResponseCallback}
      * @param retryStrategy retry strategy
      */
-    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HTTPResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -92,7 +92,7 @@ class BraintreeHTTPClient {
             targetPath = path;
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("GET")
                 .path(targetPath)
                 .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
@@ -114,10 +114,10 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via HTTP POST
      * @param data The body of the POST request
-     * @param callback {@link HttpResponseCallback}
+     * @param callback {@link HTTPResponseCallback}
      * @param configuration configuration for the Braintree Android SDK.
      */
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HTTPResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -147,7 +147,7 @@ class BraintreeHTTPClient {
             requestData = data;
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("POST")
                 .path(path)
                 .data(requestData)
@@ -193,7 +193,7 @@ class BraintreeHTTPClient {
             requestData = data;
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("POST")
                 .path(path)
                 .data(requestData)

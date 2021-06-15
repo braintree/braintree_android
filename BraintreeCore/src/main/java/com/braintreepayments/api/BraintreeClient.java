@@ -48,7 +48,7 @@ public class BraintreeClient {
      * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
      *
      * @param context       Android Context
-     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned in the {@link HttpResponseCallback}.
+     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned in the {@link HTTPResponseCallback}.
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
         this(createDefaultParams(context, authorization));
@@ -92,7 +92,7 @@ public class BraintreeClient {
         });
     }
 
-    void sendGET(final String url, final HttpResponseCallback responseCallback) {
+    void sendGET(final String url, final HTTPResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -105,7 +105,7 @@ public class BraintreeClient {
         });
     }
 
-    void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
+    void sendPOST(final String url, final String data, final HTTPResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -126,7 +126,7 @@ public class BraintreeClient {
         return integrationType;
     }
 
-    void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
+    void sendGraphQLPOST(final String payload, final HTTPResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -187,7 +187,7 @@ public class BraintreeClient {
         String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
         if (analyticsUrl != null) {
             final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
-            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
+            httpClient.post(analyticsUrl, event.toString(), null, new HTTPNoResponse());
         }
     }
 

@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import androidx.annotation.MainThread;
 
-interface HttpResponseCallback {
+interface HTTPResponseCallback {
 
     @MainThread
     void onResult(String responseBody, Exception httpError);

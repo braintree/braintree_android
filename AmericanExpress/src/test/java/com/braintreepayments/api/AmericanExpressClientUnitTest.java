@@ -31,7 +31,7 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGET(urlCaptor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGET(urlCaptor.capture(), any(HTTPResponseCallback.class));
 
         String url = urlCaptor.getValue();
         assertEquals("/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD", url);

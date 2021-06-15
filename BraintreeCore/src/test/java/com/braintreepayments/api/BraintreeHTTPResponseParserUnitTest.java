@@ -14,14 +14,14 @@ import static org.mockito.Mockito.when;
 public class BraintreeHTTPResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
-    private BaseHttpResponseParser baseParser;
+    private BaseHTTPResponseParser baseParser;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Before
     public void beforeEach() {
-        baseParser = mock(BaseHttpResponseParser.class);
+        baseParser = mock(BaseHTTPResponseParser.class);
         urlConnection = mock(HttpURLConnection.class);
     }
 

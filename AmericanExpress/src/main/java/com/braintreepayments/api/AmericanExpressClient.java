@@ -35,7 +35,7 @@ public class AmericanExpressClient {
                 .toString();
 
         braintreeClient.sendAnalyticsEvent("amex.rewards-balance.start");
-        braintreeClient.sendGET(getRewardsBalanceUrl, new HttpResponseCallback() {
+        braintreeClient.sendGET(getRewardsBalanceUrl, new HTTPResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

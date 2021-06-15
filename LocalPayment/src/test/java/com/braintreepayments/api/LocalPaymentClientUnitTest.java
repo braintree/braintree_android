@@ -64,7 +64,7 @@ public class LocalPaymentClientUnitTest {
 
         String expectedPath = "/v1/local_payments/create";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedPath), bodyCaptor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedPath), bodyCaptor.capture(), any(HTTPResponseCallback.class));
 
         String requestBody = bodyCaptor.getValue();
         JSONObject json = new JSONObject(requestBody);
@@ -421,7 +421,7 @@ public class LocalPaymentClientUnitTest {
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
         String expectedUrl = "/v1/payment_methods/paypal_accounts";
 
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HTTPResponseCallback.class));
         String requestBody = bodyCaptor.getValue();
 
         JSONObject expectedJSON = new JSONObject();

@@ -1,10 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.BaseHttpResponseParser;
-import com.braintreepayments.api.HttpRequest;
-import com.braintreepayments.api.SynchronousHttpClient;
-import com.braintreepayments.api.TLSSocketFactory;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -33,17 +28,17 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ TLSSocketFactory.class })
-public class SynchronousHttpClientUnitTest {
+public class SynchronousHTTPClientUnitTest {
 
-    HttpRequest httpRequest;
-    BaseHttpResponseParser httpResponseParser;
+    HTTPRequest httpRequest;
+    BaseHTTPResponseParser httpResponseParser;
     SSLSocketFactory sslSocketFactory;
 
     @Before
     public void beforeEach() {
         mockStatic(TLSSocketFactory.class);
-        httpRequest = mock(HttpRequest.class);
-        httpResponseParser = mock(BaseHttpResponseParser.class);
+        httpRequest = mock(HTTPRequest.class);
+        httpResponseParser = mock(BaseHTTPResponseParser.class);
         sslSocketFactory = mock(SSLSocketFactory.class);
     }
 

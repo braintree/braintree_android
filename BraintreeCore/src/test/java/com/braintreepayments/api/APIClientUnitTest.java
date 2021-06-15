@@ -69,7 +69,7 @@ public class APIClientUnitTest {
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
 
         inOrder.verify(card).setSessionId("session-id");
-        inOrder.verify(braintreeClient).sendPOST(anyString(), bodyCaptor.capture(), any(HttpResponseCallback.class));
+        inOrder.verify(braintreeClient).sendPOST(anyString(), bodyCaptor.capture(), any(HTTPResponseCallback.class));
 
         JSONObject data = new JSONObject(bodyCaptor.getValue()).getJSONObject("_meta");
         assertEquals("session-id", data.getString("sessionId"));
@@ -88,10 +88,10 @@ public class APIClientUnitTest {
 
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), null);
 
-        verify(braintreeClient, never()).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendPOST(anyString(), anyString(), any(HTTPResponseCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HTTPResponseCallback.class));
         assertEquals(card.buildJSONForGraphQL().toString(), captor.getValue());
     }
 
@@ -121,7 +121,7 @@ public class APIClientUnitTest {
         sut.tokenizeREST(new UnionPayCard(), null);
         sut.tokenizeREST(new VenmoAccount(), null);
 
-        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HTTPResponseCallback.class));
     }
 
     @Test

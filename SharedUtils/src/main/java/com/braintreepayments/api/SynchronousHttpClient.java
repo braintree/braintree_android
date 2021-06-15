@@ -17,9 +17,9 @@ import javax.net.ssl.SSLSocketFactory;
 class SynchronousHttpClient {
 
     private SSLSocketFactory socketFactory;
-    private final HttpResponseParser parser;
+    private final HTTPResponseParser parser;
 
-    SynchronousHttpClient(SSLSocketFactory socketFactory, HttpResponseParser parser) {
+    SynchronousHttpClient(SSLSocketFactory socketFactory, HTTPResponseParser parser) {
         this.parser = parser;
         if (socketFactory != null) {
             this.socketFactory = socketFactory;
@@ -36,7 +36,7 @@ class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
-    String request(HttpRequest httpRequest) throws Exception {
+    String request(HTTPRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }

@@ -64,7 +64,7 @@ public class UnionPayClient {
                         .appendQueryParameter("creditCard[number]", cardNumber)
                         .build()
                         .toString();
-                braintreeClient.sendGET(fetchCapabilitiesUrl, new HttpResponseCallback() {
+                braintreeClient.sendGET(fetchCapabilitiesUrl, new HTTPResponseCallback() {
 
                     @Override
                     public void onResult(String responseBody, Exception httpError) {
@@ -105,7 +105,7 @@ public class UnionPayClient {
 
                 try {
                     String enrollmentPayload = unionPayCard.buildEnrollment().toString();
-                    braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, new HttpResponseCallback() {
+                    braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, new HTTPResponseCallback() {
 
                         @Override
                         public void onResult(String responseBody, Exception httpError) {

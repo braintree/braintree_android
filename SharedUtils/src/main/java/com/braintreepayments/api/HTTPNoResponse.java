@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-class HttpNoResponse implements HttpResponseCallback {
+class HTTPNoResponse implements HTTPResponseCallback {
 
     @Override
     public void onResult(String responseBody, Exception httpError) {

@@ -122,7 +122,7 @@ public class PreferredPaymentMethodsClientUnitTest {
             public void onResult(@NonNull PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
-                verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
+                verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HTTPResponseCallback.class));
                 String expectedQuery = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
                 assertEquals(expectedQuery, captor.getValue());
                 countDownLatch.countDown();

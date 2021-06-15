@@ -3,9 +3,9 @@ package com.braintreepayments.api;
 /**
  * Exception thrown when an HTTP request fails.
  */
-public class HttpClientException extends Exception {
+public class HTTPClientException extends Exception {
 
-    HttpClientException(String message) {
+    HTTPClientException(String message) {
         super(message);
     }
 }

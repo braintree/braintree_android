@@ -13,7 +13,7 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
-class HttpClient {
+class HTTPClient {
 
     @IntDef({ NO_RETRY, RETRY_MAX_3_TIMES })
     @Retention(RetentionPolicy.SOURCE)
@@ -30,30 +30,30 @@ class HttpClient {
 
     private final Map<URL, Integer> retryCountMap;
 
-    protected HttpClient(SSLSocketFactory socketFactory, HttpResponseParser httpResponseParser) {
+    protected HTTPClient(SSLSocketFactory socketFactory, HTTPResponseParser httpResponseParser) {
         this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
     }
 
     @VisibleForTesting
-    HttpClient(SynchronousHttpClient syncHttpClient, Scheduler scheduler) {
+    HTTPClient(SynchronousHttpClient syncHttpClient, Scheduler scheduler) {
         this.syncHttpClient = syncHttpClient;
         this.scheduler = scheduler;
         this.retryCountMap = new HashMap<>();
     }
 
-    String sendRequest(HttpRequest request) throws Exception {
+    String sendRequest(HTTPRequest request) throws Exception {
         return syncHttpClient.request(request);
     }
 
-    void sendRequest(HttpRequest request, HttpResponseCallback callback) {
-        sendRequest(request, HttpClient.NO_RETRY, callback);
+    void sendRequest(HTTPRequest request, HTTPResponseCallback callback) {
+        sendRequest(request, HTTPClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void sendRequest(HTTPRequest request, @RetryStrategy int retryStrategy, HTTPResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void scheduleRequest(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HTTPResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(new Runnable() {
@@ -64,10 +64,10 @@ class HttpClient {
                     notifySuccessOnMainThread(callback, responseBody);
                 } catch (Exception e) {
                     switch (retryStrategy) {
-                        case HttpClient.NO_RETRY:
+                        case HTTPClient.NO_RETRY:
                             notifyErrorOnMainThread(callback, e);
                             break;
-                        case HttpClient.RETRY_MAX_3_TIMES:
+                        case HTTPClient.RETRY_MAX_3_TIMES:
                             retryGet(request, retryStrategy, callback);
                             break;
                     }
@@ -76,7 +76,7 @@ class HttpClient {
         });
     }
 
-    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void retryGet(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HTTPResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -90,7 +90,7 @@ class HttpClient {
                 retryCountMap.put(url, retryCount + 1);
             } else {
                 String message = "Retry limit has been exceeded. Try again later.";
-                HttpClientException retryLimitException = new HttpClientException(message);
+                HTTPClientException retryLimitException = new HTTPClientException(message);
                 notifyErrorOnMainThread(callback, retryLimitException);
             }
         }
@@ -104,7 +104,7 @@ class HttpClient {
         return retryCount;
     }
 
-    private void resetRetryCount(HttpRequest request) {
+    private void resetRetryCount(HTTPRequest request) {
         URL url = null;
         try {
             url = request.getURL();
@@ -115,7 +115,7 @@ class HttpClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final HttpResponseCallback callback, final String responseBody) {
+    private void notifySuccessOnMainThread(final HTTPResponseCallback callback, final String responseBody) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override
@@ -126,7 +126,7 @@ class HttpClient {
         }
     }
 
-    private void notifyErrorOnMainThread(final HttpResponseCallback callback, final Exception e) {
+    private void notifyErrorOnMainThread(final HTTPResponseCallback callback, final Exception e) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override

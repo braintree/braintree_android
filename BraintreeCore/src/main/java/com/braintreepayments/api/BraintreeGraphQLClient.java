@@ -7,15 +7,15 @@ import javax.net.ssl.SSLSocketFactory;
 
 class BraintreeGraphQLClient {
 
-    private final HttpClient httpClient;
+    private final HTTPClient httpClient;
     private final Authorization authorization;
 
     BraintreeGraphQLClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
+        this(authorization, new HTTPClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeGraphQLClient(Authorization authorization, HTTPClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }
@@ -28,14 +28,14 @@ class BraintreeGraphQLClient {
         }
     }
 
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HTTPResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
             return;
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("POST")
                 .path(path)
                 .data(data)
@@ -46,14 +46,14 @@ class BraintreeGraphQLClient {
         httpClient.sendRequest(request, callback);
     }
 
-    void post(String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String data, Configuration configuration, HTTPResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
             return;
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("POST")
                 .path("")
                 .data(data)
@@ -70,7 +70,7 @@ class BraintreeGraphQLClient {
             throw new BraintreeException(message);
         }
 
-        HttpRequest request = new HttpRequest()
+        HTTPRequest request = new HTTPRequest()
                 .method("POST")
                 .path(path)
                 .data(data)

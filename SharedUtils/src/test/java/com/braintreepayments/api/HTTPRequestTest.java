@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.HttpRequest;
-
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -19,13 +17,13 @@ import static org.junit.Assert.*;
 
 
 @RunWith(Enclosed.class)
-public class HttpRequestTest {
+public class HTTPRequestTest {
 
-    public static class NonParameterizedHttpRequestTests {
+    public static class NonParameterizedHTTPRequestTests {
 
         @Test
         public void getPath_returnsPath() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .path("sample/path");
 
             assertEquals("sample/path", sut.getPath());
@@ -33,7 +31,7 @@ public class HttpRequestTest {
 
         @Test
         public void getData_returnsData() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .data("sample data");
 
             assertEquals("sample data", sut.getData());
@@ -41,7 +39,7 @@ public class HttpRequestTest {
 
         @Test
         public void getMethod_returnsMethod() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .method("GET");
 
             assertEquals("GET", sut.getMethod());
@@ -49,7 +47,7 @@ public class HttpRequestTest {
 
         @Test
         public void getHeaders_containsADefaultSetOfHeaders() {
-            HttpRequest sut = HttpRequest.newInstance();
+            HTTPRequest sut = HTTPRequest.newInstance();
 
             assertEquals(2, sut.getHeaders().size());
             assertEquals("gzip", sut.getHeaders().get("Accept-Encoding"));
@@ -58,7 +56,7 @@ public class HttpRequestTest {
 
         @Test
         public void addHeaders_allowsForMoreHeadersToBeAddedToDefaultSet() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .addHeader("Header-0", "0")
                     .addHeader("Header-1", "1");
 
@@ -68,7 +66,7 @@ public class HttpRequestTest {
 
         @Test
         public void getURL_whenPathStartsWithHttp_returnsPathWithNoModification() throws MalformedURLException, URISyntaxException {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .path("https://anothersite.com/path");
 
             URL expectedURL = new URL("https://anothersite.com/path");
@@ -77,19 +75,19 @@ public class HttpRequestTest {
 
         @Test
         public void constructor_setsConnectTimeoutTo30SecondsByDefault() {
-            HttpRequest sut = HttpRequest.newInstance();
+            HTTPRequest sut = HTTPRequest.newInstance();
             assertEquals(30000, sut.getConnectTimeout());
         }
 
         @Test
         public void constructor_setsReadTimeoutTo30SecondsByDefault() {
-            HttpRequest sut = HttpRequest.newInstance();
+            HTTPRequest sut = HTTPRequest.newInstance();
             assertEquals(30000, sut.getReadTimeout());
         }
 
         @Test
         public void getURL_throwsMalformedURLExceptionIfBaseURLIsNull() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .baseUrl(null)
                     .path("sample/path");
 
@@ -103,7 +101,7 @@ public class HttpRequestTest {
 
         @Test
         public void getURL_throwsMalformedURLExceptionIfBaseURLIsEmpty() {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .baseUrl("")
                     .path("sample/path");
 
@@ -153,7 +151,7 @@ public class HttpRequestTest {
 
         @Test
         public void getURL() throws Exception {
-            HttpRequest sut = HttpRequest.newInstance()
+            HTTPRequest sut = HTTPRequest.newInstance()
                     .baseUrl(baseUrl)
                     .path(path);
 

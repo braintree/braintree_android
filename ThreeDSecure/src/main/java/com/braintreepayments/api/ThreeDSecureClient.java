@@ -296,7 +296,7 @@ public class ThreeDSecureClient {
         String url = APIClient.versionedPath(APIClient.PAYMENT_METHOD_ENDPOINT + "/" + lookupNonce + "/three_d_secure/authenticate_from_jwt");
         String data = body.toString();
 
-        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, data, new HTTPResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -400,7 +400,7 @@ public class ThreeDSecureClient {
         String url = APIClient.versionedPath(APIClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         String data = request.build(cardinalClient.getConsumerSessionId());
 
-        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, data, new HTTPResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

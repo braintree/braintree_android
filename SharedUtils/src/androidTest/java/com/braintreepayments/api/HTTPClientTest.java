@@ -9,10 +9,11 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class HttpClientTest {
+public class HTTPClientTest {
 
     private CountDownLatch countDownLatch;
 
@@ -23,23 +24,18 @@ public class HttpClientTest {
 
     @Test(timeout = 5000)
     public void sendRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
-        HttpClient sut = new HttpClient(null, new BaseHttpResponseParser());
+        HTTPClient sut = new HTTPClient(null, new BaseHTTPResponseParser());
 
-        HttpRequest httpRequest = new HttpRequest()
+        HTTPRequest httpRequest = new HTTPRequest()
                 .method("GET")
                 .baseUrl("https://bad.endpoint")
                 .path("bad/path");
 
-        sut.sendRequest(httpRequest, new HttpResponseCallback() {
+        sut.sendRequest(httpRequest, new HTTPResponseCallback() {
             @Override
-            public void success(String responseBody) {
-                fail("request should fail");
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertNotNull(exception);
+            public void onResult(String responseBody, Exception httpError) {
+                assertNull(responseBody);
+                assertNotNull(httpError);
                 countDownLatch.countDown();
             }
         });

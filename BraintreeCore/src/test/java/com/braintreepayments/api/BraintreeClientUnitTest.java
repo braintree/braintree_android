@@ -80,7 +80,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
         verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback));
@@ -96,7 +96,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
         verify(httpResponseCallback).onResult((String) isNull(), same(exception));
@@ -112,7 +112,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
         verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback));
@@ -128,7 +128,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
         verify(httpResponseCallback).onResult(null, exception);
@@ -144,7 +144,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
         verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
@@ -160,7 +160,7 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
         BraintreeClient sut = new BraintreeClient(params);
 
-        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
         verify(httpResponseCallback).onResult(null, exception);

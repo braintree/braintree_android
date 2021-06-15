@@ -26,16 +26,12 @@ public class BraintreeHTTPClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient braintreeHttpClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request should fail");
-            }
+        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HTTPResponseCallback() {
 
             @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure exception is due to authorization not SSL handshake
-                assertTrue(exception instanceof AuthorizationException);
+                assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
         });
@@ -48,16 +44,12 @@ public class BraintreeHTTPClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         BraintreeHTTPClient braintreeHttpClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request should fail");
-            }
+        braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HTTPResponseCallback() {
 
             @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure exception is due to authorization not SSL handshake
-                assertTrue(exception instanceof AuthorizationException);
+                assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
         });
