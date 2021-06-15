@@ -36,7 +36,7 @@ public class BraintreeClientUnitTest {
     private Context context;
     private Context applicationContext;
 
-    private BraintreeHttpClient braintreeHttpClient;
+    private BraintreeHTTPClient braintreeHttpClient;
     private BraintreeGraphQLHttpClient braintreeGraphQLHttpClient;
     private ConfigurationLoader configurationLoader;
     private AnalyticsClient analyticsClient;
@@ -49,7 +49,7 @@ public class BraintreeClientUnitTest {
         context = mock(Context.class);
         applicationContext = ApplicationProvider.getApplicationContext();
 
-        braintreeHttpClient = mock(BraintreeHttpClient.class);
+        braintreeHttpClient = mock(BraintreeHTTPClient.class);
         braintreeGraphQLHttpClient = mock(BraintreeGraphQLHttpClient.class);
         configurationLoader = mock(ConfigurationLoader.class);
         analyticsClient = mock(AnalyticsClient.class);

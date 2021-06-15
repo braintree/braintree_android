@@ -5,7 +5,7 @@ import androidx.annotation.VisibleForTesting;
 import java.net.HttpURLConnection;
 
 /**
- * Class that handles parsing http responses for {@link BraintreeHttpClient}.
+ * Class that handles parsing http responses for {@link BraintreeHTTPClient}.
  */
 class BraintreeHttpResponseParser implements HttpResponseParser {
 

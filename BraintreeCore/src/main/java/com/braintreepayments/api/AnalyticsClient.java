@@ -40,16 +40,16 @@ class AnalyticsClient {
     static final String ANALYTICS_INPUT_DATA_CONFIGURATION_KEY = "configuration";
     static final String ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY = "authorization";
 
-    private final BraintreeHttpClient httpClient;
+    private final BraintreeHTTPClient httpClient;
     private final DeviceInspector deviceInspector;
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector());
+        this(new BraintreeHTTPClient(authorization), new DeviceInspector());
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector) {
+    AnalyticsClient(BraintreeHTTPClient httpClient, DeviceInspector deviceInspector) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
     }
