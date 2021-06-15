@@ -36,8 +36,8 @@ public class MockTokenizationClientBuilder {
         return this;
     }
 
-    public TokenizationClient build() {
-        TokenizationClient tokenizationClient = mock(TokenizationClient.class);
+    public APIClient build() {
+        APIClient apiClient = mock(APIClient.class);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -46,7 +46,7 @@ public class MockTokenizationClientBuilder {
                 listener.onResult(tokenizeRESTSuccess, tokenizeRESTError);
                 return null;
             }
-        }).when(tokenizationClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
+        }).when(apiClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -55,8 +55,8 @@ public class MockTokenizationClientBuilder {
                 listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError);
                 return null;
             }
-        }).when(tokenizationClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
+        }).when(apiClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
 
-        return tokenizationClient;
+        return apiClient;
     }
 }

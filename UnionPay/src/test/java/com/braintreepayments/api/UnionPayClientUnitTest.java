@@ -28,7 +28,7 @@ public class UnionPayClientUnitTest {
     private UnionPayTokenizeCallback unionPayTokenizeCallback;
 
     private BraintreeClient braintreeClient;
-    private TokenizationClient tokenizationClient;
+    private APIClient apiClient;
 
     private UnionPayCard unionPayCard;
     private UnionPayEnrollCallback unionPayEnrollCallback;
@@ -42,7 +42,7 @@ public class UnionPayClientUnitTest {
         unionPayTokenizeCallback = mock(UnionPayTokenizeCallback.class);
 
         braintreeClient = mock(BraintreeClient.class);
-        tokenizationClient = mock(TokenizationClient.class);
+        apiClient = mock(APIClient.class);
 
         unionPayEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY);
         unionPayDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
@@ -55,11 +55,11 @@ public class UnionPayClientUnitTest {
     @Test
     public void tokenize_sendsAnalyticsEventOnTokenizeResult() throws JSONException {
         UnionPayCard unionPayCard = new UnionPayCard();
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
+        verify(apiClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         callback.onResult(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD), null);
@@ -70,11 +70,11 @@ public class UnionPayClientUnitTest {
     @Test
     public void tokenize_callsListenerWithErrorOnFailure() {
         UnionPayCard unionPayCard = new UnionPayCard();
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
+        verify(apiClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -86,11 +86,11 @@ public class UnionPayClientUnitTest {
     @Test
     public void tokenize_sendsAnalyticsEventOnFailure() {
         UnionPayCard unionPayCard = new UnionPayCard();
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.tokenize(unionPayCard, unionPayTokenizeCallback);
 
         ArgumentCaptor<TokenizeCallback> captor = ArgumentCaptor.forClass(TokenizeCallback.class);
-        verify(tokenizationClient).tokenizeREST(same(unionPayCard), captor.capture());
+        verify(apiClient).tokenizeREST(same(unionPayCard), captor.capture());
 
         TokenizeCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -108,7 +108,7 @@ public class UnionPayClientUnitTest {
         String unionPayCardJson = "{\"sample\":\"json\"}";
         when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject(unionPayCardJson));
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         String expectedPath = "/v1/union_pay_enrollments";
@@ -129,7 +129,7 @@ public class UnionPayClientUnitTest {
 
         when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<UnionPayEnrollment> resultCaptor = ArgumentCaptor.forClass(UnionPayEnrollment.class);
@@ -146,7 +146,7 @@ public class UnionPayClientUnitTest {
                 .configuration(unionPayDisabledConfiguration)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
@@ -166,7 +166,7 @@ public class UnionPayClientUnitTest {
 
         when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-failed");
@@ -186,7 +186,7 @@ public class UnionPayClientUnitTest {
 
         when(unionPayCard.buildEnrollment()).thenReturn(new JSONObject("{}"));
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-succeeded");
@@ -198,7 +198,7 @@ public class UnionPayClientUnitTest {
                 .configuration(unionPayEnabledConfiguration)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         String expectedUrl = Uri.parse("/v1/payment_methods/credit_cards/capabilities")
@@ -218,7 +218,7 @@ public class UnionPayClientUnitTest {
                 .sendGETErrorResponse(error)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         verify(unionPayFetchCapabilitiesCallback).onResult((UnionPayCapabilities) isNull(), same(error));
@@ -232,7 +232,7 @@ public class UnionPayClientUnitTest {
                 .sendGETErrorResponse(error)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.capabilities-failed");
@@ -245,7 +245,7 @@ public class UnionPayClientUnitTest {
                 .sendGETSuccessfulResponse(Fixtures.UNIONPAY_CAPABILITIES_SUCCESS_RESPONSE)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         ArgumentCaptor<UnionPayCapabilities> capabilitiesCaptor = ArgumentCaptor.forClass(UnionPayCapabilities.class);
@@ -266,7 +266,7 @@ public class UnionPayClientUnitTest {
                 .sendGETSuccessfulResponse(Fixtures.UNIONPAY_CAPABILITIES_SUCCESS_RESPONSE)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("union-pay.capabilities-received");
@@ -278,7 +278,7 @@ public class UnionPayClientUnitTest {
                 .configuration(unionPayDisabledConfiguration)
                 .build();
 
-        UnionPayClient sut = new UnionPayClient(braintreeClient, tokenizationClient);
+        UnionPayClient sut = new UnionPayClient(braintreeClient, apiClient);
         sut.fetchCapabilities(CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);

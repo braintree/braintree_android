@@ -16,7 +16,7 @@ import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class TokenizationClientTest {
+public class APIClientTest {
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> activityTestRule =
@@ -35,13 +35,13 @@ public class TokenizationClientTest {
 
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
 
-        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
+        APIClient apiClient = new APIClient(braintreeClient);
 
         JSONObject urlResponseData = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
         PayPalAccount paypalAccount = new PayPalAccount();
         paypalAccount.setUrlResponseData(urlResponseData);
 
-        tokenizationClient.tokenizeREST(paypalAccount, new TokenizeCallback() {
+        apiClient.tokenizeREST(paypalAccount, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (exception != null) {

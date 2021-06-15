@@ -32,18 +32,18 @@ public class VenmoClient {
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final APIClient apiClient;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
 
     public VenmoClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+        this(braintreeClient, new APIClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     @VisibleForTesting
-    VenmoClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    VenmoClient(BraintreeClient braintreeClient, APIClient apiClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
     }
@@ -268,7 +268,7 @@ public class VenmoClient {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 
-        tokenizationClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
+        apiClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {

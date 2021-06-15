@@ -20,16 +20,16 @@ import java.util.List;
 public class VisaCheckoutClient {
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final APIClient apiClient;
 
     public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient));
+        this(braintreeClient, new APIClient(braintreeClient));
     }
 
     @VisibleForTesting
-    VisaCheckoutClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+    VisaCheckoutClient(BraintreeClient braintreeClient, APIClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
     }
 
     /**
@@ -101,7 +101,7 @@ public class VisaCheckoutClient {
      * @param callback {@link VisaCheckoutTokenizeCallback}
      */
     public void tokenize(@NonNull VisaPaymentSummary visaPaymentSummary, @NonNull final VisaCheckoutTokenizeCallback callback) {
-        tokenizationClient.tokenizeREST(new VisaCheckoutAccount(visaPaymentSummary), new TokenizeCallback() {
+        apiClient.tokenizeREST(new VisaCheckoutAccount(visaPaymentSummary), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {

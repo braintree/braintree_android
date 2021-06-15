@@ -7,18 +7,18 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-class TokenizationClient {
+class APIClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private final WeakReference<BraintreeClient> braintreeClientRef;
 
-    TokenizationClient(BraintreeClient braintreeClient) {
+    APIClient(BraintreeClient braintreeClient) {
         this(new WeakReference<>(braintreeClient));
     }
 
     @VisibleForTesting
-    TokenizationClient(WeakReference<BraintreeClient> braintreeClientRef) {
+    APIClient(WeakReference<BraintreeClient> braintreeClientRef) {
         this.braintreeClientRef = braintreeClientRef;
     }
 
@@ -55,8 +55,8 @@ class TokenizationClient {
             return;
         }
 
-        String url = TokenizationClient.versionedPath(
-                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
+        String url = APIClient.versionedPath(
+                APIClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
         paymentMethod.setSessionId(braintreeClient.getSessionId());
 

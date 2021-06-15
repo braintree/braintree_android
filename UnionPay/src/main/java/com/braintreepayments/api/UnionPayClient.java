@@ -19,22 +19,22 @@ public class UnionPayClient {
     private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
 
     private static final String UNIONPAY_ENROLLMENT_PATH =
-        TokenizationClient.versionedPath("union_pay_enrollments");
+        APIClient.versionedPath("union_pay_enrollments");
 
     private static final String UNIONPAY_CAPABILITIES_PATH =
-        TokenizationClient.versionedPath("payment_methods/credit_cards/capabilities");
+        APIClient.versionedPath("payment_methods/credit_cards/capabilities");
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final APIClient apiClient;
 
     public UnionPayClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient));
+        this(braintreeClient, new APIClient(braintreeClient));
     }
 
     @VisibleForTesting
-    UnionPayClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+    UnionPayClient(BraintreeClient braintreeClient, APIClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
     }
 
     /**
@@ -150,7 +150,7 @@ public class UnionPayClient {
      * @param callback {@link UnionPayTokenizeCallback}
      */
     public void tokenize(@NonNull UnionPayCard unionPayCard, @NonNull final UnionPayTokenizeCallback callback) {
-        tokenizationClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
+        apiClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
