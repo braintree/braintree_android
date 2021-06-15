@@ -31,7 +31,7 @@ class BraintreeGraphQLHttpClient {
     void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 
@@ -49,7 +49,7 @@ class BraintreeGraphQLHttpClient {
     void post(String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 

@@ -70,7 +70,7 @@ class BraintreeHttpClient {
     void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 
@@ -78,7 +78,7 @@ class BraintreeHttpClient {
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
             BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            callback.failure(relativeURLNotAllowedError);
+            callback.onResult(null, relativeURLNotAllowedError);
             return;
         }
 
@@ -120,7 +120,7 @@ class BraintreeHttpClient {
     void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 
@@ -128,7 +128,7 @@ class BraintreeHttpClient {
         if (configuration == null && isRelativeURL) {
             String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
             BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            callback.failure(relativeURLNotAllowedError);
+            callback.onResult(null, relativeURLNotAllowedError);
             return;
         }
 
@@ -140,7 +140,7 @@ class BraintreeHttpClient {
                                 ((ClientToken) authorization).getAuthorizationFingerprint())
                         .toString();
             } catch (JSONException e) {
-                callback.failure(e);
+                callback.onResult(null, e);
                 return;
             }
         } else {

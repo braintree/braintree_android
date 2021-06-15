@@ -42,24 +42,24 @@ class ConfigurationLoader {
         } else {
 
             httpClient.get(configUrl, null, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
+
                 @Override
-                public void success(String responseBody) {
-                    try {
-                        Configuration configuration = Configuration.fromJson(responseBody);
-                        saveConfigurationToCache(context, configuration, authorization, configUrl);
-                        callback.onResult(configuration, null);
-                    } catch (JSONException jsonException) {
-                        callback.onResult(null, jsonException);
+                public void onResult(String responseBody, Exception httpError) {
+                    if (responseBody != null) {
+                        try {
+                            Configuration configuration = Configuration.fromJson(responseBody);
+                            saveConfigurationToCache(context, configuration, authorization, configUrl);
+                            callback.onResult(configuration, null);
+                        } catch (JSONException jsonException) {
+                            callback.onResult(null, jsonException);
+                        }
+                    } else {
+                        String errorMessageFormat = "Request for configuration has failed: %s";
+                        String errorMessage = String.format(errorMessageFormat, httpError.getMessage());
+
+                        ConfigurationException configurationException = new ConfigurationException(errorMessage, httpError);
+                        callback.onResult(null, configurationException);
                     }
-                }
-
-                @Override
-                public void failure(Exception httpException) {
-                    String errorMessageFormat = "Request for configuration has failed: %s";
-                    String errorMessage = String.format(errorMessageFormat, httpException.getMessage());
-
-                    ConfigurationException configurationException = new ConfigurationException(errorMessage, httpException);
-                    callback.onResult(null, configurationException);
                 }
             });
         }

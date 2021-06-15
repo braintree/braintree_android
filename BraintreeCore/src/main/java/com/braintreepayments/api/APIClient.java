@@ -30,21 +30,21 @@ class APIClient {
 
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
-                } catch (JSONException exception) {
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                    callback.onResult(null, exception);
-                }
-            }
 
             @Override
-            public void failure(Exception exception) {
-                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                callback.onResult(null, exception);
+            public void onResult(String responseBody, Exception httpError) {
+                if (responseBody != null) {
+                    try {
+                        callback.onResult(new JSONObject(responseBody), null);
+                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                    } catch (JSONException exception) {
+                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                        callback.onResult(null, exception);
+                    }
+                } else {
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                    callback.onResult(null, httpError);
+                }
             }
         });
     }
@@ -64,17 +64,16 @@ class APIClient {
             braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
 
                 @Override
-                public void success(String responseBody) {
-                    try {
-                        callback.onResult(new JSONObject(responseBody), null);
-                    } catch (JSONException exception) {
-                        callback.onResult(null, exception);
+                public void onResult(String responseBody, Exception httpError) {
+                    if (responseBody != null) {
+                        try {
+                            callback.onResult(new JSONObject(responseBody), null);
+                        } catch (JSONException exception) {
+                            callback.onResult(null, exception);
+                        }
+                    } else {
+                        callback.onResult(null, httpError);
                     }
-                }
-
-                @Override
-                public void failure(Exception exception) {
-                    callback.onResult(null, exception);
                 }
             });
         } catch (JSONException exception) {

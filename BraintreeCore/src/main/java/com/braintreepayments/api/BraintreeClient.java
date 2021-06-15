@@ -99,7 +99,7 @@ public class BraintreeClient {
                 if (configuration != null) {
                     httpClient.get(url, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });
@@ -112,7 +112,7 @@ public class BraintreeClient {
                 if (configuration != null) {
                     httpClient.post(url, data, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });
@@ -133,7 +133,7 @@ public class BraintreeClient {
                 if (configuration != null) {
                     graphQLHttpClient.post(payload, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });

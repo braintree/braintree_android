@@ -51,8 +51,14 @@ class PayPalInternalClient {
                     String requestBody = payPalRequest.createRequestBody(configuration, braintreeClient.getAuthorization(), successUrl, cancelUrl);
 
                     braintreeClient.sendPOST(url, requestBody, new HttpResponseCallback() {
+
                         @Override
-                        public void success(String responseBody) {
+                        public void onResult(String responseBody, Exception httpError) {
+                            if (httpError != null) {
+                                callback.onResult(null, httpError);
+                                return;
+                            }
+
                             try {
                                 PayPalResponse payPalResponse = new PayPalResponse(payPalRequest)
                                         .successUrl(successUrl);
@@ -82,11 +88,6 @@ class PayPalInternalClient {
                             } catch (JSONException exception) {
                                 callback.onResult(null, exception);
                             }
-                        }
-
-                        @Override
-                        public void failure(Exception exception) {
-                            callback.onResult(null, exception);
                         }
                     });
                 } catch (JSONException exception) {

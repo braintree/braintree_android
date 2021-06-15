@@ -66,24 +66,24 @@ public class PreferredPaymentMethodsClient {
                 final String query = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
 
                 braintreeClient.sendGraphQLPOST(query, new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        PreferredPaymentMethodsResult result =
-                                PreferredPaymentMethodsResult.fromJSON(responseBody, isVenmoAppInstalled);
-
-                        String payPalPreferredEvent =
-                                String.format("preferred-payment-methods.paypal.api-detected.%b", result.isPayPalPreferred());
-                        braintreeClient.sendAnalyticsEvent(payPalPreferredEvent);
-
-                        callback.onResult(result);
-                    }
 
                     @Override
-                    public void failure(Exception exception) {
-                        braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error");
-                        callback.onResult(new PreferredPaymentMethodsResult()
-                                .isPayPalPreferred(false)
-                                .isVenmoPreferred(isVenmoAppInstalled));
+                    public void onResult(String responseBody, Exception httpError) {
+                        if (responseBody != null) {
+                            PreferredPaymentMethodsResult result =
+                                    PreferredPaymentMethodsResult.fromJSON(responseBody, isVenmoAppInstalled);
+
+                            String payPalPreferredEvent =
+                                    String.format("preferred-payment-methods.paypal.api-detected.%b", result.isPayPalPreferred());
+                            braintreeClient.sendAnalyticsEvent(payPalPreferredEvent);
+
+                            callback.onResult(result);
+                        } else {
+                            braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error");
+                            callback.onResult(new PreferredPaymentMethodsResult()
+                                    .isPayPalPreferred(false)
+                                    .isVenmoPreferred(isVenmoAppInstalled));
+                        }
                     }
                 });
             }
