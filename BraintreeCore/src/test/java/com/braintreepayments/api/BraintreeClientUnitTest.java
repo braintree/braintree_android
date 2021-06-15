@@ -16,12 +16,11 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -100,7 +99,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult((String) isNull(), same(exception));
     }
 
     @Test
@@ -132,7 +131,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult(null, exception);
     }
 
     @Test
@@ -164,7 +163,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult(null, exception);
     }
 
     @Test

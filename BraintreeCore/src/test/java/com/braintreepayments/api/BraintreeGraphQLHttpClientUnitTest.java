@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -105,7 +106,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(httpResponseCallback).failure(captor.capture());
+        verify(httpResponseCallback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
@@ -119,7 +120,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
         sut.post("sample/path",  configuration, httpResponseCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(httpResponseCallback).failure(captor.capture());
+        verify(httpResponseCallback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
