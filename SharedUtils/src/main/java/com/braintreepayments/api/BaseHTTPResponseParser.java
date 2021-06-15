@@ -17,7 +17,7 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 
 /**
- * Class that handles parsing http responses for {@link SynchronousHttpClient}.
+ * Class that handles parsing http responses for {@link SynchronousHTTPClient}.
  */
 class BaseHTTPResponseParser implements HTTPResponseParser {
 

@@ -39,7 +39,7 @@ public class BraintreeGraphQLClientUnitTest {
     }
 
     @Test
-    public void post_withPathAndDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
+    public void post_withPathAndDataAndConfigurationAndCallback_sendsHTTPRequest() throws MalformedURLException, URISyntaxException {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
@@ -58,7 +58,7 @@ public class BraintreeGraphQLClientUnitTest {
     }
 
     @Test
-    public void post_withDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
+    public void post_withDataAndConfigurationAndCallback_sendsHTTPRequest() throws MalformedURLException, URISyntaxException {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("data", configuration, httpResponseCallback);
 
@@ -77,7 +77,7 @@ public class BraintreeGraphQLClientUnitTest {
     }
 
     @Test
-    public void post_withPathAndDataAndConfiguration_sendsHttpRequest() throws Exception {
+    public void post_withPathAndDataAndConfiguration_sendsHTTPRequest() throws Exception {
         when(httpClient.sendRequest(any(HTTPRequest.class))).thenReturn("sample response");
 
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);

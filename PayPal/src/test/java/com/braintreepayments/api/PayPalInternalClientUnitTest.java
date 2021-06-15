@@ -544,7 +544,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_propagatesHttpErrors() throws JSONException {
+    public void sendRequest_propagatesHTTPErrors() throws JSONException {
         Exception httpError = new Exception("http error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))

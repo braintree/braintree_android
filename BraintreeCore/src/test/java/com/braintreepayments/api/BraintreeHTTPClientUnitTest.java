@@ -68,7 +68,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void get_withTokenizationKey_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
+    public void get_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
 
@@ -90,7 +90,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void get_withClientToken_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
+    public void get_withClientToken_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization clientToken = Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
 
@@ -113,7 +113,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void get_withPayPalUAT_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
+    public void get_withPayPalUAT_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization payPalUAT = Authorization.fromString(Fixtures.BASE64_PAYPAL_UAT);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(payPalUAT, httpClient);
 
@@ -152,7 +152,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void postSync_withTokenizationKey_forwardsHttpRequestToHttpClient() throws Exception {
+    public void postSync_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws Exception {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
 
@@ -177,7 +177,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void postSync_withClientToken_forwardsHttpRequestToHttpClient() throws Exception {
+    public void postSync_withClientToken_forwardsHTTPRequestToHTTPClient() throws Exception {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
 
@@ -245,7 +245,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void postAsync_withTokenizationKey_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
+    public void postAsync_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
 
@@ -268,7 +268,7 @@ public class BraintreeHTTPClientUnitTest {
     }
 
     @Test
-    public void postAsync_withClientToken_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
+    public void postAsync_withClientToken_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
 

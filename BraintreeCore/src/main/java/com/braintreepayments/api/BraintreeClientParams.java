@@ -35,7 +35,7 @@ class BraintreeClientParams {
         return this;
     }
 
-    BraintreeHTTPClient getHttpClient() {
+    BraintreeHTTPClient getHTTPClient() {
         return httpClient;
     }
 

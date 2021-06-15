@@ -36,7 +36,7 @@ public class BraintreeClientUnitTest {
     private Context context;
     private Context applicationContext;
 
-    private BraintreeHTTPClient braintreeHttpClient;
+    private BraintreeHTTPClient braintreeHTTPClient;
     private BraintreeGraphQLClient braintreeGraphQLClient;
     private ConfigurationLoader configurationLoader;
     private AnalyticsClient analyticsClient;
@@ -49,7 +49,7 @@ public class BraintreeClientUnitTest {
         context = mock(Context.class);
         applicationContext = ApplicationProvider.getApplicationContext();
 
-        braintreeHttpClient = mock(BraintreeHTTPClient.class);
+        braintreeHTTPClient = mock(BraintreeHTTPClient.class);
         braintreeGraphQLClient = mock(BraintreeGraphQLClient.class);
         configurationLoader = mock(ConfigurationLoader.class);
         analyticsClient = mock(AnalyticsClient.class);
@@ -71,7 +71,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
+    public void sendGET_onGetConfigurationSuccess_forwardsRequestToHTTPClient() {
         Configuration configuration = mock(Configuration.class);
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
@@ -83,7 +83,7 @@ public class BraintreeClientUnitTest {
         HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHTTPClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
+    public void sendPOST_onGetConfigurationSuccess_forwardsRequestToHTTPClient() {
         Configuration configuration = mock(Configuration.class);
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
@@ -115,7 +115,7 @@ public class BraintreeClientUnitTest {
         HTTPResponseCallback httpResponseCallback = mock(HTTPResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHTTPClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
+    public void sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHTTPClient() {
         Configuration configuration = mock(Configuration.class);
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
@@ -343,7 +343,7 @@ public class BraintreeClientUnitTest {
                 .sessionId(sessionId)
                 .setIntegrationType(integrationType)
                 .configurationLoader(configurationLoader)
-                .httpClient(braintreeHttpClient)
+                .httpClient(braintreeHTTPClient)
                 .graphQLClient(braintreeGraphQLClient)
                 .analyticsClient(analyticsClient)
                 .browserSwitchClient(browserSwitchClient)

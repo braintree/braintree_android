@@ -43,12 +43,12 @@ public class SynchronousHTTPClientUnitTest {
     }
 
     @Test
-    public void request_whenHttpRequestURLMalformed_throwsMalformedURLException() throws Exception {
+    public void request_whenHTTPRequestURLMalformed_throwsMalformedURLException() throws Exception {
         when(httpRequest.getPath()).thenReturn("");
         when(httpRequest.getMethod()).thenReturn("GET");
         when(httpRequest.getURL()).thenThrow(new MalformedURLException());
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        final SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         assertThrows(MalformedURLException.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
@@ -61,7 +61,7 @@ public class SynchronousHTTPClientUnitTest {
     public void request_whenPathIsNull_throwsIllegalArgumentException() throws Exception {
         when(httpRequest.getPath()).thenReturn(null);
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        final SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
@@ -86,7 +86,7 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setRequestMethod("GET");
     }
@@ -107,13 +107,13 @@ public class SynchronousHTTPClientUnitTest {
         TLSSocketFactory defaultSocketFactory = mock(TLSSocketFactory.class);
         when(TLSSocketFactory.newInstance()).thenReturn(defaultSocketFactory);
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(null, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setSSLSocketFactory(defaultSocketFactory);
     }
 
     @Test
-    public void request_whenConnectionIsHttps_setsSSLSocketFactory() throws Exception {
+    public void request_whenConnectionIsHTTPS_setsSSLSocketFactory() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         URL url = mock(URL.class);
@@ -125,13 +125,13 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setSSLSocketFactory(sslSocketFactory);
     }
 
     @Test
-    public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
+    public void request_whenConnectionIsHTTPS_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         URL url = mock(URL.class);
@@ -146,7 +146,7 @@ public class SynchronousHTTPClientUnitTest {
         TLSSocketFactory defaultSocketFactory = mock(TLSSocketFactory.class);
         when(TLSSocketFactory.newInstance()).thenReturn(defaultSocketFactory);
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
+        final SynchronousHTTPClient sut = new SynchronousHTTPClient(null, httpResponseParser);
         sut.setSSLSocketFactory(null);
         SSLException exception = assertThrows(SSLException.class, new ThrowingRunnable() {
             @Override
@@ -159,7 +159,7 @@ public class SynchronousHTTPClientUnitTest {
     }
 
     @Test
-    public void request_setsHttpReadTimeout() throws Exception {
+    public void request_setsHTTPReadTimeout() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getReadTimeout()).thenReturn(123);
 
@@ -172,13 +172,13 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setReadTimeout(123);
     }
 
     @Test
-    public void request_setsHttpConnectionTimeout() throws Exception {
+    public void request_setsHTTPConnectionTimeout() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getConnectTimeout()).thenReturn(456);
 
@@ -191,13 +191,13 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setConnectTimeout(456);
     }
 
     @Test
-    public void request_setsHttpHeaders() throws Exception {
+    public void request_setsHTTPHeaders() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         Map<String, String> headers = new HashMap<>();
@@ -213,13 +213,13 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setRequestProperty("Sample-Header", "Sample Value");
     }
 
     @Test
-    public void request_parsesResponseAndReturnsHttpBody() throws Exception {
+    public void request_parsesResponseAndReturnsHTTPBody() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getMethod()).thenReturn("GET");
 
@@ -232,7 +232,7 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         String result = sut.request(httpRequest);
         assertEquals("http_ok", result);
     }
@@ -251,13 +251,13 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).disconnect();
     }
 
     @Test
-    public void request_onHttpResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
+    public void request_onHTTPResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getMethod()).thenReturn("GET");
 
@@ -270,7 +270,7 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenThrow(new Exception("error"));
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        final SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         assertThrows(Exception.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
@@ -297,7 +297,7 @@ public class SynchronousHTTPClientUnitTest {
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(httpRequest.getData()).thenReturn("test data");
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setRequestProperty("Content-Type", "application/json");
     }
@@ -324,7 +324,7 @@ public class SynchronousHTTPClientUnitTest {
 
         byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
@@ -355,7 +355,7 @@ public class SynchronousHTTPClientUnitTest {
 
         byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
 
-        SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        SynchronousHTTPClient sut = new SynchronousHTTPClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);

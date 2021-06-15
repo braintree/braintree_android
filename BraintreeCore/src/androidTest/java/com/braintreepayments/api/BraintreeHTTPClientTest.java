@@ -24,9 +24,9 @@ public class BraintreeHTTPClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient braintreeHttpClient = new BraintreeHTTPClient(authorization);
+        BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HTTPResponseCallback() {
+        braintreeHTTPClient.get("https://api.sandbox.braintreegateway.com/", null, new HTTPResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -42,9 +42,9 @@ public class BraintreeHTTPClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        BraintreeHTTPClient braintreeHttpClient = new BraintreeHTTPClient(authorization);
+        BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HTTPResponseCallback() {
+        braintreeHTTPClient.get("https://api.braintreegateway.com/", null, new HTTPResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

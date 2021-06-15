@@ -14,12 +14,12 @@ import javax.net.ssl.SSLSocketFactory;
  * This class performs an http request on the calling thread. The external caller is
  * responsible for thread scheduling to ensure that this is not called on the main thread.
  */
-class SynchronousHttpClient {
+class SynchronousHTTPClient {
 
     private SSLSocketFactory socketFactory;
     private final HTTPResponseParser parser;
 
-    SynchronousHttpClient(SSLSocketFactory socketFactory, HTTPResponseParser parser) {
+    SynchronousHTTPClient(SSLSocketFactory socketFactory, HTTPResponseParser parser) {
         this.parser = parser;
         if (socketFactory != null) {
             this.socketFactory = socketFactory;

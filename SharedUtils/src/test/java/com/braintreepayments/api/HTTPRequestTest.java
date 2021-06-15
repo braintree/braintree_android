@@ -65,7 +65,7 @@ public class HTTPRequestTest {
         }
 
         @Test
-        public void getURL_whenPathStartsWithHttp_returnsPathWithNoModification() throws MalformedURLException, URISyntaxException {
+        public void getURL_whenPathStartsWithHTTP_returnsPathWithNoModification() throws MalformedURLException, URISyntaxException {
             HTTPRequest sut = HTTPRequest.newInstance()
                     .path("https://anothersite.com/path");
 
