@@ -16,7 +16,7 @@ import javax.net.ssl.SSLException;
 import static junit.framework.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class BraintreeGraphQLHttpClientTest {
+public class BraintreeGraphQLClientTest {
 
     private CountDownLatch countDownLatch;
 

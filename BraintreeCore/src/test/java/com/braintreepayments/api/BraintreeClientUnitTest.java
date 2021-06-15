@@ -37,7 +37,7 @@ public class BraintreeClientUnitTest {
     private Context applicationContext;
 
     private BraintreeHTTPClient braintreeHttpClient;
-    private BraintreeGraphQLHttpClient braintreeGraphQLHttpClient;
+    private BraintreeGraphQLClient braintreeGraphQLClient;
     private ConfigurationLoader configurationLoader;
     private AnalyticsClient analyticsClient;
     private ManifestValidator manifestValidator;
@@ -50,7 +50,7 @@ public class BraintreeClientUnitTest {
         applicationContext = ApplicationProvider.getApplicationContext();
 
         braintreeHttpClient = mock(BraintreeHTTPClient.class);
-        braintreeGraphQLHttpClient = mock(BraintreeGraphQLHttpClient.class);
+        braintreeGraphQLClient = mock(BraintreeGraphQLClient.class);
         configurationLoader = mock(ConfigurationLoader.class);
         analyticsClient = mock(AnalyticsClient.class);
         manifestValidator = mock(ManifestValidator.class);
@@ -147,7 +147,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(braintreeGraphQLHttpClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
     }
 
     @Test
@@ -344,7 +344,7 @@ public class BraintreeClientUnitTest {
                 .setIntegrationType(integrationType)
                 .configurationLoader(configurationLoader)
                 .httpClient(braintreeHttpClient)
-                .graphQLHttpClient(braintreeGraphQLHttpClient)
+                .graphQLClient(braintreeGraphQLClient)
                 .analyticsClient(analyticsClient)
                 .browserSwitchClient(browserSwitchClient)
                 .manifestValidator(manifestValidator);

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BraintreeHttpResponseParserUnitTest {
+public class BraintreeHTTPResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
     private BaseHttpResponseParser baseParser;
@@ -29,7 +29,7 @@ public class BraintreeHttpResponseParserUnitTest {
     public void parse_forwardsResultByDefault() throws Exception {
         when(baseParser.parse(123, urlConnection)).thenReturn("parse result");
 
-        BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
+        BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
         String result = sut.parse(123, urlConnection);
         assertEquals("parse result", result);
     }
@@ -42,7 +42,7 @@ public class BraintreeHttpResponseParserUnitTest {
         Exception exception = new Exception("error");
         when(baseParser.parse(123, urlConnection)).thenThrow(exception);
 
-        BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
+        BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 
@@ -54,7 +54,7 @@ public class BraintreeHttpResponseParserUnitTest {
         AuthorizationException authorizationException = new AuthorizationException(Fixtures.ERROR_RESPONSE);
         when(baseParser.parse(123, urlConnection)).thenThrow(authorizationException);
 
-        final BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
+        final BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 
@@ -66,7 +66,7 @@ public class BraintreeHttpResponseParserUnitTest {
         UnprocessableEntityException unprocessableEntityException = new UnprocessableEntityException(Fixtures.ERROR_RESPONSE);
         when(baseParser.parse(123, urlConnection)).thenThrow(unprocessableEntityException);
 
-        final BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
+        final BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 }

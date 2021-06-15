@@ -19,7 +19,7 @@ public class BraintreeClient {
     private final Authorization authorization;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHTTPClient httpClient;
-    private final BraintreeGraphQLHttpClient graphQLHttpClient;
+    private final BraintreeGraphQLClient graphQLClient;
     private final BrowserSwitchClient browserSwitchClient;
     private final ConfigurationLoader configurationLoader;
     private final Context applicationContext;
@@ -37,7 +37,7 @@ public class BraintreeClient {
                 .setIntegrationType(IntegrationType.get(context))
                 .sessionId(UUIDHelper.getFormattedUUID())
                 .httpClient(httpClient)
-                .graphQLHttpClient(new BraintreeGraphQLHttpClient(authorization))
+                .graphQLClient(new BraintreeGraphQLClient(authorization))
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
@@ -61,7 +61,7 @@ public class BraintreeClient {
         this.authorization = params.getAuthorization();
         this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
-        this.graphQLHttpClient = params.getGraphQLHttpClient();
+        this.graphQLClient = params.getGraphQLClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
         this.sessionId = params.getSessionId();
@@ -131,7 +131,7 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    graphQLHttpClient.post(payload, configuration, responseCallback);
+                    graphQLClient.post(payload, configuration, responseCallback);
                 } else {
                     responseCallback.onResult(null, error);
                 }

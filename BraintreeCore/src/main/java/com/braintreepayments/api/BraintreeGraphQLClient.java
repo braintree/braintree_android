@@ -5,17 +5,17 @@ import androidx.annotation.VisibleForTesting;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
-class BraintreeGraphQLHttpClient {
+class BraintreeGraphQLClient {
 
     private final HttpClient httpClient;
     private final Authorization authorization;
 
-    BraintreeGraphQLHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLHttpResponseParser()));
+    BraintreeGraphQLClient(Authorization authorization) {
+        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeGraphQLClient(Authorization authorization, HttpClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }

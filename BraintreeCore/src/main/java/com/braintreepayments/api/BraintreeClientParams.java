@@ -11,7 +11,7 @@ class BraintreeClientParams {
 
     private String sessionId;
     private String integrationType;
-    private BraintreeGraphQLHttpClient graphQLHttpClient;
+    private BraintreeGraphQLClient graphQLClient;
 
     private ConfigurationLoader configurationLoader;
     private BrowserSwitchClient browserSwitchClient;
@@ -62,12 +62,12 @@ class BraintreeClientParams {
         return this;
     }
 
-    BraintreeGraphQLHttpClient getGraphQLHttpClient() {
-        return graphQLHttpClient;
+    BraintreeGraphQLClient getGraphQLClient() {
+        return graphQLClient;
     }
 
-    BraintreeClientParams graphQLHttpClient(BraintreeGraphQLHttpClient graphQLHttpClient) {
-        this.graphQLHttpClient = graphQLHttpClient;
+    BraintreeClientParams graphQLClient(BraintreeGraphQLClient graphQLClient) {
+        this.graphQLClient = graphQLClient;
         return this;
     }
 
