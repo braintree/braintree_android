@@ -54,39 +54,38 @@ class PayPalInternalClient {
 
                         @Override
                         public void onResult(String responseBody, Exception httpError) {
-                            if (httpError != null) {
-                                callback.onResult(null, httpError);
-                                return;
-                            }
+                            if (responseBody != null) {
+                                try {
+                                    PayPalResponse payPalResponse = new PayPalResponse(payPalRequest)
+                                            .successUrl(successUrl);
 
-                            try {
-                                PayPalResponse payPalResponse = new PayPalResponse(payPalRequest)
-                                        .successUrl(successUrl);
+                                    PayPalPaymentResource paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
+                                    String redirectUrl = paypalPaymentResource.getRedirectUrl();
+                                    if (redirectUrl != null) {
+                                        Uri parsedRedirectUri = Uri.parse(redirectUrl);
 
-                                PayPalPaymentResource paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
-                                String redirectUrl = paypalPaymentResource.getRedirectUrl();
-                                if (redirectUrl != null) {
-                                    Uri parsedRedirectUri = Uri.parse(redirectUrl);
+                                        String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
+                                        String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
 
-                                    String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
-                                    String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
+                                        if (pairingId != null) {
+                                            payPalResponse
+                                                    .pairingId(pairingId)
+                                                    .clientMetadataId(payPalDataCollector.getClientMetadataId(context));
+                                        }
 
-                                    if (pairingId != null) {
-                                        payPalResponse
-                                                .pairingId(pairingId)
-                                                .clientMetadataId(payPalDataCollector.getClientMetadataId(context));
+                                        String approvalUrl = parsedRedirectUri
+                                                .buildUpon()
+                                                .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
+                                                .toString();
+                                        payPalResponse.approvalUrl(approvalUrl);
                                     }
+                                    callback.onResult(payPalResponse, null);
 
-                                    String approvalUrl = parsedRedirectUri
-                                            .buildUpon()
-                                            .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
-                                            .toString();
-                                    payPalResponse.approvalUrl(approvalUrl);
+                                } catch (JSONException exception) {
+                                    callback.onResult(null, exception);
                                 }
-                                callback.onResult(payPalResponse, null);
-
-                            } catch (JSONException exception) {
-                                callback.onResult(null, exception);
+                            } else {
+                                callback.onResult(null, httpError);
                             }
                         }
                     });
