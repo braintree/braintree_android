@@ -90,7 +90,7 @@ class HTTPClient {
                 retryCountMap.put(url, retryCount + 1);
             } else {
                 String message = "Retry limit has been exceeded. Try again later.";
-                HTTPClientException retryLimitException = new HTTPClientException(message);
+                HttpClientException retryLimitException = new HttpClientException(message);
                 notifyErrorOnMainThread(callback, retryLimitException);
             }
         }

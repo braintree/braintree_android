@@ -133,7 +133,7 @@ public class HTTPClientUnitTest {
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((String) isNull(), captor.capture());
 
-        HTTPClientException httpClientException = (HTTPClientException) captor.getValue();
+        HttpClientException httpClientException = (HttpClientException) captor.getValue();
         String expectedMessage = "Retry limit has been exceeded. Try again later.";
         assertEquals(expectedMessage, httpClientException.getMessage());
     }
