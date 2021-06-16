@@ -874,7 +874,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_whenConfigurationFails_callbackFalseAndpropagatesError() {
+    public void isReadyToPay_whenConfigurationFails_callbackFalseAndPropagatesError() {
         Exception configError = new Exception("configuration error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configurationError(configError)
