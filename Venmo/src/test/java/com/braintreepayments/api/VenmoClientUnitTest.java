@@ -872,4 +872,63 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
+
+    @Test
+    public void isReadyToPay_whenConfigurationFails_callbackFalseAndPropagatesError() {
+        Exception configError = new Exception("configuration error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
+        sut.isReadyToPay(activity, callback);
+
+        verify(callback).onResult(false, configError);
+    }
+
+    @Test
+    public void isReadyToPay_whenVenmoDisabled_callbackFalse() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS))
+                .build();
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+
+        VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
+        sut.isReadyToPay(activity, callback);
+
+        verify(callback).onResult(false, null);
+    }
+
+    @Test
+    public void isReadyToPay_whenVenmoEnabledAndAppSwitchUnavailable_callbackFalse() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO))
+                .build();
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
+
+        VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
+        sut.isReadyToPay(activity, callback);
+
+        verify(callback).onResult(false, null);
+    }
+
+    @Test
+    public void isReadyToPay_whenVenmoEnabledAndAppSwitchAvailable_callbackTrue() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO))
+                .build();
+
+        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
+        sut.isReadyToPay(activity, callback);
+
+        verify(callback).onResult(true, null);
+    }
 }

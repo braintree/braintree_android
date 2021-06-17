@@ -296,4 +296,28 @@ public class VenmoClient {
     public boolean isVenmoAppSwitchAvailable(@NonNull Context context) {
         return deviceInspector.isVenmoAppSwitchAvailable(context);
     }
+
+    /**
+     * Before starting the Venmo flow, use this method to check whether
+     * Venmo is supported and set up on the device. When the callback is called with
+     * {@code true}, show the Venmo button. When it is called with {@code false}, display other
+     * checkout options.
+     *
+     * @param context Android Context
+     * @param callback {@link VenmoIsReadyToPayCallback}
+     */
+    public void isReadyToPay(final Context context, final VenmoIsReadyToPayCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                if (configuration != null) {
+                    boolean result =
+                        configuration.isVenmoEnabled() && isVenmoAppSwitchAvailable(context);
+                    callback.onResult(result, null);
+                } else {
+                    callback.onResult(false, configError);
+                }
+            }
+        });
+    }
 }
