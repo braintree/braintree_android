@@ -880,7 +880,7 @@ public class VenmoClientUnitTest {
                 .configurationError(configError)
                 .build();
 
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector);
 
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
@@ -894,7 +894,7 @@ public class VenmoClientUnitTest {
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS))
                 .build();
 
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector);
 
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
@@ -908,7 +908,7 @@ public class VenmoClientUnitTest {
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO))
                 .build();
 
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector);
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
 
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
@@ -923,7 +923,7 @@ public class VenmoClientUnitTest {
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO))
                 .build();
 
-        VenmoClient sut = new VenmoClient(braintreeClient, tokenizationClient, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector);
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
 
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
