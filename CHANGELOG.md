@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.2.0
 
 * Add `VenmoClient#isReadyToPay()` method
 * Bump `browser-switch` to `2.0.1` (fixes #409)
