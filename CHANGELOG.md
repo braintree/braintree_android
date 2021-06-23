@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add `VenmoClient#isReadyToPay()` method
+* Bump `browser-switch` to `2.0.1` (fixes #409)
 
 ## 4.1.0
 
