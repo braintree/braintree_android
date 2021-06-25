@@ -26,17 +26,10 @@ public class SamsungPayInternalClient {
 
     private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
 
-    private final String sessionId;
-    private final String integrationType;
-    private final Configuration configuration;
     private final SamsungPay samsungPay;
     private final PaymentManager paymentManager;
 
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-        this.sessionId = sessionId;
-        this.configuration = configuration;
-        this.integrationType = integrationType;
-
         Bundle bundle = new Bundle();
         bundle.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
 
@@ -100,7 +93,7 @@ public class SamsungPayInternalClient {
         });
     }
 
-    public void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo) {
+    public void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final StartSamsungPayCallback callback) {
         paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
             @Override
             public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
@@ -109,12 +102,24 @@ public class SamsungPayInternalClient {
 
             @Override
             public void onSuccess(CustomSheetPaymentInfo customSheetPaymentInfo, String s, Bundle bundle) {
-                // TODO: parse nonce
+                try {
+                    JSONObject json = new JSONObject(s);
+                    SamsungPayNonce samsungPayNonce = SamsungPayNonce.fromJSON(json);
+                    callback.onResult(samsungPayNonce, null);
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
+                }
             }
 
             @Override
-            public void onFailure(int i, Bundle bundle) {
-                // TODO: notify merchant failure
+            public void onFailure(int errorCode, Bundle bundle) {
+                if (errorCode == SpaySdk.ERROR_USER_CANCELED) {
+                    UserCanceledException userCanceledError = new UserCanceledException("User Canceled");
+                    callback.onResult(null, userCanceledError);
+                } else {
+                    SamsungPayException samsungPayError = new SamsungPayException(errorCode);
+                    callback.onResult(null, samsungPayError);
+                }
             }
         });
     }

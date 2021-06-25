@@ -32,6 +32,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
 
     implementation 'com.samsung.android.spay:sdk:2.5.01'
 
