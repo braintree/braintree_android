@@ -1,32 +1,23 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.samsung.android.sdk.samsungpay.v2.PartnerInfo;
-import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
-import com.samsung.android.sdk.samsungpay.v2.StatusListener;
-import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
-import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager;
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.PARTNER_SERVICE_TYPE;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
-import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ServiceType.INAPP_PAYMENT;
-import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA_KEY_TEST_MODE;
 
 public class SamsungPayClient {
 
@@ -69,24 +60,28 @@ public class SamsungPayClient {
     }
 
     public void goToUpdatePage(final Context context) {
-        getSamsungPay(context, new GetSamsungPayCallback() {
+        getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
-            public void onResult(@Nullable SamsungPay samsungPay, @Nullable Exception error) {
-                if (samsungPay != null) {
-                    samsungPay.goToUpdatePage();
+            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
+                if (internalClient != null) {
+                    internalClient.goToSamsungPayUpdatePage();
                     braintreeClient.sendAnalyticsEvent("samsung-pay.goto-update-page");
+                } else {
+                    // TODO: determine if we should notify an error here
                 }
             }
         });
     }
 
     public void activateSamsungPay(Context context) {
-        getSamsungPay(context, new GetSamsungPayCallback() {
+        getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
-            public void onResult(@Nullable SamsungPay samsungPay, @Nullable Exception error) {
-                if (samsungPay != null) {
-                    samsungPay.activateSamsungPay();
+            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
+                if (internalClient != null) {
+                    internalClient.activateSamsungPay();
                     braintreeClient.sendAnalyticsEvent("samsung-pay.activate-samsung-pay");
+                } else {
+                    // TODO: determine if we should notify an error here
                 }
             }
         });
@@ -191,11 +186,15 @@ public class SamsungPayClient {
         }
     }
 
-    public void requestPayment() {
+    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final StartSamsungPayCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
-                internalClient.startSamsungPay();
+                if (internalClient != null) {
+                    internalClient.startSamsungPay(paymentInfo, callback);
+                } else {
+                    callback.onResult(null, error);
+                }
             }
         });
     }
@@ -224,87 +223,5 @@ public class SamsungPayClient {
             }
         }
         return new HashSet<>(result);
-    }
-
-    private void getPaymentManager(final Context context, final GetPaymentManagerCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
-
-                    boolean isTestEnvironment = false;
-                    String samsungPayEnvironment = configuration.getSamsungPayEnvironment();
-                    if (samsungPayEnvironment != null) {
-                        isTestEnvironment = samsungPayEnvironment.equalsIgnoreCase("SANDBOX");
-                    }
-                    bundle.putBoolean(EXTRA_KEY_TEST_MODE, isTestEnvironment);
-
-                    JSONObject clientSdkMetadata = new MetadataBuilder()
-                            .integration(braintreeClient.getIntegrationType())
-                            .sessionId(braintreeClient.getSessionId())
-                            .version()
-                            .build();
-
-                    JSONObject additionalData = new JSONObject();
-                    try {
-                        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
-                        additionalData.put("clientSdkMetadata", clientSdkMetadata);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                    bundle.putString("additionalData", additionalData.toString());
-
-                    String serviceId = configuration.getSamsungPayServiceId();
-                    PartnerInfo partnerInfo = new PartnerInfo(serviceId, bundle);
-                    PaymentManager paymentManager = new PaymentManager(context, partnerInfo);
-                    callback.onResult(paymentManager, null);
-                } else {
-                    callback.onResult(null, error);
-                }
-            }
-        });
-    }
-
-    private void getSamsungPay(final Context context, final GetSamsungPayCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
-
-                    boolean isTestEnvironment = false;
-                    String samsungPayEnvironment = configuration.getSamsungPayEnvironment();
-                    if (samsungPayEnvironment != null) {
-                        isTestEnvironment = samsungPayEnvironment.equalsIgnoreCase("SANDBOX");
-                    }
-                    bundle.putBoolean(EXTRA_KEY_TEST_MODE, isTestEnvironment);
-
-                    JSONObject clientSdkMetadata = new MetadataBuilder()
-                            .integration(braintreeClient.getIntegrationType())
-                            .sessionId(braintreeClient.getSessionId())
-                            .version()
-                            .build();
-
-                    JSONObject additionalData = new JSONObject();
-                    try {
-                        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
-                        additionalData.put("clientSdkMetadata", clientSdkMetadata);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                    bundle.putString("additionalData", additionalData.toString());
-
-                    String serviceId = configuration.getSamsungPayServiceId();
-                    PartnerInfo partnerInfo = new PartnerInfo(serviceId, bundle);
-                    SamsungPay samsungPay = new SamsungPay(context, partnerInfo);
-                    callback.onResult(samsungPay, null);
-                } else {
-                    callback.onResult(null, error);
-                }
-            }
-        });
     }
 }

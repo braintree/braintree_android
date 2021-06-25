@@ -58,16 +58,17 @@ public class SamsungPayInternalClient {
         this.paymentManager = new PaymentManager(context, partnerInfo);
     }
 
-    void getSamsungPayStatus(GetSamsungPayStatusCallback callback) {
+    void getSamsungPayStatus(final GetSamsungPayStatusCallback callback) {
         samsungPay.getSamsungPayStatus(new StatusListener() {
             @Override
-            public void onSuccess(int i, Bundle bundle) {
-
+            public void onSuccess(int statusCode, Bundle bundle) {
+                callback.onResult(statusCode, null);
             }
 
             @Override
-            public void onFail(int i, Bundle bundle) {
-
+            public void onFail(int errorCode, Bundle bundle) {
+                SamsungPayException exception = new SamsungPayException(errorCode);
+                callback.onResult(null, exception);
             }
         });
     }
@@ -122,5 +123,13 @@ public class SamsungPayInternalClient {
                 }
             }
         });
+    }
+
+    public void goToSamsungPayUpdatePage() {
+        samsungPay.goToUpdatePage();
+    }
+
+    public void activateSamsungPay() {
+        samsungPay.activateSamsungPay();
     }
 }
