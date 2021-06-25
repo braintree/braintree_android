@@ -191,16 +191,13 @@ public class SamsungPayClient {
         }
     }
 
-    public void createPaymentInfo() {
-
-    }
-
-    public void createPaymentManager() {
-
-    }
-
     public void requestPayment() {
-
+        getInternalClient(new GetSamsungPayInternalClientCallback() {
+            @Override
+            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
+                internalClient.startSamsungPay();
+            }
+        });
     }
 
     public boolean isSamsungPayAvailable() {

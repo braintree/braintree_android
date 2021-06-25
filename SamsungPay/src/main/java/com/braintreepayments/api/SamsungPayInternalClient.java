@@ -3,14 +3,14 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import com.samsung.android.sdk.samsungpay.v2.PartnerInfo;
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.StatusListener;
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager;
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,6 +96,25 @@ public class SamsungPayInternalClient {
             public void onFailure(int errorCode, Bundle bundle) {
                 Exception error = new SamsungPayException(errorCode);
                 callback.onResult(null, error);
+            }
+        });
+    }
+
+    public void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo) {
+        paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
+            @Override
+            public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
+                // TODO: notify merchant card info updated
+            }
+
+            @Override
+            public void onSuccess(CustomSheetPaymentInfo customSheetPaymentInfo, String s, Bundle bundle) {
+                // TODO: parse nonce
+            }
+
+            @Override
+            public void onFailure(int i, Bundle bundle) {
+                // TODO: notify merchant failure
             }
         });
     }
