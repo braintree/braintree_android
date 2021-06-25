@@ -198,4 +198,8 @@ public class BraintreeClient {
     Authorization getAuthorization() {
         return authorization;
     }
+
+    Context getApplicationContext() {
+        return applicationContext;
+    }
 }
