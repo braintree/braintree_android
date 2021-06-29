@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class SamsungPartnerInfoBuilderTestJava {
+public class SamsungPartnerInfoBuilderTest {
 
     @Test
     public void build_setsSamsungServiceId() {
