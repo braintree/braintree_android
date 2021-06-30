@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,6 +60,7 @@ public class ThreeDSecureResult implements Parcelable {
      * @return The {@link CardNonce} associated with the 3D Secure
      * authentication
      */
+    @Nullable
     public CardNonce getTokenizedCard() {
         return tokenizedCard;
     }
@@ -69,6 +72,7 @@ public class ThreeDSecureResult implements Parcelable {
     /**
      * @return Message describing potential errors that occurred during the authentication
      */
+    @Nullable
     public String getErrorMessage() {
         return errorMessage;
     }

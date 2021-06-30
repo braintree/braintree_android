@@ -10,8 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 /**
  * DataCollector is used to collect device information to aid in fraud detection and prevention.
  */
@@ -25,7 +23,7 @@ public class DataCollector {
     private final PayPalDataCollector payPalDataCollector;
     private final KountDataCollector kountDataCollector;
 
-    public DataCollector(BraintreeClient braintreeClient) {
+    public DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient));
     }
 
@@ -42,7 +40,7 @@ public class DataCollector {
      * @param context  Android Context
      * @param callback {@link DataCollectorCallback}
      */
-    public void collectDeviceData(Context context, DataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull Context context, @NonNull DataCollectorCallback callback) {
         collectDeviceData(context, null, callback);
     }
 
@@ -58,7 +56,7 @@ public class DataCollector {
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
      * @param callback   {@link DataCollectorCallback}
      */
-    public void collectDeviceData(final Context context, final String merchantId, final DataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull final Context context, @Nullable final String merchantId, @NonNull final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -104,65 +102,16 @@ public class DataCollector {
     }
 
     /**
-     * Collect PayPal device information for fraud identification purposes.
-     *
-     * @param context  Android Context
-     * @param callback {@link DataCollectorCallback}
-     */
-    public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
-        final JSONObject deviceData = new JSONObject();
-
-        try {
-            String clientMetadataId = getPayPalClientMetadataId(context);
-            if (!TextUtils.isEmpty(clientMetadataId)) {
-                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
-            }
-        } catch (JSONException ignored) {
-        }
-        callback.onResult(deviceData.toString(), null);
-    }
-
-    /**
      * Collect device information for fraud identification purposes from PayPal only.
      *
      * @param context Android Context
      * @return The client metadata id associated with the collected data.
      */
-    public String getPayPalClientMetadataId(Context context) {
+    private String getPayPalClientMetadataId(Context context) {
         try {
             return payPalDataCollector.getClientMetadataId(context);
         } catch (NoClassDefFoundError ignored) {
         }
         return "";
-    }
-
-    void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    if (configuration.isFraudDataCollectionEnabled()) {
-                        HashMap<String, String> additionalProperties = new HashMap<>();
-                        additionalProperties.put("rda_tenant", "bt_card");
-                        additionalProperties.put("mid", configuration.getMerchantId());
-
-                        if (braintreeClient.getAuthorization() instanceof ClientToken) {
-                            String customerId = ((ClientToken) braintreeClient.getAuthorization()).getCustomerId();
-                            if (customerId != null) {
-                                additionalProperties.put("cid", customerId);
-                            }
-                        }
-
-                        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                                .setApplicationGuid(payPalDataCollector.getPayPalInstallationGUID(context))
-                                .setClientMetadataId(paymentMethodNonce.getString())
-                                .setDisableBeacon(true)
-                                .setAdditionalData(additionalProperties);
-
-                        payPalDataCollector.getClientMetadataId(context, request);
-                    }
-                }
-            }
-        });
     }
 }

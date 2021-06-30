@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +31,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobileCountryCode The mobile country code to use when sending the auth code via SMS.
      */
-    public void setMobileCountryCode(String mobileCountryCode) {
+    public void setMobileCountryCode(@Nullable String mobileCountryCode) {
         if (TextUtils.isEmpty(mobileCountryCode)) {
             this.mobileCountryCode = null;
         } else {
@@ -40,7 +42,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param mobilePhoneNumber The mobile phone number to use when sending the auth code via SMS.
      */
-    public void setMobilePhoneNumber(String mobilePhoneNumber) {
+    public void setMobilePhoneNumber(@Nullable String mobilePhoneNumber) {
         if (TextUtils.isEmpty(mobilePhoneNumber)) {
             this.mobilePhoneNumber = null;
         } else {
@@ -51,7 +53,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param smsCode The auth code sent to the user via SMS.
      */
-    public void setSmsCode(String smsCode) {
+    public void setSmsCode(@Nullable String smsCode) {
         if (TextUtils.isEmpty(smsCode)) {
             this.smsCode = null;
         } else {
@@ -62,7 +64,7 @@ public class UnionPayCard extends BaseCard implements Parcelable {
     /**
      * @param enrollmentId The UnionPay enrollment ID
      */
-    public void setEnrollmentId(String enrollmentId) {
+    public void setEnrollmentId(@Nullable String enrollmentId) {
         if (TextUtils.isEmpty(enrollmentId)) {
             this.enrollmentId = null;
         } else {
@@ -70,11 +72,43 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         }
     }
 
+    /**
+     * @return The mobile country code to use when sending the auth code via SMS.
+     */
+    @Nullable
+    public String getMobileCountryCode() {
+        return mobileCountryCode;
+    }
+
+    /**
+     * @return The mobile phone number to use when sending the auth code via SMS.
+     */
+    @Nullable
+    public String getMobilePhoneNumber() {
+        return mobilePhoneNumber;
+    }
+
+    /**
+     * @return The auth code sent to the user via SMS.
+     */
+    @Nullable
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    /**
+     * @return The UnionPay enrollment ID.
+     */
+    @Nullable
+    public String getEnrollmentId() {
+        return enrollmentId;
+    }
+
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
-        unionPayEnrollment.put(NUMBER_KEY, number);
-        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, expirationMonth);
-        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, expirationYear);
+        unionPayEnrollment.put(NUMBER_KEY, getNumber());
+        unionPayEnrollment.put(EXPIRATION_MONTH_KEY, getExpirationMonth());
+        unionPayEnrollment.put(EXPIRATION_YEAR_KEY, getExpirationYear());
         unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mobileCountryCode);
         unionPayEnrollment.put(MOBILE_PHONE_NUMBER_KEY, mobilePhoneNumber);
 

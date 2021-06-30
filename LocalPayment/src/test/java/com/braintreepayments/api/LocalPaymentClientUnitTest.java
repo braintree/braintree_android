@@ -101,10 +101,10 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        ArgumentCaptor<LocalPaymentTransaction> transactionCaptor = ArgumentCaptor.forClass(LocalPaymentTransaction.class);
+        ArgumentCaptor<LocalPaymentResult> transactionCaptor = ArgumentCaptor.forClass(LocalPaymentResult.class);
         verify(localPaymentStartCallback).onResult(transactionCaptor.capture(), (Exception) isNull());
 
-        LocalPaymentTransaction transaction = transactionCaptor.getValue();
+        LocalPaymentResult transaction = transactionCaptor.getValue();
         assertSame(request, transaction.getRequest());
         assertEquals("https://checkout.paypal.com/latinum?token=payment-token", transaction.getApprovalUrl());
         assertEquals("local-payment-id-123", transaction.getPaymentId());
@@ -136,7 +136,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        verify(localPaymentStartCallback).onResult((LocalPaymentTransaction) isNull(), same(configException));
+        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), same(configException));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentTransaction) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof ConfigurationException);
@@ -227,7 +227,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentTransaction) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -243,7 +243,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentTransaction) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -257,7 +257,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(null, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentTransaction) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -283,9 +283,9 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentTransaction transaction = new LocalPaymentTransaction(request, approvalUrl, "payment-id");
+        LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
-        sut.approveTransaction(activity, transaction);
+        sut.approvePayment(activity, transaction);
 
         ArgumentCaptor<BrowserSwitchOptions> optionsCaptor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), optionsCaptor.capture());
@@ -308,22 +308,22 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentTransaction transaction = new LocalPaymentTransaction(request, approvalUrl, "payment-id");
+        LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
-        sut.approveTransaction(activity, transaction);
+        sut.approvePayment(activity, transaction);
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.succeeded");
     }
 
     @Test
-    public void approveTransaction_whenActivityIsNull_throwsError() throws BrowserSwitchException, JSONException {
+    public void approvePayment_whenActivityIsNull_throwsError() throws BrowserSwitchException, JSONException {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentTransaction transaction = new LocalPaymentTransaction(request, approvalUrl, "payment-id");
+        LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
         try {
-            sut.approveTransaction(null, transaction);
+            sut.approvePayment(null, transaction);
             fail("Should throw");
         } catch (RuntimeException exception) {
             assertEquals("A FragmentActivity is required.", exception.getMessage());
@@ -331,11 +331,11 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void approveTransaction_whenTransactionIsNull_throwsError() throws BrowserSwitchException, JSONException {
+    public void approvePayment_whenTransactionIsNull_throwsError() throws BrowserSwitchException, JSONException {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector);
 
         try {
-            sut.approveTransaction(activity, null);
+            sut.approvePayment(activity, null);
             fail("Should throw");
         } catch (RuntimeException exception) {
             assertEquals("A LocalPaymentTransaction is required.", exception.getMessage());
@@ -468,7 +468,6 @@ public class LocalPaymentClientUnitTest {
         verify(localPaymentBrowserSwitchResultCallback).onResult(resultCaptor.capture(), (Exception) isNull());
 
         LocalPaymentNonce localPaymentNonce = resultCaptor.getValue();
-        assertEquals(PaymentMethodType.LOCAL_PAYMENT, localPaymentNonce.getType());
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", localPaymentNonce.getString());
         assertEquals("084afbf1db15445587d30bc120a23b09", localPaymentNonce.getClientMetadataId());
         assertEquals("jon@getbraintree.com", localPaymentNonce.getEmail());
@@ -524,8 +523,8 @@ public class LocalPaymentClientUnitTest {
         verify(localPaymentBrowserSwitchResultCallback).onResult((LocalPaymentNonce) isNull(), exceptionCaptor.capture());
 
         Exception cancelException = exceptionCaptor.getValue();
-        assertTrue(cancelException instanceof BraintreeException);
-        assertEquals("user canceled", cancelException.getMessage());
+        assertTrue(cancelException instanceof UserCanceledException);
+        assertEquals("User canceled Local Payment.", cancelException.getMessage());
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 
@@ -546,8 +545,8 @@ public class LocalPaymentClientUnitTest {
         verify(localPaymentBrowserSwitchResultCallback).onResult((LocalPaymentNonce) isNull(), exceptionCaptor.capture());
 
         Exception cancelException = exceptionCaptor.getValue();
-        assertTrue(cancelException instanceof BraintreeException);
-        assertEquals("system canceled", cancelException.getMessage());
+        assertTrue(cancelException instanceof UserCanceledException);
+        assertEquals("User canceled Local Payment.", cancelException.getMessage());
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 

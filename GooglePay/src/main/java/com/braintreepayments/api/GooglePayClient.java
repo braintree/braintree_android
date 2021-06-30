@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,7 +48,7 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
 
-    public GooglePayClient(BraintreeClient braintreeClient) {
+    public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new GooglePayInternalClient());
     }
 
@@ -66,7 +67,7 @@ public class GooglePayClient {
      * @param activity Android FragmentActivity
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(final FragmentActivity activity, final GooglePayIsReadyToPayCallback callback) {
+    public void isReadyToPay(@NonNull final FragmentActivity activity, @NonNull final GooglePayIsReadyToPayCallback callback) {
         isReadyToPay(activity, null, callback);
     }
 
@@ -80,8 +81,7 @@ public class GooglePayClient {
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(final FragmentActivity activity, final ReadyForGooglePayRequest request, final GooglePayIsReadyToPayCallback callback) {
-
+    public void isReadyToPay(@NonNull final FragmentActivity activity, @Nullable final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -92,11 +92,17 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(false, e);
+                    return;
+                }
+
                 if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(false, null);
                     return;
                 }
 
+                //noinspection ConstantConditions
                 if (activity == null) {
                     callback.onResult(false, new IllegalArgumentException("Activity cannot be null."));
                     return;
@@ -141,10 +147,14 @@ public class GooglePayClient {
      *
      * @param callback {@link GooglePayGetTokenizationParametersCallback}
      */
-    public void getTokenizationParameters(final GooglePayGetTokenizationParametersCallback callback) {
+    public void getTokenizationParameters(@NonNull final GooglePayGetTokenizationParametersCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(null, null);
+                    return;
+                }
                 callback.onResult(getTokenizationParameters(configuration), getAllowedCardNetworks(configuration));
             }
         });
@@ -157,7 +167,7 @@ public class GooglePayClient {
      * @param request The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayRequestPaymentCallback}
      */
-    public void requestPayment(final FragmentActivity activity, final GooglePayRequest request, final GooglePayRequestPaymentCallback callback) {
+    public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request, @NonNull final GooglePayRequestPaymentCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
@@ -167,6 +177,7 @@ public class GooglePayClient {
             return;
         }
 
+        //noinspection ConstantConditions
         if (request == null) {
             callback.onResult(new BraintreeException("Cannot pass null GooglePayRequest to requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -182,6 +193,11 @@ public class GooglePayClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                if (configuration == null) {
+                    callback.onResult(e);
+                    return;
+                }
+
                 if (!configuration.isGooglePayEnabled()) {
                     callback.onResult(new BraintreeException("Google Pay is not enabled for your Braintree account," +
                             " or Google Play Services are not configured correctly."));
@@ -237,7 +253,7 @@ public class GooglePayClient {
      * @param data Android Intent
      * @param callback {@link GooglePayOnActivityResultCallback}
      */
-    public void onActivityResult(int resultCode, Intent data, final GooglePayOnActivityResultCallback callback) {
+    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
             tokenize(PaymentData.getFromIntent(data), callback);
@@ -249,6 +265,7 @@ public class GooglePayClient {
                     AutoResolveHelper.getStatusFromIntent(data)));
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             braintreeClient.sendAnalyticsEvent("google-payment.canceled");
+            callback.onResult(null, new UserCanceledException("User canceled Google Pay."));
         }
     }
 
@@ -308,7 +325,7 @@ public class GooglePayClient {
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_DISCOVER);
                     break;
                 case ELO_NETWORK:
-                    allowedNetworks.add(BraintreeWalletConstants.CARD_NETWORK_ELO);
+                    allowedNetworks.add(BraintreeGooglePayWalletConstants.CARD_NETWORK_ELO);
                     break;
                 default:
                     break;
@@ -338,7 +355,7 @@ public class GooglePayClient {
                 case WalletConstants.CARD_NETWORK_VISA:
                     cardNetworkStrings.put("VISA");
                     break;
-                case BraintreeWalletConstants.CARD_NETWORK_ELO:
+                case BraintreeGooglePayWalletConstants.CARD_NETWORK_ELO:
                     cardNetworkStrings.put("ELO");
                     cardNetworkStrings.put("ELO_DEBIT");
                     break;
@@ -471,32 +488,7 @@ public class GooglePayClient {
         return json;
     }
 
-    private void setGooglePayRequestDefaults(Configuration configuration,
-                                             GooglePayRequest request) {
-        if (request.isEmailRequired() == null) {
-            request.setEmailRequired(false);
-        }
-
-        if (request.isPhoneNumberRequired() == null) {
-            request.setPhoneNumberRequired(false);
-        }
-
-        if (request.isBillingAddressRequired() == null) {
-            request.setBillingAddressRequired(false);
-        }
-
-        if (request.isBillingAddressRequired() &&
-                request.getBillingAddressFormat() == null) {
-            request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_MIN);
-        }
-
-        if (request.isShippingAddressRequired() == null) {
-            request.setShippingAddressRequired(false);
-        }
-
-        if (request.getAllowPrepaidCards() == null) {
-            request.setAllowPrepaidCards(true);
-        }
+    private void setGooglePayRequestDefaults(Configuration configuration, GooglePayRequest request) {
 
         if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
             request.setAllowedPaymentMethod(CARD_PAYMENT_TYPE,

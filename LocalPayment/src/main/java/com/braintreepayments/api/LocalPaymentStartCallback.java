@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 public interface LocalPaymentStartCallback {
 
     /**
-     * @param transaction {@link LocalPaymentTransaction}
-     * @param error an exception that occurred while initiating a Local Payment transaction
+     * @param localPaymentResult {@link LocalPaymentResult}
+     * @param error an exception that occurred while initiating a Local Payment
      */
-    void onResult(@Nullable LocalPaymentTransaction transaction, @Nullable Exception error);
+    void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error);
 }

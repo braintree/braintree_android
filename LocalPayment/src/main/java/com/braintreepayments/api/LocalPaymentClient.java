@@ -34,15 +34,21 @@ public class LocalPaymentClient {
 
     /**
      * Prepares the payment flow for a specific type of local payment.
+     *
      * @param request  {@link LocalPaymentRequest} with the payment details.
      * @param callback {@link LocalPaymentStartCallback}
      */
     public void startPayment(@NonNull final LocalPaymentRequest request, @NonNull final LocalPaymentStartCallback callback) {
         Exception exception = null;
+
+        //noinspection ConstantConditions
+        if (callback == null) {
+            throw new RuntimeException("A LocalPaymentCallback is required.");
+        }
+
+        //noinspection ConstantConditions
         if (request == null) {
             exception = new BraintreeException("A LocalPaymentRequest is required.");
-        } else if (callback == null) {
-            throw new RuntimeException("A LocalPaymentCallback is required.");
         } else if (request.getPaymentType() == null || request.getAmount() == null) {
             exception = new BraintreeException(
                     "LocalPaymentRequest is invalid, paymentType and amount are required.");
@@ -75,7 +81,7 @@ public class LocalPaymentClient {
                                     String paymentToken = responseJson.getJSONObject("paymentResource").getString("paymentToken");
 
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
-                                    LocalPaymentTransaction transaction = new LocalPaymentTransaction(request, redirectUrl, paymentToken);
+                                    LocalPaymentResult transaction = new LocalPaymentResult(request, redirectUrl, paymentToken);
                                     callback.onResult(transaction, null);
                                 } catch (JSONException e) {
                                     failure(e);
@@ -100,38 +106,43 @@ public class LocalPaymentClient {
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
-     * @param activity    Android FragmentActivity
-     * @param transaction {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
-     *                    and now has an approvalUrl and paymentId.
+     * @param activity           Android FragmentActivity
+     * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
+     *                           and now has an approvalUrl and paymentId.
      */
-    public void approveTransaction(@NonNull FragmentActivity activity, @NonNull LocalPaymentTransaction transaction) throws JSONException, BrowserSwitchException {
+    public void approvePayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) throws JSONException, BrowserSwitchException {
+        //noinspection ConstantConditions
         if (activity == null) {
             throw new RuntimeException("A FragmentActivity is required.");
-        } else if (transaction == null) {
+        }
+
+        //noinspection ConstantConditions
+        if (localPaymentResult == null) {
             throw new RuntimeException("A LocalPaymentTransaction is required.");
         }
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-                .url(Uri.parse(transaction.getApprovalUrl()));
+                .url(Uri.parse(localPaymentResult.getApprovalUrl()));
 
-        String paymentType = transaction.getRequest().getPaymentType();
+        String paymentType = localPaymentResult.getRequest().getPaymentType();
 
         browserSwitchOptions.metadata(new JSONObject()
-                .put("merchant-account-id", transaction.getRequest().getMerchantAccountId())
-                .put("payment-type", transaction.getRequest().getPaymentType()));
+                .put("merchant-account-id", localPaymentResult.getRequest().getMerchantAccountId())
+                .put("payment-type", localPaymentResult.getRequest().getPaymentType()));
 
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
     /**
-     * @param context Android Contex
+     * @param context             Android Contex
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback {@link LocalPaymentBrowserSwitchResultCallback}
+     * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
-    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, final LocalPaymentBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;
@@ -145,7 +156,7 @@ public class LocalPaymentClient {
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
                 sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                callback.onResult(null, new BraintreeException("system canceled"));
+                callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                 return;
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
@@ -159,7 +170,7 @@ public class LocalPaymentClient {
                 String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                    callback.onResult(null, new BraintreeException("user canceled"));
+                    callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                     return;
                 }
                 JSONObject payload = new JSONObject();

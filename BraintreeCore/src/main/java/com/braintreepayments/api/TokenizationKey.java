@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.BuildConfig;
-
 class TokenizationKey extends Authorization {
 
     static final String MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";

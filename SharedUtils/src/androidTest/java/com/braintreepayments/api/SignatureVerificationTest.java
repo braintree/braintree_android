@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@Ignore("This will be removed.")
+@Ignore("Investigate how to update these tests to check Venmo app signature.")
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class SignatureVerificationTest {
 

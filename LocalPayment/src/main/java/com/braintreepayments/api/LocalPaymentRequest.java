@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,21 +47,21 @@ public class LocalPaymentRequest {
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
      */
-    public void setAddress(PostalAddress address) {
+    public void setAddress(@Nullable PostalAddress address) {
         this.address = address;
     }
 
     /**
      * @param amount Optional - The amount for the transaction.
      */
-    public void setAmount(String amount) {
+    public void setAmount(@Nullable String amount) {
         this.amount = amount;
     }
 
     /**
      * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
      */
-    public void setBic(String bankIdentificationCode) {
+    public void setBic(@Nullable String bankIdentificationCode) {
         this.bankIdentificationCode = bankIdentificationCode;
     }
 
@@ -68,35 +70,35 @@ public class LocalPaymentRequest {
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
      */
-    public void setCurrencyCode(String currencyCode) {
+    public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
     /**
      * @param email Optional - Payer email of the customer.
      */
-    public void setEmail(String email) {
+    public void setEmail(@Nullable String email) {
         this.email = email;
     }
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
      */
-    public void setGivenName(String givenName) {
+    public void setGivenName(@Nullable String givenName) {
         this.givenName = givenName;
     }
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
      */
-    public void setMerchantAccountId(String merchantAccountId) {
+    public void setMerchantAccountId(@Nullable String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
     }
 
     /**
      * @param paymentType - The type of payment
      */
-    public void setPaymentType(String paymentType) {
+    public void setPaymentType(@Nullable String paymentType) {
         this.paymentType = paymentType;
     }
 
@@ -107,14 +109,14 @@ public class LocalPaymentRequest {
      *                               may determine which banks are presented to the customer.
      *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
      */
-    public void setPaymentTypeCountryCode(String paymentTypeCountryCode) {
+    public void setPaymentTypeCountryCode(@Nullable String paymentTypeCountryCode) {
         this.paymentTypeCountryCode = paymentTypeCountryCode;
     }
 
     /**
      * @param phone Optional - Phone number of the customer.
      */
-    public void setPhone(String phone) {
+    public void setPhone(@Nullable String phone) {
         this.phone = phone;
     }
 
@@ -129,46 +131,56 @@ public class LocalPaymentRequest {
     /**
      * @param surname Optional - Surname (last name) of the customer.
      */
-    public void setSurname(String surname) {
+    public void setSurname(@Nullable String surname) {
         this.surname = surname;
     }
 
+    @Nullable
     public PostalAddress getAddress() {
         return address;
     }
 
+    @Nullable
     public String getAmount() {
         return amount;
     }
 
+    @Nullable
     public String getBic() {
         return bankIdentificationCode;
     }
 
+    @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
+    @Nullable
     public String getEmail() {
         return email;
     }
 
+    @Nullable
     public String getGivenName() {
         return givenName;
     }
 
+    @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
+    @Nullable
     public String getPaymentType() {
         return paymentType;
     }
 
+    @Nullable
     public String getPaymentTypeCountryCode() {
         return paymentTypeCountryCode;
     }
 
+    @Nullable
     public String getPhone() {
         return phone;
     }
@@ -177,6 +189,7 @@ public class LocalPaymentRequest {
         return shippingAddressRequired;
     }
 
+    @Nullable
     public String getSurname() {
         return surname;
     }

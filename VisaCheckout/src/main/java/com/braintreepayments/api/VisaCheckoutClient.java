@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,7 +22,7 @@ public class VisaCheckoutClient {
     private final BraintreeClient braintreeClient;
     private final TokenizationClient tokenizationClient;
 
-    public VisaCheckoutClient(BraintreeClient braintreeClient) {
+    public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient));
     }
 
@@ -54,7 +55,7 @@ public class VisaCheckoutClient {
      *
      * @param callback {@link VisaCheckoutCreateProfileBuilderCallback}
      */
-    public void createProfileBuilder(final VisaCheckoutCreateProfileBuilderCallback callback) {
+    public void createProfileBuilder(@NonNull final VisaCheckoutCreateProfileBuilderCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
@@ -99,7 +100,7 @@ public class VisaCheckoutClient {
      * @param visaPaymentSummary {@link VisaPaymentSummary} The Visa payment to tokenize.
      * @param callback {@link VisaCheckoutTokenizeCallback}
      */
-    public void tokenize(VisaPaymentSummary visaPaymentSummary, final VisaCheckoutTokenizeCallback callback) {
+    public void tokenize(@NonNull VisaPaymentSummary visaPaymentSummary, @NonNull final VisaCheckoutTokenizeCallback callback) {
         tokenizationClient.tokenizeREST(new VisaCheckoutAccount(visaPaymentSummary), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {

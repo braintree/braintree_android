@@ -3,9 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import androidx.annotation.NonNull;
 
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
@@ -13,29 +11,12 @@ import org.json.JSONObject;
  */
 public class PaymentMethodNonce implements Parcelable {
 
-    private static final String PAYMENT_METHOD_TYPE_KEY = "type";
-    private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
-    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
-
     private final String nonce;
     private final boolean isDefault;
 
-    private @PaymentMethodType final int mType;
-
-    static PaymentMethodNonce fromJSON(JSONObject inputJson) throws JSONException {
-        String typeString = inputJson.getString(PAYMENT_METHOD_TYPE_KEY);
-        int type = paymentMethodTypeFromString(typeString);
-
-        String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = inputJson.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
-
-        return new PaymentMethodNonce(nonce, isDefault, type);
-    }
-
-    PaymentMethodNonce(String nonce, boolean isDefault, @PaymentMethodType int type) {
+    PaymentMethodNonce(@NonNull String nonce, boolean isDefault) {
         this.nonce = nonce;
         this.isDefault = isDefault;
-        mType = type;
     }
 
     /**
@@ -43,6 +24,7 @@ public class PaymentMethodNonce implements Parcelable {
      *          represent this PaymentMethod for the purposes of creating transactions and other monetary
      *          actions.
      */
+    @NonNull
     public String getString() {
         return nonce;
     }
@@ -54,10 +36,6 @@ public class PaymentMethodNonce implements Parcelable {
         return isDefault;
     }
 
-    @PaymentMethodType int getType() {
-        return mType;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -67,13 +45,11 @@ public class PaymentMethodNonce implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(nonce);
         dest.writeByte(isDefault ? (byte) 1 : (byte) 0);
-        dest.writeInt(mType);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         nonce = in.readString();
         isDefault = in.readByte() > 0;
-        mType = in.readInt();
     }
 
     public static final Creator<PaymentMethodNonce> CREATOR = new Creator<PaymentMethodNonce>() {
@@ -87,21 +63,4 @@ public class PaymentMethodNonce implements Parcelable {
             return new PaymentMethodNonce[size];
         }
     };
-
-    private static @PaymentMethodType int paymentMethodTypeFromString(String typeString) {
-        switch (typeString) {
-            case "CreditCard":
-                return PaymentMethodType.CARD;
-            case "PayPalAccount":
-                return PaymentMethodType.PAYPAL;
-            case "VisaCheckoutCard":
-                return PaymentMethodType.VISA_CHECKOUT;
-            case "VenmoAccount":
-                return PaymentMethodType.VENMO;
-            case "AndroidPayCard":
-                return PaymentMethodType.GOOGLE_PAY;
-            default:
-                return PaymentMethodType.UNKNOWN;
-        }
-    }
 }

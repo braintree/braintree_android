@@ -236,7 +236,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_whenResultNotOk_doesNothing() {
+    public void onActivityResult_whenResultNotOk_postsExceptionToCallback() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -245,6 +245,13 @@ public class ThreeDSecureClientUnitTest {
         verifyNoMoreInteractions(braintreeClient);
         sut.onActivityResult(AppCompatActivity.RESULT_CANCELED, new Intent(), threeDSecureResultCallback);
         verifyNoMoreInteractions(braintreeClient);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled 3DS.", exception.getMessage());
     }
 
     @Test
@@ -335,5 +342,24 @@ public class ThreeDSecureClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("BrowserSwitchResult cannot be null", exception.getMessage());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsExceptionToCallback() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.CANCELED, null, null);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled 3DS.", exception.getMessage());
     }
 }

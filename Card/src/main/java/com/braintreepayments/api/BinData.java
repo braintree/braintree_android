@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
 import org.json.JSONObject;
@@ -75,6 +77,7 @@ public class BinData implements Parcelable {
      * @return Whether the card is a prepaid card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getPrepaid() {
         return prepaid;
     }
@@ -83,6 +86,7 @@ public class BinData implements Parcelable {
      * @return Whether the card is a healthcare card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getHealthcare() {
         return healthcare;
     }
@@ -91,6 +95,7 @@ public class BinData implements Parcelable {
      * @return Whether the card is a debit card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getDebit() {
         return debit;
     }
@@ -99,6 +104,7 @@ public class BinData implements Parcelable {
      * @return A value indicating whether the issuing bank's card range is regulated by the Durbin Amendment due to the bank's assets. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getDurbinRegulated() {
         return durbinRegulated;
     }
@@ -107,6 +113,7 @@ public class BinData implements Parcelable {
      * @return Whether the card type is a commercial card and is capable of processing Level 2 transactions. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getCommercial() {
         return commercial;
     }
@@ -115,6 +122,7 @@ public class BinData implements Parcelable {
      * @return Whether the card is a payroll card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
+    @NonNull
     public String getPayroll() {
         return payroll;
     }
@@ -122,6 +130,7 @@ public class BinData implements Parcelable {
     /**
      * @return The bank that issued the credit card.
      */
+    @NonNull
     public String getIssuingBank() {
         return issuingBank;
     }
@@ -129,6 +138,7 @@ public class BinData implements Parcelable {
     /**
      * @return The country that issued the credit card.
      */
+    @NonNull
     public String getCountryOfIssuance() {
         return countryOfIssuance;
     }
@@ -136,6 +146,7 @@ public class BinData implements Parcelable {
     /**
      * @return The code for the product type of the card (e.g. `D` (Visa Signature Preferred), `G` (Visa Business)).
      */
+    @NonNull
     public String getProductId() {
         return productId;
     }

@@ -1,7 +1,11 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONArray;
@@ -14,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Represents the parameters that are needed to start the PayPal Checkout flow
  */
-public class PayPalCheckoutRequest extends PayPalRequest {
+public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
 
     /**
      * The call-to-action in the PayPal Checkout flow
@@ -47,14 +51,14 @@ public class PayPalCheckoutRequest extends PayPalRequest {
     /**
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
-     *               number, may optionally contain exactly 2 decimal places separated by '.', optional
-     *               thousands separator ',', limited to 7 digits before the decimal point.
+     *               number, may optionally contain exactly 2 decimal places separated by '.' and is
+     *               limited to 7 digits before the decimal point.
      *               <p>
      *               This amount may differ slightly from the transaction amount. The exact decline rules
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
-    public PayPalCheckoutRequest(String amount) {
+    public PayPalCheckoutRequest(@NonNull String amount) {
         this.amount = amount;
     }
 
@@ -67,7 +71,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public void setCurrencyCode(String currencyCode) {
+    public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
@@ -83,7 +87,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
      * for more information
      */
-    public void setIntent(@PayPalPaymentIntent String intent) {
+    public void setIntent(@NonNull @PayPalPaymentIntent String intent) {
         this.intent = intent;
     }
 
@@ -102,7 +106,7 @@ public class PayPalCheckoutRequest extends PayPalRequest {
      *                   </ul>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
-    public void setUserAction(@PayPalPaymentUserAction String userAction) {
+    public void setUserAction(@NonNull @PayPalPaymentUserAction String userAction) {
         this.userAction = userAction;
     }
 
@@ -125,20 +129,24 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
+    @NonNull
     public String getAmount() {
         return amount;
     }
 
+    @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
     @PayPalPaymentIntent
+    @NonNull
     public String getIntent() {
         return intent;
     }
 
     @PayPalPaymentUserAction
+    @NonNull
     public String getUserAction() {
         return userAction;
     }
@@ -225,4 +233,42 @@ public class PayPalCheckoutRequest extends PayPalRequest {
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
         return parameters.toString();
     }
+
+    PayPalCheckoutRequest(Parcel in) {
+        super(in);
+        intent = in.readString();
+        userAction = in.readString();
+        amount = in.readString();
+        currencyCode = in.readString();
+        shouldRequestBillingAgreement = in.readByte() != 0;
+        shouldOfferPayLater = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(intent);
+        dest.writeString(userAction);
+        dest.writeString(amount);
+        dest.writeString(currencyCode);
+        dest.writeByte((byte) (shouldRequestBillingAgreement ? 1 : 0));
+        dest.writeByte((byte) (shouldOfferPayLater ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PayPalCheckoutRequest> CREATOR = new Creator<PayPalCheckoutRequest>() {
+        @Override
+        public PayPalCheckoutRequest createFromParcel(Parcel in) {
+            return new PayPalCheckoutRequest(in);
+        }
+
+        @Override
+        public PayPalCheckoutRequest[] newArray(int size) {
+            return new PayPalCheckoutRequest[size];
+        }
+    };
 }

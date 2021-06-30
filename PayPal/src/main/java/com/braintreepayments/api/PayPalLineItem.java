@@ -1,6 +1,10 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.json.JSONException;
@@ -9,7 +13,7 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class PayPalLineItem {
+public class PayPalLineItem implements Parcelable {
 
     /**
      * The type of PayPal line item.
@@ -133,35 +137,43 @@ public class PayPalLineItem {
         this.url = url;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }
 
     @PayPalLineItemKind
+    @Nullable
     public String getKind() {
         return kind;
     }
 
+    @Nullable
     public String getName() {
         return name;
     }
 
+    @Nullable
     public String getProductCode() {
         return productCode;
     }
 
+    @Nullable
     public String getQuantity() {
         return quantity;
     }
 
+    @Nullable
     public String getUnitAmount() {
         return unitAmount;
     }
 
+    @Nullable
     public String getUnitTaxAmount() {
         return unitTaxAmount;
     }
 
+    @Nullable
     public String getUrl() {
         return url;
     }
@@ -182,4 +194,45 @@ public class PayPalLineItem {
 
         return new JSONObject();
     }
+
+    PayPalLineItem(Parcel in) {
+        description = in.readString();
+        kind = in.readString();
+        name = in.readString();
+        productCode = in.readString();
+        quantity = in.readString();
+        unitAmount = in.readString();
+        unitTaxAmount = in.readString();
+        url = in.readString();
+    }
+
+    public static final Creator<PayPalLineItem> CREATOR = new Creator<PayPalLineItem>() {
+        @Override
+        public PayPalLineItem createFromParcel(Parcel in) {
+            return new PayPalLineItem(in);
+        }
+
+        @Override
+        public PayPalLineItem[] newArray(int size) {
+            return new PayPalLineItem[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(description);
+        parcel.writeString(kind);
+        parcel.writeString(name);
+        parcel.writeString(productCode);
+        parcel.writeString(quantity);
+        parcel.writeString(unitAmount);
+        parcel.writeString(unitTaxAmount);
+        parcel.writeString(url);
+    }
+
 }

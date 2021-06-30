@@ -177,7 +177,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withText("Authentication")).waitForExists();
         onDevice().pressBack();
 
-        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("user canceled")));
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("User canceled 3DS.")));
     }
 
     @Test(timeout = 40000)

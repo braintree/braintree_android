@@ -3,6 +3,9 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +30,7 @@ public class PayPalCreditFinancing implements Parcelable {
 
     private PayPalCreditFinancing() {}
 
-    public static PayPalCreditFinancing fromJson(JSONObject creditFinancing) throws JSONException {
+    static PayPalCreditFinancing fromJson(JSONObject creditFinancing) throws JSONException {
         PayPalCreditFinancing result = new PayPalCreditFinancing();
 
         if (creditFinancing == null) {
@@ -61,6 +64,7 @@ public class PayPalCreditFinancing implements Parcelable {
     /**
      * @return Estimated amount per month that the customer will need to pay including fees and interest.
      */
+    @NonNull
     public PayPalCreditFinancingAmount getMonthlyPayment() {
         return monthlyPayment;
     }
@@ -75,6 +79,7 @@ public class PayPalCreditFinancing implements Parcelable {
     /**
      * @return Estimated total payment amount including interest and fees the user will pay during the lifetime of the loan.
      */
+    @NonNull
     public PayPalCreditFinancingAmount getTotalCost() {
         return totalCost;
     }
@@ -82,6 +87,7 @@ public class PayPalCreditFinancing implements Parcelable {
     /**
      * @return Estimated interest or fees amount the payer will have to pay during the lifetime of the loan.
      */
+    @NonNull
     public PayPalCreditFinancingAmount getTotalInterest() {
         return totalInterest;
     }

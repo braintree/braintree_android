@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -21,7 +22,7 @@ public class PayPalClient {
 
     private final PayPalInternalClient internalPayPalClient;
 
-    public PayPalClient(BraintreeClient braintreeClient) {
+    public PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient));
     }
 
@@ -60,7 +61,7 @@ public class PayPalClient {
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback      {@link PayPalFlowStartedCallback}
      */
-    public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest, @NonNull final PayPalFlowStartedCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -76,7 +77,7 @@ public class PayPalClient {
      * Starts the One-Time Payment (Checkout) flow for PayPal.
      */
     @Deprecated
-    public void requestOneTimePayment(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+    public void requestOneTimePayment(@NonNull final FragmentActivity activity, @NonNull final PayPalCheckoutRequest payPalCheckoutRequest, @NonNull final PayPalFlowStartedCallback callback) {
         tokenizePayPalAccount(activity, payPalCheckoutRequest, callback);
     }
 
@@ -88,7 +89,7 @@ public class PayPalClient {
      * Starts the Billing Agreement (Vault) flow for PayPal.
      */
     @Deprecated
-    public void requestBillingAgreement(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+    public void requestBillingAgreement(@NonNull final FragmentActivity activity, @NonNull final PayPalVaultRequest payPalVaultRequest, @NonNull final PayPalFlowStartedCallback callback) {
         tokenizePayPalAccount(activity, payPalVaultRequest, callback);
     }
 
@@ -197,7 +198,8 @@ public class PayPalClient {
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
-    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final PayPalBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;
@@ -217,7 +219,7 @@ public class PayPalClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new BraintreeException("User Canceled PayPal"));
+                callback.onResult(null, new UserCanceledException("User canceled PayPal."));
                 braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
             case BrowserSwitchStatus.SUCCESS:
@@ -264,7 +266,7 @@ public class PayPalClient {
                     } else {
                         callback.onResult(null, new BraintreeException("Unknown error"));
                     }
-                } catch (JSONException | PayPalBrowserSwitchException e) {
+                } catch (JSONException | UserCanceledException | PayPalBrowserSwitchException e) {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
@@ -272,11 +274,11 @@ public class PayPalClient {
         }
     }
 
-    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, PayPalBrowserSwitchException {
+    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, UserCanceledException, PayPalBrowserSwitchException {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
-            throw new PayPalBrowserSwitchException("User canceled.");
+            throw new UserCanceledException("User canceled PayPal.");
         }
 
         String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);

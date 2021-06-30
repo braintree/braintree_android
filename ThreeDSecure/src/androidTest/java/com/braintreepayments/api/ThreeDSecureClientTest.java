@@ -48,7 +48,7 @@ public class ThreeDSecureClientTest {
         card.setNumber("4000000000000051");
         card.setExpirationDate("12/20");
 
-        cardClient.tokenize(activity, card, new CardTokenizeCallback() {
+        cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
             public void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error) {
                 if (error != null) {

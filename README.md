@@ -4,7 +4,7 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-:mega:&nbsp;&nbsp;A new major version of the SDK is available in beta. See the [v4 migration guide](v4_MIGRATION_GUIDE.md) for details.
+:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4 migration guide](v4_MIGRATION_GUIDE.md) for details.
 
 Braintree's Android SDK is available for Android SDK >= 21.
 
@@ -14,15 +14,7 @@ Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:braintree:3.17.0'
-}
-```
-
-To use the latest build from the `master` branch use:
-
-```groovy
-dependencies {
-  implementation 'com.braintreepayments.api:braintree:3.17.1-SNAPSHOT'
+  implementation 'com.braintreepayments.api:braintree:4.2.0'
 }
 ```
 
@@ -31,6 +23,18 @@ dependencies {
 Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v3) for instructions on basic setup and usage.
 
 Next, read the [**full documentation**](https://developers.braintreepayments.com/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
+
+## Versions
+
+This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](http://developers.braintreepayments.com/guides/client-sdk/deprecation-policy).
+
+| Major version number | Status | Released | Deprecated | Unsupported |
+| -------------------- | ------ | -------- | ---------- | ----------- |
+| 4.x.x | Active | June 2021 | TBA | TBA |
+| 3.x.x | Deprecated | February 2019 | June 2021 | June 2022 |
+| 2.x.x | Unsupported | November 2015 | March 2020 | March 2021 |
+
+Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
 
 ## Help
 
@@ -51,4 +55,3 @@ for personal support at any phase of integration
 ## License
 
 The Braintree Android SDK is open source and available under the MIT license. See the [LICENSE](LICENSE) file for more info.
-

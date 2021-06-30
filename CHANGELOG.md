@@ -1,10 +1,53 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.2.0
+
+* Add `VenmoClient#isReadyToPay()` method
+* Bump `browser-switch` to `2.0.1` (fixes #409)
+
+## 4.1.0
+
+* Bump Cardinal version to `2.2.5-3`
+
+**Note:** The credentials for integrating with 3DS have changed. If you are using 3DS please update the credentials in your app-level `build.gradle` see [v4 Migration Guide](/v4_MIGRATION_GUIDE.md#3d-secure) 
+
+## 4.0.0
+
+* Make `PayPalRequest` and subclasses `Parcelable`
+* Add getters to data classes to improve support for Kotlin synthesized properties
+* Add `displayName` property to `VenmoRequest`
+* Bump `browser-switch` to `2.0.0`
+* Breaking Changes
+  * Rename `LocalPaymentTransaction` to `LocalPaymentResult`
+  * Rename `LocalPaymentClient#approveTransaction()` to `LocalPaymentClient#approvePayment()` 
+  * Make `PayPalCreditFinancing#fromJson()` package-private
+  * Make `PayPalCreditFinancingAmount#fromJson()` package-private
+  * Make `UnionPayCapabilities#fromJson()` package-private
+  * Make `PaymentMethodClient#parsePaymentMethodNonces()` package-private
+  * Return `UserCanceledException` on user cancellation
+  * Remove `DataCollector#collectPayPalDeviceData()`
+  * Remove `DataCollector#collectRiskData()`
+  * Make `DataCollector#getPayPalClientMetadataId()` private
+  * Remove `PaymentMethodClient`
+  * Remove `PaymentMethodType`
+  * Remove `PaymentMethodDeleteException`
+  * Remove `GetPaymentMethodNoncesCallback`
+  * Remove `DeletePaymentMethodNonceCallback`
+  * Use primitives instead of boxed types where possible
+  * Add nullability annotations to public methods
+  * Remove `Context` parameter from `CardClient#tokenize()` method
+  * Fix typo in `ThreeDSecureAdditionalInformation#getPaymentAccountIndicator()` method name
+
+**Note:** Includes all changes in [4.0.0-beta1](#400-beta1), [4.0.0-beta2](#400-beta2), and [4.0.0-beta3](#400-beta3)
+
+## 4.0.0-beta3
 
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
 * Add wallet enabled metadata tag to `AndroidManifest.xml` in `google-pay` module 
+* Bump `browser-switch` to `2.0.0-beta3`
+* Callback `BraintreeException` on user cancellation of payment flows
+* Add `paymentMethodUsage` to `VenmoRequest`
 * Breaking Changes
   * Rename `DownForMaintenanceException` to `ServiceUnavailableException`
   * Remove `GoogleApiClientException`

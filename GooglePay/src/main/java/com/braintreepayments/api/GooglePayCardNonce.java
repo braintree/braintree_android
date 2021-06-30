@@ -2,13 +2,12 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import androidx.annotation.Nullable;
-
 import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
-import static java.lang.Boolean.FALSE;
 
 /**
  * {@link PaymentMethodNonce} representing a Google Pay card.
@@ -32,7 +31,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private final String lastTwo;
     private final String lastFour;
     private final String email;
-    private Boolean isNetworkTokenized;
+    private boolean isNetworkTokenized;
     private final PostalAddress billingAddress;
     private final PostalAddress shippingAddress;
     private final BinData binData;
@@ -85,7 +84,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         String lastTwo = details.getString(LAST_TWO_KEY);
         String lastFour = details.getString(LAST_FOUR_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
-        boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
+        boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, false);
 
         return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
     }
@@ -95,14 +94,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             String lastTwo,
             String lastFour,
             String email,
-            Boolean isNetworkTokenized,
+            boolean isNetworkTokenized,
             PostalAddress billingAddress,
             PostalAddress shippingAddress,
             BinData binData,
             String nonce,
             boolean isDefault
     ) {
-        super(nonce, isDefault, PaymentMethodType.GOOGLE_PAY);
+        super(nonce, isDefault);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;
@@ -142,6 +141,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
+    @NonNull
     public String getCardType() {
         return cardType;
     }
@@ -149,6 +149,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the user's underlying card, intended for display purposes.
      */
+    @NonNull
     public String getLastTwo() {
         return lastTwo;
     }
@@ -156,6 +157,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return Last four digits of the user's underlying card, intended for display purposes.
      */
+    @NonNull
     public String getLastFour() {
         return lastFour;
     }
@@ -163,7 +165,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The user's email address associated the Google Pay account.
      */
-    @Nullable
+    @NonNull
     public String getEmail() {
         return email;
     }
@@ -171,14 +173,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return true if the card is network tokenized.
      */
-    public Boolean isNetworkTokenized() {
+    public boolean isNetworkTokenized() {
         return isNetworkTokenized;
     }
 
     /**
      * @return The user's billing address.
      */
-    @Nullable
+    @NonNull
     public PostalAddress getBillingAddress() {
         return billingAddress;
     }
@@ -186,7 +188,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The user's shipping address.
      */
-    @Nullable
+    @NonNull
     public PostalAddress getShippingAddress() {
         return shippingAddress;
     }
@@ -194,6 +196,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     /**
      * @return The BIN data for the card number associated with {@link GooglePayCardNonce}
      */
+    @NonNull
     public BinData getBinData() {
         return binData;
     }

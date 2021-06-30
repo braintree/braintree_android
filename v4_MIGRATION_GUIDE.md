@@ -1,4 +1,4 @@
-# Braintree Android v4 (Beta) Migration Guide
+# Braintree Android v4 Migration Guide
 
 See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the basics for updating your Braintree integration from v3 to v4.
 
@@ -8,12 +8,16 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 
 1. [Gradle](#gradle)
 1. [Browser Switch](#browser-switch)
+1. [BraintreeFragment](#braintree-fragment)
+1. [Event Handling](#event-handling)
+1. [Builder Patter](#builder-pattern)
 1. [American Express](#american-express)
 1. [Card](#card)
 1. [Data Collector](#data-collector)
 1. [Local Payment](#local-payment)
 1. [Google Pay](#google-pay)
 1. [PayPal](#paypal)
+1. [Samsung Pay](#samsung-pay)
 1. [Visa Checkout](#visa-checkout)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
@@ -44,14 +48,111 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 </activity>
 ``` 
 
+## BraintreeFragment
+
+In v4, we decoupled the Braintree SDK from Android to offer more integration flexibility. 
+`BraintreeFragment` has been replaced by a `Client` for each respective payment feature. 
+See the below payment method sections for examples of instantiating and using the feature clients. 
+
+## Event Handling
+
+In v3, there were several interfaces that would be called when events occurred: `PaymentMethodNonceCreatedListener`, `ConfigurationListener`, `BraintreeCancelListener`, and `BraintreeErrorListener`.
+In v4, these listeners have been replaced by a callback pattern. 
+
+### Handling `PaymentMethodNonce` Results
+
+For payment methods that do not require leaving the application, the result will be returned via the callback passed into the tokenization method. 
+For example, using the `CardClient`:
+
+```java
+cardClient.tokenize(card, (cardNonce, error) -> {
+  // send cardNonce.getString() to your server or handle error
+});
+```
+
+For payment methods that require a browser switch, the result will be returned as a `BrowserSwitchResult` and should be handled by calling the feature client's `onBrowserSwitchResult()` method in `onResume()`.
+For example, using the `ThreeDSecureClient`:
+
+```java
+@Override
+protected void onResume() {
+  super.onResume();
+
+  BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(this);
+  if (browserSwitchResult != null) {
+    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
+      // send threeDSecureResult.getTokenizedCard().getString() to your server or handle error
+    }); 
+  }
+}
+```
+
+For payment methods that that require an app switch, the result should be handled by calling the feature client's `onActivityResult()` method from your Activity's `onActivityResult()` method.
+For example, using the `VenmoClient`:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+  venmoClient.onActivityResult(this, resultCode, data, (venmoAccountNonce, error) -> {
+    // send venmoAccountNonce.getString() to your server or handle error
+  });
+}
+```
+
+Full implementation examples can be found in the payment method feature sections below. 
+
+### Handling Cancellation 
+
+When the customer cancels out of a payment flow, a `UserCanceledException` will be returned in the callback of the invoked method.
+
+### Handling Errors
+
+Errors will be returned to the callback of the invoked method.
+
+### Fetching Configuration
+
+If you need to fetch configuration, use `BraintreeClient#getConfiguration()`.
+
+Previously, this was done via `BraintreeFragment`:
+
+```java
+braintreeFragment.addListener(new ConfigurationListener() {
+
+  void onConfigurationFeetched(Configuration configuration) {
+
+  }
+});
+```
+
+## Builder Pattern
+
+The builder pattern has been removed in v4 to allow for consistent object creation across Java and Kotlin. 
+Classes have been renamed without the `Builder` postfix, method chaining has been removed, and setters have been renamed with the `set` prefix.
+
+For example, `CardBuilder` in v3 becomes `Card` in v4:
+
+```java
+Card card = new Card();
+card.setNumber("4111111111111111");
+card.setExpirationDate("12/2022");
+```
+
+Builder classes that have been renamed:
+- `CardBuilder` is now `Card`
+- `UnionPayCardBuilder` is now `UnionPayCard`
+
+## Fetching Payment Methods
+
+In `v3`, the `PaymentMethod` class could be used to retrieve a current list of `PaymentMethodNonce` objects for the current customer. In `v4`, that functionality will be moved to `drop-in`.
+
 ## American Express
 
 The American Express feature is now supported by implementing the following dependencies:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:american-express:4.0.0-beta2'
-  implementation 'com.braintreepayments.api:card:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:american-express:4.2.0'
+  implementation 'com.braintreepayments.api:card:4.2.0'
 }
 ```
 
@@ -81,7 +182,7 @@ public class AmericanExpressActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         getAmexRewardsBalance(cardNonce);
       } else {
@@ -110,7 +211,7 @@ The Card feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:card:4.2.0'
 }
 ```
 
@@ -136,7 +237,7 @@ public class CardActivity extends AppCompatActivity {
     card.setNumber("4111111111111111");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
         String nonce = cardNonce.getString();
@@ -158,7 +259,7 @@ The Data Collector feature is now supported in the following dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:data-collector:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:data-collector:4.2.0'
 }
 ```
 
@@ -193,7 +294,7 @@ The Local Payment feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:local-payment:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:local-payment:4.2.0'
 }
 ```
 
@@ -274,7 +375,7 @@ The Google Pay feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:google-pay:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:google-pay:4.2.0'
 }
 ```
 
@@ -351,7 +452,7 @@ The PayPal feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:paypal:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:paypal:4.2.0'
 }
 ```
 
@@ -433,77 +534,13 @@ The `requestOneTimePayment` and `requestBillingAgreement` methods on `PayPalClie
 
 However, `requestOneTimePayment` and `requestBillingAgreement` have been deprecated in favor of `tokenizePayPalAccount`.
 
+## Samsung Pay
+
+Samsung Pay is not yet supported in v4.
+
 ## Visa Checkout
 
-The Visa Checkout feature is now supported in a single dependency:
-
-```groovy
-dependencies {
-  implementation 'com.braintreepayments.api:visa-checkout:4.0.0-beta2'
-}
-```
-
-To use the feature, instantiate a `VisaCheckoutClient`:
-
-```java
-package com.my.app;
-
-public class VisaCheckoutActivity extends AppCompatActivity {
-
-  private BraintreeClient braintreeClient;
-  private VisaCheckoutClient visaCheckoutClient;
-
-  private CheckoutButton checkoutButton;
-    
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.visa_checkout_activity);
-    checkoutButton = (CheckoutButton) findViewById(R.id.visa_checkout_button);
-
-    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
-    visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
-  }
- 
-  private void getVisaCheckoutProfile() {
-    visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
-      if (profileBuilder != null) {
-        setupVisaCheckoutButton(profileBuilder.build());
-      } else {
-        // handle error
-      }
-    });
-  }
-
-  private void setupVisaCheckoutButton(Profile visaCheckoutProfile) {
-    PurchaseInfo purchaseInfo = new PurchaseInfo.PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-        .setDescription("Description")
-        .build();
-    checkoutButton.init(this, visaCheckoutProfile, purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
-      @Override
-      public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-        launchReadyHandler.launch();
-      }
-
-      @Override
-      public void onResult(VisaPaymentSummary visaPaymentSummary) {
-        processVisaPaymentSummary(visaPaymentSummary);
-      }
-    });
-  }
-
-  private void processVisaPaymentSummary(VisaPaymentSummary visaPaymentSummary) {
-    visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
-      if (paymentMethodNonce != null) {
-        // send this nonce to your server
-        String nonce = paymentMethodNonce.getString();
-      } else {
-        // handle error
-      }
-    });
-  }
-}
-```
+Visa Checkout is not yet supported in v4.
 
 ## Union Pay
 
@@ -511,7 +548,7 @@ The Union Pay feature is now supported by implementing the following dependencie
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:union-pay:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:union-pay:4.2.0'
 }
 ```
 
@@ -578,7 +615,7 @@ The Venmo feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:venmo:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:venmo:4.2.0'
 }
 ```
 
@@ -601,7 +638,7 @@ public class VenmoActivity extends AppCompatActivity {
 
   // The authorizeAccount() method has been replaced with tokenizeVenmoAccount()
   private void tokenizeVenmoAccount() {
-    VenmoRequest request = new VenmoRequest();
+    VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
     request.setProfileId("your-profile-id");
     request.setShouldVault(false);
           
@@ -634,7 +671,7 @@ The 3D Secure feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:three-d-secure:4.0.0-beta2'
+  implementation 'com.braintreepayments.api:three-d-secure:4.2.0'
 }
 ```
 
@@ -643,10 +680,10 @@ Additionally, add the following Maven repository and (non-sensitive) credentials
 ```groovy
 repositories {
     maven {
-        url "https://cardinalcommerce.bintray.com/android"
+        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
         credentials {
-            username 'braintree-team-sdk@cardinalcommerce'
-            password '220cc9476025679c4e5c843666c27d97cfb0f951'
+            username 'braintree_team_sdk'
+            password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
         }
     }
 }
@@ -703,7 +740,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022"); 
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         performThreeDSecureVerification(cardNonce);
       } else {
