@@ -1,5 +1,4 @@
 include ':PayPalNative'
-include ':BraintreeModels'
 include ':VisaCheckout'
 include ':GooglePay'
 include ':Venmo'
