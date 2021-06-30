@@ -1,4 +1,4 @@
-# Braintree Android v4 (Beta) Migration Guide
+# Braintree Android v4 Migration Guide
 
 See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the basics for updating your Braintree integration from v3 to v4.
 
@@ -65,7 +65,7 @@ For payment methods that do not require leaving the application, the result will
 For example, using the `CardClient`:
 
 ```java
-cardClient.tokenize(activity, card, (cardNonce, error) -> {
+cardClient.tokenize(card, (cardNonce, error) -> {
   // send cardNonce.getString() to your server or handle error
 });
 ```
@@ -103,7 +103,7 @@ Full implementation examples can be found in the payment method feature sections
 
 ### Handling Cancellation 
 
-All user cancellations will be returned as a `BraintreeException` with an error message indicating user cancellation to the callback of the invoked method. 
+When the customer cancels out of a payment flow, a `UserCanceledException` will be returned in the callback of the invoked method.
 
 ### Handling Errors
 
@@ -141,14 +141,18 @@ Builder classes that have been renamed:
 - `CardBuilder` is now `Card`
 - `UnionPayCardBuilder` is now `UnionPayCard`
 
+## Fetching Payment Methods
+
+In `v3`, the `PaymentMethod` class could be used to retrieve a current list of `PaymentMethodNonce` objects for the current customer. In `v4`, that functionality will be moved to `drop-in`.
+
 ## American Express
 
 The American Express feature is now supported by implementing the following dependencies:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:american-express:4.0.0-beta3'
-  implementation 'com.braintreepayments.api:card:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:american-express:4.2.0'
+  implementation 'com.braintreepayments.api:card:4.2.0'
 }
 ```
 
@@ -178,7 +182,7 @@ public class AmericanExpressActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         getAmexRewardsBalance(cardNonce);
       } else {
@@ -207,7 +211,7 @@ The Card feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:card:4.2.0'
 }
 ```
 
@@ -233,7 +237,7 @@ public class CardActivity extends AppCompatActivity {
     card.setNumber("4111111111111111");
     card.setExpirationDate("12/2022");
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         // send this nonce to your server
         String nonce = cardNonce.getString();
@@ -255,7 +259,7 @@ The Data Collector feature is now supported in the following dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:data-collector:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:data-collector:4.2.0'
 }
 ```
 
@@ -290,7 +294,7 @@ The Local Payment feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:local-payment:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:local-payment:4.2.0'
 }
 ```
 
@@ -371,7 +375,7 @@ The Google Pay feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:google-pay:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:google-pay:4.2.0'
 }
 ```
 
@@ -448,7 +452,7 @@ The PayPal feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:paypal:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:paypal:4.2.0'
 }
 ```
 
@@ -544,7 +548,7 @@ The Union Pay feature is now supported by implementing the following dependencie
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:union-pay:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:union-pay:4.2.0'
 }
 ```
 
@@ -611,7 +615,7 @@ The Venmo feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:venmo:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:venmo:4.2.0'
 }
 ```
 
@@ -634,7 +638,7 @@ public class VenmoActivity extends AppCompatActivity {
 
   // The authorizeAccount() method has been replaced with tokenizeVenmoAccount()
   private void tokenizeVenmoAccount() {
-    VenmoRequest request = new VenmoRequest();
+    VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
     request.setProfileId("your-profile-id");
     request.setShouldVault(false);
           
@@ -667,7 +671,7 @@ The 3D Secure feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:three-d-secure:4.0.0-beta3'
+  implementation 'com.braintreepayments.api:three-d-secure:4.2.0'
 }
 ```
 
@@ -676,10 +680,10 @@ Additionally, add the following Maven repository and (non-sensitive) credentials
 ```groovy
 repositories {
     maven {
-        url "https://cardinalcommerce.bintray.com/android"
+        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
         credentials {
-            username 'braintree-team-sdk@cardinalcommerce'
-            password '220cc9476025679c4e5c843666c27d97cfb0f951'
+            username 'braintree_team_sdk'
+            password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
         }
     }
 }
@@ -736,7 +740,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     card.setNumber("378282246310005");
     card.setExpirationDate("12/2022"); 
 
-    cardClient.tokenize(this, card, (cardNonce, error) -> {
+    cardClient.tokenize(card, (cardNonce, error) -> {
       if (cardNonce != null) {
         performThreeDSecureVerification(cardNonce);
       } else {

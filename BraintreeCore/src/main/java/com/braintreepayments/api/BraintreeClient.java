@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -49,7 +50,7 @@ public class BraintreeClient {
      * @param context       Android Context
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned in the {@link HttpResponseCallback}.
      */
-    public BraintreeClient(Context context, String authorization) {
+    public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
         this(createDefaultParams(context, authorization));
     }
 
@@ -75,7 +76,7 @@ public class BraintreeClient {
      *
      * @param callback {@link ConfigurationCallback}
      */
-    public void getConfiguration(ConfigurationCallback callback) {
+    public void getConfiguration(@NonNull ConfigurationCallback callback) {
         configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
@@ -144,7 +145,7 @@ public class BraintreeClient {
         }
     }
 
-    public BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+    public BrowserSwitchResult deliverBrowserSwitchResult(@NonNull FragmentActivity activity) {
         return browserSwitchClient.deliverResult(activity);
     }
 

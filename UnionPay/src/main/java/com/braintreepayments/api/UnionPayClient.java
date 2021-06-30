@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,7 +27,7 @@ public class UnionPayClient {
     private final BraintreeClient braintreeClient;
     private final TokenizationClient tokenizationClient;
 
-    public UnionPayClient(BraintreeClient braintreeClient) {
+    public UnionPayClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient));
     }
 
@@ -49,7 +50,7 @@ public class UnionPayClient {
      * @param cardNumber The card number to check for Union Pay capabilities.
      * @param callback {@link UnionPayFetchCapabilitiesCallback}
      */
-    public void fetchCapabilities(final String cardNumber, final UnionPayFetchCapabilitiesCallback callback) {
+    public void fetchCapabilities(@NonNull final String cardNumber, @NonNull final UnionPayFetchCapabilitiesCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -93,7 +94,7 @@ public class UnionPayClient {
      * @param unionPayCard {@link UnionPayCard}
      * @param callback {@link UnionPayEnrollCallback}
      */
-    public void enroll(final UnionPayCard unionPayCard, final UnionPayEnrollCallback callback) {
+    public void enroll(@NonNull final UnionPayCard unionPayCard, @NonNull final UnionPayEnrollCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -148,7 +149,7 @@ public class UnionPayClient {
      * @param unionPayCard {@link UnionPayCard}
      * @param callback {@link UnionPayTokenizeCallback}
      */
-    public void tokenize(UnionPayCard unionPayCard, final UnionPayTokenizeCallback callback) {
+    public void tokenize(@NonNull UnionPayCard unionPayCard, @NonNull final UnionPayTokenizeCallback callback) {
         tokenizationClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {

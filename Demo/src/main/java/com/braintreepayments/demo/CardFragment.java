@@ -2,7 +2,6 @@ package com.braintreepayments.demo;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -303,7 +302,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             card.setShouldValidate(false); // TODO GQL currently only returns the bin if validate = false
             card.setPostalCode(cardForm.getPostalCode());
 
-            cardClient.tokenize(getActivity(), card, (cardNonce, tokenizeError) -> {
+            cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
                 if (cardNonce != null) {
                     handlePaymentMethodNonceCreated(cardNonce);
                 } else {

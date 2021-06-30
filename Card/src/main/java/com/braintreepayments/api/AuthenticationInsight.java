@@ -3,6 +3,9 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONObject;
 
 /**
@@ -13,33 +16,30 @@ public class AuthenticationInsight implements Parcelable {
     private static final String GRAPHQL_REGULATION_ENVIRONMENT_KEY = "customerAuthenticationRegulationEnvironment";
     private static final String REST_REGULATION_ENVIRONMENT_KEY = "regulationEnvironment";
 
-    private String regulationEnvironment;
+    private final String regulationEnvironment;
 
     static AuthenticationInsight fromJson(JSONObject json) {
         if (json == null) {
             return null;
         }
 
-        AuthenticationInsight authInsight = new AuthenticationInsight();
         String regulationEnv;
-
         if (json.has(GRAPHQL_REGULATION_ENVIRONMENT_KEY)) {
-            regulationEnv = Json.optString(json, GRAPHQL_REGULATION_ENVIRONMENT_KEY, null);
+            regulationEnv = Json.optString(json, GRAPHQL_REGULATION_ENVIRONMENT_KEY, "");
         } else {
-            regulationEnv = Json.optString(json, REST_REGULATION_ENVIRONMENT_KEY, null);
+            regulationEnv = Json.optString(json, REST_REGULATION_ENVIRONMENT_KEY, "");
         }
 
         if ("psdtwo".equalsIgnoreCase(regulationEnv)) {
             regulationEnv = "psd2";
         }
+        regulationEnv = regulationEnv.toLowerCase();
 
-        if (regulationEnv != null ) {
-            regulationEnv = regulationEnv.toLowerCase();
-        }
+        return new AuthenticationInsight(regulationEnv);
+    }
 
-        authInsight.regulationEnvironment = regulationEnv;
-
-        return authInsight;
+    AuthenticationInsight(String regulationEnvironment) {
+        this.regulationEnvironment = regulationEnvironment;
     }
 
     /**
@@ -50,11 +50,10 @@ public class AuthenticationInsight implements Parcelable {
      * @see <a href="https://developers.braintreepayments.com/guides/3d-secure/advanced-options/android#authentication-insight">Documentation</a>
      * for possible values.
      */
+    @NonNull
     public String getRegulationEnvironment() {
         return regulationEnvironment;
     }
-
-    public AuthenticationInsight() {}
 
     @Override
     public int describeContents() {

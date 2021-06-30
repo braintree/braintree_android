@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -32,7 +33,7 @@ public class ThreeDSecureClient {
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
 
-    public ThreeDSecureClient(BraintreeClient braintreeClient) {
+    public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
     }
 
@@ -58,7 +59,7 @@ public class ThreeDSecureClient {
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void performVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
+    public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
             callback.onResult(null, new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
@@ -67,6 +68,11 @@ public class ThreeDSecureClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (configuration == null) {
+                    callback.onResult(null, error);
+                    return;
+                }
+
                 if (!configuration.isThreeDSecureEnabled()) {
                     callback.onResult(null, new BraintreeException("Three D Secure is not enabled for this account. " +
                             "Please contact Braintree Support for assistance."));
@@ -121,7 +127,7 @@ public class ThreeDSecureClient {
      *                 be invoked in this method.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void continuePerformVerification(final FragmentActivity activity, final ThreeDSecureRequest request, final ThreeDSecureResult result, final ThreeDSecureResultCallback callback) {
+    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result, @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -137,7 +143,7 @@ public class ThreeDSecureClient {
      * @param request  the {@link ThreeDSecureRequest} that has a nonce and an optional UI customization.
      * @param callback {@link ThreeDSecurePrepareLookupCallback}
      */
-    public void prepareLookup(final Context context, final ThreeDSecureRequest request, final ThreeDSecurePrepareLookupCallback callback) {
+    public void prepareLookup(@NonNull final Context context, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecurePrepareLookupCallback callback) {
         final JSONObject lookupJSON = new JSONObject();
         try {
             lookupJSON
@@ -153,6 +159,11 @@ public class ThreeDSecureClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration == null) {
+                    callback.onResult(null, null, error);
+                    return;
+
+                }
                 if (configuration.getCardinalAuthenticationJwt() == null) {
                     Exception authError = new BraintreeException("Merchant is not configured for 3DS 2.0. " +
                             "Please contact Braintree Support for assistance.");
@@ -183,7 +194,7 @@ public class ThreeDSecureClient {
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void initializeChallengeWithLookupResponse(FragmentActivity activity, String lookupResponse, ThreeDSecureResultCallback callback) {
+    public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse, @NonNull ThreeDSecureResultCallback callback) {
         initializeChallengeWithLookupResponse(activity, null, lookupResponse, callback);
     }
 
@@ -195,7 +206,7 @@ public class ThreeDSecureClient {
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void initializeChallengeWithLookupResponse(final FragmentActivity activity, final ThreeDSecureRequest request, final String lookupResponse, final ThreeDSecureResultCallback callback) {
+    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse, @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -205,7 +216,6 @@ public class ThreeDSecureClient {
                     startVerificationFlow(activity, configuration, request, result, callback);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
-                    return;
                 }
             }
         });
@@ -316,8 +326,9 @@ public class ThreeDSecureClient {
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link ThreeDSecureResultCallback}
      */
-    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, final ThreeDSecureResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final ThreeDSecureResultCallback callback) {
         // V1 flow
+        //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
             return;
@@ -325,7 +336,7 @@ public class ThreeDSecureClient {
         int status = browserSwitchResult.getStatus();
         switch (status) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new BraintreeException("User canceled 3DS."));
+                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
                 break;
             case BrowserSwitchStatus.SUCCESS:
             default:
@@ -352,10 +363,10 @@ public class ThreeDSecureClient {
      * @param data       Android Intent
      * @param callback   {@link ThreeDSecureResultCallback}
      */
-    public void onActivityResult(int resultCode, Intent data, ThreeDSecureResultCallback callback) {
+    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {
-            callback.onResult(null, new BraintreeException("User canceled 3DS."));
+            callback.onResult(null, new UserCanceledException("User canceled 3DS."));
             return;
         }
 
@@ -379,7 +390,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                 break;
             case CANCEL:
-                callback.onResult(null, new BraintreeException("User canceled 3DS."));
+                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                 break;
         }

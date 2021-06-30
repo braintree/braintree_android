@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {
@@ -24,7 +26,17 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
-        assertEquals(PaymentMethodType.VENMO, venmoAccountNonce.getType());
+        assertTrue(venmoAccountNonce.isDefault());
+    }
+
+    @Test
+    public void fromJson_withPaymentMethodId_parsesResponse() throws JSONException {
+        VenmoAccountNonce venmoAccountNonce =
+                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
+
+        assertEquals("@sampleuser", venmoAccountNonce.getUsername());
+        assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
+        assertFalse(venmoAccountNonce.isDefault());
     }
 
     @Test
@@ -45,7 +57,6 @@ public class VenmoAccountNonceUnitTest {
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(PaymentMethodType.VENMO, parceled.getType());
         assertEquals(NONCE, parceled.getString());
         assertEquals(USERNAME, parceled.getUsername());
     }

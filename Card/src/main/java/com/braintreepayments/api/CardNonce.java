@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +15,6 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class CardNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "CreditCard";
     private static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
@@ -133,13 +133,12 @@ public class CardNonce extends PaymentMethodNonce {
             String bin = Json.optString(creditCard, "bin", "");
             BinData binData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             String nonce = payload.getString(TOKEN_KEY);
-            boolean isDefault = false;
             AuthenticationInsight authenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
             String expirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
             String expirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
             String cardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
 
-            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
+            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false);
 
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
@@ -147,7 +146,7 @@ public class CardNonce extends PaymentMethodNonce {
     }
 
     private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.CARD);
+        super(nonce, isDefault);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;
@@ -163,6 +162,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Type of this card (e.g. Visa, MasterCard, American Express)
      */
+    @NonNull
     public String getCardType() {
         return cardType;
     }
@@ -170,6 +170,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Last two digits of the card, intended for display purposes.
      */
+    @NonNull
     public String getLastTwo() {
         return lastTwo;
     }
@@ -177,6 +178,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return Last four digits of the card.
      */
+    @NonNull
     public String getLastFour() {
         return lastFour;
     }
@@ -184,6 +186,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The expiration month of the card.
      */
+    @NonNull
     public String getExpirationMonth() {
         return expirationMonth;
     }
@@ -191,6 +194,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The expiration year of the card.
      */
+    @NonNull
     public String getExpirationYear() {
         return expirationYear;
     }
@@ -198,6 +202,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The name of the cardholder.
      */
+    @NonNull
     public String getCardholderName() {
         return cardholderName;
     }
@@ -206,6 +211,7 @@ public class CardNonce extends PaymentMethodNonce {
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
+    @NonNull
     public ThreeDSecureInfo getThreeDSecureInfo() {
         return threeDSecureInfo;
     }
@@ -213,6 +219,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return BIN of the card.
      */
+    @NonNull
     public String getBin() {
         return bin;
     }
@@ -220,6 +227,7 @@ public class CardNonce extends PaymentMethodNonce {
     /**
      * @return The BIN data for the card number associated with {@link CardNonce}
      */
+    @NonNull
     public BinData getBinData() {
         return binData;
     }
@@ -230,6 +238,7 @@ public class CardNonce extends PaymentMethodNonce {
      * for a potential transaction. You may use this to make an informed decision whether to perform
      * 3D Secure authentication.
      */
+    @Nullable
     public AuthenticationInsight getAuthenticationInsight() {
         return authenticationInsight;
     }

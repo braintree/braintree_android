@@ -19,7 +19,7 @@ public class PayPalCreditFinancingAmount implements Parcelable {
 
     private PayPalCreditFinancingAmount() {}
 
-    public static PayPalCreditFinancingAmount fromJson(JSONObject amount) {
+    static PayPalCreditFinancingAmount fromJson(JSONObject amount) {
         PayPalCreditFinancingAmount result = new PayPalCreditFinancingAmount();
 
         if (amount == null) {

@@ -48,6 +48,7 @@ task :release => :unit_tests do
 
   update_version(version)
   update_readme_version(version)
+  update_migration_guide_version(version)
 
   prompt_for_sonatype_username_and_password
 
@@ -85,7 +86,7 @@ task :assumptions do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :AmericanExpress:publishToSonatype :BraintreeCore:publishToSonatype :BraintreeDataCollector:publishToSonatype :Card:publishToSonatype :GooglePay:publishToSonatype :LocalPayment:publishToSonatype :PayPal:publishToSonatype :SharedUtils:publishToSonatype :ThreeDSecure:publishToSonatype :UnionPay:publishToSonatype :Venmo:publishToSonatype :VisaCheckout:publishToSonatype"
+  sh "./gradlew clean :AmericanExpress:publishToSonatype :BraintreeCore:publishToSonatype :BraintreeDataCollector:publishToSonatype :Card:publishToSonatype :GooglePay:publishToSonatype :LocalPayment:publishToSonatype :PayPal:publishToSonatype :SharedUtils:publishToSonatype :ThreeDSecure:publishToSonatype :UnionPay:publishToSonatype :Venmo:publishToSonatype"
 
   sh "./gradlew closeAndReleaseRepository"
   puts "Braintree modules have been released"
@@ -229,7 +230,7 @@ def update_migration_guide_version(version)
   major_version = version[0]
   IO.write("v#{major_version}_MIGRATION_GUIDE.md",
     File.open("v#{major_version}_MIGRATION_GUIDE.md") do |file|
-    file.read.gsub(/com.braintreepayments.api:(.+):\d+\.\d+\.\d+-.*'/, "com.braintreepayments.api:\\1:#{version}'")
+    file.read.gsub(/com.braintreepayments.api:(.+):\d+\.\d+\.\d+(-.*)?'/, "com.braintreepayments.api:\\1:#{version}'")
     end
   )
 end

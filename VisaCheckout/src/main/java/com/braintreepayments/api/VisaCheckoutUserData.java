@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONObject;
 
 /**
@@ -37,6 +39,7 @@ public class VisaCheckoutUserData implements Parcelable {
     /**
      * @return The user's first name.
      */
+    @NonNull
     public String getUserFirstName() {
         return userFirstName;
     }
@@ -44,6 +47,7 @@ public class VisaCheckoutUserData implements Parcelable {
     /**
      * @return The user's last name.
      */
+    @NonNull
     public String getUserLastName() {
         return userLastName;
     }
@@ -51,6 +55,7 @@ public class VisaCheckoutUserData implements Parcelable {
     /**
      * @return The user's full name.
      */
+    @NonNull
     public String getUserFullName() {
         return userFullName;
     }
@@ -58,6 +63,7 @@ public class VisaCheckoutUserData implements Parcelable {
     /**
      * @return The user's username.
      */
+    @NonNull
     public String getUsername() {
         return username;
     }
@@ -65,6 +71,7 @@ public class VisaCheckoutUserData implements Parcelable {
     /**
      * @return The user's email.
      */
+    @NonNull
     public String getUserEmail() {
         return userEmail;
     }

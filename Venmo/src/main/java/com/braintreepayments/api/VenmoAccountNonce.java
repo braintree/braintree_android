@@ -2,6 +2,9 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,15 +15,16 @@ import org.json.JSONObject;
  */
 public class VenmoAccountNonce extends PaymentMethodNonce {
 
-    static final String TYPE = "VenmoAccount";
     private static final String API_RESOURCE_KEY = "venmoAccounts";
-
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";
 
+    private static final String VENMO_PAYMENT_METHOD_ID_KEY = "paymentMethodId";
+    private static final String VENMO_PAYMENT_METHOD_USERNAME_KEY = "userName";
+    
     private final String username;
 
     static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
@@ -31,23 +35,34 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
             json = inputJson;
         }
 
-        String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
-        boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+        String nonce;
+        boolean isDefault;
+        String username;
 
-        JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
-        String username = details.getString(VENMO_USERNAME_KEY);
+        if (json.has(VENMO_PAYMENT_METHOD_ID_KEY)) {
+            isDefault = false;
+            nonce = json.getString(VENMO_PAYMENT_METHOD_ID_KEY);
+            username = json.getString(VENMO_PAYMENT_METHOD_USERNAME_KEY);
+        } else {
+            nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
+            isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
+
+            JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
+            username = details.getString(VENMO_USERNAME_KEY);
+        }
 
         return new VenmoAccountNonce(nonce, username, isDefault);
     }
 
     VenmoAccountNonce(String nonce, String username, boolean isDefault) {
-        super(nonce, isDefault, PaymentMethodType.VENMO);
+        super(nonce, isDefault);
         this.username = username;
     }
 
     /**
      * @return the Venmo username
      */
+    @NonNull
     public String getUsername() {
         return username;
     }

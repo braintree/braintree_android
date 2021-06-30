@@ -16,6 +16,7 @@ import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PreferredPaymentMethodsClient;
 import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
@@ -103,7 +104,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         initializeFeatureClients(initError -> {
-            VenmoRequest venmoRequest = new VenmoRequest();
+            VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
             venmoRequest.setProfileId(null);
             venmoRequest.setShouldVault(false);
 

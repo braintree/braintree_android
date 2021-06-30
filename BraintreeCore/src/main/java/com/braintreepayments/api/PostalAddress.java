@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Java object representing a postal address
  */
@@ -22,74 +25,83 @@ public class PostalAddress implements Parcelable {
     public PostalAddress() {
     }
 
-    public void setRecipientName(String name) {
+    public void setRecipientName(@Nullable String name) {
         recipientName = name;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(@Nullable String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setStreetAddress(String streetAddress) {
+    public void setStreetAddress(@Nullable String streetAddress) {
         this.streetAddress = streetAddress;
     }
 
-    public void setExtendedAddress(String extendedAddress) {
+    public void setExtendedAddress(@Nullable String extendedAddress) {
         this.extendedAddress = extendedAddress;
     }
 
-    public void setLocality(String locality) {
+    public void setLocality(@Nullable String locality) {
         this.locality = locality;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(@Nullable String region) {
         this.region = region;
     }
 
-    public void setPostalCode(String postalCode) {
+    public void setPostalCode(@Nullable String postalCode) {
         this.postalCode = postalCode;
     }
 
-    public void setSortingCode(String sortingCode) {
+    public void setSortingCode(@Nullable String sortingCode) {
         this.sortingCode = sortingCode;
     }
 
-    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
+    public void setCountryCodeAlpha2(@Nullable String countryCodeAlpha2) {
         this.countryCodeAlpha2 = countryCodeAlpha2;
     }
 
+    @Nullable
     public String getRecipientName() {
         return recipientName;
     }
 
+    @Nullable
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    @Nullable
     public String getStreetAddress() {
         return streetAddress;
     }
 
+    @Nullable
     public String getExtendedAddress() {
         return extendedAddress;
     }
 
+    @Nullable
     public String getLocality() {
         return locality;
     }
 
+    @Nullable
     public String getRegion() {
         return region;
     }
 
+    @Nullable
     public String getPostalCode() {
         return postalCode;
     }
 
+    @Nullable
     public String getSortingCode() {
         return sortingCode;
     }
 
+    @Nullable
     public String getCountryCodeAlpha2() {
         return countryCodeAlpha2;
     }

@@ -112,7 +112,7 @@ public class GooglePayInternalClientUnitTest {
         GooglePayInternalClient sut = new GooglePayInternalClient();
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest, new GooglePayIsReadyToPayCallback() {
             @Override
-            public void onResult(Boolean isReadyToPay, Exception error) {
+            public void onResult(boolean isReadyToPay, Exception error) {
                 assertTrue(isReadyToPay);
                 assertNull(error);
                 countDownLatch.countDown();
@@ -134,7 +134,7 @@ public class GooglePayInternalClientUnitTest {
         GooglePayInternalClient sut = new GooglePayInternalClient();
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest, new GooglePayIsReadyToPayCallback() {
             @Override
-            public void onResult(Boolean isReadyToPay, Exception e) {
+            public void onResult(boolean isReadyToPay, Exception e) {
                 assertFalse(isReadyToPay);
                 assertSame(error, e);
                 countDownLatch.countDown();
