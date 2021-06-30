@@ -32,18 +32,16 @@ public class PayPalNativeClient {
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
     private final TokenizationClient tokenizationClient;
-    private final PayPalClient payPalClient;
 
     public PayPalNativeClient(final BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient), new PayPalClient(braintreeClient));
+        this(braintreeClient, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalNativeClient(final BraintreeClient braintreeClient, final TokenizationClient tokenizationClient, final PayPalInternalClient internalPayPalClient, final PayPalClient payPalClient) {
+    PayPalNativeClient(final BraintreeClient braintreeClient, final TokenizationClient tokenizationClient, final PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.tokenizationClient = tokenizationClient;
         this.internalPayPalClient = internalPayPalClient;
-        this.payPalClient = payPalClient;
     }
 
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeTokenizeCallback callback) {
@@ -144,7 +142,7 @@ public class PayPalNativeClient {
                     @Override
                     public void onCancel() {
                         braintreeClient.sendAnalyticsEvent("paypal.native.client_cancel");
-                        callback.onResult(null, new BraintreeException("Canceled"));
+                        callback.onResult(null, new UserCanceledException("User canceled checkout"));
                     }
                 },
                 new OnError() {

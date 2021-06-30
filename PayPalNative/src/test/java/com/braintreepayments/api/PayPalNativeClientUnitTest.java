@@ -15,7 +15,6 @@ import com.paypal.checkout.createorder.CreateOrderActions;
 import com.paypal.checkout.error.CorrelationIds;
 import com.paypal.checkout.error.ErrorInfo;
 import com.paypal.checkout.error.OnError;
-import com.paypal.checkout.order.OrderActions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,18 +32,16 @@ import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @PrepareForTest({PayPalCheckout.class, Uri.class})
 @RunWith(RobolectricTestRunner.class)
-public class PayPalNativeClientTest {
+public class PayPalNativeClientUnitTest {
 
     private FragmentActivity context;
 
@@ -52,13 +49,10 @@ public class PayPalNativeClientTest {
     private Configuration payPalDisabledConfig;
     private Configuration payPalNoClientIdConfig;
 
-    private PayPalNativeOnActivityResumedCallback payPalNativeOnActivityResumedCallback;
     private PayPalNativeTokenizeCallback payPalNativeTokenizeCallback;
-    private PayPalClient payPalClient;
 
     @Rule
     public PowerMockRule rule = new PowerMockRule();
-
 
     @Before
     public void beforeEach() throws JSONException {
@@ -71,9 +65,7 @@ public class PayPalNativeClientTest {
         payPalNoClientIdConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_NO_CLIENT_ID);
 
 
-        payPalNativeOnActivityResumedCallback = mock(PayPalNativeOnActivityResumedCallback.class);
         payPalNativeTokenizeCallback = mock(PayPalNativeTokenizeCallback.class);
-        payPalClient = mock(PayPalClient.class);
         PowerMockito.mockStatic(PayPalCheckout.class);
         PowerMockito.mockStatic(Uri.class);
     }
@@ -87,7 +79,7 @@ public class PayPalNativeClientTest {
                 .configuration(payPalDisabledConfig)
                 .build();
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
@@ -99,39 +91,6 @@ public class PayPalNativeClientTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenDeviceCantPerformBrowserSwitch_throwsError() {
-        final String errorMessage = "AndroidManifest.xml is incorrectly configured or another app " +
-                "defines the same browser switch url as this app. See " +
-                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
-                "for the correct configuration";
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(false)
-                .build();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                PayPalFlowStartedCallback callback = invocation.getArgument(2, PayPalFlowStartedCallback.class);
-                callback.onResult(new BraintreeException(errorMessage));
-
-                ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-                verify(payPalNativeTokenizeCallback).onResult(isNull(), errorCaptor.capture());
-                assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-                assertEquals(errorMessage, errorCaptor.getValue().getMessage());
-                return null;
-            }
-        }).when(payPalClient)
-                .tokenizePayPalAccount(any(FragmentActivity.class), any(PayPalRequest.class), any(PayPalFlowStartedCallback.class));
-
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
-        sut.tokenizePayPalAccount(context, new PayPalNativeVaultRequest(), payPalNativeTokenizeCallback);
-    }
-
-    @Test
     public void tokenizePayPalAccount_whenNoClientId_throwsError() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
@@ -140,7 +99,7 @@ public class PayPalNativeClientTest {
                 .configuration(payPalNoClientIdConfig)
                 .build();
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
@@ -159,7 +118,7 @@ public class PayPalNativeClientTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
@@ -180,7 +139,7 @@ public class PayPalNativeClientTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, request, payPalNativeTokenizeCallback);
 
 
@@ -205,19 +164,19 @@ public class PayPalNativeClientTest {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnCancel callback = invocation.getArgument(2, OnCancel.class);
                 callback.onCancel();
-
-                ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-                verify(payPalNativeTokenizeCallback).onResult(isNull(), errorCaptor.capture());
-                assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-                assertEquals("Canceled", errorCaptor.getValue().getMessage());
-                verify(braintreeClient).sendAnalyticsEvent("paypal.native.client_cancel");
                 return null;
             }
         }).when(PayPalCheckout.class);
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
+
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalNativeTokenizeCallback).onResult(isNull(), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof UserCanceledException);
+        assertEquals("User canceled checkout", errorCaptor.getValue().getMessage());
+        verify(braintreeClient).sendAnalyticsEvent("paypal.native.client_cancel");
     }
 
     @Test
@@ -249,12 +208,13 @@ public class PayPalNativeClientTest {
         }).when(PayPalCheckout.class);
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
     }
 
     @Test
     public void tokenizePayPalAccount_nativeCheckout_setCorrectPairingId() {
+        CreateOrderActions createOrderActions = mock(CreateOrderActions.class);
         final String pairingId = "pairing_id";
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         PayPalResponse response = new PayPalResponse(request);
@@ -272,23 +232,26 @@ public class PayPalNativeClientTest {
         PowerMockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                CreateOrderActions createOrderActions = mock(CreateOrderActions.class);
                 CreateOrder callback = invocation.getArgument(0, CreateOrder.class);
                 callback.create(createOrderActions);
-                verify(createOrderActions).set(response.getPairingId());
                 return null;
             }
         }).when(PayPalCheckout.class);
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
+
+        verify(createOrderActions).set(response.getPairingId());
     }
 
     @Test
     public void tokenizePayPalAccount_nativeCheckout_approvedAndTokenizesResponseOnSuccess() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -314,8 +277,7 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
+               // when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -323,7 +285,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         verify(tokenizationClient).tokenizeREST(any(PayPalAccount.class), any(TokenizeCallback.class));
@@ -356,6 +318,9 @@ public class PayPalNativeClientTest {
     public void tokenizePayPalAccount_nativeCheckout_approvedAndReturnPayPalAccountNonce() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -381,8 +346,6 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -390,7 +353,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         verify(tokenizationClient).tokenizeREST(any(PayPalAccount.class), any(TokenizeCallback.class));
@@ -410,6 +373,9 @@ public class PayPalNativeClientTest {
     public void tokenizePayPalAccount_nativeCheckout_approvedAndTokenizeReturnError() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -436,8 +402,6 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -445,7 +409,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         verify(tokenizationClient).tokenizeREST(any(PayPalAccount.class), any(TokenizeCallback.class));
@@ -462,6 +426,9 @@ public class PayPalNativeClientTest {
     public void tokenizePayPalAccount_nativeCheckout_approvedAndUserCanceledURl() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -501,8 +468,6 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -510,7 +475,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
@@ -524,6 +489,9 @@ public class PayPalNativeClientTest {
     public void tokenizePayPalAccount_nativeCheckout_approvedAndInconsistentDataURL() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.0");
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -569,8 +537,6 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -578,7 +544,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeCheckoutRequest("1.0"), payPalNativeTokenizeCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
@@ -626,7 +592,7 @@ public class PayPalNativeClientTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, request, payPalNativeTokenizeCallback);
 
 
@@ -636,6 +602,7 @@ public class PayPalNativeClientTest {
 
     @Test
     public void tokenizePayPalAccount_vaultRequest_setBillingAgreementID() {
+        final CreateOrderActions createOrderActions = mock(CreateOrderActions.class);
         final String pairingId = "pairing_id";
         PayPalNativeVaultRequest request = new PayPalNativeVaultRequest();
         PayPalResponse response = new PayPalResponse(request);
@@ -653,17 +620,17 @@ public class PayPalNativeClientTest {
         PowerMockito.doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                CreateOrderActions createOrderActions = mock(CreateOrderActions.class);
                 CreateOrder callback = invocation.getArgument(0, CreateOrder.class);
                 callback.create(createOrderActions);
-                verify(createOrderActions).setBillingAgreementId(response.getPairingId());
                 return null;
             }
         }).when(PayPalCheckout.class);
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeVaultRequest(), payPalNativeTokenizeCallback);
+
+        verify(createOrderActions).setBillingAgreementId(response.getPairingId());
     }
 
 
@@ -696,6 +663,9 @@ public class PayPalNativeClientTest {
     public void tokenizePayPalAccount_vaultCheckout_approvedAndTokenizesResponseOnSuccess() throws JSONException {
         final String pairingId = "pairing_id";
         final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        final Approval approval = mock(Approval.class);
+        when(approval.getData()).thenReturn(approvalData);
+
         PayPalNativeVaultRequest request = new PayPalNativeVaultRequest();
         request.setMerchantAccountId("sample-merchant-account-id");
         PayPalResponse response = new PayPalResponse(request)
@@ -721,8 +691,6 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                Approval approval = mock(Approval.class);
-                when(approval.getData()).thenReturn(approvalData);
                 callback.onApprove(approval);
                 return null;
             }
@@ -730,7 +698,7 @@ public class PayPalNativeClientTest {
 
         PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient);
         sut.tokenizePayPalAccount(context, new PayPalNativeVaultRequest(), payPalNativeTokenizeCallback);
 
         verify(tokenizationClient).tokenizeREST(any(PayPalAccount.class), any(TokenizeCallback.class));
