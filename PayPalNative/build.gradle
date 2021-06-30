@@ -40,7 +40,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.0.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation('com.paypal.checkout:android-sdk:0.1.0') {
+    implementation('com.paypal.checkout:android-sdk:0.3.0') {
         exclude module: 'data-collector'
     }
 

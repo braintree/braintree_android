@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -47,27 +46,37 @@ public class PayPalNativeClient {
         this.payPalClient = payPalClient;
     }
 
-
-
     public void tokenizePayPalAccount(final FragmentActivity activity, final PayPalRequest request, final PayPalNativeTokenizeCallback callback) {
         if (request instanceof PayPalNativeCheckoutRequest) {
-            sendNativeCheckoutRequest(activity, (PayPalNativeCheckoutRequest) request, callback);
+            sendNativeSinglePaymentRequest(activity, (PayPalNativeCheckoutRequest) request, callback);
         } else if (request instanceof PayPalNativeVaultRequest) {
-            sendVaultRequest(activity, (PayPalNativeVaultRequest) request, callback);
+            sendNativeVaultRequest(activity, (PayPalNativeVaultRequest) request, callback);
         }
     }
 
-    private void sendNativeCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeTokenizeCallback callback) {
-        //This is copied from PayPal module.
+    private void sendNativeSinglePaymentRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest request, final PayPalNativeTokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.native.single-payment.selected");
         if (request.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.native.single-payment.paylater.offered");
         }
 
+        getBraintreeConfiguration(activity, request, callback);
+    }
+
+    private void sendNativeVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest request, final PayPalNativeTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent("paypal.native.billing-agreement.selected");
+        if (request.getShouldOfferCredit()) {
+            braintreeClient.sendAnalyticsEvent("paypal.native.billing-agreement.credit.offered");
+        }
+
+        getBraintreeConfiguration(activity, request, callback);
+    }
+
+
+    private void getBraintreeConfiguration(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalNativeTokenizeCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(Configuration configuration, Exception error) {
-
+            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (payPalConfigInvalid(configuration) || error != null) {
                     Exception configInvalidError = createPayPalNotEnabledError();
                     callback.onResult(null, configInvalidError);
@@ -80,24 +89,12 @@ public class PayPalNativeClient {
                     return;
                 }
 
-                // NOTE: the callback parameter is only necessary if PayPal Native XO needs
-                // to callback an error before starting the native UI
-                startPayPalNativeCheckout(activity, configuration, payPalClientId, request, callback);
+                startPayPalNativeCheckout(activity, configuration, payPalClientId, payPalRequest, callback);
             }
         });
     }
 
-    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeVaultRequest payPalVaultRequest, final PayPalNativeTokenizeCallback callback) {
-        //this one should default to the one we already have, once PayPalNative supports billing agreements, this should just default to native.
-        payPalClient.tokenizePayPalAccount(activity, payPalVaultRequest, new PayPalFlowStartedCallback() {
-            @Override
-            public void onResult(@Nullable Exception error) {
-                callback.onResult(null, error);
-            }
-        });
-    }
-
-    private void startPayPalNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String payPalClientId, final PayPalNativeCheckoutRequest payPalRequest, final PayPalNativeTokenizeCallback callback) {
+    private void startPayPalNativeCheckout(final FragmentActivity activity, final Configuration configuration, final String payPalClientId, final PayPalRequest payPalRequest, final PayPalNativeTokenizeCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
             public void onResult(final PayPalResponse payPalResponse, final Exception error) {
@@ -128,7 +125,12 @@ public class PayPalNativeClient {
                 new CreateOrder() {
                     @Override
                     public void create(final CreateOrderActions createOrderActions) {
-                        createOrderActions.set(payPalResponse.getPairingId());
+                        final String pairingId = payPalResponse.getPairingId();
+                        if (payPalResponse.isBillingAgreement()) {
+                            createOrderActions.setBillingAgreementId(pairingId);
+                        } else {
+                            createOrderActions.set(pairingId);
+                        }
                     }
                 },
                 new OnApprove() {
@@ -156,19 +158,34 @@ public class PayPalNativeClient {
     }
 
     private void handleNativeCheckoutApproval(final Approval approval, final PayPalResponse payPalResponse, final PayPalNativeTokenizeCallback callback) {
-        Uri deepLinkUri = Uri.parse(String.format(
-                "%s://onetouch/v1/success?paymentId=%s&token=%s&PayerID=%s",
-                braintreeClient.getReturnUrlScheme(),
-                approval.getData().getPaymentId(),
-                approval.getData().getOrderId(),
-                approval.getData().getPayerId()));
+        Uri deepLinkUri;
+        String tokenKey;
+        if (payPalResponse.isBillingAgreement()) {
+            deepLinkUri = Uri.parse(String.format(
+                    "%s://onetouch/v1/success?token=%s&ba_token=%s",
+                    braintreeClient.getReturnUrlScheme(),
+                    approval.getData().getOrderId(),
+                    payPalResponse.getPairingId())); //The approval object will return the returnURL
+            tokenKey = "ba_token";
+        } else {
+            deepLinkUri = Uri.parse(String.format(
+                    "%s://onetouch/v1/success?paymentId=%s&token=%s&PayerID=%s",
+                    braintreeClient.getReturnUrlScheme(),
+                    approval.getData().getPaymentId(),
+                    approval.getData().getOrderId(),
+                    approval.getData().getPayerId()));
+            tokenKey = "token";
+        }
         try {
-            JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, payPalResponse.getSuccessUrl(), payPalResponse.getApprovalUrl(), "token");
+            JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, payPalResponse.getSuccessUrl(), payPalResponse.getApprovalUrl(), tokenKey);
             PayPalAccount payPalAccount = new PayPalAccount();
             payPalAccount.setClientMetadataId(payPalResponse.getClientMetadataId());
             payPalAccount.setSource("paypal-browser"); //TODO: check for valid sources
             payPalAccount.setUrlResponseData(urlResponseData);
-            payPalAccount.setPaymentType("single-payment");
+
+            String paymentType = payPalResponse.isBillingAgreement()
+                    ? "billing-agreement" : "single-payment";
+            payPalAccount.setPaymentType(paymentType);
 
             if (payPalResponse.getMerchantAccountId() != null) {
                 payPalAccount.setMerchantAccountId(payPalResponse.getMerchantAccountId());
@@ -212,26 +229,6 @@ public class PayPalNativeClient {
         return new BraintreeException("PayPal is not enabled. " +
                 "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
                 "for more information.");
-    }
-
-    public void onActivityResumed(final BrowserSwitchResult browserSwitchResult, final PayPalNativeOnActivityResumedCallback callback) {
-        if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
-            return;
-        }
-        JSONObject metadata = browserSwitchResult.getRequestMetadata();
-        String paymentType = Json.optString(metadata, "payment-type", "unknown");
-        boolean isVaultPayment = paymentType.equalsIgnoreCase("billing-agreement");
-
-        if (isVaultPayment) {
-            //it means it was a vault request
-            payPalClient.onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
-                @Override
-                public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
-                    callback.onResult(payPalAccountNonce, error);
-                }
-            });
-        }
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {

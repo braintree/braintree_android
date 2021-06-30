@@ -132,44 +132,6 @@ public class PayPalNativeClientTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_vaultRequest_callsPayPalClient() throws JSONException, BrowserSwitchException {
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-
-        PayPalVaultRequest payPalVaultRequest = new PayPalNativeVaultRequest();
-        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
-
-        PayPalResponse payPalResponse = new PayPalResponse(payPalVaultRequest)
-                .approvalUrl("https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
-                .clientMetadataId("sample-client-metadata-id");
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
-                .success(payPalResponse)
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalEnabledConfig)
-                .build();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                PayPalFlowStartedCallback callback = invocation.getArgument(2, PayPalFlowStartedCallback.class);
-                callback.onResult(null);
-
-                ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-                verify(payPalNativeTokenizeCallback).onResult(isNull(), errorCaptor.capture());
-                assertNull(errorCaptor.getValue());
-                return null;
-            }
-        }).when(payPalClient)
-                .tokenizePayPalAccount(any(FragmentActivity.class), any(PayPalVaultRequest.class), any(PayPalFlowStartedCallback.class));
-
-        PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
-        sut.tokenizePayPalAccount(context, payPalVaultRequest, payPalNativeTokenizeCallback);
-        verify(payPalClient).tokenizePayPalAccount(any(FragmentActivity.class), any(PayPalVaultRequest.class), any(PayPalFlowStartedCallback.class));
-    }
-
-    @Test
     public void tokenizePayPalAccount_whenNoClientId_throwsError() {
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
@@ -352,7 +314,9 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                callback.onApprove(new Approval(approvalData, mock(OrderActions.class)));
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
                 return null;
             }
         }).when(PayPalCheckout.class);
@@ -417,7 +381,9 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                callback.onApprove(new Approval(approvalData, mock(OrderActions.class)));
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
                 return null;
             }
         }).when(PayPalCheckout.class);
@@ -470,7 +436,9 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                callback.onApprove(new Approval(approvalData, mock(OrderActions.class)));
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
                 return null;
             }
         }).when(PayPalCheckout.class);
@@ -533,7 +501,9 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                callback.onApprove(new Approval(approvalData, mock(OrderActions.class)));
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
                 return null;
             }
         }).when(PayPalCheckout.class);
@@ -599,7 +569,9 @@ public class PayPalNativeClientTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 OnApprove callback = invocation.getArgument(1, OnApprove.class);
-                callback.onApprove(new Approval(approvalData, mock(OrderActions.class)));
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
                 return null;
             }
         }).when(PayPalCheckout.class);
@@ -643,91 +615,145 @@ public class PayPalNativeClientTest {
     }
 
     @Test
-    public void onActivityResumed_whenBrowserSwitchResultIsNull_throwsError() {
+    public void tokenizePayPalAccount_vaultCheckout_sendAnalytics() {
+        PayPalNativeVaultRequest request = new PayPalNativeVaultRequest();
+        request.setShouldOfferCredit(true);
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
+
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalDisabledConfig)
+                .configuration(payPalEnabledConfig)
                 .build();
 
         PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
-        sut.onActivityResumed(null, payPalNativeOnActivityResumedCallback);
+        sut.tokenizePayPalAccount(context, request, payPalNativeTokenizeCallback);
 
 
-        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalNativeOnActivityResumedCallback).onResult(isNull(), errorCaptor.capture());
-        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-        assertEquals("BrowserSwitchResult cannot be null", errorCaptor.getValue().getMessage());
+        verify(braintreeClient).sendAnalyticsEvent("paypal.native.billing-agreement.selected");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.native.billing-agreement.credit.offered");
     }
 
     @Test
-    public void onActivityResumed_whenBrowserSwitchResultIsFromVaultPayment_returnSuccess() throws JSONException {
-
-        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
-
-        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
-                .put("payment-type", "billing-agreement")
-        );
+    public void tokenizePayPalAccount_vaultRequest_setBillingAgreementID() {
+        final String pairingId = "pairing_id";
+        PayPalNativeVaultRequest request = new PayPalNativeVaultRequest();
+        PayPalResponse response = new PayPalResponse(request);
+        response.pairingId(pairingId);
 
         TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().success(response).build();
 
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        final PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
 
-        doAnswer(new Answer<Void>() {
-                     @Override
-                     public Void answer(InvocationOnMock invocation) throws Throwable {
-                         PayPalBrowserSwitchResultCallback callback = invocation.getArgument(1, PayPalBrowserSwitchResultCallback.class);
-                         callback.onResult(payPalAccountNonce, null);
-                         return null;
-                     }
-                 }
-        ).when(payPalClient).onBrowserSwitchResult(any(BrowserSwitchResult.class), any(PayPalBrowserSwitchResultCallback.class));
+        final BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
 
+
+        PowerMockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                CreateOrderActions createOrderActions = mock(CreateOrderActions.class);
+                CreateOrder callback = invocation.getArgument(0, CreateOrder.class);
+                callback.create(createOrderActions);
+                verify(createOrderActions).setBillingAgreementId(response.getPairingId());
+                return null;
+            }
+        }).when(PayPalCheckout.class);
+        PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
         PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        sut.tokenizePayPalAccount(context, new PayPalNativeVaultRequest(), payPalNativeTokenizeCallback);
+    }
 
-        sut.onActivityResumed(browserSwitchResult, payPalNativeOnActivityResumedCallback);
 
-        ArgumentCaptor<PayPalAccountNonce> nonceCaptor = ArgumentCaptor.forClass(PayPalAccountNonce.class);
-        verify(payPalNativeOnActivityResumedCallback).onResult(nonceCaptor.capture(), isNull());
-        assertEquals(nonceCaptor.getValue().getEmail(), payPalAccountNonce.getEmail());
+    private String setUpVaultUris(BraintreeClient braintreeClient, ApprovalData approvalData, PayPalResponse response) {
+        Uri deepLinkUri = mock(Uri.class);
+        Uri successfulUri = mock(Uri.class);
+        Uri approvalUri = mock(Uri.class);
+
+        String stringDeepLink = String.format(
+                "%s://onetouch/v1/success?token=%s&ba_token=%s",
+                braintreeClient.getReturnUrlScheme(),
+                approvalData.getOrderId(),
+                response.getPairingId());
+
+        when(deepLinkUri.getLastPathSegment()).thenReturn("success");
+        when(deepLinkUri.getQueryParameter("ba_token")).thenReturn(response.getPairingId());
+        when(deepLinkUri.toString()).thenReturn(stringDeepLink);
+        when(successfulUri.getLastPathSegment()).thenReturn("success");
+        when(approvalUri.getQueryParameter("ba_token")).thenReturn(response.getPairingId());
+
+
+        when(Uri.parse(stringDeepLink)).thenAnswer((Answer<Uri>) invocation -> deepLinkUri);
+        when(Uri.parse(response.getSuccessUrl())).thenAnswer((Answer<Uri>) invocation -> successfulUri);
+        when(Uri.parse(response.getApprovalUrl())).thenAnswer((Answer<Uri>) invocation -> approvalUri);
+
+        return stringDeepLink;
     }
 
     @Test
-    public void onActivityResumed_whenBrowserSwitchResultReturnsError_throwError() throws JSONException {
+    public void tokenizePayPalAccount_vaultCheckout_approvedAndTokenizesResponseOnSuccess() throws JSONException {
+        final String pairingId = "pairing_id";
+        final ApprovalData approvalData = new ApprovalData("SANDBOX-PAYER-ID", "EC-SANDBOX-EC-TOKEN", "SANDBOX-PAYMENT-ID");
+        PayPalNativeVaultRequest request = new PayPalNativeVaultRequest();
+        request.setMerchantAccountId("sample-merchant-account-id");
+        PayPalResponse response = new PayPalResponse(request)
+                .approvalUrl("https://example.com/approval?ba_token=" + pairingId)
+                .successUrl("https://example.com/success")
+                .clientMetadataId("sample-client-metadata-id");
+        response.pairingId(pairingId);
 
-        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
+                .build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().success(response).build();
 
-        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
-                .put("payment-type", "billing-agreement")
-        );
 
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        final BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .returnUrlScheme("sample-scheme")
+                .build();
 
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        doAnswer(new Answer<Void>() {
-                     @Override
-                     public Void answer(InvocationOnMock invocation) throws Throwable {
-                         PayPalBrowserSwitchResultCallback callback = invocation.getArgument(1, PayPalBrowserSwitchResultCallback.class);
-                         callback.onResult(null, new BraintreeException("some error"));
-                         return null;
-                     }
-                 }
-        ).when(payPalClient).onBrowserSwitchResult(any(BrowserSwitchResult.class), any(PayPalBrowserSwitchResultCallback.class));
+        String stringDeepLink = setUpVaultUris(braintreeClient, approvalData, response);
+
+        PowerMockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                OnApprove callback = invocation.getArgument(1, OnApprove.class);
+                Approval approval = mock(Approval.class);
+                when(approval.getData()).thenReturn(approvalData);
+                callback.onApprove(approval);
+                return null;
+            }
+        }).when(PayPalCheckout.class);
+
+        PayPalCheckout.start(any(CreateOrder.class), any(OnApprove.class), any(OnCancel.class), any(OnError.class));
 
         PayPalNativeClient sut = new PayPalNativeClient(braintreeClient, tokenizationClient, payPalInternalClient, payPalClient);
+        sut.tokenizePayPalAccount(context, new PayPalNativeVaultRequest(), payPalNativeTokenizeCallback);
 
-        sut.onActivityResumed(browserSwitchResult, payPalNativeOnActivityResumedCallback);
+        verify(tokenizationClient).tokenizeREST(any(PayPalAccount.class), any(TokenizeCallback.class));
+        verify(payPalNativeTokenizeCallback).onResult(any(PayPalAccountNonce.class), isNull());
 
-        ArgumentCaptor<BraintreeException> nonceCaptor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(payPalNativeOnActivityResumedCallback).onResult(isNull(), nonceCaptor.capture());
-        assertEquals(nonceCaptor.getValue().getMessage(), "some error");
+        ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
+        verify(tokenizationClient).tokenizeREST(captor.capture(), any(TokenizeCallback.class));
+
+        PayPalAccount payPalAccount = captor.getValue();
+        JSONObject tokenizePayload = payPalAccount.buildJSON();
+        assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
+
+        JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
+
+        JSONObject optionsJson = new JSONObject();
+        optionsJson.put("validate", false);
+        JSONObject expectedPayPalTokenizePayload = new JSONObject()
+                .put("correlationId", "sample-client-metadata-id")
+                .put("client", new JSONObject())
+                .put("response", new JSONObject()
+                        .put("webURL", stringDeepLink))
+                .put("response_type", "web");
+
+        JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
 }
