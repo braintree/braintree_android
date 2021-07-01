@@ -36,7 +36,7 @@ public class PayPalNativeFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_paypal_native, container, false);
+       View view = inflater.inflate(R.layout.fragment_paypal_native, container, false);
         vaultButton = view.findViewById(R.id.paypal_native_vault_button);
         checkoutButton = view.findViewById(R.id.paypal_native_checkout_button);
 
