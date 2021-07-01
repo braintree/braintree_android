@@ -21,11 +21,11 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 
 public class SamsungPayClient {
 
-    private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
-
     private final ClassHelper classHelper;
     private final BraintreeClient braintreeClient;
-    private SamsungPayInternalClient internalClient;
+
+    @VisibleForTesting
+    SamsungPayInternalClient internalClient;
 
     @VisibleForTesting
     SamsungPayClient(BraintreeClient braintreeClient, ClassHelper classHelper) {
@@ -33,33 +33,7 @@ public class SamsungPayClient {
         this.classHelper = classHelper;
     }
 
-    private void getInternalClient(final GetSamsungPayInternalClientCallback callback) {
-        if (internalClient != null) {
-            callback.onResult(internalClient, null);
-        } else {
-            braintreeClient.getConfiguration(new ConfigurationCallback() {
-                @Override
-                public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                    if (configuration != null) {
-                        Context context = braintreeClient.getApplicationContext();
-                        String sessionId = braintreeClient.getSessionId();
-                        String integrationType = braintreeClient.getIntegrationType();
-                        try {
-                            internalClient =
-                                    new SamsungPayInternalClient(context, configuration, sessionId, integrationType);
-                            callback.onResult(internalClient, null);
-                        } catch (JSONException e) {
-                            callback.onResult(null, e);
-                        }
-                    } else {
-                        callback.onResult(null, error);
-                    }
-                }
-            });
-        }
-    }
-
-    public void goToUpdatePage(final Context context) {
+    public void goToUpdatePage() {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
@@ -73,7 +47,7 @@ public class SamsungPayClient {
         });
     }
 
-    public void activateSamsungPay(Context context) {
+    public void activateSamsungPay() {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
@@ -138,7 +112,7 @@ public class SamsungPayClient {
         });
     }
 
-    public void isReadyToPay(final Context context, final SamsungIsReadyToPayCallback callback) {
+    public void isReadyToPay(final SamsungIsReadyToPayCallback callback) {
         if (isSamsungPayAvailable()) {
             getSamsungPayStatus(new GetSamsungPayStatusCallback() {
                 @Override
@@ -201,6 +175,32 @@ public class SamsungPayClient {
 
     public boolean isSamsungPayAvailable() {
         return classHelper.isClassAvailable("com.samsung.android.sdk.samsungpay.v2.SamsungPay");
+    }
+
+    private void getInternalClient(final GetSamsungPayInternalClientCallback callback) {
+        if (internalClient != null) {
+            callback.onResult(internalClient, null);
+        } else {
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
+                @Override
+                public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                    if (configuration != null) {
+                        Context context = braintreeClient.getApplicationContext();
+                        String sessionId = braintreeClient.getSessionId();
+                        String integrationType = braintreeClient.getIntegrationType();
+                        try {
+                            internalClient =
+                                    new SamsungPayInternalClient(context, configuration, sessionId, integrationType);
+                            callback.onResult(internalClient, null);
+                        } catch (JSONException e) {
+                            callback.onResult(null, e);
+                        }
+                    } else {
+                        callback.onResult(null, error);
+                    }
+                }
+            });
+        }
     }
 
     private Set<SpaySdk.Brand> filterAcceptedCardBrands(List<String> braintreeAcceptedCardBrands) {
