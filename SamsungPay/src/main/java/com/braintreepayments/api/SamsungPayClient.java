@@ -65,11 +65,11 @@ public class SamsungPayClient {
             public void onResult(@Nullable Integer status, @Nullable Exception error) {
                 if (status != null) {
                     if (status == SPAY_READY) {
-                        getBraintreeSupportedSamsungPayCards(new GetBraintreeSupportedSamsungPayCards() {
+                        getBraintreeSupportedSamsungPayCards(new GetAcceptedCardBrandsCallback() {
                             @Override
-                            public void onResult(@Nullable List<SpaySdk.Brand> braintreeSupportedSamsungPayCards, @Nullable Exception error) {
-                                if (braintreeSupportedSamsungPayCards != null) {
-                                    boolean isReadyToPay = !braintreeSupportedSamsungPayCards.isEmpty();
+                            public void onResult(@Nullable List<SpaySdk.Brand> acceptedCardBrands, @Nullable Exception error) {
+                                if (acceptedCardBrands != null) {
+                                    boolean isReadyToPay = !acceptedCardBrands.isEmpty();
 
                                     if (isReadyToPay) {
                                         callback.onResult(true, null);
@@ -114,37 +114,12 @@ public class SamsungPayClient {
         });
     }
 
-    private void getBraintreeSupportedSamsungPayCards(final GetBraintreeSupportedSamsungPayCards callback) {
+    private void getBraintreeSupportedSamsungPayCards(final GetAcceptedCardBrandsCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable final SamsungPayInternalClient internalClient, @Nullable Exception error) {
                 if (internalClient != null) {
-                    braintreeClient.getConfiguration(new ConfigurationCallback() {
-                        @Override
-                        public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-                            if (configuration != null) {
-                                internalClient.getAcceptedCardBrands(new GetAcceptedCardBrandsCallback() {
-                                    @Override
-                                    public void onResult(@Nullable List<SpaySdk.Brand> spayAcceptedCardBrands, @Nullable Exception error) {
-                                        if (spayAcceptedCardBrands != null) {
-                                            Set<SpaySdk.Brand> braintreeAcceptedCardBrands =
-                                                    filterAcceptedCardBrands(configuration.getSupportedCardTypes());
-                                            Set<SpaySdk.Brand> intersection = new HashSet<>(spayAcceptedCardBrands);
-                                            intersection.retainAll(braintreeAcceptedCardBrands);
-
-                                            List<SpaySdk.Brand> result = new ArrayList<>(intersection);
-                                            callback.onResult(result, null);
-
-                                        } else {
-                                            callback.onResult(null, error);
-                                        }
-                                    }
-                                });
-                            } else {
-                                callback.onResult(null, error);
-                            }
-                        }
-                    });
+                    internalClient.getAcceptedCardBrands(callback);
                 } else {
                     callback.onResult(null, error);
                 }
@@ -173,12 +148,9 @@ public class SamsungPayClient {
                 @Override
                 public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                     if (configuration != null) {
-                        Context context = braintreeClient.getApplicationContext();
-                        String sessionId = braintreeClient.getSessionId();
-                        String integrationType = braintreeClient.getIntegrationType();
                         try {
                             internalClient =
-                                    new SamsungPayInternalClient(context, configuration, sessionId, integrationType);
+                                    new SamsungPayInternalClient(braintreeClient, configuration);
                             callback.onResult(internalClient, null);
                         } catch (JSONException e) {
                             callback.onResult(null, e);
@@ -189,27 +161,5 @@ public class SamsungPayClient {
                 }
             });
         }
-    }
-
-    private Set<SpaySdk.Brand> filterAcceptedCardBrands(List<String> braintreeAcceptedCardBrands) {
-        List<SpaySdk.Brand> result = new ArrayList<>();
-
-        for (String brand : braintreeAcceptedCardBrands) {
-            switch (brand.toLowerCase()) {
-                case "visa":
-                    result.add(SpaySdk.Brand.VISA);
-                    break;
-                case "mastercard":
-                    result.add(SpaySdk.Brand.MASTERCARD);
-                    break;
-                case "discover":
-                    result.add(SpaySdk.Brand.DISCOVER);
-                    break;
-                case "american_express":
-                    result.add(SpaySdk.Brand.AMERICANEXPRESS);
-                    break;
-            }
-        }
-        return new HashSet<>(result);
     }
 }

@@ -29,11 +29,11 @@ public class SamsungPayInternalClient {
 
     private final Set<SpaySdk.Brand> braintreeAcceptedCardBrands;
 
-    SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-        this(context, configuration, new SamsungPayPartnerInfoBuilder()
+    SamsungPayInternalClient(BraintreeClient braintreeClient, Configuration configuration) throws JSONException {
+        this(braintreeClient.getApplicationContext(), configuration, new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
-                .setSessionId(sessionId)
-                .setIntegrationType(integrationType)
+                .setSessionId(braintreeClient.getSessionId())
+                .setIntegrationType(braintreeClient.getIntegrationType())
                 .build());
     }
 
