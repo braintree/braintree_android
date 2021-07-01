@@ -1,8 +1,8 @@
 package com.braintreepayments.api;
 
-import org.junit.Before;
 import org.junit.Test;
 
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +34,17 @@ public class SamsungPayClientUnitTest {
 
     @Test
     public void isReadyToPay_whenSamsungPayNotReady_callsBackFalse() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
+        sut.internalClient = new MockSamsungPayInternalClientBuilder()
+                .getSamsungPayStatusSuccess(SPAY_NOT_READY)
+                .build();
+
+        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        sut.isReadyToPay(callback);
+
+        verify(callback).onResult(false, null);
     }
 
     @Test

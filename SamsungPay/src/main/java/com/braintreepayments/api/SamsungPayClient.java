@@ -150,7 +150,7 @@ public class SamsungPayClient {
                     if (configuration != null) {
                         try {
                             internalClient =
-                                    new SamsungPayInternalClient(braintreeClient, configuration);
+                                new SamsungPayInternalClient(braintreeClient, configuration);
                             callback.onResult(internalClient, null);
                         } catch (JSONException e) {
                             callback.onResult(null, e);
