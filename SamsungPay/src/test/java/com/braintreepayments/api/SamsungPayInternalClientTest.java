@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -104,6 +105,8 @@ public class SamsungPayInternalClientTest {
         sut.getAcceptedCardBrands(new GetAcceptedCardBrandsCallback() {
             @Override
             public void onResult(@Nullable List<SpaySdk.Brand> acceptedCardBrands, @Nullable Exception error) {
+                assertNotNull(error);
+
                 SamsungPayException samsungPayException = (SamsungPayException) error;
                 assertEquals(456, samsungPayException.getErrorCode());
                 countDownLatch.countDown();
