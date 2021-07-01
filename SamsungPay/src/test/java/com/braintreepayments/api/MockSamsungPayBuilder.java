@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
 import com.samsung.android.sdk.samsungpay.v2.StatusListener;
 
