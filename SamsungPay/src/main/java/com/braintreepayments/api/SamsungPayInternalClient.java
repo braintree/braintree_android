@@ -20,8 +20,6 @@ import java.util.List;
 
 public class SamsungPayInternalClient {
 
-    private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
-
     private final SamsungPay samsungPay;
     private final PaymentManager paymentManager;
 
