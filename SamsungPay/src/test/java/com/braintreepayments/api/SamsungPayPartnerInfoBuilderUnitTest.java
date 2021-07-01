@@ -20,14 +20,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class SamsungPartnerInfoBuilderUnitTest {
+public class SamsungPayPartnerInfoBuilderUnitTest {
 
     @Test
     public void build_setsSamsungServiceId() throws JSONException {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getSamsungPayServiceId()).thenReturn("samsung-service-id");
 
-        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+        PartnerInfo partnerInfo = new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .build();
 
@@ -39,7 +39,7 @@ public class SamsungPartnerInfoBuilderUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getSamsungPayEnvironment()).thenReturn("PRODUCTION");
 
-        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+        PartnerInfo partnerInfo = new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .setIntegrationType("braintree-integration-type")
                 .setSessionId("braintree-session-id")
@@ -67,7 +67,7 @@ public class SamsungPartnerInfoBuilderUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getSamsungPayEnvironment()).thenReturn("SANDBOX");
 
-        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+        PartnerInfo partnerInfo = new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .setIntegrationType("braintree-integration-type")
                 .setSessionId("braintree-session-id")

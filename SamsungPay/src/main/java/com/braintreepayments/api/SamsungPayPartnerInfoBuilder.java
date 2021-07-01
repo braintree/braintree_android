@@ -11,7 +11,7 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.PARTNER_SERVICE_TYPE
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ServiceType.INAPP_PAYMENT;
 import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA_KEY_TEST_MODE;
 
-class SamsungPartnerInfoBuilder {
+class SamsungPayPartnerInfoBuilder {
 
     private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
 
@@ -19,19 +19,19 @@ class SamsungPartnerInfoBuilder {
     private String integrationType;
     private Configuration configuration;
 
-    SamsungPartnerInfoBuilder() {}
+    SamsungPayPartnerInfoBuilder() {}
 
-    SamsungPartnerInfoBuilder setConfiguration(Configuration configuration) {
+    SamsungPayPartnerInfoBuilder setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         return this;
     }
 
-    SamsungPartnerInfoBuilder setSessionId(String sessionId) {
+    SamsungPayPartnerInfoBuilder setSessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
     }
 
-    SamsungPartnerInfoBuilder setIntegrationType(String integrationType) {
+    SamsungPayPartnerInfoBuilder setIntegrationType(String integrationType) {
         this.integrationType = integrationType;
         return this;
     }

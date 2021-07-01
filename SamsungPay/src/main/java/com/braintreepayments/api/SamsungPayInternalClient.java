@@ -18,10 +18,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.PARTNER_SERVICE_TYPE;
-import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ServiceType.INAPP_PAYMENT;
-import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA_KEY_TEST_MODE;
-
 public class SamsungPayInternalClient {
 
     private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
@@ -30,7 +26,7 @@ public class SamsungPayInternalClient {
     private final PaymentManager paymentManager;
 
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+        PartnerInfo partnerInfo = new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .setSessionId(sessionId)
                 .setIntegrationType(integrationType)
