@@ -43,6 +43,14 @@ public class SamsungPayInternalClient {
         this.paymentManager = paymentManager;
     }
 
+    public void goToSamsungPayUpdatePage() {
+        samsungPay.goToUpdatePage();
+    }
+
+    public void activateSamsungPay() {
+        samsungPay.activateSamsungPay();
+    }
+
     void getSamsungPayStatus(final GetSamsungPayStatusCallback callback) {
         samsungPay.getSamsungPayStatus(new StatusListener() {
             @Override
@@ -108,13 +116,5 @@ public class SamsungPayInternalClient {
                 }
             }
         });
-    }
-
-    public void goToSamsungPayUpdatePage() {
-        samsungPay.goToUpdatePage();
-    }
-
-    public void activateSamsungPay() {
-        samsungPay.activateSamsungPay();
     }
 }

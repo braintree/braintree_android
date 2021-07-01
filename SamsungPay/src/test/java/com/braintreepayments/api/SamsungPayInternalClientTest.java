@@ -35,6 +35,26 @@ public class SamsungPayInternalClientTest {
     }
 
     @Test
+    public void goToUpdatePage_forwardsInvocationToSamsungPay() {
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+
+        sut.goToSamsungPayUpdatePage();
+        verify(samsungPay).goToUpdatePage();
+    }
+
+    @Test
+    public void activateSamsungPay_forwardsInvocationToSamsungPay() {
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+
+        sut.activateSamsungPay();
+        verify(samsungPay).activateSamsungPay();
+    }
+
+    @Test
     public void getSamsungPayStatus_forwardsSuccessResultFromSamsungPay() {
         PaymentManager paymentManager = mock(PaymentManager.class);
         SamsungPay samsungPay = new MockSamsungPayBuilder()
