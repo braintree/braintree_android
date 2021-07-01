@@ -12,7 +12,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
+import org.powermock.utils.ArrayUtil;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -26,19 +28,22 @@ import static org.mockito.Mockito.when;
 
 public class SamsungPayInternalClientUnitTest {
 
+    private Configuration configuration;
+
     @Captor
     private ArgumentCaptor<List<SpaySdk.Brand>> cardBrandsCaptor;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
+        configuration = mock(Configuration.class);
     }
 
     @Test
     public void goToUpdatePage_forwardsInvocationToSamsungPay() {
         PaymentManager paymentManager = mock(PaymentManager.class);
         SamsungPay samsungPay = mock(SamsungPay.class);
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         sut.goToSamsungPayUpdatePage();
         verify(samsungPay).goToUpdatePage();
@@ -48,7 +53,7 @@ public class SamsungPayInternalClientUnitTest {
     public void activateSamsungPay_forwardsInvocationToSamsungPay() {
         PaymentManager paymentManager = mock(PaymentManager.class);
         SamsungPay samsungPay = mock(SamsungPay.class);
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         sut.activateSamsungPay();
         verify(samsungPay).activateSamsungPay();
@@ -61,7 +66,7 @@ public class SamsungPayInternalClientUnitTest {
                 .successStatusCode(123)
                 .build();
 
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
         sut.getSamsungPayStatus(callback);
@@ -76,7 +81,7 @@ public class SamsungPayInternalClientUnitTest {
                 .errorCode(456)
                 .build();
 
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
         sut.getSamsungPayStatus(callback);
@@ -90,16 +95,21 @@ public class SamsungPayInternalClientUnitTest {
     }
 
     @Test
-    public void getAcceptedCardBrands_forwardsAListOfAcceptedCardBrandsFromPaymentManager() {
-        CardInfo cardInfo = mock(CardInfo.class);
-        when(cardInfo.getBrand()).thenReturn(SpaySdk.Brand.VISA);
+    public void getAcceptedCardBrands_returnsCardsSupportedByBothBraintreeConfigAndSamsungPay() {
+        CardInfo visaCardInfo = mock(CardInfo.class);
+        when(visaCardInfo.getBrand()).thenReturn(SpaySdk.Brand.VISA);
+
+        CardInfo masterCardInfo = mock(CardInfo.class);
+        when(masterCardInfo.getBrand()).thenReturn(SpaySdk.Brand.MASTERCARD);
 
         PaymentManager paymentManager = new MockPaymentManagerBuilder()
-                .requestCardInfoSuccess(Collections.singletonList(cardInfo))
+                .requestCardInfoSuccess(Arrays.asList(visaCardInfo, masterCardInfo))
                 .build();
 
+        when(configuration.getSupportedCardTypes()).thenReturn(Arrays.asList("mastercard", "american_express"));
+
         SamsungPay samsungPay = mock(SamsungPay.class);
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         GetAcceptedCardBrandsCallback callback = mock(GetAcceptedCardBrandsCallback.class);
         sut.getAcceptedCardBrands(callback);
@@ -107,7 +117,7 @@ public class SamsungPayInternalClientUnitTest {
 
         List<SpaySdk.Brand> acceptedCardBrands = cardBrandsCaptor.getValue();
         assertEquals(1, acceptedCardBrands.size());
-        assertEquals(SpaySdk.Brand.VISA, acceptedCardBrands.get(0));
+        assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
     }
 
     @Test
@@ -119,7 +129,7 @@ public class SamsungPayInternalClientUnitTest {
                 .build();
 
         SamsungPay samsungPay = mock(SamsungPay.class);
-        SamsungPayInternalClient sut = new SamsungPayInternalClient(samsungPay, paymentManager);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         // NOTE: got an error when trying to get this test to run with an ArgumentCaptor
         sut.getAcceptedCardBrands(new GetAcceptedCardBrandsCallback() {

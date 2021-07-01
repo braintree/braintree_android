@@ -18,27 +18,32 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SamsungPayInternalClient {
 
     private final SamsungPay samsungPay;
     private final PaymentManager paymentManager;
 
+    private final Set<SpaySdk.Brand> braintreeAcceptedCardBrands;
+
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-        this(context, new SamsungPayPartnerInfoBuilder()
+        this(context, configuration, new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .setSessionId(sessionId)
                 .setIntegrationType(integrationType)
                 .build());
     }
 
-    private SamsungPayInternalClient(Context context, PartnerInfo partnerInfo) {
-        this(new SamsungPay(context, partnerInfo), new PaymentManager(context, partnerInfo));
+    private SamsungPayInternalClient(Context context, Configuration configuration, PartnerInfo partnerInfo) {
+        this(configuration, new SamsungPay(context, partnerInfo), new PaymentManager(context, partnerInfo));
     }
 
     @VisibleForTesting
-    SamsungPayInternalClient(SamsungPay samsungPay, PaymentManager paymentManager) {
+    SamsungPayInternalClient(Configuration configuration, SamsungPay samsungPay, PaymentManager paymentManager) {
+        this.braintreeAcceptedCardBrands = filterAcceptedCardBrands(configuration.getSupportedCardTypes());
         this.samsungPay = samsungPay;
         this.paymentManager = paymentManager;
     }
@@ -70,13 +75,15 @@ public class SamsungPayInternalClient {
         paymentManager.requestCardInfo(new Bundle(), new PaymentManager.CardInfoListener() {
             @Override
             public void onResult(final List<CardInfo> cardInfos) {
-                List<SpaySdk.Brand> result = new ArrayList<>();
+                Set<SpaySdk.Brand> spayAcceptedCardBrands = new HashSet<>();
                 if (cardInfos != null) {
                     for (CardInfo cardInfo : cardInfos) {
-                        result.add(cardInfo.getBrand());
+                        spayAcceptedCardBrands.add(cardInfo.getBrand());
                     }
                 }
-                callback.onResult(result, null);
+                // equivalent to getting the intersection of both sets
+                spayAcceptedCardBrands.retainAll(braintreeAcceptedCardBrands);
+                callback.onResult(new ArrayList<>(spayAcceptedCardBrands), null);
             }
 
             @Override
@@ -116,5 +123,27 @@ public class SamsungPayInternalClient {
                 }
             }
         });
+    }
+
+    private static Set<SpaySdk.Brand> filterAcceptedCardBrands(List<String> braintreeAcceptedCardBrands) {
+        List<SpaySdk.Brand> result = new ArrayList<>();
+
+        for (String brand : braintreeAcceptedCardBrands) {
+            switch (brand.toLowerCase()) {
+                case "visa":
+                    result.add(SpaySdk.Brand.VISA);
+                    break;
+                case "mastercard":
+                    result.add(SpaySdk.Brand.MASTERCARD);
+                    break;
+                case "discover":
+                    result.add(SpaySdk.Brand.DISCOVER);
+                    break;
+                case "american_express":
+                    result.add(SpaySdk.Brand.AMERICANEXPRESS);
+                    break;
+            }
+        }
+        return new HashSet<>(result);
     }
 }

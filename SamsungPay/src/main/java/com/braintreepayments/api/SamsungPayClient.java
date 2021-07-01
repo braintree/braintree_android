@@ -21,16 +21,14 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 
 public class SamsungPayClient {
 
-    private final ClassHelper classHelper;
     private final BraintreeClient braintreeClient;
 
     @VisibleForTesting
     SamsungPayInternalClient internalClient;
 
     @VisibleForTesting
-    SamsungPayClient(BraintreeClient braintreeClient, ClassHelper classHelper) {
+    SamsungPayClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
-        this.classHelper = classHelper;
     }
 
     public void goToUpdatePage() {
@@ -56,6 +54,48 @@ public class SamsungPayClient {
                     braintreeClient.sendAnalyticsEvent("samsung-pay.activate-samsung-pay");
                 } else {
                     // TODO: determine if we should notify an error here
+                }
+            }
+        });
+    }
+
+    public void isReadyToPay(final SamsungIsReadyToPayCallback callback) {
+        getSamsungPayStatus(new GetSamsungPayStatusCallback() {
+            @Override
+            public void onResult(@Nullable Integer status, @Nullable Exception error) {
+                if (status != null) {
+                    if (status == SPAY_READY) {
+                        getBraintreeSupportedSamsungPayCards(new GetBraintreeSupportedSamsungPayCards() {
+                            @Override
+                            public void onResult(@Nullable List<SpaySdk.Brand> braintreeSupportedSamsungPayCards, @Nullable Exception error) {
+                                if (braintreeSupportedSamsungPayCards != null) {
+                                    boolean isReadyToPay = !braintreeSupportedSamsungPayCards.isEmpty();
+
+                                    if (isReadyToPay) {
+                                        callback.onResult(true, null);
+                                    } else {
+                                        braintreeClient.sendAnalyticsEvent("samsung-pay.request-card-info.no-supported-cards-in-wallet");
+                                        //listener.onResponse(SamsungPayAvailability(SPAY_NOT_READY, SPAY_NO_SUPPORTED_CARDS_IN_WALLET))
+                                        callback.onResult(false, null);
+                                    }
+                                } else {
+                                    callback.onResult(false, error);
+                                }
+                            }
+                        });
+                    } else {
+                        switch (status) {
+                            case SPAY_NOT_READY:
+                                braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.not-ready");
+                                break;
+                            case SPAY_NOT_SUPPORTED:
+                                braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.device-not-supported");
+                                break;
+                        }
+                        callback.onResult(false, null);
+                    }
+                } else {
+                    callback.onResult(false, error);
                 }
             }
         });
@@ -112,54 +152,6 @@ public class SamsungPayClient {
         });
     }
 
-    public void isReadyToPay(final SamsungIsReadyToPayCallback callback) {
-        if (isSamsungPayAvailable()) {
-            getSamsungPayStatus(new GetSamsungPayStatusCallback() {
-                @Override
-                public void onResult(@Nullable Integer status, @Nullable Exception error) {
-                    if (status != null) {
-                        if (status == SPAY_READY) {
-                            getBraintreeSupportedSamsungPayCards(new GetBraintreeSupportedSamsungPayCards() {
-                                @Override
-                                public void onResult(@Nullable List<SpaySdk.Brand> braintreeSupportedSamsungPayCards, @Nullable Exception error) {
-                                    if (braintreeSupportedSamsungPayCards != null) {
-                                        boolean isReadyToPay = !braintreeSupportedSamsungPayCards.isEmpty();
-
-                                        if (isReadyToPay) {
-                                            callback.onResult(true, null);
-                                        } else {
-                                            braintreeClient.sendAnalyticsEvent("samsung-pay.request-card-info.no-supported-cards-in-wallet");
-                                            //listener.onResponse(SamsungPayAvailability(SPAY_NOT_READY, SPAY_NO_SUPPORTED_CARDS_IN_WALLET))
-                                            callback.onResult(false, null);
-                                        }
-                                    } else {
-                                        callback.onResult(false, error);
-                                    }
-                                }
-                            });
-                        } else {
-                            switch (status) {
-                                case SPAY_NOT_READY:
-                                    braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.not-ready");
-                                    break;
-                                case SPAY_NOT_SUPPORTED:
-                                    braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.device-not-supported");
-                                    break;
-                            }
-                            callback.onResult(false, null);
-                        }
-                    } else {
-                        callback.onResult(false, error);
-                    }
-                }
-            });
-
-        } else {
-            callback.onResult(false, null);
-            braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.samsung-pay-class-unavailable");
-        }
-    }
-
     public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final StartSamsungPayCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
@@ -171,10 +163,6 @@ public class SamsungPayClient {
                 }
             }
         });
-    }
-
-    public boolean isSamsungPayAvailable() {
-        return classHelper.isClassAvailable("com.samsung.android.sdk.samsungpay.v2.SamsungPay");
     }
 
     private void getInternalClient(final GetSamsungPayInternalClientCallback callback) {

@@ -8,17 +8,10 @@ import static org.mockito.Mockito.verify;
 
 public class SamsungPayClientUnitTest {
 
-    private ClassHelper classHelper;
-
-    @Before
-    public void beforeEach() {
-        classHelper = mock(ClassHelper.class);
-    }
-
     @Test
     public void goToUpdatePage_forwardsInvocationToInternalClient() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        SamsungPayClient sut = new SamsungPayClient(braintreeClient, classHelper);
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
         SamsungPayInternalClient internalClient = mock(SamsungPayInternalClient.class);
         sut.internalClient = internalClient;
@@ -30,12 +23,37 @@ public class SamsungPayClientUnitTest {
     @Test
     public void activateSamsungPay_forwardsInvocationToInternalClient() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        SamsungPayClient sut = new SamsungPayClient(braintreeClient, classHelper);
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
         SamsungPayInternalClient internalClient = mock(SamsungPayInternalClient.class);
         sut.internalClient = internalClient;
 
         sut.activateSamsungPay();
         verify(internalClient).activateSamsungPay();
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayNotReady_callsBackFalse() {
+
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayNotSupported_callsBackFalse() {
+
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayReady_andAcceptedCardsExist_callsBackTrue() {
+
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayReady_andNoBraintreeAcceptedCardsExist_callsBackFalse() {
+
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayReady_andNoSamsungPayAcceptedCardsExist_callsBackFalse() {
+
     }
 }
