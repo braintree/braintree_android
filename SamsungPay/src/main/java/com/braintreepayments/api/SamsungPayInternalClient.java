@@ -30,36 +30,11 @@ public class SamsungPayInternalClient {
     private final PaymentManager paymentManager;
 
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-//        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
-//                .setConfiguration(configuration)
-//                .setSessionId(sessionId)
-//                .setIntegrationType(integrationType)
-//                .build();
-
-
-        Bundle bundle = new Bundle();
-        bundle.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
-
-        boolean isTestEnvironment = false;
-        String samsungPayEnvironment = configuration.getSamsungPayEnvironment();
-        if (samsungPayEnvironment != null) {
-            isTestEnvironment = samsungPayEnvironment.equalsIgnoreCase("SANDBOX");
-        }
-        bundle.putBoolean(EXTRA_KEY_TEST_MODE, isTestEnvironment);
-
-        JSONObject clientSdkMetadata = new MetadataBuilder()
-                .integration(integrationType)
-                .sessionId(sessionId)
-                .version()
+        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+                .setConfiguration(configuration)
+                .setSessionId(sessionId)
+                .setIntegrationType(integrationType)
                 .build();
-
-        JSONObject additionalData = new JSONObject();
-        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
-        additionalData.put("clientSdkMetadata", clientSdkMetadata);
-        bundle.putString("additionalData", additionalData.toString());
-
-        String serviceId = configuration.getSamsungPayServiceId();
-        PartnerInfo partnerInfo = new PartnerInfo(serviceId, bundle);
 
         this.samsungPay = new SamsungPay(context, partnerInfo);
         this.paymentManager = new PaymentManager(context, partnerInfo);
