@@ -15,11 +15,12 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.PARTNER_SERVICE_TYPE
 import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA_KEY_TEST_MODE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class SamsungPartnerInfoBuilderTest {
+public class SamsungPartnerInfoBuilderUnitTest {
 
     @Test
     public void build_setsSamsungServiceId() throws JSONException {
@@ -59,5 +60,20 @@ public class SamsungPartnerInfoBuilderTest {
 
         String actualAdditionalData = data.getString("additionalData");
         JSONAssert.assertEquals(expectedAdditionalData, new JSONObject(actualAdditionalData), true);
+    }
+
+    @Test
+    public void build_whenEnvironmentIsSANDBOX_setsTestModeDataParamToTrue() throws JSONException {
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getSamsungPayEnvironment()).thenReturn("SANDBOX");
+
+        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+                .setConfiguration(configuration)
+                .setIntegrationType("braintree-integration-type")
+                .setSessionId("braintree-session-id")
+                .build();
+
+        Bundle data = partnerInfo.getData();
+        assertTrue(data.getBoolean(EXTRA_KEY_TEST_MODE));
     }
 }

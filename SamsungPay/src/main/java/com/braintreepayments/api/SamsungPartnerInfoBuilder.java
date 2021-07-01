@@ -40,18 +40,22 @@ class SamsungPartnerInfoBuilder {
         Bundle data = new Bundle();
         data.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
 
-        data.putBoolean(EXTRA_KEY_TEST_MODE, false);
-
-        JSONObject additionalData = new JSONObject();
-        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
+        boolean isTestEnvironment = false;
+        String samsungPayEnvironment = configuration.getSamsungPayEnvironment();
+        if (samsungPayEnvironment != null) {
+            isTestEnvironment = samsungPayEnvironment.equalsIgnoreCase("SANDBOX");
+        }
+        data.putBoolean(EXTRA_KEY_TEST_MODE, isTestEnvironment);
 
         JSONObject clientSdkMetadata = new MetadataBuilder()
                 .integration(integrationType)
                 .sessionId(sessionId)
                 .version()
                 .build();
-        additionalData.put("clientSdkMetadata", clientSdkMetadata);
 
+        JSONObject additionalData = new JSONObject();
+        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
+        additionalData.put("clientSdkMetadata", clientSdkMetadata);
         data.putString("additionalData", additionalData.toString());
 
         String serviceId = configuration.getSamsungPayServiceId();

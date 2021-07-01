@@ -30,6 +30,13 @@ public class SamsungPayInternalClient {
     private final PaymentManager paymentManager;
 
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
+//        PartnerInfo partnerInfo = new SamsungPartnerInfoBuilder()
+//                .setConfiguration(configuration)
+//                .setSessionId(sessionId)
+//                .setIntegrationType(integrationType)
+//                .build();
+
+
         Bundle bundle = new Bundle();
         bundle.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
 
