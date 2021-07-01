@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.samsung.android.sdk.samsungpay.v2.PartnerInfo;
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
@@ -24,14 +26,21 @@ public class SamsungPayInternalClient {
     private final PaymentManager paymentManager;
 
     SamsungPayInternalClient(Context context, Configuration configuration, String sessionId, String integrationType) throws JSONException {
-        PartnerInfo partnerInfo = new SamsungPayPartnerInfoBuilder()
+        this(context, new SamsungPayPartnerInfoBuilder()
                 .setConfiguration(configuration)
                 .setSessionId(sessionId)
                 .setIntegrationType(integrationType)
-                .build();
+                .build());
+    }
 
-        this.samsungPay = new SamsungPay(context, partnerInfo);
-        this.paymentManager = new PaymentManager(context, partnerInfo);
+    private SamsungPayInternalClient(Context context, PartnerInfo partnerInfo) {
+        this(new SamsungPay(context, partnerInfo), new PaymentManager(context, partnerInfo));
+    }
+
+    @VisibleForTesting
+    SamsungPayInternalClient(SamsungPay samsungPay, PaymentManager paymentManager) {
+        this.samsungPay = samsungPay;
+        this.paymentManager = paymentManager;
     }
 
     void getSamsungPayStatus(final GetSamsungPayStatusCallback callback) {
