@@ -13,13 +13,17 @@ import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA
 
 class SamsungPayPartnerInfoBuilder {
 
-    private static final String BRAINTREE_TOKENIZATION_API_VERSION = "2018-10-01";
+    private static final String API_VERSION_KEY = "braintreeTokenizationApiVersion";
+    private static final String CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
+
+    private static final String API_VERSION = "2018-10-01";
 
     private String sessionId;
     private String integrationType;
     private Configuration configuration;
 
-    SamsungPayPartnerInfoBuilder() {}
+    SamsungPayPartnerInfoBuilder() {
+    }
 
     SamsungPayPartnerInfoBuilder setConfiguration(Configuration configuration) {
         this.configuration = configuration;
@@ -36,7 +40,7 @@ class SamsungPayPartnerInfoBuilder {
         return this;
     }
 
-    PartnerInfo build() throws JSONException {
+    PartnerInfo build() {
         Bundle data = new Bundle();
         data.putString(PARTNER_SERVICE_TYPE, INAPP_PAYMENT.toString());
 
@@ -54,8 +58,11 @@ class SamsungPayPartnerInfoBuilder {
                 .build();
 
         JSONObject additionalData = new JSONObject();
-        additionalData.put("braintreeTokenizationApiVersion", BRAINTREE_TOKENIZATION_API_VERSION);
-        additionalData.put("clientSdkMetadata", clientSdkMetadata);
+        try {
+            additionalData.put(API_VERSION_KEY, API_VERSION);
+            additionalData.put(CLIENT_SDK_METADATA_KEY, clientSdkMetadata);
+        } catch (JSONException ignored) {
+        }
         data.putString("additionalData", additionalData.toString());
 
         String serviceId = configuration.getSamsungPayServiceId();

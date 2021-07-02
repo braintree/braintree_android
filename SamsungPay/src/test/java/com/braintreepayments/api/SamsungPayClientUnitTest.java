@@ -1,6 +1,9 @@
 package com.braintreepayments.api;
 
+import android.printservice.CustomPrinterIconCallback;
+
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
 import org.junit.Test;
 
@@ -131,5 +134,20 @@ public class SamsungPayClientUnitTest {
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, error);
+    }
+
+    @Test
+    public void startSamsungPay_forwardsInvocationToInternalClient() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        SamsungPayInternalClient internalClient = mock(SamsungPayInternalClient.class);
+        sut.internalClient = internalClient;
+
+        CustomSheetPaymentInfo paymentInfo = mock(CustomSheetPaymentInfo.class);
+        StartSamsungPayCallback callback = mock(StartSamsungPayCallback.class);
+        sut.startSamsungPay(paymentInfo, callback);
+
+        verify(internalClient).startSamsungPay(paymentInfo, callback);
     }
 }

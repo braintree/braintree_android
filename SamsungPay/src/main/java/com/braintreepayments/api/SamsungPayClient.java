@@ -148,13 +148,9 @@ public class SamsungPayClient {
                 @Override
                 public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                     if (configuration != null) {
-                        try {
-                            internalClient =
-                                new SamsungPayInternalClient(braintreeClient, configuration);
-                            callback.onResult(internalClient, null);
-                        } catch (JSONException e) {
-                            callback.onResult(null, e);
-                        }
+                        internalClient =
+                            new SamsungPayInternalClient(braintreeClient, configuration);
+                        callback.onResult(internalClient, null);
                     } else {
                         callback.onResult(null, error);
                     }
