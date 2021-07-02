@@ -29,7 +29,8 @@ public class MainFragment extends BaseFragment {
     private Button venmoButton;
     private Button visaCheckoutButton;
     private Button localPaymentsButton;
-    private Button preferredPaymentMethods;
+    private Button preferredPaymentMethodsButton;
+    private Button samsungButton;
 
     @Nullable
     @Override
@@ -42,7 +43,8 @@ public class MainFragment extends BaseFragment {
         venmoButton = view.findViewById(R.id.venmo);
         visaCheckoutButton = view.findViewById(R.id.visa_checkout);
         localPaymentsButton = view.findViewById(R.id.local_payment);
-        preferredPaymentMethods = view.findViewById(R.id.preferred_payment_methods);
+        preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods);
+        samsungButton = view.findViewById(R.id.samsung_pay);
 
         cardsButton.setOnClickListener(this::launchCards);
         payPalButton.setOnClickListener(this::launchPayPal);
@@ -50,7 +52,8 @@ public class MainFragment extends BaseFragment {
         googlePayButton.setOnClickListener(this::launchGooglePay);
         visaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
         venmoButton.setOnClickListener(this::launchVenmo);
-        preferredPaymentMethods.setOnClickListener(this::launchPreferredPaymentMethods);
+        preferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
+        samsungButton.setOnClickListener(this::launchSamsungPay);
 
         return view;
     }
@@ -118,6 +121,12 @@ public class MainFragment extends BaseFragment {
     public void launchPreferredPaymentMethods(View v) {
         NavDirections action =
                 MainFragmentDirections.actionMainFragmentToPreferredPaymentMethodsFragment();
+        Navigation.findNavController(v).navigate(action);
+    }
+
+    public void launchSamsungPay(View v) {
+        NavDirections action =
+                MainFragmentDirections.actionMainFragmentToSamsungPayFragment();
         Navigation.findNavController(v).navigate(action);
     }
 }
