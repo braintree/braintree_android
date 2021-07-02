@@ -116,4 +116,7 @@
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>
     <string name="autofill">Autofill</string>
+
+    <!-- SamsungPay -->
+    <string name="bt_start_samsung_pay">Start SamsungPay</string>
 </resources>

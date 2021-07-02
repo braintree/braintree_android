@@ -19,8 +19,7 @@ public class SamsungPayClient {
     @VisibleForTesting
     SamsungPayInternalClient internalClient;
 
-    @VisibleForTesting
-    SamsungPayClient(BraintreeClient braintreeClient) {
+    public SamsungPayClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

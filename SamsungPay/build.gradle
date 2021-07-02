@@ -34,7 +34,7 @@ dependencies {
     api project(':BraintreeCore')
     api project(':Card')
 
-    implementation 'com.samsung.android.spay:sdk:2.5.01'
+    api 'com.samsung.android.spay:sdk:2.5.01'
 
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'androidx.test.ext:junit:1.1.2'
