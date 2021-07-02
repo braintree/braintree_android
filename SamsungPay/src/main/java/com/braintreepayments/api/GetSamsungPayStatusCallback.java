@@ -2,6 +2,6 @@ package com.braintreepayments.api;
 
 import androidx.annotation.Nullable;
 
-public interface GetSamsungPayStatusCallback {
+interface GetSamsungPayStatusCallback {
     void onResult(@Nullable Integer result, @Nullable Exception error);
 }

@@ -1,19 +1,12 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
@@ -59,7 +52,7 @@ public class SamsungPayClient {
         });
     }
 
-    public void isReadyToPay(final SamsungIsReadyToPayCallback callback) {
+    public void isReadyToPay(final SamsungPayIsReadyToPayCallback callback) {
         getSamsungPayStatus(new GetSamsungPayStatusCallback() {
             @Override
             public void onResult(@Nullable Integer status, @Nullable Exception error) {
@@ -127,7 +120,7 @@ public class SamsungPayClient {
         });
     }
 
-    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final StartSamsungPayCallback callback) {
+    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {

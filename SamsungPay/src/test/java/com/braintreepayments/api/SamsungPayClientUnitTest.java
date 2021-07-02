@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.printservice.CustomPrinterIconCallback;
-
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
@@ -50,7 +48,7 @@ public class SamsungPayClientUnitTest {
                 .getSamsungPayStatusSuccess(SPAY_NOT_READY)
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, null);
@@ -65,7 +63,7 @@ public class SamsungPayClientUnitTest {
                 .getSamsungPayStatusSuccess(SPAY_NOT_SUPPORTED)
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, null);
@@ -81,7 +79,7 @@ public class SamsungPayClientUnitTest {
                 .getSamsungPayStatusError(error)
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, error);
@@ -97,7 +95,7 @@ public class SamsungPayClientUnitTest {
                 .getAcceptedCardBrandsSuccess(Collections.singletonList(SpaySdk.Brand.VISA))
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(true, null);
@@ -113,7 +111,7 @@ public class SamsungPayClientUnitTest {
                 .getAcceptedCardBrandsSuccess(Collections.<SpaySdk.Brand>emptyList())
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, null);
@@ -130,7 +128,7 @@ public class SamsungPayClientUnitTest {
                 .getAcceptedCardBrandsError(error)
                 .build();
 
-        SamsungIsReadyToPayCallback callback = mock(SamsungIsReadyToPayCallback.class);
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
         verify(callback).onResult(false, error);
@@ -145,7 +143,7 @@ public class SamsungPayClientUnitTest {
         sut.internalClient = internalClient;
 
         CustomSheetPaymentInfo paymentInfo = mock(CustomSheetPaymentInfo.class);
-        StartSamsungPayCallback callback = mock(StartSamsungPayCallback.class);
+        SamsungPayStartCallback callback = mock(SamsungPayStartCallback.class);
         sut.startSamsungPay(paymentInfo, callback);
 
         verify(internalClient).startSamsungPay(paymentInfo, callback);

@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SamsungPayInternalClient {
+class SamsungPayInternalClient {
 
     private final SamsungPay samsungPay;
     private final PaymentManager paymentManager;
@@ -48,11 +48,11 @@ public class SamsungPayInternalClient {
         this.paymentManager = paymentManager;
     }
 
-    public void goToSamsungPayUpdatePage() {
+    void goToSamsungPayUpdatePage() {
         samsungPay.goToUpdatePage();
     }
 
-    public void activateSamsungPay() {
+    void activateSamsungPay() {
         samsungPay.activateSamsungPay();
     }
 
@@ -94,7 +94,7 @@ public class SamsungPayInternalClient {
         });
     }
 
-    public void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final StartSamsungPayCallback callback) {
+    void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final SamsungPayStartCallback callback) {
         paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
             @Override
             public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
