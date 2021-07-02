@@ -142,4 +142,34 @@ public class SamsungPayInternalClientUnitTest {
         });
         countDownLatch.await();
     }
+
+    @Test
+    public void startSamsungPay_onCardInfoUpdated_updatesPaymentManagerSheetAndNotifiesListener() {
+
+    }
+
+    @Test
+    public void startSamsungPay_onSuccess_notifiesListenerOfNonceCreation() {
+
+    }
+
+    @Test
+    public void startSamsungPay_onSuccess_whenJSONInvalid_notifiesListenerOfError() {
+
+    }
+
+    @Test
+    public void startSamsungPay_onSuccess_whenJSONIncomplete_notifiesListenerOfError() {
+
+    }
+
+    @Test
+    public void startSamsungPay_onError_forwardsErrorCodeByDefault() {
+
+    }
+
+    @Test
+    public void startSamsungPay_onError_whenUserCancelled_notifiesListerOfUserCancelation() {
+
+    }
 }
