@@ -5,8 +5,11 @@ import androidx.annotation.Nullable;
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager;
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -145,31 +149,108 @@ public class SamsungPayInternalClientUnitTest {
 
     @Test
     public void startSamsungPay_onCardInfoUpdated_updatesPaymentManagerSheetAndNotifiesListener() {
+        CardInfo cardInfo = mock(CardInfo.class);
+        CustomSheet customSheet = mock(CustomSheet.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetCardInfoUpdated(cardInfo, customSheet)
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        verify(paymentManager).updateSheet(customSheet);
+        verify(listener).onSamsungPayCardInfoUpdated(cardInfo, customSheet);
     }
 
     @Test
     public void startSamsungPay_onSuccess_notifiesListenerOfNonceCreation() {
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetSuccess(customSheetPaymentInfo, Fixtures.SAMSUNG_PAY_RESPONSE)
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class));
     }
 
     @Test
     public void startSamsungPay_onSuccess_whenJSONInvalid_notifiesListenerOfError() {
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetSuccess(customSheetPaymentInfo, "invalid json")
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        verify(listener).onSamsungPayStartError(any(JSONException.class));
     }
 
     @Test
-    public void startSamsungPay_onSuccess_whenJSONIncomplete_notifiesListenerOfError() {
+    public void startSamsungPay_onSuccess_whenJSONIsNotValidSamsungPayResponse_notifiesListenerOfError() {
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetSuccess(customSheetPaymentInfo, "{}")
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        verify(listener).onSamsungPayStartError(any(JSONException.class));
     }
 
     @Test
     public void startSamsungPay_onError_forwardsErrorCodeByDefault() {
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetError(123)
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        ArgumentCaptor<SamsungPayException> captor = ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(listener).onSamsungPayStartError(captor.capture());
+
+        SamsungPayException error = captor.getValue();
+        assertEquals(123, error.getErrorCode());
     }
 
     @Test
     public void startSamsungPay_onError_whenUserCancelled_notifiesListerOfUserCancelation() {
+        CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
+        PaymentManager paymentManager = new MockPaymentManagerBuilder()
+                .startInAppPayWithCustomSheetError(SpaySdk.ERROR_USER_CANCELED)
+                .build();
 
+        SamsungPay samsungPay = mock(SamsungPay.class);
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        sut.startSamsungPay(customSheetPaymentInfo, listener);
+
+        ArgumentCaptor<UserCanceledException> captor = ArgumentCaptor.forClass(UserCanceledException.class);
+        verify(listener).onSamsungPayStartError(captor.capture());
+
+        UserCanceledException error = captor.getValue();
+        assertEquals("User Canceled", error.getMessage());
     }
 }
