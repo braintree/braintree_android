@@ -120,14 +120,14 @@ public class SamsungPayClient {
         });
     }
 
-    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartCallback callback) {
+    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartListener listener) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
                 if (internalClient != null) {
-                    internalClient.startSamsungPay(paymentInfo, callback);
-                } else {
-                    callback.onResult(null, error);
+                    internalClient.startSamsungPay(paymentInfo, listener);
+                } else if (error != null) {
+                    listener.onSamsungPayStartError(error);
                 }
             }
         });

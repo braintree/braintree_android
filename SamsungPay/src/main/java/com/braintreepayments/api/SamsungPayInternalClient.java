@@ -94,12 +94,12 @@ class SamsungPayInternalClient {
         });
     }
 
-    void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final SamsungPayStartCallback callback) {
+    void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final SamsungPayStartListener listener) {
         paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
             @Override
             public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
                 paymentManager.updateSheet(customSheet);
-                callback.onSamsungPayCardInfoUpdated(cardInfo, customSheet);
+                listener.onSamsungPayCardInfoUpdated(cardInfo, customSheet);
             }
 
             @Override
@@ -107,9 +107,9 @@ class SamsungPayInternalClient {
                 try {
                     JSONObject json = new JSONObject(s);
                     SamsungPayNonce samsungPayNonce = SamsungPayNonce.fromJSON(json);
-                    callback.onSamsungPayStartSuccess(samsungPayNonce);
+                    listener.onSamsungPayStartSuccess(samsungPayNonce);
                 } catch (JSONException e) {
-                    callback.onSamsungPayStartError(e);
+                    listener.onSamsungPayStartError(e);
                 }
             }
 
@@ -117,10 +117,10 @@ class SamsungPayInternalClient {
             public void onFailure(int errorCode, Bundle bundle) {
                 if (errorCode == SpaySdk.ERROR_USER_CANCELED) {
                     UserCanceledException userCanceledError = new UserCanceledException("User Canceled");
-                    callback.onSamsungPayStartError(userCanceledError);
+                    listener.onSamsungPayStartError(userCanceledError);
                 } else {
                     SamsungPayException samsungPayError = new SamsungPayException(errorCode);
-                    callback.onSamsungPayStartError(samsungPayError);
+                    listener.onSamsungPayStartError(samsungPayError);
                 }
             }
         });
