@@ -98,7 +98,8 @@ class SamsungPayInternalClient {
         paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
             @Override
             public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
-                // TODO: notify merchant card info updated
+                paymentManager.updateSheet(customSheet);
+                callback.onSamsungPayCardInfoUpdated(cardInfo, customSheet);
             }
 
             @Override
@@ -106,9 +107,9 @@ class SamsungPayInternalClient {
                 try {
                     JSONObject json = new JSONObject(s);
                     SamsungPayNonce samsungPayNonce = SamsungPayNonce.fromJSON(json);
-                    callback.onResult(samsungPayNonce, null);
+                    callback.onSamsungPayStartSuccess(samsungPayNonce);
                 } catch (JSONException e) {
-                    callback.onResult(null, e);
+                    callback.onSamsungPayStartError(e);
                 }
             }
 
@@ -116,10 +117,10 @@ class SamsungPayInternalClient {
             public void onFailure(int errorCode, Bundle bundle) {
                 if (errorCode == SpaySdk.ERROR_USER_CANCELED) {
                     UserCanceledException userCanceledError = new UserCanceledException("User Canceled");
-                    callback.onResult(null, userCanceledError);
+                    callback.onSamsungPayStartError(userCanceledError);
                 } else {
                     SamsungPayException samsungPayError = new SamsungPayException(errorCode);
-                    callback.onResult(null, samsungPayError);
+                    callback.onSamsungPayStartError(samsungPayError);
                 }
             }
         });

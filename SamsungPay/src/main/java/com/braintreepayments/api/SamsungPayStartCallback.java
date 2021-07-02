@@ -1,7 +1,12 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
+import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
 public interface SamsungPayStartCallback {
-    void onResult(@Nullable SamsungPayNonce samsungPayNonce, @Nullable Exception error);
+    void onSamsungPayStartError(@NonNull Exception error);
+    void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce);
+    void onSamsungPayCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet);
 }
