@@ -41,6 +41,18 @@ public class SamsungPayNonce extends PaymentMethodNonce {
         return new SamsungPayNonce(nonce, binData, cardType, last4, false);
     }
 
+    public String getLastFour() {
+        return lastFour;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public BinData getBinData() {
+        return binData;
+    }
+
     SamsungPayNonce(@NonNull String nonce, BinData binData, String cardType, String last4, boolean isDefault) {
         super(nonce, isDefault);
         this.binData = binData;
