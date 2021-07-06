@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.SamsungPayClient;
 import com.braintreepayments.api.SamsungPayError;
@@ -33,15 +35,9 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
     private Button samsungPayButton;
     private SamsungPayClient samsungPayClient;
 
-    private TextView billingAddressDetails;
-    private TextView shippingAddressDetails;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_samsung_pay, container, false);
-
-        billingAddressDetails = view.findViewById(R.id.billing_address_details);
-        shippingAddressDetails = view.findViewById(R.id.shipping_address_details);
 
         samsungPayButton = view.findViewById(R.id.samsung_pay_button);
         samsungPayButton.setOnClickListener(this::launchSamsungPay);
@@ -168,13 +164,11 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
 
     @Override
     public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, CustomSheetPaymentInfo paymentInfo) {
-        CustomSheet customSheet = paymentInfo.getCustomSheet();
-        AddressControl billingAddressControl = (AddressControl) customSheet.getSheetControl("billingAddressId");
-        CustomSheetPaymentInfo.Address billingAddress = billingAddressControl.getAddress();
+        super.onPaymentMethodNonceCreated(samsungPayNonce);
 
-        CustomSheetPaymentInfo.Address shippingAddress = paymentInfo.getPaymentShippingAddress();
-
-        displayAddresses(billingAddress, shippingAddress);
+        NavDirections action =
+                SamsungPayFragmentDirections.actionSamsungPayFragmentToDisplayNonceFragment(samsungPayNonce);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     @Override
@@ -184,31 +178,5 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
 
         customSheet.updateControl(amountBoxControl);
         samsungPayClient.updateCustomSheet(customSheet);
-    }
-
-    private void displayAddresses(CustomSheetPaymentInfo.Address billingAddress, CustomSheetPaymentInfo.Address shippingAddress) {
-        if (billingAddress != null) {
-            billingAddressDetails.setText(TextUtils.join("\n", Arrays.asList(
-                    "Billing Address",
-                    "Addressee: " + billingAddress.getAddressee(),
-                    "AddressLine1: " + billingAddress.getAddressLine1(),
-                    "AddressLine2: " + billingAddress.getAddressLine2(),
-                    "City: " + billingAddress.getCity(),
-                    "PostalCode: " + billingAddress.getPostalCode(),
-                    "CountryCode: " + billingAddress.getCountryCode()
-            )));
-        }
-
-        if (shippingAddress != null) {
-            shippingAddressDetails.setText(TextUtils.join("\n", Arrays.asList(
-                    "Shipping Address",
-                    "Addressee: " + shippingAddress.getAddressee(),
-                    "AddressLine1: " + shippingAddress.getAddressLine1(),
-                    "AddressLine2: " + shippingAddress.getAddressLine2(),
-                    "City: " + shippingAddress.getCity(),
-                    "PostalCode: " + shippingAddress.getPostalCode(),
-                    "CountryCode: " + shippingAddress.getCountryCode()
-            )));
-        }
     }
 }
