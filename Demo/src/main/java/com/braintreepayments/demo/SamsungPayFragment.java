@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.braintreepayments.api.SamsungPayClient;
+import com.braintreepayments.api.SamsungPayError;
 import com.braintreepayments.api.SamsungPayException;
 import com.braintreepayments.api.SamsungPayNonce;
 import com.braintreepayments.api.SamsungPayStartListener;
@@ -39,8 +40,8 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_samsung_pay, container, false);
 
-        billingAddressDetails = (TextView) view.findViewById(R.id.billing_address_details);
-        shippingAddressDetails = (TextView) view.findViewById(R.id.shipping_address_details);
+        billingAddressDetails = view.findViewById(R.id.billing_address_details);
+        shippingAddressDetails = view.findViewById(R.id.shipping_address_details);
 
         samsungPayButton = view.findViewById(R.id.samsung_pay_button);
         samsungPayButton.setOnClickListener(this::launchSamsungPay);
@@ -62,9 +63,34 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
             if (isReadyToPay) {
                 samsungPayButton.setVisibility(View.VISIBLE);
             } else {
-                String dialogMessage = "Samsung Pay is not available";
-                if (error != null) {
-                    dialogMessage += ": " + error.toString();
+                String dialogMessage;
+                if (error == null) {
+                    dialogMessage = "Samsung Pay is not available";
+                } else {
+                    if (error instanceof SamsungPayException) {
+                        SamsungPayException samsungPayError = (SamsungPayException) error;
+                        @SamsungPayError int errorCode = samsungPayError.getErrorCode();
+                        switch (errorCode) {
+                            case SamsungPayError.SAMSUNG_PAY_APP_NEEDS_UPDATE:
+                                dialogMessage = "Need to update Samsung Pay app...";
+                                break;
+                            case SamsungPayError.SAMSUNG_PAY_NO_SUPPORTED_CARDS_IN_WALLET:
+                                dialogMessage = "No supported cards in wallet";
+                                break;
+                            case SamsungPayError.SAMSUNG_PAY_SETUP_NOT_COMPLETED:
+                                dialogMessage = "Samsung Pay setup not completed...";
+                                break;
+                            case SamsungPayError.SAMSUNG_PAY_NOT_SUPPORTED:
+                            case SamsungPayError.SAMSUNG_PAY_NOT_READY:
+                            case SamsungPayError.SAMSUNG_PAY_ERROR_UNKNOWN:
+                            default:
+                                dialogMessage = "Samsung Pay is not supported";
+                                break;
+                        }
+                    } else {
+                        dialogMessage =
+                                String.format("Samsung Pay is not available: %s", error.toString());
+                    }
                 }
                 showDialog(dialogMessage);
             }

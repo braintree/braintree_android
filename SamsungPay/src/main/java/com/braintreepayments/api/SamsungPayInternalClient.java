@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Set;
 
 import static com.braintreepayments.api.SamsungPayMapAcceptedCardBrands.mapToSamsungPayCardBrands;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_APP_NEED_TO_UPDATE;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_SETUP_NOT_COMPLETED;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 
 class SamsungPayInternalClient {
 
@@ -66,7 +71,32 @@ class SamsungPayInternalClient {
         samsungPay.getSamsungPayStatus(new StatusListener() {
             @Override
             public void onSuccess(int statusCode, Bundle bundle) {
-                callback.onResult(statusCode, null);
+                Exception samsungPayError = null;
+
+                @SamsungPayError int error = SamsungPayError.SAMSUNG_PAY_ERROR_UNKNOWN;
+                if (statusCode != SPAY_READY) {
+                    if (bundle != null && bundle.containsKey(SamsungPay.EXTRA_ERROR_REASON)) {
+                        int reason = bundle.getInt(SamsungPay.EXTRA_ERROR_REASON);
+                        switch (reason) {
+                            case ERROR_SPAY_APP_NEED_TO_UPDATE:
+                                error = SamsungPayError.SAMSUNG_PAY_APP_NEEDS_UPDATE;
+                                break;
+                            case ERROR_SPAY_SETUP_NOT_COMPLETED:
+                                error = SamsungPayError.SAMSUNG_PAY_SETUP_NOT_COMPLETED;
+                                break;
+                        }
+                    } else {
+                        if (statusCode == SPAY_NOT_READY) {
+                            error = SamsungPayError.SAMSUNG_PAY_NOT_READY;
+                        } else {
+                            // SPAY_NOT_SUPPORTED
+                            error = SamsungPayError.SAMSUNG_PAY_NOT_SUPPORTED;
+                        }
+                    }
+                    samsungPayError = new SamsungPayException(error);
+                }
+
+                callback.onResult(statusCode, samsungPayError);
             }
 
             @Override

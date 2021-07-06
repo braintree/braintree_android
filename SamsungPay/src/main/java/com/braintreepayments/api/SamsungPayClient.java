@@ -58,7 +58,7 @@ public class SamsungPayClient {
     public void isReadyToPay(final SamsungPayIsReadyToPayCallback callback) {
         getSamsungPayStatus(new GetSamsungPayStatusCallback() {
             @Override
-            public void onResult(@Nullable Integer status, @Nullable Exception error) {
+            public void onResult(@Nullable Integer status, @Nullable Exception samsungPayError) {
                 if (status != null) {
                     if (status == SPAY_READY) {
                         getBraintreeSupportedSamsungPayCards(new GetAcceptedCardBrandsCallback() {
@@ -71,8 +71,9 @@ public class SamsungPayClient {
                                         callback.onResult(true, null);
                                     } else {
                                         braintreeClient.sendAnalyticsEvent("samsung-pay.request-card-info.no-supported-cards-in-wallet");
-                                        //listener.onResponse(SamsungPayAvailability(SPAY_NOT_READY, SPAY_NO_SUPPORTED_CARDS_IN_WALLET))
-                                        callback.onResult(false, null);
+                                        Exception noCardsInWalletError =
+                                            new SamsungPayException(SamsungPayError.SAMSUNG_PAY_NO_SUPPORTED_CARDS_IN_WALLET);
+                                        callback.onResult(false, noCardsInWalletError);
                                     }
                                 } else {
                                     callback.onResult(false, error);
@@ -88,10 +89,12 @@ public class SamsungPayClient {
                                 braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.device-not-supported");
                                 break;
                         }
-                        callback.onResult(false, null);
+
+                        // still callback error here; it may contain additional information about why Samsung Pay is not enabled
+                        callback.onResult(false, samsungPayError);
                     }
                 } else {
-                    callback.onResult(false, error);
+                    callback.onResult(false, samsungPayError);
                 }
             }
         });

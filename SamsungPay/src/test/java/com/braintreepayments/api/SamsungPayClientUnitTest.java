@@ -3,13 +3,20 @@ package com.braintreepayments.api;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -147,5 +154,50 @@ public class SamsungPayClientUnitTest {
         sut.startSamsungPay(paymentInfo, listener);
 
         verify(internalClient).startSamsungPay(paymentInfo, listener);
+    }
+
+    @Test
+    public void buildCustomSheetPaymentInfo_callsBackBuilderPreConfiguredWithBraintreeAttributes() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY))
+                .build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        BuildCustomSheetPaymentInfoCallback callback =
+                mock(BuildCustomSheetPaymentInfoCallback.class);
+        sut.buildCustomSheetPaymentInfo(callback);
+
+        ArgumentCaptor<CustomSheetPaymentInfo.Builder> captor =
+                ArgumentCaptor.forClass(CustomSheetPaymentInfo.Builder.class);
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
+
+        CustomSheetPaymentInfo.Builder builder = captor.getValue();
+        CustomSheetPaymentInfo paymentInfo = builder.build();
+
+        assertEquals("some example merchant", paymentInfo.getMerchantName());
+        assertEquals("example-samsung-authorization", paymentInfo.getMerchantId());
+
+        List<SpaySdk.Brand> expectedCardBrands = Arrays.asList(
+                SpaySdk.Brand.DISCOVER,
+                SpaySdk.Brand.MASTERCARD,
+                SpaySdk.Brand.VISA,
+                SpaySdk.Brand.AMERICANEXPRESS
+        );
+        assertEquals(expectedCardBrands, paymentInfo.getAllowedCardBrands());
+    }
+
+    @Test
+    public void buildCustomSheetPaymentInfo_forwardsConfigurationErrors() {
+        Exception configError = new Exception("config error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        BuildCustomSheetPaymentInfoCallback callback =
+                mock(BuildCustomSheetPaymentInfoCallback.class);
+        sut.buildCustomSheetPaymentInfo(callback);
+
+        verify(callback).onResult((CustomSheetPaymentInfo.Builder) isNull(), same(configError));
     }
 }
