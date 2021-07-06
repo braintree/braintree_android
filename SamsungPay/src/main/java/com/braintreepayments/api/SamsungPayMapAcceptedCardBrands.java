@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SamsungPayMapAcceptedCardBrands {
+class SamsungPayMapAcceptedCardBrands {
+
+    private SamsungPayMapAcceptedCardBrands() {}
 
     static Set<SpaySdk.Brand> mapToSamsungPayCardBrands(List<String> braintreeAcceptedCardBrands) {
         List<SpaySdk.Brand> result = new ArrayList<>();
