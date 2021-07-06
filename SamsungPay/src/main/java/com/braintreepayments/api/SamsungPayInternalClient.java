@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.braintreepayments.api.SamsungPayMapAcceptedCardBrands.mapToSamsungPayCardBrands;
+
 class SamsungPayInternalClient {
 
     private final SamsungPay samsungPay;
@@ -43,7 +45,7 @@ class SamsungPayInternalClient {
 
     @VisibleForTesting
     SamsungPayInternalClient(Configuration configuration, SamsungPay samsungPay, PaymentManager paymentManager) {
-        this.braintreeAcceptedCardBrands = filterAcceptedCardBrands(configuration.getSupportedCardTypes());
+        this.braintreeAcceptedCardBrands = mapToSamsungPayCardBrands(configuration.getSupportedCardTypes());
         this.samsungPay = samsungPay;
         this.paymentManager = paymentManager;
     }
@@ -54,6 +56,10 @@ class SamsungPayInternalClient {
 
     void activateSamsungPay() {
         samsungPay.activateSamsungPay();
+    }
+
+    void updateCustomSheet(CustomSheet customSheet) {
+        paymentManager.updateSheet(customSheet);
     }
 
     void getSamsungPayStatus(final GetSamsungPayStatusCallback callback) {
@@ -107,7 +113,7 @@ class SamsungPayInternalClient {
                 try {
                     JSONObject json = new JSONObject(s);
                     SamsungPayNonce samsungPayNonce = SamsungPayNonce.fromJSON(json);
-                    listener.onSamsungPayStartSuccess(samsungPayNonce);
+                    listener.onSamsungPayStartSuccess(samsungPayNonce, customSheetPaymentInfo);
                 } catch (JSONException e) {
                     listener.onSamsungPayStartError(e);
                 }
@@ -124,27 +130,5 @@ class SamsungPayInternalClient {
                 }
             }
         });
-    }
-
-    private static Set<SpaySdk.Brand> filterAcceptedCardBrands(List<String> braintreeAcceptedCardBrands) {
-        List<SpaySdk.Brand> result = new ArrayList<>();
-
-        for (String brand : braintreeAcceptedCardBrands) {
-            switch (brand.toLowerCase()) {
-                case "visa":
-                    result.add(SpaySdk.Brand.VISA);
-                    break;
-                case "mastercard":
-                    result.add(SpaySdk.Brand.MASTERCARD);
-                    break;
-                case "discover":
-                    result.add(SpaySdk.Brand.DISCOVER);
-                    break;
-                case "american_express":
-                    result.add(SpaySdk.Brand.AMERICANEXPRESS);
-                    break;
-            }
-        }
-        return new HashSet<>(result);
     }
 }

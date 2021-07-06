@@ -5,9 +5,13 @@ import androidx.annotation.VisibleForTesting;
 
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import static com.braintreepayments.api.SamsungPayMapAcceptedCardBrands.mapToSamsungPayCardBrands;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
@@ -127,6 +131,39 @@ public class SamsungPayClient {
                     internalClient.startSamsungPay(paymentInfo, listener);
                 } else if (error != null) {
                     listener.onSamsungPayStartError(error);
+                }
+            }
+        });
+    }
+
+    public void buildCustomSheetPaymentInfo(final BuildCustomSheetPaymentInfoCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration != null) {
+                    Set<SpaySdk.Brand> acceptedCardBrands =
+                        mapToSamsungPayCardBrands(configuration.getSamsungPaySupportedCardBrands());
+
+                    CustomSheetPaymentInfo.Builder builder = new CustomSheetPaymentInfo.Builder()
+                            .setMerchantName(configuration.getSamsungPayMerchantDisplayName())
+                            .setMerchantId(configuration.getSamsungPayAuthorization())
+                            .setAllowedCardBrands(new ArrayList<>(acceptedCardBrands));
+                    callback.onResult(builder, null);
+                    braintreeClient.sendAnalyticsEvent("samsung-pay.create-payment-info.success");
+
+                } else {
+                    callback.onResult(null, error);
+                }
+            }
+        });
+    }
+
+    public void updateCustomSheet(final CustomSheet customSheet) {
+        getInternalClient(new GetSamsungPayInternalClientCallback() {
+            @Override
+            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
+                if (internalClient != null) {
+                    internalClient.updateCustomSheet(customSheet);
                 }
             }
         });

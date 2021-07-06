@@ -1,19 +1,22 @@
 package com.braintreepayments.demo;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.TextView;
 
-import com.braintreepayments.api.GooglePayClient;
+import androidx.annotation.NonNull;
+
 import com.braintreepayments.api.SamsungPayClient;
-import com.braintreepayments.api.SamsungPayRequest;
+import com.braintreepayments.api.SamsungPayException;
+import com.braintreepayments.api.SamsungPayNonce;
+import com.braintreepayments.api.SamsungPayStartListener;
+import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
+import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AddressControl;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountBoxControl;
@@ -22,16 +25,26 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.SheetItemType;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.SheetUpdatedListener;
 
-public class SamsungPayFragment extends BaseFragment {
+import java.util.Arrays;
+
+public class SamsungPayFragment extends BaseFragment implements SamsungPayStartListener {
 
     private Button samsungPayButton;
     private SamsungPayClient samsungPayClient;
 
+    private TextView billingAddressDetails;
+    private TextView shippingAddressDetails;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_samsung_pay, container, false);
+
+        billingAddressDetails = (TextView) view.findViewById(R.id.billing_address_details);
+        shippingAddressDetails = (TextView) view.findViewById(R.id.shipping_address_details);
+
         samsungPayButton = view.findViewById(R.id.samsung_pay_button);
         samsungPayButton.setOnClickListener(this::launchSamsungPay);
+
         return view;
     }
 
@@ -60,11 +73,34 @@ public class SamsungPayFragment extends BaseFragment {
 
     public void launchSamsungPay(View v) {
 
-        CustomSheetPaymentInfo paymentInfo = builder
-                .setAddressInPaymentSheet(CustomSheetPaymentInfo.AddressInPaymentSheet.NEED_BILLING_AND_SHIPPING)
-                .setCustomSheet(getCustomSheet())
-                .setOrderNumber("order-number")
-                .build();
+        samsungPayClient.buildCustomSheetPaymentInfo((builder, error) -> {
+            if (builder != null) {
+                CustomSheetPaymentInfo paymentInfo = builder
+                        .setAddressInPaymentSheet(CustomSheetPaymentInfo.AddressInPaymentSheet.NEED_BILLING_AND_SHIPPING)
+                        .setCustomSheet(getCustomSheet())
+                        .setOrderNumber("order-number")
+                        .build();
+                samsungPayClient.startSamsungPay(paymentInfo, SamsungPayFragment.this);
+            } else {
+                handleSamsungPayError(error);
+            }
+        });
+
+    }
+
+    public void handleSamsungPayError(Exception error) {
+        if (error instanceof SamsungPayException) {
+            SamsungPayException samsungPayException = (SamsungPayException) error;
+
+            switch (samsungPayException.getErrorCode()) {
+                case SpaySdk.ERROR_NO_NETWORK:
+                    // handle accordingly
+                    // ...
+                    break;
+            }
+
+            showDialog("Samsung Pay failed with error code " + ((SamsungPayException) error).getErrorCode());
+        }
     }
 
     private CustomSheet getCustomSheet() {
@@ -76,8 +112,7 @@ public class SamsungPayFragment extends BaseFragment {
             @Override
             public void onResult(String controlId, final CustomSheet customSheet) {
                 Log.d("billing sheet updated", controlId);
-
-                mPaymentManager.updateSheet(customSheet);
+                samsungPayClient.updateCustomSheet(customSheet);
             }
         });
         sheet.addControl(billingAddressControl);
@@ -88,8 +123,7 @@ public class SamsungPayFragment extends BaseFragment {
             @Override
             public void onResult(String controlId, final CustomSheet customSheet) {
                 Log.d("shipping sheet updated", controlId);
-
-                mPaymentManager.updateSheet(customSheet);
+                samsungPayClient.updateCustomSheet(customSheet);
             }
         });
         sheet.addControl(shippingAddressControl);
@@ -99,5 +133,56 @@ public class SamsungPayFragment extends BaseFragment {
         sheet.addControl(amountBoxControl);
 
         return sheet;
+    }
+
+    @Override
+    public void onSamsungPayStartError(@NonNull Exception error) {
+        handleSamsungPayError(error);
+    }
+
+    @Override
+    public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, CustomSheetPaymentInfo paymentInfo) {
+        CustomSheet customSheet = paymentInfo.getCustomSheet();
+        AddressControl billingAddressControl = (AddressControl) customSheet.getSheetControl("billingAddressId");
+        CustomSheetPaymentInfo.Address billingAddress = billingAddressControl.getAddress();
+
+        CustomSheetPaymentInfo.Address shippingAddress = paymentInfo.getPaymentShippingAddress();
+
+        displayAddresses(billingAddress, shippingAddress);
+    }
+
+    @Override
+    public void onSamsungPayCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
+        AmountBoxControl amountBoxControl = (AmountBoxControl) customSheet.getSheetControl("amountID");
+        amountBoxControl.setAmountTotal(1.0, AmountConstants.FORMAT_TOTAL_PRICE_ONLY);
+
+        customSheet.updateControl(amountBoxControl);
+        samsungPayClient.updateCustomSheet(customSheet);
+    }
+
+    private void displayAddresses(CustomSheetPaymentInfo.Address billingAddress, CustomSheetPaymentInfo.Address shippingAddress) {
+        if (billingAddress != null) {
+            billingAddressDetails.setText(TextUtils.join("\n", Arrays.asList(
+                    "Billing Address",
+                    "Addressee: " + billingAddress.getAddressee(),
+                    "AddressLine1: " + billingAddress.getAddressLine1(),
+                    "AddressLine2: " + billingAddress.getAddressLine2(),
+                    "City: " + billingAddress.getCity(),
+                    "PostalCode: " + billingAddress.getPostalCode(),
+                    "CountryCode: " + billingAddress.getCountryCode()
+            )));
+        }
+
+        if (shippingAddress != null) {
+            shippingAddressDetails.setText(TextUtils.join("\n", Arrays.asList(
+                    "Shipping Address",
+                    "Addressee: " + shippingAddress.getAddressee(),
+                    "AddressLine1: " + shippingAddress.getAddressLine1(),
+                    "AddressLine2: " + shippingAddress.getAddressLine2(),
+                    "City: " + shippingAddress.getCity(),
+                    "PostalCode: " + shippingAddress.getPostalCode(),
+                    "CountryCode: " + shippingAddress.getCountryCode()
+            )));
+        }
     }
 }

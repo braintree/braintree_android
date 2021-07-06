@@ -179,7 +179,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
-        verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class));
+        verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class), );
     }
 
     @Test

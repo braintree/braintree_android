@@ -3,16 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    tools:context=".SamsungPayFragment"
     android:layout_marginHorizontal="10dp"
-    >
+    android:gravity="center"
+    tools:context=".SamsungPayFragment">
+
+    <TextView
+        android:id="@+id/billing_address_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textSize="10sp"
+        tools:text="Billing Address Details" />
+
+    <TextView
+        android:id="@+id/shipping_address_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textSize="10sp"
+        tools:text="Shipping Address Details" />
 
     <Button
         android:id="@+id/samsung_pay_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="@string/samsung_pay" />
+        android:text="@string/samsung_pay"
+        android:visibility="gone" />
 
 </LinearLayout>
