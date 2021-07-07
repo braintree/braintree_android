@@ -144,6 +144,22 @@ public class SamsungPayClientUnitTest {
     }
 
     @Test
+    public void isReadyToPay_whenSamsungPayStatusIsReady_andAcceptedCardsExist_sendsAnalyticsEvent() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        sut.internalClient = new MockSamsungPayInternalClientBuilder()
+                .getSamsungPayStatusSuccess(SPAY_READY)
+                .getAcceptedCardBrandsSuccess(Collections.singletonList(SpaySdk.Brand.VISA))
+                .build();
+
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
+        sut.isReadyToPay(callback);
+
+        verify(braintreeClient).sendAnalyticsEvent("samsung-pay.is-ready-to-pay.ready");
+    }
+
+    @Test
     public void isReadyToPay_whenSamsungPayStatusIsReady_andNoAcceptedCardsExist_callsBackFalseWithError() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
@@ -161,6 +177,22 @@ public class SamsungPayClientUnitTest {
 
         SamsungPayException error = captor.getValue();
         assertEquals(SamsungPayError.SAMSUNG_PAY_NO_SUPPORTED_CARDS_IN_WALLET, error.getErrorCode());
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayStatusIsReady_andNoAcceptedCardsExist_sendsAnalyticsEvent() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        sut.internalClient = new MockSamsungPayInternalClientBuilder()
+                .getSamsungPayStatusSuccess(SPAY_READY)
+                .getAcceptedCardBrandsSuccess(Collections.<SpaySdk.Brand>emptyList())
+                .build();
+
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
+        sut.isReadyToPay(callback);
+
+        verify(braintreeClient).sendAnalyticsEvent("samsung-pay.request-card-info.no-supported-cards-in-wallet");
     }
 
     @Test

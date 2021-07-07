@@ -68,6 +68,7 @@ public class SamsungPayClient {
                                     boolean isReadyToPay = !acceptedCardBrands.isEmpty();
 
                                     if (isReadyToPay) {
+                                        braintreeClient.sendAnalyticsEvent("samsung-pay.is-ready-to-pay.ready");
                                         callback.onResult(true, null);
                                     } else {
                                         braintreeClient.sendAnalyticsEvent("samsung-pay.request-card-info.no-supported-cards-in-wallet");
