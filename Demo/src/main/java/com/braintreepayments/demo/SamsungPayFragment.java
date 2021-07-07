@@ -130,23 +130,17 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayStartL
 
         final AddressControl billingAddressControl = new AddressControl("billingAddressId", SheetItemType.BILLING_ADDRESS);
         billingAddressControl.setAddressTitle("Billing Address");
-        billingAddressControl.setSheetUpdatedListener(new SheetUpdatedListener() {
-            @Override
-            public void onResult(String controlId, final CustomSheet customSheet) {
-                Log.d("billing sheet updated", controlId);
-                samsungPayClient.updateCustomSheet(customSheet);
-            }
+        billingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
+            Log.d("billing sheet updated", controlId);
+            samsungPayClient.updateCustomSheet(customSheet);
         });
         sheet.addControl(billingAddressControl);
 
         final AddressControl shippingAddressControl = new AddressControl("shippingAddressId", SheetItemType.SHIPPING_ADDRESS);
         shippingAddressControl.setAddressTitle("Shipping Address");
-        shippingAddressControl.setSheetUpdatedListener(new SheetUpdatedListener() {
-            @Override
-            public void onResult(String controlId, final CustomSheet customSheet) {
-                Log.d("shipping sheet updated", controlId);
-                samsungPayClient.updateCustomSheet(customSheet);
-            }
+        shippingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
+            Log.d("shipping sheet updated", controlId);
+            samsungPayClient.updateCustomSheet(customSheet);
         });
         sheet.addControl(shippingAddressControl);
 
