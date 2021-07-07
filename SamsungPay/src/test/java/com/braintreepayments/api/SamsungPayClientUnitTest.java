@@ -15,6 +15,7 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -47,7 +48,24 @@ public class SamsungPayClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_whenSamsungPayStatusIsNotReady_callsBackFalse() {
+    public void isReadyToPay_whenSamsungPayStatusIsNotReady_callsBackFalseAndForwardsError() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        Exception samsungPayError = new Exception("samsung error");
+        sut.internalClient = new MockSamsungPayInternalClientBuilder()
+                .getSamsungPayStatusSuccess(SPAY_NOT_READY)
+                .getSamsungPayStatusError(samsungPayError)
+                .build();
+
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
+        sut.isReadyToPay(callback);
+
+        verify(callback).onResult(false, samsungPayError);
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayStatusIsNotReady_sendsAnalyticsEvent() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
@@ -58,11 +76,28 @@ public class SamsungPayClientUnitTest {
         SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
-        verify(callback).onResult(false, null);
+        verify(braintreeClient).sendAnalyticsEvent("samsung-pay.is-ready-to-pay.not-ready");
     }
 
     @Test
-    public void isReadyToPay_whenSamsungPayStatusIsNotSupported_callsBackFalse() {
+    public void isReadyToPay_whenSamsungPayStatusIsNotSupported_callsBackFalseAndForwardsError() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        Exception samsungPayError = new Exception("samsung error");
+        sut.internalClient = new MockSamsungPayInternalClientBuilder()
+                .getSamsungPayStatusSuccess(SPAY_NOT_SUPPORTED)
+                .getSamsungPayStatusError(samsungPayError)
+                .build();
+
+        SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
+        sut.isReadyToPay(callback);
+
+        verify(callback).onResult(false, samsungPayError);
+    }
+
+    @Test
+    public void isReadyToPay_whenSamsungPayStatusIsNotSupported_sendsAnalyticsEvent() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
@@ -73,7 +108,7 @@ public class SamsungPayClientUnitTest {
         SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
-        verify(callback).onResult(false, null);
+        verify(braintreeClient).sendAnalyticsEvent("samsung-pay.is-ready-to-pay.device-not-supported");
     }
 
     @Test
@@ -109,7 +144,7 @@ public class SamsungPayClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_whenSamsungPayReady_andNoAcceptedCardsExist_callsBackFalse() {
+    public void isReadyToPay_whenSamsungPayStatusIsReady_andNoAcceptedCardsExist_callsBackFalseWithError() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
@@ -121,7 +156,11 @@ public class SamsungPayClientUnitTest {
         SamsungPayIsReadyToPayCallback callback = mock(SamsungPayIsReadyToPayCallback.class);
         sut.isReadyToPay(callback);
 
-        verify(callback).onResult(false, null);
+        ArgumentCaptor<SamsungPayException> captor = ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(callback).onResult(eq(false), captor.capture());
+
+        SamsungPayException error = captor.getValue();
+        assertEquals(SamsungPayError.SAMSUNG_PAY_NO_SUPPORTED_CARDS_IN_WALLET, error.getErrorCode());
     }
 
     @Test
@@ -178,10 +217,10 @@ public class SamsungPayClientUnitTest {
         assertEquals("example-samsung-authorization", paymentInfo.getMerchantId());
 
         List<SpaySdk.Brand> expectedCardBrands = Arrays.asList(
+                SpaySdk.Brand.AMERICANEXPRESS,
                 SpaySdk.Brand.DISCOVER,
                 SpaySdk.Brand.MASTERCARD,
-                SpaySdk.Brand.VISA,
-                SpaySdk.Brand.AMERICANEXPRESS
+                SpaySdk.Brand.VISA
         );
         assertEquals(expectedCardBrands, paymentInfo.getAllowedCardBrands());
     }

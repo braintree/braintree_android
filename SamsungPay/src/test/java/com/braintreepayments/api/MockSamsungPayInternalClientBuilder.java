@@ -49,11 +49,7 @@ public class MockSamsungPayInternalClientBuilder {
             @Override
             public Void answer(InvocationOnMock invocation) {
                 GetSamsungPayStatusCallback callback = (GetSamsungPayStatusCallback) invocation.getArguments()[0];
-                if (getSamsungPayStatusSuccess != null) {
-                    callback.onResult(getSamsungPayStatusSuccess, null);
-                } else if (getSamsungPayStatusError != null) {
-                    callback.onResult(null, getSamsungPayStatusError);
-                }
+                callback.onResult(getSamsungPayStatusSuccess, getSamsungPayStatusError);
                 return null;
             }
         }).when(internalClient).getSamsungPayStatus(any(GetSamsungPayStatusCallback.class));
