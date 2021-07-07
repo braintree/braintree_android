@@ -15,10 +15,17 @@ import static org.mockito.Mockito.mock;
 class MockSamsungPayBuilder {
 
     private Integer errorCode;
+
+    private Bundle successBundle;
     private Integer successStatusCode;
 
     MockSamsungPayBuilder errorCode(Integer errorCode) {
         this.errorCode = errorCode;
+        return this;
+    }
+
+    MockSamsungPayBuilder successBundle(Bundle successBundle) {
+        this.successBundle = successBundle;
         return this;
     }
 
@@ -35,7 +42,7 @@ class MockSamsungPayBuilder {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 StatusListener callback = (StatusListener) invocation.getArguments()[0];
                 if (successStatusCode != null) {
-                    callback.onSuccess(successStatusCode, new Bundle());
+                    callback.onSuccess(successStatusCode, successBundle);
                 } else if (errorCode != null) {
                     callback.onFail(errorCode, new Bundle());
                 }

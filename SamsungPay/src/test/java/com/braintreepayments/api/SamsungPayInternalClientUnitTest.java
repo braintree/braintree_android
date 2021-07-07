@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay;
@@ -12,22 +14,34 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_APP_NEED_TO_UPDATE;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_SETUP_NOT_COMPLETED;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.EXTRA_ERROR_REASON;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
+import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(RobolectricTestRunner.class)
 public class SamsungPayInternalClientUnitTest {
 
     private Configuration configuration;
@@ -62,18 +76,101 @@ public class SamsungPayInternalClientUnitTest {
     }
 
     @Test
-    public void getSamsungPayStatus_forwardsSuccessResultFromSamsungPay() {
+    public void getSamsungPayStatus_whenSamsungPayIsReady_forwardsSuccessResultFromSamsungPay() {
         PaymentManager paymentManager = mock(PaymentManager.class);
         SamsungPay samsungPay = new MockSamsungPayBuilder()
-                .successStatusCode(123)
+                .successStatusCode(SPAY_READY)
                 .build();
-
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
         sut.getSamsungPayStatus(callback);
 
-        verify(callback).onResult(123, null);
+        verify(callback).onResult(SPAY_READY, null);
+    }
+
+    @Test
+    public void getSamsungPayStatus_whenSamsungPayIsNotReady_forwardsNotReadyErrorByDefault() {
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = new MockSamsungPayBuilder()
+                .successStatusCode(SPAY_NOT_READY)
+                .build();
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
+        sut.getSamsungPayStatus(callback);
+
+        ArgumentCaptor<SamsungPayException> captor =
+                ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(callback).onResult(eq(SPAY_NOT_READY), captor.capture());
+
+        SamsungPayException exception = captor.getValue();
+        assertEquals(SamsungPayError.SAMSUNG_PAY_NOT_READY, exception.getErrorCode());
+    }
+
+    @Test
+    public void getSamsungPayStatus_whenSamsungPayIsNotSupported_forwardsNotSupportedErrorByDefault() {
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = new MockSamsungPayBuilder()
+                .successStatusCode(SPAY_NOT_SUPPORTED)
+                .build();
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
+        sut.getSamsungPayStatus(callback);
+
+        ArgumentCaptor<SamsungPayException> captor =
+                ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(callback).onResult(eq(SPAY_NOT_SUPPORTED), captor.capture());
+
+        SamsungPayException exception = captor.getValue();
+        assertEquals(SamsungPayError.SAMSUNG_PAY_NOT_SUPPORTED, exception.getErrorCode());
+    }
+
+    @Test
+    public void getSamsungPayStatus_whenSamsungPayIsNotReady_andSamsungPayAppNeedsUpdate_forwardsAppNeedsUpdateError() {
+        Bundle errorBundle = new Bundle();
+        errorBundle.putInt(EXTRA_ERROR_REASON, ERROR_SPAY_APP_NEED_TO_UPDATE);
+
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = new MockSamsungPayBuilder()
+                .successStatusCode(SPAY_NOT_READY)
+                .successBundle(errorBundle)
+                .build();
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
+        sut.getSamsungPayStatus(callback);
+
+        ArgumentCaptor<SamsungPayException> captor =
+                ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(callback).onResult(eq(SPAY_NOT_READY), captor.capture());
+
+        SamsungPayException exception = captor.getValue();
+        assertEquals(SamsungPayError.SAMSUNG_PAY_APP_NEEDS_UPDATE, exception.getErrorCode());
+    }
+
+    @Test
+    public void getSamsungPayStatus_whenSamsungPayIsNotReady_andSamsungPaySetupNotComplete_forwardsSetupNotCompleteError() {
+        Bundle errorBundle = new Bundle();
+        errorBundle.putInt(EXTRA_ERROR_REASON, ERROR_SPAY_SETUP_NOT_COMPLETED);
+
+        PaymentManager paymentManager = mock(PaymentManager.class);
+        SamsungPay samsungPay = new MockSamsungPayBuilder()
+                .successStatusCode(SPAY_NOT_READY)
+                .successBundle(errorBundle)
+                .build();
+        SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
+
+        GetSamsungPayStatusCallback callback = mock(GetSamsungPayStatusCallback.class);
+        sut.getSamsungPayStatus(callback);
+
+        ArgumentCaptor<SamsungPayException> captor =
+                ArgumentCaptor.forClass(SamsungPayException.class);
+        verify(callback).onResult(eq(SPAY_NOT_READY), captor.capture());
+
+        SamsungPayException exception = captor.getValue();
+        assertEquals(SamsungPayError.SAMSUNG_PAY_SETUP_NOT_COMPLETED, exception.getErrorCode());
     }
 
     @Test
@@ -179,7 +276,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
-        verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class), (CustomSheetPaymentInfo) isNull());
+        verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class), same(customSheetPaymentInfo));
     }
 
     @Test
