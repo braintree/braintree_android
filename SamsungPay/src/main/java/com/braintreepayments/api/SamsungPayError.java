@@ -16,10 +16,33 @@ import java.lang.annotation.RetentionPolicy;
 })
 public @interface SamsungPayError {
 
+    /**
+     * Samsung Pay cannot handle the payment currently.
+     */
     int SAMSUNG_PAY_NOT_READY = 0;
+
+    /**
+     * Samsung Pay app needs to be updated. See {@link SamsungPayClient#goToUpdatePage()}.
+     */
     int SAMSUNG_PAY_APP_NEEDS_UPDATE = 1;
+
+    /**
+     * Samsung Pay app setup not completed. See {@link SamsungPayClient#activateSamsungPay()}.
+     */
     int SAMSUNG_PAY_SETUP_NOT_COMPLETED = 2;
+
+    /**
+     * Samsung Pay user has no supported cards in their wallet.
+     */
     int SAMSUNG_PAY_NO_SUPPORTED_CARDS_IN_WALLET = 3;
+
+    /**
+     * Samsung Pay is not supported on the current device.
+     */
     int SAMSUNG_PAY_NOT_SUPPORTED = 4;
+
+    /**
+     * An unknown Samsung Pay error has occurred.
+     */
     int SAMSUNG_PAY_ERROR_UNKNOWN = 5;
 }

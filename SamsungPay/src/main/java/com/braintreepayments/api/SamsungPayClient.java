@@ -27,6 +27,11 @@ public class SamsungPayClient {
         this.braintreeClient = braintreeClient;
     }
 
+    /**
+     * Forwards the user to the Samsung Pay update page.
+     * This should be invoked when Samsung Pay returns a {@link SamsungPayError#SAMSUNG_PAY_APP_NEEDS_UPDATE}
+     * error code from {@link SamsungPayClient#isReadyToPay(SamsungPayIsReadyToPayCallback)}
+     */
     public void goToUpdatePage() {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
@@ -41,6 +46,11 @@ public class SamsungPayClient {
         });
     }
 
+    /**
+     * Forwards the user to the Samsung Pay activate page.
+     * This should be invoked when Samsung Pay returns a {@link SamsungPayError#SAMSUNG_PAY_SETUP_NOT_COMPLETED}
+     * error code from {@link SamsungPayClient#isReadyToPay(SamsungPayIsReadyToPayCallback)}
+     */
     public void activateSamsungPay() {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
@@ -55,6 +65,13 @@ public class SamsungPayClient {
         });
     }
 
+    /**
+     * Call isReadyToPay before starting your Samsung Pay flow. isReadyToPay will call you back with the
+     * status of Samsung Pay. If if the status of Samsung Pay is anything but [SamsungPayStatus.SPAY_READY],
+     * the listener will be called back with a value of false. If the Samsung Pay callback returns an error,
+     * see {@link SamsungPayError} for a list of possible error codes
+     * @param callback isReadyToPay callback
+     */
     public void isReadyToPay(final SamsungPayIsReadyToPayCallback callback) {
         getSamsungPayStatus(new GetSamsungPayStatusCallback() {
             @Override
