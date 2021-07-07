@@ -7,6 +7,10 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * {@link PaymentMethodNonce} representing a Samsung Pay card.
+ * @see PaymentMethodNonce
+ */
 public class SamsungPayNonce extends PaymentMethodNonce {
 
     private final String lastFour;
@@ -41,14 +45,23 @@ public class SamsungPayNonce extends PaymentMethodNonce {
         return new SamsungPayNonce(nonce, binData, cardType, last4, false);
     }
 
+    /**
+     * @return Samsung Pay card last four digits.
+     */
     public String getLastFour() {
         return lastFour;
     }
 
+    /**
+     * @return Samsung Pay card type.
+     */
     public String getCardType() {
         return cardType;
     }
 
+    /**
+     * @return Samsung Pay card {@link BinData}
+     */
     public BinData getBinData() {
         return binData;
     }

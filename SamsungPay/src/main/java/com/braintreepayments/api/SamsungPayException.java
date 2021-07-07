@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+/**
+ * Exception class representing SamsungPay errors.
+ */
 public class SamsungPayException extends Exception {
 
     private final int errorCode;
@@ -9,6 +12,9 @@ public class SamsungPayException extends Exception {
         this.errorCode = errorCode;
     }
 
+    /**
+     * @return {@link SamsungPayError}
+     */
     public int getErrorCode() {
         return errorCode;
     }

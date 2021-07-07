@@ -5,6 +5,9 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Collection of Samsung Pay error constants that may be emitted by {@link SamsungPayClient} callbacks.
+ */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
         SamsungPayError.SAMSUNG_PAY_NOT_READY,

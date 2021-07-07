@@ -3,13 +3,13 @@
 ## unreleased
 
 * SamsungPay
+  * Add `BuildCustomSheetPaymentInfoCallback`
   * Add `SamsungPayClient`
-  * Add `SamsungPayClient#goToUpdatePage()`
-  * Add `SamsungPayClient#activateSamsungPay()`
-  * Add `SamsungPayClient#isReadyToPay()`
-  * Add `SamsungPayClient#startSamsungPay()`
-  * Add `SamsungPayClient#buildCustomSheetPaymentInfo()`
-  * Add `SamsungPayClient#updateCustomSheet()`
+  * Add `SamsungPayException`
+  * Add `SamsungPayNonce`
+  * Add `SamsungPayError` constants
+  * Add `SamsungPayIsReadyToPayCallback`
+  * Add `SamsungPayStartListener`
 
 ## 4.2.0
 
