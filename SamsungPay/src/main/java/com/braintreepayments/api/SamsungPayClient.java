@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
+import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
@@ -70,7 +71,8 @@ public class SamsungPayClient {
      * status of Samsung Pay. If if the status of Samsung Pay is anything but [SamsungPayStatus.SPAY_READY],
      * the listener will be called back with a value of false. If the Samsung Pay callback returns an error,
      * see {@link SamsungPayError} for a list of possible error codes
-     * @param callback isReadyToPay callback
+     *
+     * @param callback {@link SamsungPayIsReadyToPayCallback}
      */
     public void isReadyToPay(final SamsungPayIsReadyToPayCallback callback) {
         getSamsungPayStatus(new GetSamsungPayStatusCallback() {
@@ -144,19 +146,15 @@ public class SamsungPayClient {
         });
     }
 
-    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartListener listener) {
-        getInternalClient(new GetSamsungPayInternalClientCallback() {
-            @Override
-            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
-                if (internalClient != null) {
-                    internalClient.startSamsungPay(paymentInfo, listener);
-                } else if (error != null) {
-                    listener.onSamsungPayStartError(error);
-                }
-            }
-        });
-    }
-
+    /**
+     * Creates a [CustomSheetPaymentInfo.Builder] with Braintree properties such as merchant ID, merchant name,
+     * and allowed card brands.
+     *
+     * The builder returned from the {@link BuildCustomSheetPaymentInfoCallback} can be used to set merchant
+     * properties such as the custom sheet, address requirements, etc.
+     *
+     * @param callback {@link BuildCustomSheetPaymentInfoCallback}
+     */
     public void buildCustomSheetPaymentInfo(final BuildCustomSheetPaymentInfoCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -180,6 +178,29 @@ public class SamsungPayClient {
         });
     }
 
+    /**
+     * Takes a [CustomSheetPaymentInfo] and starts the Samsung Pay flow with the custom sheet provided.
+     *
+     * @param paymentInfo the merchant configured [CustomSheetPaymentInfo]
+     * @param listener {@link SamsungPayStartListener}
+     */
+    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartListener listener) {
+        getInternalClient(new GetSamsungPayInternalClientCallback() {
+            @Override
+            public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
+                if (internalClient != null) {
+                    internalClient.startSamsungPay(paymentInfo, listener);
+                } else if (error != null) {
+                    listener.onSamsungPayStartError(error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Updates the Samsung Pay custom sheet. See {@link SamsungPayStartListener#onSamsungPayCardInfoUpdated(CardInfo, CustomSheet)}.
+     * @param customSheet merchant configured [CustomSheet]
+     */
     public void updateCustomSheet(final CustomSheet customSheet) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
