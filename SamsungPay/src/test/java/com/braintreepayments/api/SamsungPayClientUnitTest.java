@@ -1,5 +1,9 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
 
@@ -9,19 +13,50 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SamsungPayClientUnitTest {
+
+    @Test
+    public void getInternalClient_lazilyCreatesSamsungPayInternalClientFromBraintreeConfiguration() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY))
+                .build();
+        SamsungPayClient sut = new SamsungPayClient(braintreeClient);
+
+        Context context = mock(Context.class);
+        when(braintreeClient.getApplicationContext()).thenReturn(context);
+
+        GetSamsungPayInternalClientCallback callback0 = mock(GetSamsungPayInternalClientCallback.class);
+        GetSamsungPayInternalClientCallback callback1 = mock(GetSamsungPayInternalClientCallback.class);
+
+        sut.getInternalClient(callback0);
+        sut.getInternalClient(callback1);
+
+        ArgumentCaptor<SamsungPayInternalClient> captor0 =
+                ArgumentCaptor.forClass(SamsungPayInternalClient.class);
+        verify(callback0).onResult(captor0.capture(), (Exception) isNull());
+
+        ArgumentCaptor<SamsungPayInternalClient> captor1 =
+            ArgumentCaptor.forClass(SamsungPayInternalClient.class);
+        verify(callback1).onResult(captor1.capture(), (Exception) isNull());
+
+        assertSame(captor0.getValue(), captor1.getValue());
+    }
 
     @Test
     public void goToUpdatePage_forwardsInvocationToInternalClient() {
@@ -248,13 +283,13 @@ public class SamsungPayClientUnitTest {
         assertEquals("some example merchant", paymentInfo.getMerchantName());
         assertEquals("example-samsung-authorization", paymentInfo.getMerchantId());
 
-        List<SpaySdk.Brand> expectedCardBrands = Arrays.asList(
+        Set<SpaySdk.Brand> expectedCardBrands = new HashSet<>(Arrays.asList(
                 SpaySdk.Brand.AMERICANEXPRESS,
                 SpaySdk.Brand.DISCOVER,
                 SpaySdk.Brand.MASTERCARD,
                 SpaySdk.Brand.VISA
-        );
-        assertEquals(expectedCardBrands, paymentInfo.getAllowedCardBrands());
+        ));
+        assertEquals(expectedCardBrands, new HashSet<>(paymentInfo.getAllowedCardBrands()));
     }
 
     @Test

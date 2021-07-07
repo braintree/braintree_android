@@ -173,7 +173,8 @@ public class SamsungPayClient {
         });
     }
 
-    private void getInternalClient(final GetSamsungPayInternalClientCallback callback) {
+    @VisibleForTesting
+    void getInternalClient(final GetSamsungPayInternalClientCallback callback) {
         if (internalClient != null) {
             callback.onResult(internalClient, null);
         } else {
