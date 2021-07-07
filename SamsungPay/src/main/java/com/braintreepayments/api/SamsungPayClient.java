@@ -152,8 +152,9 @@ public class SamsungPayClient {
                             .setMerchantName(configuration.getSamsungPayMerchantDisplayName())
                             .setMerchantId(configuration.getSamsungPayAuthorization())
                             .setAllowedCardBrands(new ArrayList<>(acceptedCardBrands));
-                    callback.onResult(builder, null);
+
                     braintreeClient.sendAnalyticsEvent("samsung-pay.create-payment-info.success");
+                    callback.onResult(builder, null);
 
                 } else {
                     callback.onResult(null, error);
@@ -184,6 +185,7 @@ public class SamsungPayClient {
                     if (configuration != null) {
                         internalClient =
                             new SamsungPayInternalClient(braintreeClient, configuration);
+                        braintreeClient.sendAnalyticsEvent("samsung-pay.create-payment-manager.success");
                         callback.onResult(internalClient, null);
                     } else {
                         callback.onResult(null, error);
