@@ -152,7 +152,7 @@ class SamsungPayInternalClient {
             @Override
             public void onFailure(int errorCode, Bundle bundle) {
                 if (errorCode == SpaySdk.ERROR_USER_CANCELED) {
-                    UserCanceledException userCanceledError = new UserCanceledException("User Canceled");
+                    UserCanceledException userCanceledError = new UserCanceledException("User canceled Samsung Pay.");
                     listener.onSamsungPayStartError(userCanceledError);
                 } else {
                     SamsungPayException samsungPayError = new SamsungPayException(errorCode);
