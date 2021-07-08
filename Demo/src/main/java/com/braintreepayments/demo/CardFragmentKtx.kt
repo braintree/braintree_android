@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
  */
 class CardFragmentKtx : BaseFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_card_ktx, container, false)
 
         getBraintreeClient { braintreeClient ->
@@ -26,15 +25,15 @@ class CardFragmentKtx : BaseFragment() {
     }
 
     private fun tokenizeCard(braintreeClient: BraintreeClient) {
+        val card = Card()
+        card.number = "4111 1111 1111 1111"
+        card.expirationMonth = "02"
+        card.expirationYear = "2022"
+        card.cvv = "123"
+
         val cardClient = CardClient(braintreeClient)
         lifecycleScope.launch {
-            val card = Card()
-            card.number = "4111 1111 1111 1111"
-            card.expirationMonth = "02"
-            card.expirationYear = "2022"
-            card.cvv = "123"
-
-            val cardNonce: CardNonce = cardClient.tokenize(requireActivity(), card)
+            val cardNonce: CardNonce = cardClient.tokenize(card)
             print(cardNonce.string)
         }
     }
