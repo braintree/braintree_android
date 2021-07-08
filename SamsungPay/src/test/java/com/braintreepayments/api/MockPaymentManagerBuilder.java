@@ -88,7 +88,7 @@ public class MockPaymentManagerBuilder {
                 }
                 return null;
             }
-        }).when(paymentManager).startInAppPayWithCustomSheet(any(CustomSheetPaymentInfo.class), any (PaymentManager.CustomSheetTransactionInfoListener.class));
+        }).when(paymentManager).startInAppPayWithCustomSheet(any(CustomSheetPaymentInfo.class), any(PaymentManager.CustomSheetTransactionInfoListener.class));
 
         return paymentManager;
     }
