@@ -59,7 +59,7 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void createProfileBuilder_whenNotEnabled_throwsConfigurationException() {
-        ApiClient apiClient = new MockAPIClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
 
         Configuration configuration = TestConfigurationBuilder.basicConfig();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -82,7 +82,7 @@ public class VisaCheckoutClientUnitTest {
     public void createProfileBuilder_whenProduction_usesProductionConfig() throws Exception {
         final CountDownLatch lock = new CountDownLatch(1);
 
-        ApiClient apiClient = new MockAPIClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
         String configString = new TestConfigurationBuilder()
                 .environment("production")
                 .visaCheckout(new TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder()
@@ -113,7 +113,7 @@ public class VisaCheckoutClientUnitTest {
     public void createProfileBuilder_whenNotProduction_usesSandboxConfig() throws Exception {
         final CountDownLatch lock = new CountDownLatch(1);
 
-        ApiClient apiClient = new MockAPIClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
         String configString = new TestConfigurationBuilder()
                 .environment("environment")
                 .visaCheckout(new TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder()
@@ -142,7 +142,7 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws JSONException {
-        ApiClient apiClient = new MockAPIClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
@@ -159,7 +159,7 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void tokenize_whenSuccessful_sendsAnalyticEvent() throws JSONException {
-        ApiClient apiClient = new MockAPIClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
@@ -177,7 +177,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenFailure_postsException() {
         Exception tokenizeError = new Exception("Mock Failure");
-        ApiClient apiClient = new MockAPIClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(tokenizeError)
                 .build();
 
@@ -195,7 +195,7 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenFailure_sendsAnalyticEvent() {
         Exception tokenizeError = new Exception("Mock Failure");
-        ApiClient apiClient = new MockAPIClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(tokenizeError)
                 .build();
 

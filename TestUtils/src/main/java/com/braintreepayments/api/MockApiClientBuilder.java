@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-public class MockAPIClientBuilder {
+public class MockApiClientBuilder {
 
     private Exception tokenizeRESTError;
     private JSONObject tokenizeRESTSuccess;
@@ -16,22 +16,22 @@ public class MockAPIClientBuilder {
     private Exception tokenizeGraphQLError;
     private JSONObject tokenizeGraphQLSuccess;
 
-    public MockAPIClientBuilder tokenizeRESTError(Exception tokenizeRestError) {
+    public MockApiClientBuilder tokenizeRESTError(Exception tokenizeRestError) {
         this.tokenizeRESTError = tokenizeRestError;
         return this;
     }
 
-    public MockAPIClientBuilder tokenizeRESTSuccess(JSONObject tokenizeRestSuccess) {
+    public MockApiClientBuilder tokenizeRESTSuccess(JSONObject tokenizeRestSuccess) {
         this.tokenizeRESTSuccess = tokenizeRestSuccess;
         return this;
     }
 
-    public MockAPIClientBuilder tokenizeGraphQLError(Exception tokenizeGraphQLError) {
+    public MockApiClientBuilder tokenizeGraphQLError(Exception tokenizeGraphQLError) {
         this.tokenizeGraphQLError = tokenizeGraphQLError;
         return this;
     }
 
-    public MockAPIClientBuilder tokenizeGraphQLSuccess(JSONObject tokenizeGraphQLSuccess) {
+    public MockApiClientBuilder tokenizeGraphQLSuccess(JSONObject tokenizeGraphQLSuccess) {
         this.tokenizeGraphQLSuccess = tokenizeGraphQLSuccess;
         return this;
     }

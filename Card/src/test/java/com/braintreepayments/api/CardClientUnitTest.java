@@ -69,7 +69,7 @@ public class CardClientUnitTest {
                 .configuration(graphQLEnabledConfig)
                 .build();
 
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeGraphQLSuccess(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
                 .build();
 
@@ -91,7 +91,7 @@ public class CardClientUnitTest {
                 .configuration(graphQLDisabledConfig)
                 .build();
 
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
                 .build();
 
@@ -113,7 +113,7 @@ public class CardClientUnitTest {
                 .configuration(graphQLEnabledConfig)
                 .build();
 
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeGraphQLSuccess(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
                 .build();
 
@@ -129,7 +129,7 @@ public class CardClientUnitTest {
                 .configuration(graphQLDisabledConfig)
                 .build();
 
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
                 .build();
 
@@ -146,7 +146,7 @@ public class CardClientUnitTest {
                 .build();
 
         Exception error = new Exception();
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeGraphQLError(error)
                 .build();
 
@@ -163,7 +163,7 @@ public class CardClientUnitTest {
                 .build();
 
         Exception error = new Exception();
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(error)
                 .build();
 
@@ -180,7 +180,7 @@ public class CardClientUnitTest {
                 .build();
 
         Exception error = new Exception();
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeGraphQLError(error)
                 .build();
 
@@ -197,7 +197,7 @@ public class CardClientUnitTest {
                 .build();
 
         Exception error = new Exception();
-        apiClient = new MockAPIClientBuilder()
+        apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(error)
                 .build();
 
