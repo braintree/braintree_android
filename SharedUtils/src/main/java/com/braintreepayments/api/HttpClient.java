@@ -30,7 +30,7 @@ class HttpClient {
 
     private final Map<URL, Integer> retryCountMap;
 
-    protected HttpClient(SSLSocketFactory socketFactory, HTTPResponseParser httpResponseParser) {
+    protected HttpClient(SSLSocketFactory socketFactory, HttpResponseParser httpResponseParser) {
         this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
     }
 

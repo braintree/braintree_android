@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(Enclosed.class)
-public class BaseHTTPResponseParserUnitTest {
+public class BaseHttpResponseParserUnitTest {
 
     @RunWith(Parameterized.class)
     public static class HttpSuccessTest {
@@ -68,7 +68,7 @@ public class BaseHTTPResponseParserUnitTest {
             when(connection.getContentEncoding()).thenReturn(contentEncoding);
             when(connection.getInputStream()).thenReturn(inputStream);
 
-            BaseHTTPResponseParser sut = new BaseHTTPResponseParser();
+            BaseHttpResponseParser sut = new BaseHttpResponseParser();
             assertEquals(expectedResult, sut.parse(responseCode, connection));
             verify(inputStream).close();
         }
@@ -120,7 +120,7 @@ public class BaseHTTPResponseParserUnitTest {
             when(connection.getContentEncoding()).thenReturn(contentEncoding);
             when(connection.getErrorStream()).thenReturn(errorStream);
 
-            final BaseHTTPResponseParser sut = new BaseHTTPResponseParser();
+            final BaseHttpResponseParser sut = new BaseHttpResponseParser();
             Exception exception = assertThrows(expectedExceptionClass, new ThrowingRunnable() {
                 @Override
                 public void run() throws Throwable {
@@ -139,7 +139,7 @@ public class BaseHTTPResponseParserUnitTest {
         public void parse() {
             final HttpURLConnection connection = mock(HttpURLConnection.class);
 
-            final BaseHTTPResponseParser sut = new BaseHTTPResponseParser();
+            final BaseHttpResponseParser sut = new BaseHttpResponseParser();
             Exception exception = assertThrows(RateLimitException.class, new ThrowingRunnable() {
                 @Override
                 public void run() throws Throwable {

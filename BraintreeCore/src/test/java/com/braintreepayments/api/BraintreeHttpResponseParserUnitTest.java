@@ -11,17 +11,17 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BraintreeHTTPResponseParserUnitTest {
+public class BraintreeHttpResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
-    private BaseHTTPResponseParser baseParser;
+    private BaseHttpResponseParser baseParser;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Before
     public void beforeEach() {
-        baseParser = mock(BaseHTTPResponseParser.class);
+        baseParser = mock(BaseHttpResponseParser.class);
         urlConnection = mock(HttpURLConnection.class);
     }
 
@@ -29,7 +29,7 @@ public class BraintreeHTTPResponseParserUnitTest {
     public void parse_forwardsResultByDefault() throws Exception {
         when(baseParser.parse(123, urlConnection)).thenReturn("parse result");
 
-        BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
+        BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
         String result = sut.parse(123, urlConnection);
         assertEquals("parse result", result);
     }
@@ -42,7 +42,7 @@ public class BraintreeHTTPResponseParserUnitTest {
         Exception exception = new Exception("error");
         when(baseParser.parse(123, urlConnection)).thenThrow(exception);
 
-        BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
+        BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 
@@ -54,7 +54,7 @@ public class BraintreeHTTPResponseParserUnitTest {
         AuthorizationException authorizationException = new AuthorizationException(Fixtures.ERROR_RESPONSE);
         when(baseParser.parse(123, urlConnection)).thenThrow(authorizationException);
 
-        final BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
+        final BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 
@@ -66,7 +66,7 @@ public class BraintreeHTTPResponseParserUnitTest {
         UnprocessableEntityException unprocessableEntityException = new UnprocessableEntityException(Fixtures.ERROR_RESPONSE);
         when(baseParser.parse(123, urlConnection)).thenThrow(unprocessableEntityException);
 
-        final BraintreeHTTPResponseParser sut = new BraintreeHTTPResponseParser(baseParser);
+        final BraintreeHttpResponseParser sut = new BraintreeHttpResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 }

@@ -16,14 +16,14 @@ import static org.mockito.Mockito.when;
 public class BraintreeGraphQLResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
-    private BaseHTTPResponseParser baseParser;
+    private BaseHttpResponseParser baseParser;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Before
     public void beforeEach() {
-        baseParser = mock(BaseHTTPResponseParser.class);
+        baseParser = mock(BaseHttpResponseParser.class);
         urlConnection = mock(HttpURLConnection.class);
     }
 

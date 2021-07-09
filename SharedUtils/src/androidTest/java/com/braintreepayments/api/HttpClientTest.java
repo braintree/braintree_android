@@ -24,7 +24,7 @@ public class HttpClientTest {
 
     @Test(timeout = 5000)
     public void sendRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
-        HttpClient sut = new HttpClient(null, new BaseHTTPResponseParser());
+        HttpClient sut = new HttpClient(null, new BaseHttpResponseParser());
 
         HttpRequest httpRequest = new HttpRequest()
                 .method("GET")

@@ -25,7 +25,7 @@ class BraintreeHttpClient {
     private final Authorization authorization;
 
     BraintreeHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
+        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
     }
 
     @VisibleForTesting
