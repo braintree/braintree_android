@@ -19,7 +19,7 @@ abstract class Authorization {
      * Returns an {@link Authorization} of the correct type for a given {@link String}. If an
      * invalid authorization string is provided, an {@link InvalidAuthorization} will be returned.
      * Requests with an {@link InvalidAuthorization} will return a {@link BraintreeException} to the
-     * {@link HTTPResponseCallback}.
+     * {@link HttpResponseCallback}.
      *
      * @param authorizationString Given string to transform into an {@link Authorization}.
      * @return {@link Authorization}

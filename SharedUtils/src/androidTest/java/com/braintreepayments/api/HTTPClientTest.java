@@ -31,7 +31,7 @@ public class HTTPClientTest {
                 .baseUrl("https://bad.endpoint")
                 .path("bad/path");
 
-        sut.sendRequest(httpRequest, new HTTPResponseCallback() {
+        sut.sendRequest(httpRequest, new HttpResponseCallback() {
             @Override
             public void onResult(String responseBody, Exception httpError) {
                 assertNull(responseBody);

@@ -52,9 +52,9 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback {@link HTTPResponseCallback}
+     * @param callback {@link HttpResponseCallback}
      */
-    void get(String path, Configuration configuration, HTTPResponseCallback callback) {
+    void get(String path, Configuration configuration, HttpResponseCallback callback) {
         get(path, configuration, HTTPClient.NO_RETRY, callback);
     }
 
@@ -64,10 +64,10 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback {@link HTTPResponseCallback}
+     * @param callback {@link HttpResponseCallback}
      * @param retryStrategy retry strategy
      */
-    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HTTPResponseCallback callback) {
+    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -114,10 +114,10 @@ class BraintreeHTTPClient {
      *
      * @param path The path or url to request from the server via HTTP POST
      * @param data The body of the POST request
-     * @param callback {@link HTTPResponseCallback}
+     * @param callback {@link HttpResponseCallback}
      * @param configuration configuration for the Braintree Android SDK.
      */
-    void post(String path, String data, Configuration configuration, HTTPResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));

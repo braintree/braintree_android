@@ -65,7 +65,7 @@ public class PreferredPaymentMethodsClient {
 
                 final String query = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
 
-                braintreeClient.sendGraphQLPOST(query, new HTTPResponseCallback() {
+                braintreeClient.sendGraphQLPOST(query, new HttpResponseCallback() {
 
                     @Override
                     public void onResult(String responseBody, Exception httpError) {

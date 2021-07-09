@@ -112,7 +112,7 @@ public class UnionPayClientUnitTest {
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         String expectedPath = "/v1/union_pay_enrollments";
-        verify(braintreeClient).sendPOST(eq(expectedPath), eq(unionPayCardJson), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedPath), eq(unionPayCardJson), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -207,7 +207,7 @@ public class UnionPayClientUnitTest {
                 .build()
                 .toString();
 
-        verify(braintreeClient).sendGET(eq(expectedUrl), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendGET(eq(expectedUrl), any(HttpResponseCallback.class));
     }
 
     @Test

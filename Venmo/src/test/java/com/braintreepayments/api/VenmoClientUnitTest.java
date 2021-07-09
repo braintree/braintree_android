@@ -116,7 +116,7 @@ public class VenmoClientUnitTest {
         sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         String graphQLBody = captor.getValue();
         JSONObject graphQLJSON = new JSONObject(graphQLBody);
@@ -539,7 +539,7 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         String payload = captor.getValue();
         JSONObject jsonPayload = new JSONObject(payload);

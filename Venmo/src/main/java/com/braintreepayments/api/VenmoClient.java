@@ -118,7 +118,7 @@ public class VenmoClient {
                 }
 
                 final String finalVenmoProfileId = venmoProfileId;
-                braintreeClient.sendGraphQLPOST(params.toString(), new HTTPResponseCallback() {
+                braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
 
                     @Override
                     public void onResult(String responseBody, Exception httpError) {
@@ -179,7 +179,7 @@ public class VenmoClient {
                     variables.put("id", paymentContextId);
                     params.put("variables", variables);
 
-                    braintreeClient.sendGraphQLPOST(params.toString(), new HTTPResponseCallback() {
+                    braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
 
                         @Override
                         public void onResult(String responseBody, Exception httpError) {

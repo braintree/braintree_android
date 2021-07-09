@@ -29,7 +29,7 @@ class ApiClient {
         }
 
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
-        braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), new HTTPResponseCallback() {
+        braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -61,7 +61,7 @@ class ApiClient {
         paymentMethod.setSessionId(braintreeClient.getSessionId());
 
         try {
-            braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HTTPResponseCallback() {
+            braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
 
                 @Override
                 public void onResult(String responseBody, Exception httpError) {

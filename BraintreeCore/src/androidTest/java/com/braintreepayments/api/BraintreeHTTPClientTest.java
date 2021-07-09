@@ -26,7 +26,7 @@ public class BraintreeHTTPClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHTTPClient.get("https://api.sandbox.braintreegateway.com/", null, new HTTPResponseCallback() {
+        braintreeHTTPClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -44,7 +44,7 @@ public class BraintreeHTTPClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
 
-        braintreeHTTPClient.get("https://api.braintreegateway.com/", null, new HTTPResponseCallback() {
+        braintreeHTTPClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

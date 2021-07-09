@@ -93,7 +93,7 @@ public class BraintreeClient {
         });
     }
 
-    void sendGET(final String url, final HTTPResponseCallback responseCallback) {
+    void sendGET(final String url, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -106,7 +106,7 @@ public class BraintreeClient {
         });
     }
 
-    void sendPOST(final String url, final String data, final HTTPResponseCallback responseCallback) {
+    void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -127,7 +127,7 @@ public class BraintreeClient {
         return integrationType;
     }
 
-    void sendGraphQLPOST(final String payload, final HTTPResponseCallback responseCallback) {
+    void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -188,7 +188,7 @@ public class BraintreeClient {
         String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
         if (analyticsUrl != null) {
             final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
-            httpClient.post(analyticsUrl, event.toString(), null, new HTTPNoResponse());
+            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
         }
     }
 

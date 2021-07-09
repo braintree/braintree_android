@@ -35,7 +35,7 @@ public class HTTPClientUnitTest {
     public void sendRequest_sendsRequestOnBackgroundThread() throws Exception {
         HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, callback);
 
         verifyZeroInteractions(syncHTTPClient);
@@ -51,7 +51,7 @@ public class HTTPClientUnitTest {
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, callback);
 
         threadScheduler.flushBackgroundThread();
@@ -67,7 +67,7 @@ public class HTTPClientUnitTest {
 
         when(syncHTTPClient.request(httpRequest)).thenReturn("response body");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, callback);
 
         threadScheduler.flushBackgroundThread();
@@ -108,7 +108,7 @@ public class HTTPClientUnitTest {
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
@@ -122,7 +122,7 @@ public class HTTPClientUnitTest {
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
@@ -145,7 +145,7 @@ public class HTTPClientUnitTest {
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();

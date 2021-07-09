@@ -72,7 +72,7 @@ public class LocalPaymentClient {
                         sendAnalyticsEvent(request.getPaymentType(), "local-payment.start-payment.selected");
 
                         String url = "/v1/local_payments/create";
-                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HTTPResponseCallback() {
+                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HttpResponseCallback() {
 
                             @Override
                             public void onResult(String responseBody, Exception httpError) {
@@ -194,7 +194,7 @@ public class LocalPaymentClient {
                     payload.put("_meta", metaData);
 
                     String url = "/v1/payment_methods/paypal_accounts";
-                    braintreeClient.sendPOST(url, payload.toString(), new HTTPResponseCallback() {
+                    braintreeClient.sendPOST(url, payload.toString(), new HttpResponseCallback() {
 
                         @Override
                         public void onResult(String responseBody, Exception httpError) {

@@ -50,7 +50,7 @@ class PayPalInternalClient {
 
                     String requestBody = payPalRequest.createRequestBody(configuration, braintreeClient.getAuthorization(), successUrl, cancelUrl);
 
-                    braintreeClient.sendPOST(url, requestBody, new HTTPResponseCallback() {
+                    braintreeClient.sendPOST(url, requestBody, new HttpResponseCallback() {
 
                         @Override
                         public void onResult(String responseBody, Exception httpError) {

@@ -28,12 +28,12 @@ import static org.mockito.Mockito.when;
 public class BraintreeHTTPClientUnitTest {
 
     private HTTPClient httpClient;
-    HTTPResponseCallback httpResponseCallback;
+    HttpResponseCallback httpResponseCallback;
 
     @Before
     public void beforeEach() {
         httpClient = mock(HTTPClient.class);
-        httpResponseCallback = mock(HTTPResponseCallback.class);
+        httpResponseCallback = mock(HttpResponseCallback.class);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class BraintreeHTTPClientUnitTest {
         Authorization tokenizationKey = mock(Authorization.class);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", null, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -57,7 +57,7 @@ public class BraintreeHTTPClientUnitTest {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("https://example.com/sample/path", null, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -75,7 +75,7 @@ public class BraintreeHTTPClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -97,7 +97,7 @@ public class BraintreeHTTPClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -120,7 +120,7 @@ public class BraintreeHTTPClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -141,7 +141,7 @@ public class BraintreeHTTPClientUnitTest {
         BraintreeHTTPClient sut = new BraintreeHTTPClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
@@ -252,7 +252,7 @@ public class BraintreeHTTPClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("sample/path", "{}", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -275,7 +275,7 @@ public class BraintreeHTTPClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
         sut.post("sample/path", "{}", configuration, callback);
 
@@ -298,7 +298,7 @@ public class BraintreeHTTPClientUnitTest {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
         sut.post("sample/path", "{}", null, callback);
 
@@ -315,7 +315,7 @@ public class BraintreeHTTPClientUnitTest {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
 
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("https://example.com/sample/path", "{}", null, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
@@ -331,7 +331,7 @@ public class BraintreeHTTPClientUnitTest {
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
         Authorization clientToken = Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
         BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
         sut.post("sample/path", "not json", configuration, callback);
@@ -351,7 +351,7 @@ public class BraintreeHTTPClientUnitTest {
         BraintreeHTTPClient sut = new BraintreeHTTPClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
-        HTTPResponseCallback callback = mock(HTTPResponseCallback.class);
+        HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("sample/path", "{}", configuration, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);

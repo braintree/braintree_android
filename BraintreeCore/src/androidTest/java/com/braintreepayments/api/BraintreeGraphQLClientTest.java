@@ -30,7 +30,7 @@ public class BraintreeGraphQLClientTest {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", new HTTPResponseCallback() {
+        braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override
             public void onResult(String responseBody, Exception httpError) {
                 // Make sure SSL handshake is successful
@@ -47,7 +47,7 @@ public class BraintreeGraphQLClientTest {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", new HTTPResponseCallback() {
+        braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

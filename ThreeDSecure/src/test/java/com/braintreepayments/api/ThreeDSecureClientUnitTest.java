@@ -101,7 +101,7 @@ public class ThreeDSecureClientUnitTest {
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(bodyCaptor.getValue());
         assertEquals("amount", body.getString("amount"));
@@ -134,7 +134,7 @@ public class ThreeDSecureClientUnitTest {
 
         ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(pathCaptor.capture(), bodyCaptor.capture(), any(HTTPResponseCallback.class));
+        verify(braintreeClient).sendPOST(pathCaptor.capture(), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         String path = pathCaptor.getValue();
         String body = bodyCaptor.getValue();

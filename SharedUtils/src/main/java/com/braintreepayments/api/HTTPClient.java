@@ -45,15 +45,15 @@ class HTTPClient {
         return syncHTTPClient.request(request);
     }
 
-    void sendRequest(HTTPRequest request, HTTPResponseCallback callback) {
+    void sendRequest(HTTPRequest request, HttpResponseCallback callback) {
         sendRequest(request, HTTPClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HTTPRequest request, @RetryStrategy int retryStrategy, HTTPResponseCallback callback) {
+    void sendRequest(HTTPRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HTTPResponseCallback callback) {
+    private void scheduleRequest(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(new Runnable() {
@@ -76,7 +76,7 @@ class HTTPClient {
         });
     }
 
-    private void retryGet(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HTTPResponseCallback callback) {
+    private void retryGet(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -115,7 +115,7 @@ class HTTPClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final HTTPResponseCallback callback, final String responseBody) {
+    private void notifySuccessOnMainThread(final HttpResponseCallback callback, final String responseBody) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override
@@ -126,7 +126,7 @@ class HTTPClient {
         }
     }
 
-    private void notifyErrorOnMainThread(final HTTPResponseCallback callback, final Exception e) {
+    private void notifyErrorOnMainThread(final HttpResponseCallback callback, final Exception e) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override
