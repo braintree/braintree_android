@@ -8,9 +8,9 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 
 /**
  * Callback for receiving results of
- * {@link SamsungPayClient#startSamsungPay(CustomSheetPaymentInfo, SamsungPayStartListener)}.
+ * {@link SamsungPayClient#startSamsungPay(CustomSheetPaymentInfo, SamsungPayListener)}.
  */
-public interface SamsungPayStartListener {
+public interface SamsungPayListener {
 
     /**
      * Called when Samsung Pay card info has been updated. {@link SamsungPayClient#updateCustomSheet(CustomSheet)}

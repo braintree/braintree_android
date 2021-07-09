@@ -129,7 +129,7 @@ class SamsungPayInternalClient {
         });
     }
 
-    void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final SamsungPayStartListener listener) {
+    void startSamsungPay(CustomSheetPaymentInfo customSheetPaymentInfo, final SamsungPayListener listener) {
         paymentManager.startInAppPayWithCustomSheet(customSheetPaymentInfo, new PaymentManager.CustomSheetTransactionInfoListener() {
             @Override
             public void onCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {

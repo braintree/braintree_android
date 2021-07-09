@@ -1,13 +1,11 @@
 package com.braintreepayments.demo;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavDirections;
@@ -17,7 +15,7 @@ import com.braintreepayments.api.SamsungPayClient;
 import com.braintreepayments.api.SamsungPayError;
 import com.braintreepayments.api.SamsungPayException;
 import com.braintreepayments.api.SamsungPayNonce;
-import com.braintreepayments.api.SamsungPayStartListener;
+import com.braintreepayments.api.SamsungPayListener;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
@@ -26,11 +24,8 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountBoxControl;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountConstants;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.SheetItemType;
-import com.samsung.android.sdk.samsungpay.v2.payment.sheet.SheetUpdatedListener;
 
-import java.util.Arrays;
-
-public class SamsungPayFragment extends BaseFragment implements SamsungPayStartListener {
+public class SamsungPayFragment extends BaseFragment implements SamsungPayListener {
 
     private Button samsungPayButton;
     private SamsungPayClient samsungPayClient;

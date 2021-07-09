@@ -184,9 +184,9 @@ public class SamsungPayClient {
      * Takes a [CustomSheetPaymentInfo] and starts the Samsung Pay flow with the custom sheet provided.
      *
      * @param paymentInfo the merchant configured [CustomSheetPaymentInfo]
-     * @param listener {@link SamsungPayStartListener}
+     * @param listener {@link SamsungPayListener}
      */
-    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayStartListener listener) {
+    public void startSamsungPay(final CustomSheetPaymentInfo paymentInfo, final SamsungPayListener listener) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
@@ -200,7 +200,7 @@ public class SamsungPayClient {
     }
 
     /**
-     * Updates the Samsung Pay custom sheet. See {@link SamsungPayStartListener#onSamsungPayCardInfoUpdated(CardInfo, CustomSheet)}.
+     * Updates the Samsung Pay custom sheet. See {@link SamsungPayListener#onSamsungPayCardInfoUpdated(CardInfo, CustomSheet)}.
      * @param customSheet merchant configured [CustomSheet]
      */
     public void updateCustomSheet(final CustomSheet customSheet) {

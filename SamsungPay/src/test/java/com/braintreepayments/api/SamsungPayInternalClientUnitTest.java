@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
@@ -256,7 +255,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
         CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         verify(paymentManager).updateSheet(customSheet);
@@ -273,7 +272,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         verify(listener).onSamsungPayStartSuccess(any(SamsungPayNonce.class), same(customSheetPaymentInfo));
@@ -289,7 +288,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         verify(listener).onSamsungPayStartError(any(JSONException.class));
@@ -305,7 +304,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         verify(listener).onSamsungPayStartError(any(JSONException.class));
@@ -321,7 +320,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         ArgumentCaptor<SamsungPayException> captor = ArgumentCaptor.forClass(SamsungPayException.class);
@@ -341,7 +340,7 @@ public class SamsungPayInternalClientUnitTest {
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(customSheetPaymentInfo, listener);
 
         ArgumentCaptor<UserCanceledException> captor = ArgumentCaptor.forClass(UserCanceledException.class);

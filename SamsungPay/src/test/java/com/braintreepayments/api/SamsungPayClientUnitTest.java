@@ -282,7 +282,7 @@ public class SamsungPayClientUnitTest {
         sut.internalClient = internalClient;
 
         CustomSheetPaymentInfo paymentInfo = mock(CustomSheetPaymentInfo.class);
-        SamsungPayStartListener listener = mock(SamsungPayStartListener.class);
+        SamsungPayListener listener = mock(SamsungPayListener.class);
         sut.startSamsungPay(paymentInfo, listener);
 
         verify(internalClient).startSamsungPay(paymentInfo, listener);
