@@ -14,16 +14,16 @@ import org.json.JSONObject;
 public class CardClient {
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final ApiClient apiClient;
 
     public CardClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    CardClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+    CardClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
     }
 
     /**
@@ -62,7 +62,7 @@ public class CardClient {
                     card.setSessionId(braintreeClient.getSessionId());
                     try {
                         JSONObject tokenizePayload = card.buildJSONForGraphQL();
-                        tokenizationClient.tokenizeGraphQL(tokenizePayload, new TokenizeCallback() {
+                        apiClient.tokenizeGraphQL(tokenizePayload, new TokenizeCallback() {
                             @Override
                             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                                 handleTokenizeResponse(tokenizationResponse, exception, callback);
@@ -72,7 +72,7 @@ public class CardClient {
                         callback.onResult(null, e);
                     }
                 } else {
-                    tokenizationClient.tokenizeREST(card, new TokenizeCallback() {
+                    apiClient.tokenizeREST(card, new TokenizeCallback() {
                         @Override
                         public void onResult(JSONObject tokenizationResponse, Exception exception) {
                             handleTokenizeResponse(tokenizationResponse, exception, callback);

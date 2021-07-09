@@ -8,18 +8,18 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 
 /**
- * Class that handles parsing http responses for {@link BraintreeGraphQLHttpClient}.
+ * Class that handles parsing http responses for {@link BraintreeGraphQLClient}.
  */
-class BraintreeGraphQLHttpResponseParser implements HttpResponseParser {
+class BraintreeGraphQLResponseParser implements HttpResponseParser {
 
     private final HttpResponseParser baseParser;
 
-    BraintreeGraphQLHttpResponseParser() {
+    BraintreeGraphQLResponseParser() {
         this(new BaseHttpResponseParser());
     }
 
     @VisibleForTesting
-    BraintreeGraphQLHttpResponseParser(HttpResponseParser baseParser) {
+    BraintreeGraphQLResponseParser(HttpResponseParser baseParser) {
         this.baseParser = baseParser;
     }
 

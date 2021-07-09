@@ -59,7 +59,7 @@ public class ConfigurationLoaderUnitTest {
         verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
-        httpResponseCallback.success(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
+        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
 
         verify(callback).onResult(any(Configuration.class), (Exception) isNull());
     }
@@ -78,7 +78,7 @@ public class ConfigurationLoaderUnitTest {
         verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
-        httpResponseCallback.success(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
+        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
 
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
         verify(configurationCache).saveConfiguration(same(context), any(Configuration.class), eq(cacheKey));
@@ -95,7 +95,7 @@ public class ConfigurationLoaderUnitTest {
         verify(braintreeHttpClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
-        httpResponseCallback.success("not json");
+        httpResponseCallback.onResult("not json", null);
 
         verify(callback).onResult((Configuration) isNull(), any(JSONException.class));
     }
@@ -112,7 +112,7 @@ public class ConfigurationLoaderUnitTest {
 
         HttpResponseCallback httpResponseCallback = httpResponseCaptor.getValue();
         Exception httpError = new Exception("http error");
-        httpResponseCallback.failure(httpError);
+        httpResponseCallback.onResult(null, httpError);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((Configuration) isNull(), errorCaptor.capture());

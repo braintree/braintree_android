@@ -19,7 +19,7 @@ public class BraintreeClient {
     private final Authorization authorization;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
-    private final BraintreeGraphQLHttpClient graphQLHttpClient;
+    private final BraintreeGraphQLClient graphQLClient;
     private final BrowserSwitchClient browserSwitchClient;
     private final ConfigurationLoader configurationLoader;
     private final Context applicationContext;
@@ -27,6 +27,7 @@ public class BraintreeClient {
     private final ManifestValidator manifestValidator;
     private final String sessionId;
     private final String integrationType;
+
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString) {
         Authorization authorization = Authorization.fromString(authString);
@@ -37,7 +38,7 @@ public class BraintreeClient {
                 .setIntegrationType(IntegrationType.get(context))
                 .sessionId(UUIDHelper.getFormattedUUID())
                 .httpClient(httpClient)
-                .graphQLHttpClient(new BraintreeGraphQLHttpClient(authorization))
+                .graphQLClient(new BraintreeGraphQLClient(authorization))
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
@@ -48,7 +49,7 @@ public class BraintreeClient {
      * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
      *
      * @param context       Android Context
-     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned in the {@link HttpResponseCallback}.
+     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
         this(createDefaultParams(context, authorization));
@@ -61,7 +62,7 @@ public class BraintreeClient {
         this.authorization = params.getAuthorization();
         this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
-        this.graphQLHttpClient = params.getGraphQLHttpClient();
+        this.graphQLClient = params.getGraphQLClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
         this.sessionId = params.getSessionId();
@@ -99,7 +100,7 @@ public class BraintreeClient {
                 if (configuration != null) {
                     httpClient.get(url, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });
@@ -112,7 +113,7 @@ public class BraintreeClient {
                 if (configuration != null) {
                     httpClient.post(url, data, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });
@@ -131,9 +132,9 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    graphQLHttpClient.post(payload, configuration, responseCallback);
+                    graphQLClient.post(payload, configuration, responseCallback);
                 } else {
-                    responseCallback.failure(error);
+                    responseCallback.onResult(null, error);
                 }
             }
         });

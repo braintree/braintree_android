@@ -13,7 +13,7 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BraintreeGraphQLHttpResponseParserUnitTest {
+public class BraintreeGraphQLResponseParserUnitTest {
 
     private HttpURLConnection urlConnection;
     private BaseHttpResponseParser baseParser;
@@ -32,7 +32,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         String responseWithSuccess = Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD;
         when(baseParser.parse(123, urlConnection)).thenReturn(responseWithSuccess);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         String result = sut.parse(123, urlConnection);
         assertEquals(responseWithSuccess, result);
     }
@@ -45,7 +45,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         Exception exception = new Exception("error");
         when(baseParser.parse(123, urlConnection)).thenThrow(exception);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         sut.parse(123, urlConnection);
     }
 
@@ -54,7 +54,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         String responseWithUserError = Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR;
         when(baseParser.parse(123, urlConnection)).thenReturn(responseWithUserError);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         try {
             sut.parse(123, urlConnection);
             fail("No exception was thrown");
@@ -69,7 +69,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         String responseWithValidationNotAllowed = Fixtures.ERRORS_GRAPHQL_VALIDATION_NOT_ALLOWED_ERROR;
         when(baseParser.parse(123, urlConnection)).thenReturn(responseWithValidationNotAllowed);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         try {
             sut.parse(123, urlConnection);
             fail("No exception was thrown");
@@ -84,7 +84,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         String responseWithCoercionError = Fixtures.ERRORS_GRAPHQL_COERCION_ERROR;
         when(baseParser.parse(123, urlConnection)).thenReturn(responseWithCoercionError);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         try {
             sut.parse(123, urlConnection);
             fail("No exception was thrown");
@@ -98,7 +98,7 @@ public class BraintreeGraphQLHttpResponseParserUnitTest {
         String responseWithUnknownError = Fixtures.ERRORS_GRAPHQL_UNKNOWN_ERROR;
         when(baseParser.parse(123, urlConnection)).thenReturn(responseWithUnknownError);
 
-        BraintreeGraphQLHttpResponseParser sut = new BraintreeGraphQLHttpResponseParser(baseParser);
+        BraintreeGraphQLResponseParser sut = new BraintreeGraphQLResponseParser(baseParser);
         try {
             sut.parse(123, urlConnection);
             fail("No exception was thrown");

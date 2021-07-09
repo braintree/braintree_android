@@ -14,13 +14,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class BraintreeGraphQLHttpClientUnitTest {
+public class BraintreeGraphQLClientUnitTest {
 
     private HttpClient httpClient;
     private HttpResponseCallback httpResponseCallback;
@@ -39,7 +40,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -58,7 +59,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
 
     @Test
     public void post_withDataAndConfigurationAndCallback_sendsHttpRequest() throws MalformedURLException, URISyntaxException {
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("data", configuration, httpResponseCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -79,7 +80,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
     public void post_withPathAndDataAndConfiguration_sendsHttpRequest() throws Exception {
         when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample response");
 
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         String result = sut.post("sample/path", "data", configuration);
         assertEquals("sample response", result);
 
@@ -101,11 +102,11 @@ public class BraintreeGraphQLHttpClientUnitTest {
     public void post_withPathAndDataAndConfigurationAndCallback_withInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(httpResponseCallback).failure(captor.capture());
+        verify(httpResponseCallback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
@@ -115,11 +116,11 @@ public class BraintreeGraphQLHttpClientUnitTest {
     public void post_withDataAndConfigurationAndCallback_withInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path",  configuration, httpResponseCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(httpResponseCallback).failure(captor.capture());
+        verify(httpResponseCallback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
@@ -129,7 +130,7 @@ public class BraintreeGraphQLHttpClientUnitTest {
     public void post_withPathAndDataAndConfiguration_withInvalidToken_throwsBraintreeException() throws Exception {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
-        BraintreeGraphQLHttpClient sut = new BraintreeGraphQLHttpClient(authorization, httpClient);
+        BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
 
         try {
             sut.post("sample/path", "data", configuration);

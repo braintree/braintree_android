@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-public class MockTokenizationClientBuilder {
+public class MockApiClientBuilder {
 
     private Exception tokenizeRESTError;
     private JSONObject tokenizeRESTSuccess;
@@ -16,28 +16,28 @@ public class MockTokenizationClientBuilder {
     private Exception tokenizeGraphQLError;
     private JSONObject tokenizeGraphQLSuccess;
 
-    public MockTokenizationClientBuilder tokenizeRESTError(Exception tokenizeRestError) {
+    public MockApiClientBuilder tokenizeRESTError(Exception tokenizeRestError) {
         this.tokenizeRESTError = tokenizeRestError;
         return this;
     }
 
-    public MockTokenizationClientBuilder tokenizeRESTSuccess(JSONObject tokenizeRestSuccess) {
+    public MockApiClientBuilder tokenizeRESTSuccess(JSONObject tokenizeRestSuccess) {
         this.tokenizeRESTSuccess = tokenizeRestSuccess;
         return this;
     }
 
-    public MockTokenizationClientBuilder tokenizeGraphQLError(Exception tokenizeGraphQLError) {
+    public MockApiClientBuilder tokenizeGraphQLError(Exception tokenizeGraphQLError) {
         this.tokenizeGraphQLError = tokenizeGraphQLError;
         return this;
     }
 
-    public MockTokenizationClientBuilder tokenizeGraphQLSuccess(JSONObject tokenizeGraphQLSuccess) {
+    public MockApiClientBuilder tokenizeGraphQLSuccess(JSONObject tokenizeGraphQLSuccess) {
         this.tokenizeGraphQLSuccess = tokenizeGraphQLSuccess;
         return this;
     }
 
-    public TokenizationClient build() {
-        TokenizationClient tokenizationClient = mock(TokenizationClient.class);
+    public ApiClient build() {
+        ApiClient apiClient = mock(ApiClient.class);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -46,7 +46,7 @@ public class MockTokenizationClientBuilder {
                 listener.onResult(tokenizeRESTSuccess, tokenizeRESTError);
                 return null;
             }
-        }).when(tokenizationClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
+        }).when(apiClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -55,8 +55,8 @@ public class MockTokenizationClientBuilder {
                 listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError);
                 return null;
             }
-        }).when(tokenizationClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
+        }).when(apiClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
 
-        return tokenizationClient;
+        return apiClient;
     }
 }

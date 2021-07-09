@@ -32,18 +32,18 @@ public class VenmoClient {
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final ApiClient apiClient;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
 
     public VenmoClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+        this(braintreeClient, new ApiClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     @VisibleForTesting
-    VenmoClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
     }
@@ -119,21 +119,21 @@ public class VenmoClient {
 
                 final String finalVenmoProfileId = venmoProfileId;
                 braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        String paymentContextId = parsePaymentContextId(responseBody);
-                        if (TextUtils.isEmpty(paymentContextId)) {
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-                            callback.onResult(new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
-                            return;
-                        }
-                        startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, paymentContextId);
-                    }
 
                     @Override
-                    public void failure(Exception exception) {
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-                        callback.onResult(exception);
+                    public void onResult(String responseBody, Exception httpError) {
+                        if (responseBody != null) {
+                            String paymentContextId = parsePaymentContextId(responseBody);
+                            if (TextUtils.isEmpty(paymentContextId)) {
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                                callback.onResult(new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
+                                return;
+                            }
+                            startVenmoActivityForResult(activity, request, configuration, finalVenmoProfileId, paymentContextId);
+                        } else {
+                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                            callback.onResult(httpError);
+                        }
                     }
                 });
             }
@@ -180,31 +180,31 @@ public class VenmoClient {
                     params.put("variables", variables);
 
                     braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+
                         @Override
-                        public void success(String responseBody) {
-                            try {
-                                JSONObject data = new JSONObject(responseBody).getJSONObject("data");
-                                VenmoAccountNonce nonce = VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
+                        public void onResult(String responseBody, Exception httpError) {
+                            if (responseBody != null) {
+                                try {
+                                    JSONObject data = new JSONObject(responseBody).getJSONObject("data");
+                                    VenmoAccountNonce nonce = VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
 
-                                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                                boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
+                                    boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                                    boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
 
-                                if (shouldVault && isClientToken) {
-                                    vaultVenmoAccountNonce(nonce.getString(), callback);
-                                } else {
+                                    if (shouldVault && isClientToken) {
+                                        vaultVenmoAccountNonce(nonce.getString(), callback);
+                                    } else {
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
+                                        callback.onResult(nonce, null);
+                                    }
+                                } catch (JSONException exception) {
                                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
-                                    callback.onResult(nonce, null);
+                                    callback.onResult(null, exception);
                                 }
-                            } catch (JSONException exception) {
+                            } else {
                                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
-                                callback.onResult(null, exception);
+                                callback.onResult(null, httpError);
                             }
-                        }
-
-                        @Override
-                        public void failure(Exception exception) {
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
-                            callback.onResult(null, exception);
                         }
                     });
 
@@ -268,7 +268,7 @@ public class VenmoClient {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 
-        tokenizationClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
+        apiClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {

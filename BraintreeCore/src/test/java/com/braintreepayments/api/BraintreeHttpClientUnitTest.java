@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -44,7 +45,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("sample/path", null, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).failure(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -144,7 +145,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(callback).failure(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
@@ -302,7 +303,7 @@ public class BraintreeHttpClientUnitTest {
         sut.post("sample/path", "{}", null, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).failure(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -336,7 +337,7 @@ public class BraintreeHttpClientUnitTest {
         sut.post("sample/path", "not json", configuration, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).failure(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof JSONException);
@@ -354,7 +355,7 @@ public class BraintreeHttpClientUnitTest {
         sut.post("sample/path", "{}", configuration, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(callback).failure(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());

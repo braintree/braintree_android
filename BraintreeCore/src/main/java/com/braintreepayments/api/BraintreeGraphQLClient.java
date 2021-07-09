@@ -5,17 +5,17 @@ import androidx.annotation.VisibleForTesting;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
-class BraintreeGraphQLHttpClient {
+class BraintreeGraphQLClient {
 
     private final HttpClient httpClient;
     private final Authorization authorization;
 
-    BraintreeGraphQLHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLHttpResponseParser()));
+    BraintreeGraphQLClient(Authorization authorization) {
+        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeGraphQLClient(Authorization authorization, HttpClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }
@@ -31,7 +31,7 @@ class BraintreeGraphQLHttpClient {
     void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 
@@ -49,7 +49,7 @@ class BraintreeGraphQLHttpClient {
     void post(String data, Configuration configuration, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.failure(new BraintreeException(message));
+            callback.onResult(null, new BraintreeException(message));
             return;
         }
 

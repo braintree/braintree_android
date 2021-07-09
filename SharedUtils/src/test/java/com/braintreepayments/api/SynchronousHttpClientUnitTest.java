@@ -1,10 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.BaseHttpResponseParser;
-import com.braintreepayments.api.HttpRequest;
-import com.braintreepayments.api.SynchronousHttpClient;
-import com.braintreepayments.api.TLSSocketFactory;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;

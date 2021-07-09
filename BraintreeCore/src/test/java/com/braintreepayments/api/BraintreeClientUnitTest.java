@@ -16,12 +16,11 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -38,7 +37,7 @@ public class BraintreeClientUnitTest {
     private Context applicationContext;
 
     private BraintreeHttpClient braintreeHttpClient;
-    private BraintreeGraphQLHttpClient braintreeGraphQLHttpClient;
+    private BraintreeGraphQLClient braintreeGraphQLClient;
     private ConfigurationLoader configurationLoader;
     private AnalyticsClient analyticsClient;
     private ManifestValidator manifestValidator;
@@ -51,7 +50,7 @@ public class BraintreeClientUnitTest {
         applicationContext = ApplicationProvider.getApplicationContext();
 
         braintreeHttpClient = mock(BraintreeHttpClient.class);
-        braintreeGraphQLHttpClient = mock(BraintreeGraphQLHttpClient.class);
+        braintreeGraphQLClient = mock(BraintreeGraphQLClient.class);
         configurationLoader = mock(ConfigurationLoader.class);
         analyticsClient = mock(AnalyticsClient.class);
         manifestValidator = mock(ManifestValidator.class);
@@ -100,7 +99,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult((String) isNull(), same(exception));
     }
 
     @Test
@@ -132,7 +131,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult(null, exception);
     }
 
     @Test
@@ -148,7 +147,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(braintreeGraphQLHttpClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
     }
 
     @Test
@@ -164,7 +163,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(httpResponseCallback).failure(same(exception));
+        verify(httpResponseCallback).onResult(null, exception);
     }
 
     @Test
@@ -345,7 +344,7 @@ public class BraintreeClientUnitTest {
                 .setIntegrationType(integrationType)
                 .configurationLoader(configurationLoader)
                 .httpClient(braintreeHttpClient)
-                .graphQLHttpClient(braintreeGraphQLHttpClient)
+                .graphQLClient(braintreeGraphQLClient)
                 .analyticsClient(analyticsClient)
                 .browserSwitchClient(browserSwitchClient)
                 .manifestValidator(manifestValidator);

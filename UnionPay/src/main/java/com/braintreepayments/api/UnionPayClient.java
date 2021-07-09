@@ -19,22 +19,22 @@ public class UnionPayClient {
     private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
 
     private static final String UNIONPAY_ENROLLMENT_PATH =
-        TokenizationClient.versionedPath("union_pay_enrollments");
+        ApiClient.versionedPath("union_pay_enrollments");
 
     private static final String UNIONPAY_CAPABILITIES_PATH =
-        TokenizationClient.versionedPath("payment_methods/credit_cards/capabilities");
+        ApiClient.versionedPath("payment_methods/credit_cards/capabilities");
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final ApiClient apiClient;
 
     public UnionPayClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    UnionPayClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+    UnionPayClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
     }
 
     /**
@@ -65,16 +65,16 @@ public class UnionPayClient {
                         .build()
                         .toString();
                 braintreeClient.sendGET(fetchCapabilitiesUrl, new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        callback.onResult(UnionPayCapabilities.fromJson(responseBody), null);
-                        braintreeClient.sendAnalyticsEvent("union-pay.capabilities-received");
-                    }
 
                     @Override
-                    public void failure(Exception exception) {
-                        callback.onResult(null, exception);
-                        braintreeClient.sendAnalyticsEvent("union-pay.capabilities-failed");
+                    public void onResult(String responseBody, Exception httpError) {
+                        if (responseBody != null) {
+                            callback.onResult(UnionPayCapabilities.fromJson(responseBody), null);
+                            braintreeClient.sendAnalyticsEvent("union-pay.capabilities-received");
+                        } else {
+                            callback.onResult(null, httpError);
+                            braintreeClient.sendAnalyticsEvent("union-pay.capabilities-failed");
+                        }
                     }
                 });
             }
@@ -106,23 +106,24 @@ public class UnionPayClient {
                 try {
                     String enrollmentPayload = unionPayCard.buildEnrollment().toString();
                     braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, new HttpResponseCallback() {
-                        @Override
-                        public void success(String responseBody) {
-                            try {
-                                JSONObject response = new JSONObject(responseBody);
-                                String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
-                                boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
-                                callback.onResult(new UnionPayEnrollment(enrollmentId, smsCodeRequired), null);
-                                braintreeClient.sendAnalyticsEvent("union-pay.enrollment-succeeded");
-                            } catch (JSONException e) {
-                                failure(e);
-                            }
-                        }
 
                         @Override
-                        public void failure(Exception exception) {
-                            callback.onResult(null, exception);
-                            braintreeClient.sendAnalyticsEvent("union-pay.enrollment-failed");
+                        public void onResult(String responseBody, Exception httpError) {
+                            if (responseBody != null) {
+                                try {
+                                    JSONObject response = new JSONObject(responseBody);
+                                    String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
+                                    boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
+                                    callback.onResult(new UnionPayEnrollment(enrollmentId, smsCodeRequired), null);
+                                    braintreeClient.sendAnalyticsEvent("union-pay.enrollment-succeeded");
+                                } catch (JSONException e) {
+                                    callback.onResult(null, e);
+                                    braintreeClient.sendAnalyticsEvent("union-pay.enrollment-failed");
+                                }
+                            } else {
+                                callback.onResult(null, httpError);
+                                braintreeClient.sendAnalyticsEvent("union-pay.enrollment-failed");
+                            }
                         }
                     });
                 } catch (JSONException exception) {
@@ -150,7 +151,7 @@ public class UnionPayClient {
      * @param callback {@link UnionPayTokenizeCallback}
      */
     public void tokenize(@NonNull UnionPayCard unionPayCard, @NonNull final UnionPayTokenizeCallback callback) {
-        tokenizationClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
+        apiClient.tokenizeREST(unionPayCard, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {

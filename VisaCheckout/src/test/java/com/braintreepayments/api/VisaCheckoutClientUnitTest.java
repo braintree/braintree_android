@@ -59,14 +59,14 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void createProfileBuilder_whenNotEnabled_throwsConfigurationException() {
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
 
         Configuration configuration = TestConfigurationBuilder.basicConfig();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .build();
 
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         VisaCheckoutCreateProfileBuilderCallback listener = mock(VisaCheckoutCreateProfileBuilderCallback.class);
         sut.createProfileBuilder(listener);
@@ -82,7 +82,7 @@ public class VisaCheckoutClientUnitTest {
     public void createProfileBuilder_whenProduction_usesProductionConfig() throws Exception {
         final CountDownLatch lock = new CountDownLatch(1);
 
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
         String configString = new TestConfigurationBuilder()
                 .environment("production")
                 .visaCheckout(new TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder()
@@ -94,7 +94,7 @@ public class VisaCheckoutClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(configString))
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         sut.createProfileBuilder(new VisaCheckoutCreateProfileBuilderCallback() {
             @Override
@@ -113,7 +113,7 @@ public class VisaCheckoutClientUnitTest {
     public void createProfileBuilder_whenNotProduction_usesSandboxConfig() throws Exception {
         final CountDownLatch lock = new CountDownLatch(1);
 
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        ApiClient apiClient = new MockApiClientBuilder().build();
         String configString = new TestConfigurationBuilder()
                 .environment("environment")
                 .visaCheckout(new TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder()
@@ -125,7 +125,7 @@ public class VisaCheckoutClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(configString))
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         sut.createProfileBuilder(new VisaCheckoutCreateProfileBuilderCallback() {
             @Override
@@ -142,14 +142,14 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws JSONException {
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configurationWithVisaCheckout)
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         VisaCheckoutTokenizeCallback listener = mock(VisaCheckoutTokenizeCallback.class);
         sut.tokenize(visaPaymentSummary, listener);
@@ -159,14 +159,14 @@ public class VisaCheckoutClientUnitTest {
 
     @Test
     public void tokenize_whenSuccessful_sendsAnalyticEvent() throws JSONException {
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configurationWithVisaCheckout)
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         VisaCheckoutTokenizeCallback listener = mock(VisaCheckoutTokenizeCallback.class);
         sut.tokenize(visaPaymentSummary, listener);
@@ -177,14 +177,14 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenFailure_postsException() {
         Exception tokenizeError = new Exception("Mock Failure");
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(tokenizeError)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configurationWithVisaCheckout)
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         VisaCheckoutTokenizeCallback listener = mock(VisaCheckoutTokenizeCallback.class);
         sut.tokenize(visaPaymentSummary, listener);
@@ -195,14 +195,14 @@ public class VisaCheckoutClientUnitTest {
     @Test
     public void tokenize_whenFailure_sendsAnalyticEvent() {
         Exception tokenizeError = new Exception("Mock Failure");
-        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
+        ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(tokenizeError)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configurationWithVisaCheckout)
                 .build();
-        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, tokenizationClient);
+        VisaCheckoutClient sut = new VisaCheckoutClient(braintreeClient, apiClient);
 
         VisaCheckoutTokenizeCallback listener = mock(VisaCheckoutTokenizeCallback.class);
         sut.tokenize(visaPaymentSummary, listener);

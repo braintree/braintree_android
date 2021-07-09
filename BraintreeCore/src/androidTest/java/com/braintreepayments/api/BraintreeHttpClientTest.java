@@ -27,15 +27,11 @@ public class BraintreeHttpClientTest {
         BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
 
         braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request should fail");
-            }
 
             @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure exception is due to authorization not SSL handshake
-                assertTrue(exception instanceof AuthorizationException);
+                assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
         });
@@ -49,15 +45,11 @@ public class BraintreeHttpClientTest {
         BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
 
         braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request should fail");
-            }
 
             @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure exception is due to authorization not SSL handshake
-                assertTrue(exception instanceof AuthorizationException);
+                assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
         });

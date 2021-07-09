@@ -7,18 +7,18 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-class TokenizationClient {
+class ApiClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private final WeakReference<BraintreeClient> braintreeClientRef;
 
-    TokenizationClient(BraintreeClient braintreeClient) {
+    ApiClient(BraintreeClient braintreeClient) {
         this(new WeakReference<>(braintreeClient));
     }
 
     @VisibleForTesting
-    TokenizationClient(WeakReference<BraintreeClient> braintreeClientRef) {
+    ApiClient(WeakReference<BraintreeClient> braintreeClientRef) {
         this.braintreeClientRef = braintreeClientRef;
     }
 
@@ -30,21 +30,21 @@ class TokenizationClient {
 
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                try {
-                    callback.onResult(new JSONObject(responseBody), null);
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
-                } catch (JSONException exception) {
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                    callback.onResult(null, exception);
-                }
-            }
 
             @Override
-            public void failure(Exception exception) {
-                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
-                callback.onResult(null, exception);
+            public void onResult(String responseBody, Exception httpError) {
+                if (responseBody != null) {
+                    try {
+                        callback.onResult(new JSONObject(responseBody), null);
+                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
+                    } catch (JSONException exception) {
+                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                        callback.onResult(null, exception);
+                    }
+                } else {
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
+                    callback.onResult(null, httpError);
+                }
             }
         });
     }
@@ -55,8 +55,8 @@ class TokenizationClient {
             return;
         }
 
-        String url = TokenizationClient.versionedPath(
-                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
+        String url = ApiClient.versionedPath(
+                ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethod.getApiPath());
 
         paymentMethod.setSessionId(braintreeClient.getSessionId());
 
@@ -64,17 +64,16 @@ class TokenizationClient {
             braintreeClient.sendPOST(url, paymentMethod.buildJSON().toString(), new HttpResponseCallback() {
 
                 @Override
-                public void success(String responseBody) {
-                    try {
-                        callback.onResult(new JSONObject(responseBody), null);
-                    } catch (JSONException exception) {
-                        callback.onResult(null, exception);
+                public void onResult(String responseBody, Exception httpError) {
+                    if (responseBody != null) {
+                        try {
+                            callback.onResult(new JSONObject(responseBody), null);
+                        } catch (JSONException exception) {
+                            callback.onResult(null, exception);
+                        }
+                    } else {
+                        callback.onResult(null, httpError);
                     }
-                }
-
-                @Override
-                public void failure(Exception exception) {
-                    callback.onResult(null, exception);
                 }
             });
         } catch (JSONException exception) {

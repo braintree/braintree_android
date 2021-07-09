@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.HttpRequest;
-
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;

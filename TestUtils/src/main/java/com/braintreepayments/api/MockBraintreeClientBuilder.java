@@ -146,9 +146,9 @@ public class MockBraintreeClientBuilder {
             public Void answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
                 if (sendGETSuccess != null) {
-                    callback.success(sendGETSuccess);
+                    callback.onResult(sendGETSuccess, null);
                 } else if (sendGETError != null) {
-                    callback.failure(sendGETError);
+                    callback.onResult(null, sendGETError);
                 }
                 return null;
             }
@@ -159,9 +159,9 @@ public class MockBraintreeClientBuilder {
             public Void answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 if (sendPOSTSuccess != null) {
-                    callback.success(sendPOSTSuccess);
+                    callback.onResult(sendPOSTSuccess, null);
                 } else if (sendPOSTError != null) {
-                    callback.failure(sendPOSTError);
+                    callback.onResult(null, sendPOSTError);
                 }
                 return null;
             }
@@ -172,9 +172,9 @@ public class MockBraintreeClientBuilder {
             public Void answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
                 if (sendGraphQLPOSTSuccess != null) {
-                    callback.success(sendGraphQLPOSTSuccess);
+                    callback.onResult(sendGraphQLPOSTSuccess, null);
                 } else if (sendGraphQLPOSTError != null) {
-                    callback.failure(sendGraphQLPOSTError);
+                    callback.onResult(null, sendGraphQLPOSTError);
                 }
                 return null;
             }

@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -32,14 +33,9 @@ public class HttpClientTest {
 
         sut.sendRequest(httpRequest, new HttpResponseCallback() {
             @Override
-            public void success(String responseBody) {
-                fail("request should fail");
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertNotNull(exception);
+            public void onResult(String responseBody, Exception httpError) {
+                assertNull(responseBody);
+                assertNotNull(httpError);
                 countDownLatch.countDown();
             }
         });

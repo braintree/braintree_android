@@ -18,18 +18,18 @@ import org.json.JSONObject;
 public class PayPalClient {
 
     private final BraintreeClient braintreeClient;
-    private final TokenizationClient tokenizationClient;
+    private final ApiClient apiClient;
 
     private final PayPalInternalClient internalPayPalClient;
 
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, PayPalInternalClient internalPayPalClient) {
+    PayPalClient(BraintreeClient braintreeClient, ApiClient apiClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
-        this.tokenizationClient = tokenizationClient;
+        this.apiClient = apiClient;
         this.internalPayPalClient = internalPayPalClient;
     }
 
@@ -242,7 +242,7 @@ public class PayPalClient {
                             payPalAccount.setIntent(payPalIntent);
                         }
 
-                        tokenizationClient.tokenizeREST(payPalAccount, new TokenizeCallback() {
+                        apiClient.tokenizeREST(payPalAccount, new TokenizeCallback() {
                             @Override
                             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                                 if (tokenizationResponse != null) {

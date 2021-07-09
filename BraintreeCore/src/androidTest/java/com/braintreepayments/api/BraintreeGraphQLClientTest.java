@@ -16,7 +16,7 @@ import javax.net.ssl.SSLException;
 import static junit.framework.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class BraintreeGraphQLHttpClientTest {
+public class BraintreeGraphQLClientTest {
 
     private CountDownLatch countDownLatch;
 
@@ -32,14 +32,9 @@ public class BraintreeGraphQLHttpClientTest {
 
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
             @Override
-            public void success(String responseBody) {
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure SSL handshake is successful
-                assertFalse(exception instanceof SSLException);
+                assertFalse(httpError instanceof SSLException);
                 countDownLatch.countDown();
             }
         });
@@ -53,15 +48,11 @@ public class BraintreeGraphQLHttpClientTest {
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
         braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                countDownLatch.countDown();
-            }
 
             @Override
-            public void failure(Exception exception) {
+            public void onResult(String responseBody, Exception httpError) {
                 // Make sure SSL handshake is successful
-                assertFalse(exception instanceof SSLException);
+                assertFalse(httpError instanceof SSLException);
                 countDownLatch.countDown();
             }
         });

@@ -120,7 +120,7 @@ class HttpClient {
             scheduler.runOnMain(new Runnable() {
                 @Override
                 public void run() {
-                    callback.success(responseBody);
+                    callback.onResult(responseBody, null);
                 }
             });
         }
@@ -131,7 +131,7 @@ class HttpClient {
             scheduler.runOnMain(new Runnable() {
                 @Override
                 public void run() {
-                    callback.failure(e);
+                    callback.onResult(null, e);
                 }
             });
         }
