@@ -28,7 +28,7 @@ public class CardClientUnitTest {
     private CardTokenizeCallback cardTokenizeCallback;
 
     private DataCollector dataCollector;
-    private APIClient apiClient;
+    private ApiClient apiClient;
 
     private Configuration graphQLEnabledConfig;
     private Configuration graphQLDisabledConfig;
@@ -40,7 +40,7 @@ public class CardClientUnitTest {
         cardTokenizeCallback = mock(CardTokenizeCallback.class);
 
         dataCollector = mock(DataCollector.class);
-        apiClient = mock(APIClient.class);
+        apiClient = mock(ApiClient.class);
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL);
         graphQLDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);

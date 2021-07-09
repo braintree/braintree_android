@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
-public class APIClientUnitTest {
+public class ApiClientUnitTest {
 
     Context context;
 
@@ -46,7 +46,7 @@ public class APIClientUnitTest {
         Card card = mock(Card.class);
         TokenizeCallback callback = mock(TokenizeCallback.class);
 
-        APIClient sut = new APIClient(new WeakReference<BraintreeClient>(null));
+        ApiClient sut = new ApiClient(new WeakReference<BraintreeClient>(null));
         sut.tokenizeREST(card, callback);
 
         verifyZeroInteractions(card);
@@ -60,7 +60,7 @@ public class APIClientUnitTest {
                 .sessionId("session-id")
                 .build();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
 
         Card card = spy(new Card());
         sut.tokenizeREST(card, null);
@@ -83,7 +83,7 @@ public class APIClientUnitTest {
                 .authorization(authorization)
                 .build();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
         Card card = new Card();
 
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), null);
@@ -103,7 +103,7 @@ public class APIClientUnitTest {
 
         Card card = new Card();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), null);
 
         verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.started");
@@ -115,7 +115,7 @@ public class APIClientUnitTest {
                 .configuration(graphQLEnabledConfig)
                 .build();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
 
         sut.tokenizeREST(new PayPalAccount(), null);
         sut.tokenizeREST(new UnionPayCard(), null);
@@ -133,7 +133,7 @@ public class APIClientUnitTest {
 
         Card card = new Card();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
@@ -153,7 +153,7 @@ public class APIClientUnitTest {
 
         Card card = new Card();
 
-        APIClient sut = new APIClient(braintreeClient);
+        ApiClient sut = new ApiClient(braintreeClient);
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
@@ -166,6 +166,6 @@ public class APIClientUnitTest {
 
     @Test
     public void versionedPath_returnsv1Path() {
-        assertEquals("/v1/test/path", APIClient.versionedPath("test/path"));
+        assertEquals("/v1/test/path", ApiClient.versionedPath("test/path"));
     }
 }

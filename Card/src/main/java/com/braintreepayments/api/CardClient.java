@@ -14,14 +14,14 @@ import org.json.JSONObject;
 public class CardClient {
 
     private final BraintreeClient braintreeClient;
-    private final APIClient apiClient;
+    private final ApiClient apiClient;
 
     public CardClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new APIClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    CardClient(BraintreeClient braintreeClient, APIClient apiClient) {
+    CardClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
     }

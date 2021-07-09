@@ -54,14 +54,14 @@ public class VenmoClientUnitTest {
     private VenmoSharedPrefsWriter sharedPrefsWriter;
     private DeviceInspector deviceInspector;
 
-    private APIClient apiClient;
+    private ApiClient apiClient;
     private VenmoOnActivityResultCallback onActivityResultCallback;
 
     @Before
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
         braintreeClient = mock(BraintreeClient.class);
-        apiClient = mock(APIClient.class);
+        apiClient = mock(ApiClient.class);
         deviceInspector = mock(DeviceInspector.class);
 
         venmoEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);

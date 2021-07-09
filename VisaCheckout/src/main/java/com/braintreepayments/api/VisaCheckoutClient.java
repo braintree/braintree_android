@@ -20,14 +20,14 @@ import java.util.List;
 public class VisaCheckoutClient {
 
     private final BraintreeClient braintreeClient;
-    private final APIClient apiClient;
+    private final ApiClient apiClient;
 
     public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new APIClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    VisaCheckoutClient(BraintreeClient braintreeClient, APIClient apiClient) {
+    VisaCheckoutClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
     }

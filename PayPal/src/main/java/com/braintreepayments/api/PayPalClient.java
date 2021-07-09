@@ -18,16 +18,16 @@ import org.json.JSONObject;
 public class PayPalClient {
 
     private final BraintreeClient braintreeClient;
-    private final APIClient apiClient;
+    private final ApiClient apiClient;
 
     private final PayPalInternalClient internalPayPalClient;
 
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new APIClient(braintreeClient), new PayPalInternalClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(BraintreeClient braintreeClient, APIClient apiClient, PayPalInternalClient internalPayPalClient) {
+    PayPalClient(BraintreeClient braintreeClient, ApiClient apiClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
         this.internalPayPalClient = internalPayPalClient;

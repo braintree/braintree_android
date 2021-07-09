@@ -19,20 +19,20 @@ public class UnionPayClient {
     private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
 
     private static final String UNIONPAY_ENROLLMENT_PATH =
-        APIClient.versionedPath("union_pay_enrollments");
+        ApiClient.versionedPath("union_pay_enrollments");
 
     private static final String UNIONPAY_CAPABILITIES_PATH =
-        APIClient.versionedPath("payment_methods/credit_cards/capabilities");
+        ApiClient.versionedPath("payment_methods/credit_cards/capabilities");
 
     private final BraintreeClient braintreeClient;
-    private final APIClient apiClient;
+    private final ApiClient apiClient;
 
     public UnionPayClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new APIClient(braintreeClient));
+        this(braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    UnionPayClient(BraintreeClient braintreeClient, APIClient apiClient) {
+    UnionPayClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
     }

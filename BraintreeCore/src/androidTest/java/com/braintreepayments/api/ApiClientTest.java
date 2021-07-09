@@ -16,7 +16,7 @@ import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class APIClientTest {
+public class ApiClientTest {
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> activityTestRule =
@@ -35,7 +35,7 @@ public class APIClientTest {
 
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
 
-        APIClient apiClient = new APIClient(braintreeClient);
+        ApiClient apiClient = new ApiClient(braintreeClient);
 
         JSONObject urlResponseData = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
         PayPalAccount paypalAccount = new PayPalAccount();

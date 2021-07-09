@@ -36,8 +36,8 @@ public class MockAPIClientBuilder {
         return this;
     }
 
-    public APIClient build() {
-        APIClient apiClient = mock(APIClient.class);
+    public ApiClient build() {
+        ApiClient apiClient = mock(ApiClient.class);
 
         doAnswer(new Answer<Void>() {
             @Override

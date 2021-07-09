@@ -12,7 +12,7 @@ import org.json.JSONException;
 public class AmericanExpressClient {
 
     private static final String AMEX_REWARDS_BALANCE_PATH =
-        APIClient.versionedPath("payment_methods/amex_rewards_balance");
+        ApiClient.versionedPath("payment_methods/amex_rewards_balance");
 
     private final BraintreeClient braintreeClient;
 
