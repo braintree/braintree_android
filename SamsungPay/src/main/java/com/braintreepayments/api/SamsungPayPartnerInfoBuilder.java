@@ -13,10 +13,10 @@ import static com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.EXTRA
 
 class SamsungPayPartnerInfoBuilder {
 
-    private static final String API_VERSION_KEY = "braintreeTokenizationApiVersion";
+    private static final String BRAINTREE_API_VERSION_KEY = "braintreeTokenizationApiVersion";
     private static final String CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
 
-    private static final String API_VERSION = "2018-10-01";
+    private static final String BRAINTREE_API_VERSION = "2018-10-01";
 
     private String sessionId;
     private String integrationType;
@@ -59,7 +59,7 @@ class SamsungPayPartnerInfoBuilder {
 
         JSONObject additionalData = new JSONObject();
         try {
-            additionalData.put(API_VERSION_KEY, API_VERSION);
+            additionalData.put(BRAINTREE_API_VERSION_KEY, BRAINTREE_API_VERSION);
             additionalData.put(CLIENT_SDK_METADATA_KEY, clientSdkMetadata);
         } catch (JSONException ignored) {
         }
