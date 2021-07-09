@@ -26,7 +26,7 @@ class HttpClient {
     static final int MAX_RETRY_ATTEMPTS = 3;
 
     private final Scheduler scheduler;
-    private final SynchronousHttpClient syncHTTPClient;
+    private final SynchronousHttpClient syncHttpClient;
 
     private final Map<URL, Integer> retryCountMap;
 
@@ -35,14 +35,14 @@ class HttpClient {
     }
 
     @VisibleForTesting
-    HttpClient(SynchronousHttpClient syncHTTPClient, Scheduler scheduler) {
-        this.syncHTTPClient = syncHTTPClient;
+    HttpClient(SynchronousHttpClient syncHttpClient, Scheduler scheduler) {
+        this.syncHttpClient = syncHttpClient;
         this.scheduler = scheduler;
         this.retryCountMap = new HashMap<>();
     }
 
     String sendRequest(HttpRequest request) throws Exception {
-        return syncHTTPClient.request(request);
+        return syncHttpClient.request(request);
     }
 
     void sendRequest(HttpRequest request, HttpResponseCallback callback) {
@@ -60,7 +60,7 @@ class HttpClient {
             @Override
             public void run() {
                 try {
-                    String responseBody = syncHTTPClient.request(request);
+                    String responseBody = syncHttpClient.request(request);
                     notifySuccessOnMainThread(callback, responseBody);
                 } catch (Exception e) {
                     switch (retryStrategy) {

@@ -63,7 +63,7 @@ public class BraintreeClient {
         this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLClient = params.getGraphQLClient();
-        this.httpClient = params.getHTTPClient();
+        this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
         this.sessionId = params.getSessionId();
         this.integrationType = params.getIntegrationType();

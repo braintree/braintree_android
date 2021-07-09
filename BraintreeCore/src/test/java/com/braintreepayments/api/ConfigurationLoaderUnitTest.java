@@ -29,7 +29,7 @@ public class ConfigurationLoaderUnitTest {
 
     private ConfigurationCache configurationCache;
 
-    private BraintreeHttpClient braintreeHTTPClient;
+    private BraintreeHttpClient braintreeHttpClient;
     private ConfigurationCallback callback;
 
     private Context context;
@@ -42,7 +42,7 @@ public class ConfigurationLoaderUnitTest {
         authorization = mock(Authorization.class);
         context = mock(Context.class);
 
-        braintreeHTTPClient = mock(BraintreeHttpClient.class);
+        braintreeHttpClient = mock(BraintreeHttpClient.class);
         callback = mock(ConfigurationCallback.class);
     }
 
@@ -50,13 +50,13 @@ public class ConfigurationLoaderUnitTest {
     public void loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
 
-        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
@@ -69,13 +69,13 @@ public class ConfigurationLoaderUnitTest {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
 
-        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
@@ -88,11 +88,11 @@ public class ConfigurationLoaderUnitTest {
     public void loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
-        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHttpClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult("not json", null);
@@ -101,14 +101,14 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_onHTTPError_forwardsExceptionToErrorResponseListener() {
+    public void loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> httpResponseCaptor = ArgumentCaptor.forClass(HttpResponseCallback.class);
-        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), httpResponseCaptor.capture());
+        verify(braintreeHttpClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), httpResponseCaptor.capture());
 
         HttpResponseCallback httpResponseCallback = httpResponseCaptor.getValue();
         Exception httpError = new Exception("http error");
@@ -126,7 +126,7 @@ public class ConfigurationLoaderUnitTest {
     public void loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
@@ -145,10 +145,10 @@ public class ConfigurationLoaderUnitTest {
         when(authorization.getBearer()).thenReturn("bearer");
         when(configurationCache.getConfiguration(context, cacheKey)).thenReturn(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
 
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHTTPClient, configurationCache);
+        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);
 
-        verify(braintreeHTTPClient, times(0)).get(anyString(), (Configuration) isNull(), anyInt(), any(HttpResponseCallback.class));
+        verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), anyInt(), any(HttpResponseCallback.class));
         verify(callback).onResult(any(Configuration.class), (Exception) isNull());
     }
 }

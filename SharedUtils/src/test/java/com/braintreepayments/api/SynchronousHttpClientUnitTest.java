@@ -43,7 +43,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenHTTPRequestURLMalformed_throwsMalformedURLException() throws Exception {
+    public void request_whenHttpRequestURLMalformed_throwsMalformedURLException() throws Exception {
         when(httpRequest.getPath()).thenReturn("");
         when(httpRequest.getMethod()).thenReturn("GET");
         when(httpRequest.getURL()).thenThrow(new MalformedURLException());
@@ -113,7 +113,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenConnectionIsHTTPS_setsSSLSocketFactory() throws Exception {
+    public void request_whenConnectionIsHttps_setsSSLSocketFactory() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         URL url = mock(URL.class);
@@ -131,7 +131,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenConnectionIsHTTPS_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
+    public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         URL url = mock(URL.class);
@@ -159,7 +159,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_setsHTTPReadTimeout() throws Exception {
+    public void request_setsHttpReadTimeout() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getReadTimeout()).thenReturn(123);
 
@@ -178,7 +178,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_setsHTTPConnectionTimeout() throws Exception {
+    public void request_setsHttpConnectionTimeout() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getConnectTimeout()).thenReturn(456);
 
@@ -197,7 +197,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_setsHTTPHeaders() throws Exception {
+    public void request_setsHttpHeaders() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
 
         Map<String, String> headers = new HashMap<>();
@@ -219,7 +219,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_parsesResponseAndReturnsHTTPBody() throws Exception {
+    public void request_parsesResponseAndReturnsHttpBody() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getMethod()).thenReturn("GET");
 
@@ -257,7 +257,7 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_onHTTPResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
+    public void request_onHttpResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
         when(httpRequest.getPath()).thenReturn("sample/path");
         when(httpRequest.getMethod()).thenReturn("GET");
 
