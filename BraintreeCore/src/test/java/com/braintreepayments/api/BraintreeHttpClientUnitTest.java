@@ -27,12 +27,12 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeHttpClientUnitTest {
 
-    private HTTPClient httpClient;
+    private HttpClient httpClient;
     HttpResponseCallback httpResponseCallback;
 
     @Before
     public void beforeEach() {
-        httpClient = mock(HTTPClient.class);
+        httpClient = mock(HttpClient.class);
         httpResponseCallback = mock(HttpResponseCallback.class);
     }
 
@@ -61,7 +61,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("https://example.com/sample/path", null, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), eq(HTTPClient.NO_RETRY), same(callback));
+        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
         HTTPRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
@@ -79,7 +79,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), eq(HTTPClient.NO_RETRY), same(callback));
+        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
         HTTPRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
@@ -101,7 +101,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), eq(HTTPClient.NO_RETRY), same(callback));
+        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
         HTTPRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
@@ -124,7 +124,7 @@ public class BraintreeHttpClientUnitTest {
         sut.get("sample/path", configuration, callback);
 
         ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), eq(HTTPClient.NO_RETRY), same(callback));
+        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
         HTTPRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();

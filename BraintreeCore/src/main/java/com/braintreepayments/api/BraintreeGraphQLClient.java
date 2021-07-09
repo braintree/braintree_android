@@ -7,15 +7,15 @@ import javax.net.ssl.SSLSocketFactory;
 
 class BraintreeGraphQLClient {
 
-    private final HTTPClient httpClient;
+    private final HttpClient httpClient;
     private final Authorization authorization;
 
     BraintreeGraphQLClient(Authorization authorization) {
-        this(authorization, new HTTPClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
+        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLClient(Authorization authorization, HTTPClient httpClient) {
+    BraintreeGraphQLClient(Authorization authorization, HttpClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }

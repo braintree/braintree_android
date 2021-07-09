@@ -56,7 +56,7 @@ public class ConfigurationLoaderUnitTest {
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
 
-        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HTTPClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
@@ -75,7 +75,7 @@ public class ConfigurationLoaderUnitTest {
         String expectedConfigUrl = "https://example.com/config?configVersion=3";
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
 
-        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HTTPClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHTTPClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
@@ -92,7 +92,7 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
-        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HTTPClient.RETRY_MAX_3_TIMES), captor.capture());
+        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
 
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult("not json", null);
@@ -108,7 +108,7 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<HttpResponseCallback> httpResponseCaptor = ArgumentCaptor.forClass(HttpResponseCallback.class);
-        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HTTPClient.RETRY_MAX_3_TIMES), httpResponseCaptor.capture());
+        verify(braintreeHTTPClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), httpResponseCaptor.capture());
 
         HttpResponseCallback httpResponseCallback = httpResponseCaptor.getValue();
         Exception httpError = new Exception("http error");

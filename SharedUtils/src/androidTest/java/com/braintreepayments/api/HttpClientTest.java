@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class HTTPClientTest {
+public class HttpClientTest {
 
     private CountDownLatch countDownLatch;
 
@@ -24,7 +24,7 @@ public class HTTPClientTest {
 
     @Test(timeout = 5000)
     public void sendRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
-        HTTPClient sut = new HTTPClient(null, new BaseHTTPResponseParser());
+        HttpClient sut = new HttpClient(null, new BaseHTTPResponseParser());
 
         HTTPRequest httpRequest = new HTTPRequest()
                 .method("GET")

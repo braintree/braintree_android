@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.HTTPClient.RetryStrategy;
+import com.braintreepayments.api.HttpClient.RetryStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,15 +21,15 @@ class BraintreeHttpClient {
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static final String CLIENT_KEY_HEADER = "Client-Key";
 
-    private final HTTPClient httpClient;
+    private final HttpClient httpClient;
     private final Authorization authorization;
 
     BraintreeHttpClient(Authorization authorization) {
-        this(authorization, new HTTPClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
+        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHttpClient(Authorization authorization, HTTPClient httpClient) {
+    BraintreeHttpClient(Authorization authorization, HttpClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }
@@ -55,7 +55,7 @@ class BraintreeHttpClient {
      * @param callback {@link HttpResponseCallback}
      */
     void get(String path, Configuration configuration, HttpResponseCallback callback) {
-        get(path, configuration, HTTPClient.NO_RETRY, callback);
+        get(path, configuration, HttpClient.NO_RETRY, callback);
     }
 
     /**

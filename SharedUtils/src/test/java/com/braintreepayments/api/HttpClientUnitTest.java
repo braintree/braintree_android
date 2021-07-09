@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public class HTTPClientUnitTest {
+public class HttpClientUnitTest {
 
     private SynchronousHttpClient syncHTTPClient;
 
@@ -33,7 +33,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_sendsRequestOnBackgroundThread() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, callback);
@@ -46,7 +46,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenBaseHTTPClientThrowsException_notifiesErrorViaCallbackOnMainThread() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
@@ -63,7 +63,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_onBaseHTTPClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         when(syncHTTPClient.request(httpRequest)).thenReturn("response body");
 
@@ -79,7 +79,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenCallbackIsNull_doesNotNotifySuccess() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         when(syncHTTPClient.request(httpRequest)).thenReturn("response body");
         sut.sendRequest(httpRequest, null);
@@ -90,7 +90,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenCallbackIsNull_doesNotNotifyError() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
@@ -103,13 +103,13 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_retriesRequest3Times() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
         verify(syncHTTPClient, times(3)).request(httpRequest);
@@ -117,13 +117,13 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_notifiesMaxRetriesLimitExceededOnForegroundThread() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
         verify(callback, never()).onResult((String) isNull(), any(Exception.class));
@@ -140,13 +140,13 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_futureRequestsAreAllowed() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHTTPClient.request(httpRequest)).thenThrow(exception);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
 
@@ -154,7 +154,7 @@ public class HTTPClientUnitTest {
         when(syncHTTPClient.request(httpRequest))
                 .thenThrow(exception)
                 .thenReturn("response body");
-        sut.sendRequest(httpRequest, HTTPClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
         threadScheduler.flushMainThread();
@@ -164,7 +164,7 @@ public class HTTPClientUnitTest {
 
     @Test
     public void sendRequestSynchronous_sendsHTTPRequest() throws Exception {
-        HTTPClient sut = new HTTPClient(syncHTTPClient, threadScheduler);
+        HttpClient sut = new HttpClient(syncHTTPClient, threadScheduler);
 
         when(syncHTTPClient.request(httpRequest)).thenReturn("response body");
 

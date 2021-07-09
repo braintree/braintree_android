@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeGraphQLClientUnitTest {
 
-    private HTTPClient httpClient;
+    private HttpClient httpClient;
     private HttpResponseCallback httpResponseCallback;
 
     private Configuration configuration;
@@ -31,7 +31,7 @@ public class BraintreeGraphQLClientUnitTest {
 
     @Before
     public void beforeEach() throws JSONException {
-        httpClient = mock(HTTPClient.class);
+        httpClient = mock(HttpClient.class);
         httpResponseCallback = mock(HttpResponseCallback.class);
 
         authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);

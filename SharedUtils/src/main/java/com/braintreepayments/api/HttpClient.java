@@ -13,7 +13,7 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocketFactory;
 
-class HTTPClient {
+class HttpClient {
 
     @IntDef({ NO_RETRY, RETRY_MAX_3_TIMES })
     @Retention(RetentionPolicy.SOURCE)
@@ -30,12 +30,12 @@ class HTTPClient {
 
     private final Map<URL, Integer> retryCountMap;
 
-    protected HTTPClient(SSLSocketFactory socketFactory, HTTPResponseParser httpResponseParser) {
+    protected HttpClient(SSLSocketFactory socketFactory, HTTPResponseParser httpResponseParser) {
         this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
     }
 
     @VisibleForTesting
-    HTTPClient(SynchronousHttpClient syncHTTPClient, Scheduler scheduler) {
+    HttpClient(SynchronousHttpClient syncHTTPClient, Scheduler scheduler) {
         this.syncHTTPClient = syncHTTPClient;
         this.scheduler = scheduler;
         this.retryCountMap = new HashMap<>();
@@ -46,7 +46,7 @@ class HTTPClient {
     }
 
     void sendRequest(HTTPRequest request, HttpResponseCallback callback) {
-        sendRequest(request, HTTPClient.NO_RETRY, callback);
+        sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
     void sendRequest(HTTPRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
@@ -64,10 +64,10 @@ class HTTPClient {
                     notifySuccessOnMainThread(callback, responseBody);
                 } catch (Exception e) {
                     switch (retryStrategy) {
-                        case HTTPClient.NO_RETRY:
+                        case HttpClient.NO_RETRY:
                             notifyErrorOnMainThread(callback, e);
                             break;
-                        case HTTPClient.RETRY_MAX_3_TIMES:
+                        case HttpClient.RETRY_MAX_3_TIMES:
                             retryGet(request, retryStrategy, callback);
                             break;
                     }
