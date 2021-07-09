@@ -18,14 +18,14 @@ import static org.mockito.Mockito.when;
 
 public class HTTPClientUnitTest {
 
-    private SynchronousHTTPClient syncHTTPClient;
+    private SynchronousHttpClient syncHTTPClient;
 
     private HTTPRequest httpRequest;
     private MockThreadScheduler threadScheduler;
 
     @Before
     public void beforeEach() {
-        syncHTTPClient = mock(SynchronousHTTPClient.class);
+        syncHTTPClient = mock(SynchronousHttpClient.class);
         threadScheduler = spy(new MockThreadScheduler());
 
         httpRequest = new HTTPRequest().path("https://example.com");

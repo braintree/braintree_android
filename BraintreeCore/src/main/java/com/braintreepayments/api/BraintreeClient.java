@@ -18,7 +18,7 @@ public class BraintreeClient {
 
     private final Authorization authorization;
     private final AnalyticsClient analyticsClient;
-    private final BraintreeHTTPClient httpClient;
+    private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLClient graphQLClient;
     private final BrowserSwitchClient browserSwitchClient;
     private final ConfigurationLoader configurationLoader;
@@ -31,7 +31,7 @@ public class BraintreeClient {
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString) {
         Authorization authorization = Authorization.fromString(authString);
-        BraintreeHTTPClient httpClient = new BraintreeHTTPClient(authorization);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)

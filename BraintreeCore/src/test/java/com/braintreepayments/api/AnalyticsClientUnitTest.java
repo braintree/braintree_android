@@ -46,7 +46,7 @@ public class AnalyticsClientUnitTest {
     private Context context;
     private Authorization authorization;
 
-    private BraintreeHTTPClient httpClient;
+    private BraintreeHttpClient httpClient;
     private DeviceInspector deviceInspector;
     private ClassHelper classHelper;
 
@@ -59,7 +59,7 @@ public class AnalyticsClientUnitTest {
 
         context = ApplicationProvider.getApplicationContext();
 
-        httpClient = mock(BraintreeHTTPClient.class);
+        httpClient = mock(BraintreeHttpClient.class);
         deviceInspector = mock(DeviceInspector.class);
         classHelper = mock(ClassHelper.class);
 

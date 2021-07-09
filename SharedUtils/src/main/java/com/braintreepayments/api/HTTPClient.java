@@ -26,16 +26,16 @@ class HTTPClient {
     static final int MAX_RETRY_ATTEMPTS = 3;
 
     private final Scheduler scheduler;
-    private final SynchronousHTTPClient syncHTTPClient;
+    private final SynchronousHttpClient syncHTTPClient;
 
     private final Map<URL, Integer> retryCountMap;
 
     protected HTTPClient(SSLSocketFactory socketFactory, HTTPResponseParser httpResponseParser) {
-        this(new SynchronousHTTPClient(socketFactory, httpResponseParser), new ThreadScheduler());
+        this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
     }
 
     @VisibleForTesting
-    HTTPClient(SynchronousHTTPClient syncHTTPClient, Scheduler scheduler) {
+    HTTPClient(SynchronousHttpClient syncHTTPClient, Scheduler scheduler) {
         this.syncHTTPClient = syncHTTPClient;
         this.scheduler = scheduler;
         this.retryCountMap = new HashMap<>();

@@ -10,15 +10,15 @@ import org.json.JSONException;
 
 class ConfigurationLoader {
 
-    private final BraintreeHTTPClient httpClient;
+    private final BraintreeHttpClient httpClient;
     private final ConfigurationCache configurationCache;
 
-    ConfigurationLoader(BraintreeHTTPClient httpClient) {
+    ConfigurationLoader(BraintreeHttpClient httpClient) {
         this(httpClient, ConfigurationCache.getInstance());
     }
 
     @VisibleForTesting
-    ConfigurationLoader(BraintreeHTTPClient httpClient, ConfigurationCache configurationCache) {
+    ConfigurationLoader(BraintreeHttpClient httpClient, ConfigurationCache configurationCache) {
         this.httpClient = httpClient;
         this.configurationCache = configurationCache;
     }

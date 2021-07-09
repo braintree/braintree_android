@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class BraintreeHTTPClientUnitTest {
+public class BraintreeHttpClientUnitTest {
 
     private HTTPClient httpClient;
     HttpResponseCallback httpResponseCallback;
@@ -39,7 +39,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() {
         Authorization tokenizationKey = mock(Authorization.class);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", null, callback);
@@ -55,7 +55,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("https://example.com/sample/path", null, callback);
@@ -70,7 +70,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -92,7 +92,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withClientToken_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization clientToken = Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -115,7 +115,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withPayPalUAT_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization payPalUAT = Authorization.fromString(Fixtures.BASE64_PAYPAL_UAT);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(payPalUAT, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(payPalUAT, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -138,7 +138,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void get_withInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(authorization, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
@@ -154,7 +154,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postSync_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws Exception {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -179,7 +179,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postSync_withClientToken_forwardsHTTPRequestToHTTPClient() throws Exception {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -206,7 +206,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postSync_withNullConfiguration_andRelativeUrl_throwsError() {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         try {
             sut.post("sample/path", "{}", null);
@@ -219,7 +219,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postSync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         sut.post("https://example.com/sample/path", "{}", null);
 
@@ -233,7 +233,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postSync_withInvalidToken_throwsBraintreeException() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(authorization, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         try {
@@ -247,7 +247,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postAsync_withTokenizationKey_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         Authorization tokenizationKey = TokenizationKey.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(tokenizationKey, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(tokenizationKey, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -270,7 +270,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postAsync_withClientToken_forwardsHTTPRequestToHTTPClient() throws MalformedURLException, URISyntaxException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
@@ -296,7 +296,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postAsync_withNullConfiguration_andRelativeUrl_postsCallbackError() {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
@@ -313,7 +313,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postAsync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() throws Exception {
         ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
 
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("https://example.com/sample/path", "{}", null, callback);
@@ -333,7 +333,7 @@ public class BraintreeHTTPClientUnitTest {
         Authorization clientToken = Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
 
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(clientToken, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(clientToken, httpClient);
         sut.post("sample/path", "not json", configuration, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -348,7 +348,7 @@ public class BraintreeHTTPClientUnitTest {
     @Test
     public void postAsync_withInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
-        BraintreeHTTPClient sut = new BraintreeHTTPClient(authorization, httpClient);
+        BraintreeHttpClient sut = new BraintreeHttpClient(authorization, httpClient);
 
         Configuration configuration = mock(Configuration.class);
         HttpResponseCallback callback = mock(HttpResponseCallback.class);

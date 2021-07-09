@@ -15,7 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 /**
  * Network request class that handles Braintree request specifics and threading.
  */
-class BraintreeHTTPClient {
+class BraintreeHttpClient {
 
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -24,12 +24,12 @@ class BraintreeHTTPClient {
     private final HTTPClient httpClient;
     private final Authorization authorization;
 
-    BraintreeHTTPClient(Authorization authorization) {
+    BraintreeHttpClient(Authorization authorization) {
         this(authorization, new HTTPClient(getSocketFactory(), new BraintreeHTTPResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHTTPClient(Authorization authorization, HTTPClient httpClient) {
+    BraintreeHttpClient(Authorization authorization, HTTPClient httpClient) {
         this.httpClient = httpClient;
         this.authorization = authorization;
     }

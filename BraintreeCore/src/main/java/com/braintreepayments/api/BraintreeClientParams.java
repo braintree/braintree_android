@@ -6,7 +6,7 @@ class BraintreeClientParams {
 
     private Authorization authorization;
     private AnalyticsClient analyticsClient;
-    private BraintreeHTTPClient httpClient;
+    private BraintreeHttpClient httpClient;
     private Context context;
 
     private String sessionId;
@@ -35,11 +35,11 @@ class BraintreeClientParams {
         return this;
     }
 
-    BraintreeHTTPClient getHTTPClient() {
+    BraintreeHttpClient getHTTPClient() {
         return httpClient;
     }
 
-    BraintreeClientParams httpClient(BraintreeHTTPClient httpClient) {
+    BraintreeClientParams httpClient(BraintreeHttpClient httpClient) {
         this.httpClient = httpClient;
         return this;
     }

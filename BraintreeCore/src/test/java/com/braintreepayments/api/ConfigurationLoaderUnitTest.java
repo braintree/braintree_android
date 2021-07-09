@@ -29,7 +29,7 @@ public class ConfigurationLoaderUnitTest {
 
     private ConfigurationCache configurationCache;
 
-    private BraintreeHTTPClient braintreeHTTPClient;
+    private BraintreeHttpClient braintreeHTTPClient;
     private ConfigurationCallback callback;
 
     private Context context;
@@ -42,7 +42,7 @@ public class ConfigurationLoaderUnitTest {
         authorization = mock(Authorization.class);
         context = mock(Context.class);
 
-        braintreeHTTPClient = mock(BraintreeHTTPClient.class);
+        braintreeHTTPClient = mock(BraintreeHttpClient.class);
         callback = mock(ConfigurationCallback.class);
     }
 

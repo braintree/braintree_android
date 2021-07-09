@@ -12,7 +12,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class BraintreeHTTPClientTest {
+public class BraintreeHttpClientTest {
 
     private CountDownLatch countDownLatch;
 
@@ -24,7 +24,7 @@ public class BraintreeHTTPClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
+        BraintreeHttpClient braintreeHTTPClient = new BraintreeHttpClient(authorization);
 
         braintreeHTTPClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
 
@@ -42,7 +42,7 @@ public class BraintreeHTTPClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        BraintreeHTTPClient braintreeHTTPClient = new BraintreeHTTPClient(authorization);
+        BraintreeHttpClient braintreeHTTPClient = new BraintreeHttpClient(authorization);
 
         braintreeHTTPClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
 
