@@ -79,27 +79,33 @@ public class SamsungPayClientUnitTest {
     }
 
     @Test
-    public void goToUpdatePage_forwardsInvocationToInternalClient() {
+    public void goToUpdatePage_forwardsInvocationToInternalClient_andNotifiesCompletion() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
         SamsungPayInternalClient internalClient = mock(SamsungPayInternalClient.class);
         sut.internalClient = internalClient;
 
-        sut.goToUpdatePage();
+        SamsungPayUpdateCallback callback = mock(SamsungPayUpdateCallback.class);
+        sut.updateSamsungPay(callback);
+
         verify(internalClient).goToSamsungPayUpdatePage();
+        verify(callback).onResult(null);
     }
 
     @Test
-    public void activateSamsungPay_forwardsInvocationToInternalClient() {
+    public void activateSamsungPay_forwardsInvocationToInternalClient_andNotifiesCompletion() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         SamsungPayClient sut = new SamsungPayClient(braintreeClient);
 
         SamsungPayInternalClient internalClient = mock(SamsungPayInternalClient.class);
         sut.internalClient = internalClient;
 
-        sut.activateSamsungPay();
+        SamsungPayActivateCallback callback = mock(SamsungPayActivateCallback.class);
+        sut.activateSamsungPay(callback);
+
         verify(internalClient).activateSamsungPay();
+        verify(callback).onResult(null);
     }
 
     @Test

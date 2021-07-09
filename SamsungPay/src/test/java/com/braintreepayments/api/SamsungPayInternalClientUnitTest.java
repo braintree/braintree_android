@@ -348,6 +348,6 @@ public class SamsungPayInternalClientUnitTest {
         verify(listener).onSamsungPayStartError(captor.capture());
 
         UserCanceledException error = captor.getValue();
-        assertEquals("User Canceled", error.getMessage());
+        assertEquals("User canceled Samsung Pay.", error.getMessage());
     }
 }

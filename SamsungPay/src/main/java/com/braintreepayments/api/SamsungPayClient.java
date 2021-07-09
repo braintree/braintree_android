@@ -33,15 +33,16 @@ public class SamsungPayClient {
      * This should be invoked when Samsung Pay returns a {@link SamsungPayError#SAMSUNG_PAY_APP_NEEDS_UPDATE}
      * error code from {@link SamsungPayClient#isReadyToPay(SamsungPayIsReadyToPayCallback)}
      */
-    public void goToUpdatePage() {
+    public void updateSamsungPay(final SamsungPayUpdateCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
                 if (internalClient != null) {
                     internalClient.goToSamsungPayUpdatePage();
                     braintreeClient.sendAnalyticsEvent("samsung-pay.goto-update-page");
+                    callback.onResult(null);
                 } else {
-                    // TODO: determine if we should notify an error here
+                    callback.onResult(error);
                 }
             }
         });
@@ -52,15 +53,16 @@ public class SamsungPayClient {
      * This should be invoked when Samsung Pay returns a {@link SamsungPayError#SAMSUNG_PAY_SETUP_NOT_COMPLETED}
      * error code from {@link SamsungPayClient#isReadyToPay(SamsungPayIsReadyToPayCallback)}
      */
-    public void activateSamsungPay() {
+    public void activateSamsungPay(final SamsungPayActivateCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable SamsungPayInternalClient internalClient, @Nullable Exception error) {
                 if (internalClient != null) {
                     internalClient.activateSamsungPay();
                     braintreeClient.sendAnalyticsEvent("samsung-pay.activate-samsung-pay");
+                    callback.onResult(null);
                 } else {
-                    // TODO: determine if we should notify an error here
+                    callback.onResult(error);
                 }
             }
         });
