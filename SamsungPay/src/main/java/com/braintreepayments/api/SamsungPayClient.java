@@ -82,7 +82,7 @@ public class SamsungPayClient {
             public void onResult(@Nullable Integer status, @Nullable Exception samsungPayError) {
                 if (status != null) {
                     if (status == SPAY_READY) {
-                        getBraintreeSupportedSamsungPayCards(new GetAcceptedCardBrandsCallback() {
+                        getAcceptedCardBrands(new GetAcceptedCardBrandsCallback() {
                             @Override
                             public void onResult(@Nullable List<SpaySdk.Brand> acceptedCardBrands, @Nullable Exception error) {
                                 if (acceptedCardBrands != null) {
@@ -135,7 +135,7 @@ public class SamsungPayClient {
         });
     }
 
-    private void getBraintreeSupportedSamsungPayCards(final GetAcceptedCardBrandsCallback callback) {
+    private void getAcceptedCardBrands(final GetAcceptedCardBrandsCallback callback) {
         getInternalClient(new GetSamsungPayInternalClientCallback() {
             @Override
             public void onResult(@Nullable final SamsungPayInternalClient internalClient, @Nullable Exception error) {
