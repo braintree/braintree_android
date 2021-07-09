@@ -26,7 +26,7 @@ public class HttpClientTest {
     public void sendRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
         HttpClient sut = new HttpClient(null, new BaseHTTPResponseParser());
 
-        HTTPRequest httpRequest = new HTTPRequest()
+        HttpRequest httpRequest = new HttpRequest()
                 .method("GET")
                 .baseUrl("https://bad.endpoint")
                 .path("bad/path");

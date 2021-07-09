@@ -35,7 +35,7 @@ class BraintreeGraphQLClient {
             return;
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
                 .data(data)
@@ -53,7 +53,7 @@ class BraintreeGraphQLClient {
             return;
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path("")
                 .data(data)
@@ -70,7 +70,7 @@ class BraintreeGraphQLClient {
             throw new BraintreeException(message);
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
                 .data(data)

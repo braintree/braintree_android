@@ -30,14 +30,14 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 @PrepareForTest({ TLSSocketFactory.class })
 public class SynchronousHttpClientUnitTest {
 
-    HTTPRequest httpRequest;
+    HttpRequest httpRequest;
     BaseHTTPResponseParser httpResponseParser;
     SSLSocketFactory sslSocketFactory;
 
     @Before
     public void beforeEach() {
         mockStatic(TLSSocketFactory.class);
-        httpRequest = mock(HTTPRequest.class);
+        httpRequest = mock(HttpRequest.class);
         httpResponseParser = mock(BaseHTTPResponseParser.class);
         sslSocketFactory = mock(SSLSocketFactory.class);
     }

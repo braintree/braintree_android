@@ -92,7 +92,7 @@ class BraintreeHttpClient {
             targetPath = path;
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("GET")
                 .path(targetPath)
                 .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
@@ -147,7 +147,7 @@ class BraintreeHttpClient {
             requestData = data;
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
                 .data(requestData)
@@ -193,7 +193,7 @@ class BraintreeHttpClient {
             requestData = data;
         }
 
-        HTTPRequest request = new HTTPRequest()
+        HttpRequest request = new HttpRequest()
                 .method("POST")
                 .path(path)
                 .data(requestData)

@@ -20,7 +20,7 @@ public class HttpClientUnitTest {
 
     private SynchronousHttpClient syncHTTPClient;
 
-    private HTTPRequest httpRequest;
+    private HttpRequest httpRequest;
     private MockThreadScheduler threadScheduler;
 
     @Before
@@ -28,7 +28,7 @@ public class HttpClientUnitTest {
         syncHTTPClient = mock(SynchronousHttpClient.class);
         threadScheduler = spy(new MockThreadScheduler());
 
-        httpRequest = new HTTPRequest().path("https://example.com");
+        httpRequest = new HttpRequest().path("https://example.com");
     }
 
     @Test

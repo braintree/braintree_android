@@ -41,19 +41,19 @@ class HttpClient {
         this.retryCountMap = new HashMap<>();
     }
 
-    String sendRequest(HTTPRequest request) throws Exception {
+    String sendRequest(HttpRequest request) throws Exception {
         return syncHTTPClient.request(request);
     }
 
-    void sendRequest(HTTPRequest request, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, HttpResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HTTPRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(new Runnable() {
@@ -76,7 +76,7 @@ class HttpClient {
         });
     }
 
-    private void retryGet(final HTTPRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -104,7 +104,7 @@ class HttpClient {
         return retryCount;
     }
 
-    private void resetRetryCount(HTTPRequest request) {
+    private void resetRetryCount(HttpRequest request) {
         URL url = null;
         try {
             url = request.getURL();

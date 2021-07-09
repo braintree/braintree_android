@@ -60,10 +60,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("https://example.com/sample/path", null, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
     }
 
@@ -78,10 +78,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
@@ -100,10 +100,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         String expectedUrlString = String.format("https://example.com/sample/path?authorizationFingerprint=%s", clientToken.getBearer());
         assertEquals(new URL(expectedUrlString), httpRequest.getURL());
@@ -123,10 +123,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.get("sample/path", configuration, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         String expectedUrlString = String.format("https://example.com/sample/path?authorizationFingerprint=%s", payPalUAT.getBearer());
         assertEquals(new URL(expectedUrlString), httpRequest.getURL());
@@ -159,15 +159,15 @@ public class BraintreeHttpClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        when(httpClient.sendRequest(any(HTTPRequest.class))).thenReturn("sample result");
+        when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample result");
 
         String result = sut.post("sample/path", "{}", configuration);
         assertEquals("sample result", result);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture());
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
@@ -184,15 +184,15 @@ public class BraintreeHttpClientUnitTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getClientApiUrl()).thenReturn("https://example.com");
 
-        when(httpClient.sendRequest(any(HTTPRequest.class))).thenReturn("sample result");
+        when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample result");
 
         String result = sut.post("sample/path", "{}", configuration);
         assertEquals("sample result", result);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture());
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
@@ -223,10 +223,10 @@ public class BraintreeHttpClientUnitTest {
 
         sut.post("https://example.com/sample/path", "{}", null);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture());
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
     }
 
@@ -255,10 +255,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("sample/path", "{}", configuration, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
@@ -279,10 +279,10 @@ public class BraintreeHttpClientUnitTest {
 
         sut.post("sample/path", "{}", configuration, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         Map<String, String> headers = httpRequest.getHeaders();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
@@ -318,10 +318,10 @@ public class BraintreeHttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.post("https://example.com/sample/path", "{}", null, callback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(callback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example.com/sample/path"), httpRequest.getURL());
     }
 

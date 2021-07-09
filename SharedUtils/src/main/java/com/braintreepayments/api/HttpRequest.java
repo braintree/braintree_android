@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-class HTTPRequest {
+class HttpRequest {
 
     private static final int THIRTY_SECONDS_MS = 30000;
 
@@ -25,11 +25,11 @@ class HTTPRequest {
     private Map<String, String> headers;
     private final Map<String, String> additionalHeaders;
 
-    static HTTPRequest newInstance() {
-        return new HTTPRequest();
+    static HttpRequest newInstance() {
+        return new HttpRequest();
     }
 
-    HTTPRequest() {
+    HttpRequest() {
         headers = null;
         additionalHeaders = new HashMap<>();
         baseUrl = "";
@@ -38,27 +38,27 @@ class HTTPRequest {
         connectTimeout = THIRTY_SECONDS_MS;
     }
 
-    HTTPRequest path(String path) {
+    HttpRequest path(String path) {
         this.path = path;
         return this;
     }
 
-    HTTPRequest baseUrl(String baseUrl) {
+    HttpRequest baseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }
 
-    HTTPRequest data(String data) {
+    HttpRequest data(String data) {
         this.data = data;
         return this;
     }
 
-    HTTPRequest method(String method) {
+    HttpRequest method(String method) {
         this.method = method;
         return this;
     }
 
-    HTTPRequest addHeader(String name, String value) {
+    HttpRequest addHeader(String name, String value) {
         additionalHeaders.put(name, value);
         return this;
     }

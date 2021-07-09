@@ -36,7 +36,7 @@ class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
-    String request(HTTPRequest httpRequest) throws Exception {
+    String request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }

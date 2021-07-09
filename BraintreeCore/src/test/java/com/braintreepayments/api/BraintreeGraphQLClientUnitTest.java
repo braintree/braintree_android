@@ -43,10 +43,10 @@ public class BraintreeGraphQLClientUnitTest {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("sample/path", "data", configuration, httpResponseCallback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());
@@ -62,10 +62,10 @@ public class BraintreeGraphQLClientUnitTest {
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         sut.post("data", configuration, httpResponseCallback);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), same(httpResponseCallback));
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());
@@ -78,16 +78,16 @@ public class BraintreeGraphQLClientUnitTest {
 
     @Test
     public void post_withPathAndDataAndConfiguration_sendsHTTPRequest() throws Exception {
-        when(httpClient.sendRequest(any(HTTPRequest.class))).thenReturn("sample response");
+        when(httpClient.sendRequest(any(HttpRequest.class))).thenReturn("sample response");
 
         BraintreeGraphQLClient sut = new BraintreeGraphQLClient(authorization, httpClient);
         String result = sut.post("sample/path", "data", configuration);
         assertEquals("sample response", result);
 
-        ArgumentCaptor<HTTPRequest> captor = ArgumentCaptor.forClass(HTTPRequest.class);
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture());
 
-        HTTPRequest httpRequest = captor.getValue();
+        HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
         assertEquals("data", httpRequest.getData());
         assertEquals("POST", httpRequest.getMethod());

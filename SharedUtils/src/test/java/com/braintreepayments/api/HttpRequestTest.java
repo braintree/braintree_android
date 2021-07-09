@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 
 @RunWith(Enclosed.class)
-public class HTTPRequestTest {
+public class HttpRequestTest {
 
-    public static class NonParameterizedHTTPRequestTests {
+    public static class NonParameterizedHttpRequestTests {
 
         @Test
         public void getPath_returnsPath() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .path("sample/path");
 
             assertEquals("sample/path", sut.getPath());
@@ -31,7 +31,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getData_returnsData() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .data("sample data");
 
             assertEquals("sample data", sut.getData());
@@ -39,7 +39,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getMethod_returnsMethod() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .method("GET");
 
             assertEquals("GET", sut.getMethod());
@@ -47,7 +47,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getHeaders_containsADefaultSetOfHeaders() {
-            HTTPRequest sut = HTTPRequest.newInstance();
+            HttpRequest sut = HttpRequest.newInstance();
 
             assertEquals(2, sut.getHeaders().size());
             assertEquals("gzip", sut.getHeaders().get("Accept-Encoding"));
@@ -56,7 +56,7 @@ public class HTTPRequestTest {
 
         @Test
         public void addHeaders_allowsForMoreHeadersToBeAddedToDefaultSet() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .addHeader("Header-0", "0")
                     .addHeader("Header-1", "1");
 
@@ -66,7 +66,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getURL_whenPathStartsWithHTTP_returnsPathWithNoModification() throws MalformedURLException, URISyntaxException {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .path("https://anothersite.com/path");
 
             URL expectedURL = new URL("https://anothersite.com/path");
@@ -75,19 +75,19 @@ public class HTTPRequestTest {
 
         @Test
         public void constructor_setsConnectTimeoutTo30SecondsByDefault() {
-            HTTPRequest sut = HTTPRequest.newInstance();
+            HttpRequest sut = HttpRequest.newInstance();
             assertEquals(30000, sut.getConnectTimeout());
         }
 
         @Test
         public void constructor_setsReadTimeoutTo30SecondsByDefault() {
-            HTTPRequest sut = HTTPRequest.newInstance();
+            HttpRequest sut = HttpRequest.newInstance();
             assertEquals(30000, sut.getReadTimeout());
         }
 
         @Test
         public void getURL_throwsMalformedURLExceptionIfBaseURLIsNull() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .baseUrl(null)
                     .path("sample/path");
 
@@ -101,7 +101,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getURL_throwsMalformedURLExceptionIfBaseURLIsEmpty() {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .baseUrl("")
                     .path("sample/path");
 
@@ -151,7 +151,7 @@ public class HTTPRequestTest {
 
         @Test
         public void getURL() throws Exception {
-            HTTPRequest sut = HTTPRequest.newInstance()
+            HttpRequest sut = HttpRequest.newInstance()
                     .baseUrl(baseUrl)
                     .path(path);
 
