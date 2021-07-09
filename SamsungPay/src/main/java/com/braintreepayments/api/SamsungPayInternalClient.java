@@ -88,8 +88,7 @@ class SamsungPayInternalClient {
                     } else {
                         if (statusCode == SPAY_NOT_READY) {
                             error = SamsungPayError.SAMSUNG_PAY_NOT_READY;
-                        } else {
-                            // SPAY_NOT_SUPPORTED
+                        } else if (statusCode == SPAY_NOT_SUPPORTED) {
                             error = SamsungPayError.SAMSUNG_PAY_NOT_SUPPORTED;
                         }
                     }
