@@ -25,12 +25,12 @@ public @interface SamsungPayError {
     int SAMSUNG_PAY_NOT_READY = 0;
 
     /**
-     * Samsung Pay app needs to be updated. See {@link SamsungPayClient#goToUpdatePage()}.
+     * Samsung Pay app needs to be updated. See {@link SamsungPayClient#updateSamsungPay(SamsungPayUpdateCallback)}.
      */
     int SAMSUNG_PAY_APP_NEEDS_UPDATE = 1;
 
     /**
-     * Samsung Pay app setup not completed. See {@link SamsungPayClient#activateSamsungPay()}.
+     * Samsung Pay app setup not completed. See {@link SamsungPayClient#activateSamsungPay(SamsungPayActivateCallback)}.
      */
     int SAMSUNG_PAY_SETUP_NOT_COMPLETED = 2;
 
