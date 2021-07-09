@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SamsungPay
+  * Add `BuildCustomSheetPaymentInfoCallback`
+  * Add `SamsungPayClient`
+  * Add `SamsungPayException`
+  * Add `SamsungPayNonce`
+  * Add `SamsungPayError` constants
+  * Add `SamsungPayIsReadyToPayCallback`
+  * Add `SamsungPayStartListener`
+
 ## 4.2.0
 
 * Add `VenmoClient#isReadyToPay()` method

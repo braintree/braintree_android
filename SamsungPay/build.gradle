@@ -1,0 +1,129 @@
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.2'
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
+        consumerProguardFiles 'proguard.pro'
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    testOptions.unitTests {
+        all {
+            jvmArgs '-noverify'
+        }
+        returnDefaultValues true
+        includeAndroidResources true
+    }
+}
+
+dependencies {
+    api project(':BraintreeCore')
+    api project(':Card')
+
+    api 'com.samsung.android.spay:sdk:2.5.01'
+
+    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    testImplementation 'org.powermock:powermock-classloading-xstream:2.0.9'
+    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation project(':TestUtils')
+}
+
+// region signing and publishing
+
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    repositories {
+        sonatype()
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                artifact sourcesJar
+                artifact javadocsJar
+
+                groupId = 'com.braintreepayments.api'
+                artifactId = 'samsung-pay'
+                version = rootProject.versionName
+
+                pom {
+                    name = 'samsung-pay'
+                    packaging = 'aar'
+                    description = 'Samsung Pay Module for Braintree\'s Android SDK.'
+                    url = 'https://github.com/braintree/braintree_android'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// endregion

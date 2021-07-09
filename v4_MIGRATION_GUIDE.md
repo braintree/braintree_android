@@ -536,7 +536,97 @@ However, `requestOneTimePayment` and `requestBillingAgreement` have been depreca
 
 ## Samsung Pay
 
-Samsung Pay is not yet supported in v4.
+The SamsungPay feature is now supported in a single dependency:
+
+```groovy
+dependencies {
+  implementation 'com.braintreepayments.api:samsung-pay:4.2.0'
+}
+```
+
+To use the feature, instantiate a `SamsungPayClient`:
+
+```java
+package com.my.app;
+
+public class SamsungPayActivity extends AppCompatActivity implements SamsungPayListener {
+    
+  private BraintreeClient braintreeClient;
+  private SamsungPayClient samsungPayClient;
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    braintreeClient = new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN");
+    samsungPayClient = new SamsungPayClient(braintreeClient);
+  }
+
+  private void checkIfSamsungPayIsAvailable() {
+    samsungPayClient.isReadyToPay((isReadyToPay, error) -> {
+      if (isReadyToPay) {
+        // Samsung Pay is available 
+      } else {
+        // handle error 
+      }
+    });
+  }
+ 
+  private void launchSamsungPay() {
+    samsungPayClient.buildCustomSheetPaymentInfo((builder, error) -> {
+      if (builder != null) {
+        CustomSheetPaymentInfo paymentInfo = builder
+            .setAddressInPaymentSheet(CustomSheetPaymentInfo.AddressInPaymentSheet.NEED_BILLING_AND_SHIPPING)
+            .setCustomSheet(getCustomSheet())
+            .setOrderNumber("order-number")
+            .build();
+        samsungPayClient.startSamsungPay(paymentInfo, SamsungPayActivity.this);
+      } else {
+        // handle error
+      }
+    });
+  }
+
+  private CustomSheet getCustomSheet() {
+    CustomSheet sheet = new CustomSheet();
+
+    final AddressControl billingAddressControl = new AddressControl("billingAddressId", SheetItemType.BILLING_ADDRESS);
+    billingAddressControl.setAddressTitle("Billing Address");
+    billingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
+      samsungPayClient.updateCustomSheet(customSheet);
+    });
+    sheet.addControl(billingAddressControl);
+
+    final AddressControl shippingAddressControl = new AddressControl("shippingAddressId", SheetItemType.SHIPPING_ADDRESS);
+    shippingAddressControl.setAddressTitle("Shipping Address");
+    shippingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
+      samsungPayClient.updateCustomSheet(customSheet);
+    });
+    sheet.addControl(shippingAddressControl);
+
+    AmountBoxControl amountBoxControl = new AmountBoxControl("amountID", "USD");
+    amountBoxControl.setAmountTotal(1.0, AmountConstants.FORMAT_TOTAL_PRICE_ONLY);
+    sheet.addControl(amountBoxControl);
+
+    return sheet;
+  }
+
+  @Override
+  public void onSamsungPayStartError(@NonNull Exception error) {
+    // handle samsung pay start error
+  }
+
+  @Override
+  public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, CustomSheetPaymentInfo paymentInfo) {
+    // send samsungPayNonce.getString() to server to create a transaction
+  }
+
+  @Override
+  public void onSamsungPayCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
+    // make adjustments to custom sheet as needed
+    samsungPayClient.updateCustomSheet(customSheet);
+  }
+}
+```
 
 ## Visa Checkout
 

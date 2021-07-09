@@ -23,6 +23,9 @@
             android:id="@+id/action_mainFragment_to_googlePayFragment"
             app:destination="@id/googlePayFragment" />
         <action
+            android:id="@+id/action_mainFragment_to_samsungPayFragment"
+            app:destination="@id/samsungPayFragment" />
+        <action
             android:id="@+id/action_mainFragment_to_visaCheckoutFragment"
             app:destination="@id/visaCheckoutFragment" />
         <action
@@ -139,5 +142,15 @@
         android:name="com.braintreepayments.demo.PreferredPaymentMethodsFragment"
         tools:layout="@layout/fragment_preferred_payment_methods"
         />
+    <fragment
+        android:id="@+id/samsungPayFragment"
+        android:name="com.braintreepayments.demo.SamsungPayFragment"
+        tools:layout="@layout/fragment_samsung_pay">
+        <action
+            android:id="@+id/action_samsungPayFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
 
 </navigation>

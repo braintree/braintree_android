@@ -1,3 +1,4 @@
+include ':SamsungPay'
 include ':VisaCheckout'
 include ':GooglePay'
 include ':Venmo'
