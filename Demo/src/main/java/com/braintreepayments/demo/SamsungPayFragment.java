@@ -152,7 +152,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
     }
 
     @Override
-    public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, CustomSheetPaymentInfo paymentInfo) {
+    public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, @NonNull CustomSheetPaymentInfo paymentInfo) {
         super.onPaymentMethodNonceCreated(samsungPayNonce);
 
         NavDirections action =
@@ -161,7 +161,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
     }
 
     @Override
-    public void onSamsungPayCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet) {
+    public void onSamsungPayCardInfoUpdated(@NonNull CardInfo cardInfo, @NonNull CustomSheet customSheet) {
         AmountBoxControl amountBoxControl = (AmountBoxControl) customSheet.getSheetControl("amountID");
         amountBoxControl.setAmountTotal(1.0, AmountConstants.FORMAT_TOTAL_PRICE_ONLY);
 

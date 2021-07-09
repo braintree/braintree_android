@@ -17,14 +17,14 @@ public interface SamsungPayListener {
      * @param cardInfo SamsungPay [CardInfo]
      * @param customSheet SamsungPay [CustomSheet]
      */
-    void onSamsungPayCardInfoUpdated(CardInfo cardInfo, CustomSheet customSheet);
+    void onSamsungPayCardInfoUpdated(@NonNull CardInfo cardInfo, @NonNull CustomSheet customSheet);
 
     /**
      * Called on Samsung Pay start success.
      * @param samsungPayNonce {@link PaymentMethodNonce} representing a Samsung Pay Card
      * @param paymentInfo Samsung Pay [CustomSheetPaymentInfo] containing additional information
      */
-    void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, CustomSheetPaymentInfo paymentInfo);
+    void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, @NonNull CustomSheetPaymentInfo paymentInfo);
 
     /**
      * Called on Samsung Pay start error.
