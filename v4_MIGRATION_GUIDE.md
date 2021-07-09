@@ -592,7 +592,6 @@ public class SamsungPayActivity extends AppCompatActivity implements SamsungPayL
     final AddressControl billingAddressControl = new AddressControl("billingAddressId", SheetItemType.BILLING_ADDRESS);
     billingAddressControl.setAddressTitle("Billing Address");
     billingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
-      Log.d("billing sheet updated", controlId);
       samsungPayClient.updateCustomSheet(customSheet);
     });
     sheet.addControl(billingAddressControl);
@@ -600,7 +599,6 @@ public class SamsungPayActivity extends AppCompatActivity implements SamsungPayL
     final AddressControl shippingAddressControl = new AddressControl("shippingAddressId", SheetItemType.SHIPPING_ADDRESS);
     shippingAddressControl.setAddressTitle("Shipping Address");
     shippingAddressControl.setSheetUpdatedListener((controlId, customSheet) -> {
-      Log.d("shipping sheet updated", controlId);
       samsungPayClient.updateCustomSheet(customSheet);
     });
     sheet.addControl(shippingAddressControl);
