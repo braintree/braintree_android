@@ -2,7 +2,10 @@
 
 ## unreleased
 
+* Core
+  * Make `Configuration#getSupportedCardTypes()` public
 * ThreeDSecure
+  * Make `ThreeDSecureResult#getLookup()` public
   * Bump Cardinal version to `2.2.5-4`
 * SamsungPay
   * Add `BuildCustomSheetPaymentInfoCallback`

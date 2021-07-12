@@ -81,7 +81,10 @@ public class ThreeDSecureResult implements Parcelable {
         return (errorMessage != null && errorMessage.length() > 0);
     }
 
-    ThreeDSecureLookup getLookup() {
+    /**
+     * @return {@link ThreeDSecureLookup} containing details of the 3D Secure lookup.
+     */
+    public ThreeDSecureLookup getLookup() {
         return lookup;
     }
 
