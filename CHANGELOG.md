@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* Core
+  * Make `Configuration#getSupportedCardTypes()` public
+* ThreeDSecure
+  * Make `ThreeDSecureResult#getLookup()` public
 * SamsungPay
   * Add `BuildCustomSheetPaymentInfoCallback`
   * Add `SamsungPayClient`

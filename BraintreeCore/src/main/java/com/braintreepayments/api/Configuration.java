@@ -488,7 +488,7 @@ public class Configuration {
     /**
      * @return a {@link List<String>} of card types supported by the merchant.
      */
-    List<String> getSupportedCardTypes() {
+    public List<String> getSupportedCardTypes() {
         return cardConfiguration.getSupportedCardTypes();
     }
 }
