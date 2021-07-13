@@ -151,10 +151,7 @@ class AnalyticsDatabase extends SQLiteOpenHelper {
                         request.id = Integer.valueOf(ids[i]);
                         request.event = events[i];
                         request.timestamp = Long.valueOf(timestamps[i]);
-                        int columnIndex = cursor.getColumnIndex(META_JSON);
-                        if (columnIndex >= 0) {
-                            request.metadata = new JSONObject(cursor.getString(columnIndex));
-                        }
+                        request.metadata = new JSONObject(cursor.getString(cursor.getColumnIndex(META_JSON)));
                         innerList.add(request);
                     } catch (JSONException ignored) {}
                 }
