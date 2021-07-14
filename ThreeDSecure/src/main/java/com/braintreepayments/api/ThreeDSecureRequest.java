@@ -317,6 +317,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
         dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(exemptionRequested ? (byte) 1 : 0);
+        dest.writeByte(cardAdd ? (byte) 1 : 0);
         dest.writeParcelable(v2UiCustomization, flags);
         dest.writeParcelable(v1UiCustomization, flags);
         dest.writeString(accountType);
@@ -334,6 +335,7 @@ public class ThreeDSecureRequest implements Parcelable {
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
+        cardAdd = in.readByte() > 0;
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         accountType = in.readString();
@@ -367,6 +369,10 @@ public class ThreeDSecureRequest implements Parcelable {
             base.put("amount", amount);
             base.put("additional_info", additionalInfo);
             base.putOpt("account_type", accountType);
+
+            if (cardAdd) {
+               base.put("card_add", cardAdd);
+            }
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
             additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
