@@ -40,6 +40,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean challengeRequested = false;
     private boolean dataOnlyRequested = false;
     private boolean exemptionRequested = false;
+    private boolean cardAdd = false;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
 
@@ -162,6 +163,10 @@ public class ThreeDSecureRequest implements Parcelable {
         this.exemptionRequested = exemptionRequested;
     }
 
+    public void setCardAdd(boolean cardAdd) {
+        this.cardAdd = cardAdd;
+    }
+
     /**
      * Optional UI Customization for the 3DS2 challenge views.
      * See <a href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization documentation</a>.
@@ -270,6 +275,10 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     public boolean isExemptionRequested() {
         return exemptionRequested;
+    }
+
+    public boolean isCardAdd() {
+        return cardAdd;
     }
 
     /**
