@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -8,8 +10,21 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
+import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.approve.Approval;
+import com.paypal.checkout.approve.OnApprove;
+import com.paypal.checkout.cancel.OnCancel;
+import com.paypal.checkout.config.CheckoutConfig;
+import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.createorder.CreateOrder;
+import com.paypal.checkout.createorder.CreateOrderActions;
+import com.paypal.checkout.error.ErrorInfo;
+import com.paypal.checkout.error.OnError;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
@@ -114,10 +129,39 @@ public class PayPalClient {
                     callback.onResult(manifestInvalidError);
                     return;
                 }
+                String clientId = configuration.getPayPalClientId();
+                if (clientId == null) {
+                    //In the future module, we should default this to our new callback function.
+                    //Is this the correct way to send an analytic?
+                    braintreeClient.sendAnalyticsEvent("paypal.native.client-id-null");
+                    callback.onResult(new BraintreeException("Client Id is null"));
+                    return;
+                }
+                String redirectUrl = getPayPalReturnUrl(activity);
+                Environment environment = Environment.SANDBOX;
+                if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
+                    environment = Environment.LIVE;
+                }
+
+                CheckoutConfig checkoutConfig = new CheckoutConfig(
+                        activity.getApplication(),
+                        clientId,
+                        environment,
+                        redirectUrl
+                );
+                PayPalCheckout.setConfig(checkoutConfig);
                 sendPayPalRequest(activity, payPalCheckoutRequest, callback);
             }
         });
 
+    }
+
+    private String getPayPalReturnUrl(Context context) {
+        //Shouldnt the configuration include the return URL of the client? why are generating this?
+        if (context != null) {
+            return String.format("%s://paypalpay", context.getPackageName().toLowerCase(Locale.ROOT)).replace("_", "");
+        }
+        return null;
     }
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
@@ -168,7 +212,7 @@ public class PayPalClient {
         });
     }
 
-    private void startBrowserSwitch(FragmentActivity activity, PayPalResponse payPalResponse) throws JSONException, BrowserSwitchException {
+    private void startBrowserSwitch(final FragmentActivity activity, final PayPalResponse payPalResponse) throws JSONException, BrowserSwitchException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", payPalResponse.getApprovalUrl());
         metadata.put("success-url", payPalResponse.getSuccessUrl());
@@ -182,12 +226,65 @@ public class PayPalClient {
         metadata.put("source", "paypal-browser");
         metadata.put("intent", payPalResponse.getIntent());
 
-        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+        final BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(payPalResponse.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .metadata(metadata);
-        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+        if (payPalResponse.isBillingAgreement()) {
+            braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+        } else {
+            PayPalCheckout.start(
+                    new CreateOrder() {
+                        @Override
+                        public void create(@NonNull CreateOrderActions createOrderActions) {
+                            Context appContext = activity.getApplicationContext();
+                            Uri browserSwitchUrl = browserSwitchOptions.getUrl();
+                            int requestCode = browserSwitchOptions.getRequestCode();
+                            String returnUrlScheme = browserSwitchOptions.getReturnUrlScheme();
+                            JSONObject metadata = browserSwitchOptions.getMetadata();
+                            BrowserSwitchRequest request =
+                                    new BrowserSwitchRequest(requestCode, browserSwitchUrl, metadata, returnUrlScheme);
+                            BrowserSwitchPersistentStore persistentStore = BrowserSwitchPersistentStore.getInstance();
+                            persistentStore.putActiveRequest(request, appContext);
+                            createOrderActions.set(payPalResponse.getPairingId());
+                        }
+                    },
+                    new OnApprove() {
+                        @Override
+                        public void onApprove(@NonNull Approval approval) {
+                            Intent currentIntent = activity.getIntent();
+                            String data = String.format(
+                                    "%s://onetouch/v1/success?token=%s",
+                                    braintreeClient.getReturnUrlScheme(),
+                                    approval.getData().getOrderId()
+                            );
+                            currentIntent.setData(Uri.parse(data));
+                            activity.setIntent(currentIntent);
+                        }
+                    },
+
+                    /*
+                      PayPalFlowStarted Callback is used for errors before checkout,
+                      and PayPalBrowserSwitchResultCallback doesn't apply as we wont call a browser.
+                      Implementation of onError and onCancel depend on the design of future PayPalNativeCheckout module
+                     */
+                    new OnCancel() {
+                        @Override
+                        public void onCancel() {
+                            //is this the correct analytic?
+                            braintreeClient.sendAnalyticsEvent("paypal.native.client_cancel");
+                        }
+                    },
+                    new OnError() {
+                        @Override
+                        public void onError(@NonNull ErrorInfo errorInfo) {
+                            //do we send analytic here? if so we should specify error
+                            braintreeClient.sendAnalyticsEvent("paypal.native.error");
+                        }
+                    }
+            );
+        }
     }
 
     private static String getAnalyticsEventPrefix(PayPalRequest request) {
