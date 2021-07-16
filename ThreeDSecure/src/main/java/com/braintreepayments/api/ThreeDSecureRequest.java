@@ -164,11 +164,11 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. An authentication created using this flag should only be used for card add operations
-     * (creation of customers' credit cards or payment methods) and not for creating transactions.
+     * Optional. An authentication created using this flag should only be used for adding a
+     * payment method to the merchant's vault and not for creating transactions.
      *
-     * @param cardAdd If set to true, card-add challenge will be requested from the issuer to confirm
-     *                adding new card to the merchant's vault.
+     * @param cardAdd If set to true, the authentication challenge will be requested from the issuer
+     *                to confirm adding new card to the merchant's vault.
      */
     public void setCardAdd(boolean cardAdd) {
         this.cardAdd = cardAdd;
@@ -285,8 +285,8 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return If card-add challenge will be requested from the issuer to confirm adding new card to
-     * the merchant's vault.
+     * @return If the authentication challenge will be requested from the issuer to confirm adding
+     * new card to the merchant's vault.
      */
     public boolean isCardAdd() {
         return cardAdd;
