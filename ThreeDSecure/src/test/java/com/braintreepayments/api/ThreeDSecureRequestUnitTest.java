@@ -63,7 +63,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.setChallengeRequested(true);
         expected.setDataOnlyRequested(true);
         expected.setExemptionRequested(true);
-        expected.setCardAdd(true);
+        expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
         expected.setV1UiCustomization(v1UiCustomization);
         expected.setAccountType(ThreeDSecureRequest.CREDIT);
@@ -95,7 +95,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
         assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
-        assertEquals(expected.isCardAdd(), actual.isCardAdd());
+        assertEquals(expected.isCardAddChallengeRequested(), actual.isCardAddChallengeRequested());
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
@@ -135,7 +135,7 @@ public class ThreeDSecureRequestUnitTest {
         request.setChallengeRequested(true);
         request.setDataOnlyRequested(true);
         request.setExemptionRequested(true);
-        request.setCardAdd(true);
+        request.setCardAddChallengeRequested(true);
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
         JSONObject json = new JSONObject(request.build("df-reference-id"));

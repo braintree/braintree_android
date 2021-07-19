@@ -7,7 +7,7 @@
 * ThreeDSecure
   * Make `ThreeDSecureResult#getLookup()` public
   * Bump Cardinal version to `2.2.5-4`
-  * Add `cardAdd` to `ThreeDSecureRequest`
+  * Add `cardAddChallengeRequested` to `ThreeDSecureRequest`
 * SamsungPay
   * Add `BuildCustomSheetPaymentInfoCallback`
   * Add `SamsungPayClient`
