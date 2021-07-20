@@ -40,6 +40,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean challengeRequested = false;
     private boolean dataOnlyRequested = false;
     private boolean exemptionRequested = false;
+    private boolean cardAddChallengeRequested = false;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
 
@@ -163,6 +164,17 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. An authentication created using this flag should only be used for adding a
+     * payment method to the merchant's vault and not for creating transactions.
+     *
+     * @param cardAddChallengeRequested If set to true, the authentication challenge will be requested from the issuer
+     *                to confirm adding new card to the merchant's vault.
+     */
+    public void setCardAddChallengeRequested(boolean cardAddChallengeRequested) {
+        this.cardAddChallengeRequested = cardAddChallengeRequested;
+    }
+
+    /**
      * Optional UI Customization for the 3DS2 challenge views.
      * See <a href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization documentation</a>.
      *
@@ -273,6 +285,14 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * @return If the authentication challenge will be requested from the issuer to confirm adding
+     * new card to the merchant's vault.
+     */
+    public boolean isCardAddChallengeRequested() {
+        return cardAddChallengeRequested;
+    }
+
+    /**
      * @return The UI customization for 3DS2 challenge views.
      */
     @Nullable
@@ -308,6 +328,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
         dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(exemptionRequested ? (byte) 1 : 0);
+        dest.writeByte(cardAddChallengeRequested ? (byte) 1 : 0);
         dest.writeParcelable(v2UiCustomization, flags);
         dest.writeParcelable(v1UiCustomization, flags);
         dest.writeString(accountType);
@@ -325,6 +346,7 @@ public class ThreeDSecureRequest implements Parcelable {
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
+        cardAddChallengeRequested = in.readByte() > 0;
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         accountType = in.readString();
@@ -358,6 +380,10 @@ public class ThreeDSecureRequest implements Parcelable {
             base.put("amount", amount);
             base.put("additional_info", additionalInfo);
             base.putOpt("account_type", accountType);
+
+            if (cardAddChallengeRequested) {
+               base.put("card_add", cardAddChallengeRequested);
+            }
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
             additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
