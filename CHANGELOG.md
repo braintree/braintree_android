@@ -8,14 +8,6 @@
   * Make `ThreeDSecureResult#getLookup()` public
   * Bump Cardinal version to `2.2.5-4`
   * Add `cardAddChallengeRequested` to `ThreeDSecureRequest`
-* SamsungPay
-  * Add `BuildCustomSheetPaymentInfoCallback`
-  * Add `SamsungPayClient`
-  * Add `SamsungPayException`
-  * Add `SamsungPayNonce`
-  * Add `SamsungPayError` constants
-  * Add `SamsungPayIsReadyToPayCallback`
-  * Add `SamsungPayStartListener`
 
 ## 4.2.0
 
