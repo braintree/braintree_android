@@ -262,4 +262,20 @@ public class ThreeDSecureRequestUnitTest {
         JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
         assertFalse(json.getJSONObject("additional_info").has("shipping_method"));
     }
+
+    @Test
+    public void build_whenCardAddChallengeRequestedNotSet_doesNotSetCardAddChallengeRequested() throws JSONException {
+        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+
+        JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
+        assertFalse(json.has("card_add"));
+    }
+
+    @Test
+    public void build_whenCardAddChallengeRequestedFalse_setsCardAddChallengeRequestedFalse() throws JSONException {
+        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+
+        JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
+        assertFalse(json.getBoolean("card_add"));
+    }
 }
