@@ -40,7 +40,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean challengeRequested = false;
     private boolean dataOnlyRequested = false;
     private boolean exemptionRequested = false;
-    private boolean cardAddChallengeRequested = false;
+    private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
 
@@ -167,8 +167,12 @@ public class ThreeDSecureRequest implements Parcelable {
      * Optional. An authentication created using this flag should only be used for adding a
      * payment method to the merchant's vault and not for creating transactions.
      *
-     * @param cardAddChallengeRequested If set to true, the authentication challenge will be requested from the issuer
-     *                to confirm adding new card to the merchant's vault.
+     * @param cardAddChallengeRequested If set to true, the authentication challenge will be requested
+     *                                  from the issuer to confirm adding new card to the merchant's
+     *                                  vault. If not set and amount is 0, the authentication challenge
+     *                                  will be presented to the user. If set to false, when the amount
+     *                                  is 0, the authentication challenge will not be presented to the user.
+     *
      */
     public void setCardAddChallengeRequested(boolean cardAddChallengeRequested) {
         this.cardAddChallengeRequested = cardAddChallengeRequested;
