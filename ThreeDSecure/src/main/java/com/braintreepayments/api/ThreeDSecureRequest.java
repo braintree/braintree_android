@@ -174,7 +174,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *                                  is 0, the authentication challenge will not be presented to the user.
      *
      */
-    public void setCardAddChallengeRequested(boolean cardAddChallengeRequested) {
+    public void setCardAddChallengeRequested(@Nullable Boolean cardAddChallengeRequested) {
         this.cardAddChallengeRequested = cardAddChallengeRequested;
     }
 
@@ -290,9 +290,10 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * @return If the authentication challenge will be requested from the issuer to confirm adding
-     * new card to the merchant's vault.
+     * new card to the merchant's vault or null if the value has not been set.
      */
-    public boolean isCardAddChallengeRequested() {
+    @Nullable
+    public Boolean isCardAddChallengeRequested() {
         return cardAddChallengeRequested;
     }
 
