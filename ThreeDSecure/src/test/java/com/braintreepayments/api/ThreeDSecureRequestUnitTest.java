@@ -274,6 +274,7 @@ public class ThreeDSecureRequestUnitTest {
     @Test
     public void build_whenCardAddChallengeRequestedFalse_setsCardAddChallengeRequestedFalse() throws JSONException {
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+        threeDSecureRequest.setCardAddChallengeRequested(false);
 
         JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
         assertFalse(json.getBoolean("card_add"));

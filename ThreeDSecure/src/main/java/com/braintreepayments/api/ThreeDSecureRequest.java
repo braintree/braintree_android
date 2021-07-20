@@ -385,7 +385,7 @@ public class ThreeDSecureRequest implements Parcelable {
             base.put("additional_info", additionalInfo);
             base.putOpt("account_type", accountType);
 
-            if (cardAddChallengeRequested) {
+            if (cardAddChallengeRequested != null) {
                base.put("card_add", cardAddChallengeRequested);
             }
 
