@@ -221,7 +221,7 @@ end
 def update_readme_version(version)
   IO.write("README.md",
     File.open("README.md") do |file|
-      file.read.gsub(/:braintree:\d+\.\d+\.\d+'/, ":braintree:#{version}'")
+      file.read.gsub(/:card:\d+\.\d+\.\d+'/, ":card:#{version}'")
     end
   )
 end

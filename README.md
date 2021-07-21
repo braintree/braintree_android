@@ -10,11 +10,14 @@ Braintree's Android SDK is available for Android SDK >= 21.
 
 ## Adding It To Your Project
 
-Add the dependency in your `build.gradle`:
+The features of the Braintree SDK are organized into modules and that can be imported as dependencies in your `build.gradle` file.
+See the [v4 migration guide](v4_MIGRATION_GUIDE.md) for specific dependencies required for each module.
+
+For an integration offering card payments, add the following dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:braintree:4.2.0'
+  implementation 'com.braintreepayments.api:card:4.2.0'
 }
 ```
 
