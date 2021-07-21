@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.3.0
 
 * Core
   * Make `Configuration#getSupportedCardTypes()` public
