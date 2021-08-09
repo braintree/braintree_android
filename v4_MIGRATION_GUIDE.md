@@ -621,7 +621,7 @@ public class SamsungPayActivity extends AppCompatActivity implements SamsungPayL
   }
 
   @Override
-  public void onSamsungPayCardInfoUpdated(@NotNull CardInfo cardInfo, @NonNull CustomSheet customSheet) {
+  public void onSamsungPayCardInfoUpdated(@NonNull CardInfo cardInfo, @NonNull CustomSheet customSheet) {
     // make adjustments to custom sheet as needed
     samsungPayClient.updateCustomSheet(customSheet);
   }
