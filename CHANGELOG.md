@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SamsungPay
+  * Add `SamsungPayClient`
+  * Add `SamsungPayClient#goToUpdatePage()`
+  * Add `SamsungPayClient#activateSamsungPay()`
+  * Add `SamsungPayClient#isReadyToPay()`
+  * Add `SamsungPayClient#startSamsungPay()`
+  * Add `SamsungPayClient#buildCustomSheetPaymentInfo()`
+  * Add `SamsungPayClient#updateCustomSheet()`
+
 ## 4.3.0
 
 * Core
