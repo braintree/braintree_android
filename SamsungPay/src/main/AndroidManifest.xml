@@ -2,4 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.braintreepayments.api.samsungpay">
 
+    <application>
+        <meta-data android:name="spay_sdk_api_level" android:value="2.4" />
+        <meta-data android:name="debug_mode" android:value="N" />
+    </application>
+
+    <queries>
+        <package android:name="com.samsung.android.spay" />
+    </queries>
 </manifest>
