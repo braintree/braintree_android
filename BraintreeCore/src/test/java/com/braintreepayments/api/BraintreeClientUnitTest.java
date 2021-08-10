@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -257,6 +258,18 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
+    public void getBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+        BrowserSwitchResult browserSwitchResult = createSuccessfulBrowserSwitchResult();
+        when(browserSwitchClient.getResult(activity)).thenReturn(browserSwitchResult);
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClient sut = new BraintreeClient(params);
+
+        assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity));
+    }
+
+    @Test
     public void deliverBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
@@ -348,5 +361,14 @@ public class BraintreeClientUnitTest {
                 .analyticsClient(analyticsClient)
                 .browserSwitchClient(browserSwitchClient)
                 .manifestValidator(manifestValidator);
+    }
+
+    private static BrowserSwitchResult createSuccessfulBrowserSwitchResult() {
+        int requestCode = 123;
+        Uri url = Uri.parse("www.example.com");
+        String returnUrlScheme = "sample-scheme";
+        BrowserSwitchRequest browserSwitchRequest = new BrowserSwitchRequest(
+                requestCode, url, new JSONObject(), returnUrlScheme, true);
+        return new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, browserSwitchRequest);
     }
 }

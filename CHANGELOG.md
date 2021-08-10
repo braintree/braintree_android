@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Core
+  * Bump `browser-switch` version to `2.0.2`
 * SamsungPay
   * Add `SamsungPayClient`
   * Add `SamsungPayClient#goToUpdatePage()`
