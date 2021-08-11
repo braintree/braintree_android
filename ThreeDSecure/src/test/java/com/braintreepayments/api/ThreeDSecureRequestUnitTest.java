@@ -110,7 +110,6 @@ public class ThreeDSecureRequestUnitTest {
 
     @Test
     public void writeToParcel_allowCardAddChallengeRequestedToEqualNull() {
-
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setCardAddChallengeRequested(null);
 
