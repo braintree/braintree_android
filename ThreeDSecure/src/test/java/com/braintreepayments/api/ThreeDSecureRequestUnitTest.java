@@ -12,6 +12,7 @@ import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_1;
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -105,6 +106,20 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(expected.getV1UiCustomization().getRedirectDescription(),
                 actual.getV1UiCustomization().getRedirectDescription());
+    }
+
+    @Test
+    public void writeToParcel_allowCardAddChallengeRequestedToEqualNull() {
+
+        ThreeDSecureRequest expected = new ThreeDSecureRequest();
+        expected.setCardAddChallengeRequested(null);
+
+        Parcel parcel = Parcel.obtain();
+        expected.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
+        assertNull(actual.isCardAddChallengeRequested());
     }
 
     @Test
