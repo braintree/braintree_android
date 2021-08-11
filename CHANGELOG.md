@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Fix issue that causes `ThreeDSecureRequest` to throw a NPE when parceling.
+
 ## 4.4.0
 
 * Core
