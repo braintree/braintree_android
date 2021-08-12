@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.4.1
 
 * ThreeDSecure
   * Fix issue that causes `ThreeDSecureRequest` to throw a `NullPointerException` when parceling.
