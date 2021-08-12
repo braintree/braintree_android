@@ -3,7 +3,7 @@
 ## unreleased
 
 * ThreeDSecure
-  * Fix issue that causes `ThreeDSecureRequest` to throw a NPE when parceling.
+  * Fix issue that causes `ThreeDSecureRequest` to throw a `NullPointerException` when parceling.
 
 ## 4.4.0
 
