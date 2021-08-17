@@ -214,7 +214,7 @@ public class SamsungPayInternalClientUnitTest {
         List<SpaySdk.Brand> acceptedCardBrands = cardBrandsCaptor.getValue();
         assertEquals(2, acceptedCardBrands.size());
         assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
-        assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
+        assertEquals(SpaySdk.Brand.VISA, acceptedCardBrands.get(1));
     }
 
     @Test
