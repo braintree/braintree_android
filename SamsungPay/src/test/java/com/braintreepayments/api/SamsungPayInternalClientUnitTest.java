@@ -49,9 +49,9 @@ public class SamsungPayInternalClientUnitTest {
     private ArgumentCaptor<List<SpaySdk.Brand>> cardBrandsCaptor;
 
     @Before
-    public void beforeEach() {
+    public void beforeEach() throws JSONException {
         MockitoAnnotations.initMocks(this);
-        configuration = mock(Configuration.class);
+        configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY);
     }
 
     @Test
@@ -204,8 +204,6 @@ public class SamsungPayInternalClientUnitTest {
                 .requestCardInfoSuccess(Arrays.asList(visaCardInfo, masterCardInfo))
                 .build();
 
-        when(configuration.getSupportedCardTypes()).thenReturn(Arrays.asList("mastercard", "american_express"));
-
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
@@ -214,7 +212,8 @@ public class SamsungPayInternalClientUnitTest {
         verify(callback).onResult(cardBrandsCaptor.capture(), (Exception) isNull());
 
         List<SpaySdk.Brand> acceptedCardBrands = cardBrandsCaptor.getValue();
-        assertEquals(1, acceptedCardBrands.size());
+        assertEquals(2, acceptedCardBrands.size());
+        assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
         assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
     }
 

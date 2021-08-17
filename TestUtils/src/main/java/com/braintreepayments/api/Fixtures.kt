@@ -811,15 +811,22 @@ object Fixtures {
           "environment": "test",
           "merchantId": "integration_merchant_id",
           "merchantAccountId": "integration_merchant_account_id",
+          "creditCards": {
+            "supportedCardTypes": [
+              "American Express",
+              "Discover",
+              "JCB",
+              "MasterCard",
+              "Visa"
+            ]
+          },
           "samsungPay" : {
             "displayName": "some example merchant",
             "serviceId": "some-service-id",
             "supportedCardBrands": [
               "american_express",
-              "diners",
               "discover",
               "jcb",
-              "maestro",
               "mastercard",
               "visa"
             ],
