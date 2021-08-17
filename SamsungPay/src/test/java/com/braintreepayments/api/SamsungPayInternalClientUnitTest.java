@@ -21,7 +21,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_APP_NEED_TO_UPDATE;
@@ -213,8 +215,11 @@ public class SamsungPayInternalClientUnitTest {
 
         List<SpaySdk.Brand> acceptedCardBrands = cardBrandsCaptor.getValue();
         assertEquals(2, acceptedCardBrands.size());
-        assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
-        assertEquals(SpaySdk.Brand.VISA, acceptedCardBrands.get(1));
+
+        Set<SpaySdk.Brand> expected = new HashSet<>(
+                Arrays.asList(SpaySdk.Brand.MASTERCARD, SpaySdk.Brand.VISA));
+        Set<SpaySdk.Brand> actual = new HashSet<>(acceptedCardBrands);
+        assertEquals(expected, actual);
     }
 
     @Test
