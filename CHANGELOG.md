@@ -4,6 +4,8 @@
 
 * BraintreeCore
   * Add `BraintreeClient` constructor to allow a custom return url scheme to be used for browser and app switching
+* SamsungPay
+  * Add additional alias for Amex in `SamsungPay` (fixes #430)
 
 ## 4.4.1
 
