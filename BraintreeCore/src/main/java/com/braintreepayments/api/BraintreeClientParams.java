@@ -13,6 +13,7 @@ class BraintreeClientParams {
     private String integrationType;
     private BraintreeGraphQLClient graphQLClient;
 
+    private String returnUrlScheme;
     private ConfigurationLoader configurationLoader;
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
@@ -104,6 +105,15 @@ class BraintreeClientParams {
 
     BraintreeClientParams setIntegrationType(String integrationType) {
         this.integrationType = integrationType;
+        return this;
+    }
+
+    String getReturnUrlScheme() {
+        return returnUrlScheme;
+    }
+
+    BraintreeClientParams returnUrlScheme(String returnUrlScheme) {
+        this.returnUrlScheme = returnUrlScheme;
         return this;
     }
 }
