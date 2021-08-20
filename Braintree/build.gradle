@@ -70,15 +70,15 @@ dependencies {
     androidTestImplementation project(':BraintreeDataCollector')
     androidTestImplementation project(':ThreeDSecure')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation project(':TestUtils')
 
     testImplementation playServicesWallet
     testImplementation project(':BraintreeDataCollector')
     testImplementation 'org.robolectric:robolectric:4.1'
-    testImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation 'androidx.test.ext:junit:1.1.3'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
