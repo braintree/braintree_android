@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Add `BraintreeClient` constructor to allow a custom return url scheme to be used for browser and app switching
+
 ## 4.4.1
 
 * ThreeDSecure
