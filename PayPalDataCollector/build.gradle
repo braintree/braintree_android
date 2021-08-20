@@ -8,7 +8,7 @@ def dataCollectorVersion = 'paypal-data-collector-5.1.1.jar'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
