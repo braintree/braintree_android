@@ -341,12 +341,22 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getReturnUrlScheme_returnsUrlScheme() {
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
-        BraintreeClient sut = new BraintreeClient(params);
+    public void getReturnUrlScheme_returnsUrlSchemeBasedOnApplicationIdByDefault() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String authorization = Fixtures.BASE64_CLIENT_TOKEN;
+        BraintreeClient sut = new BraintreeClient(context, authorization);
 
-        String returnUrlScheme = sut.getReturnUrlScheme();
-        assertEquals("com.braintreepayments.api.test.braintree", returnUrlScheme);
+        assertEquals("com.braintreepayments.api.test.braintree", sut.getReturnUrlScheme());
+    }
+
+    @Test
+    public void getReturnUrlScheme_returnsUrlSchemeDefinedInConstructor() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String authorization = Fixtures.BASE64_CLIENT_TOKEN;
+        String returnUrlScheme = "custom-url-scheme";
+        BraintreeClient sut = new BraintreeClient(context, authorization, returnUrlScheme);
+
+        assertEquals("custom-url-scheme", sut.getReturnUrlScheme());
     }
 
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, String sessionId, String integrationType) {
