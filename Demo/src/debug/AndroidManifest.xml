@@ -41,6 +41,5 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".internal.LeakLoggerService" />
     </application>
 </manifest>
