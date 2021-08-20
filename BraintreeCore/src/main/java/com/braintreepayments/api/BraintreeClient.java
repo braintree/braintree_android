@@ -66,7 +66,9 @@ public class BraintreeClient {
     }
 
     /**
-     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
+     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token and a custom url scheme.
+     *
+     * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
      *
      * @param context         Android Context
      * @param authorization   The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
