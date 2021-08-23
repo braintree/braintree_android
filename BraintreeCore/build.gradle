@@ -8,7 +8,7 @@ def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -46,7 +46,7 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.work:work-runtime:2.4.0'
+    implementation 'androidx.work:work-runtime:2.5.0'
 
     api 'com.braintreepayments.api:browser-switch:2.0.2'
     api project(':SharedUtils')
@@ -61,7 +61,7 @@ dependencies {
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
 
-    testImplementation 'androidx.work:work-testing:2.4.0'
+    testImplementation 'androidx.work:work-testing:2.5.0'
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'androidx.test:core:1.3.0'
     testImplementation 'androidx.test.ext:junit:1.1.2'
