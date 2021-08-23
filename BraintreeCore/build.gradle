@@ -46,7 +46,7 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.work:work-runtime:2.5.0'
+    implementation 'androidx.work:work-runtime:2.7.0-alpha05'
 
     api 'com.braintreepayments.api:browser-switch:2.0.2'
     api project(':SharedUtils')
