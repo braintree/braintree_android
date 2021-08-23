@@ -42,7 +42,7 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation project(':ThreeDSecure')
     testImplementation "androidx.core:core-ktx:+"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.20"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.5.10"
 
     androidTestImplementation project(':TestUtils')
