@@ -37,7 +37,8 @@ In v3, `com.braintreepayments.api.BraintreeBrowserSwitchActivity` was the design
 In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integration into an activity you own:
 
 ```xml
-<activity android:name="com.company.app.MyPaymentsActivity">
+<activity android:name="com.company.app.MyPaymentsActivity"
+    android:exported="true">
     ...
     <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
@@ -47,6 +48,8 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
     </intent-filter>
 </activity>
 ``` 
+
+Note: `android:exported="true"` is required if your app compile SDK version is API 31 (Android 12) or later.
 
 ## BraintreeFragment
 
