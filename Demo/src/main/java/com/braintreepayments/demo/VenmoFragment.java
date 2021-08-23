@@ -47,7 +47,11 @@ public class VenmoFragment extends BaseFragment {
         venmoClient.onActivityResult(getActivity(), activityResult.getResultCode(), activityResult.getData(), new VenmoOnActivityResultCallback() {
             @Override
             public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                handleVenmoResult(venmoAccountNonce);
+                if (error != null) {
+                    handleError(error);
+                } else {
+                    handleVenmoResult(venmoAccountNonce);
+                }
             }
         });
     }

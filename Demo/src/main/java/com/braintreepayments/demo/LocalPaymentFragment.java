@@ -92,6 +92,11 @@ public class LocalPaymentFragment extends BaseFragment {
     protected void handleLocalPaymentResult(LocalPaymentNonce localPaymentNonce, Exception error) {
         super.onPaymentMethodNonceCreated(localPaymentNonce);
 
+        if (error != null) {
+            handleError(error);
+            return;
+        }
+
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
                 LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
