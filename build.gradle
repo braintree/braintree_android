@@ -34,9 +34,9 @@ allprojects {
 
 version '4.5.1-SNAPSHOT'
 ext {
-    compileSdkVersion = 30
+    compileSdkVersion = 31
     minSdkVersion = 21
-    targetSdkVersion = 30
+    targetSdkVersion = 31
     versionCode = 136
     versionName = version
 

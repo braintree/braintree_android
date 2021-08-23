@@ -112,7 +112,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 
     androidTestImplementation 'com.braintreepayments:device-automator:1.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
