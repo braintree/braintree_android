@@ -49,7 +49,7 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 </activity>
 ``` 
 
-Note: `android:exported="true"` is required if your app compile SDK version is API 31 (Android 12) or later.
+Note: `android:exported` is required if your app compile SDK version is API 31 (Android 12) or later.
 
 ## BraintreeFragment
 
