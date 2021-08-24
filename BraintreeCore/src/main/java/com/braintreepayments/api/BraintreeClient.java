@@ -27,9 +27,18 @@ public class BraintreeClient {
     private final ManifestValidator manifestValidator;
     private final String sessionId;
     private final String integrationType;
-
+    private final String returnUrlScheme;
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString) {
+        String returnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
+        return createDefaultParams(context, authString, returnUrlScheme);
+    }
+
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
@@ -38,6 +47,7 @@ public class BraintreeClient {
                 .setIntegrationType(IntegrationType.get(context))
                 .sessionId(UUIDHelper.getFormattedUUID())
                 .httpClient(httpClient)
+                .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorization))
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
@@ -55,6 +65,19 @@ public class BraintreeClient {
         this(createDefaultParams(context, authorization));
     }
 
+    /**
+     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token and a custom url scheme.
+     *
+     * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
+     *
+     * @param context         Android Context
+     * @param authorization   The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
+     * @param returnUrlScheme A custom return url to use for browser and app switching
+     */
+    public BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String returnUrlScheme) {
+        this(createDefaultParams(context, authorization, returnUrlScheme));
+    }
+
     @VisibleForTesting
     BraintreeClient(BraintreeClientParams params) {
         this.analyticsClient = params.getAnalyticsClient();
@@ -67,6 +90,7 @@ public class BraintreeClient {
         this.manifestValidator = params.getManifestValidator();
         this.sessionId = params.getSessionId();
         this.integrationType = params.getIntegrationType();
+        this.returnUrlScheme = params.getReturnUrlScheme();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -155,11 +179,7 @@ public class BraintreeClient {
     }
 
     String getReturnUrlScheme() {
-        if (applicationContext != null) {
-            return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
-                    .replace("_", "") + ".braintree";
-        }
-        return null;
+        return returnUrlScheme;
     }
 
     boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {
@@ -183,7 +203,7 @@ public class BraintreeClient {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, urlScheme, klass);
     }
 
-    ActivityInfo getManifestActivityInfo(Class klass) {
+    <T> ActivityInfo getManifestActivityInfo(Class<T> klass) {
         return manifestValidator.getActivityInfo(applicationContext, klass);
     }
 
