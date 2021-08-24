@@ -8,7 +8,7 @@ def dataCollectorVersion = 'paypal-data-collector-5.1.1.jar'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -34,8 +34,8 @@ dependencies {
     api files('libs/' + dataCollectorVersion)
     compileOnly 'androidx.annotation:annotation:1.1.0'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
 }
 
 // region signing and publishing

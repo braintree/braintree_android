@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
+* Bump `browser-switch` version to `1.2.0`
+
 ## 3.17.4
 
 * Revert release 3.17.3 (local repository does not propagate MPI aar file)

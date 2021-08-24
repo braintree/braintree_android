@@ -10,7 +10,8 @@
         <activity android:name=".test.TestActivity" />
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <data android:scheme="com.braintreepayments.api.test.braintree" />
