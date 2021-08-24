@@ -38,7 +38,7 @@ dependencies {
     implementation files('libs/android-magnessdk-5.3.0.jar')
 
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation project(':BraintreeCore')
+    api project(':BraintreeCore')
 
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.mockito:mockito-core:3.6.0'
