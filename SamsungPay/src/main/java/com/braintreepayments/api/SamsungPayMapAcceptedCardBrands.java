@@ -25,6 +25,7 @@ class SamsungPayMapAcceptedCardBrands {
                 case "discover":
                     result.add(SpaySdk.Brand.DISCOVER);
                     break;
+                case "american express":
                 case "american_express":
                     result.add(SpaySdk.Brand.AMERICANEXPRESS);
                     break;

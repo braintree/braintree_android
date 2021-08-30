@@ -411,7 +411,7 @@ public class ConfigurationUnitTest {
     public void getSamsungPaySupportedCardBrands_forwardsValuesFromConfiguration() throws JSONException {
         Configuration sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY);
 
-        List<String> expected = Arrays.asList("american_express", "diners", "discover", "jcb", "maestro", "mastercard", "visa");
+        List<String> expected = Arrays.asList("american_express", "discover", "jcb", "mastercard", "visa");
         assertEquals(expected, sut.getSamsungPaySupportedCardBrands());
     }
 

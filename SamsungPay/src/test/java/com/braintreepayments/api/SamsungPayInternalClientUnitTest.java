@@ -21,7 +21,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.ERROR_SPAY_APP_NEED_TO_UPDATE;
@@ -49,9 +51,9 @@ public class SamsungPayInternalClientUnitTest {
     private ArgumentCaptor<List<SpaySdk.Brand>> cardBrandsCaptor;
 
     @Before
-    public void beforeEach() {
+    public void beforeEach() throws JSONException {
         MockitoAnnotations.initMocks(this);
-        configuration = mock(Configuration.class);
+        configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY);
     }
 
     @Test
@@ -204,8 +206,6 @@ public class SamsungPayInternalClientUnitTest {
                 .requestCardInfoSuccess(Arrays.asList(visaCardInfo, masterCardInfo))
                 .build();
 
-        when(configuration.getSupportedCardTypes()).thenReturn(Arrays.asList("mastercard", "american_express"));
-
         SamsungPay samsungPay = mock(SamsungPay.class);
         SamsungPayInternalClient sut = new SamsungPayInternalClient(configuration, samsungPay, paymentManager);
 
@@ -214,8 +214,12 @@ public class SamsungPayInternalClientUnitTest {
         verify(callback).onResult(cardBrandsCaptor.capture(), (Exception) isNull());
 
         List<SpaySdk.Brand> acceptedCardBrands = cardBrandsCaptor.getValue();
-        assertEquals(1, acceptedCardBrands.size());
-        assertEquals(SpaySdk.Brand.MASTERCARD, acceptedCardBrands.get(0));
+        assertEquals(2, acceptedCardBrands.size());
+
+        Set<SpaySdk.Brand> expected = new HashSet<>(
+                Arrays.asList(SpaySdk.Brand.MASTERCARD, SpaySdk.Brand.VISA));
+        Set<SpaySdk.Brand> actual = new HashSet<>(acceptedCardBrands);
+        assertEquals(expected, actual);
     }
 
     @Test
