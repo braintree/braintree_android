@@ -6,6 +6,7 @@
   * Add `BraintreeClient` constructor to allow a custom return url scheme to be used for browser and app switching
 * BraintreeDataCollector
   * Bump Magnes dependency to version 5.3.0
+  * Add `BraintreeCore` as an `api` dependency (Fixes #437)
 * SamsungPay
   * Add additional alias for Amex in `SamsungPay` (fixes #430)
 
