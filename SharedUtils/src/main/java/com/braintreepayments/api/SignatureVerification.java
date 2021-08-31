@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.util.Base64;
+import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 class SignatureVerification {
 
@@ -26,14 +24,12 @@ class SignatureVerification {
      *
      * @param context Android Context
      * @param packageName the package name of the app to verify.
-     * @param certificateSubject the expected certificate subject of the app.
-     * @param certificateIssuer the expected certificate issuer of the app.
-     * @param publicKeyHashCode the hash code of the app's public key.
+     * @param base64EncodedSignature the hash code of the app's public key.
      * @return true is signature is valid or signature verification has been disabled.
      */
     @SuppressLint("PackageManagerGetSignatures")
     static boolean isSignatureValid(Context context, String packageName,
-            String certificateSubject, String certificateIssuer, int publicKeyHashCode) {
+                                    String base64EncodedSignature) {
         if (!enableSignatureVerification) {
             return true;
         }
@@ -47,38 +43,26 @@ class SignatureVerification {
             return false;
         }
 
-        InputStream certStream = null;
-        boolean validated = (signatures.length != 0);
+        if (signatures.length == 0) {
+            return false;
+        }
+
         for (Signature signature : signatures) {
+            String currentSignature;
             try {
-                certStream = new ByteArrayInputStream(signature.toByteArray());
-
-                X509Certificate x509Cert =
-                        (X509Certificate) CertificateFactory.getInstance("X509")
-                                .generateCertificate(certStream);
-
-                String subject = x509Cert.getSubjectX500Principal().getName();
-                String issuer = x509Cert.getIssuerX500Principal().getName();
-                int actualPublicKeyHashCode = x509Cert.getPublicKey().hashCode();
-
-                validated &= (certificateSubject.equals(subject) &&
-                        certificateIssuer.equals(issuer) &&
-                        publicKeyHashCode == actualPublicKeyHashCode);
-
-                if (!validated) {
-                    return false;
-                }
-            } catch (CertificateException e) {
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                md.update(signature.toByteArray());
+                currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            } catch (NoSuchAlgorithmException e) {
                 return false;
-            } finally {
-                try {
-                    if (certStream != null) {
-                        certStream.close();
-                    }
-                } catch(IOException ignored) {}
+            }
+
+            boolean validated = base64EncodedSignature.equals(currentSignature);
+            if (!validated) {
+                return false;
             }
         }
 
-        return validated;
+        return true;
     }
 }

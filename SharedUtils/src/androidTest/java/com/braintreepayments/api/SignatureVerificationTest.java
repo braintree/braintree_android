@@ -51,6 +51,6 @@ public class SignatureVerificationTest {
 
     private boolean checkSignature() {
         return SignatureVerification.isSignatureValid(ApplicationProvider.getApplicationContext(),
-                "com.paypal.android.p2pmobile", "O=Paypal", "O=Paypal", 34172764);
+                "com.paypal.android.p2pmobile", "base64-encoded-signature");
     }
 }
