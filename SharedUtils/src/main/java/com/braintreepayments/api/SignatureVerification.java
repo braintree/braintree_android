@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.content.pm.SigningInfo;
 import android.util.Base64;
 
 import java.security.MessageDigest;
@@ -24,7 +23,7 @@ class SignatureVerification {
      *
      * @param context Android Context
      * @param packageName the package name of the app to verify.
-     * @param base64EncodedSignature the hash code of the app's public key.
+     * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
     @SuppressLint("PackageManagerGetSignatures")

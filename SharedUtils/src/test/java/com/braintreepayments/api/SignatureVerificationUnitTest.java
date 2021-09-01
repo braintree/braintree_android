@@ -67,7 +67,7 @@ public class SignatureVerificationUnitTest {
     }
 
     @Test
-    public void isSignatureValid_whenAdditionalSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException, PackageManager.NameNotFoundException {
+    public void isSignatureValid_whenAdditionalSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
         Signature[] signatures = new Signature[123];
         Signature firstSignature = mock(Signature.class);
         byte[] firstSignatureBytes = "example-signature1".getBytes();
