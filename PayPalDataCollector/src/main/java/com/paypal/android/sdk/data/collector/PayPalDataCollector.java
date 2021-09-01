@@ -2,8 +2,10 @@ package com.paypal.android.sdk.data.collector;
 
 import android.content.Context;
 import android.support.annotation.MainThread;
+import android.util.Log;
 
 import lib.android.paypal.com.magnessdk.Environment;
+import lib.android.paypal.com.magnessdk.InvalidInputException;
 import lib.android.paypal.com.magnessdk.MagnesResult;
 import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
@@ -68,17 +70,23 @@ public class PayPalDataCollector {
             return "";
         }
 
-        MagnesSDK magnesInstance = MagnesSDK.getInstance();
-        MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context)
-                .setMagnesSource(MagnesSource.BRAINTREE)
-                .disableBeacon(request.isDisableBeacon())
-                .setMagnesEnvironment(Environment.LIVE)
-                .setAppGuid(request.getApplicationGuid());
+        try {
 
-        magnesInstance.setUp(magnesSettingsBuilder.build());
+            MagnesSDK magnesInstance = MagnesSDK.getInstance();
+            MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context)
+                    .setMagnesSource(MagnesSource.BRAINTREE)
+                    .disableBeacon(request.isDisableBeacon())
+                    .setMagnesEnvironment(Environment.LIVE)
+                    .setAppGuid(request.getApplicationGuid());
 
-        MagnesResult result = magnesInstance.collectAndSubmit(context, request.getClientMetadataId(), request.getAdditionalData());
+            magnesInstance.setUp(magnesSettingsBuilder.build());
 
-        return result.getPaypalClientMetaDataId();
+            MagnesResult result = magnesInstance.collectAndSubmit(context, request.getClientMetadataId(), request.getAdditionalData());
+            return result.getPaypalClientMetaDataId();
+        } catch (InvalidInputException e) {
+            // Either clientMetadataId or appGuid exceeds their character limit
+            Log.e("Exception", "Error fetching client metadata ID. Contact Braintree Support for assistance.", e);
+            return "";
+        }
     }
 }
