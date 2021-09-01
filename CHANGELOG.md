@@ -2,8 +2,9 @@
 
 ## unreleased
 
-* Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
-* Bump `browser-switch` version to `2.1.0`
+* Android 12 Support
+  * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
+  * Bump `browser-switch` version to `2.1.0`
 
 ## 4.5.0
 
