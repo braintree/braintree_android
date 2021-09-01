@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
 import android.util.Base64;
-import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +35,7 @@ class SignatureVerification {
         }
 
         PackageManager packageManager = context.getPackageManager();
+
         Signature[] signatures;
         try {
             signatures = packageManager
@@ -48,18 +49,20 @@ class SignatureVerification {
         }
 
         for (Signature signature : signatures) {
-            String currentSignature;
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA-256");
-                md.update(signature.toByteArray());
-                currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-            } catch (NoSuchAlgorithmException e) {
-                return false;
-            }
+            if (signature != null) {
+                String currentSignature;
+                try {
+                    MessageDigest md = MessageDigest.getInstance("SHA-256");
+                    md.update(signature.toByteArray());
+                    currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                } catch (NoSuchAlgorithmException e) {
+                    return false;
+                }
 
-            boolean validated = base64EncodedSignature.equals(currentSignature);
-            if (!validated) {
-                return false;
+                boolean validated = base64EncodedSignature.equals(currentSignature);
+                if (!validated) {
+                    return false;
+                }
             }
         }
 
