@@ -48,20 +48,18 @@ class SignatureVerification {
         }
 
         for (Signature signature : signatures) {
-            if (signature != null) {
-                String currentSignature;
-                try {
-                    MessageDigest md = MessageDigest.getInstance("SHA-256");
-                    md.update(signature.toByteArray());
-                    currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-                } catch (NoSuchAlgorithmException e) {
-                    return false;
-                }
+            String currentSignature;
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                md.update(signature.toByteArray());
+                currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            } catch (NoSuchAlgorithmException e) {
+                return false;
+            }
 
-                boolean validated = base64EncodedSignature.equals(currentSignature);
-                if (!validated) {
-                    return false;
-                }
+            boolean validated = base64EncodedSignature.equals(currentSignature);
+            if (!validated) {
+                return false;
             }
         }
 

@@ -25,18 +25,16 @@ import java.security.NoSuchAlgorithmException;
 public class SignatureVerificationUnitTest {
 
     private Context context;
+    private PackageInfo packageInfo;
 
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException {
         context = mock(Context.class);
         PackageManager packageManager = mock(PackageManager.class);
-        PackageInfo packageInfo = mock(PackageInfo.class);
-        Signature[] signatures = new Signature[123];
-        Signature signature = mock(Signature.class);
-        byte[] bytes = "example-signature".getBytes();
-        signatures[0] = signature;
+        packageInfo = mock(PackageInfo.class);
+        Signature[] signatures = new Signature[1];
+        signatures[0] = createMockSignature("example-signature");
 
-        when(signature.toByteArray()).thenReturn(bytes);
         packageInfo.signatures = signatures;
         when(packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES))).thenReturn(packageInfo);
         when(context.getPackageManager()).thenReturn(packageManager);
@@ -44,48 +42,39 @@ public class SignatureVerificationUnitTest {
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException {
-        Signature signatureToVerify = mock(Signature.class);
-        when(signatureToVerify.toByteArray()).thenReturn("example-signature".getBytes());
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(signatureToVerify.toByteArray());
-
-        String base64EncodedSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-
-       assertTrue(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature));
+        String base64EncodedSignature = base64EncodedSHA256("example-signature");
+        assertTrue(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
-        Signature signatureToVerify = mock(Signature.class);
-        when(signatureToVerify.toByteArray()).thenReturn("different-signature".getBytes());
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(signatureToVerify.toByteArray());
-
-        String base64EncodedSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-
+        String base64EncodedSignature = base64EncodedSHA256("different-signature");
         assertFalse(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
     public void isSignatureValid_whenAdditionalSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
-        Signature[] signatures = new Signature[123];
-        Signature firstSignature = mock(Signature.class);
-        byte[] firstSignatureBytes = "example-signature1".getBytes();
-        when(firstSignature.toByteArray()).thenReturn(firstSignatureBytes);
-        signatures[0] = firstSignature;
+        Signature[] signatures = new Signature[2];
+        signatures[0] = createMockSignature("example-signature1");
+        signatures[1] = createMockSignature("example-signature2");
 
-        Signature additionalSignature = mock(Signature.class);
-        byte[] additionalSignatureBytes = "example-signature2".getBytes();
-        when(additionalSignature.toByteArray()).thenReturn(additionalSignatureBytes);
-        signatures[1] = additionalSignature;
+        packageInfo.signatures = signatures;
 
-        Signature signatureToVerify = mock(Signature.class);
-        when(signatureToVerify.toByteArray()).thenReturn("example-signature1".getBytes());
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(signatureToVerify.toByteArray());
-
-        String base64EncodedSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+        String base64EncodedSignature = base64EncodedSHA256("example-signature1");
 
         assertFalse(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature));
+    }
+
+    private static String base64EncodedSHA256(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(input.getBytes());
+        return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+    }
+
+    private static Signature createMockSignature(String signatureContent) {
+        Signature signature = mock(Signature.class);
+        byte[] bytes = signatureContent.getBytes();
+        when(signature.toByteArray()).thenReturn(bytes);
+        return signature;
     }
 }
