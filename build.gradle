@@ -4,7 +4,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.3'
 
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
@@ -89,9 +89,9 @@ allprojects {
     }
 
     ext {
-        compileSdkVersion = 30
+        compileSdkVersion = 31
         minSdkVersion = 16
-        targetSdkVersion = 30
+        targetSdkVersion = 31
         versionCode = 99
         versionName = version
     }
