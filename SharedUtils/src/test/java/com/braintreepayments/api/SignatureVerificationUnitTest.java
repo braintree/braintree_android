@@ -47,13 +47,13 @@ public class SignatureVerificationUnitTest {
     }
 
     @Test
-    public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException, CertificateException {
+    public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("example-signature");
         assertTrue(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
     }
 
     @Test
-    public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException, CertificateException {
+    public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("different-signature");
         assertFalse(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
     }

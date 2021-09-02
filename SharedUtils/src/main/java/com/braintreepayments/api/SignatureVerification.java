@@ -60,8 +60,8 @@ class SignatureVerification {
             String currentSignature;
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
-                md.update(certificateHelper.getEncodedCertificate(signature.toByteArray()));
-                currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                byte[] encodedCert = certificateHelper.getEncodedCertificate(signature.toByteArray());
+                currentSignature = Base64.encodeToString(md.digest(encodedCert), Base64.DEFAULT);
             } catch (NoSuchAlgorithmException | CertificateException e) {
                 return false;
             }
