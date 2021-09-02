@@ -7,8 +7,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 class SignatureVerification {
 
@@ -26,9 +29,15 @@ class SignatureVerification {
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    @SuppressLint("PackageManagerGetSignatures")
     static boolean isSignatureValid(Context context, String packageName,
                                     String base64EncodedSignature) {
+        return isSignatureValid(context, packageName, base64EncodedSignature , new CertificateHelper());
+    }
+
+    @VisibleForTesting
+    @SuppressLint("PackageManagerGetSignatures")
+    static boolean isSignatureValid(Context context, String packageName,
+                                    String base64EncodedSignature, CertificateHelper certificateHelper) {
         if (!enableSignatureVerification) {
             return true;
         }
@@ -51,9 +60,9 @@ class SignatureVerification {
             String currentSignature;
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
-                md.update(signature.toByteArray());
+                md.update(certificateHelper.getEncodedCertificate(signature.toByteArray()));
                 currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-            } catch (NoSuchAlgorithmException e) {
+            } catch (NoSuchAlgorithmException | CertificateException e) {
                 return false;
             }
 
