@@ -10,12 +10,18 @@
 
     <application>
         <activity android:name="com.braintreepayments.api.AndroidPayActivity"
-            android:theme="@style/bt_transparent_activity"/>
+            android:theme="@style/bt_transparent_activity"
+            android:exported="true"
+            />
 
         <activity android:name="com.braintreepayments.api.GooglePaymentActivity"
-            android:theme="@style/bt_transparent_activity"/>
+            android:theme="@style/bt_transparent_activity"
+            android:exported="true"
+            />
 
-        <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity"/>
+        <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity"
+            android:exported="true"
+            />
 
         <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
     </application>
