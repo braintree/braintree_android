@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump magnes version to 5.3.0
+* Update compile and target SDK versions to 31
+* Add android:export property to activities in AndroidManifest.xml
+
 ## 2.22.0
 
 * Add support for `PayPalLineItem`
