@@ -16,6 +16,5 @@
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
         <activity android:name=".test.DemoTestActivity"/>
 
-        <service android:name=".internal.LeakLoggerService" />
     </application>
 </manifest>

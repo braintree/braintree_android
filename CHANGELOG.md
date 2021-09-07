@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Android 12 Support
+  * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
+  * Bump `browser-switch` version to `2.1.0`
+  * Fix issue where Venmo app is not detected on Android 12 devices
+
 ## 4.5.0
 
 * BraintreeCore
