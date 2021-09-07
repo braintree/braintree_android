@@ -5,6 +5,7 @@
 
     <queries>
         <package android:name="com.venmo" />
+        <package android:name="com.android.chrome" />
         <package android:name="com.paypal.android.p2pmobile" />
     </queries>
 
