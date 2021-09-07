@@ -32,12 +32,12 @@ allprojects {
     }
 }
 
-version '4.6.0'
+version '4.6.1-SNAPSHOT'
 ext {
     compileSdkVersion = 31
     minSdkVersion = 21
     targetSdkVersion = 31
-    versionCode = 136
+    versionCode = 137
     versionName = version
 
     playServicesWalletVersion ='16.0.1'
