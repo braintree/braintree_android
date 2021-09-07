@@ -97,9 +97,6 @@ dependencies {
 
     implementation 'com.braintreepayments.api:google-payment:2.0.0'
 
-    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
-
     androidTestImplementation 'com.lukekorth:device-automator:0.3.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'

@@ -7,7 +7,9 @@
         android:usesCleartextTraffic="true">
 
         <!--suppress AndroidDomInspection -->
-        <activity android:name=".test.TestActivity" />
+        <activity android:name=".test.TestActivity"
+            android:exported="true"
+        />
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">

@@ -77,12 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
                 Settings.isPayPalSignatureVerificationDisabled(this));
         PayPalOneTouchCore.useHardcodedConfig(this, Settings.useHardcodedPayPalConfiguration(this));
 
-        if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{ WRITE_EXTERNAL_STORAGE }, 1);
-        } else {
-            handleAuthorizationState();
-        }
+        handleAuthorizationState();
     }
 
     @Override

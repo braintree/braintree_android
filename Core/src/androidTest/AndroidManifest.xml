@@ -2,6 +2,8 @@
           package="com.braintreepayments.api.core">
 
     <application>
-        <activity android:name="com.braintreepayments.api.test.ManifestTestActivity" />
+        <activity android:name="com.braintreepayments.api.test.ManifestTestActivity"
+            android:exported="true"
+        />
     </application>
 </manifest>
