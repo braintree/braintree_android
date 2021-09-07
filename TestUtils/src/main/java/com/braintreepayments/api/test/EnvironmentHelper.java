@@ -15,16 +15,6 @@ public class EnvironmentHelper {
     }
 
     public static String getGatewayPath() {
-        String path = EnvironmentHelper.getGatewayIp();
-
-        if (!TextUtils.isEmpty(BuildConfig.GATEWAY_PORT)) {
-            path = path + ":" + BuildConfig.GATEWAY_PORT;
-        }
-
-        if (!path.startsWith("http")) {
-            path = "http://" + path;
-        }
-
-        return path;
+        return "https://api.sandbox.braintreegateway.com:443";
     }
 }
