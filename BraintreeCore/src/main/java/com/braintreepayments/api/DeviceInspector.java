@@ -19,10 +19,7 @@ class DeviceInspector {
     private static final String VENMO_APP_PACKAGE = "com.venmo";
 
     private static final String VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
-    private static final String VENMO_CERTIFICATE_SUBJECT = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
-    private static final String VENMO_CERTIFICATE_ISSUER = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
-
-    private static final int VENMO_PUBLIC_KEY_HASH_CODE = -129711843;
+    private static final String VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n";
 
     private final AppHelper appHelper;
 
@@ -49,8 +46,8 @@ class DeviceInspector {
      */
     boolean isVenmoAppSwitchAvailable(Context context) {
         return appHelper.isIntentAvailable(context, getVenmoIntent()) &&
-                SignatureVerification.isSignatureValid(context, VENMO_APP_PACKAGE, VENMO_CERTIFICATE_SUBJECT, VENMO_CERTIFICATE_ISSUER,
-                        VENMO_PUBLIC_KEY_HASH_CODE);
+                SignatureVerification.isSignatureValid(context, VENMO_APP_PACKAGE,
+                        VENMO_BASE_64_ENCODED_SIGNATURE);
     }
 
     private static Intent getVenmoIntent() {
