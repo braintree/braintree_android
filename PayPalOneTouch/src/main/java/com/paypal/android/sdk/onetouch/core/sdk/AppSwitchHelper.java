@@ -30,8 +30,8 @@ public class AppSwitchHelper {
 
     private static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
 
-    public static final String PAYPAL_BASE_64_ENCODED_SIGNATURE1 = "tFPTfHgoVveCqOCfFO4guE9JoxB19H/ToHmC2Mr+/9k=\n";
-    public static final String PAYPAL_BASE_64_ENCODED_SIGNATURE2 = "x8YuoPbi9uuof5VAaYdQVTDvL1FufN5ZkdcUAzFEgHI=\n";
+    private static final String PAYPAL_BASE_64_ENCODED_SIGNATURE1 = "tFPTfHgoVveCqOCfFO4guE9JoxB19H/ToHmC2Mr+/9k=\n";
+    private static final String PAYPAL_BASE_64_ENCODED_SIGNATURE2 = "x8YuoPbi9uuof5VAaYdQVTDvL1FufN5ZkdcUAzFEgHI=\n";
 
     public static boolean isSignatureValid(Context context, String packageName) {
         return SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE1)
