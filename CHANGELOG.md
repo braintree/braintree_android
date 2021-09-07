@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.6.0
 
 * Android 12 Support
   * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
