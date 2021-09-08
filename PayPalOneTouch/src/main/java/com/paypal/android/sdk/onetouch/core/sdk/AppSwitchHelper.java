@@ -33,7 +33,8 @@ public class AppSwitchHelper {
 
     public static boolean isSignatureValid(Context context, String packageName) {
         return SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE1)
-                || SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE2);    }
+                || SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE2);
+    }
 
     public static Intent createBaseIntent(String action, String packageName) {
         return new Intent(action).setPackage(packageName);
