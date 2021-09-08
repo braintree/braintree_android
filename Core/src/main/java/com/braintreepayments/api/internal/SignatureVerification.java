@@ -5,10 +5,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.util.Base64;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -31,6 +36,7 @@ public class SignatureVerification {
      * @param publicKeyHashCode the hash code of the app's public key.
      * @return true is signature is valid or signature verification has been disabled.
      */
+    @Deprecated
     @SuppressLint("PackageManagerGetSignatures")
     public static boolean isSignatureValid(Context context, String packageName,
             String certificateSubject, String certificateIssuer, int publicKeyHashCode) {
@@ -80,5 +86,60 @@ public class SignatureVerification {
         }
 
         return validated;
+    }
+
+    /**
+     * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
+     * impersonating other apps.
+     *
+     * @param context Android Context
+     * @param packageName the package name of the app to verify.
+     * @param base64EncodedSignature the base64 encoded signature to verify.
+     * @return true is signature is valid or signature verification has been disabled.
+     */
+    public static boolean isSignatureValid(Context context, String packageName,
+                                           String base64EncodedSignature) {
+        return isSignatureValid(context, packageName, base64EncodedSignature , new CertificateHelper());
+    }
+
+    @VisibleForTesting
+    @SuppressLint("PackageManagerGetSignatures")
+    static boolean isSignatureValid(Context context, String packageName,
+                                    String base64EncodedSignature, CertificateHelper certificateHelper) {
+        if (!sEnableSignatureVerification) {
+            return true;
+        }
+
+        PackageManager packageManager = context.getPackageManager();
+
+        Signature[] signatures;
+        try {
+            signatures = packageManager
+                    .getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+
+        if (signatures.length == 0) {
+            return false;
+        }
+
+        for (Signature signature : signatures) {
+            String currentSignature;
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                byte[] encodedCert = certificateHelper.getEncodedCertificate(signature.toByteArray());
+                currentSignature = Base64.encodeToString(md.digest(encodedCert), Base64.DEFAULT);
+            } catch (NoSuchAlgorithmException | CertificateException e) {
+                return false;
+            }
+
+            boolean validated = base64EncodedSignature.equals(currentSignature);
+            if (!validated) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -4,6 +4,7 @@
 
 * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
 * Bump `browser-switch` version to `1.2.0`
+* Fix issue where Venmo app is not detected on Android 12 devices
 
 ## 3.17.4
 
