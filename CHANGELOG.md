@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Google Wallet dependency to 18.1.3
+
 ## 4.6.0
 
 * Android 12 Support
