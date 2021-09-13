@@ -78,6 +78,17 @@ public class ThreeDSecureLookupUnitTest {
     }
 
     @Test
+    public void fromJson_whenLookupVersion2_andPareqNull_parsesCorrectly() throws JSONException {
+        JSONObject lookupV2NullPareq = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_NULL_PAREQ).getJSONObject("lookup");
+        ThreeDSecureLookup sut = ThreeDSecureLookup.fromJson(lookupV2NullPareq.toString());
+        assertNull(sut.getPareq());
+    }
+
+    @Test
+    public void fromJson_whenLookupVersion1_andPareqNull_throwsException() {
+    }
+
+    @Test
     public void isParcelable() {
         Parcel parcel = Parcel.obtain();
         lookupWithVersion1.writeToParcel(parcel, 0);
