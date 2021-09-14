@@ -49,7 +49,7 @@ public class ThreeDSecureLookup implements Parcelable {
 
         lookup.md = json.getString(MD_KEY);
         lookup.termUrl = json.getString(TERM_URL_KEY);
-        lookup.pareq = json.getString(PA_REQ_KEY);
+        lookup.pareq = Json.optString(json, PA_REQ_KEY, "");
         lookup.threeDSecureVersion = Json.optString(json, THREE_D_SECURE_VERSION_KEY, "");
         lookup.transactionId = Json.optString(json, TRANSACTION_ID_KEY, "");
 
