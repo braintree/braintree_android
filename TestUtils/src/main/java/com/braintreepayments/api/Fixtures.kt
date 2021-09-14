@@ -81,6 +81,73 @@ object Fixtures {
     """
 
     // language=JSON
+    const val THREE_D_SECURE_LOOKUP_RESPONSE_NULL_PAREQ = """
+        {
+          "lookup": {
+            "acsUrl": "https://acs-url/",
+            "md": "merchant-descriptor",
+            "termUrl": "https://term-url/",
+            "pareq": null,
+            "transactionId": "sample-transaction-id"
+          },
+          "paymentMethod": {
+            "type": "CreditCard",
+            "nonce": "123456-12345-12345-a-adfa",
+            "description": "ending in ••11",
+            "isDefault": false,
+            "isLocked": false,
+            "securityQuestions": [],
+            "details": {
+              "cardType": "Visa",
+              "lastTwo": "11",
+              "lastFour": "1111"
+            },
+            "threeDSecureInfo": {
+              "liabilityShifted": true,
+              "liabilityShiftPossible": true
+            }
+          },
+          "threeDSecureInfo": {
+            "liabilityShifted": true,
+            "liabilityShiftPossible": true
+          }
+        }
+    """
+
+    // language=JSON
+    const val THREE_D_SECURE_LOOKUP_RESPONSE_MISSING_PAREQ = """
+        {
+          "lookup": {
+            "acsUrl": "https://acs-url/",
+            "md": "merchant-descriptor",
+            "termUrl": "https://term-url/",
+            "transactionId": "sample-transaction-id"
+          },
+          "paymentMethod": {
+            "type": "CreditCard",
+            "nonce": "123456-12345-12345-a-adfa",
+            "description": "ending in ••11",
+            "isDefault": false,
+            "isLocked": false,
+            "securityQuestions": [],
+            "details": {
+              "cardType": "Visa",
+              "lastTwo": "11",
+              "lastFour": "1111"
+            },
+            "threeDSecureInfo": {
+              "liabilityShifted": true,
+              "liabilityShiftPossible": true
+            }
+          },
+          "threeDSecureInfo": {
+            "liabilityShifted": true,
+            "liabilityShiftPossible": true
+          }
+        }
+    """
+
+    // language=JSON
     const val THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL = """
         {
           "lookup": {
@@ -123,6 +190,75 @@ object Fixtures {
             "md": "merchant-descriptor",
             "termUrl": "https://term-url/",
             "pareq": "pareq",
+            "threeDSecureVersion": "1.0.2",
+            "transactionId": "some-transaction-id"
+          },
+          "paymentMethod": {
+            "type": "CreditCard",
+            "nonce": "123456-12345-12345-a-adfa",
+            "description": "ending in ••11",
+            "isDefault": false,
+            "isLocked": false,
+            "securityQuestions": [],
+            "details": {
+              "cardType": "Visa",
+              "lastTwo": "11",
+              "lastFour": "1111"
+            },
+            "threeDSecureInfo": {
+              "liabilityShifted": true,
+              "liabilityShiftPossible": true
+            }
+          },
+          "threeDSecureInfo": {
+            "liabilityShifted": true,
+            "liabilityShiftPossible": true
+          }
+        }
+    """
+
+    // language=JSON
+    const val THREE_D_SECURE_V1_LOOKUP_RESPONSE_NULL_PAREQ = """
+        {
+          "lookup": {
+            "acsUrl": "https://acs-url/",
+            "md": "merchant-descriptor",
+            "termUrl": "https://term-url/",
+            "pareq": null,
+            "threeDSecureVersion": "1.0.2",
+            "transactionId": "some-transaction-id"
+          },
+          "paymentMethod": {
+            "type": "CreditCard",
+            "nonce": "123456-12345-12345-a-adfa",
+            "description": "ending in ••11",
+            "isDefault": false,
+            "isLocked": false,
+            "securityQuestions": [],
+            "details": {
+              "cardType": "Visa",
+              "lastTwo": "11",
+              "lastFour": "1111"
+            },
+            "threeDSecureInfo": {
+              "liabilityShifted": true,
+              "liabilityShiftPossible": true
+            }
+          },
+          "threeDSecureInfo": {
+            "liabilityShifted": true,
+            "liabilityShiftPossible": true
+          }
+        }
+    """
+
+    // language=JSON
+    const val THREE_D_SECURE_V1_LOOKUP_RESPONSE_MISSING_PAREQ = """
+        {
+          "lookup": {
+            "acsUrl": "https://acs-url/",
+            "md": "merchant-descriptor",
+            "termUrl": "https://term-url/",
             "threeDSecureVersion": "1.0.2",
             "transactionId": "some-transaction-id"
           },
