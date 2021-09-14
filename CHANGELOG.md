@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Make `pareq` optional on `ThreeDSecureLookup`
+
 ## 4.6.0
 
 * Android 12 Support
