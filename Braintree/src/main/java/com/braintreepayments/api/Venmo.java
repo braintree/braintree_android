@@ -44,8 +44,6 @@ public class Venmo {
 
     static final String PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
-    static final String CERTIFICATE_SUBJECT = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
-    static final String CERTIFICATE_ISSUER = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final int PUBLIC_KEY_HASH_CODE = -129711843;
 
     private static final String VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n";
