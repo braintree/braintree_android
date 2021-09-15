@@ -28,13 +28,12 @@ import java.util.Locale;
 public class AppSwitchHelper {
 
     private static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
-    private static final String WALLET_APP_CERT_SUBJECT = "O=Paypal";
-    private static final String WALLET_APP_CERT_ISSUER = "O=Paypal";
-    private static final int WALLET_APP_PUBLIC_KEY_HASH_CODE = 34172764;
+    private static final String PAYPAL_BASE_64_ENCODED_SIGNATURE1 = "tFPTfHgoVveCqOCfFO4guE9JoxB19H/ToHmC2Mr+/9k=\n";
+    private static final String PAYPAL_BASE_64_ENCODED_SIGNATURE2 = "x8YuoPbi9uuof5VAaYdQVTDvL1FufN5ZkdcUAzFEgHI=\n";
 
     public static boolean isSignatureValid(Context context, String packageName) {
-        return SignatureVerification.isSignatureValid(context, packageName, WALLET_APP_CERT_SUBJECT,
-                WALLET_APP_CERT_ISSUER, WALLET_APP_PUBLIC_KEY_HASH_CODE);
+        return SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE1)
+                || SignatureVerification.isSignatureValid(context, packageName, PAYPAL_BASE_64_ENCODED_SIGNATURE2);
     }
 
     public static Intent createBaseIntent(String action, String packageName) {

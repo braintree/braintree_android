@@ -81,16 +81,6 @@ public class VenmoUnitTest {
     }
 
     @Test
-    public void certificateSubjectIsCorrect() {
-        assertEquals("CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US", Venmo.CERTIFICATE_SUBJECT);
-    }
-
-    @Test
-    public void certificateIssuerIsCorrect() {
-        assertEquals("CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US", Venmo.CERTIFICATE_ISSUER);
-    }
-
-    @Test
     public void publicKeyHashCodeIsCorrect() {
         assertEquals(-129711843, Venmo.PUBLIC_KEY_HASH_CODE);
     }
