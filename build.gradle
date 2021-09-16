@@ -28,12 +28,12 @@ allprojects {
     }
 }
 
-version '3.18.0'
+version '3.18.1-SNAPSHOT'
 ext {
     compileSdkVersion = 31
     minSdkVersion = 21
     targetSdkVersion = 31
-    versionCode = 129
+    versionCode = 130
     versionName = version
 
     googlePaymentVersion = '3.3.1'
