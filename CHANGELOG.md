@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.18.0
 
 * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
 * Bump `browser-switch` version to `1.2.0`
