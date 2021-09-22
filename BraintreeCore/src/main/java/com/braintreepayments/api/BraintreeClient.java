@@ -38,7 +38,11 @@ public class BraintreeClient {
         return createDefaultParams(context, authString, UUIDHelper.getFormattedUUID(), returnUrlScheme);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
+        return createDefaultParams(context, authString, UUIDHelper.getFormattedUUID(), returnUrlScheme);
+    }
+
+    private static BraintreeClientParams createDefaultParams(String sessionId, Context context, String authString) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
@@ -85,6 +89,10 @@ public class BraintreeClient {
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String returnUrlScheme) {
         this(createDefaultParams(context, authorization, returnUrlScheme));
+    }
+
+    BraintreeClient(@NonNull String sessionId, @NonNull Context context, @NonNull String authorization) {
+        this(createDefaultParams(sessionId, context, authorization));
     }
 
     @VisibleForTesting
