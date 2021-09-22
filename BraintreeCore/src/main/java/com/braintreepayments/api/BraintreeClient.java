@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
@@ -35,29 +36,29 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, UUIDHelper.getFormattedUUID(), returnUrlScheme);
+        return createDefaultParams(context, authString, returnUrlScheme, UUIDHelper.getFormattedUUID(), IntegrationType.CUSTOM);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
-        return createDefaultParams(context, authString, UUIDHelper.getFormattedUUID(), returnUrlScheme);
+        return createDefaultParams(context, authString, returnUrlScheme, UUIDHelper.getFormattedUUID(), IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(String sessionId, Context context, String authString) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, @IntegrationType.Integration String integrationType) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, sessionId, returnUrlScheme);
+        return createDefaultParams(context, authString, returnUrlScheme, sessionId, integrationType);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, String returnUrlScheme) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)
-                .setIntegrationType(IntegrationType.CUSTOM)
+                .setIntegrationType(integrationType)
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
@@ -91,8 +92,8 @@ public class BraintreeClient {
         this(createDefaultParams(context, authorization, returnUrlScheme));
     }
 
-    BraintreeClient(@NonNull String sessionId, @NonNull Context context, @NonNull String authorization) {
-        this(createDefaultParams(sessionId, context, authorization));
+    BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
+        this(createDefaultParams(context, authorization, sessionId, integrationType));
     }
 
     @VisibleForTesting
