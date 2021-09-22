@@ -57,7 +57,7 @@ public class BraintreeClient {
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)
-                .setIntegrationType(IntegrationType.get(context))
+                .setIntegrationType(IntegrationType.CUSTOM)
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)

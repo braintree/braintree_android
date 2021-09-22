@@ -1,22 +1,18 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
+import androidx.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 class IntegrationType {
 
-    static String get(Context context) {
-        try {
-            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(context)) {
-                return "dropin";
-            }
-        } catch (ClassNotFoundException ignored) {}
-
-        try {
-            if (Class.forName("com.braintreepayments.api.dropin.DropInActivity").isInstance(context)) {
-                return "dropin2";
-            }
-        } catch (ClassNotFoundException ignored) {}
-
-        return "custom";
-    }
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+            IntegrationType.CUSTOM,
+            IntegrationType.DROP_IN
+    })
+    @interface Integration {}
+    static final String CUSTOM = "custom";
+    static final String DROP_IN = "dropin";
 }

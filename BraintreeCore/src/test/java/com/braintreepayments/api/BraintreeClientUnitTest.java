@@ -369,6 +369,15 @@ public class BraintreeClientUnitTest {
         assertEquals("custom-session-id", sut.getSessionId());
     }
 
+    @Test
+    public void getIntegrationType_returnsCustomByDefault() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String authorization = Fixtures.BASE64_CLIENT_TOKEN;
+        BraintreeClient sut = new BraintreeClient(context, authorization);
+
+        assertEquals("custom", sut.getIntegrationType());
+    }
+
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, String sessionId, String integrationType) {
         return new BraintreeClientParams()
                 .authorization(authorization)
