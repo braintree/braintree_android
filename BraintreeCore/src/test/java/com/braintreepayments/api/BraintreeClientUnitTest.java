@@ -62,7 +62,7 @@ public class BraintreeClientUnitTest {
 
     @Test
     public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         ConfigurationCallback configurationCallback = mock(ConfigurationCallback.class);
@@ -78,7 +78,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -94,7 +94,7 @@ public class BraintreeClientUnitTest {
                 .configurationError(exception)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -110,7 +110,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -126,7 +126,7 @@ public class BraintreeClientUnitTest {
                 .configurationError(exception)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -142,7 +142,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -158,7 +158,7 @@ public class BraintreeClientUnitTest {
                 .configurationError(exception)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -174,7 +174,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -182,8 +182,8 @@ public class BraintreeClientUnitTest {
         verify(analyticsClient).sendEvent(same(applicationContext), same(configuration), captor.capture());
 
         AnalyticsEvent event = captor.getValue();
-        assertEquals("sessionId", event.metadata.getString("sessionId"));
-        assertEquals("integrationType", event.metadata.getString("integrationType"));
+        assertEquals("session-id", event.metadata.getString("sessionId"));
+        assertEquals("custom", event.metadata.getString("integrationType"));
         assertEquals("android.event.started", event.event);
     }
 
@@ -193,7 +193,7 @@ public class BraintreeClientUnitTest {
                 .configurationError(new Exception("error"))
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -208,7 +208,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -222,7 +222,7 @@ public class BraintreeClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -230,27 +230,11 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getSessionId_forwardsSessionIdFromInstantiation() {
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
-        BraintreeClient sut = new BraintreeClient(params);
-
-        assertEquals("sessionId", sut.getSessionId());
-    }
-
-    @Test
-    public void getIntegrationType_forwardsIntegrationTypeFromInstantiation() {
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
-        BraintreeClient sut = new BraintreeClient(params);
-
-        assertEquals("integrationType", sut.getIntegrationType());
-    }
-
-    @Test
     public void startBrowserSwitch_forwardsInvocationToBrowserSwitchClient() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.startBrowserSwitch(activity, browserSwitchOptions);
@@ -263,7 +247,7 @@ public class BraintreeClientUnitTest {
         BrowserSwitchResult browserSwitchResult = createSuccessfulBrowserSwitchResult();
         when(browserSwitchClient.getResult(activity)).thenReturn(browserSwitchResult);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity));
@@ -273,7 +257,7 @@ public class BraintreeClientUnitTest {
     public void deliverBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.deliverBrowserSwitchResult(activity);
@@ -282,7 +266,7 @@ public class BraintreeClientUnitTest {
 
     @Test
     public void canPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         FragmentActivity activity = mock(FragmentActivity.class);
@@ -301,7 +285,7 @@ public class BraintreeClientUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
         doNothing().when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertTrue(sut.canPerformBrowserSwitch(activity, 123));
@@ -312,7 +296,7 @@ public class BraintreeClientUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
         doThrow(new BrowserSwitchException("error")).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.canPerformBrowserSwitch(activity, 123);
@@ -323,7 +307,7 @@ public class BraintreeClientUnitTest {
     public void isUrlSchemeDeclaredInAndroidManifest_forwardsInvocationToManifestValidator() {
         when(manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, "a-url-scheme", FragmentActivity.class)).thenReturn(true);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertTrue(sut.isUrlSchemeDeclaredInAndroidManifest("a-url-scheme", FragmentActivity.class));
@@ -334,7 +318,7 @@ public class BraintreeClientUnitTest {
         ActivityInfo activityInfo = new ActivityInfo();
         when(manifestValidator.getActivityInfo(applicationContext, FragmentActivity.class)).thenReturn(activityInfo);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader, "sessionId", "integrationType");
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertSame(activityInfo, sut.getManifestActivityInfo(FragmentActivity.class));
@@ -388,12 +372,12 @@ public class BraintreeClientUnitTest {
         assertEquals("dropin", sut.getIntegrationType());
     }
 
-    private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, String sessionId, String integrationType) {
+    private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)
-                .sessionId(sessionId)
-                .setIntegrationType(integrationType)
+                .sessionId("session-id")
+                .setIntegrationType(IntegrationType.CUSTOM)
                 .configurationLoader(configurationLoader)
                 .httpClient(braintreeHttpClient)
                 .graphQLClient(braintreeGraphQLClient)
