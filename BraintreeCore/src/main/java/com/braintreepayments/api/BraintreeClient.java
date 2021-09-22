@@ -35,17 +35,26 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme);
+        return createDefaultParams(context, authString, UUIDHelper.getFormattedUUID(), returnUrlScheme);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId) {
+        String returnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
+        return createDefaultParams(context, authString, sessionId, returnUrlScheme);
+    }
+
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, String returnUrlScheme) {
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
                 .context(context)
                 .setIntegrationType(IntegrationType.get(context))
-                .sessionId(UUIDHelper.getFormattedUUID())
+                .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorization))
