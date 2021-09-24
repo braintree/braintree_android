@@ -37,6 +37,7 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressRequired(true);
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
+        request.setCorrelationId("123-correlation");
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
 
@@ -45,6 +46,7 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
+        assertEquals("123-correlation", request.getCorrelationId());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
     }
@@ -64,6 +66,7 @@ public class PayPalVaultRequestUnitTest {
 
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setDisplayName("Display Name");
+        request.setCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
@@ -85,6 +88,7 @@ public class PayPalVaultRequestUnitTest {
                 .getRecipientName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals("Display Name", result.getDisplayName());
+        assertEquals("123-correlation", result.getCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());

@@ -39,6 +39,7 @@ public abstract class PayPalRequest implements Parcelable {
     static final String DISPLAY_NAME_KEY = "brand_name";
     static final String SHIPPING_ADDRESS_KEY = "shipping_address";
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
+    static final String CORRELATION_ID_KEY = "correlation_id";
     static final String LINE_ITEMS_KEY = "line_items";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -64,6 +65,7 @@ public abstract class PayPalRequest implements Parcelable {
     private String landingPageType;
     private String displayName;
     private String merchantAccountId;
+    private String correlationId;
     private final ArrayList<PayPalLineItem> lineItems;
 
     /**
@@ -183,6 +185,15 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
+     * Optional: A correlation ID created with Set Transaction Context on your server.
+     *
+     * @param correlationId the correlation ID.
+     */
+    public void setCorrelationId(@Nullable String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    /**
      * Optional: The line items for this transaction. It can include up to 249 line items.
      *
      * @param lineItems a collection of {@link PayPalLineItem}
@@ -225,6 +236,11 @@ public abstract class PayPalRequest implements Parcelable {
         return merchantAccountId;
     }
 
+    @Nullable
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
     @NonNull
     public ArrayList<PayPalLineItem> getLineItems() {
         return lineItems;
@@ -247,6 +263,7 @@ public abstract class PayPalRequest implements Parcelable {
         landingPageType = in.readString();
         displayName = in.readString();
         merchantAccountId = in.readString();
+        correlationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
     }
 
@@ -265,6 +282,7 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(landingPageType);
         parcel.writeString(displayName);
         parcel.writeString(merchantAccountId);
+        parcel.writeString(correlationId);
         parcel.writeTypedList(lineItems);
     }
 }
