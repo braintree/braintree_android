@@ -66,8 +66,7 @@ class ConfigurationCache {
                     .putString(cacheKey, configuration.toJson())
                     .putLong(timestampKey, currentTimeMillis)
                     .apply();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+        } catch (GeneralSecurityException | IOException ignored) {
         }
     }
 }

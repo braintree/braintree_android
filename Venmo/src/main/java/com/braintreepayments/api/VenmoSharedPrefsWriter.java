@@ -19,8 +19,7 @@ class VenmoSharedPrefsWriter {
             braintreeSharedPreferences.getSharedPreferences(context).edit()
                     .putBoolean(VAULT_VENMO_KEY, shouldVault)
                     .apply();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+        } catch (GeneralSecurityException | IOException ignored) {
         }
     }
 

@@ -34,8 +34,7 @@ public class SharedPreferencesHelper {
                     .putString(cacheKey, configuration.toJson())
                     .putLong(timestampKey, System.currentTimeMillis())
                     .apply();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+        } catch (GeneralSecurityException | IOException ignored) {
         }
     }
 
@@ -46,8 +45,7 @@ public class SharedPreferencesHelper {
                     .edit()
                     .clear()
                     .apply();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+        } catch (GeneralSecurityException | IOException ignored) {
         }
     }
 
