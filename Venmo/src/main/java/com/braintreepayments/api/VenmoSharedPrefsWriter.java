@@ -13,6 +13,10 @@ class VenmoSharedPrefsWriter {
 
     VenmoSharedPrefsWriter() {}
 
+    void persistVenmoVaultOption(Context context, boolean shouldVault) {
+        persistVenmoVaultOption(context, new BraintreeSharedPreferences(), shouldVault);
+    }
+
     @VisibleForTesting
     void persistVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) {
         try {
@@ -23,8 +27,8 @@ class VenmoSharedPrefsWriter {
         }
     }
 
-    void persistVenmoVaultOption(Context context, boolean shouldVault) {
-        persistVenmoVaultOption(context, new BraintreeSharedPreferences(), shouldVault);
+    boolean getVenmoVaultOption(Context context) {
+        return getVenmoVaultOption(context, new BraintreeSharedPreferences());
     }
 
     @VisibleForTesting
@@ -35,9 +39,5 @@ class VenmoSharedPrefsWriter {
         } catch (GeneralSecurityException | IOException e) {
             return false;
         }
-    }
-
-    boolean getVenmoVaultOption(Context context) {
-        return getVenmoVaultOption(context, new BraintreeSharedPreferences());
     }
 }

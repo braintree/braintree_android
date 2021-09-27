@@ -11,6 +11,10 @@ import java.security.GeneralSecurityException;
 
 class BraintreeSharedPreferences {
 
+    SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
+        return getSharedPreferences(context, "BraintreeApi");
+    }
+
     SharedPreferences getSharedPreferences(Context context, String fileName) throws GeneralSecurityException, IOException {
         MasterKey masterKey = new MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -23,9 +27,5 @@ class BraintreeSharedPreferences {
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
-    }
-
-    SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context, "BraintreeApi");
     }
 }

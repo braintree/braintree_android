@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import androidx.test.core.app.ApplicationProvider;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalInstallationIdentifierTest {
+public class PayPalInstallationIdentifierUnitTest {
 
     private Context context;
     private SharedPreferences prefs;

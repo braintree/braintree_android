@@ -14,6 +14,10 @@ class PayPalInstallationIdentifier {
     private static final String INSTALL_GUID = "InstallationGUID";
     private static final String SHARED_PREFS_NAMESPACE = "com.braintreepayments.api.paypal";
 
+    String getInstallationGUID(Context context) {
+        return getInstallationGUID(context, new BraintreeSharedPreferences());
+    }
+
     @VisibleForTesting
     String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         SharedPreferences preferences;
@@ -36,9 +40,5 @@ class PayPalInstallationIdentifier {
             }
         }
         return null;
-    }
-
-    String getInstallationGUID(Context context) {
-        return getInstallationGUID(context, new BraintreeSharedPreferences());
     }
 }
