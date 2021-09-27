@@ -14,6 +14,10 @@ public class SharedPreferencesHelper {
         return context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 
+    public static SharedPreferences getSharedPreferences(Context context, String fileName) {
+        return context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+    }
+
     public static void overrideConfigurationCache(Context context, Authorization authorization, Configuration configuration) {
         final String configUrl = Uri.parse(authorization.getConfigUrl())
                 .buildUpon()
