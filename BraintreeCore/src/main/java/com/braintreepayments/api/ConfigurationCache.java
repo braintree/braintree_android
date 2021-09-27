@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.annotation.VisibleForTesting;
 
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.concurrent.TimeUnit;
 
 class ConfigurationCache {
@@ -35,7 +37,12 @@ class ConfigurationCache {
 
     @VisibleForTesting
     String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
+        SharedPreferences prefs;
+        try {
+            prefs = BraintreeSharedPreferences.getSharedPreferences(context);
+        } catch (GeneralSecurityException | IOException e) {
+            return null;
+        }
 
         String timestampKey = cacheKey + "_timestamp";
         if (prefs.contains(timestampKey)) {
@@ -54,9 +61,13 @@ class ConfigurationCache {
     @VisibleForTesting
     void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
-        BraintreeSharedPreferences.getSharedPreferences(context).edit()
-                .putString(cacheKey, configuration.toJson())
-                .putLong(timestampKey, currentTimeMillis)
-                .apply();
+        try {
+            BraintreeSharedPreferences.getSharedPreferences(context).edit()
+                    .putString(cacheKey, configuration.toJson())
+                    .putLong(timestampKey, currentTimeMillis)
+                    .apply();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }

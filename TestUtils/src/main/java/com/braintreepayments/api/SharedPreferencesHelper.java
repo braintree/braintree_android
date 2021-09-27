@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Base64;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 public class SharedPreferencesHelper {
 
     public static SharedPreferences getSharedPreferences(Context context) {
@@ -20,20 +23,28 @@ public class SharedPreferencesHelper {
 
         String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
-        BraintreeSharedPreferences
-                .getSharedPreferences(context)
-                .edit()
-                .putString(cacheKey, configuration.toJson())
-                .putLong(timestampKey, System.currentTimeMillis())
-                .apply();
+        try {
+            BraintreeSharedPreferences
+                    .getSharedPreferences(context)
+                    .edit()
+                    .putString(cacheKey, configuration.toJson())
+                    .putLong(timestampKey, System.currentTimeMillis())
+                    .apply();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void clearConfigurationCacheOverride(Context context) {
-        BraintreeSharedPreferences
-                .getSharedPreferences(context)
-                .edit()
-                .clear()
-                .apply();
+        try {
+            BraintreeSharedPreferences
+                    .getSharedPreferences(context)
+                    .edit()
+                    .clear()
+                    .apply();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("ApplySharedPref")

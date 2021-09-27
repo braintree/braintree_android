@@ -2,53 +2,30 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Base64;
+import android.os.Build;
+
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
+import androidx.security.crypto.MasterKeys;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 class BraintreeSharedPreferences {
 
-    static SharedPreferences getSharedPreferences(Context context) {
-        return context.getApplicationContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
-    }
+    static SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
+        MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
 
-    static void putParcelable(Context context, String key, Parcelable parcelable) {
-        Parcel parcel = Parcel.obtain();
-        parcelable.writeToParcel(parcel, 0);
-        getSharedPreferences(context).edit()
-                .putString(key, Base64.encodeToString(parcel.marshall(), 0))
-                .apply();
-    }
+        return EncryptedSharedPreferences.create(
+                context,
+                "BraintreeApi",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
 
-    static Parcel getParcelable(Context context, String key) {
-        try {
-            byte[] requestBytes = Base64.decode(getSharedPreferences(context).getString(key, ""), 0);
-            Parcel parcel = Parcel.obtain();
-            parcel.unmarshall(requestBytes, 0, requestBytes.length);
-            parcel.setDataPosition(0);
-
-            return parcel;
-        } catch (Exception ignored) {}
-
-        return null;
-    }
-
-    static void remove(Context context, String key) {
-        getSharedPreferences(context)
-                .edit()
-                .remove(key)
-                .apply();
-    }
-
-    static void putString(Context context, String key, String value) {
-        getSharedPreferences(context)
-                .edit()
-                .putString(key, value)
-                .apply();
-    }
-
-    static String getString(Context context, String key) {
-        return getSharedPreferences(context)
-                .getString(key, "");
+//        return context.getApplicationContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 }
