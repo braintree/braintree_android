@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* SharedPreferences
+  * Encrypt shared preferences in BraintreeSharedPreferences (fixes #440)
 * ThreeDSecure
   * Make `pareq` optional on `ThreeDSecureLookup`
 
