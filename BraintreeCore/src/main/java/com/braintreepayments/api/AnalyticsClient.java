@@ -92,7 +92,7 @@ class AnalyticsClient {
                 .build();
     }
 
-    void uploadAnalytics(Context context, Configuration configuration) throws Exception {
+    void uploadAnalytics(Context context, Configuration configuration, BraintreeSharedPreferences braintreeSharedPreferences) throws Exception {
         String analyticsUrl = configuration.getAnalyticsUrl();
 
         final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
@@ -100,7 +100,7 @@ class AnalyticsClient {
 
         try {
             for (final List<AnalyticsEvent> innerEvents : events) {
-                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents);
+                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents, braintreeSharedPreferences);
                 httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
                 db.removeEvents(innerEvents);
             }
@@ -112,7 +112,7 @@ class AnalyticsClient {
     }
 
     private JSONObject serializeEvents(Context context, Authorization authorization,
-                                       List<AnalyticsEvent> events) throws JSONException {
+                                       List<AnalyticsEvent> events, BraintreeSharedPreferences braintreeSharedPreferences) throws JSONException {
         AnalyticsEvent primeEvent = events.get(0);
 
         JSONObject requestObject = new JSONObject();
@@ -132,7 +132,7 @@ class AnalyticsClient {
                 .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                 .put(DEVICE_MODEL_KEY, Build.MODEL)
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                        UUIDHelper.getPersistentUUID(context))
+                        UUIDHelper.getPersistentUUID(context, braintreeSharedPreferences))
                 .put(IS_SIMULATOR_KEY, deviceInspector.isDeviceEmulator());
         requestObject.put(META_KEY, meta);
 

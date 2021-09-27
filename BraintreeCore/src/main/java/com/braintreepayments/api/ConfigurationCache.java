@@ -32,14 +32,14 @@ class ConfigurationCache {
     ConfigurationCache() {}
 
     String getConfiguration(Context context, String cacheKey) {
-        return getConfiguration(context, cacheKey, System.currentTimeMillis());
+        return getConfiguration(context, new BraintreeSharedPreferences(), cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
+    String getConfiguration(Context context, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
         SharedPreferences prefs;
         try {
-            prefs = BraintreeSharedPreferences.getSharedPreferences(context);
+            prefs = braintreeSharedPreferences.getSharedPreferences(context);
         } catch (GeneralSecurityException | IOException e) {
             return null;
         }
@@ -55,14 +55,14 @@ class ConfigurationCache {
     }
 
     void saveConfiguration(Context context, Configuration configuration, String cacheKey) {
-        saveConfiguration(context, configuration, cacheKey, System.currentTimeMillis());
+        saveConfiguration(context, configuration, new BraintreeSharedPreferences(), cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
+    void saveConfiguration(Context context, Configuration configuration, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            BraintreeSharedPreferences.getSharedPreferences(context).edit()
+            braintreeSharedPreferences.getSharedPreferences(context).edit()
                     .putString(cacheKey, configuration.toJson())
                     .putLong(timestampKey, currentTimeMillis)
                     .apply();

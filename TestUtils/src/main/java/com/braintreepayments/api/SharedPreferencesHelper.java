@@ -24,7 +24,7 @@ public class SharedPreferencesHelper {
         String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            BraintreeSharedPreferences
+            new BraintreeSharedPreferences()
                     .getSharedPreferences(context)
                     .edit()
                     .putString(cacheKey, configuration.toJson())
@@ -37,7 +37,7 @@ public class SharedPreferencesHelper {
 
     public static void clearConfigurationCacheOverride(Context context) {
         try {
-            BraintreeSharedPreferences
+           new BraintreeSharedPreferences()
                     .getSharedPreferences(context)
                     .edit()
                     .clear()

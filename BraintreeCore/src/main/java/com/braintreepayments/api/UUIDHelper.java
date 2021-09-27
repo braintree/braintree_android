@@ -13,12 +13,13 @@ class UUIDHelper {
 
     /**
      * @param context Android Context
+     * @param braintreeSharedPreferences
      * @return A persistent UUID for this application install.
      */
-    static String getPersistentUUID(Context context) {
+    static String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         SharedPreferences prefs = null;
         try {
-            prefs = BraintreeSharedPreferences.getSharedPreferences(context);
+            prefs = braintreeSharedPreferences.getSharedPreferences(context);
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
         }

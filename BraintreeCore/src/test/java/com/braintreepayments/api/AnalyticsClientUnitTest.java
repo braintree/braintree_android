@@ -21,12 +21,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
 import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
+import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -51,9 +54,10 @@ public class AnalyticsClientUnitTest {
     private ClassHelper classHelper;
 
     private long mCurrentTime;
+    private BraintreeSharedPreferences braintreeSharedPreferences;
 
     @Before
-    public void setup() throws InvalidArgumentException {
+    public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
         authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         mCurrentTime = System.currentTimeMillis();
 
@@ -62,6 +66,9 @@ public class AnalyticsClientUnitTest {
         httpClient = mock(BraintreeHttpClient.class);
         deviceInspector = mock(DeviceInspector.class);
         classHelper = mock(ClassHelper.class);
+
+        braintreeSharedPreferences = mock(BraintreeSharedPreferences.class);
+        when(braintreeSharedPreferences.getSharedPreferences(context)).thenReturn(getSharedPreferences(context));
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -136,7 +143,7 @@ public class AnalyticsClientUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
 
         verifyZeroInteractions(httpClient);
     }
@@ -161,7 +168,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -178,7 +185,7 @@ public class AnalyticsClientUnitTest {
         assertEquals("false", meta.getString("deviceRooted"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals(UUIDHelper.getPersistentUUID(context),
+        assertEquals(UUIDHelper.getPersistentUUID(context, braintreeSharedPreferences),
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
         assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
@@ -204,7 +211,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -236,7 +243,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration));
@@ -277,7 +284,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(0, pendingEvents.size());
@@ -302,7 +309,7 @@ public class AnalyticsClientUnitTest {
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         try {
-            sut.uploadAnalytics(context, configuration);
+            sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
             fail("uploadAnalytics should throw");
         } catch (Exception e) {
             assertSame(httpError, e);

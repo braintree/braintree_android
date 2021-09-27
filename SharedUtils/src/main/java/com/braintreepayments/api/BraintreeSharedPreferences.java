@@ -11,7 +11,7 @@ import java.security.GeneralSecurityException;
 
 class BraintreeSharedPreferences {
 
-    static SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
+    SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
         MasterKey masterKey = new MasterKey.Builder(context)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();

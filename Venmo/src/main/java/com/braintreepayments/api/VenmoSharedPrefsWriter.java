@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -11,9 +13,10 @@ class VenmoSharedPrefsWriter {
 
     VenmoSharedPrefsWriter() {}
 
-    void persistVenmoVaultOption(Context context, boolean shouldVault) {
+    @VisibleForTesting
+    void persistVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) {
         try {
-            BraintreeSharedPreferences.getSharedPreferences(context).edit()
+            braintreeSharedPreferences.getSharedPreferences(context).edit()
                     .putBoolean(VAULT_VENMO_KEY, shouldVault)
                     .apply();
         } catch (GeneralSecurityException | IOException e) {
@@ -21,12 +24,21 @@ class VenmoSharedPrefsWriter {
         }
     }
 
-    boolean getVenmoVaultOption(Context context) {
+    void persistVenmoVaultOption(Context context, boolean shouldVault) {
+        persistVenmoVaultOption(context, new BraintreeSharedPreferences(), shouldVault);
+    }
+
+    @VisibleForTesting
+    boolean getVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         try {
-            return BraintreeSharedPreferences.getSharedPreferences(context)
+            return braintreeSharedPreferences.getSharedPreferences(context)
                     .getBoolean(VAULT_VENMO_KEY, false);
         } catch (GeneralSecurityException | IOException e) {
             return false;
         }
+    }
+
+    boolean getVenmoVaultOption(Context context) {
+        return getVenmoVaultOption(context, new BraintreeSharedPreferences());
     }
 }
