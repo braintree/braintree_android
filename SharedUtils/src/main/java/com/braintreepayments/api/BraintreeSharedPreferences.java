@@ -28,4 +28,5 @@ class BraintreeSharedPreferences {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
     }
+
 }
