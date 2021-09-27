@@ -2,11 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
-import androidx.security.crypto.MasterKeys;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -25,7 +23,5 @@ class BraintreeSharedPreferences {
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
-
-//        return context.getApplicationContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 }
