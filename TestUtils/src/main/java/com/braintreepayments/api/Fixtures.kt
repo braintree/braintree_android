@@ -1941,7 +1941,15 @@ object Fixtures {
     const val VENMO_PAYMENT_METHOD_CONTEXT_JSON = """
         {
           "paymentMethodId": "sample-payment-method-id",
-          "userName": "@sampleuser"
+          "userName": "@sampleuser",
+          "payerInfo": {
+            "email": "venmo-email",
+            "externalId": "venmo-external-id",
+            "firstName": "venmo-first-name",
+            "lastName": "venmo-last-name",
+            "phoneNumber": "venmo-phone-number",
+            "userName": "@sampleuser"
+          }
         }
     """
 

@@ -174,7 +174,7 @@ public class VenmoClient {
             if (paymentContextId != null) {
                 JSONObject params = new JSONObject();
                 try {
-                    params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName } } }");
+                    params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName } } } }");
                     JSONObject variables = new JSONObject();
                     variables.put("id", paymentContextId);
                     params.put("variables", variables);
