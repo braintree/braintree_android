@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Venmo
+  * Make `VenmoRequest` parcelable
 * ThreeDSecure
   * Make `pareq` optional on `ThreeDSecureLookup`
 
