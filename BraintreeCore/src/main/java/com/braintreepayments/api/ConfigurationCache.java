@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
-
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -37,20 +35,17 @@ class ConfigurationCache {
 
     @VisibleForTesting
     String getConfiguration(Context context, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
-        SharedPreferences prefs;
+        String timestampKey = cacheKey + "_timestamp";
         try {
-            prefs = braintreeSharedPreferences.getSharedPreferences(context);
-        } catch (GeneralSecurityException | IOException e) {
-            return null;
+            if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
+                long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(context, timestampKey));
+                if (timeInCache < TIME_TO_LIVE) {
+                    return braintreeSharedPreferences.getString(context, cacheKey);
+                }
+            }
+        } catch (GeneralSecurityException | IOException ignored) {
         }
 
-        String timestampKey = cacheKey + "_timestamp";
-        if (prefs.contains(timestampKey)) {
-            long timeInCache = (currentTimeMillis - prefs.getLong(timestampKey, 0));
-            if (timeInCache < TIME_TO_LIVE) {
-                return prefs.getString(cacheKey, "");
-            }
-        }
         return null;
     }
 
@@ -62,10 +57,7 @@ class ConfigurationCache {
     void saveConfiguration(Context context, Configuration configuration, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            braintreeSharedPreferences.getSharedPreferences(context).edit()
-                    .putString(cacheKey, configuration.toJson())
-                    .putLong(timestampKey, currentTimeMillis)
-                    .apply();
+            braintreeSharedPreferences.putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
         } catch (GeneralSecurityException | IOException ignored) {
         }
     }

@@ -20,25 +20,17 @@ class PayPalInstallationIdentifier {
 
     @VisibleForTesting
     String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        SharedPreferences preferences;
         try {
-            preferences = braintreeSharedPreferences.getSharedPreferences(context, SHARED_PREFS_NAMESPACE);
-        } catch (GeneralSecurityException | IOException e) {
-            return null;
-        }
-        if (preferences != null) {
-            String existingGUID = preferences.getString(INSTALL_GUID, null);
+            String existingGUID = braintreeSharedPreferences.getString(context, SHARED_PREFS_NAMESPACE, INSTALL_GUID);
             if (existingGUID != null) {
                 return existingGUID;
             } else {
                 String newGuid = UUID.randomUUID().toString();
-                preferences.edit()
-                        .putString(INSTALL_GUID, newGuid)
-                        .apply();
-
+                braintreeSharedPreferences.putString(context, SHARED_PREFS_NAMESPACE, INSTALL_GUID, newGuid);
                 return newGuid;
             }
+        } catch (GeneralSecurityException | IOException e) {
+            return null;
         }
-        return null;
     }
 }

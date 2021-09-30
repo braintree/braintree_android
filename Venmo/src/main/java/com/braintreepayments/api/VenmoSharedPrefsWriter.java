@@ -20,9 +20,7 @@ class VenmoSharedPrefsWriter {
     @VisibleForTesting
     void persistVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) {
         try {
-            braintreeSharedPreferences.getSharedPreferences(context).edit()
-                    .putBoolean(VAULT_VENMO_KEY, shouldVault)
-                    .apply();
+            braintreeSharedPreferences.putBoolean(context, VAULT_VENMO_KEY, shouldVault);
         } catch (GeneralSecurityException | IOException ignored) {
         }
     }
@@ -34,8 +32,7 @@ class VenmoSharedPrefsWriter {
     @VisibleForTesting
     boolean getVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         try {
-            return braintreeSharedPreferences.getSharedPreferences(context)
-                    .getBoolean(VAULT_VENMO_KEY, false);
+            return braintreeSharedPreferences.getBoolean(context, VAULT_VENMO_KEY);
         } catch (GeneralSecurityException | IOException e) {
             return false;
         }

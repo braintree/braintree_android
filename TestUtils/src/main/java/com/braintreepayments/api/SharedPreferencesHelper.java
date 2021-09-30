@@ -28,55 +28,15 @@ public class SharedPreferencesHelper {
         String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            new BraintreeSharedPreferences()
-                    .getSharedPreferences(context)
-                    .edit()
-                    .putString(cacheKey, configuration.toJson())
-                    .putLong(timestampKey, System.currentTimeMillis())
-                    .apply();
+            new BraintreeSharedPreferences().putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
         } catch (GeneralSecurityException | IOException ignored) {
         }
     }
 
     public static void clearConfigurationCacheOverride(Context context) {
         try {
-           new BraintreeSharedPreferences()
-                    .getSharedPreferences(context)
-                    .edit()
-                    .clear()
-                    .apply();
+           new BraintreeSharedPreferences().clearSharedPreferences(context);
         } catch (GeneralSecurityException | IOException ignored) {
         }
-    }
-
-    @SuppressWarnings("ApplySharedPref")
-    public static void clearSharedPreferences(Context context) {
-        getSharedPreferences(context).edit().clear().commit();
-    }
-
-    public static void writeMockConfiguration(Context context, String configUrl, String appendedAuthorization,
-            String configurationString) {
-        writeMockConfiguration(context, configUrl, appendedAuthorization, configurationString,
-                System.currentTimeMillis());
-    }
-
-    @SuppressWarnings("ApplySharedPref")
-    public static void writeMockConfiguration(Context context, String configUrl, String appendedAuthorization,
-            String configurationString, long timestamp) {
-        configUrl = Uri.parse(configUrl)
-                .buildUpon()
-                .appendQueryParameter("configVersion", "3")
-                .build()
-                .toString();
-
-        if (appendedAuthorization != null) {
-            configUrl = configUrl.concat(appendedAuthorization);
-        }
-
-        String key = Base64.encodeToString(configUrl.getBytes(), 0);
-        getSharedPreferences(context).edit()
-                .putString(key, configurationString)
-                .putLong(key + "_timestamp", timestamp)
-                .commit();
     }
 }

@@ -1,5 +1,20 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -27,22 +42,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
-import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
-
 @RunWith(RobolectricTestRunner.class)
 public class AnalyticsClientUnitTest {
 
@@ -53,13 +52,13 @@ public class AnalyticsClientUnitTest {
     private DeviceInspector deviceInspector;
     private ClassHelper classHelper;
 
-    private long mCurrentTime;
+    private long currentTime;
     private BraintreeSharedPreferences braintreeSharedPreferences;
 
     @Before
     public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
         authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        mCurrentTime = System.currentTimeMillis();
+        currentTime = System.currentTimeMillis();
 
         context = ApplicationProvider.getApplicationContext();
 
@@ -68,7 +67,6 @@ public class AnalyticsClientUnitTest {
         classHelper = mock(ClassHelper.class);
 
         braintreeSharedPreferences = mock(BraintreeSharedPreferences.class);
-        when(braintreeSharedPreferences.getSharedPreferences(context)).thenReturn(getSharedPreferences(context));
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -166,6 +164,7 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.isDeviceRooted()).thenReturn(false);
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
+        when(braintreeSharedPreferences.getString(context, "braintreeUUID")).thenReturn("sample-uuid");
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
@@ -221,11 +220,11 @@ public class AnalyticsClientUnitTest {
         assertEquals(2, array.length());
         JSONObject eventOne = array.getJSONObject(0);
         assertEquals("android.started", eventOne.getString("kind"));
-        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= currentTime);
 
         JSONObject eventTwo = array.getJSONObject(1);
         assertEquals("android.finished", eventTwo.getString("kind"));
-        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= currentTime);
     }
 
     @Test
@@ -256,7 +255,7 @@ public class AnalyticsClientUnitTest {
         JSONObject analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         JSONObject meta = requestJson.getJSONObject("_meta");
         assertEquals("android.started", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
         assertEquals("sessionId", meta.getString("sessionId"));
 
         requestJson = new JSONObject(values.get(1));
@@ -264,7 +263,7 @@ public class AnalyticsClientUnitTest {
         analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         meta = requestJson.getJSONObject("_meta");
         assertEquals("android.finished", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
         assertEquals("sessionIdTwo", meta.getString("sessionId"));
     }
 

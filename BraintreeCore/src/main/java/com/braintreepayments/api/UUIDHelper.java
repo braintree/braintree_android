@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -17,21 +16,16 @@ class UUIDHelper {
      * @return A persistent UUID for this application install.
      */
     static String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        SharedPreferences prefs = null;
-        try {
-            prefs = braintreeSharedPreferences.getSharedPreferences(context);
-        } catch (GeneralSecurityException | IOException ignored) {
-        }
-
         String uuid = null;
-        if (prefs != null) {
-            uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
-        }
+        try {
+            uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY);
+        } catch (GeneralSecurityException | IOException ignored) {}
+
         if (uuid == null) {
             uuid = getFormattedUUID();
-            if (prefs != null) {
-                prefs.edit().putString(BRAINTREE_UUID_KEY, uuid).apply();
-            }
+            try {
+                braintreeSharedPreferences.putString(context, BRAINTREE_UUID_KEY, uuid);
+            } catch (GeneralSecurityException | IOException ignored) {}
         }
 
         return uuid;
