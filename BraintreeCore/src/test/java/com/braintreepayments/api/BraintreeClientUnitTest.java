@@ -77,7 +77,7 @@ public class BraintreeClientUnitTest {
 
         BraintreeClientParams params = new BraintreeClientParams()
                 .context(context)
-                .uuidHelper(uuidHelper);
+                .UUIDHelper(uuidHelper);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertEquals("sample-formatted-uuid", sut.getSessionId());

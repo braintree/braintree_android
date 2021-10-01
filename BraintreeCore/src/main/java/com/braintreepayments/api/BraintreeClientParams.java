@@ -100,11 +100,11 @@ class BraintreeClientParams {
         return this;
     }
 
-    UUIDHelper getUuidHelper() {
+    UUIDHelper getUUIDHelper() {
         return uuidHelper;
     }
 
-    BraintreeClientParams uuidHelper(UUIDHelper uuidHelper) {
+    BraintreeClientParams UUIDHelper(UUIDHelper uuidHelper) {
         this.uuidHelper = uuidHelper;
         return this;
     }

@@ -65,7 +65,7 @@ public class BraintreeClient {
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
-                .uuidHelper(new UUIDHelper())
+                .UUIDHelper(new UUIDHelper())
                 .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
@@ -109,7 +109,7 @@ public class BraintreeClient {
 
         String sessionId = params.getSessionId();
         if (sessionId == null) {
-            sessionId = params.getUuidHelper().getFormattedUUID();
+            sessionId = params.getUUIDHelper().getFormattedUUID();
         }
         this.sessionId = sessionId;
         this.integrationType = params.getIntegrationType();
