@@ -13,13 +13,14 @@ class ConfigurationCache {
     private static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5);
 
     private static volatile ConfigurationCache INSTANCE;
+    private final BraintreeSharedPreferences braintreeSharedPreferences;
 
     static ConfigurationCache getInstance() {
         if (INSTANCE == null) {
             synchronized (ConfigurationCache.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new ConfigurationCache();
+                    INSTANCE = new ConfigurationCache(new BraintreeSharedPreferences());
                 }
             }
         }
@@ -27,14 +28,16 @@ class ConfigurationCache {
     }
 
     @VisibleForTesting
-    ConfigurationCache() {}
+    ConfigurationCache(BraintreeSharedPreferences braintreeSharedPreferences) {
+        this.braintreeSharedPreferences = braintreeSharedPreferences;
+    }
 
     String getConfiguration(Context context, String cacheKey) {
-        return getConfiguration(context, new BraintreeSharedPreferences(), cacheKey, System.currentTimeMillis());
+        return getConfiguration(context, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    String getConfiguration(Context context, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
+    String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
         String timestampKey = cacheKey + "_timestamp";
         try {
             if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
@@ -50,11 +53,11 @@ class ConfigurationCache {
     }
 
     void saveConfiguration(Context context, Configuration configuration, String cacheKey) {
-        saveConfiguration(context, configuration, new BraintreeSharedPreferences(), cacheKey, System.currentTimeMillis());
+        saveConfiguration(context, configuration, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    void saveConfiguration(Context context, Configuration configuration, BraintreeSharedPreferences braintreeSharedPreferences, String cacheKey, long currentTimeMillis) {
+    void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
             braintreeSharedPreferences.putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);

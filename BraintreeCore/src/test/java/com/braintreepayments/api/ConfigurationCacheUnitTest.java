@@ -36,8 +36,8 @@ public class ConfigurationCacheUnitTest {
     public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException, GeneralSecurityException, IOException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
-        ConfigurationCache sut = new ConfigurationCache();
-        sut.saveConfiguration(context, configuration, braintreeSharedPreferences, "cacheKey", 123);
+        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
+        sut.saveConfiguration(context, configuration, "cacheKey", 123);
         verify(braintreeSharedPreferences).putStringAndLong(context, "cacheKey", configuration.toJson(), "cacheKey_timestamp", 123L);
     }
 
@@ -48,10 +48,10 @@ public class ConfigurationCacheUnitTest {
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(0L);
         when(braintreeSharedPreferences.getString(context, "cacheKey")).thenReturn(configuration.toJson());
 
-        ConfigurationCache sut = new ConfigurationCache();
-        sut.saveConfiguration(context, configuration, braintreeSharedPreferences, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
+        sut.saveConfiguration(context, configuration, "cacheKey", 0);
 
-        assertEquals(configuration.toJson(), ConfigurationCache.getInstance().getConfiguration(context, braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
+        assertEquals(configuration.toJson(), sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
     }
 
     @Test
@@ -61,9 +61,9 @@ public class ConfigurationCacheUnitTest {
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));
         when(braintreeSharedPreferences.getString(context, "cacheKey")).thenReturn(configuration.toJson());
 
-        ConfigurationCache sut = new ConfigurationCache();
-        sut.saveConfiguration(context, configuration, braintreeSharedPreferences, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
+        sut.saveConfiguration(context, configuration, "cacheKey", 0);
 
-        assertNull(ConfigurationCache.getInstance().getConfiguration(context, braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(20)));
+        assertNull(sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(20)));
     }
 }
