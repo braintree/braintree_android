@@ -11,8 +11,6 @@ import android.content.Context;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.UUID;
 
 public class UUIDHelperUnitTest {
@@ -27,8 +25,8 @@ public class UUIDHelperUnitTest {
     }
 
     @Test
-    public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() throws GeneralSecurityException, IOException {
-        when(braintreeSharedPreferences.getString(context, "InstallationGUID")).thenReturn(null);
+    public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() {
+        when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(null);
 
         UUIDHelper sut = new UUIDHelper();
 
@@ -38,9 +36,9 @@ public class UUIDHelperUnitTest {
     }
 
     @Test
-    public void getInstallationGUID_returnsExistingGUIDWhenOneExist() throws GeneralSecurityException, IOException {
+    public void getInstallationGUID_returnsExistingGUIDWhenOneExist() {
         String uuid = UUID.randomUUID().toString();
-        when(braintreeSharedPreferences.getString(context, "InstallationGUID")).thenReturn(uuid);
+        when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(uuid);
 
         UUIDHelper sut = new UUIDHelper();
 

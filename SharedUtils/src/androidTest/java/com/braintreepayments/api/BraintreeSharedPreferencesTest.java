@@ -42,7 +42,7 @@ public class BraintreeSharedPreferencesTest {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
 
-        assertEquals("testValue", sut.getString(context, "testKey"));
+        assertEquals("testValue", sut.getString(context, "testKey", ""));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class BraintreeSharedPreferencesTest {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
 
-        assertEquals("testValue", sut.getString(context, "testKey"));
+        assertEquals("testValue", sut.getString(context, "testKey", ""));
     }
 
     @Test

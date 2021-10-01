@@ -46,12 +46,12 @@ class BraintreeSharedPreferences {
         }
     }
 
-    String getString(Context context, String key)  {
+    String getString(Context context, String key, String fallback)  {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            return sharedPreferences.getString(key, "");
+            return sharedPreferences.getString(key, fallback);
         }
-        return "";
+        return fallback;
     }
 
     void putString(Context context, String key, String value){

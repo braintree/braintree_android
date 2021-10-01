@@ -46,7 +46,7 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey(context, "cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(0L);
-        when(braintreeSharedPreferences.getString(context, "cacheKey")).thenReturn(configuration.toJson());
+        when(braintreeSharedPreferences.getString(context, "cacheKey", "")).thenReturn(configuration.toJson());
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
         sut.saveConfiguration(context, configuration, "cacheKey", 0);
@@ -59,7 +59,7 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey(context, "cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));
-        when(braintreeSharedPreferences.getString(context, "cacheKey")).thenReturn(configuration.toJson());
+        when(braintreeSharedPreferences.getString(context, "cacheKey","")).thenReturn(configuration.toJson());
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
         sut.saveConfiguration(context, configuration, "cacheKey", 0);

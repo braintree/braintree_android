@@ -21,7 +21,7 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY);
+        String uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY, null);
 
         if (uuid == null) {
             uuid = getFormattedUUID();
@@ -41,7 +41,7 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String existingGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID);
+        String existingGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID, null);
         if (existingGUID != null) {
             return existingGUID;
         } else {

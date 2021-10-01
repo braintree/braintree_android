@@ -40,7 +40,7 @@ class ConfigurationCache {
         if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
             long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(context, timestampKey));
             if (timeInCache < TIME_TO_LIVE) {
-                return braintreeSharedPreferences.getString(context, cacheKey);
+                return braintreeSharedPreferences.getString(context, cacheKey, "");
             }
         }
 
