@@ -5,17 +5,12 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-@RunWith(RobolectricTestRunner.class)
 public class VenmoSharedPrefsWriterUnitTest {
 
     private Context context;
@@ -23,21 +18,21 @@ public class VenmoSharedPrefsWriterUnitTest {
 
     @Before
     public void beforeEach() throws GeneralSecurityException, IOException {
-        context = ApplicationProvider.getApplicationContext();
+        context = mock(Context.class);
         braintreeSharedPreferences = mock(BraintreeSharedPreferences.class);
     }
 
     @Test
     public void persistVenmoVaultOption_persistsVaultOption() throws GeneralSecurityException, IOException {
-        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
-        sut.persistVenmoVaultOption(context, braintreeSharedPreferences, true);
+        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter(braintreeSharedPreferences);
+        sut.persistVenmoVaultOption(context, true);
         verify(braintreeSharedPreferences).putBoolean(context, "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", true);
     }
 
     @Test
     public void getVenmoVaultOption_retrievesVaultOptionFromSharedPrefs() throws GeneralSecurityException, IOException {
-        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
-        sut.getVenmoVaultOption(context, braintreeSharedPreferences);
+        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter(braintreeSharedPreferences);
+        sut.getVenmoVaultOption(context);
         verify(braintreeSharedPreferences).getBoolean(context, "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY");
     }
 }

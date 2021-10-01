@@ -10,15 +10,18 @@ import java.security.GeneralSecurityException;
 class VenmoSharedPrefsWriter {
 
     private static final String VAULT_VENMO_KEY = "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY";
+    private final BraintreeSharedPreferences braintreeSharedPreferences;
 
-    VenmoSharedPrefsWriter() {}
-
-    void persistVenmoVaultOption(Context context, boolean shouldVault) {
-        persistVenmoVaultOption(context, new BraintreeSharedPreferences(), shouldVault);
+    VenmoSharedPrefsWriter() {
+        this(new BraintreeSharedPreferences());
     }
 
     @VisibleForTesting
-    void persistVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) {
+    VenmoSharedPrefsWriter(BraintreeSharedPreferences braintreeSharedPreferences) {
+        this.braintreeSharedPreferences = braintreeSharedPreferences;
+    }
+
+    void persistVenmoVaultOption(Context context, boolean shouldVault) {
         try {
             braintreeSharedPreferences.putBoolean(context, VAULT_VENMO_KEY, shouldVault);
         } catch (GeneralSecurityException | IOException ignored) {
@@ -26,11 +29,6 @@ class VenmoSharedPrefsWriter {
     }
 
     boolean getVenmoVaultOption(Context context) {
-        return getVenmoVaultOption(context, new BraintreeSharedPreferences());
-    }
-
-    @VisibleForTesting
-    boolean getVenmoVaultOption(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         try {
             return braintreeSharedPreferences.getBoolean(context, VAULT_VENMO_KEY);
         } catch (GeneralSecurityException | IOException e) {
