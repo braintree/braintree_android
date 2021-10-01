@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeSharedPreferences.getSharedPreferences;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
@@ -25,115 +26,99 @@ public class BraintreeSharedPreferencesTest {
     @Before
     public void beforeEach() throws GeneralSecurityException, IOException {
         context = ApplicationProvider.getApplicationContext();
-        new BraintreeSharedPreferences().getSharedPreferences(context).edit().clear().apply();
+        getSharedPreferences(context).edit().clear().apply();
     }
 
     @Test
-    public void getSharedPreferences_returnsEncryptedSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(ApplicationProvider.getApplicationContext());
+    public void getSharedPreferences_returnsEncryptedSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(ApplicationProvider.getApplicationContext());
         assertTrue(sharedPreferences instanceof EncryptedSharedPreferences);
     }
 
     @Test
-    public void getSharedPreferences_returnsPreferencesWithBraintreeApiFilenameByDefault() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("test-key-braintree-api", true).apply();
-        assertTrue(sut.getSharedPreferences(context).getBoolean("test-key-braintree-api", false));
-    }
-
-    @Test
-    public void getSharedPreferences_returnsPreferencesWithFilenameByFromConstructor() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("test-key-custom-file", true).apply();
-        assertTrue(sut.getSharedPreferences(context).getBoolean("test-key-custom-file", false));
-    }
-
-    @Test
-    public void getString_returnsStringFromSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+    public void getString_returnsStringFromSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
 
         assertEquals("testValue", sut.getString(context, "testKey"));
     }
 
     @Test
-    public void getString_withFilename_returnsStringFromSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+    public void getString_withFilename_returnsStringFromSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
 
         assertEquals("testValue", sut.getString(context, "testKey"));
     }
 
     @Test
-    public void putString_savesStringInSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
+    public void putString_savesStringInSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putString(context, "testKey2", "testValue2");
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         assertEquals("testValue2", sharedPreferences.getString("testKey2", null));
     }
 
     @Test
-    public void putString_withFilename_savesStringInSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
+    public void putString_withFilename_savesStringInSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putString(context, "testKey2", "testValue2");
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         assertEquals("testValue2", sharedPreferences.getString("testKey2", null));
     }
 
     @Test
-    public void getBoolean_returnsBooleanFromSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+    public void getBoolean_returnsBooleanFromSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putBoolean("testKeyBoolean", true).apply();
 
         assertTrue(sut.getBoolean(context, "testKeyBoolean"));
     }
 
     @Test
-    public void putBoolean_savesBooleanToSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
+    public void putBoolean_savesBooleanToSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putBoolean(context, "testKeyBoolean2", true);
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         assertTrue(sharedPreferences.getBoolean("testKeyBoolean2", false));
     }
 
     @Test
-    public void containsKey_returnsIfKeyExistsInSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
+    public void containsKey_returnsIfKeyExistsInSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putBoolean("testContainsKey", true).apply();
 
         assertTrue(sut.containsKey(context, "testContainsKey"));
     }
 
     @Test
-    public void getLong_returnsLongFromSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+    public void getLong_returnsLongFromSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putLong("testKeyLong", 1L).apply();
 
         assertEquals(1L, sut.getLong(context, "testKeyLong"));
     }
 
     @Test
-    public void putStringAndLong_savesToSharedPreferences() throws GeneralSecurityException, IOException {
-        BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
+    public void putStringAndLong_savesToSharedPreferences() {
+        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putStringAndLong(context, "testKeyString", "testValueString", "testKeyLong", 2L);
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
         assertEquals("testValueString", sharedPreferences.getString("testKeyString", null));
         assertEquals(2L, sharedPreferences.getLong("testKeyLong", 0));
     }

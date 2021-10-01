@@ -11,7 +11,20 @@ import java.security.GeneralSecurityException;
 
 class BraintreeSharedPreferences {
 
+    private static volatile BraintreeSharedPreferences INSTANCE;
     private static final String BRAINTREE_SHARED_PREFS_FILENAME = "BraintreeApi";
+
+    static BraintreeSharedPreferences getInstance() {
+        if (INSTANCE == null) {
+            synchronized (BraintreeSharedPreferences.class) {
+                // double check that instance was not created in another thread
+                if (INSTANCE == null) {
+                    INSTANCE = new BraintreeSharedPreferences();
+                }
+            }
+        }
+        return INSTANCE;
+    }
 
     static SharedPreferences getSharedPreferences(Context context) {
         try {

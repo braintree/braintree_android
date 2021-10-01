@@ -11,7 +11,7 @@ class VenmoSharedPrefsWriter {
     private final BraintreeSharedPreferences braintreeSharedPreferences;
 
     VenmoSharedPrefsWriter() {
-        this(new BraintreeSharedPreferences());
+        this(BraintreeSharedPreferences.getInstance());
     }
 
     @VisibleForTesting

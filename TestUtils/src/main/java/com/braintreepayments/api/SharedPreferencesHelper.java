@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Base64;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 public class SharedPreferencesHelper {
 
     public static SharedPreferences getSharedPreferences(Context context) {
@@ -27,16 +24,10 @@ public class SharedPreferencesHelper {
 
         String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
-        try {
-            new BraintreeSharedPreferences().putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
-        } catch (GeneralSecurityException | IOException ignored) {
-        }
+        BraintreeSharedPreferences.getInstance().putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
     }
 
     public static void clearConfigurationCacheOverride(Context context) {
-        try {
-           new BraintreeSharedPreferences().clearSharedPreferences(context, );
-        } catch (GeneralSecurityException | IOException ignored) {
-        }
+        BraintreeSharedPreferences.getInstance().clearSharedPreferences(context);
     }
 }

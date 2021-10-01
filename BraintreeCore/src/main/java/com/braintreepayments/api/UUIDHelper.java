@@ -16,7 +16,7 @@ class UUIDHelper {
      * @return A persistent UUID for this application install.
      */
     String getPersistentUUID(Context context) {
-        return getPersistentUUID(context, new BraintreeSharedPreferences());
+        return getPersistentUUID(context, BraintreeSharedPreferences.getInstance());
     }
 
     @VisibleForTesting
@@ -36,7 +36,7 @@ class UUIDHelper {
     }
 
     String getInstallationGUID(Context context) {
-        return getInstallationGUID(context, new BraintreeSharedPreferences());
+        return getInstallationGUID(context, BraintreeSharedPreferences.getInstance());
     }
 
     @VisibleForTesting

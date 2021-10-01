@@ -18,7 +18,7 @@ class ConfigurationCache {
             synchronized (ConfigurationCache.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new ConfigurationCache(new BraintreeSharedPreferences());
+                    INSTANCE = new ConfigurationCache(BraintreeSharedPreferences.getInstance());
                 }
             }
         }
