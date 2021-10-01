@@ -3,7 +3,7 @@
 ## unreleased
 
 * SharedPreferences
-  * Encrypt shared preferences in BraintreeSharedPreferences (fixes #440)
+  * Encrypt shared preferences data stored by SDK (fixes #440)
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure
