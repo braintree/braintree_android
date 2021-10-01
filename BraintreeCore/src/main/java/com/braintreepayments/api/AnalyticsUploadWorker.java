@@ -34,7 +34,7 @@ public class AnalyticsUploadWorker extends Worker {
 
         AnalyticsClient analyticsClient = new AnalyticsClient(authorization);
         try {
-            analyticsClient.uploadAnalytics(getApplicationContext(), configuration, new BraintreeSharedPreferences());
+            analyticsClient.uploadAnalytics(getApplicationContext(), configuration);
             return Result.success();
         } catch (Exception e) {
             return Result.failure();

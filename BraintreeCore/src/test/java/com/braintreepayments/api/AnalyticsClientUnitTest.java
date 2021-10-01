@@ -53,7 +53,7 @@ public class AnalyticsClientUnitTest {
     private ClassHelper classHelper;
 
     private long currentTime;
-    private BraintreeSharedPreferences braintreeSharedPreferences;
+    private UUIDHelper uuidHelper;
 
     @Before
     public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
@@ -66,7 +66,8 @@ public class AnalyticsClientUnitTest {
         deviceInspector = mock(DeviceInspector.class);
         classHelper = mock(ClassHelper.class);
 
-        braintreeSharedPreferences = mock(BraintreeSharedPreferences.class);
+        uuidHelper = mock(UUIDHelper.class);
+        when(uuidHelper.getPersistentUUID(context)).thenReturn("sample-persistent-uuid");
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -97,7 +98,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.sendEvent(context, configuration, event);
 
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
@@ -115,7 +116,7 @@ public class AnalyticsClientUnitTest {
         AnalyticsEvent event = new AnalyticsEvent(
                 context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.sendEvent(context, configuration, event);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
@@ -129,7 +130,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
@@ -140,8 +141,8 @@ public class AnalyticsClientUnitTest {
     public void uploadAnalytics_whenNoEventsExist_doesNothing() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        sut.uploadAnalytics(context, configuration);
 
         verifyZeroInteractions(httpClient);
     }
@@ -164,10 +165,9 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.isDeviceRooted()).thenReturn(false);
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
-        when(braintreeSharedPreferences.getString(context, "braintreeUUID")).thenReturn("sample-uuid");
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -184,7 +184,7 @@ public class AnalyticsClientUnitTest {
         assertEquals("false", meta.getString("deviceRooted"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals(UUIDHelper.getPersistentUUID(context, braintreeSharedPreferences),
+        assertEquals("sample-persistent-uuid",
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
         assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
@@ -209,8 +209,8 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -241,8 +241,8 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration));
@@ -282,8 +282,8 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        sut.uploadAnalytics(context, configuration);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(0, pendingEvents.size());
@@ -306,9 +306,9 @@ public class AnalyticsClientUnitTest {
         Exception httpError = new Exception("error");
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         try {
-            sut.uploadAnalytics(context, configuration, braintreeSharedPreferences);
+            sut.uploadAnalytics(context, configuration);
             fail("uploadAnalytics should throw");
         } catch (Exception e) {
             assertSame(httpError, e);

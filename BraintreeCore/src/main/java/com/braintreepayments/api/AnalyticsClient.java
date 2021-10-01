@@ -42,16 +42,18 @@ class AnalyticsClient {
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
+    private final UUIDHelper uuidHelper;
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector());
+        this(new BraintreeHttpClient(authorization), new DeviceInspector(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector) {
+    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, UUIDHelper uuidHelper) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
+        this.uuidHelper = uuidHelper;
     }
 
     void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {
@@ -92,7 +94,7 @@ class AnalyticsClient {
                 .build();
     }
 
-    void uploadAnalytics(Context context, Configuration configuration, BraintreeSharedPreferences braintreeSharedPreferences) throws Exception {
+    void uploadAnalytics(Context context, Configuration configuration) throws Exception {
         String analyticsUrl = configuration.getAnalyticsUrl();
 
         final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
@@ -100,7 +102,7 @@ class AnalyticsClient {
 
         try {
             for (final List<AnalyticsEvent> innerEvents : events) {
-                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents, braintreeSharedPreferences);
+                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents);
                 httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
                 db.removeEvents(innerEvents);
             }
@@ -112,7 +114,7 @@ class AnalyticsClient {
     }
 
     private JSONObject serializeEvents(Context context, Authorization authorization,
-                                       List<AnalyticsEvent> events, BraintreeSharedPreferences braintreeSharedPreferences) throws JSONException {
+                                       List<AnalyticsEvent> events) throws JSONException {
         AnalyticsEvent primeEvent = events.get(0);
 
         JSONObject requestObject = new JSONObject();
@@ -132,7 +134,7 @@ class AnalyticsClient {
                 .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                 .put(DEVICE_MODEL_KEY, Build.MODEL)
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                        UUIDHelper.getPersistentUUID(context, braintreeSharedPreferences))
+                        uuidHelper.getPersistentUUID(context))
                 .put(IS_SIMULATOR_KEY, deviceInspector.isDeviceEmulator());
         requestObject.put(META_KEY, meta);
 

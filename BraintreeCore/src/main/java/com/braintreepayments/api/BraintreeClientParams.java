@@ -17,6 +17,7 @@ class BraintreeClientParams {
     private ConfigurationLoader configurationLoader;
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
+    private UUIDHelper uuidHelper;
 
     Authorization getAuthorization() {
         return authorization;
@@ -96,6 +97,15 @@ class BraintreeClientParams {
 
     BraintreeClientParams manifestValidator(ManifestValidator manifestValidator) {
         this.manifestValidator = manifestValidator;
+        return this;
+    }
+
+    UUIDHelper getUuidHelper() {
+        return uuidHelper;
+    }
+
+    BraintreeClientParams uuidHelper(UUIDHelper uuidHelper) {
+        this.uuidHelper = uuidHelper;
         return this;
     }
 
