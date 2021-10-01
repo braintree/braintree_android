@@ -4,6 +4,8 @@
 
 * SharedPreferences
   * Encrypt shared preferences in BraintreeSharedPreferences (fixes #440)
+* Venmo
+  * Make `VenmoRequest` parcelable
 * ThreeDSecure
   * Make `pareq` optional on `ThreeDSecureLookup`
 
