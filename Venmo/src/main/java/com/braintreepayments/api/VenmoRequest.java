@@ -1,11 +1,14 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 /**
  A VenmoRequest specifies options that contribute to the Venmo flow
  */
-public class VenmoRequest {
+public class VenmoRequest implements Parcelable {
 
     private boolean shouldVault;
     private String profileId;
@@ -88,5 +91,37 @@ public class VenmoRequest {
             default:
                 return null;
         }
+    }
+
+    protected VenmoRequest(Parcel in) {
+        shouldVault = in.readByte() != 0;
+        profileId = in.readString();
+        displayName = in.readString();
+        paymentMethodUsage = in.readInt();
+    }
+
+    public static final Creator<VenmoRequest> CREATOR = new Creator<VenmoRequest>() {
+        @Override
+        public VenmoRequest createFromParcel(Parcel in) {
+            return new VenmoRequest(in);
+        }
+
+        @Override
+        public VenmoRequest[] newArray(int size) {
+            return new VenmoRequest[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeByte((byte) (shouldVault ? 1 : 0));
+        parcel.writeString(profileId);
+        parcel.writeString(displayName);
+        parcel.writeInt(paymentMethodUsage);
     }
 }
