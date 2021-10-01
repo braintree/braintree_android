@@ -11,77 +11,97 @@ import java.security.GeneralSecurityException;
 
 class BraintreeSharedPreferences {
 
-    SharedPreferences getSharedPreferences(Context context) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context, "BraintreeApi");
+    private static final String BRAINTREE_SHARED_PREFS_FILENAME = "BraintreeApi";
+
+    static SharedPreferences getSharedPreferences(Context context) {
+        try {
+            MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+
+            return EncryptedSharedPreferences.create(
+                    context,
+                    BRAINTREE_SHARED_PREFS_FILENAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (GeneralSecurityException | IOException e) {
+            return null;
+        }
     }
 
-    SharedPreferences getSharedPreferences(Context context, String filename) throws GeneralSecurityException, IOException {
-        MasterKey masterKey = new MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build();
-
-        return EncryptedSharedPreferences.create(
-                context,
-                filename,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        );
+    String getString(Context context, String key)  {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            return sharedPreferences.getString(key, "");
+        }
+        return "";
     }
 
-    String getString(Context context, String key) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context)
-                .getString(key, "");
+    void putString(Context context, String key, String value){
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences
+                    .edit()
+                    .putString(key, value)
+                    .apply();
+        }
     }
 
-    String getString(Context context, String filename, String key) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context, filename)
-                .getString(key, "");
+    boolean getBoolean(Context context, String key) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            return sharedPreferences.getBoolean(key, false);
+        }
+        return false;
     }
 
-    void putString(Context context, String key, String value) throws GeneralSecurityException, IOException {
-        getSharedPreferences(context).edit()
-                .putString(key, value)
-                .apply();
+    void putBoolean(Context context, String key, boolean value) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences
+                    .edit()
+                    .putBoolean(key, value)
+                    .apply();
+        }
     }
 
-    void putString(Context context, String filename, String key, String value) throws GeneralSecurityException, IOException {
-        getSharedPreferences(context, filename).edit()
-                .putString(key, value)
-                .apply();
+    boolean containsKey(Context context, String key) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            return sharedPreferences.contains(key);
+        }
+        return false;
     }
 
-    boolean getBoolean(Context context, String key) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context)
-                .getBoolean(key, false);
+    long getLong(Context context, String key) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            return sharedPreferences.getLong(key, 0);
+        }
+        return 0;
     }
 
-    void putBoolean(Context context, String key, boolean value) throws GeneralSecurityException, IOException {
-        getSharedPreferences(context).edit()
-                .putBoolean(key, value)
-                .apply();
+    void putStringAndLong(Context context, String stringKey, String stringValue, String longKey, long longValue) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences
+                    .edit()
+                    .putString(stringKey, stringValue)
+                    .putLong(longKey, longValue)
+                    .apply();
+
+        }
     }
 
-    boolean containsKey(Context context, String key) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context).contains(key);
-    }
-
-    long getLong(Context context, String key) throws GeneralSecurityException, IOException {
-        return getSharedPreferences(context)
-                .getLong(key, 0);
-    }
-
-    void putStringAndLong(Context context, String stringKey, String stringValue, String longKey, long longValue) throws GeneralSecurityException, IOException {
-        getSharedPreferences(context).edit()
-                .putString(stringKey, stringValue)
-                .putLong(longKey, longValue)
-                .apply();
-    }
-
-    void clearSharedPreferences(Context context) throws GeneralSecurityException, IOException {
-        getSharedPreferences(context)
-                .edit()
-                .clear()
-                .apply();
+    void clearSharedPreferences(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences
+                    .edit()
+                    .clear()
+                    .apply();
+        }
     }
 }

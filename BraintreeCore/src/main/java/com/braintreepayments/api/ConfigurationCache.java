@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.concurrent.TimeUnit;
 
 class ConfigurationCache {
@@ -39,14 +37,11 @@ class ConfigurationCache {
     @VisibleForTesting
     String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
         String timestampKey = cacheKey + "_timestamp";
-        try {
-            if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
-                long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(context, timestampKey));
-                if (timeInCache < TIME_TO_LIVE) {
-                    return braintreeSharedPreferences.getString(context, cacheKey);
-                }
+        if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
+            long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(context, timestampKey));
+            if (timeInCache < TIME_TO_LIVE) {
+                return braintreeSharedPreferences.getString(context, cacheKey);
             }
-        } catch (GeneralSecurityException | IOException ignored) {
         }
 
         return null;
@@ -59,9 +54,6 @@ class ConfigurationCache {
     @VisibleForTesting
     void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
-        try {
-            braintreeSharedPreferences.putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
-        } catch (GeneralSecurityException | IOException ignored) {
-        }
+        braintreeSharedPreferences.putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
     }
 }

@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
+
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
@@ -8,8 +10,6 @@ import android.content.Context;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.rule.ActivityTestRule;
-
-import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
 
 @SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends AppCompatActivity> extends ActivityTestRule<T> {
@@ -25,6 +25,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
+        new BraintreeSharedPreferences().clearSharedPreferences(ApplicationProvider.getApplicationContext());
 
         keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
@@ -38,6 +39,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         super.afterActivityFinished();
 
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
+        new BraintreeSharedPreferences().clearSharedPreferences(ApplicationProvider.getApplicationContext());
 
         keyguardLock.reenableKeyguard();
     }

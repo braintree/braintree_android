@@ -35,7 +35,7 @@ public class SharedPreferencesHelper {
 
     public static void clearConfigurationCacheOverride(Context context) {
         try {
-           new BraintreeSharedPreferences().clearSharedPreferences(context);
+           new BraintreeSharedPreferences().clearSharedPreferences(context, );
         } catch (GeneralSecurityException | IOException ignored) {
         }
     }

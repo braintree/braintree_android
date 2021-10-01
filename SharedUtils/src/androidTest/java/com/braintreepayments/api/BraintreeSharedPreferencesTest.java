@@ -40,15 +40,15 @@ public class BraintreeSharedPreferencesTest {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
         SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
         sharedPreferences.edit().putBoolean("test-key-braintree-api", true).apply();
-        assertTrue(sut.getSharedPreferences(context, "BraintreeApi").getBoolean("test-key-braintree-api", false));
+        assertTrue(sut.getSharedPreferences(context).getBoolean("test-key-braintree-api", false));
     }
 
     @Test
     public void getSharedPreferences_returnsPreferencesWithFilenameByFromConstructor() throws GeneralSecurityException, IOException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context, "custom-file-name");
+        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
         sharedPreferences.edit().putBoolean("test-key-custom-file", true).apply();
-        assertTrue(sut.getSharedPreferences(context, "custom-file-name").getBoolean("test-key-custom-file", false));
+        assertTrue(sut.getSharedPreferences(context).getBoolean("test-key-custom-file", false));
     }
 
     @Test
@@ -63,10 +63,10 @@ public class BraintreeSharedPreferencesTest {
     @Test
     public void getString_withFilename_returnsStringFromSharedPreferences() throws GeneralSecurityException, IOException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context, "test-filename");
+        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
 
-        assertEquals("testValue", sut.getString(context,"test-filename", "testKey"));
+        assertEquals("testValue", sut.getString(context, "testKey"));
     }
 
     @Test
@@ -83,9 +83,9 @@ public class BraintreeSharedPreferencesTest {
     public void putString_withFilename_savesStringInSharedPreferences() throws GeneralSecurityException, IOException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences();
 
-        sut.putString(context, "test-filename", "testKey2", "testValue2");
+        sut.putString(context, "testKey2", "testValue2");
 
-        SharedPreferences sharedPreferences = sut.getSharedPreferences(context, "test-filename");
+        SharedPreferences sharedPreferences = sut.getSharedPreferences(context);
         assertEquals("testValue2", sharedPreferences.getString("testKey2", null));
     }
 
