@@ -61,6 +61,29 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
+    public void constructor_usesSessionIdFromParams() {
+        BraintreeClientParams params = new BraintreeClientParams()
+                .context(context)
+                .sessionId("session-id");
+        BraintreeClient sut = new BraintreeClient(params);
+
+        assertEquals("session-id", sut.getSessionId());
+    }
+
+    @Test
+    public void constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
+        UUIDHelper uuidHelper = mock(UUIDHelper.class);
+        when(uuidHelper.getFormattedUUID()).thenReturn("sample-formatted-uuid");
+
+        BraintreeClientParams params = new BraintreeClientParams()
+                .context(context)
+                .uuidHelper(uuidHelper);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        assertEquals("sample-formatted-uuid", sut.getSessionId());
+    }
+
+    @Test
     public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
         BraintreeClientParams params = createDefaultParams(configurationLoader);
         BraintreeClient sut = new BraintreeClient(params);
