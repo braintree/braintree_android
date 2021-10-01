@@ -26,6 +26,8 @@ class BraintreeSharedPreferences {
         return INSTANCE;
     }
 
+    private BraintreeSharedPreferences() {}
+
     static SharedPreferences getSharedPreferences(Context context) {
         try {
             MasterKey masterKey = new MasterKey.Builder(context)
