@@ -14,6 +14,7 @@ public class LocalPaymentRequest {
     private static final String CANCEL_URL_KEY = "cancelUrl";
     private static final String EXPERIENCE_PROFILE_KEY = "experienceProfile";
     private static final String NO_SHIPPING_KEY = "noShipping";
+    private static final String DISPLAY_NAME_KEY = "brandName";
     private static final String FUNDING_SOURCE_KEY = "fundingSource";
     private static final String AMOUNT_KEY = "amount";
     private static final String CURRENCY_CODE_KEY = "currencyIsoCode";
@@ -33,7 +34,9 @@ public class LocalPaymentRequest {
 
     private PostalAddress address;
     private String amount;
+    private String bankIdentificationCode;
     private String currencyCode;
+    private String displayName;
     private String email;
     private String givenName;
     private String merchantAccountId;
@@ -42,7 +45,6 @@ public class LocalPaymentRequest {
     private String phone;
     private boolean shippingAddressRequired;
     private String surname;
-    private String bankIdentificationCode;
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
@@ -65,7 +67,6 @@ public class LocalPaymentRequest {
         this.bankIdentificationCode = bankIdentificationCode;
     }
 
-
     /**
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
@@ -73,6 +74,12 @@ public class LocalPaymentRequest {
     public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
+
+    /**
+     * @param displayName Optional - The merchant name displayed inside of the Local Payment flow
+     *                    when starting the payment.
+     */
+    public void setDisplayName(@Nullable String displayName) { this.displayName = displayName; }
 
     /**
      * @param email Optional - Payer email of the customer.
@@ -156,6 +163,11 @@ public class LocalPaymentRequest {
     }
 
     @Nullable
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -222,6 +234,7 @@ public class LocalPaymentRequest {
 
             JSONObject experienceProfile = new JSONObject();
             experienceProfile.put(NO_SHIPPING_KEY, !shippingAddressRequired);
+            experienceProfile.put(DISPLAY_NAME_KEY, displayName);
             payload.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
 
             return payload.toString();
