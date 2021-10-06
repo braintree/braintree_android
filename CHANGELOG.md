@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* DataCollector
+  * Fix memory leak from `PayPalDataCollector` (fixes #419)
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure
