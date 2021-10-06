@@ -4,6 +4,8 @@
 
 * SharedPreferences
   * Encrypt shared preferences data stored by SDK (fixes #440)
+* DataCollector
+  * Fix memory leak from `PayPalDataCollector` (fixes #419)
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure

@@ -65,12 +65,12 @@ class PayPalDataCollector {
      */
     @MainThread
     String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
-        if (context == null) {
+        if (context == null || context.getApplicationContext() == null) {
             return "";
         }
 
         try {
-            MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context)
+            MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context.getApplicationContext())
                     .setMagnesSource(MagnesSource.BRAINTREE)
                     .disableBeacon(request.isDisableBeacon())
                     .setMagnesEnvironment(Environment.LIVE)
@@ -78,7 +78,7 @@ class PayPalDataCollector {
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
 
-            MagnesResult result = magnesSDK.collectAndSubmit(context, request.getClientMetadataId(), request.getAdditionalData());
+            MagnesResult result = magnesSDK.collectAndSubmit(context.getApplicationContext(), request.getClientMetadataId(), request.getAdditionalData());
 
             return result.getPaypalClientMetaDataId();
         } catch (InvalidInputException e) {

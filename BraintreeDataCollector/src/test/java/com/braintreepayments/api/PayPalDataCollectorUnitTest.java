@@ -42,6 +42,7 @@ public class PayPalDataCollectorUnitTest {
         magnesSDK = mock(MagnesSDK.class);
         uuidHelper = mock(UUIDHelper.class);
         context = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(mock(Context.class));
 
         // this uuid has no actual meaning; magnes requires a valid guid for tests
         sampleInstallationGUID = "0665203b-16e4-4ce2-be98-d7d73ec32e8a";
