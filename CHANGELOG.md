@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Local Payments
+  * Add `displayName` to `LocalPaymentRequest`
 * DataCollector
   * Fix memory leak from `PayPalDataCollector` (fixes #419)
 * Venmo

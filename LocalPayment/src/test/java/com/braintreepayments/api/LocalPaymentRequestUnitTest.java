@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentRequestUnitTest {
-
+    
     @Test
     public void build_setsAllParams() throws JSONException {
         PostalAddress address = new PostalAddress();
@@ -37,6 +37,7 @@ public class LocalPaymentRequestUnitTest {
         request.setCurrencyCode("EUR");
         request.setPaymentTypeCountryCode("NL");
         request.setBic("bank-id-code");
+        request.setDisplayName("My Brand!");
 
         JSONObject json = new JSONObject(request.build("http://success-url.com", "http://cancel-url.com"));
 
@@ -60,6 +61,7 @@ public class LocalPaymentRequestUnitTest {
         assertEquals("NL", json.getString("paymentTypeCountryCode"));
         assertEquals("bank-id-code", json.getString("bic"));
         assertTrue(json.getJSONObject("experienceProfile").getBoolean("noShipping"));
+        assertEquals("My Brand!", json.getJSONObject("experienceProfile").getString("brandName"));
         String expectedCancelUrl = Uri.parse("http://cancel-url.com").toString();
         String expectedReturnUrl = Uri.parse("http://success-url.com").toString();
         assertEquals(expectedCancelUrl, json.getString("cancelUrl"));
