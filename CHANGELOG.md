@@ -7,7 +7,7 @@
 * Local Payments
   * Add `displayName` to `LocalPaymentRequest`
 * PayPal
-  * Fix issue that caused PayPal User Cancelations from PayPal Browser flow to be incorrectly reported as failures
+  * Fix issue that caused user cancelations from PayPal browser flow to be incorrectly reported as failures
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure
