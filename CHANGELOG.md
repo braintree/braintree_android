@@ -2,10 +2,10 @@
 
 ## unreleased
 
-* Local Payments
-  * Add `displayName` to `LocalPaymentRequest`
 * DataCollector
   * Fix memory leak from `PayPalDataCollector` (fixes #419)
+* Local Payments
+  * Add `displayName` to `LocalPaymentRequest`
 * PayPal
   * Fix issue that caused PayPal User Cancelations from PayPal Browser flow to be incorrectly reported as failures
 * Venmo
