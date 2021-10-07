@@ -4,7 +4,6 @@
 
 * Local Payments
   * Add `displayName` to `LocalPaymentRequest`
-
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure
