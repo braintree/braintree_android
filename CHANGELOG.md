@@ -6,6 +6,8 @@
   * Add `displayName` to `LocalPaymentRequest`
 * DataCollector
   * Fix memory leak from `PayPalDataCollector` (fixes #419)
+* PayPal
+  * Fix issue that caused PayPal User Cancelations from PayPal Browser flow to be incorrectly reported as failures
 * Venmo
   * Make `VenmoRequest` parcelable
 * ThreeDSecure
