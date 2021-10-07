@@ -519,7 +519,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenCancelUriReceived_notifiesCancellation() throws JSONException {
+    public void onBrowserSwitchResult_whenCancelUriReceived_notifiesCancellationAndSendsAnalyticsEvent() throws JSONException {
         ApiClient apiClient = new MockApiClientBuilder().build();
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -550,6 +550,8 @@ public class PayPalClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
+
+        verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
 
     @Test
