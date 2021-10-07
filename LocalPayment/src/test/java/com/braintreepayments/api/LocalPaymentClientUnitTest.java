@@ -84,6 +84,7 @@ public class LocalPaymentClientUnitTest {
         assertEquals("CA", json.getString("state"));
         assertEquals("local-merchant-account-id", json.getString("merchantAccountId"));
         assertTrue(json.getJSONObject("experienceProfile").getBoolean("noShipping"));
+        assertEquals("My Brand!", json.getJSONObject("experienceProfile").getString("brandName"));
         String expectedCancelUrl = Uri.parse("sample-scheme://local-payment-cancel").toString();
         String expectedReturnUrl = Uri.parse("sample-scheme://local-payment-success").toString();
         assertEquals(expectedCancelUrl, json.getString("cancelUrl"));
@@ -585,6 +586,7 @@ public class LocalPaymentClientUnitTest {
         request.setMerchantAccountId("local-merchant-account-id");
         request.setCurrencyCode("EUR");
         request.setPaymentTypeCountryCode("NL");
+        request.setDisplayName("My Brand!");
 
         return request;
     }

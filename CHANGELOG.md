@@ -4,6 +4,8 @@
 
 * SharedPreferences
   * Encrypt shared preferences data stored by SDK (fixes #440)
+* Local Payments
+  * Add `displayName` to `LocalPaymentRequest`
 * DataCollector
   * Fix memory leak from `PayPalDataCollector` (fixes #419)
 * Venmo
