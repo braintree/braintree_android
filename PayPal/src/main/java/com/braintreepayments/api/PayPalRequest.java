@@ -65,7 +65,7 @@ public abstract class PayPalRequest implements Parcelable {
     private String landingPageType;
     private String displayName;
     private String merchantAccountId;
-    private String correlationId;
+    private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
 
     /**
@@ -185,12 +185,12 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: A correlation ID created with Set Transaction Context on your server.
+     * Optional: A risk correlation ID created with Set Transaction Context on your server.
      *
-     * @param correlationId the correlation ID.
+     * @param riskCorrelationId the correlation ID.
      */
-    public void setCorrelationId(@Nullable String correlationId) {
-        this.correlationId = correlationId;
+    public void setRiskCorrelationId(@Nullable String riskCorrelationId) {
+        this.riskCorrelationId = riskCorrelationId;
     }
 
     /**
@@ -237,8 +237,8 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     @Nullable
-    public String getCorrelationId() {
-        return correlationId;
+    public String getRiskCorrelationId() {
+        return riskCorrelationId;
     }
 
     @NonNull
@@ -263,7 +263,7 @@ public abstract class PayPalRequest implements Parcelable {
         landingPageType = in.readString();
         displayName = in.readString();
         merchantAccountId = in.readString();
-        correlationId = in.readString();
+        riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
     }
 
@@ -282,7 +282,7 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(landingPageType);
         parcel.writeString(displayName);
         parcel.writeString(merchantAccountId);
-        parcel.writeString(correlationId);
+        parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
     }
 }

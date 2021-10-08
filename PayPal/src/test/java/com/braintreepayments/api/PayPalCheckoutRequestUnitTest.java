@@ -48,7 +48,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
         request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
-        request.setCorrelationId("123-correlation");
+        request.setRiskCorrelationId("123-correlation");
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
 
         assertEquals("1.00", request.getAmount());
@@ -61,7 +61,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalPaymentIntent.SALE, request.getIntent());
         assertEquals(PayPalCheckoutRequest.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
-        assertEquals("123-correlation", request.getCorrelationId());
+        assertEquals("123-correlation", request.getRiskCorrelationId());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferPayLater());
     }
@@ -83,7 +83,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
-        request.setCorrelationId("123-correlation");
+        request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
@@ -108,7 +108,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals(PayPalCheckoutRequest.USER_ACTION_COMMIT, result.getUserAction());
         assertEquals("Display Name", result.getDisplayName());
-        assertEquals("123-correlation", result.getCorrelationId());
+        assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
