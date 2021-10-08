@@ -66,11 +66,13 @@ class PayPalInternalClient {
 
                                         String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
                                         String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
+                                        String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
+                                                ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context);
 
                                         if (pairingId != null) {
                                             payPalResponse
                                                     .pairingId(pairingId)
-                                                    .clientMetadataId(payPalDataCollector.getClientMetadataId(context));
+                                                    .clientMetadataId(clientMetadataId);
                                         }
 
                                         String approvalUrl = parsedRedirectUri
