@@ -16,20 +16,20 @@ import lib.android.paypal.com.magnessdk.MagnesSource;
 class PayPalDataCollector {
 
     private final MagnesSDK magnesSDK;
-    private final PayPalInstallationIdentifier payPalInstallationIdentifier;
+    private final UUIDHelper uuidHelper;
 
     PayPalDataCollector() {
-        this(MagnesSDK.getInstance(), new PayPalInstallationIdentifier());
+        this(MagnesSDK.getInstance(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    PayPalDataCollector(MagnesSDK magnesSDK, PayPalInstallationIdentifier payPalInstallationIdentifier) {
+    PayPalDataCollector(MagnesSDK magnesSDK, UUIDHelper uuidHelper) {
         this.magnesSDK = magnesSDK;
-        this.payPalInstallationIdentifier = payPalInstallationIdentifier;
+        this.uuidHelper = uuidHelper;
     }
 
     String getPayPalInstallationGUID(Context context) {
-        return payPalInstallationIdentifier.getInstallationGUID(context);
+        return uuidHelper.getInstallationGUID(context);
     }
 
     /**

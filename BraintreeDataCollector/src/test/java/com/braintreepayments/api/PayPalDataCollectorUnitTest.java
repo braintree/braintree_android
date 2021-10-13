@@ -35,12 +35,12 @@ public class PayPalDataCollectorUnitTest {
     private String sampleInstallationGUID;
 
     private MagnesSDK magnesSDK;
-    private PayPalInstallationIdentifier payPalInstallationIdentifier;
+    private UUIDHelper uuidHelper;
 
     @Before
     public void beforeEach() {
         magnesSDK = mock(MagnesSDK.class);
-        payPalInstallationIdentifier = mock(PayPalInstallationIdentifier.class);
+        uuidHelper = mock(UUIDHelper.class);
         context = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(mock(Context.class));
 
@@ -50,16 +50,16 @@ public class PayPalDataCollectorUnitTest {
 
     @Test
     public void getPayPalInstallationGUID_returnsInstallationIdentifier() {
-        when(payPalInstallationIdentifier.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
 
         assertEquals(sampleInstallationGUID, sut.getPayPalInstallationGUID(context));
     }
 
     @Test
     public void getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
-        when(payPalInstallationIdentifier.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
 
         String result = sut.getClientMetadataId(null);
         assertEquals("", result);
@@ -67,12 +67,12 @@ public class PayPalDataCollectorUnitTest {
 
     @Test
     public void getClientMetadataId_configuresMagnesWithDefaultSettings() throws InvalidInputException {
-        when(payPalInstallationIdentifier.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
         sut.getClientMetadataId(context);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
@@ -99,7 +99,7 @@ public class PayPalDataCollectorUnitTest {
         when(magnesSDK.collectAndSubmit(any(Context.class), eq("client-metadata-id"), same(additionalData)))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
         sut.getClientMetadataId(context, payPalDataCollectorRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
@@ -114,7 +114,7 @@ public class PayPalDataCollectorUnitTest {
 
     @Test
     public void getClientMetadataId_forwardsClientMetadataIdFromMagnesResult() throws InvalidInputException {
-        when(payPalInstallationIdentifier.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         MagnesResult magnesResult = mock(MagnesResult.class);
         when(magnesResult.getPaypalClientMetaDataId()).thenReturn("paypal-clientmetadata-id");
@@ -122,7 +122,7 @@ public class PayPalDataCollectorUnitTest {
         when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenReturn(magnesResult);
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
         String result = sut.getClientMetadataId(context);
 
         assertEquals("paypal-clientmetadata-id", result);
@@ -130,12 +130,12 @@ public class PayPalDataCollectorUnitTest {
 
     @Test
     public void getClientMetadataId_returnsEmptyStringWhenMagnesInputInvalid() throws InvalidInputException {
-        when(payPalInstallationIdentifier.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenThrow(new InvalidInputException("invalid input"));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, payPalInstallationIdentifier);
+        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
         String result = sut.getClientMetadataId(context);
 
         assertEquals("", result);

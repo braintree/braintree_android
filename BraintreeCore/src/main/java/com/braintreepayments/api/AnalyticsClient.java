@@ -42,16 +42,18 @@ class AnalyticsClient {
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
+    private final UUIDHelper uuidHelper;
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector());
+        this(new BraintreeHttpClient(authorization), new DeviceInspector(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector) {
+    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, UUIDHelper uuidHelper) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
+        this.uuidHelper = uuidHelper;
     }
 
     void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {
@@ -132,7 +134,7 @@ class AnalyticsClient {
                 .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                 .put(DEVICE_MODEL_KEY, Build.MODEL)
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                        UUIDHelper.getPersistentUUID(context))
+                        uuidHelper.getPersistentUUID(context))
                 .put(IS_SIMULATOR_KEY, deviceInspector.isDeviceEmulator());
         requestObject.put(META_KEY, meta);
 

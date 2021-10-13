@@ -1,5 +1,20 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -21,24 +36,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(RobolectricTestRunner.class)
 public class AnalyticsClientUnitTest {
@@ -50,18 +52,22 @@ public class AnalyticsClientUnitTest {
     private DeviceInspector deviceInspector;
     private ClassHelper classHelper;
 
-    private long mCurrentTime;
+    private long currentTime;
+    private UUIDHelper uuidHelper;
 
     @Before
-    public void setup() throws InvalidArgumentException {
+    public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
         authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        mCurrentTime = System.currentTimeMillis();
+        currentTime = System.currentTimeMillis();
 
         context = ApplicationProvider.getApplicationContext();
 
         httpClient = mock(BraintreeHttpClient.class);
         deviceInspector = mock(DeviceInspector.class);
         classHelper = mock(ClassHelper.class);
+
+        uuidHelper = mock(UUIDHelper.class);
+        when(uuidHelper.getPersistentUUID(context)).thenReturn("sample-persistent-uuid");
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -92,7 +98,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.sendEvent(context, configuration, event);
 
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
@@ -110,7 +116,7 @@ public class AnalyticsClientUnitTest {
         AnalyticsEvent event = new AnalyticsEvent(
                 context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.sendEvent(context, configuration, event);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
@@ -124,7 +130,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
@@ -135,7 +141,7 @@ public class AnalyticsClientUnitTest {
     public void uploadAnalytics_whenNoEventsExist_doesNothing() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.uploadAnalytics(context, configuration);
 
         verifyZeroInteractions(httpClient);
@@ -160,7 +166,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -178,7 +184,7 @@ public class AnalyticsClientUnitTest {
         assertEquals("false", meta.getString("deviceRooted"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals(UUIDHelper.getPersistentUUID(context),
+        assertEquals("sample-persistent-uuid",
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
         assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
@@ -203,7 +209,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -214,11 +220,11 @@ public class AnalyticsClientUnitTest {
         assertEquals(2, array.length());
         JSONObject eventOne = array.getJSONObject(0);
         assertEquals("android.started", eventOne.getString("kind"));
-        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= currentTime);
 
         JSONObject eventTwo = array.getJSONObject(1);
         assertEquals("android.finished", eventTwo.getString("kind"));
-        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= currentTime);
     }
 
     @Test
@@ -235,7 +241,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -249,7 +255,7 @@ public class AnalyticsClientUnitTest {
         JSONObject analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         JSONObject meta = requestJson.getJSONObject("_meta");
         assertEquals("android.started", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
         assertEquals("sessionId", meta.getString("sessionId"));
 
         requestJson = new JSONObject(values.get(1));
@@ -257,7 +263,7 @@ public class AnalyticsClientUnitTest {
         analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         meta = requestJson.getJSONObject("_meta");
         assertEquals("android.finished", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
         assertEquals("sessionIdTwo", meta.getString("sessionId"));
     }
 
@@ -276,7 +282,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         sut.uploadAnalytics(context, configuration);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
@@ -300,7 +306,7 @@ public class AnalyticsClientUnitTest {
         Exception httpError = new Exception("error");
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
         try {
             sut.uploadAnalytics(context, configuration);
             fail("uploadAnalytics should throw");

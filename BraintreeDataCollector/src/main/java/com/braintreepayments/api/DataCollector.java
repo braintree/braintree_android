@@ -22,16 +22,18 @@ public class DataCollector {
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
     private final KountDataCollector kountDataCollector;
+    private final UUIDHelper uuidHelper;
 
     public DataCollector(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient));
+        this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient), new UUIDHelper());
     }
 
     @VisibleForTesting
-    DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, KountDataCollector kountDataCollector) {
+    DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, KountDataCollector kountDataCollector, UUIDHelper uuidHelper) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.kountDataCollector = kountDataCollector;
+        this.uuidHelper = uuidHelper;
     }
 
     /**
@@ -78,7 +80,7 @@ public class DataCollector {
                             id = configuration.getKountMerchantId();
                         }
 
-                        final String deviceSessionId = UUIDHelper.getFormattedUUID();
+                        final String deviceSessionId = uuidHelper.getFormattedUUID();
                         kountDataCollector.startDataCollection(context, id, deviceSessionId, new KountDataCollectorCallback() {
                             @Override
                             public void onResult(@Nullable String kountSessionId, @Nullable Exception error) {

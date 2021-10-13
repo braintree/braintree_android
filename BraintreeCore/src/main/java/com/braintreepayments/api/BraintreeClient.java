@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
@@ -36,11 +35,11 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme, UUIDHelper.getFormattedUUID(), IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
-        return createDefaultParams(context, authString, returnUrlScheme, UUIDHelper.getFormattedUUID(), IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, @IntegrationType.Integration String integrationType) {
@@ -66,6 +65,7 @@ public class BraintreeClient {
                 .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
+                .UUIDHelper(new UUIDHelper())
                 .configurationLoader(new ConfigurationLoader(httpClient));
     }
 
@@ -106,7 +106,12 @@ public class BraintreeClient {
         this.graphQLClient = params.getGraphQLClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
-        this.sessionId = params.getSessionId();
+
+        String sessionId = params.getSessionId();
+        if (sessionId == null) {
+            sessionId = params.getUUIDHelper().getFormattedUUID();
+        }
+        this.sessionId = sessionId;
         this.integrationType = params.getIntegrationType();
         this.returnUrlScheme = params.getReturnUrlScheme();
 

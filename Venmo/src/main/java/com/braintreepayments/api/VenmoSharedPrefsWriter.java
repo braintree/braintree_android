@@ -2,20 +2,28 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 class VenmoSharedPrefsWriter {
 
     private static final String VAULT_VENMO_KEY = "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY";
 
-    VenmoSharedPrefsWriter() {}
+    private final BraintreeSharedPreferences braintreeSharedPreferences;
+
+    VenmoSharedPrefsWriter() {
+        this(BraintreeSharedPreferences.getInstance());
+    }
+
+    @VisibleForTesting
+    VenmoSharedPrefsWriter(BraintreeSharedPreferences braintreeSharedPreferences) {
+        this.braintreeSharedPreferences = braintreeSharedPreferences;
+    }
 
     void persistVenmoVaultOption(Context context, boolean shouldVault) {
-        BraintreeSharedPreferences.getSharedPreferences(context).edit()
-                .putBoolean(VAULT_VENMO_KEY, shouldVault)
-                .apply();
+        braintreeSharedPreferences.putBoolean(context, VAULT_VENMO_KEY, shouldVault);
     }
 
     boolean getVenmoVaultOption(Context context) {
-        return BraintreeSharedPreferences.getSharedPreferences(context)
-                .getBoolean(VAULT_VENMO_KEY, false);
+        return braintreeSharedPreferences.getBoolean(context, VAULT_VENMO_KEY);
     }
 }

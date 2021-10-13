@@ -1,45 +1,38 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-import androidx.test.core.app.ApplicationProvider;
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
-@RunWith(RobolectricTestRunner.class)
 public class VenmoSharedPrefsWriterUnitTest {
 
     private Context context;
-    private SharedPreferences sharedPrefs;
+    private BraintreeSharedPreferences braintreeSharedPreferences;
 
     @Before
-    public void beforeEach() {
-        context = ApplicationProvider.getApplicationContext();
-        sharedPrefs = context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
-        sharedPrefs.edit()
-            .putBoolean("com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", false)
-            .apply();
+    public void beforeEach() throws GeneralSecurityException, IOException {
+        context = mock(Context.class);
+        braintreeSharedPreferences = mock(BraintreeSharedPreferences.class);
     }
 
     @Test
     public void persistVenmoVaultOption_persistsVaultOption() {
-        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
+        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter(braintreeSharedPreferences);
         sut.persistVenmoVaultOption(context, true);
-        assertTrue(
-            sharedPrefs.getBoolean("com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", false)
-        );
+        verify(braintreeSharedPreferences).putBoolean(context, "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", true);
     }
 
     @Test
     public void getVenmoVaultOption_retrievesVaultOptionFromSharedPrefs() {
-        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
-        sut.persistVenmoVaultOption(context, true);
-        assertTrue(sut.getVenmoVaultOption(context));
+        VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter(braintreeSharedPreferences);
+        sut.getVenmoVaultOption(context);
+        verify(braintreeSharedPreferences).getBoolean(context, "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY");
     }
 }
