@@ -71,7 +71,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
 
         enterThreeDSecurePasswordAndReturnToApp();
 
-        onDevice(withTextContaining("Failed to authenticate, please try a different form of payment")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("Failed to authenticate, please try a different form of payment")));
     }
 
     @Test(timeout = 40000)
@@ -111,13 +111,13 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     public void threeDSecure_whenSignatureVerificationFails_returnsAFailedAuthentication() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE));
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
-        onDevice(withText("CVC")).perform(setText("123"));
+        onDevice(withText("CID")).perform(setText("1234"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         enterThreeDSecurePasswordAndReturnToApp();
 
-        onDevice(withTextContaining("Failed to authenticate, please try a different form of payment")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("Failed to authenticate, please try a different form of payment")));
     }
 
     @Test(timeout = 40000)
@@ -149,7 +149,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
 
         enterThreeDSecurePasswordAndReturnToApp();
 
-        onDevice(withTextContaining("An unexpected error occurred")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("An unexpected error occurred")));
     }
 
     @Test(timeout = 40000)
@@ -163,7 +163,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withText("Authentication")).waitForExists();
         onDevice(withContentDescription("Close tab")).perform(click());
 
-        onDevice(withText("3DS canceled")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("User canceled 3DS.")));
     }
 
     @Test(timeout = 40000)
@@ -190,7 +190,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
 
         enterThreeDSecurePasswordAndReturnToApp();
 
-        onDevice(withTextContaining("An unexpected error occurred")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("An unexpected error occurred")));
     }
 
     @Test(timeout = 50000)
@@ -224,7 +224,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice().typeText("1234");
         onDevice(withText("Submit")).perform(click());
 
-        onDevice(withText("wasVerified: true")).exists();
+        onDevice(withTextStartingWith("Card Last Two")).check(text(containsString("wasVerified: true")));
     }
 
     private void enterThreeDSecurePasswordAndReturnToApp() {
