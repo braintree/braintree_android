@@ -230,6 +230,10 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
             parameters.put(MERCHANT_ACCOUNT_ID, getMerchantAccountId());
         }
 
+        if (getRiskCorrelationId() != null) {
+            parameters.put(CORRELATION_ID_KEY, getRiskCorrelationId());
+        }
+
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
         return parameters.toString();
     }

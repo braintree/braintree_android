@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static junit.framework.TestCase.assertNull;
+
 import android.content.Context;
 
 import org.json.JSONArray;
@@ -398,6 +400,54 @@ public class PayPalInternalClientUnitTest {
         JSONObject actual = new JSONObject(result);
 
         assertFalse(actual.has("line_items"));
+    }
+
+    @Test
+    public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws JSONException {
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
+                .authorization(clientToken)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+        payPalRequest.setRiskCorrelationId("risk-correlation-id");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        PayPalResponse payPalResponse = captor.getValue();
+        assertEquals("risk-correlation-id", payPalResponse.getClientMetadataId());
+    }
+
+    @Test
+    public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws JSONException {
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
+                .authorization(clientToken)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        PayPalResponse payPalResponse = captor.getValue();
+        assertNull(payPalRequest.getRiskCorrelationId());
+        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
     }
 
     @Test
