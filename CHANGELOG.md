@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.7.0
 
 * SharedPreferences
   * Encrypt shared preferences data stored by SDK (fixes #440)
