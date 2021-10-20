@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Bump `work-runtime` version to `2.7.0`
+  * Bump `browser-switch` version to `2.1.1`
+
 ## 4.7.0
 
 * SharedPreferences
