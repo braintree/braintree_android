@@ -36,6 +36,15 @@ class AnalyticsClient {
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
     private static final String IS_SIMULATOR_KEY = "isSimulator";
 
+    private static final String SESSION_ID_KEY = "sessionId";
+    private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
+    private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
+    private static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
+    private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
+    private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
+    private static final String INTEGRATION_TYPE_KEY = "integrationType";
+    private static final String DROP_IN_VERSION_KEY = "dropinVersion";
+
     static final String ANALYTICS_UPLOAD_WORK_NAME = "uploadAnalytics";
     static final String ANALYTICS_INPUT_DATA_CONFIGURATION_KEY = "configuration";
     static final String ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY = "authorization";
@@ -54,6 +63,13 @@ class AnalyticsClient {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
         this.uuidHelper = uuidHelper;
+    }
+
+    void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
+        String fullEventName = String.format("android.%s", eventName);
+        long timestamp = System.currentTimeMillis();
+        DeviceMetadata deviceMetadata = deviceInspector.getDeviceMetadata(context);
+        
     }
 
     void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {

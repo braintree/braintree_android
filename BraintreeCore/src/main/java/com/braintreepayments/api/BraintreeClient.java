@@ -130,12 +130,12 @@ public class BraintreeClient {
         configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
-    void sendAnalyticsEvent(final String eventFragment) {
+    void sendAnalyticsEvent(final String eventName) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (isAnalyticsEnabled(configuration)) {
-                    final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventFragment);
+                    final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventName);
                     analyticsClient.sendEvent(applicationContext, configuration, event);
                 }
             }

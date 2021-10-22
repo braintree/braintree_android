@@ -1,10 +1,15 @@
 package com.braintreepayments.api;
 
+import static android.content.res.Configuration.ORIENTATION_UNDEFINED;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
@@ -22,14 +27,16 @@ class DeviceInspector {
     private static final String VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n";
 
     private final AppHelper appHelper;
+    private final ClassHelper classHelper;
 
     DeviceInspector() {
-        this(new AppHelper());
+        this(new AppHelper(), new ClassHelper());
     }
 
     @VisibleForTesting
-    DeviceInspector(AppHelper appHelper) {
+    DeviceInspector(AppHelper appHelper, ClassHelper classHelper) {
         this.appHelper = appHelper;
+        this.classHelper = classHelper;
     }
 
     boolean isPayPalInstalled(Context context) {
@@ -113,5 +120,78 @@ class DeviceInspector {
         }
 
         return (check1 || check2 || check3);
+    }
+
+    DeviceMetadata getDeviceMetadata(Context context) {
+        String networkType = getNetworkType(context);
+        String userOrientation = getUserOrientation(context);
+        String appVersion = getAppVersion(context);
+        String dropInVersion = getDropInVersion();
+        boolean isPayPalInstalled = isPayPalInstalled(context);
+        boolean isVenmoInstalled = isVenmoInstalled(context);
+
+        return new DeviceMetadata(
+            appVersion,
+            dropInVersion,
+            networkType,
+            userOrientation,
+            isPayPalInstalled,
+            isVenmoInstalled
+        );
+    }
+
+    private String getNetworkType(Context context) {
+        String networkType = null;
+        if (context != null) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            if (networkInfo != null) {
+                networkType = networkInfo.getTypeName();
+            }
+            if (networkType == null) {
+                networkType = "none";
+            }
+        }
+        return networkType;
+    }
+
+    private String getAppVersion(Context context) {
+        String result = "VersionUnknown";
+        if (context != null) {
+            try {
+                result = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException ignored) { /* do nothing */ }
+        }
+        return result;
+    }
+
+    private String getUserOrientation(Context context) {
+        int orientation = ORIENTATION_UNDEFINED;
+        if (context != null) {
+            orientation = context.getResources().getConfiguration().orientation;
+        }
+
+        switch (orientation) {
+            case android.content.res.Configuration.ORIENTATION_PORTRAIT:
+                return "Portrait";
+            case Configuration.ORIENTATION_LANDSCAPE:
+                return "Landscape";
+            default:
+                return "Unknown";
+        }
+    }
+
+    /**
+     * Gets the current Drop-in version or null.
+     *
+     * @return string representation of the current Drop-in version, or null if
+     * Drop-in is unavailable
+     */
+    private String getDropInVersion() {
+        return classHelper.getFieldValue(
+                "com.braintreepayments.api.dropin.BuildConfig",
+                "VERSION_NAME"
+        );
     }
 }
