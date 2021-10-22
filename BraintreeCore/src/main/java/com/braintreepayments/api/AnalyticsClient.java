@@ -153,11 +153,13 @@ class AnalyticsClient {
         AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
         List<AnalyticsEvent> events = analyticsEventDao.getAllEvents();
 
-        DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
-
-        JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), events, metadata);
-        httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
-        analyticsEventDao.deleteEvents(events);
+        boolean shouldUploadAnalytics = !events.isEmpty();
+        if (shouldUploadAnalytics) {
+            DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+            JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), events, metadata);
+            httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
+            analyticsEventDao.deleteEvents(events);
+        }
     }
 
     String getLastKnownAnalyticsUrl() {

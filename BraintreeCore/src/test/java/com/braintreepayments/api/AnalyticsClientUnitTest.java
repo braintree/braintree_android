@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -179,7 +178,6 @@ public class AnalyticsClientUnitTest {
         verifyZeroInteractions(httpClient);
     }
 
-    @Ignore("these tests fail because mockito calls the underlying room code, which cannot run on the main thread")
     @Test
     public void uploadAnalytics_whenEventsExist_sendsCorrectMetaData() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
@@ -224,7 +222,6 @@ public class AnalyticsClientUnitTest {
         assertTrue(meta.getBoolean("venmoInstalled"));
     }
 
-    @Ignore("these tests fail because mockito calls the underlying room code, which cannot run on the main thread")
     @Test
     public void uploadAnalytics_whenEventsExist_sendsAllEvents() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
@@ -264,7 +261,6 @@ public class AnalyticsClientUnitTest {
         assertEquals(456, Long.parseLong(eventTwo.getString("timestamp")));
     }
 
-    @Ignore("these tests fail because mockito calls the underlying room code, which cannot run on the main thread")
     @Test
     public void uploadAnalytics_deletesDatabaseEventsOnSuccessResponse() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
