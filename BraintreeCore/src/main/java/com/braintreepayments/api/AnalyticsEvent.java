@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "analytics_event")
-public class AnalyticsEvent2 {
+public class AnalyticsEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "_id")
@@ -19,7 +19,7 @@ public class AnalyticsEvent2 {
     @ColumnInfo(name = "timestamp")
     private final long timestamp;
 
-    AnalyticsEvent2(@NonNull String name, long timestamp) {
+    AnalyticsEvent(@NonNull String name, long timestamp) {
         this.name = name;
         this.timestamp = timestamp;
     }

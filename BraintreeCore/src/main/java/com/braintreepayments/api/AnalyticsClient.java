@@ -38,16 +38,16 @@ class AnalyticsClient {
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
-    private final AnalyticsDatabase2 analyticsDatabase;
+    private final AnalyticsDatabase analyticsDatabase;
 
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Context context, Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector(), AnalyticsDatabase2.getDatabase(context));
+        this(new BraintreeHttpClient(authorization), new DeviceInspector(), AnalyticsDatabase.getDatabase(context));
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, AnalyticsDatabase2 analyticsDatabase) {
+    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, AnalyticsDatabase analyticsDatabase) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
         this.analyticsDatabase = analyticsDatabase;
@@ -122,7 +122,7 @@ class AnalyticsClient {
     ListenableWorker.Result writeAnalytics(Context context, Data inputData) {
         String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
         long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, 0);
-        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
+        AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
 
         AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
         analyticsEventDao.insertEvent(event);
@@ -150,11 +150,8 @@ class AnalyticsClient {
     void uploadAnalytics(Context context, Configuration configuration, String sessionId, String integration) throws Exception {
         String analyticsUrl = configuration.getAnalyticsUrl();
 
-        Context applicationContext = context.getApplicationContext();
-        AnalyticsDatabase2 db = AnalyticsDatabase2.getDatabase(applicationContext);
-
-        AnalyticsEventDao analyticsEventDao = db.analyticsEventDao();
-        List<AnalyticsEvent2> events = analyticsEventDao.getAllEvents();
+        AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
+        List<AnalyticsEvent> events = analyticsEventDao.getAllEvents();
 
         DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
 
@@ -167,7 +164,7 @@ class AnalyticsClient {
         return lastKnownAnalyticsUrl;
     }
 
-    private JSONObject serializeEvents(Context context, Authorization authorization, List<AnalyticsEvent2> events, DeviceMetadata metadata) throws JSONException {
+    private JSONObject serializeEvents(Context context, Authorization authorization, List<AnalyticsEvent> events, DeviceMetadata metadata) throws JSONException {
         JSONObject requestObject = new JSONObject();
         if (authorization instanceof ClientToken) {
             requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
@@ -178,7 +175,7 @@ class AnalyticsClient {
 
         JSONArray eventObjects = new JSONArray();
         JSONObject eventObject;
-        for (AnalyticsEvent2 analyticsEvent : events) {
+        for (AnalyticsEvent analyticsEvent : events) {
             eventObject = new JSONObject()
                     .put(KIND_KEY, analyticsEvent.getName())
                     .put(TIMESTAMP_KEY, analyticsEvent.getTimestamp());

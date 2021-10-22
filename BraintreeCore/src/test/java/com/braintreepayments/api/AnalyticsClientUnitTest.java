@@ -6,7 +6,6 @@ import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_EVENT_NAM
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_INTEGRATION;
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_SESSION_ID;
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP;
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.same;
@@ -30,7 +29,6 @@ import androidx.work.testing.WorkManagerTestInitHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,7 +58,7 @@ public class AnalyticsClientUnitTest {
     private String sessionId;
     private String integration;
 
-    AnalyticsDatabase2 analyticsDatabase;
+    AnalyticsDatabase analyticsDatabase;
     AnalyticsEventDao analyticsEventDao;
 
     @Before
@@ -76,16 +74,11 @@ public class AnalyticsClientUnitTest {
         httpClient = mock(BraintreeHttpClient.class);
         deviceInspector = mock(DeviceInspector.class);
 
-        analyticsDatabase = mock(AnalyticsDatabase2.class);
+        analyticsDatabase = mock(AnalyticsDatabase.class);
         analyticsEventDao = mock(AnalyticsEventDao.class);
         when(analyticsDatabase.analyticsEventDao()).thenReturn(analyticsEventDao);
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
-    }
-
-    @After
-    public void tearDown() {
-        clearAllEvents(context);
     }
 
     @Test
@@ -139,10 +132,10 @@ public class AnalyticsClientUnitTest {
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
         sut.writeAnalytics(context, inputData);
 
-        ArgumentCaptor<AnalyticsEvent2> captor = ArgumentCaptor.forClass(AnalyticsEvent2.class);
+        ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
         verify(analyticsEventDao).insertEvent(captor.capture());
 
-        AnalyticsEvent2 event = captor.getValue();
+        AnalyticsEvent event = captor.getValue();
         assertEquals("sample-event-name", event.getName());
         assertEquals(123, event.getTimestamp());
     }
@@ -201,7 +194,7 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
+        AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
         when(analyticsEventDao.getAllEvents()).thenReturn(Collections.singletonList(event));
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
@@ -246,9 +239,9 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        List<AnalyticsEvent2> events = new ArrayList<>();
-        events.add(new AnalyticsEvent2("event0", 123));
-        events.add(new AnalyticsEvent2("event1", 456));
+        List<AnalyticsEvent> events = new ArrayList<>();
+        events.add(new AnalyticsEvent("event0", 123));
+        events.add(new AnalyticsEvent("event1", 456));
 
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
@@ -286,9 +279,9 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        List<AnalyticsEvent2> events = new ArrayList<>();
-        events.add(new AnalyticsEvent2("event0", 123));
-        events.add(new AnalyticsEvent2("event1", 456));
+        List<AnalyticsEvent> events = new ArrayList<>();
+        events.add(new AnalyticsEvent("event0", 123));
+        events.add(new AnalyticsEvent("event1", 456));
 
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
@@ -312,9 +305,9 @@ public class AnalyticsClientUnitTest {
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        List<AnalyticsEvent2> events = new ArrayList<>();
-        events.add(new AnalyticsEvent2("event0", 123));
-        events.add(new AnalyticsEvent2("event1", 456));
+        List<AnalyticsEvent> events = new ArrayList<>();
+        events.add(new AnalyticsEvent("event0", 123));
+        events.add(new AnalyticsEvent("event1", 456));
 
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 

@@ -11,11 +11,11 @@ import java.util.List;
 interface AnalyticsEventDao {
 
     @Insert
-    void insertEvent(AnalyticsEvent2 event);
+    void insertEvent(AnalyticsEvent event);
 
     @Query("SELECT * FROM analytics_event")
-    List<AnalyticsEvent2> getAllEvents();
+    List<AnalyticsEvent> getAllEvents();
 
     @Delete
-    void deleteEvents(List<AnalyticsEvent2> events);
+    void deleteEvents(List<AnalyticsEvent> events);
 }

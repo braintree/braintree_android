@@ -232,13 +232,13 @@ public class BraintreeClient {
         return manifestValidator.getActivityInfo(applicationContext, klass);
     }
 
-    // TODO: Remove application context dependency from AnalyticsEvent and unit test
+    // TODO: Figure out how to send this with updated analytics event
     void reportCrash() {
-        String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
-        if (analyticsUrl != null) {
-            final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
-            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
-        }
+//        String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
+//        if (analyticsUrl != null) {
+//            final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
+//            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
+//        }
     }
 
     static boolean isAnalyticsEnabled(Configuration configuration) {
