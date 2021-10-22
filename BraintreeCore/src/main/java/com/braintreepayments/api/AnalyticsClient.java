@@ -24,25 +24,6 @@ class AnalyticsClient {
     private static final String META_KEY = "_meta";
     private static final String TOKENIZATION_KEY = "tokenization_key";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String PLATFORM_KEY = "platform";
-    private static final String PLATFORM_VERSION_KEY = "platformVersion";
-    private static final String SDK_VERSION_KEY = "sdkVersion";
-    private static final String MERCHANT_APP_ID_KEY = "merchantAppId";
-    private static final String MERCHANT_APP_NAME_KEY = "merchantAppName";
-    private static final String DEVICE_ROOTED_KEY = "deviceRooted";
-    private static final String DEVICE_MANUFACTURER_KEY = "deviceManufacturer";
-    private static final String DEVICE_MODEL_KEY = "deviceModel";
-    private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
-    private static final String IS_SIMULATOR_KEY = "isSimulator";
-
-    private static final String SESSION_ID_KEY = "sessionId";
-    private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
-    private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
-    private static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
-    private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
-    private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
-    private static final String INTEGRATION_TYPE_KEY = "integrationType";
-    private static final String DROP_IN_VERSION_KEY = "dropinVersion";
 
     static final String ANALYTICS_UPLOAD_WORK_NAME = "uploadAnalytics";
     static final String ANALYTICS_INPUT_DATA_CONFIGURATION_KEY = "configuration";
