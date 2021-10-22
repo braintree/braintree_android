@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
@@ -58,18 +57,16 @@ class AnalyticsClient {
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
-    private final UUIDHelper uuidHelper;
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector(), new UUIDHelper());
+        this(new BraintreeHttpClient(authorization), new DeviceInspector());
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, UUIDHelper uuidHelper) {
+    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
-        this.uuidHelper = uuidHelper;
     }
 
     void sendEvent2(Context context, Configuration configuration, String eventName, String sessionId, String integration) {

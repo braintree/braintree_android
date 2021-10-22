@@ -98,7 +98,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.sendEvent(context, configuration, event);
 
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
@@ -116,7 +116,7 @@ public class AnalyticsClientUnitTest {
         AnalyticsEvent event = new AnalyticsEvent(
                 context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.sendEvent(context, configuration, event);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
@@ -130,7 +130,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
@@ -141,7 +141,7 @@ public class AnalyticsClientUnitTest {
     public void uploadAnalytics_whenNoEventsExist_doesNothing() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration);
 
         verifyZeroInteractions(httpClient);
@@ -166,7 +166,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -209,7 +209,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -241,7 +241,7 @@ public class AnalyticsClientUnitTest {
 
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -282,7 +282,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         sut.uploadAnalytics(context, configuration);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
@@ -306,7 +306,7 @@ public class AnalyticsClientUnitTest {
         Exception httpError = new Exception("error");
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, uuidHelper);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
         try {
             sut.uploadAnalytics(context, configuration);
             fail("uploadAnalytics should throw");
