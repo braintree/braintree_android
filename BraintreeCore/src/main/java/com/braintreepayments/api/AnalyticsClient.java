@@ -38,16 +38,19 @@ class AnalyticsClient {
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
+    private final AnalyticsDatabase2 analyticsDatabase;
+
     private String lastKnownAnalyticsUrl;
 
-    AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector());
+    AnalyticsClient(Context context, Authorization authorization) {
+        this(new BraintreeHttpClient(authorization), new DeviceInspector(), AnalyticsDatabase2.getDatabase(context));
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector) {
+    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, AnalyticsDatabase2 analyticsDatabase) {
         this.httpClient = httpClient;
         this.deviceInspector = deviceInspector;
+        this.analyticsDatabase = analyticsDatabase;
     }
 
     void sendEvent2(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
@@ -117,11 +120,9 @@ class AnalyticsClient {
     ListenableWorker.Result writeAnalytics(Context context, Data inputData) {
         String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
         long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, 0);
-
         AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
-        AnalyticsDatabase2 db = AnalyticsDatabase2.getDatabase(context);
 
-        AnalyticsEventDao analyticsEventDao = db.analyticsEventDao();
+        AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
         analyticsEventDao.insertEvent(event);
 
         return ListenableWorker.Result.success();

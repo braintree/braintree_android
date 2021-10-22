@@ -1,25 +1,26 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_EVENT_NAME;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_INTEGRATION;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_SESSION_ID;
+import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP;
 import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import android.content.Context;
-import android.os.Build;
-import android.os.Build.VERSION;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.work.Data;
+import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -38,6 +39,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -55,11 +58,18 @@ public class AnalyticsClientUnitTest {
     private long currentTime;
     private UUIDHelper uuidHelper;
 
+    private String eventName;
+    private long timestamp;
     private String sessionId;
     private String integration;
 
+    AnalyticsDatabase2 analyticsDatabase;
+    AnalyticsEventDao analyticsEventDao;
+
     @Before
     public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
+        timestamp = 123;
+        eventName = "sample-event-name";
         sessionId = "sample-session-id";
         integration = "sample-integration";
 
@@ -74,6 +84,10 @@ public class AnalyticsClientUnitTest {
 
         uuidHelper = mock(UUIDHelper.class);
         when(uuidHelper.getPersistentUUID(context)).thenReturn("sample-persistent-uuid");
+
+        analyticsDatabase = mock(AnalyticsDatabase2.class);
+        analyticsEventDao = mock(AnalyticsEventDao.class);
+        when(analyticsDatabase.analyticsEventDao()).thenReturn(analyticsEventDao);
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -101,31 +115,45 @@ public class AnalyticsClientUnitTest {
 
     @Test
     public void createAnalyticsWriteRequest_returnsAnalyticsUploadWorkerWithDelay() {
-        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsWriteRequest("event-name", 123);
+        OneTimeWorkRequest result =
+            AnalyticsClient.createAnalyticsWriteRequest(eventName, timestamp);
 
         WorkSpec workSpec = result.getWorkSpec();
         assertEquals(AnalyticsWriteWorker.class.getName(), workSpec.workerClassName);
 
+        assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
         assertEquals("event-name", workSpec.input.getString("eventName"));
         assertEquals(123, workSpec.input.getLong("timestamp", 0));
     }
 
     @Test
-    public void sendEvent_addsEventToAnalyticsDatabase() throws JSONException, InterruptedException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
+    public void writeAnalytics_whenEventNameAndTimestampArePresent_returnsSuccess() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
 
-        when(httpClient.getAuthorization()).thenReturn(authorization);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        ListenableWorker.Result result = sut.writeAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Success);
+    }
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(context, configuration, event);
+    @Test
+    public void writeAnalytics_addsEventToAnalyticsDatabaseAndReturnsSuccess() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
 
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        awaitTasksFinished(database);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.writeAnalytics(context, inputData);
 
-        AnalyticsEvent capturedEvent = database.getPendingRequests().get(0).get(0);
-        assertEquals(event.timestamp, capturedEvent.timestamp);
+        ArgumentCaptor<AnalyticsEvent2> captor = ArgumentCaptor.forClass(AnalyticsEvent2.class);
+        verify(analyticsEventDao).insertEvent(captor.capture());
+
+        AnalyticsEvent2 event = captor.getValue();
+        assertEquals("sample-event-name", event.getName());
+        assertEquals(123, event.getTimestamp());
     }
 
     @Test
@@ -133,11 +161,8 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
-
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.sendEvent(context, configuration, event);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.sendEvent2(context, configuration, eventName, sessionId, integration);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
@@ -145,13 +170,10 @@ public class AnalyticsClientUnitTest {
     @Test
     public void sendEventAndReturnId_enqueuesAnalyticsWorker() throws ExecutionException, InterruptedException, JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        AnalyticsEvent event = new AnalyticsEvent(
-                context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
-
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        UUID workSpecId = sut.sendEventAndReturnId2(context, configuration, eventName, timestamp, sessionId, integration);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(WorkInfo.State.ENQUEUED, analyticsWorkerInfo.getState());
@@ -160,9 +182,15 @@ public class AnalyticsClientUnitTest {
     @Test
     public void uploadAnalytics_whenNoEventsExist_doesNothing() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.uploadAnalytics(context, inputData);
 
         verifyZeroInteractions(httpClient);
     }
@@ -170,47 +198,43 @@ public class AnalyticsClientUnitTest {
     @Test
     public void uploadAnalytics_whenEventsExist_sendsCorrectMetaData() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
 
-        when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
-        when(deviceInspector.isVenmoInstalled(context)).thenReturn(true);
-
-        AnalyticsEvent event = new AnalyticsEvent(context, "sessionId", "custom", "event.started", deviceInspector, classHelper);
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        database.addEvent(event);
-
-        awaitTasksFinished(database);
-
-        when(deviceInspector.getAppName(context)).thenReturn("Test Application");
-        when(deviceInspector.isDeviceEmulator()).thenReturn(false);
-        when(deviceInspector.isDeviceRooted()).thenReturn(false);
-
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
+        when(analyticsEventDao.getAllEvents()).thenReturn(Collections.singletonList(event));
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
         JSONObject object = new JSONObject(captor.getValue());
         JSONObject meta = object.getJSONObject("_meta");
 
-        assertEquals("Android", meta.getString("platform"));
-        assertEquals(Integer.toString(VERSION.SDK_INT), meta.getString("platformVersion"));
-        assertEquals(BuildConfig.VERSION_NAME, meta.getString("sdkVersion"));
-        // WORKAROUND: Google is appending '.test' to the package name in unit tests.
-        // This works fine on an emulator.
-        assertEquals("com.braintreepayments.api.test", meta.getString("merchantAppId"));
-        assertEquals("Test Application", meta.getString("merchantAppName"));
+        assertEquals("sample-session-id", meta.getString("sessionId"));
+        assertEquals("platform", meta.getString("platform"));
+        assertEquals("platform-version", meta.getString("platformVersion"));
+        assertEquals("sdk-version", meta.getString("sdkVersion"));
+        assertEquals("merchant-app-id", meta.getString("merchantAppId"));
+        assertEquals("merchant-app-name", meta.getString("merchantAppName"));
         assertEquals("false", meta.getString("deviceRooted"));
-        assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
-        assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals("sample-persistent-uuid",
-                meta.getString("deviceAppGeneratedPersistentUuid"));
+        assertEquals("device-manufacturer", meta.getString("deviceManufacturer"));
+        assertEquals("device-model", meta.getString("deviceModel"));
+        assertEquals("persistent-uuid",
+            meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
-        assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
-        assertEquals("custom", meta.getString("integrationType"));
+        assertEquals("user-orientation", meta.getString("userInterfaceOrientation"));
+        assertEquals("integration", meta.getString("integrationType"));
         assertEquals("sessionId", meta.getString("sessionId"));
-        assertFalse(meta.getString("sessionId").contains("-"));
         assertTrue(meta.getBoolean("paypalInstalled"));
         assertTrue(meta.getBoolean("venmoInstalled"));
     }
@@ -218,19 +242,25 @@ public class AnalyticsClientUnitTest {
     @Test
     public void uploadAnalytics_whenEventsExist_sendsAllEvents() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
 
-        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        database.addEvent(one);
-        database.addEvent(two);
-
-        awaitTasksFinished(database);
-
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        List<AnalyticsEvent2> events = new ArrayList<>();
+        events.add(new AnalyticsEvent2("event0", 123));
+        events.add(new AnalyticsEvent2("event1", 456));
+
+        when(analyticsEventDao.getAllEvents()).thenReturn(events);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(anyString(), captor.capture(), same(configuration));
@@ -238,101 +268,87 @@ public class AnalyticsClientUnitTest {
         JSONObject analyticsJson = new JSONObject(captor.getValue());
         JSONArray array = analyticsJson.getJSONArray("analytics");
         assertEquals(2, array.length());
+
         JSONObject eventOne = array.getJSONObject(0);
-        assertEquals("android.started", eventOne.getString("kind"));
-        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= currentTime);
+        assertEquals("android.event0", eventOne.getString("kind"));
+        assertEquals(123, Long.parseLong(eventOne.getString("timestamp")));
 
         JSONObject eventTwo = array.getJSONObject(1);
-        assertEquals("android.finished", eventTwo.getString("kind"));
-        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= currentTime);
-    }
-
-    @Test
-    public void uploadAnalytics_whenEventsExist_batchesUploadsBySessionId() throws Exception {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-
-        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(context, "sessionIdTwo", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        database.addEvent(one);
-        database.addEvent(two);
-
-        awaitTasksFinished(database);
-
-        when(httpClient.getAuthorization()).thenReturn(authorization);
-
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient, times(2)).post(anyString(), captor.capture(), same(configuration));
-
-        List<String> values = captor.getAllValues();
-        assertEquals(2, values.size());
-
-        JSONObject requestJson = new JSONObject(values.get(0));
-        assertEquals(1, requestJson.getJSONArray("analytics").length());
-        JSONObject analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
-        JSONObject meta = requestJson.getJSONObject("_meta");
-        assertEquals("android.started", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
-        assertEquals("sessionId", meta.getString("sessionId"));
-
-        requestJson = new JSONObject(values.get(1));
-        assertEquals(1, requestJson.getJSONArray("analytics").length());
-        analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
-        meta = requestJson.getJSONObject("_meta");
-        assertEquals("android.finished", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= currentTime);
-        assertEquals("sessionIdTwo", meta.getString("sessionId"));
+        assertEquals("android.event1", eventTwo.getString("kind"));
+        assertEquals(456, Long.parseLong(eventTwo.getString("timestamp")));
     }
 
     @Test
     public void uploadAnalytics_deletesDatabaseEventsOnSuccessResponse() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
 
-        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        database.addEvent(one);
-        database.addEvent(two);
-
-        awaitTasksFinished(database);
-
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
-        when(httpClient.post(anyString(), anyString(), same(configuration))).thenReturn("");
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        sut.uploadAnalytics(context, configuration);
+        List<AnalyticsEvent2> events = new ArrayList<>();
+        events.add(new AnalyticsEvent2("event0", 123));
+        events.add(new AnalyticsEvent2("event1", 456));
 
-        List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
-        assertEquals(0, pendingEvents.size());
+        when(analyticsEventDao.getAllEvents()).thenReturn(events);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.uploadAnalytics(context, inputData);
+
+        verify(analyticsEventDao).deleteEvents(events);
     }
 
     @Test
-    public void uploadAnalytics_propagatesExceptionsOnError() throws Exception {
+    public void uploadAnalytics_returnsError() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
 
-        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
-        database.addEvent(one);
-        database.addEvent(two);
-
-        awaitTasksFinished(database);
-
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
+
+        List<AnalyticsEvent2> events = new ArrayList<>();
+        events.add(new AnalyticsEvent2("event0", 123));
+        events.add(new AnalyticsEvent2("event1", 456));
+
+        when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
         Exception httpError = new Exception("error");
         when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector);
-        try {
-            sut.uploadAnalytics(context, configuration);
-            fail("uploadAnalytics should throw");
-        } catch (Exception e) {
-            assertSame(httpError, e);
-            assertEquals(1, database.getPendingRequests().size());
-        }
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+    }
+
+    private static DeviceMetadata createSampleDeviceMetadata() {
+        return new DeviceMetadata.Builder()
+                .integration("integration")
+                .sessionId("session-id")
+                .platform("platform")
+                .sdkVersion("sdk-version")
+                .deviceManufacturer("device-manufacturer")
+                .deviceModel("device-model")
+                .platformVersion("platform-version")
+                .merchantAppName("merchant-app-name")
+                .devicePersistentUUID("persistent-uuid")
+                .merchantAppId("merchant-app-id")
+                .userOrientation("user-orientation")
+                .isPayPalInstalled(true)
+                .isVenmoInstalled(true)
+                .isSimulator(false)
+                .isDeviceRooted(false)
+                .build();
     }
 }
