@@ -9,6 +9,10 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+/**
+ * Class for background analytics tasks.
+ * This class is used internally by the SDK and should not be used directly.
+ */
 public abstract class AnalyticsBaseWorker extends Worker {
 
     public AnalyticsBaseWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {

@@ -5,6 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.work.WorkerParameters;
 
+/**
+ * Class to write analytics events to the database.
+ * This class is used internally by the SDK and should not be used directly.
+ */
 public class AnalyticsWriteWorker extends AnalyticsBaseWorker {
 
     public AnalyticsWriteWorker(@NonNull Context context, @NonNull WorkerParameters params) {
