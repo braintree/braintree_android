@@ -25,16 +25,15 @@ class AnalyticsClient {
     private static final String TOKENIZATION_KEY = "tokenization_key";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
 
-    static final String ANALYTICS_UPLOAD_WORK_NAME = "uploadAnalytics";
-    static final String ANALYTICS_INPUT_DATA_CONFIGURATION_KEY = "configuration";
-    static final String ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY = "authorization";
+    static final String WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics";
+    static final String INPUT_DATA_CONFIGURATION_KEY = "configuration";
+    static final String INPUT_DATA_AUTHORIZATION_KEY = "authorization";
+    static final String INPUT_DATA_SESSION_ID = "sessionId";
+    static final String INPUT_DATA_INTEGRATION = "integration";
 
-    static final String ANALYTICS_WRITE_WORK_NAME = "writeAnalytics";
-    static final String ANALYTICS_INPUT_DATA_EVENT_NAME = "eventName";
-    static final String ANALYTICS_INPUT_DATA_TIMESTAMP = "timestamp";
-
-    static final String ANALYTICS_INPUT_DATA_SESSION_ID = "sessionId";
-    static final String ANALYTICS_INPUT_DATA_INTEGRATION = "integration";
+    static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalytics";
+    static final String INPUT_DATA_EVENT_NAME = "eventName";
+    static final String INPUT_DATA_TIMESTAMP = "timestamp";
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
@@ -74,7 +73,7 @@ class AnalyticsClient {
         WorkManager
                 .getInstance(context.getApplicationContext())
                 .enqueueUniqueWork(
-                        ANALYTICS_UPLOAD_WORK_NAME, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
+                        WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
         return analyticsWorkRequest.getId();
     }
 
@@ -84,14 +83,14 @@ class AnalyticsClient {
         WorkManager
                 .getInstance(context.getApplicationContext())
                 .enqueueUniqueWork(
-                        ANALYTICS_WRITE_WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
+                        WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
         return analyticsWorkRequest.getId();
     }
 
     static OneTimeWorkRequest createAnalyticsWriteRequest(String eventName, long timestamp) {
         Data inputData = new Data.Builder()
-                .putString(ANALYTICS_INPUT_DATA_EVENT_NAME, eventName)
-                .putLong(ANALYTICS_INPUT_DATA_TIMESTAMP, timestamp)
+                .putString(INPUT_DATA_EVENT_NAME, eventName)
+                .putLong(INPUT_DATA_TIMESTAMP, timestamp)
                 .build();
 
         return new OneTimeWorkRequest.Builder(AnalyticsWriteWorker.class)
@@ -102,10 +101,10 @@ class AnalyticsClient {
     @VisibleForTesting
     static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
         Data inputData = new Data.Builder()
-                .putString(ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY, authorization.toString())
-                .putString(ANALYTICS_INPUT_DATA_CONFIGURATION_KEY, configuration.toJson())
-                .putString(ANALYTICS_INPUT_DATA_SESSION_ID, sessionId)
-                .putString(ANALYTICS_INPUT_DATA_INTEGRATION, integration)
+                .putString(INPUT_DATA_AUTHORIZATION_KEY, authorization.toString())
+                .putString(INPUT_DATA_CONFIGURATION_KEY, configuration.toJson())
+                .putString(INPUT_DATA_SESSION_ID, sessionId)
+                .putString(INPUT_DATA_INTEGRATION, integration)
                 .build();
 
         return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
