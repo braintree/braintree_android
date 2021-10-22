@@ -8,7 +8,7 @@ import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_SESSION_I
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -199,11 +199,10 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), same(configuration));
+        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class));
         JSONObject object = new JSONObject(captor.getValue());
         JSONObject meta = object.getJSONObject("_meta");
 
-        assertEquals("sample-session-id", meta.getString("sessionId"));
         assertEquals("platform", meta.getString("platform"));
         assertEquals("platform-version", meta.getString("platformVersion"));
         assertEquals("sdk-version", meta.getString("sdkVersion"));
@@ -216,8 +215,8 @@ public class AnalyticsClientUnitTest {
             meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
         assertEquals("user-orientation", meta.getString("userInterfaceOrientation"));
-        assertEquals("integration", meta.getString("integrationType"));
-        assertEquals("sessionId", meta.getString("sessionId"));
+        assertEquals("sample-integration", meta.getString("integrationType"));
+        assertEquals("sample-session-id", meta.getString("sessionId"));
         assertTrue(meta.getBoolean("paypalInstalled"));
         assertTrue(meta.getBoolean("venmoInstalled"));
     }
@@ -246,18 +245,18 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), same(configuration));
+        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
         JSONArray array = analyticsJson.getJSONArray("analytics");
         assertEquals(2, array.length());
 
         JSONObject eventOne = array.getJSONObject(0);
-        assertEquals("android.event0", eventOne.getString("kind"));
+        assertEquals("event0", eventOne.getString("kind"));
         assertEquals(123, Long.parseLong(eventOne.getString("timestamp")));
 
         JSONObject eventTwo = array.getJSONObject(1);
-        assertEquals("android.event1", eventTwo.getString("kind"));
+        assertEquals("event1", eventTwo.getString("kind"));
         assertEquals(456, Long.parseLong(eventTwo.getString("timestamp")));
     }
 
@@ -308,7 +307,7 @@ public class AnalyticsClientUnitTest {
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
         Exception httpError = new Exception("error");
-        when(httpClient.post(anyString(), anyString(), same(configuration))).thenThrow(httpError);
+        when(httpClient.post(anyString(), anyString(), any(Configuration.class))).thenThrow(httpError);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
@@ -317,8 +316,8 @@ public class AnalyticsClientUnitTest {
 
     private static DeviceMetadata createSampleDeviceMetadata() {
         return new DeviceMetadata.Builder()
-                .integration("integration")
-                .sessionId("session-id")
+                .integration("sample-integration")
+                .sessionId("sample-session-id")
                 .platform("platform")
                 .sdkVersion("sdk-version")
                 .deviceManufacturer("device-manufacturer")

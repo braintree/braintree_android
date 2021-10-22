@@ -223,7 +223,7 @@ class DeviceMetadata {
     }
 
     JSONObject toJSON() throws JSONException {
-        JSONObject json = new JSONObject()
+        return new JSONObject()
                 .put(SESSION_ID_KEY, sessionId)
                 .put(INTEGRATION_TYPE_KEY, integration)
                 .put(DEVICE_NETWORK_TYPE_KEY, networkType)
@@ -242,7 +242,5 @@ class DeviceMetadata {
                 .put(DEVICE_MODEL_KEY, deviceModel)
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, devicePersistentUUID)
                 .put(IS_SIMULATOR_KEY, isSimulator);
-
-        return json;
     }
 }
