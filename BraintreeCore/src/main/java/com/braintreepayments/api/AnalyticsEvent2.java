@@ -13,24 +13,20 @@ public class AnalyticsEvent2 {
     public int id;
 
     @NonNull
-    @ColumnInfo(name = "event")
-    private final String event;
+    @ColumnInfo(name = "name")
+    private final String name;
 
     @ColumnInfo(name = "timestamp")
     private final long timestamp;
 
-    AnalyticsEvent2(@NonNull String event, long timestamp) {
-        this.event = event;
+    AnalyticsEvent2(@NonNull String name, long timestamp) {
+        this.name = name;
         this.timestamp = timestamp;
     }
 
-    public int getId() {
-        return id;
-    }
-
     @NonNull
-    public String getEvent() {
-        return event;
+    public String getName() {
+        return name;
     }
 
     public long getTimestamp() {

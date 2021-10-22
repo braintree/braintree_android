@@ -146,7 +146,7 @@ class AnalyticsClient {
         JSONObject eventObject;
         for (AnalyticsEvent2 analyticsEvent : events) {
             eventObject = new JSONObject()
-                    .put(KIND_KEY, analyticsEvent.getEvent())
+                    .put(KIND_KEY, analyticsEvent.getName())
                     .put(TIMESTAMP_KEY, analyticsEvent.getTimestamp());
 
             eventObjects.put(eventObject);
