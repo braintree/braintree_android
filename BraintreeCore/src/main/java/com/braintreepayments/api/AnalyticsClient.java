@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -26,14 +27,14 @@ class AnalyticsClient {
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
 
     static final String WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics";
-    static final String INPUT_DATA_CONFIGURATION_KEY = "configuration";
-    static final String INPUT_DATA_AUTHORIZATION_KEY = "authorization";
-    static final String INPUT_DATA_SESSION_ID = "sessionId";
-    static final String INPUT_DATA_INTEGRATION = "integration";
-
     static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalytics";
-    static final String INPUT_DATA_EVENT_NAME = "eventName";
-    static final String INPUT_DATA_TIMESTAMP = "timestamp";
+
+    static final String WORK_INPUT_KEY_AUTHORIZATION = "authorization";
+    static final String WORK_INPUT_KEY_CONFIGURATION = "configuration";
+    static final String WORK_INPUT_KEY_EVENT_NAME = "eventName";
+    static final String WORK_INPUT_KEY_INTEGRATION = "integration";
+    static final String WORK_INPUT_KEY_SESSION_ID = "sessionId";
+    static final String WORK_INPUT_KEY_TIMESTAMP = "timestamp";
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
@@ -89,8 +90,8 @@ class AnalyticsClient {
 
     static OneTimeWorkRequest createAnalyticsWriteRequest(String eventName, long timestamp) {
         Data inputData = new Data.Builder()
-                .putString(INPUT_DATA_EVENT_NAME, eventName)
-                .putLong(INPUT_DATA_TIMESTAMP, timestamp)
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
                 .build();
 
         return new OneTimeWorkRequest.Builder(AnalyticsWriteWorker.class)
@@ -101,16 +102,46 @@ class AnalyticsClient {
     @VisibleForTesting
     static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
         Data inputData = new Data.Builder()
-                .putString(INPUT_DATA_AUTHORIZATION_KEY, authorization.toString())
-                .putString(INPUT_DATA_CONFIGURATION_KEY, configuration.toJson())
-                .putString(INPUT_DATA_SESSION_ID, sessionId)
-                .putString(INPUT_DATA_INTEGRATION, integration)
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
                 .build();
 
         return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
                 .setInitialDelay(30, TimeUnit.SECONDS)
                 .setInputData(inputData)
                 .build();
+    }
+
+    ListenableWorker.Result writeAnalytics(Context context, Data inputData) {
+        String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
+        long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, 0);
+
+        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
+        AnalyticsDatabase2 db = AnalyticsDatabase2.getDatabase(context);
+
+        AnalyticsEventDao analyticsEventDao = db.analyticsEventDao();
+        analyticsEventDao.insertEvent(event);
+
+        return ListenableWorker.Result.success();
+    }
+
+    ListenableWorker.Result uploadAnalytics(Context context, Data inputData) {
+        Configuration configuration = getConfigurationFromData(inputData);
+        String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
+        String integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION);
+
+        if (configuration == null || sessionId == null || integration == null) {
+            return ListenableWorker.Result.failure();
+        }
+
+        try {
+            uploadAnalytics(context, configuration, sessionId, integration);
+            return ListenableWorker.Result.success();
+        } catch (Exception e) {
+            return ListenableWorker.Result.failure();
+        }
     }
 
     void uploadAnalytics(Context context, Configuration configuration, String sessionId, String integration) throws Exception {
@@ -154,5 +185,17 @@ class AnalyticsClient {
         requestObject.put(ANALYTICS_KEY, eventObjects);
 
         return requestObject;
+    }
+
+    private static Configuration getConfigurationFromData(Data inputData) {
+        if (inputData != null) {
+            String configJson = inputData.getString(WORK_INPUT_KEY_CONFIGURATION);
+            if (configJson != null) {
+                try {
+                    return Configuration.fromJson(configJson);
+                } catch (JSONException e) { /* ignored */ }
+            }
+        }
+        return null;
     }
 }

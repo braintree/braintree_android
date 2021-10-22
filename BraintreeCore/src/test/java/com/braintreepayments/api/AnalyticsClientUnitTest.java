@@ -55,8 +55,14 @@ public class AnalyticsClientUnitTest {
     private long currentTime;
     private UUIDHelper uuidHelper;
 
+    private String sessionId;
+    private String integration;
+
     @Before
     public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
+        sessionId = "sample-session-id";
+        integration = "sample-integration";
+
         authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         currentTime = System.currentTimeMillis();
 
@@ -78,9 +84,10 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void createAnalyticsWorkerRequest_returnsAnalyticsUploadWorkerWithDelay() throws JSONException {
+    public void createAnalyticsUploadRequest_returnsAnalyticsUploadWorkerWithDelay() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsUploadRequest(configuration, authorization);
+        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsUploadRequest(
+                configuration, authorization, sessionId, integration);
 
         WorkSpec workSpec = result.getWorkSpec();
         assertEquals(30000, workSpec.initialDelay);
@@ -88,6 +95,19 @@ public class AnalyticsClientUnitTest {
 
         assertEquals(configuration.toJson(), workSpec.input.getString("configuration"));
         assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
+        assertEquals("sample-session", workSpec.input.getString("sessionId"));
+        assertEquals("sample-integration", workSpec.input.getString("integration"));
+    }
+
+    @Test
+    public void createAnalyticsWriteRequest_returnsAnalyticsUploadWorkerWithDelay() {
+        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsWriteRequest("event-name", 123);
+
+        WorkSpec workSpec = result.getWorkSpec();
+        assertEquals(AnalyticsWriteWorker.class.getName(), workSpec.workerClassName);
+
+        assertEquals("event-name", workSpec.input.getString("eventName"));
+        assertEquals(123, workSpec.input.getLong("timestamp", 0));
     }
 
     @Test
