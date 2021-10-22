@@ -9,9 +9,9 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-public abstract class AnalyticsWorker extends Worker {
+public abstract class AnalyticsBaseWorker extends Worker {
 
-    public AnalyticsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public AnalyticsBaseWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 

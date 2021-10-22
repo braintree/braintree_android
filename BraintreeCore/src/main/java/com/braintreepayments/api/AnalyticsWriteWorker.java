@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.work.WorkerParameters;
 
-public class AnalyticsWriteWorker extends AnalyticsWorker {
+public class AnalyticsWriteWorker extends AnalyticsBaseWorker {
 
     public AnalyticsWriteWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
