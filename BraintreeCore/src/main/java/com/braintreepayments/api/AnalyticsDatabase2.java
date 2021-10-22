@@ -16,6 +16,7 @@ abstract class AnalyticsDatabase2 extends RoomDatabase {
     static AnalyticsDatabase2 getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AnalyticsDatabase2.class) {
+                // double check that instance was not created in another thread
                 if (INSTANCE == null) {
                     String dbName = "analytics_database";
                     Context appContext = context.getApplicationContext();

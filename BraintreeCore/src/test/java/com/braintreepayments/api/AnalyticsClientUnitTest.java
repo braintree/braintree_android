@@ -80,7 +80,7 @@ public class AnalyticsClientUnitTest {
     @Test
     public void createAnalyticsWorkerRequest_returnsAnalyticsUploadWorkerWithDelay() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsWorkerRequest(configuration, authorization);
+        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsUploadRequest(configuration, authorization);
 
         WorkSpec workSpec = result.getWorkSpec();
         assertEquals(30000, workSpec.initialDelay);

@@ -10,7 +10,7 @@ public class AnalyticsEvent2 {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "_id")
-    private int id;
+    public int id;
 
     @NonNull
     @ColumnInfo(name = "event")
