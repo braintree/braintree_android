@@ -82,7 +82,8 @@ class AnalyticsClient {
     }
 
     private UUID scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(eventName, timestamp);
+        Authorization authorization = httpClient.getAuthorization();
+        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(authorization, eventName, timestamp);
 
         WorkManager
                 .getInstance(context.getApplicationContext())
@@ -91,8 +92,9 @@ class AnalyticsClient {
         return analyticsWorkRequest.getId();
     }
 
-    static OneTimeWorkRequest createAnalyticsWriteRequest(String eventName, long timestamp) {
+    static OneTimeWorkRequest createAnalyticsWriteRequest(Authorization authorization, String eventName, long timestamp) {
         Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
                 .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
                 .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
                 .build();
