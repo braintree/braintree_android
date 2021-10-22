@@ -16,16 +16,11 @@ public class AnalyticsEvent2 {
     @ColumnInfo(name = "event")
     private final String event;
 
-    @NonNull
-    @ColumnInfo(name = "meta_json")
-    private final String metadataJSON;
-
     @ColumnInfo(name = "timestamp")
     private final long timestamp;
 
-    AnalyticsEvent2(@NonNull String event, @NonNull String metadataJSON, long timestamp) {
+    AnalyticsEvent2(@NonNull String event, long timestamp) {
         this.event = event;
-        this.metadataJSON = metadataJSON;
         this.timestamp = timestamp;
     }
 
@@ -36,11 +31,6 @@ public class AnalyticsEvent2 {
     @NonNull
     public String getEvent() {
         return event;
-    }
-
-    @NonNull
-    public String getMetadataJSON() {
-        return metadataJSON;
     }
 
     public long getTimestamp() {

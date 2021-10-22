@@ -52,7 +52,9 @@ class AnalyticsClient {
     static final String ANALYTICS_WRITE_WORK_NAME = "writeAnalytics";
     static final String ANALYTICS_INPUT_DATA_EVENT_NAME = "eventName";
     static final String ANALYTICS_INPUT_DATA_TIMESTAMP = "timestamp";
-    static final String ANALYTICS_INPUT_DATA_METADATA = "metadata";
+
+    static final String ANALYTICS_INPUT_DATA_SESSION_ID = "sessionId";
+    static final String ANALYTICS_INPUT_DATA_INTEGRATION = "integration";
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
@@ -73,57 +75,23 @@ class AnalyticsClient {
     void sendEvent2(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
         String fullEventName = String.format("android.%s", eventName);
         long timestamp = System.currentTimeMillis();
-        DeviceMetadata deviceMetadata = deviceInspector.getDeviceMetadata(context);
-
-        JSONObject metadata = new JSONObject();
-        try {
-            metadata
-                .put(SESSION_ID_KEY, sessionId)
-                .put(INTEGRATION_TYPE_KEY, integration)
-                .put(DEVICE_NETWORK_TYPE_KEY, deviceMetadata.getNetworkType())
-                .put(USER_INTERFACE_ORIENTATION_KEY, deviceMetadata.getUserOrientation())
-                .put(MERCHANT_APP_VERSION_KEY, deviceMetadata.getAppVersion())
-                .put(PAYPAL_INSTALLED_KEY, deviceMetadata.isPayPalInstalled())
-                .put(VENMO_INSTALLED_KEY, deviceMetadata.isVenmoInstalled())
-                .put(DROP_IN_VERSION_KEY, deviceMetadata.getDropInVersion());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String metadataJSON = metadata.toString();
-
-        sendEvent2(context, configuration, fullEventName, metadataJSON, timestamp);
+        sendEvent2(context, configuration, fullEventName, timestamp, sessionId, integration);
     }
 
-    void sendEvent2(Context context, Configuration configuration, String eventName, String metadata, long timestamp) {
-        sendEventAndReturnId2(context, configuration, eventName, timestamp, metadata);
+    void sendEvent2(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
+        sendEventAndReturnId2(context, configuration, eventName, timestamp, sessionId, integration);
     }
 
     @VisibleForTesting
-    UUID sendEventAndReturnId2(Context context, Configuration configuration, String eventName, long timestamp, String metadata) {
+    UUID sendEventAndReturnId2(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
-        scheduleAnalyticsWrite(context, eventName, timestamp, metadata);
-        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization());
+        scheduleAnalyticsWrite(context, eventName, timestamp);
+        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {
-        sendEventAndReturnId(context, configuration, event);
-    }
-
-    @VisibleForTesting
-    UUID sendEventAndReturnId(Context context, Configuration configuration, AnalyticsEvent event) {
-        lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
-
-        Context applicationContext = context.getApplicationContext();
-        AnalyticsDatabase db = AnalyticsDatabase.getInstance(applicationContext);
-        db.addEvent(event);
-
-        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization());
-    }
-
-    private UUID scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization) {
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization);
+    private UUID scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization, String sessionId, String integration) {
+        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
 
         WorkManager
                 .getInstance(context.getApplicationContext())
@@ -132,8 +100,8 @@ class AnalyticsClient {
         return analyticsWorkRequest.getId();
     }
 
-    private UUID scheduleAnalyticsWrite(Context context, String eventName, long timestamp, String metadata) {
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(eventName, timestamp, metadata);
+    private UUID scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
+        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(eventName, timestamp);
 
         WorkManager
                 .getInstance(context.getApplicationContext())
@@ -142,10 +110,9 @@ class AnalyticsClient {
         return analyticsWorkRequest.getId();
     }
 
-    static OneTimeWorkRequest createAnalyticsWriteRequest(String eventName, long timestamp, String metadata) {
+    static OneTimeWorkRequest createAnalyticsWriteRequest(String eventName, long timestamp) {
         Data inputData = new Data.Builder()
                 .putString(ANALYTICS_INPUT_DATA_EVENT_NAME, eventName)
-                .putString(ANALYTICS_INPUT_DATA_METADATA, metadata)
                 .putLong(ANALYTICS_INPUT_DATA_TIMESTAMP, timestamp)
                 .build();
 
@@ -155,10 +122,12 @@ class AnalyticsClient {
     }
 
     @VisibleForTesting
-    static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization) {
+    static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
         Data inputData = new Data.Builder()
                 .putString(ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY, authorization.toString())
                 .putString(ANALYTICS_INPUT_DATA_CONFIGURATION_KEY, configuration.toJson())
+                .putString(ANALYTICS_INPUT_DATA_SESSION_ID, sessionId)
+                .putString(ANALYTICS_INPUT_DATA_INTEGRATION, integration)
                 .build();
 
         return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
@@ -167,7 +136,7 @@ class AnalyticsClient {
                 .build();
     }
 
-    void uploadAnalytics(Context context, Configuration configuration) throws Exception {
+    void uploadAnalytics(Context context, Configuration configuration, String sessionId, String integration) throws Exception {
         String analyticsUrl = configuration.getAnalyticsUrl();
 
         Context applicationContext = context.getApplicationContext();
@@ -176,7 +145,9 @@ class AnalyticsClient {
         AnalyticsEventDao analyticsEventDao = db.analyticsEventDao();
         List<AnalyticsEvent2> events = analyticsEventDao.getAllEvents();
 
-        JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), events);
+        DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+
+        JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), events, metadata);
         httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
         analyticsEventDao.deleteEvents(events);
     }
@@ -185,31 +156,14 @@ class AnalyticsClient {
         return lastKnownAnalyticsUrl;
     }
 
-    private JSONObject serializeEvents(Context context, Authorization authorization,
-                                       List<AnalyticsEvent2> events) throws JSONException {
-        AnalyticsEvent2 primeEvent = events.get(0);
-
+    private JSONObject serializeEvents(Context context, Authorization authorization, List<AnalyticsEvent2> events, DeviceMetadata metadata) throws JSONException {
         JSONObject requestObject = new JSONObject();
         if (authorization instanceof ClientToken) {
             requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
         } else {
             requestObject.put(TOKENIZATION_KEY, authorization.getBearer());
         }
-
-        JSONObject meta = new JSONObject(primeEvent.getMetadataJSON());
-        meta
-            .put(PLATFORM_KEY, "Android")
-            .put(PLATFORM_VERSION_KEY, Integer.toString(Build.VERSION.SDK_INT))
-            .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
-            .put(MERCHANT_APP_ID_KEY, context.getPackageName())
-            .put(MERCHANT_APP_NAME_KEY, deviceInspector.getAppName(context))
-            .put(DEVICE_ROOTED_KEY, deviceInspector.isDeviceRooted())
-            .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
-            .put(DEVICE_MODEL_KEY, Build.MODEL)
-            .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                    uuidHelper.getPersistentUUID(context))
-            .put(IS_SIMULATOR_KEY, deviceInspector.isDeviceEmulator());
-        requestObject.put(META_KEY, meta);
+        requestObject.put(META_KEY, metadata.toJSON());
 
         JSONArray eventObjects = new JSONArray();
         JSONObject eventObject;

@@ -28,15 +28,17 @@ class DeviceInspector {
 
     private final AppHelper appHelper;
     private final ClassHelper classHelper;
+    private final UUIDHelper uuidHelper;
 
     DeviceInspector() {
-        this(new AppHelper(), new ClassHelper());
+        this(new AppHelper(), new ClassHelper(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    DeviceInspector(AppHelper appHelper, ClassHelper classHelper) {
+    DeviceInspector(AppHelper appHelper, ClassHelper classHelper, UUIDHelper uuidHelper) {
         this.appHelper = appHelper;
         this.classHelper = classHelper;
+        this.uuidHelper = uuidHelper;
     }
 
     boolean isPayPalInstalled(Context context) {
@@ -122,22 +124,27 @@ class DeviceInspector {
         return (check1 || check2 || check3);
     }
 
-    DeviceMetadata getDeviceMetadata(Context context) {
-        String networkType = getNetworkType(context);
-        String userOrientation = getUserOrientation(context);
-        String appVersion = getAppVersion(context);
-        String dropInVersion = getDropInVersion();
-        boolean isPayPalInstalled = isPayPalInstalled(context);
-        boolean isVenmoInstalled = isVenmoInstalled(context);
-
-        return new DeviceMetadata(
-            appVersion,
-            dropInVersion,
-            networkType,
-            userOrientation,
-            isPayPalInstalled,
-            isVenmoInstalled
-        );
+    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration) {
+        return new DeviceMetadata.Builder()
+                .platform("Android")
+                .platformVersion(Integer.toString(Build.VERSION.SDK_INT))
+                .sdkVersion(BuildConfig.VERSION_NAME)
+                .merchantAppId(context.getPackageName())
+                .merchantAppName(getAppName(context))
+                .isDeviceRooted(isDeviceRooted())
+                .deviceManufacturer(Build.MANUFACTURER)
+                .deviceModel(Build.MODEL)
+                .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
+                .isSimulator(isDeviceEmulator())
+                .sessionId(sessionId)
+                .integration(integration)
+                .networkType(getNetworkType(context))
+                .userOrientation(getUserOrientation(context))
+                .appVersion(getAppVersion(context))
+                .dropInVersion(getDropInVersion())
+                .isPayPalInstalled(isPayPalInstalled(context))
+                .isVenmoInstalled(isVenmoInstalled(context))
+                .build();
     }
 
     private String getNetworkType(Context context) {

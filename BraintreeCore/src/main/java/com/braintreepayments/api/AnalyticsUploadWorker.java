@@ -11,6 +11,8 @@ import org.json.JSONException;
 
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY;
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_CONFIGURATION_KEY;
+import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_INTEGRATION;
+import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_SESSION_ID;
 
 /**
  * Class to upload analytics events.
@@ -28,13 +30,16 @@ public class AnalyticsUploadWorker extends Worker {
         Data inputData = getInputData();
         Authorization authorization = getAuthorizationFromData(inputData);
         Configuration configuration = getConfigurationFromData(inputData);
-        if (authorization == null || configuration == null) {
+        String sessionId = inputData.getString(ANALYTICS_INPUT_DATA_SESSION_ID);
+        String integration = inputData.getString(ANALYTICS_INPUT_DATA_INTEGRATION);
+
+        if (authorization == null || configuration == null || sessionId == null || integration == null) {
             return Result.failure();
         }
 
         AnalyticsClient analyticsClient = new AnalyticsClient(authorization);
         try {
-            analyticsClient.uploadAnalytics(getApplicationContext(), configuration);
+            analyticsClient.uploadAnalytics(getApplicationContext(), configuration, sessionId, integration);
             return Result.success();
         } catch (Exception e) {
             return Result.failure();

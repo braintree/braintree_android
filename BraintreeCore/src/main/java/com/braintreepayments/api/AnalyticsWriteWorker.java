@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_EVENT_NAME;
-import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_METADATA;
 import static com.braintreepayments.api.AnalyticsClient.ANALYTICS_INPUT_DATA_TIMESTAMP;
 
 import android.content.Context;
@@ -23,9 +22,8 @@ public class AnalyticsWriteWorker extends Worker {
         Data inputData = getInputData();
         String eventName = inputData.getString(ANALYTICS_INPUT_DATA_EVENT_NAME);
         long timestamp = inputData.getLong(ANALYTICS_INPUT_DATA_TIMESTAMP, 0);
-        String metadata = inputData.getString(ANALYTICS_INPUT_DATA_METADATA);
 
-        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, metadata, timestamp);
+        AnalyticsEvent2 event = new AnalyticsEvent2(eventName, timestamp);
         AnalyticsDatabase2 db = AnalyticsDatabase2.getDatabase(getApplicationContext());
 
         AnalyticsEventDao analyticsEventDao = db.analyticsEventDao();
