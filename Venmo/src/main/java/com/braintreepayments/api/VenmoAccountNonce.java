@@ -69,15 +69,13 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         super(nonce, isDefault);
         this.username = username;
 
-        if (json.has(VENMO_PAYMENT_METHOD_ID_KEY)) {
-            if (json.has(VENMO_PAYER_INFO_KEY)) {
-                JSONObject payerInfo = json.getJSONObject(VENMO_PAYER_INFO_KEY);
-                this.email = payerInfo.optString(VENMO_EMAIL_KEY);
-                this.externalId = payerInfo.optString(VENMO_EXTERNAL_ID_KEY);
-                this.firstName = payerInfo.optString(VENMO_FIRST_NAME_KEY);
-                this.lastName = payerInfo.optString(VENMO_LAST_NAME_KEY);
-                this.phoneNumber = payerInfo.optString(VENMO_PHONE_NUMBER_KEY);
-            }
+        if (json.has(VENMO_PAYER_INFO_KEY)) {
+            JSONObject payerInfo = json.getJSONObject(VENMO_PAYER_INFO_KEY);
+            this.email = payerInfo.optString(VENMO_EMAIL_KEY);
+            this.externalId = payerInfo.optString(VENMO_EXTERNAL_ID_KEY);
+            this.firstName = payerInfo.optString(VENMO_FIRST_NAME_KEY);
+            this.lastName = payerInfo.optString(VENMO_LAST_NAME_KEY);
+            this.phoneNumber = payerInfo.optString(VENMO_PHONE_NUMBER_KEY);
         }
     }
 
