@@ -15,8 +15,8 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {
 
-    private static final String NONCE = "nonce";
-    private static final String USERNAME = "username";
+    private static final String NONCE = "venmo-nonce";
+    private static final String USERNAME = "venmo-username";
     private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, USERNAME, false);
 
     @Test
@@ -36,6 +36,11 @@ public class VenmoAccountNonceUnitTest {
 
         assertEquals("@sampleuser", venmoAccountNonce.getUsername());
         assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
+        assertEquals("venmo-email", venmoAccountNonce.getEmail());
+        assertEquals("venmo-external-id", venmoAccountNonce.getExternalId());
+        assertEquals("venmo-first-name", venmoAccountNonce.getFirstName());
+        assertEquals("venmo-last-name", venmoAccountNonce.getLastName());
+        assertEquals("venmo-phone-number", venmoAccountNonce.getPhoneNumber());
         assertFalse(venmoAccountNonce.isDefault());
     }
 
@@ -50,14 +55,22 @@ public class VenmoAccountNonceUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly() {
+    public void parcelsCorrectly() throws JSONException {
+        VenmoAccountNonce venmoAccountNonce =
+                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
+
         Parcel parcel = Parcel.obtain();
-        VENMO_NONCE.writeToParcel(parcel, 0);
+        venmoAccountNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(NONCE, parceled.getString());
-        assertEquals(USERNAME, parceled.getUsername());
+        assertEquals("@sampleuser", parceled.getUsername());
+        assertEquals("sample-payment-method-id", parceled.getString());
+        assertEquals("venmo-email", parceled.getEmail());
+        assertEquals("venmo-external-id", parceled.getExternalId());
+        assertEquals("venmo-first-name", parceled.getFirstName());
+        assertEquals("venmo-last-name", parceled.getLastName());
+        assertEquals("venmo-phone-number", parceled.getPhoneNumber());
     }
 }

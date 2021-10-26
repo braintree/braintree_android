@@ -543,7 +543,7 @@ public class VenmoClientUnitTest {
 
         String payload = captor.getValue();
         JSONObject jsonPayload = new JSONObject(payload);
-        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName } } }";
+        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName } } } }";
         assertEquals(expectedQuery, jsonPayload.get("query"));
         assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }
