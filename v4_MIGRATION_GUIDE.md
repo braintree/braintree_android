@@ -51,7 +51,7 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 </activity>
 ``` 
 
-Additionally, apps that use both DropIn and BraintreeClient should specify a custom url scheme, since `DropInActivity` already uses the `${applicationId}.braintree` url intent filter.
+Additionally, apps that use both Drop-in and BraintreeClient should specify a custom url scheme, since `DropInActivity` already uses the `${applicationId}.braintree` url intent filter.
 
 
 ## BraintreeFragment
