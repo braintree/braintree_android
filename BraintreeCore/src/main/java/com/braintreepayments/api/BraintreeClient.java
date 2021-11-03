@@ -136,7 +136,7 @@ public class BraintreeClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (isAnalyticsEnabled(configuration)) {
-                    analyticsClient.sendEvent2(applicationContext, configuration, eventName, sessionId, getIntegrationType());
+                    analyticsClient.sendEvent(applicationContext, configuration, eventName, sessionId, getIntegrationType());
                 }
             }
         });

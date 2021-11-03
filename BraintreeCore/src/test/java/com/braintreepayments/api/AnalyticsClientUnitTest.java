@@ -145,7 +145,7 @@ public class AnalyticsClientUnitTest {
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        sut.sendEvent2(context, configuration, eventName, sessionId, integration);
+        sut.sendEvent(context, configuration, eventName, sessionId, integration);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
@@ -156,7 +156,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        UUID workSpecId = sut.sendEventAndReturnId2(context, configuration, eventName, timestamp, sessionId, integration);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, eventName, timestamp, sessionId, integration);
 
         WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(WorkInfo.State.ENQUEUED, analyticsWorkerInfo.getState());

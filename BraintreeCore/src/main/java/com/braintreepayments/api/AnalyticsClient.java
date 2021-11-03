@@ -53,18 +53,18 @@ class AnalyticsClient {
         this.analyticsDatabase = analyticsDatabase;
     }
 
-    void sendEvent2(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
+    void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
         String fullEventName = String.format("android.%s", eventName);
         long timestamp = System.currentTimeMillis();
-        sendEvent2(context, configuration, fullEventName, timestamp, sessionId, integration);
+        sendEvent(context, configuration, fullEventName, timestamp, sessionId, integration);
     }
 
-    void sendEvent2(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
-        sendEventAndReturnId2(context, configuration, eventName, timestamp, sessionId, integration);
+    void sendEvent(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
+        sendEventAndReturnId(context, configuration, eventName, timestamp, sessionId, integration);
     }
 
     @VisibleForTesting
-    UUID sendEventAndReturnId2(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
+    UUID sendEventAndReturnId(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         scheduleAnalyticsWrite(context, eventName, timestamp);
