@@ -263,6 +263,20 @@
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
 
+## 3.18.0
+
+* Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
+* Bump `browser-switch` version to `1.2.0`
+* Fix issue where Venmo and PayPal apps are not detected on Android 12 devices
+
+## 3.17.4
+
+* Revert release 3.17.3 (local repository does not propagate MPI aar file)
+
+## ~3.17.3~
+
+* ~Remove Bintray dependency for Cardinal SDK (fixes #373 - [Cardinal bintray credentials can now be removed](https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v3#generate-a-client-token))~
+
 ## 3.17.2
 
 * Bump Cardinal version to `2.2.5-2`
