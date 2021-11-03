@@ -88,7 +88,7 @@ public class AnalyticsClientUnitTest {
 
         WorkSpec workSpec = result.getWorkSpec();
         assertEquals(30000, workSpec.initialDelay);
-        assertEquals(AnalyticsUploadWorker.class.getName(), workSpec.workerClassName);
+        assertEquals(AnalyticsUploadFromDbWorker.class.getName(), workSpec.workerClassName);
 
         assertEquals(configuration.toJson(), workSpec.input.getString("configuration"));
         assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
@@ -102,7 +102,7 @@ public class AnalyticsClientUnitTest {
             AnalyticsClient.createAnalyticsWriteRequest(authorization, eventName, timestamp);
 
         WorkSpec workSpec = result.getWorkSpec();
-        assertEquals(AnalyticsWriteWorker.class.getName(), workSpec.workerClassName);
+        assertEquals(AnalyticsWriteToDbWorker.class.getName(), workSpec.workerClassName);
 
         assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
         assertEquals("sample-event-name", workSpec.input.getString("eventName"));

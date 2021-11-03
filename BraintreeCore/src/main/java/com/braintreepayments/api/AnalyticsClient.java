@@ -99,7 +99,7 @@ class AnalyticsClient {
                 .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
                 .build();
 
-        return new OneTimeWorkRequest.Builder(AnalyticsWriteWorker.class)
+        return new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
                 .setInputData(inputData)
                 .build();
     }
@@ -113,7 +113,7 @@ class AnalyticsClient {
                 .putString(WORK_INPUT_KEY_INTEGRATION, integration)
                 .build();
 
-        return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
+        return new OneTimeWorkRequest.Builder(AnalyticsUploadFromDbWorker.class)
                 .setInitialDelay(30, TimeUnit.SECONDS)
                 .setInputData(inputData)
                 .build();

@@ -6,12 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.work.WorkerParameters;
 
 /**
- * Class to write analytics events to the database.
+ * Class to upload analytics events.
  * This class is used internally by the SDK and should not be used directly.
  */
-public class AnalyticsWriteWorker extends AnalyticsBaseWorker {
+public class AnalyticsUploadFromDbWorker extends AnalyticsBaseWorker {
 
-    public AnalyticsWriteWorker(@NonNull Context context, @NonNull WorkerParameters params) {
+    public AnalyticsUploadFromDbWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
     }
 
@@ -19,6 +19,6 @@ public class AnalyticsWriteWorker extends AnalyticsBaseWorker {
     @Override
     public Result doWork() {
         AnalyticsClient analyticsClient = createAnalyticsClientFromInputData();
-        return analyticsClient.writeAnalytics(getApplicationContext(), getInputData());
+        return analyticsClient.uploadAnalytics(getApplicationContext(), getInputData());
     }
 }
