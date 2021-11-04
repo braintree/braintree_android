@@ -42,6 +42,10 @@ public class DeviceInspectorUnitTest {
     private ClassHelper classHelper;
     private UUIDHelper uuidHelper;
 
+    private Runtime runtime;
+    private Process process;
+    private File superUserApkFile;
+
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException {
         context = mock(Context.class);
@@ -54,6 +58,10 @@ public class DeviceInspectorUnitTest {
         appHelper = mock(AppHelper.class);
         uuidHelper = mock(UUIDHelper.class);
         classHelper = mock(ClassHelper.class);
+
+        superUserApkFile = mock(File.class);
+        runtime = mock(Runtime.class);
+        process = mock(Process.class);
 
         when(context.getPackageManager()).thenReturn(packageManager);
         when(context.getPackageName()).thenReturn("com.sample.app");
@@ -130,11 +138,7 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenSwitchUserCommandLineToolNotFound_returnsDeviceRootedAsFalse() throws IOException, JSONException {
-        File superUserApkFile = mock(File.class);
         when(superUserApkFile.exists()).thenReturn(false);
-
-        Runtime runtime = mock(Runtime.class);
-        Process process = mock(Process.class);
 
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes()));
@@ -149,18 +153,17 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenBuildTagsIncludeTestKeys_returnsDeviceRootedAsTrue() throws JSONException {
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(
-                context, "session-id", "integration-type", "test-keys", mock(File.class), mock(Runtime.class));
+                context, "session-id", "integration-type", "test-keys", superUserApkFile, runtime);
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
     }
 
     @Test
     public void getDeviceMetadata_whenSuperUserApkFileExists_returnsDeviceRootedAsTrue() throws JSONException {
-        File superUserApkFile = mock(File.class);
         when(superUserApkFile.exists()).thenReturn(true);
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, mock(Runtime.class));
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
 
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
@@ -168,14 +171,12 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenSuCommandPresentOnSystemPath_returnsDeviceRootedAsTrue() throws IOException, JSONException {
-        Runtime runtime = mock(Runtime.class);
-        Process process = mock(Process.class);
 
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("/path/to/su/command".getBytes()));
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", mock(File.class), runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
 
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
@@ -183,22 +184,20 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenFileExistsThrows_returnsDeviceRootedAsFalse() throws JSONException {
-        File superUserApkFile = mock(File.class);
         when(superUserApkFile.exists()).thenThrow(new SecurityException());
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, mock(Runtime.class));
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
         JSONObject metadataJSON = metadata.toJSON();
         assertFalse(metadataJSON.getBoolean("deviceRooted"));
     }
 
     @Test
     public void getDeviceMetadata_whenRuntimeExecThrows_returnsFalse() throws IOException, JSONException {
-        Runtime runtime = mock(Runtime.class);
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenThrow(new IOException());
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", mock(File.class), runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
         JSONObject metadataJSON = metadata.toJSON();
         assertFalse(metadataJSON.getBoolean("deviceRooted"));
     }
