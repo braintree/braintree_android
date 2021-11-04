@@ -52,12 +52,33 @@ class DeviceInspector {
         this.superUserApkFile = superUserApkFile;
     }
 
-    boolean isPayPalInstalled(Context context) {
-        return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE);
+    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration) {
+        String buildTags = android.os.Build.TAGS;
+        return getDeviceMetadata(context, sessionId, integration, buildTags);
     }
 
-    boolean isVenmoInstalled(Context context) {
-        return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE);
+    @VisibleForTesting
+    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration, String buildTags) {
+        return new DeviceMetadata.Builder()
+                .platform("Android")
+                .platformVersion(Integer.toString(Build.VERSION.SDK_INT))
+                .sdkVersion(BuildConfig.VERSION_NAME)
+                .merchantAppId(context.getPackageName())
+                .merchantAppName(getAppName(context))
+                .isDeviceRooted(isDeviceRooted(buildTags))
+                .deviceManufacturer(Build.MANUFACTURER)
+                .deviceModel(Build.MODEL)
+                .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
+                .isSimulator(isDeviceEmulator())
+                .sessionId(sessionId)
+                .integration(integration)
+                .networkType(getNetworkType(context))
+                .userOrientation(getUserOrientation(context))
+                .appVersion(getAppVersion(context))
+                .dropInVersion(getDropInVersion())
+                .isPayPalInstalled(isPayPalInstalled(context))
+                .isVenmoInstalled(isVenmoInstalled(context))
+                .build();
     }
 
     /**
@@ -68,6 +89,14 @@ class DeviceInspector {
         return appHelper.isIntentAvailable(context, getVenmoIntent()) &&
                 SignatureVerification.isSignatureValid(context, VENMO_APP_PACKAGE,
                         VENMO_BASE_64_ENCODED_SIGNATURE);
+    }
+
+    boolean isPayPalInstalled(Context context) {
+        return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE);
+    }
+
+    boolean isVenmoInstalled(Context context) {
+        return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE);
     }
 
     private static Intent getVenmoIntent() {
@@ -123,35 +152,6 @@ class DeviceInspector {
         }
 
         return (check1 || check2 || check3);
-    }
-
-    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration) {
-        String buildTags = android.os.Build.TAGS;
-        return getDeviceMetadata(context, sessionId, integration, buildTags);
-    }
-
-    @VisibleForTesting
-    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration, String buildTags) {
-        return new DeviceMetadata.Builder()
-                .platform("Android")
-                .platformVersion(Integer.toString(Build.VERSION.SDK_INT))
-                .sdkVersion(BuildConfig.VERSION_NAME)
-                .merchantAppId(context.getPackageName())
-                .merchantAppName(getAppName(context))
-                .isDeviceRooted(isDeviceRooted(buildTags))
-                .deviceManufacturer(Build.MANUFACTURER)
-                .deviceModel(Build.MODEL)
-                .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
-                .isSimulator(isDeviceEmulator())
-                .sessionId(sessionId)
-                .integration(integration)
-                .networkType(getNetworkType(context))
-                .userOrientation(getUserOrientation(context))
-                .appVersion(getAppVersion(context))
-                .dropInVersion(getDropInVersion())
-                .isPayPalInstalled(isPayPalInstalled(context))
-                .isVenmoInstalled(isVenmoInstalled(context))
-                .build();
     }
 
     private String getNetworkType(Context context) {
