@@ -46,6 +46,8 @@ public class DeviceInspectorUnitTest {
     private Process process;
     private File superUserApkFile;
 
+    private DeviceInspector sut;
+
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException {
         context = mock(Context.class);
@@ -70,11 +72,12 @@ public class DeviceInspectorUnitTest {
         when(resources.getConfiguration()).thenReturn(configuration);
 
         when(context.getSystemService(Context.CONNECTIVITY_SERVICE)).thenReturn(connectivityManager);
+
+        sut = new DeviceInspector(appHelper, classHelper, uuidHelper, runtime, superUserApkFile);
     }
 
     @Test
     public void getDeviceMetadata_returnsPlatform() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("Android", metadataJSON.getString("platform"));
@@ -84,7 +87,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_returnsPlatformVersion() throws JSONException {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 123);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("123", metadataJSON.getString("platformVersion"));
@@ -92,7 +94,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_returnsSDKVersion() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals(BuildConfig.VERSION_NAME, metadataJSON.getString("sdkVersion"));
@@ -100,7 +101,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_returnsMerchantAppId() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("com.sample.app", metadataJSON.getString("merchantAppId"));
@@ -108,7 +108,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_returnsApplicationNameUnknownByDefault() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
@@ -120,7 +119,6 @@ public class DeviceInspectorUnitTest {
         when(packageManager.getApplicationInfo("com.sample.app", 0)).thenReturn(applicationInfo);
         when(packageManager.getApplicationLabel(applicationInfo)).thenReturn("SampleAppName");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("SampleAppName", metadataJSON.getString("merchantAppName"));
@@ -130,7 +128,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenApplicationInfoNotFound_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException, JSONException {
         when(packageManager.getApplicationInfo("sample-package-name", 0)).thenThrow(new PackageManager.NameNotFoundException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
@@ -143,17 +140,15 @@ public class DeviceInspectorUnitTest {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes()));
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
         JSONObject metadataJSON = metadata.toJSON();
         assertFalse(metadataJSON.getBoolean("deviceRooted"));
     }
 
     @Test
     public void getDeviceMetadata_whenBuildTagsIncludeTestKeys_returnsDeviceRootedAsTrue() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(
-                context, "session-id", "integration-type", "test-keys", superUserApkFile, runtime);
+                context, "session-id", "integration-type", "test-keys");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
     }
@@ -162,8 +157,7 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenSuperUserApkFileExists_returnsDeviceRootedAsTrue() throws JSONException {
         when(superUserApkFile.exists()).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
 
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
@@ -175,8 +169,7 @@ public class DeviceInspectorUnitTest {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("/path/to/su/command".getBytes()));
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
 
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("deviceRooted"));
@@ -186,8 +179,7 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenFileExistsThrows_returnsDeviceRootedAsFalse() throws JSONException {
         when(superUserApkFile.exists()).thenThrow(new SecurityException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
         JSONObject metadataJSON = metadata.toJSON();
         assertFalse(metadataJSON.getBoolean("deviceRooted"));
     }
@@ -196,8 +188,7 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenRuntimeExecThrows_returnsFalse() throws IOException, JSONException {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenThrow(new IOException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "", superUserApkFile, runtime);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
         JSONObject metadataJSON = metadata.toJSON();
         assertFalse(metadataJSON.getBoolean("deviceRooted"));
     }
@@ -206,7 +197,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_returnsDeviceManufacturer() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "device-manufacturer");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("device-manufacturer", metadataJSON.getString("deviceManufacturer"));
@@ -216,7 +206,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_returnsDeviceModel() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "MODEL", "device-model");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("device-model", metadataJSON.getString("deviceModel"));
@@ -226,7 +215,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_returnsDeviceAppGeneratedPersistentUuid() throws JSONException {
         when(uuidHelper.getPersistentUUID(context)).thenReturn("persistent-uuid");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("persistent-uuid",
@@ -239,7 +227,6 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "randomBuildManufacturer");
         ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "randomBuildFingerprint");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("false", metadataJSON.getString("isSimulator"));
@@ -249,7 +236,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenBuildProductIsGoogleSdk_returnsTrueForIsSimulator() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "google_sdk");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("isSimulator"));
@@ -259,7 +245,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenBuildProductIsSdk_returnsTrueForIsSimulator() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "sdk");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("isSimulator"));
@@ -269,7 +254,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrueForIsSimulator() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "Genymotion");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("isSimulator"));
@@ -279,7 +263,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrueForIsSimulator() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "generic");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("isSimulator"));
@@ -287,7 +270,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_forwardsSessionId() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("session-id", metadataJSON.getString("sessionId"));
@@ -295,7 +277,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_forwardsIntegrationType() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("integration-type", metadataJSON.getString("integrationType"));
@@ -307,7 +288,6 @@ public class DeviceInspectorUnitTest {
         when(networkInfo.getTypeName()).thenReturn("network-type-name");
         when(connectivityManager.getActiveNetworkInfo()).thenReturn(networkInfo);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("network-type-name", metadataJSON.getString("deviceNetworkType"));
@@ -315,7 +295,6 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenNetworkInfoUnavailable_returnsNoneForNetworkType() throws JSONException {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("none", metadataJSON.getString("deviceNetworkType"));
@@ -325,7 +304,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenDeviceOrientationIsPortrait_returnsPortraitForUserInterfaceOrientation() throws JSONException {
         configuration.orientation = Configuration.ORIENTATION_PORTRAIT;
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("Portrait", metadataJSON.getString("userInterfaceOrientation"));
@@ -335,7 +313,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenDeviceOrientationIsLandscape_returnsLandscapeForUserInterfaceOrientation() throws JSONException {
         configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("Landscape", metadataJSON.getString("userInterfaceOrientation"));
@@ -345,7 +322,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenDeviceOrientationIsUndefined_returnsUnknownForUserInterfaceOrientation() throws JSONException {
         configuration.orientation = Configuration.ORIENTATION_UNDEFINED;
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("Unknown", metadataJSON.getString("userInterfaceOrientation"));
@@ -357,7 +333,6 @@ public class DeviceInspectorUnitTest {
         packageInfo.versionName = "AppVersion";
         when(packageManager.getPackageInfo("com.sample.app", 0)).thenReturn(packageInfo);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("AppVersion", metadataJSON.getString("merchantAppVersion"));
@@ -367,7 +342,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_whenAppVersionUnavailable_returnsVersionUnknownByDefault() throws JSONException, PackageManager.NameNotFoundException {
         when(packageManager.getPackageInfo("com.sample.app", 0)).thenThrow(new PackageManager.NameNotFoundException());
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("VersionUnknown", metadataJSON.getString("merchantAppVersion"));
@@ -379,7 +353,6 @@ public class DeviceInspectorUnitTest {
         String fieldName = "VERSION_NAME";
         when(classHelper.getFieldValue(className, fieldName)).thenReturn("drop-in-version");
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("drop-in-version", metadataJSON.getString("dropinVersion"));
@@ -389,7 +362,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_forwardsIsPayPalInstalledResultFromAppHelper() throws JSONException {
         when(appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile")).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("paypalInstalled"));
@@ -399,7 +371,6 @@ public class DeviceInspectorUnitTest {
     public void getDeviceMetadata_forwardsIsVenmoInstalledResultFromAppHelper() throws JSONException {
         when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
 
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertTrue(metadataJSON.getBoolean("venmoInstalled"));

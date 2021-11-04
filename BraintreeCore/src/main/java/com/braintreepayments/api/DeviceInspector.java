@@ -30,16 +30,26 @@ class DeviceInspector {
     private final AppHelper appHelper;
     private final ClassHelper classHelper;
     private final UUIDHelper uuidHelper;
+    private final Runtime runtime;
+    private final File superUserApkFile;
 
     DeviceInspector() {
-        this(new AppHelper(), new ClassHelper(), new UUIDHelper());
+        this(
+                new AppHelper(),
+                new ClassHelper(),
+                new UUIDHelper(),
+                Runtime.getRuntime(),
+                new File("/system/app/Superuser.apk")
+        );
     }
 
     @VisibleForTesting
-    DeviceInspector(AppHelper appHelper, ClassHelper classHelper, UUIDHelper uuidHelper) {
+    DeviceInspector(AppHelper appHelper, ClassHelper classHelper, UUIDHelper uuidHelper, Runtime runtime, File superUserApkFile) {
         this.appHelper = appHelper;
         this.classHelper = classHelper;
         this.uuidHelper = uuidHelper;
+        this.runtime = runtime;
+        this.superUserApkFile = superUserApkFile;
     }
 
     boolean isPayPalInstalled(Context context) {
@@ -98,7 +108,7 @@ class DeviceInspector {
     }
 
     @VisibleForTesting
-    boolean isDeviceRooted(String buildTags, File superUserApkFile, Runtime runtime) {
+    boolean isDeviceRooted(String buildTags) {
         boolean check1 = buildTags != null && buildTags.contains("test-keys");
 
         boolean check2;
@@ -122,20 +132,18 @@ class DeviceInspector {
 
     DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration) {
         String buildTags = android.os.Build.TAGS;
-        File superUserApkFile = new File("/system/app/Superuser.apk");
-        Runtime runtime = Runtime.getRuntime();
-        return getDeviceMetadata(context, sessionId, integration, buildTags, superUserApkFile, runtime);
+        return getDeviceMetadata(context, sessionId, integration, buildTags);
     }
 
     @VisibleForTesting
-    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration, String buildTags, File superUserApkFile, Runtime runtime) {
+    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration, String buildTags) {
         return new DeviceMetadata.Builder()
                 .platform("Android")
                 .platformVersion(Integer.toString(Build.VERSION.SDK_INT))
                 .sdkVersion(BuildConfig.VERSION_NAME)
                 .merchantAppId(context.getPackageName())
                 .merchantAppName(getAppName(context))
-                .isDeviceRooted(isDeviceRooted(buildTags, superUserApkFile, runtime))
+                .isDeviceRooted(isDeviceRooted(buildTags))
                 .deviceManufacturer(Build.MANUFACTURER)
                 .deviceModel(Build.MODEL)
                 .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
@@ -172,7 +180,7 @@ class DeviceInspector {
         if (context != null) {
             try {
                 PackageInfo packageInfo =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                        context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
                 if (packageInfo != null) {
                     result = packageInfo.versionName;
                 }
