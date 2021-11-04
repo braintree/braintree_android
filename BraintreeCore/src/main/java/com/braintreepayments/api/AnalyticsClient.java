@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 class AnalyticsClient {
@@ -24,6 +25,8 @@ class AnalyticsClient {
     private static final String META_KEY = "_meta";
     private static final String TOKENIZATION_KEY = "tokenization_key";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
+
+    private static final long INVALID_TIMESTAMP = -1;
 
     static final String WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics";
     static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb";
@@ -93,18 +96,19 @@ class AnalyticsClient {
     }
 
     @VisibleForTesting
-    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
+    UUID sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         String fullEventName = String.format("android.%s", eventName);
         scheduleAnalyticsWrite(fullEventName, timestamp);
-        scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
+        return scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    private void scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
+    private UUID scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
         workManager.enqueueUniqueWork(
                 WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
+        return analyticsWorkRequest.getId();
     }
 
     private void scheduleAnalyticsWrite(String eventName, long timestamp) {
@@ -117,13 +121,19 @@ class AnalyticsClient {
 
     ListenableWorker.Result writeAnalytics(Data inputData) {
         String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
-        long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, 0);
-        AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
+        long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP);
 
-        AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
-        analyticsEventDao.insertEvent(event);
+        ListenableWorker.Result result;
+        if (eventName == null || timestamp == INVALID_TIMESTAMP) {
+            result = ListenableWorker.Result.failure();
+        } else {
+            AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
+            AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
+            analyticsEventDao.insertEvent(event);
 
-        return ListenableWorker.Result.success();
+            result = ListenableWorker.Result.success();
+        }
+        return result;
     }
 
     ListenableWorker.Result uploadAnalytics(Context context, Data inputData) {

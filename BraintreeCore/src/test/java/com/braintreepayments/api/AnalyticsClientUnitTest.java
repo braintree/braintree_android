@@ -179,6 +179,28 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
+    public void writeAnalytics_whenEventNameIsMissing_returnsFailure() {
+        Data inputData = new Data.Builder()
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        ListenableWorker.Result result = sut.writeAnalytics(inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+    }
+
+    @Test
+    public void writeAnalytics_whenTimestampIsMissing_returnsFailure() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        ListenableWorker.Result result = sut.writeAnalytics(inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+    }
+
+    @Test
     public void writeAnalytics_addsEventToAnalyticsDatabaseAndReturnsSuccess() {
         Data inputData = new Data.Builder()
                 .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
