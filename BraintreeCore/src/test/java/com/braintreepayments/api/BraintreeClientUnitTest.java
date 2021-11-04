@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.work.testing.WorkManagerTestInitHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +59,8 @@ public class BraintreeClientUnitTest {
         browserSwitchClient = mock(BrowserSwitchClient.class);
 
         when(context.getApplicationContext()).thenReturn(applicationContext);
+
+        WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
 
     @Test

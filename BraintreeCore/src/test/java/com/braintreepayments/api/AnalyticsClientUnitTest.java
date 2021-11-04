@@ -25,7 +25,6 @@ import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.impl.model.WorkSpec;
-import androidx.work.testing.WorkManagerTestInitHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,8 +77,6 @@ public class AnalyticsClientUnitTest {
         when(analyticsDatabase.analyticsEventDao()).thenReturn(analyticsEventDao);
 
         workManager = mock(WorkManager.class);
-
-        WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
 
     @Test
