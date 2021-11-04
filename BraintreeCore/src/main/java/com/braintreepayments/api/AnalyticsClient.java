@@ -14,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 class AnalyticsClient {
@@ -82,37 +81,26 @@ class AnalyticsClient {
     }
 
     void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
-        String fullEventName = String.format("android.%s", eventName);
-        long timestamp = System.currentTimeMillis();
-        sendEvent(context, configuration, fullEventName, timestamp, sessionId, integration);
-    }
-
-    void sendEvent(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
-        sendEventAndReturnId(context, configuration, eventName, timestamp, sessionId, integration);
-    }
-
-    @VisibleForTesting
-    UUID sendEventAndReturnId(Context context, Configuration configuration, String eventName, long timestamp, String sessionId, String integration) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
-        scheduleAnalyticsWrite(context, eventName, timestamp);
-        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization(), sessionId, integration);
+        long timestamp = System.currentTimeMillis();
+        String fullEventName = String.format("android.%s", eventName);
+        scheduleAnalyticsWrite(context, fullEventName, timestamp);
+
+        scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    private UUID scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization, String sessionId, String integration) {
+    private void scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization, String sessionId, String integration) {
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
-
         WorkManager
                 .getInstance(context.getApplicationContext())
                 .enqueueUniqueWork(
                         WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
-        return analyticsWorkRequest.getId();
     }
 
     private void scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
         Authorization authorization = httpClient.getAuthorization();
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(authorization, eventName, timestamp);
-
         WorkManager
                 .getInstance(context.getApplicationContext())
                 .enqueueUniqueWork(
@@ -156,7 +144,7 @@ class AnalyticsClient {
         boolean shouldUploadAnalytics = !events.isEmpty();
         if (shouldUploadAnalytics) {
             DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
-            JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), events, metadata);
+            JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
             httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
             analyticsEventDao.deleteEvents(events);
         }
@@ -166,7 +154,7 @@ class AnalyticsClient {
         return lastKnownAnalyticsUrl;
     }
 
-    private JSONObject serializeEvents(Context context, Authorization authorization, List<AnalyticsEvent> events, DeviceMetadata metadata) throws JSONException {
+    private JSONObject serializeEvents(Authorization authorization, List<AnalyticsEvent> events, DeviceMetadata metadata) throws JSONException {
         JSONObject requestObject = new JSONObject();
         if (authorization instanceof ClientToken) {
             requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
