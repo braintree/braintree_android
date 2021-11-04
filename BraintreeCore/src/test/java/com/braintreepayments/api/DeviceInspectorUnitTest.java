@@ -107,6 +107,14 @@ public class DeviceInspectorUnitTest {
     }
 
     @Test
+    public void getDeviceMetadata_whenApplicationInfoUnavailable_returnsApplicationNameUnknown() throws PackageManager.NameNotFoundException, JSONException {
+        when(packageManager.getApplicationInfo("com.sample.app", 0)).thenThrow(new PackageManager.NameNotFoundException());
+
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        assertEquals("ApplicationNameUnknown", metadata.toJSON().getString("merchantAppName"));
+    }
+
+    @Test
     public void getDeviceMetadata_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException, JSONException {
         ApplicationInfo applicationInfo = new ApplicationInfo();
         when(packageManager.getApplicationInfo("com.sample.app", 0)).thenReturn(applicationInfo);
