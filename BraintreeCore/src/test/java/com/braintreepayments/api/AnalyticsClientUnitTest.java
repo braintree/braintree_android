@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
@@ -58,8 +60,9 @@ public class AnalyticsClientUnitTest {
     private String sessionId;
     private String integration;
 
-    AnalyticsDatabase analyticsDatabase;
-    AnalyticsEventDao analyticsEventDao;
+    private WorkManager workManager;
+    private AnalyticsDatabase analyticsDatabase;
+    private AnalyticsEventDao analyticsEventDao;
 
     @Before
     public void beforeEach() throws InvalidArgumentException, GeneralSecurityException, IOException {
@@ -77,6 +80,8 @@ public class AnalyticsClientUnitTest {
         analyticsDatabase = mock(AnalyticsDatabase.class);
         analyticsEventDao = mock(AnalyticsEventDao.class);
         when(analyticsDatabase.analyticsEventDao()).thenReturn(analyticsEventDao);
+
+        workManager = mock(WorkManager.class);
 
         WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
@@ -115,34 +120,54 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.sendEvent(context, configuration, eventName, sessionId, integration);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
 
     @Test
-    public void sendEvent_enqueuesAnalyticsWriteToDbTask() throws ExecutionException, InterruptedException, JSONException {
+    public void sendEvent_enqueuesAnalyticsWriteToDbWorker() throws ExecutionException, InterruptedException, JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        sut.sendEvent(context, configuration, eventName, sessionId, integration);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        sut.sendEvent(context, configuration, eventName, sessionId, integration, 123);
 
-        WorkInfo writeTaskWorkerInfo = findWorkInfoForName("writeAnalyticsToDb");
-        assertNotNull(writeTaskWorkerInfo);
+        ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
+        verify(workManager)
+                .enqueueUniqueWork(eq("writeAnalyticsToDb"), eq(ExistingWorkPolicy.APPEND_OR_REPLACE), captor.capture());
+
+        OneTimeWorkRequest workRequest = captor.getValue();
+        WorkSpec workSpec = workRequest.getWorkSpec();
+        assertEquals(AnalyticsWriteToDbWorker.class.getName(), workSpec.workerClassName);
+
+        assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
+        assertEquals("android.sample-event-name", workSpec.input.getString("eventName"));
+        assertEquals(123, workSpec.input.getLong("timestamp", 0));
     }
 
     @Test
-    public void sendEvent_enqueuesAnalyticsUploadTask() throws ExecutionException, InterruptedException, JSONException {
+    public void sendEvent_enqueuesAnalyticsUploadWorker() throws ExecutionException, InterruptedException, JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        sut.sendEvent(context, configuration, eventName, sessionId, integration);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        sut.sendEvent(context, configuration, eventName, sessionId, integration, 123);
 
-        WorkInfo uploadTaskWorkerInfo = findWorkInfoForName("uploadAnalytics");
-        assertNotNull(uploadTaskWorkerInfo);
+        ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
+        verify(workManager)
+                .enqueueUniqueWork(eq("uploadAnalytics"), eq(ExistingWorkPolicy.KEEP), captor.capture());
+
+        OneTimeWorkRequest workRequest = captor.getValue();
+        WorkSpec workSpec = workRequest.getWorkSpec();
+        assertEquals(30000, workSpec.initialDelay);
+        assertEquals(AnalyticsUploadWorker.class.getName(), workSpec.workerClassName);
+
+        assertEquals(configuration.toJson(), workSpec.input.getString("configuration"));
+        assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
+        assertEquals("sample-session-id", workSpec.input.getString("sessionId"));
+        assertEquals("sample-integration", workSpec.input.getString("integration"));
     }
 
     @Test
@@ -152,7 +177,7 @@ public class AnalyticsClientUnitTest {
                 .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
                 .build();
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.writeAnalytics(inputData);
         assertTrue(result instanceof ListenableWorker.Result.Success);
     }
@@ -164,7 +189,7 @@ public class AnalyticsClientUnitTest {
                 .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
                 .build();
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.writeAnalytics(inputData);
 
         ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
@@ -185,7 +210,7 @@ public class AnalyticsClientUnitTest {
                 .putString(WORK_INPUT_KEY_INTEGRATION, integration)
                 .build();
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.uploadAnalytics(context, inputData);
 
         verifyZeroInteractions(httpClient);
@@ -208,7 +233,7 @@ public class AnalyticsClientUnitTest {
         AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
         when(analyticsEventDao.getAllEvents()).thenReturn(Collections.singletonList(event));
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -254,7 +279,7 @@ public class AnalyticsClientUnitTest {
 
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -293,7 +318,7 @@ public class AnalyticsClientUnitTest {
 
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         sut.uploadAnalytics(context, inputData);
 
         verify(analyticsEventDao).deleteEvents(events);
@@ -322,7 +347,7 @@ public class AnalyticsClientUnitTest {
         Exception httpError = new Exception("error");
         when(httpClient.post(anyString(), anyString(), any(Configuration.class))).thenThrow(httpError);
 
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
         assertTrue(result instanceof ListenableWorker.Result.Failure);
     }

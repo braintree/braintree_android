@@ -66,45 +66,53 @@ class AnalyticsClient {
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
     private final AnalyticsDatabase analyticsDatabase;
+    private final WorkManager workManager;
 
     private String lastKnownAnalyticsUrl;
 
     AnalyticsClient(Context context, Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector(), AnalyticsDatabase.getDatabase(context));
+        this(
+                new BraintreeHttpClient(authorization),
+                AnalyticsDatabase.getDatabase(context.getApplicationContext()),
+                WorkManager.getInstance(context.getApplicationContext()),
+                new DeviceInspector()
+        );
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, AnalyticsDatabase analyticsDatabase) {
+    AnalyticsClient(BraintreeHttpClient httpClient, AnalyticsDatabase analyticsDatabase, WorkManager workManager, DeviceInspector deviceInspector) {
         this.httpClient = httpClient;
+        this.workManager = workManager;
         this.deviceInspector = deviceInspector;
         this.analyticsDatabase = analyticsDatabase;
     }
 
     void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
+        long timestamp = System.currentTimeMillis();
+        sendEvent(context, configuration, eventName, sessionId, integration, timestamp);
+    }
+
+    @VisibleForTesting
+    void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
-        long timestamp = System.currentTimeMillis();
         String fullEventName = String.format("android.%s", eventName);
         scheduleAnalyticsWrite(context, fullEventName, timestamp);
-
         scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
     private void scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization, String sessionId, String integration) {
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
-        WorkManager
-                .getInstance(context.getApplicationContext())
-                .enqueueUniqueWork(
-                        WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
+        workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
     }
 
     private void scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
         Authorization authorization = httpClient.getAuthorization();
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(authorization, eventName, timestamp);
-        WorkManager
-                .getInstance(context.getApplicationContext())
-                .enqueueUniqueWork(
-                        WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
+        OneTimeWorkRequest analyticsWorkRequest =
+                createAnalyticsWriteRequest(authorization, eventName, timestamp);
+        workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
     }
 
     ListenableWorker.Result writeAnalytics(Data inputData) {
