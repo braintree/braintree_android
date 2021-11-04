@@ -151,7 +151,6 @@ class DeviceInspector {
                 .build();
     }
 
-
     private String getNetworkType(Context context) {
         String networkType = null;
         if (context != null) {

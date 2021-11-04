@@ -374,7 +374,17 @@ public class DeviceInspectorUnitTest {
         assertEquals("VersionUnknown", metadataJSON.getString("merchantAppVersion"));
     }
 
-    // TODO: unit test drop in version
+    @Test
+    public void getDeviceMetadata_forwardsDropInVersionFromClassHelper() throws JSONException {
+        String className = "com.braintreepayments.api.dropin.BuildConfig";
+        String fieldName = "VERSION_NAME";
+        when(classHelper.getFieldValue(className, fieldName)).thenReturn("drop-in-version");
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("drop-in-version", metadataJSON.getString("dropinVersion"));
+    }
 
     @Test
     public void getDeviceMetadata_forwardsIsPayPalInstalledResultFromAppHelper() throws JSONException {
