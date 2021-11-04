@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -194,49 +194,6 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void uploadAnalytics_whenEventsExist_sendsCorrectMetaData() throws Exception {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
-                .build();
-
-        DeviceMetadata metadata = createSampleDeviceMetadata();
-        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
-
-        AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
-        when(analyticsEventDao.getAllEvents()).thenReturn(Collections.singletonList(event));
-
-        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.uploadAnalytics(context, inputData);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class));
-        JSONObject object = new JSONObject(captor.getValue());
-        JSONObject meta = object.getJSONObject("_meta");
-
-        assertEquals("platform", meta.getString("platform"));
-        assertEquals("platform-version", meta.getString("platformVersion"));
-        assertEquals("sdk-version", meta.getString("sdkVersion"));
-        assertEquals("merchant-app-id", meta.getString("merchantAppId"));
-        assertEquals("merchant-app-name", meta.getString("merchantAppName"));
-        assertEquals("false", meta.getString("deviceRooted"));
-        assertEquals("device-manufacturer", meta.getString("deviceManufacturer"));
-        assertEquals("device-model", meta.getString("deviceModel"));
-        assertEquals("persistent-uuid",
-            meta.getString("deviceAppGeneratedPersistentUuid"));
-        assertEquals("false", meta.getString("isSimulator"));
-        assertEquals("user-orientation", meta.getString("userInterfaceOrientation"));
-        assertEquals("sample-integration", meta.getString("integrationType"));
-        assertEquals("sample-session-id", meta.getString("sessionId"));
-        assertTrue(meta.getBoolean("paypalInstalled"));
-        assertTrue(meta.getBoolean("venmoInstalled"));
-    }
-
-    @Test
     public void uploadAnalytics_whenEventsExist_sendsAllEvents() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         Data inputData = new Data.Builder()
@@ -263,6 +220,10 @@ public class AnalyticsClientUnitTest {
         verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
+
+        JSONObject meta = analyticsJson.getJSONObject("_meta");
+        JSONAssert.assertEquals(metadata.toJSON(), meta, true);
+
         JSONArray array = analyticsJson.getJSONArray("analytics");
         assertEquals(2, array.length());
 
@@ -345,6 +306,10 @@ public class AnalyticsClientUnitTest {
         verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), any(HttpNoResponse.class));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
+
+        JSONObject meta = analyticsJson.getJSONObject("_meta");
+        JSONAssert.assertEquals(metadata.toJSON(), meta, true);
+
         JSONArray array = analyticsJson.getJSONArray("analytics");
         assertEquals(1, array.length());
 
@@ -354,7 +319,7 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() throws Exception {
+    public void reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() {
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
         when(httpClient.getAuthorization()).thenReturn(authorization);
