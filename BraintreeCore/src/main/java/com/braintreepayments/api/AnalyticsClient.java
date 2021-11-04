@@ -38,34 +38,6 @@ class AnalyticsClient {
     static final String WORK_INPUT_KEY_SESSION_ID = "sessionId";
     static final String WORK_INPUT_KEY_TIMESTAMP = "timestamp";
 
-    @VisibleForTesting
-    static OneTimeWorkRequest createAnalyticsWriteRequest(Authorization authorization, String eventName, long timestamp) {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
-                .build();
-
-        return new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
-                .setInputData(inputData)
-                .build();
-    }
-
-    @VisibleForTesting
-    static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
-                .build();
-
-        return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
-                .setInitialDelay(30, TimeUnit.SECONDS)
-                .setInputData(inputData)
-                .build();
-    }
-
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
     private final AnalyticsDatabase analyticsDatabase;
@@ -104,17 +76,18 @@ class AnalyticsClient {
         return scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    private UUID scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
-        workManager.enqueueUniqueWork(
-                WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
-        return analyticsWorkRequest.getId();
-    }
-
     private void scheduleAnalyticsWrite(String eventName, long timestamp) {
         Authorization authorization = httpClient.getAuthorization();
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
+
         OneTimeWorkRequest analyticsWorkRequest =
-                createAnalyticsWriteRequest(authorization, eventName, timestamp);
+                new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
+                        .setInputData(inputData)
+                        .build();
         workManager.enqueueUniqueWork(
                 WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
     }
@@ -136,6 +109,24 @@ class AnalyticsClient {
         return result;
     }
 
+    private UUID scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        OneTimeWorkRequest analyticsWorkRequest =
+                new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
+                        .setInitialDelay(30, TimeUnit.SECONDS)
+                        .setInputData(inputData)
+                        .build();
+        workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
+        return analyticsWorkRequest.getId();
+    }
+
     ListenableWorker.Result uploadAnalytics(Context context, Data inputData) {
         Configuration configuration = getConfigurationFromData(inputData);
         String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
@@ -146,25 +137,21 @@ class AnalyticsClient {
         }
 
         try {
-            uploadAnalytics(context, configuration, sessionId, integration);
+            AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
+            List<AnalyticsEvent> events = analyticsEventDao.getAllEvents();
+
+            boolean shouldUploadAnalytics = !events.isEmpty();
+            if (shouldUploadAnalytics) {
+                DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+                JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
+
+                String analyticsUrl = configuration.getAnalyticsUrl();
+                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
+                analyticsEventDao.deleteEvents(events);
+            }
             return ListenableWorker.Result.success();
         } catch (Exception e) {
             return ListenableWorker.Result.failure();
-        }
-    }
-
-    void uploadAnalytics(Context context, Configuration configuration, String sessionId, String integration) throws Exception {
-        String analyticsUrl = configuration.getAnalyticsUrl();
-
-        AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
-        List<AnalyticsEvent> events = analyticsEventDao.getAllEvents();
-
-        boolean shouldUploadAnalytics = !events.isEmpty();
-        if (shouldUploadAnalytics) {
-            DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
-            JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
-            httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
-            analyticsEventDao.deleteEvents(events);
         }
     }
 

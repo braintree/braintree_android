@@ -83,35 +83,6 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void createAnalyticsUploadRequest_returnsAnalyticsUploadWorkerWithDelay() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        OneTimeWorkRequest result = AnalyticsClient.createAnalyticsUploadRequest(
-                configuration, authorization, sessionId, integration);
-
-        WorkSpec workSpec = result.getWorkSpec();
-        assertEquals(30000, workSpec.initialDelay);
-        assertEquals(AnalyticsUploadWorker.class.getName(), workSpec.workerClassName);
-
-        assertEquals(configuration.toJson(), workSpec.input.getString("configuration"));
-        assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
-        assertEquals("sample-session-id", workSpec.input.getString("sessionId"));
-        assertEquals("sample-integration", workSpec.input.getString("integration"));
-    }
-
-    @Test
-    public void createAnalyticsWriteRequest_returnsAnalyticsUploadWorkerWithDelay() {
-        OneTimeWorkRequest result =
-            AnalyticsClient.createAnalyticsWriteRequest(authorization, eventName, timestamp);
-
-        WorkSpec workSpec = result.getWorkSpec();
-        assertEquals(AnalyticsWriteToDbWorker.class.getName(), workSpec.workerClassName);
-
-        assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
-        assertEquals("sample-event-name", workSpec.input.getString("eventName"));
-        assertEquals(123, workSpec.input.getLong("timestamp", 0));
-    }
-
-    @Test
     public void sendEvent_setsLastKnownAnalyticsUrl() throws JSONException {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
