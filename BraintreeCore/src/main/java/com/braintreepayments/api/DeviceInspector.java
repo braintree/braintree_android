@@ -96,11 +96,6 @@ class DeviceInspector {
         return appName;
     }
 
-    boolean isDeviceRooted() {
-        return isDeviceRooted(
-                android.os.Build.TAGS, new File("/system/app/Superuser.apk"), Runtime.getRuntime());
-    }
-
     @VisibleForTesting
     boolean isDeviceRooted(String buildTags, File superUserApkFile, Runtime runtime) {
         boolean check1 = buildTags != null && buildTags.contains("test-keys");
@@ -125,13 +120,21 @@ class DeviceInspector {
     }
 
     DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration) {
+        String buildTags = android.os.Build.TAGS;
+        File superUserApkFile = new File("/system/app/Superuser.apk");
+        Runtime runtime = Runtime.getRuntime();
+        return getDeviceMetadata(context, sessionId, integration, buildTags, superUserApkFile, runtime);
+    }
+
+    @VisibleForTesting
+    DeviceMetadata getDeviceMetadata(Context context, String sessionId, String integration, String buildTags, File superUserApkFile, Runtime runtime) {
         return new DeviceMetadata.Builder()
                 .platform("Android")
                 .platformVersion(Integer.toString(Build.VERSION.SDK_INT))
                 .sdkVersion(BuildConfig.VERSION_NAME)
                 .merchantAppId(context.getPackageName())
                 .merchantAppName(getAppName(context))
-                .isDeviceRooted(isDeviceRooted())
+                .isDeviceRooted(isDeviceRooted(buildTags, superUserApkFile, runtime))
                 .deviceManufacturer(Build.MANUFACTURER)
                 .deviceModel(Build.MODEL)
                 .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
@@ -146,6 +149,7 @@ class DeviceInspector {
                 .isVenmoInstalled(isVenmoInstalled(context))
                 .build();
     }
+
 
     private String getNetworkType(Context context) {
         String networkType = null;
