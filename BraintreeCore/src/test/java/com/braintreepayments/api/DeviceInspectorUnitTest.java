@@ -36,7 +36,6 @@ public class DeviceInspectorUnitTest {
     private Configuration configuration;
     private ConnectivityManager connectivityManager;
 
-    private PackageInfo packageInfo;
     private PackageManager packageManager;
 
     private AppHelper appHelper;
@@ -50,7 +49,6 @@ public class DeviceInspectorUnitTest {
         connectivityManager = mock(ConnectivityManager.class);
         configuration = new Configuration();
 
-        packageInfo = new PackageInfo();
         packageManager = mock(PackageManager.class);
 
         appHelper = mock(AppHelper.class);
@@ -59,7 +57,6 @@ public class DeviceInspectorUnitTest {
 
         when(context.getPackageManager()).thenReturn(packageManager);
         when(context.getPackageName()).thenReturn("com.sample.app");
-        when(packageManager.getPackageInfo("com.sample.app", 0)).thenReturn(packageInfo);
 
         when(context.getResources()).thenReturn(resources);
         when(resources.getConfiguration()).thenReturn(configuration);
@@ -355,7 +352,28 @@ public class DeviceInspectorUnitTest {
         assertEquals("Unknown", metadataJSON.getString("userInterfaceOrientation"));
     }
 
-    // TODO: unit test app version
+    @Test
+    public void getDeviceMetadata_returnsAppVersion() throws JSONException, PackageManager.NameNotFoundException {
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.versionName = "AppVersion";
+        when(packageManager.getPackageInfo("com.sample.app", 0)).thenReturn(packageInfo);
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("AppVersion", metadataJSON.getString("merchantAppVersion"));
+    }
+
+    @Test
+    public void getDeviceMetadata_whenAppVersionUnavailable_returnsVersionUnknownByDefault() throws JSONException, PackageManager.NameNotFoundException {
+        when(packageManager.getPackageInfo("com.sample.app", 0)).thenThrow(new PackageManager.NameNotFoundException());
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("VersionUnknown", metadataJSON.getString("merchantAppVersion"));
+    }
+
     // TODO: unit test drop in version
 
     @Test

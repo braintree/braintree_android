@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
@@ -171,7 +172,11 @@ class DeviceInspector {
         String result = "VersionUnknown";
         if (context != null) {
             try {
-                result = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+                PackageInfo packageInfo =
+                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                if (packageInfo != null) {
+                    result = packageInfo.versionName;
+                }
             } catch (PackageManager.NameNotFoundException ignored) { /* do nothing */ }
         }
         return result;
