@@ -157,17 +157,22 @@ class AnalyticsClient {
     }
 
     void reportCrash(Context context, String sessionId, String integration) {
+        reportCrash(context, sessionId, integration, System.currentTimeMillis());
+    }
+
+    @VisibleForTesting
+    void reportCrash(Context context, String sessionId, String integration, long timestamp) {
+        if (lastKnownAnalyticsUrl == null) {
+            return;
+        }
+
         DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
-        AnalyticsEvent event = new AnalyticsEvent("android.crash", System.currentTimeMillis());
+        AnalyticsEvent event = new AnalyticsEvent("android.crash", timestamp);
         List<AnalyticsEvent> events = Collections.singletonList(event);
         try {
             JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
             httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, new HttpNoResponse());
         } catch (JSONException e) { /* ignored */ }
-    }
-
-    String getLastKnownAnalyticsUrl() {
-        return lastKnownAnalyticsUrl;
     }
 
     private JSONObject serializeEvents(Authorization authorization, List<AnalyticsEvent> events, DeviceMetadata metadata) throws JSONException {

@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
@@ -77,17 +79,6 @@ public class AnalyticsClientUnitTest {
         when(analyticsDatabase.analyticsEventDao()).thenReturn(analyticsEventDao);
 
         workManager = mock(WorkManager.class);
-    }
-
-    @Test
-    public void sendEvent_setsLastKnownAnalyticsUrl() throws JSONException {
-        when(httpClient.getAuthorization()).thenReturn(authorization);
-
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(configuration, eventName, sessionId, integration);
-
-        assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
 
     @Test
@@ -311,7 +302,7 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void uploadAnalytics_returnsError() throws Exception {
+    public void uploadAnalytics_whenAnalyticsSendFails_returnsError() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         Data inputData = new Data.Builder()
                 .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
@@ -336,6 +327,42 @@ public class AnalyticsClientUnitTest {
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
         assertTrue(result instanceof ListenableWorker.Result.Failure);
+    }
+
+    @Test
+    public void reportCrash_whenLastKnownAnalyticsUrlExists_sendsCrashAnalyticsEvent() throws Exception {
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
+        when(httpClient.getAuthorization()).thenReturn(authorization);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+
+        sut.sendEvent(configuration, eventName, sessionId, integration);
+        sut.reportCrash(context, sessionId, integration, 123);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), any(HttpNoResponse.class));
+
+        JSONObject analyticsJson = new JSONObject(captor.getValue());
+        JSONArray array = analyticsJson.getJSONArray("analytics");
+        assertEquals(1, array.length());
+
+        JSONObject eventOne = array.getJSONObject(0);
+        assertEquals("android.crash", eventOne.getString("kind"));
+        assertEquals(123, Long.parseLong(eventOne.getString("timestamp")));
+    }
+
+    @Test
+    public void reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() throws Exception {
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
+        when(httpClient.getAuthorization()).thenReturn(authorization);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        sut.reportCrash(context, sessionId, integration, 123);
+
+        verifyZeroInteractions(httpClient);
     }
 
     private static DeviceMetadata createSampleDeviceMetadata() {
