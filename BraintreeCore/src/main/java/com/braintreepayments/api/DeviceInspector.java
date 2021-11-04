@@ -103,14 +103,14 @@ class DeviceInspector {
         return new Intent().setComponent(new ComponentName(VENMO_APP_PACKAGE, VENMO_APP_PACKAGE + "." + VENMO_APP_SWITCH_ACTIVITY));
     }
 
-    boolean isDeviceEmulator() {
+    private boolean isDeviceEmulator() {
         return "google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "Genymotion".equalsIgnoreCase(Build.MANUFACTURER) ||
                 Build.FINGERPRINT.contains("generic");
     }
 
-    String getAppName(Context context) {
+    private String getAppName(Context context) {
         ApplicationInfo applicationInfo;
         String packageName = context.getPackageName();
         PackageManager packageManager = context.getPackageManager();
@@ -131,8 +131,7 @@ class DeviceInspector {
         return appName;
     }
 
-    @VisibleForTesting
-    boolean isDeviceRooted(String buildTags) {
+    private boolean isDeviceRooted(String buildTags) {
         boolean check1 = buildTags != null && buildTags.contains("test-keys");
 
         boolean check2;
