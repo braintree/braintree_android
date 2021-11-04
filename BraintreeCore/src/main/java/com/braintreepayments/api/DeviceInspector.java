@@ -160,9 +160,9 @@ class DeviceInspector {
             if (networkInfo != null) {
                 networkType = networkInfo.getTypeName();
             }
-            if (networkType == null) {
-                networkType = "none";
-            }
+        }
+        if (networkType == null) {
+            networkType = "none";
         }
         return networkType;
     }

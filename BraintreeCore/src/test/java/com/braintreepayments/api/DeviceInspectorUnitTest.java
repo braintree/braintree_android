@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import org.json.JSONException;
@@ -306,7 +307,25 @@ public class DeviceInspectorUnitTest {
         assertEquals("integration-type", metadataJSON.getString("integrationType"));
     }
 
-    // TODO: unit test network type
+    @Test
+    public void getDeviceMetadata_returnsNetworkType() throws JSONException {
+        NetworkInfo networkInfo = mock(NetworkInfo.class);
+        when(networkInfo.getTypeName()).thenReturn("network-type-name");
+        when(connectivityManager.getActiveNetworkInfo()).thenReturn(networkInfo);
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("network-type-name", metadataJSON.getString("deviceNetworkType"));
+    }
+
+    @Test
+    public void getDeviceMetadata_whenNetworkInfoUnavailable_returnsNoneForNetworkType() throws JSONException {
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("none", metadataJSON.getString("deviceNetworkType"));
+    }
 
     @Test
     public void getDeviceMetadata_whenDeviceOrientationIsPortrait_returnsPortraitForUserInterfaceOrientation() throws JSONException {
