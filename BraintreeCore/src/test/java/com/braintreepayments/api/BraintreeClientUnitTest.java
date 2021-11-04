@@ -201,7 +201,7 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
-        verify(analyticsClient).sendEvent(applicationContext, configuration, "event.started", "session-id", "custom");
+        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom");
     }
 
     @Test

@@ -87,27 +87,27 @@ class AnalyticsClient {
         this.analyticsDatabase = analyticsDatabase;
     }
 
-    void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration) {
+    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration) {
         long timestamp = System.currentTimeMillis();
-        sendEvent(context, configuration, eventName, sessionId, integration, timestamp);
+        sendEvent(configuration, eventName, sessionId, integration, timestamp);
     }
 
     @VisibleForTesting
-    void sendEvent(Context context, Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
+    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         String fullEventName = String.format("android.%s", eventName);
-        scheduleAnalyticsWrite(context, fullEventName, timestamp);
-        scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization(), sessionId, integration);
+        scheduleAnalyticsWrite(fullEventName, timestamp);
+        scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    private void scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization, String sessionId, String integration) {
+    private void scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsUploadRequest(configuration, authorization, sessionId, integration);
         workManager.enqueueUniqueWork(
                 WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
     }
 
-    private void scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
+    private void scheduleAnalyticsWrite(String eventName, long timestamp) {
         Authorization authorization = httpClient.getAuthorization();
         OneTimeWorkRequest analyticsWorkRequest =
                 createAnalyticsWriteRequest(authorization, eventName, timestamp);

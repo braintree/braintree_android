@@ -117,7 +117,7 @@ public class AnalyticsClientUnitTest {
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(context, configuration, eventName, sessionId, integration);
+        sut.sendEvent(configuration, eventName, sessionId, integration);
 
         assertEquals("analytics_url", sut.getLastKnownAnalyticsUrl());
     }
@@ -128,7 +128,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(context, configuration, eventName, sessionId, integration, 123);
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123);
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
@@ -149,7 +149,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(context, configuration, eventName, sessionId, integration, 123);
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123);
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
