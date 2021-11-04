@@ -7,7 +7,6 @@ import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_INTEGRATI
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_SESSION_ID;
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,9 +23,7 @@ import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.WorkQuery;
 import androidx.work.impl.model.WorkSpec;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
@@ -44,7 +41,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RunWith(RobolectricTestRunner.class)
 public class AnalyticsClientUnitTest {
@@ -127,7 +123,7 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void sendEvent_enqueuesAnalyticsWriteToDbWorker() throws ExecutionException, InterruptedException, JSONException {
+    public void sendEvent_enqueuesAnalyticsWriteToDbWorker() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
@@ -148,7 +144,7 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void sendEvent_enqueuesAnalyticsUploadWorker() throws ExecutionException, InterruptedException, JSONException {
+    public void sendEvent_enqueuesAnalyticsUploadWorker() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
@@ -350,16 +346,6 @@ public class AnalyticsClientUnitTest {
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
         assertTrue(result instanceof ListenableWorker.Result.Failure);
-    }
-
-    private WorkInfo findWorkInfoForName(String workName) throws ExecutionException, InterruptedException {
-        List<String> workNames = Collections.singletonList(workName);
-        WorkQuery wq = WorkQuery.Builder.fromUniqueWorkNames(workNames).build();
-
-        List<WorkInfo> workInfos =
-                WorkManager.getInstance(context).getWorkInfos(wq).get();
-        assertEquals(1, workInfos.size());
-        return workInfos.get(0);
     }
 
     private static DeviceMetadata createSampleDeviceMetadata() {
