@@ -87,12 +87,10 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_returnsSDKVersion() throws JSONException {
-        ReflectionHelpers.setStaticField(BuildConfig.class, "VERSION_NAME", "456");
-
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("456", metadataJSON.getString("sdkVersion"));
+        assertEquals(BuildConfig.VERSION_NAME, metadataJSON.getString("sdkVersion"));
     }
 
     @Test
