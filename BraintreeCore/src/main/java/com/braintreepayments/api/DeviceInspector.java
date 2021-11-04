@@ -75,15 +75,10 @@ class DeviceInspector {
     }
 
     boolean isDeviceEmulator() {
-        return isDeviceEmulator(Build.PRODUCT, Build.MANUFACTURER, Build.FINGERPRINT);
-    }
-
-    @VisibleForTesting
-    boolean isDeviceEmulator(String buildProduct, String buildManufacturer, String buildFingerprint) {
-        return "google_sdk".equalsIgnoreCase(buildProduct) ||
-                "sdk".equalsIgnoreCase(buildProduct) ||
-                "Genymotion".equalsIgnoreCase(buildManufacturer) ||
-                buildFingerprint.contains("generic");
+        return "google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
+                "sdk".equalsIgnoreCase(Build.PRODUCT) ||
+                "Genymotion".equalsIgnoreCase(Build.MANUFACTURER) ||
+                Build.FINGERPRINT.contains("generic");
     }
 
     String getAppName(Context context) {

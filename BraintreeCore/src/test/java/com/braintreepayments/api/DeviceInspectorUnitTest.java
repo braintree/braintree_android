@@ -17,7 +17,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +31,6 @@ import java.io.IOException;
 public class DeviceInspectorUnitTest {
 
     private Context context;
-    private Resources resources;
     private Configuration configuration;
     private ConnectivityManager connectivityManager;
 
@@ -51,7 +49,7 @@ public class DeviceInspectorUnitTest {
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException {
         context = mock(Context.class);
-        resources = mock(Resources.class);
+        Resources resources = mock(Resources.class);
         connectivityManager = mock(ConnectivityManager.class);
         configuration = new Configuration();
 
@@ -79,8 +77,7 @@ public class DeviceInspectorUnitTest {
     @Test
     public void getDeviceMetadata_returnsPlatform() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("Android", metadataJSON.getString("platform"));
+        assertEquals("Android", metadata.toJSON().getString("platform"));
     }
 
     @Test
@@ -88,29 +85,25 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 123);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("123", metadataJSON.getString("platformVersion"));
+        assertEquals("123", metadata.toJSON().getString("platformVersion"));
     }
 
     @Test
     public void getDeviceMetadata_returnsSDKVersion() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals(BuildConfig.VERSION_NAME, metadataJSON.getString("sdkVersion"));
+        assertEquals(BuildConfig.VERSION_NAME, metadata.toJSON().getString("sdkVersion"));
     }
 
     @Test
     public void getDeviceMetadata_returnsMerchantAppId() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("com.sample.app", metadataJSON.getString("merchantAppId"));
+        assertEquals("com.sample.app", metadata.toJSON().getString("merchantAppId"));
     }
 
     @Test
     public void getDeviceMetadata_returnsApplicationNameUnknownByDefault() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
+        assertEquals("ApplicationNameUnknown", metadata.toJSON().getString("merchantAppName"));
     }
 
     @Test
@@ -120,8 +113,7 @@ public class DeviceInspectorUnitTest {
         when(packageManager.getApplicationLabel(applicationInfo)).thenReturn("SampleAppName");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("SampleAppName", metadataJSON.getString("merchantAppName"));
+        assertEquals("SampleAppName", metadata.toJSON().getString("merchantAppName"));
     }
 
     @Test
@@ -129,8 +121,7 @@ public class DeviceInspectorUnitTest {
         when(packageManager.getApplicationInfo("sample-package-name", 0)).thenThrow(new PackageManager.NameNotFoundException());
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
+        assertEquals("ApplicationNameUnknown", metadata.toJSON().getString("merchantAppName"));
     }
 
     @Test
@@ -141,16 +132,14 @@ public class DeviceInspectorUnitTest {
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes()));
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertFalse(metadataJSON.getBoolean("deviceRooted"));
+        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
     public void getDeviceMetadata_whenBuildTagsIncludeTestKeys_returnsDeviceRootedAsTrue() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(
                 context, "session-id", "integration-type", "test-keys");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("deviceRooted"));
+        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
@@ -158,9 +147,7 @@ public class DeviceInspectorUnitTest {
         when(superUserApkFile.exists()).thenReturn(true);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("deviceRooted"));
+        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
@@ -170,9 +157,7 @@ public class DeviceInspectorUnitTest {
         when(process.getInputStream()).thenReturn(new ByteArrayInputStream("/path/to/su/command".getBytes()));
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("deviceRooted"));
+        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
@@ -180,8 +165,7 @@ public class DeviceInspectorUnitTest {
         when(superUserApkFile.exists()).thenThrow(new SecurityException());
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertFalse(metadataJSON.getBoolean("deviceRooted"));
+        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
@@ -189,8 +173,7 @@ public class DeviceInspectorUnitTest {
         when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenThrow(new IOException());
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertFalse(metadataJSON.getBoolean("deviceRooted"));
+        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
     }
 
     @Test
@@ -198,8 +181,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "device-manufacturer");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("device-manufacturer", metadataJSON.getString("deviceManufacturer"));
+        assertEquals("device-manufacturer", metadata.toJSON().getString("deviceManufacturer"));
     }
 
     @Test
@@ -207,8 +189,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MODEL", "device-model");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("device-model", metadataJSON.getString("deviceModel"));
+        assertEquals("device-model", metadata.toJSON().getString("deviceModel"));
     }
 
     @Test
@@ -216,9 +197,8 @@ public class DeviceInspectorUnitTest {
         when(uuidHelper.getPersistentUUID(context)).thenReturn("persistent-uuid");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
         assertEquals("persistent-uuid",
-                metadataJSON.getString("deviceAppGeneratedPersistentUuid"));
+                metadata.toJSON().getString("deviceAppGeneratedPersistentUuid"));
     }
 
     @Test
@@ -228,8 +208,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "randomBuildFingerprint");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("false", metadataJSON.getString("isSimulator"));
+        assertEquals("false", metadata.toJSON().getString("isSimulator"));
     }
 
     @Test
@@ -237,8 +216,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "google_sdk");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("isSimulator"));
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"));
     }
 
     @Test
@@ -246,8 +224,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "sdk");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("isSimulator"));
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"));
     }
 
     @Test
@@ -255,8 +232,7 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "Genymotion");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("isSimulator"));
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"));
     }
 
     @Test
@@ -264,22 +240,19 @@ public class DeviceInspectorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "generic");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("isSimulator"));
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"));
     }
 
     @Test
     public void getDeviceMetadata_forwardsSessionId() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("session-id", metadataJSON.getString("sessionId"));
+        assertEquals("session-id", metadata.toJSON().getString("sessionId"));
     }
 
     @Test
     public void getDeviceMetadata_forwardsIntegrationType() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("integration-type", metadataJSON.getString("integrationType"));
+        assertEquals("integration-type", metadata.toJSON().getString("integrationType"));
     }
 
     @Test
@@ -289,15 +262,13 @@ public class DeviceInspectorUnitTest {
         when(connectivityManager.getActiveNetworkInfo()).thenReturn(networkInfo);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("network-type-name", metadataJSON.getString("deviceNetworkType"));
+        assertEquals("network-type-name", metadata.toJSON().getString("deviceNetworkType"));
     }
 
     @Test
     public void getDeviceMetadata_whenNetworkInfoUnavailable_returnsNoneForNetworkType() throws JSONException {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("none", metadataJSON.getString("deviceNetworkType"));
+        assertEquals("none", metadata.toJSON().getString("deviceNetworkType"));
     }
 
     @Test
@@ -305,8 +276,7 @@ public class DeviceInspectorUnitTest {
         configuration.orientation = Configuration.ORIENTATION_PORTRAIT;
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("Portrait", metadataJSON.getString("userInterfaceOrientation"));
+        assertEquals("Portrait", metadata.toJSON().getString("userInterfaceOrientation"));
     }
 
     @Test
@@ -314,8 +284,7 @@ public class DeviceInspectorUnitTest {
         configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("Landscape", metadataJSON.getString("userInterfaceOrientation"));
+        assertEquals("Landscape", metadata.toJSON().getString("userInterfaceOrientation"));
     }
 
     @Test
@@ -323,8 +292,7 @@ public class DeviceInspectorUnitTest {
         configuration.orientation = Configuration.ORIENTATION_UNDEFINED;
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("Unknown", metadataJSON.getString("userInterfaceOrientation"));
+        assertEquals("Unknown", metadata.toJSON().getString("userInterfaceOrientation"));
     }
 
     @Test
@@ -334,8 +302,7 @@ public class DeviceInspectorUnitTest {
         when(packageManager.getPackageInfo("com.sample.app", 0)).thenReturn(packageInfo);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("AppVersion", metadataJSON.getString("merchantAppVersion"));
+        assertEquals("AppVersion", metadata.toJSON().getString("merchantAppVersion"));
     }
 
     @Test
@@ -343,8 +310,7 @@ public class DeviceInspectorUnitTest {
         when(packageManager.getPackageInfo("com.sample.app", 0)).thenThrow(new PackageManager.NameNotFoundException());
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("VersionUnknown", metadataJSON.getString("merchantAppVersion"));
+        assertEquals("VersionUnknown", metadata.toJSON().getString("merchantAppVersion"));
     }
 
     @Test
@@ -354,8 +320,7 @@ public class DeviceInspectorUnitTest {
         when(classHelper.getFieldValue(className, fieldName)).thenReturn("drop-in-version");
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertEquals("drop-in-version", metadataJSON.getString("dropinVersion"));
+        assertEquals("drop-in-version", metadata.toJSON().getString("dropinVersion"));
     }
 
     @Test
@@ -363,8 +328,7 @@ public class DeviceInspectorUnitTest {
         when(appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile")).thenReturn(true);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("paypalInstalled"));
+        assertTrue(metadata.toJSON().getBoolean("paypalInstalled"));
     }
 
     @Test
@@ -372,7 +336,6 @@ public class DeviceInspectorUnitTest {
         when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
 
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
-        JSONObject metadataJSON = metadata.toJSON();
-        assertTrue(metadataJSON.getBoolean("venmoInstalled"));
+        assertTrue(metadata.toJSON().getBoolean("venmoInstalled"));
     }
 }
