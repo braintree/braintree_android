@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,58 +66,6 @@ public class DeviceInspectorUnitTest {
     }
 
     @Test
-    public void detectEmulator_defaultsToFalse() {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertFalse(sut.isDeviceEmulator("randomBuildProduct", "randomBuildManufacturer", "randomBuildFingerprint"));
-    }
-
-    @Test
-    public void detectEmulator_whenBuildProductIsGoogleSdk_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertTrue(sut.isDeviceEmulator("google_sdk", "randomBuildManufacturer", "randomBuildFingerprint"));
-    }
-
-    @Test
-    public void detectEmulator_whenBuildProductIsSdk_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertTrue(sut.isDeviceEmulator("sdk", "randomBuildManufacturer", "randomBuildFingerprint"));
-    }
-
-    @Test
-    public void detectEmulator_whenBuildManufacturerIsGenymotion_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertTrue(sut.isDeviceEmulator("randomBuildProduct", "Genymotion", "randomBuildFingerprint"));
-    }
-
-    @Test
-    public void detectEmulator_whenBuildFingerprintIsGeneric_returnsTrue() {
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertTrue(sut.isDeviceEmulator("randomBuildProduct", "randomBuildManufacturer", "generic"));
-    }
-
-    @Test
-    public void getAppName_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException {
-        when(context.getPackageName()).thenReturn("sample-package-name");
-        when(context.getPackageManager()).thenReturn(packageManager);
-
-        ApplicationInfo applicationInfo = new ApplicationInfo();
-        when(packageManager.getApplicationInfo("sample-package-name", 0)).thenReturn(applicationInfo);
-        when(packageManager.getApplicationLabel(applicationInfo)).thenReturn("SampleAppName");
-
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertEquals("SampleAppName", sut.getAppName(context));
-    }
-
-    @Test
-    public void getAppName_whenApplicationInfoNotFound_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException {
-        when(context.getPackageName()).thenReturn("sample-package-name");
-        when(packageManager.getApplicationInfo("sample-package-name", 0)).thenThrow(new PackageManager.NameNotFoundException());
-
-        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
-        assertEquals("ApplicationNameUnknown", sut.getAppName(context));
-    }
-
-    @Test
     public void getDeviceMetadata_returnsAndroidAsPlatform() throws JSONException {
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
@@ -158,6 +105,28 @@ public class DeviceInspectorUnitTest {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         JSONObject metadataJSON = metadata.toJSON();
         assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
+    }
+
+    @Test
+    public void getDeviceMetadata_whenApplicationInfoNotFound_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException, JSONException {
+        when(packageManager.getApplicationInfo("sample-package-name", 0)).thenThrow(new PackageManager.NameNotFoundException());
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("ApplicationNameUnknown", metadataJSON.getString("merchantAppName"));
+    }
+
+    @Test
+    public void getDeviceMetadata_returnsAppNameFromPackageManager() throws PackageManager.NameNotFoundException, JSONException {
+        ApplicationInfo applicationInfo = new ApplicationInfo();
+        when(packageManager.getApplicationInfo("com.sample.app", 0)).thenReturn(applicationInfo);
+        when(packageManager.getApplicationLabel(applicationInfo)).thenReturn("SampleAppName");
+
+        DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
+        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
+        JSONObject metadataJSON = metadata.toJSON();
+        assertEquals("SampleAppName", metadataJSON.getString("merchantAppName"));
     }
 
     @Test
@@ -268,9 +237,9 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenBuildProductManufacturerAndFingerprintAreValid_returnsFalse() throws JSONException {
-        ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "build-product");
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "build-manufacturer");
-        ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "build-fingerprint");
+        ReflectionHelpers.setStaticField(Build.class, "PRODUCT", "randomBuildProduct");
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "randomBuildManufacturer");
+        ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "randomBuildFingerprint");
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
@@ -300,7 +269,7 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrue() throws JSONException {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "genymotion");
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "Genymotion");
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
@@ -310,7 +279,7 @@ public class DeviceInspectorUnitTest {
 
     @Test
     public void getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrue() throws JSONException {
-        ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "generic-fingerprint");
+        ReflectionHelpers.setStaticField(Build.class, "FINGERPRINT", "generic");
 
         DeviceInspector sut = new DeviceInspector(appHelper, classHelper, uuidHelper);
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
