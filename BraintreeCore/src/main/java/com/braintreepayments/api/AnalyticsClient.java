@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -153,6 +154,16 @@ class AnalyticsClient {
         } catch (Exception e) {
             return ListenableWorker.Result.failure();
         }
+    }
+
+    void reportCrash(Context context, String sessionId, String integration) {
+        DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+        AnalyticsEvent event = new AnalyticsEvent("android.crash", System.currentTimeMillis());
+        List<AnalyticsEvent> events = Collections.singletonList(event);
+        try {
+            JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
+            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, new HttpNoResponse());
+        } catch (JSONException e) { /* ignored */ }
     }
 
     String getLastKnownAnalyticsUrl() {

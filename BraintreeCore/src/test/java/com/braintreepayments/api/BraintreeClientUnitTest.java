@@ -392,6 +392,20 @@ public class BraintreeClientUnitTest {
         assertEquals("dropin", sut.getIntegrationType());
     }
 
+    @Test
+    public void reportCrash_reportsCrashViaAnalyticsClient() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
+                .configuration(configuration)
+                .build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        sut.reportCrash();
+        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM);
+    }
+
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
         return new BraintreeClientParams()
                 .authorization(authorization)
