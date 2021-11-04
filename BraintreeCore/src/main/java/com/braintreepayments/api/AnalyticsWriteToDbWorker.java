@@ -19,6 +19,6 @@ public class AnalyticsWriteToDbWorker extends AnalyticsBaseWorker {
     @Override
     public Result doWork() {
         AnalyticsClient analyticsClient = createAnalyticsClientFromInputData();
-        return analyticsClient.writeAnalytics(getApplicationContext(), getInputData());
+        return analyticsClient.writeAnalytics(getInputData());
     }
 }

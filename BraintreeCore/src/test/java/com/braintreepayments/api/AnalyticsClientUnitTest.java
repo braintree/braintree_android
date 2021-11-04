@@ -7,6 +7,7 @@ import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_INTEGRATI
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_SESSION_ID;
 import static com.braintreepayments.api.AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
@@ -23,6 +24,7 @@ import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+import androidx.work.WorkQuery;
 import androidx.work.impl.model.WorkSpec;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
@@ -40,7 +42,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RunWith(RobolectricTestRunner.class)
@@ -61,7 +62,7 @@ public class AnalyticsClientUnitTest {
     AnalyticsEventDao analyticsEventDao;
 
     @Before
-    public void setup() throws InvalidArgumentException, GeneralSecurityException, IOException {
+    public void beforeEach() throws InvalidArgumentException, GeneralSecurityException, IOException {
         timestamp = 123;
         eventName = "sample-event-name";
         sessionId = "sample-session-id";
@@ -88,7 +89,7 @@ public class AnalyticsClientUnitTest {
 
         WorkSpec workSpec = result.getWorkSpec();
         assertEquals(30000, workSpec.initialDelay);
-        assertEquals(AnalyticsUploadFromDbWorker.class.getName(), workSpec.workerClassName);
+        assertEquals(AnalyticsUploadWorker.class.getName(), workSpec.workerClassName);
 
         assertEquals(configuration.toJson(), workSpec.input.getString("configuration"));
         assertEquals(authorization.toString(), workSpec.input.getString("authorization"));
@@ -110,36 +111,6 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void writeAnalytics_whenEventNameAndTimestampArePresent_returnsSuccess() {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
-                .build();
-
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        ListenableWorker.Result result = sut.writeAnalytics(context, inputData);
-        assertTrue(result instanceof ListenableWorker.Result.Success);
-    }
-
-    @Test
-    public void writeAnalytics_addsEventToAnalyticsDatabaseAndReturnsSuccess() {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
-                .build();
-
-        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        sut.writeAnalytics(context, inputData);
-
-        ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
-        verify(analyticsEventDao).insertEvent(captor.capture());
-
-        AnalyticsEvent event = captor.getValue();
-        assertEquals("sample-event-name", event.getName());
-        assertEquals(123, event.getTimestamp());
-    }
-
-    @Test
     public void sendEvent_setsLastKnownAnalyticsUrl() throws JSONException {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
@@ -151,15 +122,57 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void sendEventAndReturnId_enqueuesAnalyticsWorker() throws ExecutionException, InterruptedException, JSONException {
+    public void sendEvent_enqueuesAnalyticsWriteToDbTask() throws ExecutionException, InterruptedException, JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
-        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, eventName, timestamp, sessionId, integration);
+        sut.sendEvent(context, configuration, eventName, sessionId, integration);
 
-        WorkInfo analyticsWorkerInfo = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
-        assertEquals(WorkInfo.State.ENQUEUED, analyticsWorkerInfo.getState());
+        WorkInfo writeTaskWorkerInfo = findWorkInfoForName("writeAnalyticsToDb");
+        assertNotNull(writeTaskWorkerInfo);
+    }
+
+    @Test
+    public void sendEvent_enqueuesAnalyticsUploadTask() throws ExecutionException, InterruptedException, JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        when(httpClient.getAuthorization()).thenReturn(authorization);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.sendEvent(context, configuration, eventName, sessionId, integration);
+
+        WorkInfo uploadTaskWorkerInfo = findWorkInfoForName("uploadAnalytics");
+        assertNotNull(uploadTaskWorkerInfo);
+    }
+
+    @Test
+    public void writeAnalytics_whenEventNameAndTimestampArePresent_returnsSuccess() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        ListenableWorker.Result result = sut.writeAnalytics(inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Success);
+    }
+
+    @Test
+    public void writeAnalytics_addsEventToAnalyticsDatabaseAndReturnsSuccess() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
+        sut.writeAnalytics(inputData);
+
+        ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
+        verify(analyticsEventDao).insertEvent(captor.capture());
+
+        AnalyticsEvent event = captor.getValue();
+        assertEquals("sample-event-name", event.getName());
+        assertEquals(123, event.getTimestamp());
     }
 
     @Test
@@ -312,6 +325,16 @@ public class AnalyticsClientUnitTest {
         AnalyticsClient sut = new AnalyticsClient(httpClient, deviceInspector, analyticsDatabase);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
         assertTrue(result instanceof ListenableWorker.Result.Failure);
+    }
+
+    private WorkInfo findWorkInfoForName(String workName) throws ExecutionException, InterruptedException {
+        List<String> workNames = Collections.singletonList(workName);
+        WorkQuery wq = WorkQuery.Builder.fromUniqueWorkNames(workNames).build();
+
+        List<WorkInfo> workInfos =
+                WorkManager.getInstance(context).getWorkInfos(wq).get();
+        assertEquals(1, workInfos.size());
+        return workInfos.get(0);
     }
 
     private static DeviceMetadata createSampleDeviceMetadata() {

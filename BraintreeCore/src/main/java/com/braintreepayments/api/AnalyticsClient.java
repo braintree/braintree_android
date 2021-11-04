@@ -27,7 +27,7 @@ class AnalyticsClient {
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
 
     static final String WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics";
-    static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalytics";
+    static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb";
 
     static final String WORK_INPUT_KEY_AUTHORIZATION = "authorization";
     static final String WORK_INPUT_KEY_CONFIGURATION = "configuration";
@@ -35,6 +35,34 @@ class AnalyticsClient {
     static final String WORK_INPUT_KEY_INTEGRATION = "integration";
     static final String WORK_INPUT_KEY_SESSION_ID = "sessionId";
     static final String WORK_INPUT_KEY_TIMESTAMP = "timestamp";
+
+    @VisibleForTesting
+    static OneTimeWorkRequest createAnalyticsWriteRequest(Authorization authorization, String eventName, long timestamp) {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
+
+        return new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
+                .setInputData(inputData)
+                .build();
+    }
+
+    @VisibleForTesting
+    static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
+                .setInitialDelay(30, TimeUnit.SECONDS)
+                .setInputData(inputData)
+                .build();
+    }
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
@@ -81,7 +109,7 @@ class AnalyticsClient {
         return analyticsWorkRequest.getId();
     }
 
-    private UUID scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
+    private void scheduleAnalyticsWrite(Context context, String eventName, long timestamp) {
         Authorization authorization = httpClient.getAuthorization();
         OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWriteRequest(authorization, eventName, timestamp);
 
@@ -89,37 +117,9 @@ class AnalyticsClient {
                 .getInstance(context.getApplicationContext())
                 .enqueueUniqueWork(
                         WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
-        return analyticsWorkRequest.getId();
     }
 
-    static OneTimeWorkRequest createAnalyticsWriteRequest(Authorization authorization, String eventName, long timestamp) {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
-                .build();
-
-        return new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
-                .setInputData(inputData)
-                .build();
-    }
-
-    @VisibleForTesting
-    static OneTimeWorkRequest createAnalyticsUploadRequest(Configuration configuration, Authorization authorization, String sessionId, String integration) {
-        Data inputData = new Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
-                .build();
-
-        return new OneTimeWorkRequest.Builder(AnalyticsUploadFromDbWorker.class)
-                .setInitialDelay(30, TimeUnit.SECONDS)
-                .setInputData(inputData)
-                .build();
-    }
-
-    ListenableWorker.Result writeAnalytics(Context context, Data inputData) {
+    ListenableWorker.Result writeAnalytics(Data inputData) {
         String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
         long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, 0);
         AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);

@@ -9,9 +9,9 @@ import androidx.work.WorkerParameters;
  * Class to upload analytics events.
  * This class is used internally by the SDK and should not be used directly.
  */
-public class AnalyticsUploadFromDbWorker extends AnalyticsBaseWorker {
+public class AnalyticsUploadWorker extends AnalyticsBaseWorker {
 
-    public AnalyticsUploadFromDbWorker(@NonNull Context context, @NonNull WorkerParameters params) {
+    public AnalyticsUploadWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
     }
 
