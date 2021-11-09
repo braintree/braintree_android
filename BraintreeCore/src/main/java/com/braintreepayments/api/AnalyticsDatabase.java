@@ -13,7 +13,7 @@ abstract class AnalyticsDatabase extends RoomDatabase {
 
     private static volatile AnalyticsDatabase INSTANCE;
 
-    static AnalyticsDatabase getDatabase(final Context context) {
+    static AnalyticsDatabase getInstance(final Context context) {
         if (INSTANCE == null) {
             synchronized (AnalyticsDatabase.class) {
                 // double check that instance was not created in another thread

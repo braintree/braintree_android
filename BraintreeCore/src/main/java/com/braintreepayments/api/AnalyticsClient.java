@@ -49,7 +49,7 @@ class AnalyticsClient {
     AnalyticsClient(Context context, Authorization authorization) {
         this(
                 new BraintreeHttpClient(authorization),
-                AnalyticsDatabase.getDatabase(context.getApplicationContext()),
+                AnalyticsDatabase.getInstance(context.getApplicationContext()),
                 WorkManager.getInstance(context.getApplicationContext()),
                 new DeviceInspector()
         );
