@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.18.1
 
 * Bump Cardinal version to `2.2.5-4`
 
