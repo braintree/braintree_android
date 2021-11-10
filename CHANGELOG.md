@@ -263,6 +263,10 @@
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
 
+## 3.18.1
+
+* Bump Cardinal version to `2.2.5-4`
+
 ## 3.18.0
 
 * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
