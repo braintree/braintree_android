@@ -348,13 +348,13 @@ public class DeviceInspectorUnitTest {
     }
 
     @Test
-    public void isPayPalInstalled_forwardsIsPayPalInstalledResultFromAppHelper() throws JSONException {
+    public void isPayPalInstalled_forwardsIsPayPalInstalledResultFromAppHelper() {
         when(appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile")).thenReturn(true);
         assertTrue(sut.isPayPalInstalled(context));
     }
 
     @Test
-    public void isVenmoInstalled_forwardsIsVenmoInstalledResultFromAppHelper() throws JSONException {
+    public void isVenmoInstalled_forwardsIsVenmoInstalledResultFromAppHelper() {
         when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
         assertTrue(sut.isVenmoInstalled(context));
     }

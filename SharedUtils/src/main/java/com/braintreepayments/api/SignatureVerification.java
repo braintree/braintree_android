@@ -24,14 +24,14 @@ class SignatureVerification {
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
      * impersonating other apps.
      *
-     * @param context Android Context
-     * @param packageName the package name of the app to verify.
+     * @param context                Android Context
+     * @param packageName            the package name of the app to verify.
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
     static boolean isSignatureValid(Context context, String packageName,
                                     String base64EncodedSignature) {
-        return isSignatureValid(context, packageName, base64EncodedSignature , new CertificateHelper());
+        return isSignatureValid(context, packageName, base64EncodedSignature, new CertificateHelper());
     }
 
     @VisibleForTesting
