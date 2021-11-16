@@ -6,8 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.work.WorkerParameters;
 
 /**
- * Class to write analytics events to the database.
+ * Class for background analytics tasks.
  * This class is used internally by the SDK and should not be used directly.
+ * It is not subject to semantic versioning and may change at any time.
  */
 public class AnalyticsWriteToDbWorker extends AnalyticsBaseWorker {
 
