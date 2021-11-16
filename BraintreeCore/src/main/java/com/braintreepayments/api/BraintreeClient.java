@@ -62,7 +62,7 @@ public class BraintreeClient {
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorization))
-                .analyticsClient(new AnalyticsClient(context, authorization))
+                .analyticsClient(new AnalyticsClient(authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
@@ -130,12 +130,13 @@ public class BraintreeClient {
         configurationLoader.loadConfiguration(applicationContext, authorization, callback);
     }
 
-    void sendAnalyticsEvent(final String eventName) {
+    void sendAnalyticsEvent(final String eventFragment) {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (isAnalyticsEnabled(configuration)) {
-                    analyticsClient.sendEvent(configuration, eventName, sessionId, getIntegrationType());
+                    final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventFragment);
+                    analyticsClient.sendEvent(applicationContext, configuration, event);
                 }
             }
         });
@@ -231,8 +232,13 @@ public class BraintreeClient {
         return manifestValidator.getActivityInfo(applicationContext, klass);
     }
 
+    // TODO: Remove application context dependency from AnalyticsEvent and unit test
     void reportCrash() {
-        analyticsClient.reportCrash(applicationContext, sessionId, integrationType);
+        String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
+        if (analyticsUrl != null) {
+            final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
+            httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
+        }
     }
 
     static boolean isAnalyticsEnabled(Configuration configuration) {

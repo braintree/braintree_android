@@ -23,13 +23,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 @RunWith(RobolectricTestRunner.class)
-public class SignatureVerifierUnitTest {
+public class SignatureVerificationUnitTest {
 
     private Context context;
     private PackageInfo packageInfo;
     private CertificateHelper certificateHelper;
-
-    private SignatureVerifier sut;
 
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException, CertificateException {
@@ -46,20 +44,18 @@ public class SignatureVerifierUnitTest {
         packageInfo.signatures = signatures;
         when(packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES))).thenReturn(packageInfo);
         when(context.getPackageManager()).thenReturn(packageManager);
-
-        sut = new SignatureVerifier(certificateHelper);
     }
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("example-signature");
-        assertTrue(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
+        assertTrue(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
     }
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("different-signature");
-        assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
+        assertFalse(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
     }
 
     @Test
@@ -73,7 +69,7 @@ public class SignatureVerifierUnitTest {
         when(certificateHelper.getEncodedCertificate("example-signature2".getBytes())).thenReturn("example-signature2".getBytes());
 
         String base64EncodedSignature = base64EncodedSHA256("example-signature1");
-        assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
+        assertFalse(SignatureVerification.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
     }
 
     private static String base64EncodedSHA256(String input) throws NoSuchAlgorithmException {

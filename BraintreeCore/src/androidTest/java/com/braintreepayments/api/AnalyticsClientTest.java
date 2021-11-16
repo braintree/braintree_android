@@ -45,8 +45,11 @@ public class AnalyticsClientTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SANDBOX_ANALYTICS);
 
         Context context = activity.getApplicationContext();
-        AnalyticsClient sut = new AnalyticsClient(activity, authorization);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123);
+        AnalyticsEvent event = new AnalyticsEvent(
+                context, "sessionId", "custom", "event.started");
+
+        AnalyticsClient sut = new AnalyticsClient(authorization);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
@@ -64,8 +67,11 @@ public class AnalyticsClientTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PROD_ANALYTICS);
 
         Context context = activity.getApplicationContext();
-        AnalyticsClient sut = new AnalyticsClient(activity, authorization);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123);
+        AnalyticsEvent event = new AnalyticsEvent(
+                context, "sessionId", "custom", "event.started");
+
+        AnalyticsClient sut = new AnalyticsClient(authorization);
+        UUID workSpecId = sut.sendEventAndReturnId(context, configuration, event);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);

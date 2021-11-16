@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.work.testing.WorkManagerTestInitHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,8 +58,6 @@ public class BraintreeClientUnitTest {
         browserSwitchClient = mock(BrowserSwitchClient.class);
 
         when(context.getApplicationContext()).thenReturn(applicationContext);
-
-        WorkManagerTestInitHelper.initializeTestWorkManager(context);
     }
 
     @Test
@@ -204,7 +201,13 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
-        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom");
+        ArgumentCaptor<AnalyticsEvent> captor = ArgumentCaptor.forClass(AnalyticsEvent.class);
+        verify(analyticsClient).sendEvent(same(applicationContext), same(configuration), captor.capture());
+
+        AnalyticsEvent event = captor.getValue();
+        assertEquals("session-id", event.metadata.getString("sessionId"));
+        assertEquals("custom", event.metadata.getString("integrationType"));
+        assertEquals("android.event.started", event.event);
     }
 
     @Test
@@ -390,20 +393,6 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN);
 
         assertEquals("dropin", sut.getIntegrationType());
-    }
-
-    @Test
-    public void reportCrash_reportsCrashViaAnalyticsClient() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configuration(configuration)
-                .build();
-
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
-        BraintreeClient sut = new BraintreeClient(params);
-
-        sut.reportCrash();
-        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM);
     }
 
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
