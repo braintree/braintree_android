@@ -52,7 +52,6 @@ public class BraintreeClient {
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
-        Context appContext = context.getApplicationContext();
         Authorization authorization = Authorization.fromString(authString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
@@ -63,7 +62,7 @@ public class BraintreeClient {
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorization))
-                .analyticsClient(new AnalyticsClient(appContext, authorization))
+                .analyticsClient(new AnalyticsClient(context, authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
