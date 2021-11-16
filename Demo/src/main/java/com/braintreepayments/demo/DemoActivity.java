@@ -25,7 +25,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.SignatureVerificationOverrides;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,9 +66,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onResume() {
         super.onResume();
-
-        SignatureVerificationOverrides.disableAppSwitchSignatureVerification(
-                Settings.isPayPalSignatureVerificationDisabled(this));
 
         if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

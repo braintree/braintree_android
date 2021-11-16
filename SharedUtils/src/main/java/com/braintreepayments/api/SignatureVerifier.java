@@ -13,37 +13,32 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
-class SignatureVerification {
+class SignatureVerifier {
 
-    /**
-     * Used to disable signature verification for development and test.
-     */
-    static boolean enableSignatureVerification = true;
+    private final CertificateHelper certificateHelper;
+
+    SignatureVerifier() {
+        this(new CertificateHelper());
+    }
+
+    @VisibleForTesting
+    SignatureVerifier(CertificateHelper certificateHelper) {
+        this.certificateHelper = certificateHelper;
+    }
 
     /**
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
      * impersonating other apps.
      *
-     * @param context Android Context
-     * @param packageName the package name of the app to verify.
+     * @param context                Android Context
+     * @param packageName            the package name of the app to verify.
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    static boolean isSignatureValid(Context context, String packageName,
-                                    String base64EncodedSignature) {
-        return isSignatureValid(context, packageName, base64EncodedSignature , new CertificateHelper());
-    }
-
-    @VisibleForTesting
     @SuppressLint("PackageManagerGetSignatures")
-    static boolean isSignatureValid(Context context, String packageName,
-                                    String base64EncodedSignature, CertificateHelper certificateHelper) {
-        if (!enableSignatureVerification) {
-            return true;
-        }
+    boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature) {
 
         PackageManager packageManager = context.getPackageManager();
-
         Signature[] signatures;
         try {
             signatures = packageManager
@@ -71,7 +66,6 @@ class SignatureVerification {
                 return false;
             }
         }
-
         return true;
     }
 }
