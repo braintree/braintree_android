@@ -36,6 +36,8 @@ In v3, `com.braintreepayments.api.BraintreeBrowserSwitchActivity` was the design
 
 In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integration into an activity you own:
 
+> Note: `android:exported` is required if your app compile SDK version is API 31 (Android 12) or later.
+
 ```xml
 <activity android:name="com.company.app.MyPaymentsActivity"
     android:exported="true">
@@ -49,7 +51,8 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 </activity>
 ``` 
 
-Note: `android:exported` is required if your app compile SDK version is API 31 (Android 12) or later.
+Additionally, apps that use both Drop-in and BraintreeClient should specify a custom url scheme, since `DropInActivity` already uses the `${applicationId}.braintree` url intent filter.
+
 
 ## BraintreeFragment
 
