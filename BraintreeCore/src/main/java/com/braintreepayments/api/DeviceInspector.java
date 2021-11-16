@@ -87,7 +87,7 @@ class DeviceInspector {
      */
     boolean isVenmoAppSwitchAvailable(Context context) {
         return appHelper.isIntentAvailable(context, getVenmoIntent()) &&
-                SignatureVerification.isSignatureValid(context, VENMO_APP_PACKAGE,
+                SignatureVerifier.isSignatureValid(context, VENMO_APP_PACKAGE,
                         VENMO_BASE_64_ENCODED_SIGNATURE);
     }
 

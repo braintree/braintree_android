@@ -13,7 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
-class SignatureVerification {
+class SignatureVerifier {
 
     /**
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
@@ -24,18 +24,15 @@ class SignatureVerification {
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    static boolean isSignatureValid(Context context, String packageName,
-                                    String base64EncodedSignature) {
+    static boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature) {
         return isSignatureValid(context, packageName, base64EncodedSignature, new CertificateHelper());
     }
 
     @VisibleForTesting
     @SuppressLint("PackageManagerGetSignatures")
-    static boolean isSignatureValid(Context context, String packageName,
-                                    String base64EncodedSignature, CertificateHelper certificateHelper) {
+    static boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature, CertificateHelper certificateHelper) {
 
         PackageManager packageManager = context.getPackageManager();
-
         Signature[] signatures;
         try {
             signatures = packageManager
