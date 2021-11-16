@@ -25,7 +25,9 @@ class DeviceInspector {
     private static final String VENMO_APP_PACKAGE = "com.venmo";
 
     private static final String VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
-    private static final String VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n";
+
+    @VisibleForTesting
+    static final String VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n";
 
     private final AppHelper appHelper;
     private final ClassHelper classHelper;

@@ -1,12 +1,18 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.DeviceInspector.VENMO_BASE_64_ENCODED_SIGNATURE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +26,7 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -39,6 +46,7 @@ public class DeviceInspectorUnitTest {
     private AppHelper appHelper;
     private ClassHelper classHelper;
     private UUIDHelper uuidHelper;
+    private SignatureVerifier signatureVerifier;
 
     private Runtime runtime;
     private Process process;
@@ -58,6 +66,7 @@ public class DeviceInspectorUnitTest {
         appHelper = mock(AppHelper.class);
         uuidHelper = mock(UUIDHelper.class);
         classHelper = mock(ClassHelper.class);
+        signatureVerifier = mock(SignatureVerifier.class);
 
         superUserApkFile = mock(File.class);
         runtime = mock(Runtime.class);
@@ -71,7 +80,7 @@ public class DeviceInspectorUnitTest {
 
         when(context.getSystemService(Context.CONNECTIVITY_SERVICE)).thenReturn(connectivityManager);
 
-        sut = new DeviceInspector(appHelper, classHelper, uuidHelper, runtime, superUserApkFile);
+        sut = new DeviceInspector(appHelper, classHelper, uuidHelper, signatureVerifier, runtime, superUserApkFile);
     }
 
     @Test
@@ -357,5 +366,44 @@ public class DeviceInspectorUnitTest {
     public void isVenmoInstalled_forwardsIsVenmoInstalledResultFromAppHelper() {
         when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
         assertTrue(sut.isVenmoInstalled(context));
+    }
+
+    @Test
+    public void isVenmoAppSwitchAvailable_checksForVenmoIntentAvailability() {
+        sut.isVenmoAppSwitchAvailable(context);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(appHelper).isIntentAvailable(same(context), captor.capture());
+
+        Intent intent = captor.getValue();
+        ComponentName component = intent.getComponent();
+        assertEquals("com.venmo", component.getPackageName());
+        assertEquals("com.venmo.controller.SetupMerchantActivity", component.getClassName());
+    }
+
+    @Test
+    public void isVenmoAppSwitchAvailable_whenVenmoIsNotInstalled_returnsFalse() {
+        when(appHelper.isIntentAvailable(same(context), any(Intent.class))).thenReturn(false);
+        assertFalse(sut.isVenmoAppSwitchAvailable(context));
+    }
+
+    @Test
+    public void isVenmoAppSwitchAvailable_whenVenmoIsInstalledSignatureIsNotValid_returnsFalse() {
+        when(appHelper.isIntentAvailable(same(context), any(Intent.class))).thenReturn(true);
+        when(
+                signatureVerifier.isSignatureValid(context, "com.venmo", VENMO_BASE_64_ENCODED_SIGNATURE)
+        ).thenReturn(false);
+
+        assertFalse(sut.isVenmoAppSwitchAvailable(context));
+    }
+
+    @Test
+    public void isVenmoAppSwitchAvailable_whenVenmoIsInstalledSignatureIsValid_returnsTrue() {
+        when(appHelper.isIntentAvailable(same(context), any(Intent.class))).thenReturn(true);
+        when(
+                signatureVerifier.isSignatureValid(context, "com.venmo", VENMO_BASE_64_ENCODED_SIGNATURE)
+        ).thenReturn(true);
+
+        assertTrue(sut.isVenmoAppSwitchAvailable(context));
     }
 }
