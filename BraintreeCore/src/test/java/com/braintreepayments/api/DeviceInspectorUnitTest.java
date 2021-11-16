@@ -346,4 +346,16 @@ public class DeviceInspectorUnitTest {
         DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type");
         assertTrue(metadata.toJSON().getBoolean("venmoInstalled"));
     }
+
+    @Test
+    public void isPayPalInstalled_forwardsIsPayPalInstalledResultFromAppHelper() throws JSONException {
+        when(appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile")).thenReturn(true);
+        assertTrue(sut.isPayPalInstalled(context));
+    }
+
+    @Test
+    public void isVenmoInstalled_forwardsIsVenmoInstalledResultFromAppHelper() throws JSONException {
+        when(appHelper.isAppInstalled(context, "com.venmo")).thenReturn(true);
+        assertTrue(sut.isVenmoInstalled(context));
+    }
 }
