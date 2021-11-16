@@ -16,11 +16,6 @@ import java.security.cert.CertificateException;
 class SignatureVerification {
 
     /**
-     * Used to disable signature verification for development and test.
-     */
-    static boolean enableSignatureVerification = true;
-
-    /**
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
      * impersonating other apps.
      *
@@ -38,9 +33,6 @@ class SignatureVerification {
     @SuppressLint("PackageManagerGetSignatures")
     static boolean isSignatureValid(Context context, String packageName,
                                     String base64EncodedSignature, CertificateHelper certificateHelper) {
-        if (!enableSignatureVerification) {
-            return true;
-        }
 
         PackageManager packageManager = context.getPackageManager();
 
