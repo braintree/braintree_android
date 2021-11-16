@@ -15,6 +15,17 @@ import java.security.cert.CertificateException;
 
 class SignatureVerifier {
 
+    private final CertificateHelper certificateHelper;
+
+    SignatureVerifier() {
+        this(new CertificateHelper());
+    }
+
+    @VisibleForTesting
+    SignatureVerifier(CertificateHelper certificateHelper) {
+        this.certificateHelper = certificateHelper;
+    }
+
     /**
      * Check if an app has the correct, matching, signature. Used to prevent malicious apps from
      * impersonating other apps.
@@ -24,13 +35,8 @@ class SignatureVerifier {
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    static boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature) {
-        return isSignatureValid(context, packageName, base64EncodedSignature, new CertificateHelper());
-    }
-
-    @VisibleForTesting
     @SuppressLint("PackageManagerGetSignatures")
-    static boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature, CertificateHelper certificateHelper) {
+    boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature) {
 
         PackageManager packageManager = context.getPackageManager();
         Signature[] signatures;
@@ -60,7 +66,6 @@ class SignatureVerifier {
                 return false;
             }
         }
-
         return true;
     }
 }

@@ -29,6 +29,8 @@ public class SignatureVerifierUnitTest {
     private PackageInfo packageInfo;
     private CertificateHelper certificateHelper;
 
+    private SignatureVerifier sut;
+
     @Before
     public void beforeEach() throws PackageManager.NameNotFoundException, CertificateException {
         context = mock(Context.class);
@@ -44,18 +46,20 @@ public class SignatureVerifierUnitTest {
         packageInfo.signatures = signatures;
         when(packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES))).thenReturn(packageInfo);
         when(context.getPackageManager()).thenReturn(packageManager);
+
+        sut = new SignatureVerifier(certificateHelper);
     }
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("example-signature");
-        assertTrue(SignatureVerifier.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
+        assertTrue(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
     public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("different-signature");
-        assertFalse(SignatureVerifier.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
+        assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
@@ -69,7 +73,7 @@ public class SignatureVerifierUnitTest {
         when(certificateHelper.getEncodedCertificate("example-signature2".getBytes())).thenReturn("example-signature2".getBytes());
 
         String base64EncodedSignature = base64EncodedSHA256("example-signature1");
-        assertFalse(SignatureVerifier.isSignatureValid(context, "com.example", base64EncodedSignature, certificateHelper));
+        assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     private static String base64EncodedSHA256(String input) throws NoSuchAlgorithmException {

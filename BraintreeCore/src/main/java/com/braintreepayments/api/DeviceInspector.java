@@ -32,22 +32,25 @@ class DeviceInspector {
     private final UUIDHelper uuidHelper;
     private final Runtime runtime;
     private final File superUserApkFile;
+    private final SignatureVerifier signatureVerifier;
 
     DeviceInspector() {
         this(
                 new AppHelper(),
                 new ClassHelper(),
                 new UUIDHelper(),
+                new SignatureVerifier(),
                 Runtime.getRuntime(),
                 new File("/system/app/Superuser.apk")
         );
     }
 
     @VisibleForTesting
-    DeviceInspector(AppHelper appHelper, ClassHelper classHelper, UUIDHelper uuidHelper, Runtime runtime, File superUserApkFile) {
+    DeviceInspector(AppHelper appHelper, ClassHelper classHelper, UUIDHelper uuidHelper, SignatureVerifier signatureVerifier, Runtime runtime, File superUserApkFile) {
         this.appHelper = appHelper;
         this.classHelper = classHelper;
         this.uuidHelper = uuidHelper;
+        this.signatureVerifier = signatureVerifier;
         this.runtime = runtime;
         this.superUserApkFile = superUserApkFile;
     }
@@ -86,9 +89,10 @@ class DeviceInspector {
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
     boolean isVenmoAppSwitchAvailable(Context context) {
-        return appHelper.isIntentAvailable(context, getVenmoIntent()) &&
-                SignatureVerifier.isSignatureValid(context, VENMO_APP_PACKAGE,
-                        VENMO_BASE_64_ENCODED_SIGNATURE);
+        boolean isVenmoIntentAvailable = appHelper.isIntentAvailable(context, getVenmoIntent());
+        boolean isVenmoSignatureValid = signatureVerifier.isSignatureValid(
+                context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE);
+        return isVenmoIntentAvailable && isVenmoSignatureValid;
     }
 
     boolean isPayPalInstalled(Context context) {
