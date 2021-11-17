@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* GooglePay
+  * Bump `play-services-wallet` version to `18.1.3`
 * BraintreeCore
   * Bump `work-runtime` version to `2.7.0`
   * Bump `browser-switch` version to `2.1.1`
