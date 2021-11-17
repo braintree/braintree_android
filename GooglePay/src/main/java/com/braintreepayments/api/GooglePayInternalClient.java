@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
@@ -13,11 +14,19 @@ import com.google.android.gms.wallet.WalletConstants;
 
 class GooglePayInternalClient {
 
+    private final PaymentsClientWrapper paymentsClientWrapper;
+
+    GooglePayInternalClient() {
+        this(new PaymentsClientWrapper());
+    }
+
+    @VisibleForTesting
+    GooglePayInternalClient(PaymentsClientWrapper paymentsClientWrapper) {
+        this.paymentsClientWrapper = paymentsClientWrapper;
+    }
+
     void isReadyToPay(FragmentActivity activity, Configuration configuration, IsReadyToPayRequest isReadyToPayRequest, final GooglePayIsReadyToPayCallback callback) {
-        PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
-                new Wallet.WalletOptions.Builder()
-                        .setEnvironment(getGooglePayEnvironment(configuration))
-                        .build());
+        PaymentsClient paymentsClient = paymentsClientWrapper.getPaymentsClient(activity, configuration);
         paymentsClient.isReadyToPay(isReadyToPayRequest).addOnCompleteListener(new OnCompleteListener<Boolean>() {
             @Override
             public void onComplete(@NonNull Task<Boolean> task) {
@@ -28,13 +37,5 @@ class GooglePayInternalClient {
                 }
             }
         });
-    }
-
-    int getGooglePayEnvironment(Configuration configuration) {
-        if ("production".equals(configuration.getGooglePayEnvironment())) {
-            return WalletConstants.ENVIRONMENT_PRODUCTION;
-        } else {
-            return WalletConstants.ENVIRONMENT_TEST;
-        }
     }
 }
