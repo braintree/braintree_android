@@ -47,7 +47,8 @@ public class ThreeDSecureVerificationTest {
 
         final Card card = new Card();
         card.setNumber(THREE_D_SECURE_VERIFICATON_NOT_REQUIRED);
-        card.setExpirationDate("12/20");
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
@@ -135,7 +136,8 @@ public class ThreeDSecureVerificationTest {
 
         final Card card = new Card();
         card.setNumber(THREE_D_SECURE_VERIFICATON);
-        card.setExpirationDate("12/20");
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
         CardClient cardClient = new CardClient(braintreeClient);
@@ -172,7 +174,8 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException, InvalidArgumentException {
         final Card card = new Card();
         card.setNumber(THREE_D_SECURE_LOOKUP_ERROR);
-        card.setExpirationDate("12/20");
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
@@ -217,7 +220,8 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException, InvalidArgumentException {
         final Card card = new Card();
         card.setNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR);
-        card.setExpirationDate("12/20");
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
