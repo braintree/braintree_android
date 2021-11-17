@@ -10,11 +10,7 @@ class PaymentsClientWrapper {
     private final WalletOptionsWrapper walletOptionsWrapper;
 
     PaymentsClientWrapper() {
-        this(new WalletOptionsWrapper());
-    }
-
-    PaymentsClientWrapper(WalletOptionsWrapper walletOptionsWrapper) {
-        this.walletOptionsWrapper = walletOptionsWrapper;
+        this.walletOptionsWrapper = new WalletOptionsWrapper();
     }
 
     PaymentsClient getPaymentsClient(FragmentActivity activity, Configuration configuration) {
