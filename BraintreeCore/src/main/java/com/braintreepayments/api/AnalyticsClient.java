@@ -1,11 +1,11 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,130 +26,187 @@ class AnalyticsClient {
     private static final String META_KEY = "_meta";
     private static final String TOKENIZATION_KEY = "tokenization_key";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String PLATFORM_KEY = "platform";
-    private static final String PLATFORM_VERSION_KEY = "platformVersion";
-    private static final String SDK_VERSION_KEY = "sdkVersion";
-    private static final String MERCHANT_APP_ID_KEY = "merchantAppId";
-    private static final String MERCHANT_APP_NAME_KEY = "merchantAppName";
-    private static final String DEVICE_ROOTED_KEY = "deviceRooted";
-    private static final String DEVICE_MANUFACTURER_KEY = "deviceManufacturer";
-    private static final String DEVICE_MODEL_KEY = "deviceModel";
-    private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
-    private static final String IS_SIMULATOR_KEY = "isSimulator";
 
-    static final String ANALYTICS_UPLOAD_WORK_NAME = "uploadAnalytics";
-    static final String ANALYTICS_INPUT_DATA_CONFIGURATION_KEY = "configuration";
-    static final String ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY = "authorization";
+    private static final long INVALID_TIMESTAMP = -1;
+
+    static final String WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics";
+    static final String WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb";
+
+    static final String WORK_INPUT_KEY_AUTHORIZATION = "authorization";
+    static final String WORK_INPUT_KEY_CONFIGURATION = "configuration";
+    static final String WORK_INPUT_KEY_EVENT_NAME = "eventName";
+    static final String WORK_INPUT_KEY_INTEGRATION = "integration";
+    static final String WORK_INPUT_KEY_SESSION_ID = "sessionId";
+    static final String WORK_INPUT_KEY_TIMESTAMP = "timestamp";
 
     private final BraintreeHttpClient httpClient;
     private final DeviceInspector deviceInspector;
-    private final UUIDHelper uuidHelper;
+    private final AnalyticsDatabase analyticsDatabase;
+    private final WorkManager workManager;
+
     private String lastKnownAnalyticsUrl;
 
-    AnalyticsClient(Authorization authorization) {
-        this(new BraintreeHttpClient(authorization), new DeviceInspector(), new UUIDHelper());
+    AnalyticsClient(Context context, Authorization authorization) {
+        this(
+                new BraintreeHttpClient(authorization),
+                AnalyticsDatabase.getInstance(context.getApplicationContext()),
+                WorkManager.getInstance(context.getApplicationContext()),
+                new DeviceInspector()
+        );
     }
 
     @VisibleForTesting
-    AnalyticsClient(BraintreeHttpClient httpClient, DeviceInspector deviceInspector, UUIDHelper uuidHelper) {
+    AnalyticsClient(BraintreeHttpClient httpClient, AnalyticsDatabase analyticsDatabase, WorkManager workManager, DeviceInspector deviceInspector) {
         this.httpClient = httpClient;
+        this.workManager = workManager;
         this.deviceInspector = deviceInspector;
-        this.uuidHelper = uuidHelper;
+        this.analyticsDatabase = analyticsDatabase;
     }
 
-    void sendEvent(Context context, Configuration configuration, AnalyticsEvent event) {
-        sendEventAndReturnId(context, configuration, event);
+    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration) {
+        long timestamp = System.currentTimeMillis();
+        sendEvent(configuration, eventName, sessionId, integration, timestamp);
     }
 
     @VisibleForTesting
-    UUID sendEventAndReturnId(Context context, Configuration configuration, AnalyticsEvent event) {
+    UUID sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
-        Context applicationContext = context.getApplicationContext();
-        AnalyticsDatabase db = AnalyticsDatabase.getInstance(applicationContext);
-        db.addEvent(event);
-
-        return scheduleAnalyticsUpload(context, configuration, httpClient.getAuthorization());
+        String fullEventName = String.format("android.%s", eventName);
+        scheduleAnalyticsWrite(fullEventName, timestamp);
+        return scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
     }
 
-    private UUID scheduleAnalyticsUpload(Context context, Configuration configuration, Authorization authorization) {
-        OneTimeWorkRequest analyticsWorkRequest = createAnalyticsWorkerRequest(configuration, authorization);
+    private void scheduleAnalyticsWrite(String eventName, long timestamp) {
+        Authorization authorization = httpClient.getAuthorization();
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+                .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+                .build();
 
-        WorkManager
-                .getInstance(context.getApplicationContext())
-                .enqueueUniqueWork(
-                        ANALYTICS_UPLOAD_WORK_NAME, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
+        OneTimeWorkRequest analyticsWorkRequest =
+                new OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker.class)
+                        .setInputData(inputData)
+                        .build();
+        workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest);
+    }
+
+    ListenableWorker.Result writeAnalytics(Data inputData) {
+        String eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME);
+        long timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP);
+
+        ListenableWorker.Result result;
+        if (eventName == null || timestamp == INVALID_TIMESTAMP) {
+            result = ListenableWorker.Result.failure();
+        } else {
+            AnalyticsEvent event = new AnalyticsEvent(eventName, timestamp);
+            AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
+            analyticsEventDao.insertEvent(event);
+
+            result = ListenableWorker.Result.success();
+        }
+        return result;
+    }
+
+    private UUID scheduleAnalyticsUpload(Configuration configuration, Authorization authorization, String sessionId, String integration) {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        OneTimeWorkRequest analyticsWorkRequest =
+                new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
+                        .setInitialDelay(30, TimeUnit.SECONDS)
+                        .setInputData(inputData)
+                        .build();
+        workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest);
         return analyticsWorkRequest.getId();
     }
 
-    @VisibleForTesting
-    static OneTimeWorkRequest createAnalyticsWorkerRequest(Configuration configuration, Authorization authorization) {
-        Data inputData = new Data.Builder()
-                .putString(ANALYTICS_INPUT_DATA_AUTHORIZATION_KEY, authorization.toString())
-                .putString(ANALYTICS_INPUT_DATA_CONFIGURATION_KEY, configuration.toJson())
-                .build();
+    ListenableWorker.Result uploadAnalytics(Context context, Data inputData) {
+        Configuration configuration = getConfigurationFromData(inputData);
+        String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
+        String integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION);
 
-        return new OneTimeWorkRequest.Builder(AnalyticsUploadWorker.class)
-                .setInitialDelay(30, TimeUnit.SECONDS)
-                .setInputData(inputData)
-                .build();
-    }
-
-    void uploadAnalytics(Context context, Configuration configuration) throws Exception {
-        String analyticsUrl = configuration.getAnalyticsUrl();
-
-        final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
-        List<List<AnalyticsEvent>> events = db.getPendingRequests();
+        if (configuration == null || sessionId == null || integration == null) {
+            return ListenableWorker.Result.failure();
+        }
 
         try {
-            for (final List<AnalyticsEvent> innerEvents : events) {
-                JSONObject analyticsRequest = serializeEvents(context, httpClient.getAuthorization(), innerEvents);
+            AnalyticsEventDao analyticsEventDao = analyticsDatabase.analyticsEventDao();
+            List<AnalyticsEvent> events = analyticsEventDao.getAllEvents();
+
+            boolean shouldUploadAnalytics = !events.isEmpty();
+            if (shouldUploadAnalytics) {
+                DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+                JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
+
+                String analyticsUrl = configuration.getAnalyticsUrl();
                 httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
-                db.removeEvents(innerEvents);
+                analyticsEventDao.deleteEvents(events);
             }
-        } catch (JSONException ignored) {}
+            return ListenableWorker.Result.success();
+        } catch (Exception e) {
+            return ListenableWorker.Result.failure();
+        }
     }
 
-    String getLastKnownAnalyticsUrl() {
-        return lastKnownAnalyticsUrl;
+    void reportCrash(Context context, String sessionId, String integration) {
+        reportCrash(context, sessionId, integration, System.currentTimeMillis());
     }
 
-    private JSONObject serializeEvents(Context context, Authorization authorization,
-                                       List<AnalyticsEvent> events) throws JSONException {
-        AnalyticsEvent primeEvent = events.get(0);
+    @VisibleForTesting
+    void reportCrash(Context context, String sessionId, String integration, long timestamp) {
+        if (lastKnownAnalyticsUrl == null) {
+            return;
+        }
 
+        DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
+        AnalyticsEvent event = new AnalyticsEvent("android.crash", timestamp);
+        List<AnalyticsEvent> events = Collections.singletonList(event);
+        try {
+            JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
+            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, new HttpNoResponse());
+        } catch (JSONException e) { /* ignored */ }
+    }
+
+    private JSONObject serializeEvents(Authorization authorization, List<AnalyticsEvent> events, DeviceMetadata metadata) throws JSONException {
         JSONObject requestObject = new JSONObject();
         if (authorization instanceof ClientToken) {
             requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
         } else {
             requestObject.put(TOKENIZATION_KEY, authorization.getBearer());
         }
-
-        JSONObject meta = primeEvent.metadata
-                .put(PLATFORM_KEY, "Android")
-                .put(PLATFORM_VERSION_KEY, Integer.toString(Build.VERSION.SDK_INT))
-                .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
-                .put(MERCHANT_APP_ID_KEY, context.getPackageName())
-                .put(MERCHANT_APP_NAME_KEY, deviceInspector.getAppName(context))
-                .put(DEVICE_ROOTED_KEY, deviceInspector.isDeviceRooted())
-                .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
-                .put(DEVICE_MODEL_KEY, Build.MODEL)
-                .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                        uuidHelper.getPersistentUUID(context))
-                .put(IS_SIMULATOR_KEY, deviceInspector.isDeviceEmulator());
-        requestObject.put(META_KEY, meta);
+        requestObject.put(META_KEY, metadata.toJSON());
 
         JSONArray eventObjects = new JSONArray();
         JSONObject eventObject;
         for (AnalyticsEvent analyticsEvent : events) {
             eventObject = new JSONObject()
-                    .put(KIND_KEY, analyticsEvent.event)
-                    .put(TIMESTAMP_KEY, analyticsEvent.timestamp);
+                    .put(KIND_KEY, analyticsEvent.getName())
+                    .put(TIMESTAMP_KEY, analyticsEvent.getTimestamp());
 
             eventObjects.put(eventObject);
         }
         requestObject.put(ANALYTICS_KEY, eventObjects);
 
         return requestObject;
+    }
+
+    private static Configuration getConfigurationFromData(Data inputData) {
+        if (inputData != null) {
+            String configJson = inputData.getString(WORK_INPUT_KEY_CONFIGURATION);
+            if (configJson != null) {
+                try {
+                    return Configuration.fromJson(configJson);
+                } catch (JSONException e) { /* ignored */ }
+            }
+        }
+        return null;
     }
 }
