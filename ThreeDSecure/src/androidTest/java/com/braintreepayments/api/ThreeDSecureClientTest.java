@@ -46,7 +46,8 @@ public class ThreeDSecureClientTest {
 
         Card card = new Card();
         card.setNumber("4000000000000051");
-        card.setExpirationDate("12/20");
+        card.setExpirationMonth("12");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
