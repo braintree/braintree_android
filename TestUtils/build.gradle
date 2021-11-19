@@ -31,10 +31,10 @@ dependencies {
     implementation deps.junit
 
     compileOnly deps.robolectric
-    compileOnly 'org.powermock:powermock-module-junit4:1.6.6'
-    compileOnly 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    compileOnly 'org.powermock:powermock-api-mockito:1.6.6'
-    compileOnly 'org.powermock:powermock-classloading-xstream:1.6.6'
+    compileOnly deps.powermockJunit
+    compileOnly deps.powermockRule
+    compileOnly deps.powermockMockito
+    compileOnly deps.powermockClassloading
     compileOnly 'org.skyscreamer:jsonassert:1.4.0'
 
     implementation project(':BraintreeCore')

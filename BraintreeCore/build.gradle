@@ -68,10 +68,10 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
     testImplementation deps.junit
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
-    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
-    testImplementation 'org.powermock:powermock-classloading-xstream:2.0.7'
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
     testImplementation 'org.skyscreamer:jsonassert:1.5.0'
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')

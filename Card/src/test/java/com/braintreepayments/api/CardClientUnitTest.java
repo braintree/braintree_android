@@ -36,7 +36,7 @@ public class CardClientUnitTest {
     @Before
     public void beforeEach() throws JSONException {
         context = mock(Context.class);
-        card = mock(Card.class);
+        card = new Card();
         cardTokenizeCallback = mock(CardTokenizeCallback.class);
 
         dataCollector = mock(DataCollector.class);
@@ -75,7 +75,6 @@ public class CardClientUnitTest {
 
         CardClient sut = new CardClient(braintreeClient, apiClient);
 
-        Card card = new Card();
         sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
@@ -97,7 +96,6 @@ public class CardClientUnitTest {
 
         CardClient sut = new CardClient(braintreeClient, apiClient);
 
-        Card card = new Card();
         sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
