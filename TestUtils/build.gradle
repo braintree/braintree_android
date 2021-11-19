@@ -39,8 +39,8 @@ dependencies {
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')
-    implementation "androidx.core:core-ktx:1.6.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.core:core-ktx:+"
+    implementation deps.kotlinStdLib
 }
 repositories {
     mavenCentral()
