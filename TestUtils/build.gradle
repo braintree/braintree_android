@@ -30,7 +30,7 @@ dependencies {
 
     implementation deps.junit
 
-    compileOnly 'org.robolectric:robolectric:4.1'
+    compileOnly deps.robolectric
     compileOnly 'org.powermock:powermock-module-junit4:1.6.6'
     compileOnly 'org.powermock:powermock-module-junit4-rule:1.6.6'
     compileOnly 'org.powermock:powermock-api-mockito:1.6.6'

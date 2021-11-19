@@ -38,7 +38,7 @@ dependencies {
 
     api 'com.samsung.android.spay:sdk:2.5.01'
 
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation deps.robolectric
     testImplementation deps.junit
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'

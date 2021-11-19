@@ -42,7 +42,7 @@ dependencies {
     testImplementation deps.androidxTestCore
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation deps.robolectric
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'

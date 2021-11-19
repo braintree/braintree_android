@@ -40,7 +40,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
     api project(':BraintreeCore')
 
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation deps.robolectric
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation deps.androidxTestCore
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'

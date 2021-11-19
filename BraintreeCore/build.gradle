@@ -65,7 +65,7 @@ dependencies {
     androidTestImplementation project(':TestUtils')
 
     testImplementation deps.workTesting
-    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
     testImplementation deps.junit
     testImplementation 'org.powermock:powermock-module-junit4:2.0.7'

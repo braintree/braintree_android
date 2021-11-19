@@ -8,11 +8,12 @@ buildscript {
     }
     ext.versions = [
             "kotlin": "1.4.10",
-            "androidxTest": "1.4.0"
+            "androidxTest": "1.4.0",
+            "powermock": "2.0.7"
     ]
     ext.deps = [
             "appCompat"   : "androidx.appcompat:appcompat:1.3.1",
-            "kotlinStdLib": "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+            "kotlinStdLib": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
 
             "work" : "androidx.work:work-runtime:2.7.0-alpha05",
             "workTesting" : "androidx.work:work-testing:2.5.0",
@@ -20,13 +21,20 @@ buildscript {
             "androidxTestRules": "androidx.test:rules:${versions.androidxTest}",
             "androidxTestRunner": "androidx.test:runner:${versions.androidxTest}",
             "androidxTestCore": "androidx.test:core:${versions.androidxTest}",
-            "junit": "androidx.test.ext:junit:1.1.3"
+
+            "junit": "androidx.test.ext:junit:1.1.3",
+            "robolectric": "org.robolectric:robolectric:4.1",
+
+            "powermockJunit": "org.powermock:powermock-module-junit4:${versions.powermock}",
+            "powermockRule": "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
+            "powermockMockito": "org.powermock:powermock-api-mockito2:${versions.powermock}",
+            "powermockClassloading" : "org.powermock:powermock-classloading-xstream:${versions.powermock}"
     ]
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
-        classpath deps.kotlinStdLib
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5'
     }
 }
