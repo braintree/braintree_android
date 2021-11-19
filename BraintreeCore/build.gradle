@@ -58,7 +58,7 @@ dependencies {
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation deps.junit
     androidTestImplementation deps.workTesting
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
@@ -67,7 +67,7 @@ dependencies {
     testImplementation deps.workTesting
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation deps.androidxTestCore
-    testImplementation 'androidx.test.ext:junit:1.1.3'
+    testImplementation deps.junit
     testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'

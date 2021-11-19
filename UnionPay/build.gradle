@@ -45,7 +45,7 @@ dependencies {
 
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation deps.junit
     androidTestImplementation project(':TestUtils')
 }
 

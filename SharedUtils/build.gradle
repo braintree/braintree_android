@@ -45,7 +45,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-classloading-xstream:2.0.7'
 
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation deps.junit
     androidTestImplementation deps.appCompat
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
 }

@@ -19,7 +19,8 @@ buildscript {
 
             "androidxTestRules": "androidx.test:rules:${versions.androidxTest}",
             "androidxTestRunner": "androidx.test:runner:${versions.androidxTest}",
-            "androidxTestCore": "androidx.test:core:${versions.androidxTest}"
+            "androidxTestCore": "androidx.test:core:${versions.androidxTest}",
+            "junit": "androidx.test.ext:junit:1.1.3"
     ]
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'

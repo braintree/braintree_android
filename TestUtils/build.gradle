@@ -28,7 +28,7 @@ dependencies {
     api 'androidx.test:rules:1.4.0'
     api deps.appCompat
 
-    implementation 'androidx.test.ext:junit:1.1.3'
+    implementation deps.junit
 
     compileOnly 'org.robolectric:robolectric:4.1'
     compileOnly 'org.powermock:powermock-module-junit4:1.6.6'
