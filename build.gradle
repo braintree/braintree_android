@@ -34,7 +34,11 @@ buildscript {
             "powermockJunitLegacy": "org.powermock:powermock-module-junit4:${versions.powermockLegacy}",
             "powermockRuleLegacy": "org.powermock:powermock-module-junit4-rule:${versions.powermockLegacy}",
             "powermockMockitoLegacy": "org.powermock:powermock-api-mockito:${versions.powermockLegacy}",
-            "powermockClassloadingLegacy" : "org.powermock:powermock-classloading-xstream:${versions.powermockLegacy}"
+            "powermockClassloadingLegacy" : "org.powermock:powermock-classloading-xstream:${versions.powermockLegacy}",
+
+            "dexmakerMockito": "com.google.dexmaker:dexmaker-mockito:1.2",
+
+            "jsonAssert": "org.skyscreamer:jsonassert:1.5.0"
     ]
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'

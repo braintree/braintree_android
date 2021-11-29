@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junit
     androidTestImplementation deps.appCompat
-    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation deps.dexmakerMockito
 }
 
 // region signing and publishing

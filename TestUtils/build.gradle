@@ -35,7 +35,7 @@ dependencies {
     compileOnly deps.powermockRule
     compileOnly deps.powermockMockito
     compileOnly deps.powermockClassloading
-    compileOnly 'org.skyscreamer:jsonassert:1.4.0'
+    compileOnly deps.jsonAssert
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')

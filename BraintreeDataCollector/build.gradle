@@ -43,7 +43,7 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation deps.androidxTestCore
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation deps.jsonAssert
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito

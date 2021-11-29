@@ -47,7 +47,7 @@ dependencies {
     testImplementation deps.powermockRuleLegacy
     testImplementation deps.powermockMockitoLegacy
     testImplementation deps.powermockClassloadingLegacy
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation deps.jsonAssert
     testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
 }
 

@@ -37,7 +37,7 @@ dependencies {
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation deps.jsonAssert
     testImplementation project(':TestUtils')
 }
 

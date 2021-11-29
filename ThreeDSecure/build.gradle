@@ -35,7 +35,7 @@ dependencies {
 
     implementation deps.appCompat
 
-    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junit
@@ -46,7 +46,7 @@ dependencies {
     testImplementation deps.powermockRuleLegacy
     testImplementation deps.powermockMockitoLegacy
     testImplementation deps.powermockClassloadingLegacy
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation deps.jsonAssert
     testImplementation project(':TestUtils')
 }
 

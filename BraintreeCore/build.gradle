@@ -55,7 +55,7 @@ dependencies {
     api project(':SharedUtils')
 
     androidTestImplementation playServicesWallet
-    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junit
@@ -72,7 +72,7 @@ dependencies {
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
-    testImplementation 'org.skyscreamer:jsonassert:1.5.0'
+    testImplementation deps.jsonAssert
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
