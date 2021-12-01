@@ -38,7 +38,7 @@ dependencies {
     implementation deps.appCompat
 
     testImplementation project(':TestUtils')
-    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation deps.playServicesWallet
     testImplementation deps.androidxTestCore
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner

@@ -29,7 +29,7 @@ android {
 dependencies {
     api project(':BraintreeCore')
 
-    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation deps.annotation
 
     testImplementation deps.robolectric
     testImplementation deps.powermockJunit

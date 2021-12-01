@@ -37,11 +37,11 @@ dependencies {
     implementation files('libs/kount-data-collector-3.2.jar')
     implementation files('libs/android-magnessdk-5.3.0.jar')
 
-    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation deps.annotation
     api project(':BraintreeCore')
 
     testImplementation deps.robolectric
-    testImplementation 'org.mockito:mockito-core:3.6.0'
+    testImplementation deps.mockitoCore
     testImplementation deps.androidxTestCore
     testImplementation deps.jsonAssert
     testImplementation deps.powermockJunit

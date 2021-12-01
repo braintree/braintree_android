@@ -35,7 +35,7 @@ android {
 
 dependencies {
     implementation deps.appCompat
-    api 'com.google.android.gms:play-services-wallet:16.0.1'
+    api deps.playServicesWallet
 
     api project(':BraintreeCore')
     api project(':PayPal')
@@ -44,7 +44,7 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
-    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation deps.playServicesWallet
     testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule

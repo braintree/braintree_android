@@ -30,7 +30,7 @@ dependencies {
     api project(':BraintreeCore')
     api project(':Card')
 
-    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation deps.annotation
 
     testImplementation deps.robolectric
     testImplementation deps.powermockJunit

@@ -10,14 +10,22 @@ buildscript {
             "kotlin": "1.4.10",
             "androidxTest": "1.4.0",
             "powermock": "2.0.7",
-            "powermockLegacy": "1.6.6"
+            "powermockLegacy": "1.6.6",
+            "room": "2.2.6",
+            "playServices": "16.0.1"
     ]
     ext.deps = [
             "appCompat"   : "androidx.appcompat:appcompat:1.3.1",
+            "annotation": "androidx.annotation:annotation:1.2.0",
             "kotlinStdLib": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+
+            "playServicesWallet": "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
             "work" : "androidx.work:work-runtime:2.7.0-alpha05",
             "workTesting" : "androidx.work:work-testing:2.5.0",
+
+            "roomCompiler": "androidx.room:room-compiler:${versions.room}",
+            "roomRuntime": "androidx.room:room-runtime:${versions.room}",
 
             "androidxTestRules": "androidx.test:rules:${versions.androidxTest}",
             "androidxTestRunner": "androidx.test:runner:${versions.androidxTest}",
@@ -37,8 +45,11 @@ buildscript {
             "powermockClassloadingLegacy" : "org.powermock:powermock-classloading-xstream:${versions.powermockLegacy}",
 
             "dexmakerMockito": "com.google.dexmaker:dexmaker-mockito:1.2",
+            "mockitoCore": "org.mockito:mockito-core:3.6.0",
 
-            "jsonAssert": "org.skyscreamer:jsonassert:1.5.0"
+            "jsonAssert": "org.skyscreamer:jsonassert:1.5.0",
+
+            "browserSwitch": "com.braintreepayments.api:browser-switch:2.1.1",
     ]
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
@@ -72,8 +83,6 @@ ext {
     targetSdkVersion = 31
     versionCode = 139
     versionName = version
-
-    playServicesWalletVersion = '16.0.1'
 }
 
 nexusStaging {

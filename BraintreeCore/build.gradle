@@ -42,19 +42,18 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
 
 dependencies {
     implementation deps.appCompat
     implementation deps.work
 
-    implementation 'androidx.room:room-runtime:2.2.6'
-    annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    implementation deps.roomRuntime
+    annotationProcessor deps.roomCompiler
 
-    api 'com.braintreepayments.api:browser-switch:2.1.1'
+    api deps.browserSwitch
     api project(':SharedUtils')
 
-    androidTestImplementation playServicesWallet
+    androidTestImplementation deps.playServicesWallet
     androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
