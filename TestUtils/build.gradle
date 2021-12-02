@@ -24,11 +24,11 @@ android {
 }
 
 dependencies {
-    api 'androidx.test:runner:1.4.0'
-    api 'androidx.test:rules:1.4.0'
+    api deps.androidxTestRunner
+    api deps.androidxTestRunner
     api deps.appCompat
 
-    implementation deps.junit
+    implementation deps.junitTest
 
     compileOnly deps.robolectric
     compileOnly deps.powermockJunit

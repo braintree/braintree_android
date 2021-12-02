@@ -35,7 +35,7 @@ dependencies {
 
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
-    testImplementation deps.junit
+    testImplementation deps.junitTest
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito

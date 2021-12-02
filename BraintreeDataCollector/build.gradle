@@ -53,7 +53,7 @@ dependencies {
 
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junit
+    androidTestImplementation deps.junitTest
     androidTestImplementation deps.appCompat
     androidTestImplementation project(':TestUtils')
 }

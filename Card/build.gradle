@@ -48,7 +48,7 @@ dependencies {
     androidTestImplementation project(':TestUtils')
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junit
+    androidTestImplementation deps.junitTest
 }
 
 // region signing and publishing

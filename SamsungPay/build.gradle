@@ -39,7 +39,7 @@ dependencies {
     api 'com.samsung.android.spay:sdk:2.5.01'
 
     testImplementation deps.robolectric
-    testImplementation deps.junit
+    testImplementation deps.junitTest
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito

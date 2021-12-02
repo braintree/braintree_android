@@ -57,7 +57,7 @@ dependencies {
     androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junit
+    androidTestImplementation deps.junitTest
     androidTestImplementation deps.workTesting
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
@@ -66,7 +66,7 @@ dependencies {
     testImplementation deps.workTesting
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
-    testImplementation deps.junit
+    testImplementation deps.junitTest
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito

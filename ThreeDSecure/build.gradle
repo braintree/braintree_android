@@ -31,14 +31,14 @@ android {
 dependencies {
     api project(':BraintreeCore')
     api project(':Card')
-    implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-4'
+    implementation deps.cardinal
 
     implementation deps.appCompat
 
     androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junit
+    androidTestImplementation deps.junitTest
     androidTestImplementation project(':TestUtils')
 
     testImplementation deps.robolectric

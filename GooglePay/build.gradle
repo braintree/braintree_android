@@ -45,7 +45,7 @@ dependencies {
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
     testImplementation deps.playServicesWallet
-    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
+    testImplementation deps.assertJ
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito

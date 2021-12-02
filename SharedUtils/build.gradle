@@ -35,7 +35,7 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 
     testImplementation 'junit:junit:4.13'
-    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation deps.androidxTestCore
     testImplementation deps.mockitoCore
     testImplementation deps.robolectric
 
@@ -45,7 +45,7 @@ dependencies {
     testImplementation deps.powermockClassloading
 
     androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junit
+    androidTestImplementation deps.junitTest
     androidTestImplementation deps.appCompat
     androidTestImplementation deps.dexmakerMockito
 }

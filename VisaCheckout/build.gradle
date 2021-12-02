@@ -48,7 +48,7 @@ dependencies {
     testImplementation deps.powermockMockitoLegacy
     testImplementation deps.powermockClassloadingLegacy
     testImplementation deps.jsonAssert
-    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
+    testImplementation deps.assertJ
 }
 
 /* maven deploy + signing */
