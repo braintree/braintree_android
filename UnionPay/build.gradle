@@ -39,9 +39,9 @@ dependencies {
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
     testImplementation project(':TestUtils')
-    testImplementation "androidx.core:core-ktx:1.6.0"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.5.10"
+    testImplementation deps.coreKtx
+    testImplementation deps.kotlinStdLib
+    testImplementation deps.kotlinTest
 
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner

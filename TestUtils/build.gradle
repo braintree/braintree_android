@@ -39,7 +39,7 @@ dependencies {
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')
-    implementation "androidx.core:core-ktx:+"
+    implementation deps.coreKtx
     implementation deps.kotlinStdLib
 }
 repositories {
