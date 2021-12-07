@@ -101,7 +101,6 @@ public class GooglePayFragment extends BaseFragment {
                     googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
                             .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                             .build());
-                    googlePayRequest.setGoogleMerchantId(Settings.getGooglePayMerchantId(activity));
 
             googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
                 if (requestPaymentError != null) {
