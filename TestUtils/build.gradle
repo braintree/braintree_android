@@ -25,7 +25,7 @@ android {
 
 dependencies {
     api deps.androidxTestRunner
-    api deps.androidxTestRunner
+    api deps.androidxTestRules
     api deps.appCompat
 
     implementation deps.junitTest
