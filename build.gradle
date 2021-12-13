@@ -55,6 +55,8 @@ buildscript {
             "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
             "powermockMockito"           : "org.powermock:powermock-api-mockito2:${versions.powermock}",
             "powermockClassloading"      : "org.powermock:powermock-classloading-xstream:${versions.powermock}",
+
+            // Legacy versions of the powermock libraries are required until 3DS and Visa Checkout tests can be updated to resolve robolectric/powermock test issues
             "powermockJunitLegacy"       : "org.powermock:powermock-module-junit4:${versions.powermockLegacy}",
             "powermockRuleLegacy"        : "org.powermock:powermock-module-junit4-rule:${versions.powermockLegacy}",
             "powermockMockitoLegacy"     : "org.powermock:powermock-api-mockito:${versions.powermockLegacy}",
