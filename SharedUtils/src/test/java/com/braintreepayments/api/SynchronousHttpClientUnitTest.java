@@ -295,7 +295,7 @@ public class SynchronousHttpClientUnitTest {
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
-        when(httpRequest.getData()).thenReturn("test data");
+        when(httpRequest.getData()).thenReturn(toByteArray("test data"));
 
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
@@ -310,7 +310,7 @@ public class SynchronousHttpClientUnitTest {
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
 
-        String data = "test data";
+        byte[] data = toByteArray("test data");
         when(httpRequest.getData()).thenReturn(data);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
@@ -322,13 +322,11 @@ public class SynchronousHttpClientUnitTest {
         OutputStream outputStream = mock(OutputStream.class);
         when(connection.getOutputStream()).thenReturn(outputStream);
 
-        byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
-
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(expectedBytes);
+        verify(outputStream).write(data);
         verify(outputStream).flush();
         verify(outputStream).close();
     }
@@ -341,7 +339,7 @@ public class SynchronousHttpClientUnitTest {
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
 
-        String data = "Bjärne Stroustrüp";
+        byte[] data = toByteArray("Bjärne Stroustrüp");
         when(httpRequest.getData()).thenReturn(data);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
@@ -353,15 +351,17 @@ public class SynchronousHttpClientUnitTest {
         OutputStream outputStream = mock(OutputStream.class);
         when(connection.getOutputStream()).thenReturn(outputStream);
 
-        byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
-
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(expectedBytes);
+        verify(outputStream).write(data);
         verify(outputStream).flush();
         verify(outputStream).close();
+    }
+
+    private static byte[] toByteArray(String data) {
+        return data.getBytes(StandardCharsets.UTF_8);
     }
 }
 

@@ -66,11 +66,12 @@ class SynchronousHttpClient {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
-            byte[] outputBytes = httpRequest.getData().getBytes(StandardCharsets.UTF_8);
             OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(outputBytes);
+            outputStream.write(httpRequest.getData());
             outputStream.flush();
             outputStream.close();
+
+            httpRequest.dispose();
         }
 
         int responseCode = connection.getResponseCode();

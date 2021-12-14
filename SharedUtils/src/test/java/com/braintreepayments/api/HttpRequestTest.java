@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
@@ -34,7 +35,7 @@ public class HttpRequestTest {
             HttpRequest sut = HttpRequest.newInstance()
                     .data("sample data");
 
-            assertEquals("sample data", sut.getData());
+            assertEquals("sample data", new String(sut.getData(), StandardCharsets.UTF_8));
         }
 
         @Test
@@ -157,5 +158,9 @@ public class HttpRequestTest {
 
             assertEquals(expectedURL, sut.getURL());
         }
+    }
+
+    private static byte[] toByteArray(String data) {
+        return data.getBytes(StandardCharsets.UTF_8);
     }
 }
