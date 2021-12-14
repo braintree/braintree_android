@@ -50,8 +50,8 @@ class HttpRequest {
         return this;
     }
 
-    HttpRequest data(String data) {
-        this.data = data.getBytes(StandardCharsets.UTF_8);
+    HttpRequest data(String dataAsString) {
+        this.data = dataAsString.getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
