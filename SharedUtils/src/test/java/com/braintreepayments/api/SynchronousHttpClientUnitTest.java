@@ -352,7 +352,7 @@ public class SynchronousHttpClientUnitTest {
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(toByteArray("test data"));
+        verify(outputStream).write(httpRequest.getData());
         verify(outputStream).flush();
         verify(outputStream).close();
         verify(httpRequest).dispose();
@@ -382,7 +382,7 @@ public class SynchronousHttpClientUnitTest {
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(toByteArray("Bjärne Stroustrüp"));
+        verify(outputStream).write(httpRequest.getData());
         verify(outputStream).flush();
         verify(outputStream).close();
         verify(httpRequest).dispose();
