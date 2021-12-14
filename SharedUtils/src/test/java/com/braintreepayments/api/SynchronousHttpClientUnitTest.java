@@ -29,14 +29,12 @@ import javax.net.ssl.SSLSocketFactory;
 @PrepareForTest({ TLSSocketFactory.class })
 public class SynchronousHttpClientUnitTest {
 
-    HttpRequest httpRequest;
     BaseHttpResponseParser httpResponseParser;
     SSLSocketFactory sslSocketFactory;
 
     @Before
     public void beforeEach() {
         mockStatic(TLSSocketFactory.class);
-        httpRequest = mock(HttpRequest.class);
         httpResponseParser = mock(BaseHttpResponseParser.class);
         sslSocketFactory = mock(SSLSocketFactory.class);
     }
