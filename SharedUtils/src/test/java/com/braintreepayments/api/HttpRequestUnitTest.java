@@ -18,9 +18,9 @@ import static org.junit.Assert.*;
 
 
 @RunWith(Enclosed.class)
-public class HttpRequestTest {
+public class HttpRequestUnitTest {
 
-    public static class NonParameterizedHttpRequestTests {
+    public static class NonParameterizedScenarios {
 
         @Test
         public void getPath_returnsPath() {
@@ -36,6 +36,23 @@ public class HttpRequestTest {
                     .data("sample data");
 
             assertEquals("sample data", new String(sut.getData(), StandardCharsets.UTF_8));
+        }
+
+        @Test
+        public void dispose_whenDataIsNull_doesNothing() {
+            HttpRequest sut = HttpRequest.newInstance();
+            sut.dispose();
+            assertNull(sut.getData());
+        }
+
+        @Test
+        public void dispose_whenDataExists_zeroesOutData() {
+            HttpRequest sut = HttpRequest.newInstance()
+                    .data("sample data");
+            sut.dispose();
+
+            byte[] actual = sut.getData();
+            assertArrayEquals(new byte[actual.length], actual);
         }
 
         @Test
@@ -116,13 +133,13 @@ public class HttpRequestTest {
     }
 
     @RunWith(Parameterized.class)
-    public static class GetURLTest {
+    public static class GetURLScenarios {
 
         private final String baseUrl;
         private final String path;
         private final URL expectedURL;
 
-        public GetURLTest(String baseUrl, String path, URL expectedURL) {
+        public GetURLScenarios(String baseUrl, String path, URL expectedURL) {
             this.baseUrl = baseUrl;
             this.path = path;
             this.expectedURL = expectedURL;
@@ -158,9 +175,5 @@ public class HttpRequestTest {
 
             assertEquals(expectedURL, sut.getURL());
         }
-    }
-
-    private static byte[] toByteArray(String data) {
-        return data.getBytes(StandardCharsets.UTF_8);
     }
 }

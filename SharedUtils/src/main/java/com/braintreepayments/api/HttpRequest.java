@@ -75,7 +75,9 @@ class HttpRequest {
 
     void dispose() {
         // overwrite bytes content with zeros
-        Arrays.fill(data, (byte) 0);
+        if (data != null) {
+            Arrays.fill(data, (byte) 0);
+        }
     }
 
     String getMethod() {
