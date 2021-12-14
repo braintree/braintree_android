@@ -74,7 +74,7 @@ class HttpRequest {
     }
 
     void dispose() {
-        // overwrite bytes content with zeros
+        // overwrite data content with zeros
         if (data != null) {
             Arrays.fill(data, (byte) 0);
         }
