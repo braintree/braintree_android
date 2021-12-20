@@ -4,6 +4,7 @@
 
 * GooglePay
   * Deprecate `googleMerchantId`
+  * Bump `play-services-wallet` version to `18.1.3`
 * SharedUtils
   * Use byte array to hold `HttpRequest` data. Dispose data immediately after making http request.
 
