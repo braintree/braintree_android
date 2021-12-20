@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch
 
 
 @RunWith(RobolectricTestRunner::class)
-class GooglePayInternalClientUnitTestKT {
+class GooglePayInternalClientUnitTest {
 
     private lateinit var activity: FragmentActivity
     private lateinit var isReadyToPayCallback: GooglePayIsReadyToPayCallback
