@@ -42,37 +42,36 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.work:work-runtime:2.7.0-alpha05'
+    implementation deps.appCompat
+    implementation deps.work
 
-    implementation 'androidx.room:room-runtime:2.2.6'
-    annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    implementation deps.roomRuntime
+    annotationProcessor deps.roomCompiler
 
-    api 'com.braintreepayments.api:browser-switch:2.1.1'
+    api deps.browserSwitch
     api project(':SharedUtils')
 
-    androidTestImplementation playServicesWallet
-    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.work:work-testing:2.5.0'
+    androidTestImplementation deps.playServicesWallet
+    androidTestImplementation deps.dexmakerMockito
+    androidTestImplementation deps.androidxTestRules
+    androidTestImplementation deps.androidxTestRunner
+    androidTestImplementation deps.junitTest
+    androidTestImplementation deps.workTesting
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
 
-    testImplementation 'androidx.work:work-testing:2.5.0'
-    testImplementation 'org.robolectric:robolectric:4.1'
-    testImplementation 'androidx.test:core:1.4.0'
-    testImplementation 'androidx.test.ext:junit:1.1.3'
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
-    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
-    testImplementation 'org.powermock:powermock-classloading-xstream:2.0.7'
-    testImplementation 'org.skyscreamer:jsonassert:1.5.0'
+    testImplementation deps.workTesting
+    testImplementation deps.robolectric
+    testImplementation deps.androidxTestCore
+    testImplementation deps.junitTest
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
+    testImplementation deps.jsonAssert
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')

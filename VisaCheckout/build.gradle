@@ -35,20 +35,20 @@ dependencies {
     api project(':Card')
     api(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation deps.appCompat
 
     testImplementation project(':TestUtils')
-    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
-    testImplementation 'androidx.test:core:1.4.0'
-    testImplementation 'androidx.test:runner:1.4.0'
-    testImplementation 'androidx.test:rules:1.4.0'
-    testImplementation 'org.robolectric:robolectric:4.1'
-    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
-    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
-    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
+    testImplementation deps.playServicesWallet
+    testImplementation deps.androidxTestCore
+    testImplementation deps.androidxTestRules
+    testImplementation deps.androidxTestRunner
+    testImplementation deps.robolectric
+    testImplementation deps.powermockJunitLegacy
+    testImplementation deps.powermockRuleLegacy
+    testImplementation deps.powermockMockitoLegacy
+    testImplementation deps.powermockClassloadingLegacy
+    testImplementation deps.jsonAssert
+    testImplementation deps.assertJ
 }
 
 /* maven deploy + signing */

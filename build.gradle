@@ -1,5 +1,4 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
     repositories {
         jcenter()
         google()
@@ -7,11 +6,68 @@ buildscript {
             url = "https://plugins.gradle.org/m2/"
         }
     }
+
+    ext.versions = [
+            "kotlin"         : "1.4.10",
+            "androidxTest"   : "1.4.0",
+            "powermock"      : "2.0.7",
+            "powermockLegacy": "1.6.6",
+            "room"           : "2.2.6",
+            "playServices"   : "16.0.1"
+    ]
+
+    ext.deps = [
+            "appCompat"                  : "androidx.appcompat:appcompat:1.3.1",
+            "annotation"                 : "androidx.annotation:annotation:1.2.0",
+            "coreKtx"                    : "androidx.core:core-ktx:1.7.0",
+
+            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+            "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
+
+            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.1.1",
+            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-4",
+            "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
+            "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
+
+            // 1.1.0-alpha or higher is required for API 21 support
+            "securityCrypto"             : "androidx.security:security-crypto:1.1.0-alpha03",
+
+            // NEXT_MAJOR_VERSION: upgrade to 2.7.1 (or latest) when Java 7 support is explicitly dropped
+            "work"                       : "androidx.work:work-runtime:2.7.0-alpha05",
+            "workTesting"                : "androidx.work:work-testing:2.5.0",
+
+            "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
+            "roomRuntime"                : "androidx.room:room-runtime:${versions.room}",
+
+            "androidxTestRules"          : "androidx.test:rules:${versions.androidxTest}",
+            "androidxTestRunner"         : "androidx.test:runner:${versions.androidxTest}",
+            "androidxTestCore"           : "androidx.test:core:${versions.androidxTest}",
+
+            "junit"                      : "junit:junit:4.13",
+            "junitTest"                  : "androidx.test.ext:junit:1.1.3",
+            "robolectric"                : "org.robolectric:robolectric:4.1",
+            "dexmakerMockito"            : "com.google.dexmaker:dexmaker-mockito:1.2",
+            "mockitoCore"                : "org.mockito:mockito-core:3.6.0",
+            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.0",
+            "assertJ"                    : "com.squareup.assertj:assertj-android:1.1.1",
+
+            "powermockJunit"             : "org.powermock:powermock-module-junit4:${versions.powermock}",
+            "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
+            "powermockMockito"           : "org.powermock:powermock-api-mockito2:${versions.powermock}",
+            "powermockClassloading"      : "org.powermock:powermock-classloading-xstream:${versions.powermock}",
+
+            // Legacy versions of the powermock libraries are required until 3DS and Visa Checkout tests can be updated to resolve robolectric/powermock test issues
+            "powermockJunitLegacy"       : "org.powermock:powermock-module-junit4:${versions.powermockLegacy}",
+            "powermockRuleLegacy"        : "org.powermock:powermock-module-junit4-rule:${versions.powermockLegacy}",
+            "powermockMockitoLegacy"     : "org.powermock:powermock-api-mockito:${versions.powermockLegacy}",
+            "powermockClassloadingLegacy": "org.powermock:powermock-classloading-xstream:${versions.powermockLegacy}",
+    ]
+
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5'
     }
 }
@@ -39,8 +95,6 @@ ext {
     targetSdkVersion = 31
     versionCode = 139
     versionName = version
-
-    playServicesWalletVersion ='16.0.1'
 }
 
 nexusStaging {
