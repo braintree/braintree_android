@@ -1,27 +1,40 @@
 package com.braintreepayments.api
 
 import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.WalletConstants
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.slot
 import junit.framework.TestCase.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.CountDownLatch
 
-class GoolgePayInternalClientUnitTestKT {
 
-    private val activity = mockk<FragmentActivity>(relaxed = true)
-    private val isReadyToPayCallback = mockk<GooglePayIsReadyToPayCallback>(relaxed = true)
-    private val paymentsClient = mockk<PaymentsClient>()
-    private val isReadyToPayRequest = IsReadyToPayRequest.fromJson("{}")
+@RunWith(RobolectricTestRunner::class)
+class GooglePayInternalClientUnitTestKT {
+
+    private lateinit var activity: FragmentActivity
+    private lateinit var isReadyToPayCallback: GooglePayIsReadyToPayCallback
+    private lateinit var paymentsClient: PaymentsClient
+    private lateinit var isReadyToPayRequest: IsReadyToPayRequest
 
     @Before
     fun beforeEach() {
         mockkStatic(Wallet::class)
+        activity = mockk(relaxed = true)
+        isReadyToPayCallback = mockk(relaxed = true)
+        paymentsClient = mockk()
+        isReadyToPayRequest = IsReadyToPayRequest.fromJson("{}")
     }
 
     @Test
@@ -58,18 +71,37 @@ class GoolgePayInternalClientUnitTestKT {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
 
-        // TODO: determine why callback is not being fired here
-        coEvery { paymentsClient.isReadyToPay(isReadyToPayRequest) } coAnswers {
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } answers {
             Tasks.forResult(true)
         }
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->
-            assertFalse(isReadyToPay)
+            assertTrue(isReadyToPay)
             assertNull(error)
             countDownLatch.countDown()
         }
 
+        countDownLatch.await()
+    }
+
+    @Test
+    fun `isReadyToPay forwards failure result to callback`() {
+        val countDownLatch = CountDownLatch(1)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
+        every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
+
+        val expectedError = ApiException(Status.RESULT_INTERNAL_ERROR)
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } answers {
+            Tasks.forException(expectedError)
+        }
+
+        val sut = GooglePayInternalClient()
+        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->
+            assertFalse(isReadyToPay)
+            assertSame(expectedError, error)
+            countDownLatch.countDown()
+        }
         countDownLatch.await()
     }
 }
