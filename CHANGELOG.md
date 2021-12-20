@@ -3,7 +3,7 @@
 ## unreleased
 
 * GooglePay
-    * Deprecate `googleMerchantId`
+  * Deprecate `googleMerchantId`
 * SharedUtils
   * Use byte array to hold `HttpRequest` data. Dispose data immediately after making http request.
 
