@@ -58,6 +58,8 @@ dependencies {
     testImplementation deps.jsonAssert
     testImplementation deps.coreKtx
     testImplementation deps.kotlinStdLib
+    testImplementation deps.kotlinCoroutinesCore
+    testImplementation deps.mockk
 }
 
 // region signing and publishing
