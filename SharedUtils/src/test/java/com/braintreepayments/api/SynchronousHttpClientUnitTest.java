@@ -1,5 +1,13 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -12,41 +20,31 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ TLSSocketFactory.class })
 public class SynchronousHttpClientUnitTest {
 
-    HttpRequest httpRequest;
     BaseHttpResponseParser httpResponseParser;
     SSLSocketFactory sslSocketFactory;
 
     @Before
     public void beforeEach() {
         mockStatic(TLSSocketFactory.class);
-        httpRequest = mock(HttpRequest.class);
         httpResponseParser = mock(BaseHttpResponseParser.class);
         sslSocketFactory = mock(SSLSocketFactory.class);
     }
 
     @Test
-    public void request_whenHttpRequestURLMalformed_throwsMalformedURLException() throws Exception {
-        when(httpRequest.getPath()).thenReturn("");
-        when(httpRequest.getMethod()).thenReturn("GET");
-        when(httpRequest.getURL()).thenThrow(new MalformedURLException());
+    public void request_whenHttpRequestURLMalformed_throwsMalformedURLException() {
+        final HttpRequest httpRequest = new HttpRequest()
+                .path("")
+                .method("GET")
+                .baseUrl("/:/");
 
         final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         assertThrows(MalformedURLException.class, new ThrowingRunnable() {
@@ -58,8 +56,9 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenPathIsNull_throwsIllegalArgumentException() throws Exception {
-        when(httpRequest.getPath()).thenReturn(null);
+    public void request_whenPathIsNull_throwsIllegalArgumentException() {
+        final HttpRequest httpRequest = new HttpRequest()
+                .path(null);
 
         final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, new ThrowingRunnable() {
@@ -74,8 +73,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_setsRequestMethod() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("GET");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -93,7 +94,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_whenConnectionIsHttps_usesDefaultSSLSocketFactoryWhenNoFactoryIsSet() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -114,7 +118,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_whenConnectionIsHttps_setsSSLSocketFactory() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -132,7 +139,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -160,7 +170,11 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_setsHttpReadTimeout() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
+
         when(httpRequest.getReadTimeout()).thenReturn(123);
 
         URL url = mock(URL.class);
@@ -179,7 +193,11 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_setsHttpConnectionTimeout() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
+
         when(httpRequest.getConnectTimeout()).thenReturn(456);
 
         URL url = mock(URL.class);
@@ -198,11 +216,11 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_setsHttpHeaders() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Sample-Header", "Sample Value");
-        when(httpRequest.getHeaders()).thenReturn(headers);
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com")
+                .addHeader("Sample-Header", "Sample Value"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -220,8 +238,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_parsesResponseAndReturnsHttpBody() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("GET");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -239,8 +259,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_onSuccess_closesUrlConnection() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("GET");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -258,8 +280,10 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_onHttpResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("GET");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("GET")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -282,8 +306,11 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_whenPost_addsContentTypeHeader() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("POST");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("POST")
+                .data("test data")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
@@ -295,7 +322,6 @@ public class SynchronousHttpClientUnitTest {
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
-        when(httpRequest.getData()).thenReturn("test data");
 
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
@@ -304,14 +330,14 @@ public class SynchronousHttpClientUnitTest {
 
     @Test
     public void request_whenPost_writesAsciiCharactersToOutputStream() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("POST");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("POST")
+                .data("test data")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
-
-        String data = "test data";
-        when(httpRequest.getData()).thenReturn(data);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -322,27 +348,26 @@ public class SynchronousHttpClientUnitTest {
         OutputStream outputStream = mock(OutputStream.class);
         when(connection.getOutputStream()).thenReturn(outputStream);
 
-        byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
-
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(expectedBytes);
+        verify(outputStream).write(httpRequest.getData());
         verify(outputStream).flush();
         verify(outputStream).close();
+        verify(httpRequest).dispose();
     }
 
     @Test
     public void request_whenPost_writesUTF8CharactersToOutputStream() throws Exception {
-        when(httpRequest.getPath()).thenReturn("sample/path");
-        when(httpRequest.getMethod()).thenReturn("POST");
+        final HttpRequest httpRequest = spy(new HttpRequest()
+                .path("sample/path")
+                .method("POST")
+                .data("Bjärne Stroustrüp")
+                .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
         when(httpRequest.getURL()).thenReturn(url);
-
-        String data = "Bjärne Stroustrüp";
-        when(httpRequest.getData()).thenReturn(data);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -353,15 +378,18 @@ public class SynchronousHttpClientUnitTest {
         OutputStream outputStream = mock(OutputStream.class);
         when(connection.getOutputStream()).thenReturn(outputStream);
 
-        byte[] expectedBytes = data.getBytes(StandardCharsets.UTF_8);
-
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
 
         verify(connection).setDoOutput(true);
-        verify(outputStream).write(expectedBytes);
+        verify(outputStream).write(httpRequest.getData());
         verify(outputStream).flush();
         verify(outputStream).close();
+        verify(httpRequest).dispose();
+    }
+
+    private static byte[] toByteArray(String data) {
+        return data.getBytes(StandardCharsets.UTF_8);
     }
 }
 

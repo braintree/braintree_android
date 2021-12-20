@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +49,7 @@ public class BraintreeGraphQLClientUnitTest {
 
         HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
-        assertEquals("data", httpRequest.getData());
+        assertEquals("data", new String(httpRequest.getData(), StandardCharsets.UTF_8));
         assertEquals("POST", httpRequest.getMethod());
 
         Map<String, String> headers = httpRequest.getHeaders();
@@ -67,7 +68,7 @@ public class BraintreeGraphQLClientUnitTest {
 
         HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql"), httpRequest.getURL());
-        assertEquals("data", httpRequest.getData());
+        assertEquals("data", new String(httpRequest.getData(), StandardCharsets.UTF_8));
         assertEquals("POST", httpRequest.getMethod());
 
         Map<String, String> headers = httpRequest.getHeaders();
@@ -89,7 +90,7 @@ public class BraintreeGraphQLClientUnitTest {
 
         HttpRequest httpRequest = captor.getValue();
         assertEquals(new URL("https://example-graphql.com/graphql/sample/path"), httpRequest.getURL());
-        assertEquals("data", httpRequest.getData());
+        assertEquals("data", new String(httpRequest.getData(), StandardCharsets.UTF_8));
         assertEquals("POST", httpRequest.getMethod());
 
         Map<String, String> headers = httpRequest.getHeaders();

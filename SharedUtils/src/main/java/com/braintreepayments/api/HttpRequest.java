@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -16,7 +18,7 @@ class HttpRequest {
 
     private String path;
     private String baseUrl;
-    private String data;
+    private byte[] data;
     private String method;
 
     private final int readTimeout;
@@ -48,8 +50,8 @@ class HttpRequest {
         return this;
     }
 
-    HttpRequest data(String data) {
-        this.data = data;
+    HttpRequest data(String dataAsString) {
+        this.data = dataAsString.getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
@@ -67,8 +69,15 @@ class HttpRequest {
         return path;
     }
 
-    String getData() {
+    byte[] getData() {
         return data;
+    }
+
+    void dispose() {
+        // overwrite data content with zeros
+        if (data != null) {
+            Arrays.fill(data, (byte) 0);
+        }
     }
 
     String getMethod() {

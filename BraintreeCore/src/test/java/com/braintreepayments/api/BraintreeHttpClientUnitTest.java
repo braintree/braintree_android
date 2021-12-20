@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static com.braintreepayments.api.FixturesHelper.base64Encode;
@@ -173,7 +174,7 @@ public class BraintreeHttpClientUnitTest {
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
         assertEquals(Fixtures.TOKENIZATION_KEY, headers.get("Client-Key"));
         assertEquals("POST", httpRequest.getMethod());
-        assertEquals("{}", httpRequest.getData());
+        assertEquals("{}", new String(httpRequest.getData(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -200,7 +201,7 @@ public class BraintreeHttpClientUnitTest {
         assertEquals("POST", httpRequest.getMethod());
 
         String expectedData = String.format("{\"authorizationFingerprint\":\"%s\"}", clientToken.getAuthorizationFingerprint());
-        assertEquals(expectedData, httpRequest.getData());
+        assertEquals(expectedData, new String(httpRequest.getData(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -264,7 +265,7 @@ public class BraintreeHttpClientUnitTest {
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
         assertEquals(Fixtures.TOKENIZATION_KEY, headers.get("Client-Key"));
         assertEquals("POST", httpRequest.getMethod());
-        assertEquals("{}", httpRequest.getData());
+        assertEquals("{}", new String(httpRequest.getData(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -290,7 +291,7 @@ public class BraintreeHttpClientUnitTest {
         assertEquals("POST", httpRequest.getMethod());
 
         String expectedData = String.format("{\"authorizationFingerprint\":\"%s\"}", clientToken.getAuthorizationFingerprint());
-        assertEquals(expectedData, httpRequest.getData());
+        assertEquals(expectedData, new String(httpRequest.getData(), StandardCharsets.UTF_8));
     }
 
     @Test
