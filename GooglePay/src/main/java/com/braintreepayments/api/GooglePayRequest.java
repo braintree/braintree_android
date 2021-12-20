@@ -39,6 +39,9 @@ public class GooglePayRequest implements Parcelable {
     private final HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
     private final HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
     private String environment;
+
+    // NEXT_MAJOR_VERSION: remove googleMerchantId since it is no longer required/included in the
+    // Google Pay API documentation
     private String googleMerchantId;
     private String googleMerchantName;
     private String countryCode;
@@ -172,13 +175,20 @@ public class GooglePayRequest implements Parcelable {
     }
 
     /**
+     * Optional.
+     *
+     * @deprecated Google Merchant ID is no longer required and will be removed.
+     *
      * @param merchantId The merchant ID that Google Pay has provided.
      */
+    @Deprecated
     public void setGoogleMerchantId(@Nullable String merchantId) {
         googleMerchantId = merchantId;
     }
 
     /**
+     * Optional.
+     *
      * @param merchantName The merchant name that will be presented in Google Pay
      */
     public void setGoogleMerchantName(@Nullable String merchantName) {
@@ -434,8 +444,11 @@ public class GooglePayRequest implements Parcelable {
     }
 
     /**
+     * @deprecated Google Merchant ID is no longer required and will be removed.
+     *
      * @return The merchant ID that Google Pay has provided.
      */
+    @Deprecated
     @Nullable
     public String getGoogleMerchantId() {
         return googleMerchantId;
