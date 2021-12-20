@@ -177,8 +177,11 @@ public class GooglePayRequest implements Parcelable {
     /**
      * Optional.
      *
+     * @deprecated Google Merchant ID is no longer required and will be removed.
+     *
      * @param merchantId The merchant ID that Google Pay has provided.
      */
+    @Deprecated
     public void setGoogleMerchantId(@Nullable String merchantId) {
         googleMerchantId = merchantId;
     }
@@ -441,8 +444,11 @@ public class GooglePayRequest implements Parcelable {
     }
 
     /**
+     * @deprecated Google Merchant ID is no longer required and will be removed.
+     *
      * @return The merchant ID that Google Pay has provided.
      */
+    @Deprecated
     @Nullable
     public String getGoogleMerchantId() {
         return googleMerchantId;
