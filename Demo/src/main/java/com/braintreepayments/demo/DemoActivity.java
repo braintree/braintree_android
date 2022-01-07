@@ -74,7 +74,10 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             handleAuthorizationState();
         }
 
-        handleBrowserSwitchResultIfNecessary();
+        if (braintreeClient != null) {
+            braintreeClient.deliverBrowserSwitchResult(this);
+        }
+//        handleBrowserSwitchResultIfNecessary();
     }
 
     public void getBraintreeClient(BraintreeClientCallback callback) {

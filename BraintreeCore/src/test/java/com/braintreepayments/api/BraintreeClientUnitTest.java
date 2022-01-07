@@ -416,7 +416,7 @@ public class BraintreeClientUnitTest {
                 .httpClient(braintreeHttpClient)
                 .graphQLClient(braintreeGraphQLClient)
                 .analyticsClient(analyticsClient)
-                .browserSwitchClient(browserSwitchClient)
+                .browserSwitchLauncher(browserSwitchClient)
                 .manifestValidator(manifestValidator);
     }
 

@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
@@ -20,7 +21,7 @@ import com.braintreepayments.api.PayPalClient;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
-public class PayPalFragment extends BaseFragment {
+public class PayPalFragment extends BaseFragment implements BrowserSwitchListener {
 
     private String deviceData;
     private PayPalClient payPalClient;
@@ -38,9 +39,6 @@ public class PayPalFragment extends BaseFragment {
 
         billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
-
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getPayPalBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handlePayPalBrowserSwitchResult);
 
         return view;
     }
@@ -86,21 +84,18 @@ public class PayPalFragment extends BaseFragment {
         });
     }
 
-    private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-        if (paymentMethodNonce != null) {
-            super.onPaymentMethodNonceCreated(paymentMethodNonce);
+    @Override
+    public void onBrowserSwitchResult(BrowserSwitchResult result) {
+        payPalClient.onBrowserSwitchResult(result, (paymentMethodNonce, error) -> {
+            if (paymentMethodNonce != null) {
+                super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-            PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
-            action.setDeviceData(deviceData);
+                PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
+                        PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                action.setDeviceData(deviceData);
 
-            NavHostFragment.findNavController(this).navigate(action);
-        }
-    }
-
-    public void handlePayPalBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult != null) {
-            payPalClient.onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> handlePayPalResult(payPalAccountNonce, error));
-        }
+                NavHostFragment.findNavController(this).navigate(action);
+            }
+        });
     }
 }

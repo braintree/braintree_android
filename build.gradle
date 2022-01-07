@@ -28,7 +28,7 @@ buildscript {
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
-            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.1.1",
+            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.1.2-SNAPSHOT",
             "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-4",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",

@@ -20,7 +20,9 @@ public class BraintreeClient {
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLClient graphQLClient;
-    private final BrowserSwitchClient browserSwitchClient;
+//    private final BrowserSwitchClient browserSwitchClient;
+    private final BrowserSwitchLauncher browserSwitchLauncher;
+    private final BrowserSwitchObserver browserSwitchObserver;
     private final ConfigurationLoader configurationLoader;
     private final Context applicationContext;
     private final CrashReporter crashReporter;
@@ -63,7 +65,7 @@ public class BraintreeClient {
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorization))
                 .analyticsClient(new AnalyticsClient(context, authorization))
-                .browserSwitchClient(new BrowserSwitchClient())
+                .browserSwitchLauncher(new BrowserSwitchLauncher())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
                 .configurationLoader(new ConfigurationLoader(httpClient));
@@ -103,11 +105,12 @@ public class BraintreeClient {
         this.analyticsClient = params.getAnalyticsClient();
         this.applicationContext = params.getContext().getApplicationContext();
         this.authorization = params.getAuthorization();
-        this.browserSwitchClient = params.getBrowserSwitchClient();
+        this.browserSwitchLauncher = params.getBrowserSwitchLauncher();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLClient = params.getGraphQLClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
+        this.browserSwitchObserver = new BrowserSwitchObserver();
 
         String sessionId = params.getSessionId();
         if (sessionId == null) {
@@ -189,17 +192,21 @@ public class BraintreeClient {
     }
 
     void startBrowserSwitch(FragmentActivity activity, BrowserSwitchOptions browserSwitchOptions) throws BrowserSwitchException {
-        if (browserSwitchClient != null) {
-            browserSwitchClient.start(activity, browserSwitchOptions);
+        if (browserSwitchLauncher != null) {
+            browserSwitchLauncher.launch(activity, browserSwitchOptions);
+//            browserSwitchLauncher.start(activity, browserSwitchOptions);
         }
     }
 
     BrowserSwitchResult getBrowserSwitchResult(@NonNull FragmentActivity activity) {
-        return browserSwitchClient.getResult(activity);
+        return browserSwitchObserver.getResult(activity);
+//        return browserSwitchLauncher.getResult(activity);
     }
 
     public BrowserSwitchResult deliverBrowserSwitchResult(@NonNull FragmentActivity activity) {
-        return browserSwitchClient.deliverResult(activity);
+        browserSwitchObserver.onActivityResumed(activity);
+        // TODO: keep old method and deprecate this method
+        return null;
     }
 
     String getReturnUrlScheme() {
@@ -216,7 +223,7 @@ public class BraintreeClient {
                 .requestCode(requestCode);
         boolean result = true;
         try {
-            browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
+            browserSwitchLauncher.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
         } catch (BrowserSwitchException e) {
             result = false;
         }
