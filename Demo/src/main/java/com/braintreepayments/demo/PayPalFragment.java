@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
@@ -86,16 +87,18 @@ public class PayPalFragment extends BaseFragment implements BrowserSwitchListene
 
     @Override
     public void onBrowserSwitchResult(BrowserSwitchResult result) {
-        payPalClient.onBrowserSwitchResult(result, (paymentMethodNonce, error) -> {
-            if (paymentMethodNonce != null) {
-                super.onPaymentMethodNonceCreated(paymentMethodNonce);
+        if (result.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
+            payPalClient.onBrowserSwitchResult(result, (paymentMethodNonce, error) -> {
+                if (paymentMethodNonce != null) {
+                    super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-                PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                        PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
-                action.setDeviceData(deviceData);
+                    PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
+                            PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    action.setDeviceData(deviceData);
 
-                NavHostFragment.findNavController(this).navigate(action);
-            }
-        });
+                    NavHostFragment.findNavController(this).navigate(action);
+                }
+            });
+        }
     }
 }

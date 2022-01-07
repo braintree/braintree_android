@@ -12,7 +12,6 @@ import com.braintreepayments.api.BrowserSwitchResult;
 
 public class DemoViewModel extends ViewModel {
 
-    private final MutableLiveData<BrowserSwitchResult> threeDSecureBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<BrowserSwitchResult> localPaymentBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> threeDSecureActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
@@ -25,9 +24,6 @@ public class DemoViewModel extends ViewModel {
         switch (browserSwitchResult.getRequestCode()) {
             case BraintreeRequestCodes.LOCAL_PAYMENT:
                 localPaymentBrowserSwitchResult.setValue(browserSwitchResult);
-                break;
-            case BraintreeRequestCodes.THREE_D_SECURE:
-                threeDSecureBrowserSwitchResult.setValue(browserSwitchResult);
                 break;
         }
     }
@@ -56,10 +52,6 @@ public class DemoViewModel extends ViewModel {
 
     public MutableLiveData<ActivityResult> getVenmoActivityResult() {
         return venmoActivityResult;
-    }
-
-    public LiveData<BrowserSwitchResult> getThreeDSecureBrowserSwitchResult() {
-        return threeDSecureBrowserSwitchResult;
     }
 
     public LiveData<BrowserSwitchResult> getLocalPaymentBrowserSwitchResult() {

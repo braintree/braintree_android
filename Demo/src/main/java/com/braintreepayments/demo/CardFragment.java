@@ -20,6 +20,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.BraintreeRequestCodes;
+import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
@@ -47,7 +49,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener {
+public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
@@ -98,7 +100,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         }
 
         DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getThreeDSecureBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureBrowserSwitchResult);
         viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
 
         return view;
@@ -320,6 +321,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillPostalCode("12345");
     }
 
+    @Override
+    public void onBrowserSwitchResult(BrowserSwitchResult result) {
+        if (result.getRequestCode() == BraintreeRequestCodes.THREE_D_SECURE) {
+            threeDSecureClient.onBrowserSwitchResult(result, this::handleThreeDSecureResult);
+        }
+    }
+
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
@@ -327,12 +335,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
-        }
-    }
-
-    private void handleThreeDSecureBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult != null) {
-            threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, this::handleThreeDSecureResult);
         }
     }
 
