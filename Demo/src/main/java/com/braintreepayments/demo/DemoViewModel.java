@@ -17,17 +17,6 @@ public class DemoViewModel extends ViewModel {
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
 
-    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult == null) {
-            return;
-        }
-        switch (browserSwitchResult.getRequestCode()) {
-            case BraintreeRequestCodes.LOCAL_PAYMENT:
-                localPaymentBrowserSwitchResult.setValue(browserSwitchResult);
-                break;
-        }
-    }
-
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case BraintreeRequestCodes.THREE_D_SECURE:

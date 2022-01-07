@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchException;
+import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentNonce;
@@ -20,7 +22,7 @@ import com.braintreepayments.api.PostalAddress;
 
 import org.json.JSONException;
 
-public class LocalPaymentFragment extends BaseFragment {
+public class LocalPaymentFragment extends BaseFragment implements BrowserSwitchListener {
 
     private LocalPaymentClient localPaymentClient;
 
@@ -30,9 +32,6 @@ public class LocalPaymentFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_local_payment, container, false);
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
-
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getLocalPaymentBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handleLocalPaymentBrowserSwitchResult);
 
         return view;
     }
@@ -83,9 +82,10 @@ public class LocalPaymentFragment extends BaseFragment {
 
     }
 
-    public void handleLocalPaymentBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult != null) {
-            localPaymentClient.onBrowserSwitchResult(getActivity(), browserSwitchResult, this::handleLocalPaymentResult);
+    @Override
+    public void onBrowserSwitchResult(BrowserSwitchResult result) {
+        if (result.getRequestCode() == BraintreeRequestCodes.LOCAL_PAYMENT) {
+            localPaymentClient.onBrowserSwitchResult(requireActivity(), result, this::handleLocalPaymentResult);
         }
     }
 

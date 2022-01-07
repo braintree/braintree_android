@@ -77,7 +77,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         if (braintreeClient != null) {
             braintreeClient.deliverBrowserSwitchResult(this);
         }
-//        handleBrowserSwitchResultIfNecessary();
     }
 
     public void getBraintreeClient(BraintreeClientCallback callback) {
@@ -100,15 +99,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 showDialog(error.getMessage());
             }
         });
-    }
-
-    private void handleBrowserSwitchResultIfNecessary() {
-        if (braintreeClient != null) {
-            BrowserSwitchResult result = braintreeClient.deliverBrowserSwitchResult(this);
-            if (result != null) {
-                viewModel.onBrowserSwitchResult(result);
-            }
-        }
     }
 
     @Override
