@@ -12,7 +12,6 @@ import com.braintreepayments.api.BrowserSwitchResult;
 
 public class DemoViewModel extends ViewModel {
 
-    private final MutableLiveData<BrowserSwitchResult> localPaymentBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> threeDSecureActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
@@ -41,9 +40,5 @@ public class DemoViewModel extends ViewModel {
 
     public MutableLiveData<ActivityResult> getVenmoActivityResult() {
         return venmoActivityResult;
-    }
-
-    public LiveData<BrowserSwitchResult> getLocalPaymentBrowserSwitchResult() {
-        return localPaymentBrowserSwitchResult;
     }
 }
