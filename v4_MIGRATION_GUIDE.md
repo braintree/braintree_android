@@ -79,7 +79,7 @@ If your app has multiple browser switch targets, you can specify multiple intent
 </activity>
 ``` 
 
-Then when constructing your `BraintreeClient`, make sure to pass the appropriate custom url scheme for each deep link target Activity.
+Then when constructing your `BraintreeClient` make sure to pass the appropriate custom url scheme for each deep link target Activity:
 
 ```java
 // MyPaymentsActivity1.java
