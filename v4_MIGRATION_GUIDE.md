@@ -84,7 +84,7 @@ Then when constructing your `BraintreeClient` make sure to pass the appropriate 
 ```java
 // MyPaymentsActivity1.java
 BraintreeClient braintreeClient =
-        new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN", "custom-url-scheme-1");
+    new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN", "custom-url-scheme-1");
 ```
 
 ```java
