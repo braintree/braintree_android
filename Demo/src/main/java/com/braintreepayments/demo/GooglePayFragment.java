@@ -41,9 +41,6 @@ public class GooglePayFragment extends BaseFragment {
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getGooglePayActivityResult().observe(getViewLifecycleOwner(), this::handleGooglePayActivityResult);
-
         return view;
     }
 
@@ -52,7 +49,7 @@ public class GooglePayFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         googlePayLauncher = registerForActivityResult(new GooglePayContract(),
-                result -> googlePayClient.onGooglePayResult(result));
+                result -> googlePayClient.onGooglePayResult(result, this::handleGooglePayActivityResult));
     }
 
     @Override
@@ -125,16 +122,12 @@ public class GooglePayFragment extends BaseFragment {
         });
     }
 
-    private void handleGooglePayActivityResult(ActivityResult activityResult) {
-        int resultCode = activityResult.getResultCode();
-        Intent data = activityResult.getData();
-        googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
-            if (error != null) {
-                handleError(error);
-            } else {
-                handleGooglePayActivityResult(paymentMethodNonce);
-            }
-        });
+    private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+        if (error != null) {
+            handleError(error);
+        } else {
+            handleGooglePayActivityResult(paymentMethodNonce);
+        }
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
