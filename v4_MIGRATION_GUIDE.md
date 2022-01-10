@@ -53,6 +53,45 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 
 Additionally, apps that use both Drop-in and BraintreeClient should specify a custom url scheme, since `DropInActivity` already uses the `${applicationId}.braintree` url intent filter.
 
+If your app has multiple browser switch targets, you can specify multiple intent filters, and use the `BraintreeClient` constructor that allows you to specify a `customUrlScheme`:
+
+```xml
+<activity android:name="com.company.app.MyPaymentsActivity1"
+    android:exported="true">
+    ...
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="custom-url-scheme-1"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+    </intent-filter>
+</activity>
+
+<activity android:name="com.company.app.MyPaymentsActivity2"
+    android:exported="true">
+    ...
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="custom-url-scheme-2"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+    </intent-filter>
+</activity>
+``` 
+
+Then when constructing your `BraintreeClient`, make sure to pass the appropriate custom url scheme for each deep link target Activity.
+
+```java
+// MyPaymentsActivity1.java
+BraintreeClient braintreeClient =
+        new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN", "custom-url-scheme-1");
+```
+
+```java
+// MyPaymentsActivity2.java
+BraintreeClient braintreeClient =
+    new BraintreeClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN", "custom-url-scheme-2");
+```
 
 ## BraintreeFragment
 
