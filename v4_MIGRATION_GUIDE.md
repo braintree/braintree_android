@@ -527,7 +527,7 @@ public class PayPalActivity extends AppCompatActivity {
       payPalClient.onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
         if (payPalAccountNonce != null) {
           // Send nonce to server
-          String payPalAccountNonce = payPalNonce.getString();
+          String nonce = payPalAccountNonce.getString();
         } else {
           // handle error
         }
