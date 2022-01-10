@@ -103,9 +103,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             sendSmsButton.setVisibility(VISIBLE);
         }
 
-        DemoViewModel viewModel = new ViewModelProvider(requireActivity()).get(DemoViewModel.class);
-        viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
-
         return view;
     }
 

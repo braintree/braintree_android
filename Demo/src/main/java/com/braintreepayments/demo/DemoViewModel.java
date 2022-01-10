@@ -12,15 +12,11 @@ import com.braintreepayments.api.BrowserSwitchResult;
 
 public class DemoViewModel extends ViewModel {
 
-    private final MutableLiveData<ActivityResult> threeDSecureActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
-            case BraintreeRequestCodes.THREE_D_SECURE:
-                threeDSecureActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
-                break;
             case BraintreeRequestCodes.GOOGLE_PAY:
                 googlePayActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
@@ -28,10 +24,6 @@ public class DemoViewModel extends ViewModel {
                 venmoActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
         }
-    }
-
-    public MutableLiveData<ActivityResult> getThreeDSecureActivityResult() {
-        return threeDSecureActivityResult;
     }
 
     public MutableLiveData<ActivityResult> getGooglePayActivityResult() {
