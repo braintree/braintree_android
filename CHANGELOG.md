@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.8.1
 
 * GooglePay
   * Deprecate `googleMerchantId`
