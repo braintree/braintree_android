@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -47,14 +48,20 @@ public class GooglePayClient {
 
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
+    private final ActivityResultLauncher<GooglePayContractInput> googlePayLauncher;
 
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new GooglePayInternalClient());
+        this(braintreeClient, null, new GooglePayInternalClient());
+    }
+
+    public GooglePayClient(@NonNull BraintreeClient braintreeClient, ActivityResultLauncher<GooglePayContractInput> googlePayLauncher) {
+        this(braintreeClient, googlePayLauncher, new GooglePayInternalClient());
     }
 
     @VisibleForTesting
-    GooglePayClient(BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
+    GooglePayClient(BraintreeClient braintreeClient, ActivityResultLauncher<GooglePayContractInput> googlePayLauncher, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
+        this.googlePayLauncher = googlePayLauncher;
         this.internalGooglePayClient = internalGooglePayClient;
     }
 
@@ -208,15 +215,20 @@ public class GooglePayClient {
 
                 braintreeClient.sendAnalyticsEvent("google-payment.started");
 
+                int environment = getGooglePayEnvironment(configuration);
                 PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
-                Intent intent = new Intent(activity, GooglePayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
-                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
 
-                activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
+                if (googlePayLauncher != null) {
+                    googlePayLauncher.launch(new GooglePayContractInput(environment, paymentDataRequest));
+                } else {
+                    Intent intent = new Intent(activity, GooglePayActivity.class)
+                            .putExtra(EXTRA_ENVIRONMENT, environment)
+                            .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
+
+                    activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
+                }
             }
         });
-
     }
 
     /**
@@ -245,6 +257,22 @@ public class GooglePayClient {
             } catch (JSONException | NullPointerException e1) {
                 callback.onResult(null, e1);
             }
+        }
+    }
+
+    public void onGooglePayResult(GooglePayResult result, @NonNull final GooglePayOnActivityResultCallback callback) {
+        PaymentData paymentData = result.getPaymentData();
+        if (paymentData != null) {
+            braintreeClient.sendAnalyticsEvent("google-payment.authorized");
+            tokenize(paymentData, callback);
+        } else {
+            BraintreeException exception = result.getError();
+            if (exception instanceof GooglePayException) {
+                braintreeClient.sendAnalyticsEvent("google-payment.failed");
+            } else if (exception instanceof UserCanceledException) {
+                braintreeClient.sendAnalyticsEvent("google-payment.canceled");
+            }
+            callback.onResult(null, exception);
         }
     }
 

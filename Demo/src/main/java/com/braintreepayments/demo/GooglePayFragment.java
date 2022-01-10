@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -14,6 +16,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.GooglePayContract;
+import com.braintreepayments.api.GooglePayContractInput;
+import com.braintreepayments.api.GooglePayResult;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
@@ -26,6 +31,8 @@ public class GooglePayFragment extends BaseFragment {
 
     private ImageButton googlePayButton;
     private GooglePayClient googlePayClient;
+
+    ActivityResultLauncher<GooglePayContractInput> googlePayLauncher;
 
     @Nullable
     @Override
@@ -41,11 +48,19 @@ public class GooglePayFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        googlePayLauncher = registerForActivityResult(new GooglePayContract(),
+                result -> googlePayClient.onGooglePayResult(result));
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getBraintreeClient(braintreeClient -> {
 
-            googlePayClient = new GooglePayClient(braintreeClient);
+            googlePayClient = new GooglePayClient(braintreeClient, googlePayLauncher);
 
             braintreeClient.getConfiguration((configuration, error) -> {
                 if (configuration == null) {
