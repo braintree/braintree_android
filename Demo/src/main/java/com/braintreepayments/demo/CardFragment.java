@@ -1,5 +1,8 @@
 package com.braintreepayments.demo;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,14 +26,15 @@ import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchListener;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
+import com.braintreepayments.api.ThreeDSecureContract;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -45,9 +50,6 @@ import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchListener {
 
@@ -76,6 +78,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private UnionPayClient unionPayClient;
     private DataCollector dataCollector;
 
+    private ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -99,7 +103,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             sendSmsButton.setVisibility(VISIBLE);
         }
 
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
+        DemoViewModel viewModel = new ViewModelProvider(requireActivity()).get(DemoViewModel.class);
         viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
 
         return view;
@@ -118,6 +122,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 sendSmsButton.setVisibility(VISIBLE);
             }
         }
+
+        threeDSecureLauncher = registerForActivityResult(new ThreeDSecureContract(),
+                result -> threeDSecureClient.onCardinalResult(result, this::handleThreeDSecureResult));
     }
 
     @Override
@@ -142,7 +149,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             final AppCompatActivity activity = (AppCompatActivity) getActivity();
             americanExpressClient = new AmericanExpressClient(braintreeClient);
             cardClient = new CardClient(braintreeClient);
-            threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+            threeDSecureClient = new ThreeDSecureClient(braintreeClient, threeDSecureLauncher);
             unionPayClient = new UnionPayClient(braintreeClient);
             dataCollector = new DataCollector(braintreeClient);
 
@@ -345,7 +352,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-        final FragmentActivity activity = getActivity();
+        final FragmentActivity activity = requireActivity();
         if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(activity)) {
             threeDSecureRequested = true;
             loading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
