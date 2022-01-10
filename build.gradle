@@ -93,12 +93,12 @@ allprojects {
     }
 }
 
-version '4.8.1'
+version '4.8.2-SNAPSHOT'
 ext {
     compileSdkVersion = 31
     minSdkVersion = 21
     targetSdkVersion = 31
-    versionCode = 139
+    versionCode = 140
     versionName = version
 }
 
