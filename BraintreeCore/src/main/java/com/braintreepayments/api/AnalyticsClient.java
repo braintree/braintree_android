@@ -46,9 +46,9 @@ class AnalyticsClient {
 
     private String lastKnownAnalyticsUrl;
 
-    AnalyticsClient(Context context, Authorization authorization) {
+    AnalyticsClient(Context context, AuthorizationLoader authorizationLoader) {
         this(
-                new BraintreeHttpClient(authorization),
+                new BraintreeHttpClient(authorizationLoader),
                 AnalyticsDatabase.getInstance(context.getApplicationContext()),
                 WorkManager.getInstance(context.getApplicationContext()),
                 new DeviceInspector()
@@ -147,7 +147,7 @@ class AnalyticsClient {
                 JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
 
                 String analyticsUrl = configuration.getAnalyticsUrl();
-                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
+                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, httpClient.getAuthorization());
                 analyticsEventDao.deleteEvents(events);
             }
             return ListenableWorker.Result.success();

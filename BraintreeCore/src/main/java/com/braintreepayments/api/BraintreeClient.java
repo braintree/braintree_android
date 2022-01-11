@@ -16,7 +16,8 @@ import java.util.Locale;
  */
 public class BraintreeClient {
 
-    private final Authorization authorization;
+    private final AuthorizationLoader authorizationLoader;
+
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLClient graphQLClient;
@@ -37,11 +38,11 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, null, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
-        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, null, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, @IntegrationType.Integration String integrationType) {
@@ -50,21 +51,21 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme, sessionId, integrationType);
+        return createDefaultParams(context, authString, null, returnUrlScheme, sessionId, integrationType);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
-        Authorization authorization = Authorization.fromString(authString);
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, BraintreeAuthProvider authProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
+        AuthorizationLoader authorizationLoader = new AuthorizationLoader(authProvider, authString);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorizationLoader);
         return new BraintreeClientParams()
-                .authorization(authorization)
+                .authorizationLoader(authorizationLoader)
                 .context(context)
                 .setIntegrationType(integrationType)
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
-                .graphQLClient(new BraintreeGraphQLClient(authorization))
-                .analyticsClient(new AnalyticsClient(context, authorization))
+                .graphQLClient(new BraintreeGraphQLClient(authorizationLoader))
+                .analyticsClient(new AnalyticsClient(context, authorizationLoader))
                 .browserSwitchLauncher(new BrowserSwitchLauncher())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
@@ -104,7 +105,7 @@ public class BraintreeClient {
     BraintreeClient(BraintreeClientParams params) {
         this.analyticsClient = params.getAnalyticsClient();
         this.applicationContext = params.getContext().getApplicationContext();
-        this.authorization = params.getAuthorization();
+        this.authorizationLoader = params.getAuthorizationLoader();
         this.browserSwitchLauncher = params.getBrowserSwitchLauncher();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLClient = params.getGraphQLClient();
@@ -129,8 +130,13 @@ public class BraintreeClient {
      *
      * @param callback {@link ConfigurationCallback}
      */
-    public void getConfiguration(@NonNull ConfigurationCallback callback) {
-        configurationLoader.loadConfiguration(applicationContext, authorization, callback);
+    public void getConfiguration(@NonNull final ConfigurationCallback callback) {
+        authorizationLoader.loadAuthorization(new AuthorizationCallback() {
+            @Override
+            public void onAuthorization(@Nullable Authorization authorization, @Nullable Exception error) {
+                configurationLoader.loadConfiguration(applicationContext, authorization, callback);
+            }
+        });
     }
 
     void sendAnalyticsEvent(final String eventName) {
@@ -247,7 +253,7 @@ public class BraintreeClient {
     }
 
     Authorization getAuthorization() {
-        return authorization;
+        return authorizationLoader.getAuthorization();
     }
 
     Context getApplicationContext() {

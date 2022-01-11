@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.HttpClient.RetryStrategy;
@@ -22,16 +23,16 @@ class BraintreeHttpClient {
     private static final String CLIENT_KEY_HEADER = "Client-Key";
 
     private final HttpClient httpClient;
-    private final Authorization authorization;
+    private final AuthorizationLoader authorizationLoader;
 
-    BraintreeHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
+    BraintreeHttpClient(AuthorizationLoader authorizationLoader) {
+        this(authorizationLoader, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeHttpClient(AuthorizationLoader authorizationLoader, HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.authorization = authorization;
+        this.authorizationLoader = authorizationLoader;
     }
 
     private static SSLSocketFactory getSocketFactory() {
@@ -43,7 +44,7 @@ class BraintreeHttpClient {
     }
 
     Authorization getAuthorization() {
-        return authorization;
+        return authorizationLoader.getAuthorization();
     }
 
     /**
@@ -67,45 +68,51 @@ class BraintreeHttpClient {
      * @param callback {@link HttpResponseCallback}
      * @param retryStrategy retry strategy
      */
-    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
-        if (authorization instanceof InvalidAuthorization) {
-            String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.onResult(null, new BraintreeException(message));
-            return;
-        }
+    void get(final String path, final Configuration configuration, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+        authorizationLoader.loadAuthorization(new AuthorizationCallback() {
+            @Override
+            public void onAuthorization(@Nullable Authorization authorization, @Nullable Exception error) {
 
-        boolean isRelativeURL = !path.startsWith("http");
-        if (configuration == null && isRelativeURL) {
-            String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
-            BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            callback.onResult(null, relativeURLNotAllowedError);
-            return;
-        }
+                if (authorization instanceof InvalidAuthorization) {
+                    String message = ((InvalidAuthorization) authorization).getErrorMessage();
+                    callback.onResult(null, new BraintreeException(message));
+                    return;
+                }
 
-        String targetPath;
-        if (authorization instanceof ClientToken || authorization instanceof PayPalUAT) {
-            targetPath = Uri.parse(path)
-                    .buildUpon()
-                    .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer())
-                    .toString();
-        } else {
-            targetPath = path;
-        }
+                boolean isRelativeURL = !path.startsWith("http");
+                if (configuration == null && isRelativeURL) {
+                    String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
+                    BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
+                    callback.onResult(null, relativeURLNotAllowedError);
+                    return;
+                }
 
-        HttpRequest request = new HttpRequest()
-                .method("GET")
-                .path(targetPath)
-                .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
+                String targetPath;
+                if (authorization instanceof ClientToken || authorization instanceof PayPalUAT) {
+                    targetPath = Uri.parse(path)
+                            .buildUpon()
+                            .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer())
+                            .toString();
+                } else {
+                    targetPath = path;
+                }
 
-        if (isRelativeURL && configuration != null) {
-            request.baseUrl(configuration.getClientApiUrl());
-        }
+                HttpRequest request = new HttpRequest()
+                        .method("GET")
+                        .path(targetPath)
+                        .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
 
-        if (authorization instanceof TokenizationKey) {
-            request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());
-        }
+                if (isRelativeURL && configuration != null) {
+                    request.baseUrl(configuration.getClientApiUrl());
+                }
 
-        httpClient.sendRequest(request, retryStrategy, callback);
+                if (authorization instanceof TokenizationKey) {
+                    request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());
+                }
+
+                httpClient.sendRequest(request, retryStrategy, callback);
+            }
+        });
     }
 
     /**
@@ -117,50 +124,55 @@ class BraintreeHttpClient {
      * @param callback {@link HttpResponseCallback}
      * @param configuration configuration for the Braintree Android SDK.
      */
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
-        if (authorization instanceof InvalidAuthorization) {
-            String message = ((InvalidAuthorization) authorization).getErrorMessage();
-            callback.onResult(null, new BraintreeException(message));
-            return;
-        }
+    void post(final String path, final String data, final Configuration configuration, final HttpResponseCallback callback) {
+        authorizationLoader.loadAuthorization(new AuthorizationCallback() {
+            @Override
+            public void onAuthorization(@Nullable Authorization authorization, @Nullable Exception error) {
+                if (authorization instanceof InvalidAuthorization) {
+                    String message = ((InvalidAuthorization) authorization).getErrorMessage();
+                    callback.onResult(null, new BraintreeException(message));
+                    return;
+                }
 
-        boolean isRelativeURL = !path.startsWith("http");
-        if (configuration == null && isRelativeURL) {
-            String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
-            BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
-            callback.onResult(null, relativeURLNotAllowedError);
-            return;
-        }
+                boolean isRelativeURL = !path.startsWith("http");
+                if (configuration == null && isRelativeURL) {
+                    String message = "Braintree HTTP GET request without configuration cannot have a relative path.";
+                    BraintreeException relativeURLNotAllowedError = new BraintreeException(message);
+                    callback.onResult(null, relativeURLNotAllowedError);
+                    return;
+                }
 
-        String requestData;
-        if (authorization instanceof ClientToken) {
-            try {
-                requestData = new JSONObject(data)
-                        .put(AUTHORIZATION_FINGERPRINT_KEY,
-                                ((ClientToken) authorization).getAuthorizationFingerprint())
-                        .toString();
-            } catch (JSONException e) {
-                callback.onResult(null, e);
-                return;
+                String requestData;
+                if (authorization instanceof ClientToken) {
+                    try {
+                        requestData = new JSONObject(data)
+                                .put(AUTHORIZATION_FINGERPRINT_KEY,
+                                        ((ClientToken) authorization).getAuthorizationFingerprint())
+                                .toString();
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                        return;
+                    }
+                } else {
+                    requestData = data;
+                }
+
+                HttpRequest request = new HttpRequest()
+                        .method("POST")
+                        .path(path)
+                        .data(requestData)
+                        .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
+
+                if (isRelativeURL && configuration != null) {
+                    request.baseUrl(configuration.getClientApiUrl());
+                }
+
+                if (authorization instanceof TokenizationKey) {
+                    request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());
+                }
+                httpClient.sendRequest(request, callback);
             }
-        } else {
-            requestData = data;
-        }
-
-        HttpRequest request = new HttpRequest()
-                .method("POST")
-                .path(path)
-                .data(requestData)
-                .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME);
-
-        if (isRelativeURL && configuration != null) {
-            request.baseUrl(configuration.getClientApiUrl());
-        }
-
-        if (authorization instanceof TokenizationKey) {
-            request.addHeader(CLIENT_KEY_HEADER, authorization.getBearer());
-        }
-        httpClient.sendRequest(request, callback);
+        });
     }
 
     /**
@@ -171,7 +183,7 @@ class BraintreeHttpClient {
      * @param configuration configuration for the Braintree Android SDK.
      * @return the HTTP response body
      */
-    String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration, Authorization authorization) throws Exception {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             throw new BraintreeException(message);

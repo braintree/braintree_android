@@ -23,7 +23,10 @@ public abstract class AnalyticsBaseWorker extends Worker {
     protected AnalyticsClient createAnalyticsClientFromInputData() {
         Data inputData = getInputData();
         String authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION);
-        Authorization authorization = Authorization.fromString(authString);
-        return new AnalyticsClient(getApplicationContext(), authorization);
+        // TODO: consider refactoring to allow AnalyticsClient to be instantiated with
+        // an authorization string
+        AuthorizationLoader authorizationLoader =
+            new AuthorizationLoader(null, authString);
+        return new AnalyticsClient(getApplicationContext(), authorizationLoader);
     }
 }
