@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -18,17 +18,19 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Configuration;
 import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.VenmoAccountNonce;
-import com.braintreepayments.api.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.VenmoTokenizeAccountCallback;
 import com.braintreepayments.api.VenmoClient;
-import com.braintreepayments.api.VenmoOnActivityResultCallback;
+import com.braintreepayments.api.VenmoContract;
+import com.braintreepayments.api.VenmoContractInput;
+import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
+import com.braintreepayments.api.VenmoTokenizeAccountCallback;
 
 public class VenmoFragment extends BaseFragment {
 
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
 
+    ActivityResultLauncher<VenmoContractInput> venmoLauncher;
 
     @Nullable
     @Override
@@ -37,23 +39,23 @@ public class VenmoFragment extends BaseFragment {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getVenmoActivityResult().observe(getViewLifecycleOwner(), this::handleVenmoActivityResult);
-
         return view;
     }
 
-    public void handleVenmoActivityResult(ActivityResult activityResult) {
-        venmoClient.onActivityResult(getActivity(), activityResult.getResultCode(), activityResult.getData(), new VenmoOnActivityResultCallback() {
-            @Override
-            public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                if (error != null) {
-                    handleError(error);
-                } else {
-                    handleVenmoResult(venmoAccountNonce);
-                }
-            }
-        });
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        venmoLauncher = registerForActivityResult(new VenmoContract(),
+            result -> venmoClient.onVenmoResult(requireActivity(), result, this::handleVenmoActivityResult));
+    }
+
+    public void handleVenmoActivityResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
+        if (error != null) {
+            handleError(error);
+        } else {
+            handleVenmoResult(venmoAccountNonce);
+        }
     }
 
     private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
@@ -76,7 +78,7 @@ public class VenmoFragment extends BaseFragment {
             @Override
             public void onResult(@Nullable BraintreeClient braintreeClient) {
                 if (braintreeClient != null) {
-                    venmoClient = new VenmoClient(braintreeClient);
+                    venmoClient = new VenmoClient(braintreeClient, venmoLauncher);
 
                     braintreeClient.getConfiguration(new ConfigurationCallback() {
                         @Override
