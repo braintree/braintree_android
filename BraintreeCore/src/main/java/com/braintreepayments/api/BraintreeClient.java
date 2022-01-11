@@ -32,26 +32,26 @@ public class BraintreeClient {
     private final String integrationType;
     private final String returnUrlScheme;
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, BraintreeAuthProvider authProvider) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, null, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, authProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
-        return createDefaultParams(context, authString, null, returnUrlScheme, null, IntegrationType.CUSTOM);
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, BraintreeAuthProvider authProvider, String returnUrlScheme) {
+        return createDefaultParams(context, authString, authProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, BraintreeAuthProvider authProvider, String sessionId, @IntegrationType.Integration String integrationType) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, null, returnUrlScheme, sessionId, integrationType);
+        return createDefaultParams(context, authString, authProvider, returnUrlScheme, sessionId, integrationType);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, BraintreeAuthProvider authProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
@@ -79,7 +79,17 @@ public class BraintreeClient {
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
-        this(createDefaultParams(context, authorization));
+        this(createDefaultParams(context, authorization, null));
+    }
+
+    /**
+     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
+     *
+     * @param context       Android Context
+     * @param authProvider The AuthProvider used to fetch a client token
+     */
+    public BraintreeClient(@NonNull Context context, @NonNull BraintreeAuthProvider authProvider) {
+        this(createDefaultParams(context, null, authProvider));
     }
 
     /**
@@ -94,11 +104,11 @@ public class BraintreeClient {
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String returnUrlScheme) {
-        this(createDefaultParams(context, authorization, returnUrlScheme));
+        this(createDefaultParams(context, authorization, null, returnUrlScheme));
     }
 
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
-        this(createDefaultParams(context, authorization, sessionId, integrationType));
+        this(createDefaultParams(context, authorization, null, sessionId, integrationType));
     }
 
     @VisibleForTesting

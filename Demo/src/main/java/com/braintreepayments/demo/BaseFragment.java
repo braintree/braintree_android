@@ -6,6 +6,7 @@ import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public abstract class BaseFragment extends Fragment {
@@ -46,10 +47,11 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    protected void getBraintreeClient(BraintreeClientCallback callback) {
+    protected BraintreeClient getBraintreeClient() {
         DemoActivity demoActivity = getDemoActivity();
         if (demoActivity != null) {
-            demoActivity.getBraintreeClient(callback);
+            return demoActivity.getBraintreeClient();
         }
+        return null;
     }
 }

@@ -24,6 +24,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.BrowserSwitchResult;
@@ -78,14 +79,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private UnionPayClient unionPayClient;
     private DataCollector dataCollector;
 
+    private String cardFormActionLabel;
+
     private ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_card, container, false);
+        cardFormActionLabel = getString(R.string.purchase);
 
+        View view = inflater.inflate(R.layout.fragment_card, container, false);
         cardForm = view.findViewById(R.id.card_form);
+
         cardForm.setOnFormFieldFocusedListener(this);
         cardForm.setOnCardFormSubmitListener(this);
 
@@ -142,35 +147,34 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
-        getBraintreeClient(braintreeClient -> {
-            final AppCompatActivity activity = (AppCompatActivity) getActivity();
-            americanExpressClient = new AmericanExpressClient(braintreeClient);
-            cardClient = new CardClient(braintreeClient);
-            threeDSecureClient = new ThreeDSecureClient(braintreeClient, threeDSecureLauncher);
-            unionPayClient = new UnionPayClient(braintreeClient);
-            dataCollector = new DataCollector(braintreeClient);
+        BraintreeClient braintreeClient = getBraintreeClient();
 
-            purchaseButton.setEnabled(true);
-            autofillButton.setEnabled(true);
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        americanExpressClient = new AmericanExpressClient(braintreeClient);
+        cardClient = new CardClient(braintreeClient);
+        threeDSecureClient = new ThreeDSecureClient(braintreeClient, threeDSecureLauncher);
+        unionPayClient = new UnionPayClient(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
 
-            braintreeClient.getConfiguration((configuration, configError) -> {
-                if (configuration != null) {
-                    cardForm.cardRequired(true)
-                            .expirationRequired(true)
-                            .cvvRequired(configuration.isCvvChallengePresent())
-                            .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                            .mobileNumberRequired(false)
-                            .actionLabel(getString(R.string.purchase))
-                            .setup(activity);
+        purchaseButton.setEnabled(true);
+        autofillButton.setEnabled(true);
 
-                    if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                        dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
-                    }
-                } else {
-                    handleError(configError);
+        braintreeClient.getConfiguration((configuration, configError) -> {
+            if (configuration != null) {
+                cardForm.cardRequired(true)
+                        .expirationRequired(true)
+                        .cvvRequired(configuration.isCvvChallengePresent())
+                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                        .mobileNumberRequired(false)
+                        .actionLabel(cardFormActionLabel)
+                        .setup(activity);
+
+                if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                    dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
                 }
-            });
-
+            } else {
+                handleError(configError);
+            }
         });
     }
 
@@ -215,7 +219,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         smsCode.setText("");
 
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        getBraintreeClient((braintreeClient) -> braintreeClient.getConfiguration((configuration, error) -> {
+        BraintreeClient braintreeClient = getBraintreeClient();
+
+        braintreeClient.getConfiguration((configuration, error) -> {
+
             if (capabilities.isUnionPay()) {
                 if (!capabilities.isSupported()) {
                     cardForm.setCardNumberError("Card not accepted");
@@ -229,7 +236,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .cvvRequired(true)
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
                         .mobileNumberRequired(true)
-                        .actionLabel(getString(R.string.purchase))
+                        .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
                 sendSmsButton.setVisibility(VISIBLE);
@@ -241,14 +248,14 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .cvvRequired(configuration.isCvvChallengePresent())
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
                         .mobileNumberRequired(false)
-                        .actionLabel(getString(R.string.purchase))
+                        .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
                 if (!configuration.isCvvChallengePresent()) {
                     ((EditText) activity.findViewById(R.id.bt_card_form_cvv)).setText("");
                 }
             }
-        }));
+        });
     }
 
     public void sendSms(View v) {

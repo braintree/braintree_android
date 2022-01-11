@@ -74,35 +74,29 @@ public class VenmoFragment extends BaseFragment {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
-        getBraintreeClient(new BraintreeClientCallback() {
+        BraintreeClient braintreeClient = getBraintreeClient();
+        venmoClient = new VenmoClient(braintreeClient, venmoLauncher);
+
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(@Nullable BraintreeClient braintreeClient) {
-                if (braintreeClient != null) {
-                    venmoClient = new VenmoClient(braintreeClient, venmoLauncher);
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
+                    VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+                    venmoRequest.setProfileId(null);
+                    venmoRequest.setShouldVault(shouldVault);
 
-                    braintreeClient.getConfiguration(new ConfigurationCallback() {
+                    venmoClient.tokenizeVenmoAccount(activity, venmoRequest, new VenmoTokenizeAccountCallback() {
                         @Override
-                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                            if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                                VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-                                venmoRequest.setProfileId(null);
-                                venmoRequest.setShouldVault(shouldVault);
-
-                                venmoClient.tokenizeVenmoAccount(activity, venmoRequest, new VenmoTokenizeAccountCallback() {
-                                    @Override
-                                    public void onResult(Exception error) {
-                                        if (error != null) {
-                                            handleError(error);
-                                        }
-                                    }
-                                });
-                            } else if (configuration.isVenmoEnabled()) {
-                                showDialog("Please install the Venmo app first.");
-                            } else {
-                                showDialog("Venmo is not enabled for the current merchant.");
+                        public void onResult(Exception error) {
+                            if (error != null) {
+                                handleError(error);
                             }
                         }
                     });
+                } else if (configuration.isVenmoEnabled()) {
+                    showDialog("Please install the Venmo app first.");
+                } else {
+                    showDialog("Venmo is not enabled for the current merchant.");
                 }
             }
         });

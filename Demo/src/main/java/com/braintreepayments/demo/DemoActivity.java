@@ -37,8 +37,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
 
     private BraintreeClient braintreeClient;
-    private DemoAuthorizationProvider authProvider;
-
     private AppBarConfiguration appBarConfiguration;
 
     protected String authorization;
@@ -50,7 +48,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_demo);
 
-        authProvider = new DemoAuthorizationProvider();
+        braintreeClient =
+            new BraintreeClient(this, new DemoAuthorizationProvider(this));
+
         if (savedInstanceState != null) {
             authorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
             customerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);
@@ -76,26 +76,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-    public void getBraintreeClient(BraintreeClientCallback callback) {
-        if (braintreeClient != null) {
-            callback.onResult(braintreeClient);
-            return;
-        }
-        if (authorization != null) {
-            braintreeClient = new BraintreeClient(this, authorization);
-            callback.onResult(braintreeClient);
-            return;
-        }
-
-        authProvider.fetchAuthorization(this, (authorization, error) -> {
-            if (authorization != null) {
-                this.authorization = authorization;
-                braintreeClient = new BraintreeClient(DemoActivity.this, this.authorization);
-                callback.onResult(braintreeClient);
-            } else if (error != null) {
-                showDialog(error.getMessage());
-            }
-        });
+    public BraintreeClient getBraintreeClient() {
+        return braintreeClient;
     }
 
     @Override
@@ -164,7 +146,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setProgressBarIndeterminateVisibility(true);
 
         authorization = null;
-        braintreeClient = null;
+        braintreeClient =
+                new BraintreeClient(this, new DemoAuthorizationProvider(this));
         customerId = Settings.getCustomerId(this);
     }
 

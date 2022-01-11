@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.braintreepayments.InitializeFeatureClientsCallback;
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalVaultRequest;
@@ -52,12 +53,11 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     }
 
     private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
-        getBraintreeClient(braintreeClient -> {
-            payPalClient = new PayPalClient(braintreeClient);
-            venmoClient = new VenmoClient(braintreeClient);
-            preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
-            callback.onResult(null);
-        });
+        BraintreeClient braintreeClient = getBraintreeClient();
+        payPalClient = new PayPalClient(braintreeClient);
+        venmoClient = new VenmoClient(braintreeClient);
+        preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
+        callback.onResult(null);
     }
 
     public void launchPreferredPaymentMethods(View v) {
