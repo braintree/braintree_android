@@ -53,7 +53,7 @@ In the `AndroidManifest.xml`, migrate the `intent-filter` from your v3 integrati
 
 Additionally, apps that use both Drop-in and BraintreeClient should specify a custom url scheme, since `DropInActivity` already uses the `${applicationId}.braintree` url intent filter.
 
-If your app has multiple browser switch targets, you can specify multiple intent filters, and use the `BraintreeClient` constructor that allows you to specify a `customUrlScheme`:
+If your app has multiple browser switch targets, you can specify multiple intent filters and use the `BraintreeClient` constructor that allows you to specify a `customUrlScheme`:
 
 ```xml
 <activity android:name="com.company.app.MyPaymentsActivity1"
