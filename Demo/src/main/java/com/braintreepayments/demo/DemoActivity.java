@@ -43,7 +43,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     protected String authorization;
     protected String customerId;
-    private DemoViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +58,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
-
-        viewModel = new ViewModelProvider(this).get(DemoViewModel.class);
     }
 
     @Override
@@ -120,12 +117,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         handleAuthorizationState();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        viewModel.onActivityResult(requestCode, resultCode, data);
     }
 
     private void handleAuthorizationState() {
