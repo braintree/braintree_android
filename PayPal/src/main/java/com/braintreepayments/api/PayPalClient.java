@@ -37,11 +37,8 @@ public class PayPalClient {
         this.apiClient = apiClient;
         this.internalPayPalClient = internalPayPalClient;
 
-
-        ActivityResultRegistry activityResultRegistry =
-                fragment.requireActivity().getActivityResultRegistry();
         this.payPalBrowserSwitchObserver =
-            new PayPalBrowserSwitchObserver(activityResultRegistry, this);
+            new PayPalBrowserSwitchObserver(this);
         fragment.getLifecycle().addObserver(payPalBrowserSwitchObserver);
     }
 

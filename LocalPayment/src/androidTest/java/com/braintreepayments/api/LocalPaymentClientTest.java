@@ -49,7 +49,7 @@ public class LocalPaymentClientTest {
         request.setShippingAddressRequired(true);
         request.setCurrencyCode("EUR");
 
-        LocalPaymentClient sut = new LocalPaymentClient(braintreeClient);
+        LocalPaymentClient sut = new LocalPaymentClient(, braintreeClient);
         sut.startPayment(request, new LocalPaymentStartCallback() {
             @Override
             public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {

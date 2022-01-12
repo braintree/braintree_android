@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,23 +9,21 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchException;
-import com.braintreepayments.api.BrowserSwitchListener;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
+import com.braintreepayments.api.LocalPaymentListener;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.PostalAddress;
 
 import org.json.JSONException;
 
-public class LocalPaymentFragment extends BaseFragment implements BrowserSwitchListener {
+public class LocalPaymentFragment extends BaseFragment implements LocalPaymentListener {
 
+    private BraintreeClient braintreeClient;
     private LocalPaymentClient localPaymentClient;
 
     @Nullable
@@ -37,14 +36,23 @@ public class LocalPaymentFragment extends BaseFragment implements BrowserSwitchL
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
+        localPaymentClient = new LocalPaymentClient(this, braintreeClient);
+        localPaymentClient.setLocalPaymentListener(this);
+    }
+
     public void launchIdeal(View v) {
-        BraintreeClient braintreeClient = getBraintreeClient();
         if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(getActivity()))) {
             handleError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
             return;
         }
 
-        localPaymentClient = new LocalPaymentClient(braintreeClient);
         PostalAddress address = new PostalAddress();
         address.setStreetAddress("Stadhouderskade 78");
         address.setCountryCodeAlpha2("NL");
@@ -79,22 +87,16 @@ public class LocalPaymentFragment extends BaseFragment implements BrowserSwitchL
     }
 
     @Override
-    public void onBrowserSwitchResult(BrowserSwitchResult result) {
-        if (result.getRequestCode() == BraintreeRequestCodes.LOCAL_PAYMENT) {
-            localPaymentClient.onBrowserSwitchResult(requireActivity(), result, this::handleLocalPaymentResult);
-        }
-    }
-
-    protected void handleLocalPaymentResult(LocalPaymentNonce localPaymentNonce, Exception error) {
+    public void onLocalPaymentSuccess(LocalPaymentNonce localPaymentNonce) {
         super.onPaymentMethodNonceCreated(localPaymentNonce);
-
-        if (error != null) {
-            handleError(error);
-            return;
-        }
 
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
                 LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    @Override
+    public void onLocalPaymentError(Exception error) {
+        handleError(error);
     }
 }

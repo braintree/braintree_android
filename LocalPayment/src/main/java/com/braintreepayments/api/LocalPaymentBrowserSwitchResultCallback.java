@@ -1,12 +1,10 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)}.
+ * {@link LocalPaymentClient#onBrowserSwitchResult(BrowserSwitchResult)}.
  */
 public interface LocalPaymentBrowserSwitchResultCallback {
 

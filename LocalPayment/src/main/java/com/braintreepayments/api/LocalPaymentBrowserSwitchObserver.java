@@ -6,12 +6,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
-public class PayPalBrowserSwitchObserver implements DefaultLifecycleObserver {
+public class LocalPaymentBrowserSwitchObserver implements DefaultLifecycleObserver {
 
-    private final PayPalClient payPalClient;
+    private final LocalPaymentClient localPaymentClient;
 
-    PayPalBrowserSwitchObserver(PayPalClient payPalClient) {
-        this.payPalClient = payPalClient;
+    LocalPaymentBrowserSwitchObserver(LocalPaymentClient localPaymentClient) {
+        this.localPaymentClient = localPaymentClient;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class PayPalBrowserSwitchObserver implements DefaultLifecycleObserver {
         }
 
         if (activity != null) {
-            payPalClient.deliverBrowserSwitchResult(activity);
+            localPaymentClient.deliverBrowserSwitchResult(activity);
         }
     }
 

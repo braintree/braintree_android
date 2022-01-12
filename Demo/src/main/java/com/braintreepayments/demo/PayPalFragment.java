@@ -45,6 +45,18 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
+        dataCollector = new DataCollector(braintreeClient);
+        payPalClient = new PayPalClient(this, braintreeClient);
+        payPalClient.setPayPalListener(this);
+    }
+
     public void launchSinglePayment(View v) {
         launchPayPal(false);
     }
@@ -56,13 +68,6 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
     private void launchPayPal(boolean isBillingAgreement) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
-
-        Context context = requireContext();
-        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
-
-        dataCollector = new DataCollector(braintreeClient);
-        payPalClient = new PayPalClient(this, braintreeClient);
-        payPalClient.setPayPalListener(this);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {

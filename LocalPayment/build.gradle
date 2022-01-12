@@ -28,6 +28,7 @@ android {
 
 dependencies {
     implementation deps.appCompat
+    implementation deps.lifecycleRuntime
 
     api project(':BraintreeCore')
     implementation project(':BraintreeDataCollector')
