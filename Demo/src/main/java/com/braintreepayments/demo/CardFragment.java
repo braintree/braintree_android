@@ -24,7 +24,6 @@ import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeRequestCodes;
-import com.braintreepayments.api.BrowserSwitchListener;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
@@ -50,7 +49,7 @@ import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchListener, ThreeDSecureListener {
+public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
@@ -327,23 +326,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillExpirationDate("01/27");
         autofillHelper.fillCVV("123");
         autofillHelper.fillPostalCode("12345");
-    }
-
-    @Override
-    public void onBrowserSwitchResult(BrowserSwitchResult result) {
-        if (result.getRequestCode() == BraintreeRequestCodes.THREE_D_SECURE) {
-            threeDSecureClient.onBrowserSwitchResult(result);
-        }
-    }
-
-    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-        safelyCloseLoadingView();
-        if (threeDSecureResult != null) {
-            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
-            handlePaymentMethodNonceCreated(paymentMethodNonce);
-        } else {
-            handleError(error);
-        }
     }
 
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
