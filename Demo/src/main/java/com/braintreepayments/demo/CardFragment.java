@@ -332,7 +332,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     @Override
     public void onBrowserSwitchResult(BrowserSwitchResult result) {
         if (result.getRequestCode() == BraintreeRequestCodes.THREE_D_SECURE) {
-            threeDSecureClient.onBrowserSwitchResult(result, this::handleThreeDSecureResult);
+            threeDSecureClient.onBrowserSwitchResult(result);
         }
     }
 

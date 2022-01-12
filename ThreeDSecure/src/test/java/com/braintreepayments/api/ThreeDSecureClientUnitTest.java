@@ -268,7 +268,7 @@ public class ThreeDSecureClientUnitTest {
                 new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, uri);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
+        sut.onBrowserSwitchResult(browserSwitchResult);
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(threeDSecureResultCallback).onResult(captor.capture(), (Exception) isNull());
@@ -294,7 +294,7 @@ public class ThreeDSecureClientUnitTest {
                 new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, uri);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
+        sut.onBrowserSwitchResult(browserSwitchResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shifted.true");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shift-possible.true");
@@ -318,7 +318,7 @@ public class ThreeDSecureClientUnitTest {
                 new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, uri);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
+        sut.onBrowserSwitchResult(browserSwitchResult);
 
         ArgumentCaptor<ErrorWithResponse> captor = ArgumentCaptor.forClass(ErrorWithResponse.class);
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
@@ -334,7 +334,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.onBrowserSwitchResult(null, threeDSecureResultCallback);
+        sut.onBrowserSwitchResult(null);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
@@ -353,7 +353,7 @@ public class ThreeDSecureClientUnitTest {
                 new BrowserSwitchResult(BrowserSwitchStatus.CANCELED, null, null);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.onBrowserSwitchResult(browserSwitchResult, threeDSecureResultCallback);
+        sut.onBrowserSwitchResult(browserSwitchResult);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());

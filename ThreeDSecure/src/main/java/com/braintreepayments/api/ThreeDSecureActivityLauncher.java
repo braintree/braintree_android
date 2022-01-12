@@ -4,6 +4,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -37,6 +39,16 @@ class ThreeDSecureActivityLauncher implements DefaultLifecycleObserver {
 
     @Override
     public void onResume(@NonNull LifecycleOwner owner) {
+        FragmentActivity activity = null;
+        if (owner instanceof FragmentActivity) {
+            activity = (FragmentActivity) owner;
+        } else if (owner instanceof Fragment) {
+            activity = ((Fragment) owner).getActivity();
+        }
+
+        if (activity != null) {
+            threeDSecureClient.deliverBrowserSwitchResult(activity);
+        }
     }
 
     @Override

@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -340,19 +338,21 @@ public class ThreeDSecureClient {
 
     /**
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link ThreeDSecureResultCallback}
+     *
      */
-    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final ThreeDSecureResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
         // V1 flow
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            Exception unknownError = new BraintreeException("BrowserSwitchResult cannot be null");
+            threeDSecureListener.onThreeDSecureVerificationFailure(unknownError);
             return;
         }
         int status = browserSwitchResult.getStatus();
         switch (status) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
+                Exception userCanceledException = new UserCanceledException("User canceled 3DS.");
+                threeDSecureListener.onThreeDSecureVerificationFailure(userCanceledException);
                 break;
             case BrowserSwitchStatus.SUCCESS:
             default:
@@ -362,12 +362,14 @@ public class ThreeDSecureClient {
                     try {
                         ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
                         if (result.hasError()) {
-                            callback.onResult(null, new ErrorWithResponse(422, authResponse));
+                            Exception threeDSecureError =
+                                new ErrorWithResponse(422, authResponse);
+                            threeDSecureListener.onThreeDSecureVerificationFailure(threeDSecureError);
                         } else {
                             notify3DSComplete(result);
                         }
                     } catch (JSONException e) {
-                        callback.onResult(null, e);
+                        threeDSecureListener.onThreeDSecureVerificationFailure(e);
                     }
                 }
                 break;
@@ -467,5 +469,13 @@ public class ThreeDSecureClient {
 
     public void setThreeDSecureListener(ThreeDSecureListener threeDSecureListener) {
         this.threeDSecureListener = threeDSecureListener;
+    }
+
+    public void deliverBrowserSwitchResult(FragmentActivity activity) {
+        BrowserSwitchResult browserSwitchResult =
+            braintreeClient.deliverBrowserSwitchResult(activity);
+        if (browserSwitchResult != null) {
+            onBrowserSwitchResult(browserSwitchResult);
+        }
     }
 }
