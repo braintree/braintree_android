@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -77,6 +78,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private DataCollector dataCollector;
 
     private String cardFormActionLabel;
+    private BraintreeClient braintreeClient;
 
     @Nullable
     @Override
@@ -120,11 +122,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             }
         }
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        americanExpressClient = new AmericanExpressClient(braintreeClient);
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
         cardClient = new CardClient(braintreeClient);
-        unionPayClient = new UnionPayClient(braintreeClient);
         dataCollector = new DataCollector(braintreeClient);
+        unionPayClient = new UnionPayClient(braintreeClient);
+        americanExpressClient = new AmericanExpressClient(braintreeClient);
 
         threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
         threeDSecureClient.setThreeDSecureListener(this);
