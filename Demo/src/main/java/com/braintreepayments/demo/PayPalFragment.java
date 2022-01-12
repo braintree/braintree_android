@@ -1,5 +1,8 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,18 +16,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeRequestCodes;
-import com.braintreepayments.api.BrowserSwitchListener;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
 
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
-
-public class PayPalFragment extends BaseFragment implements BrowserSwitchListener, PayPalListener {
+public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private BraintreeClient braintreeClient;
 
@@ -77,13 +74,6 @@ public class PayPalFragment extends BaseFragment implements BrowserSwitchListene
                 payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
             }
         });
-    }
-
-    @Override
-    public void onBrowserSwitchResult(BrowserSwitchResult result) {
-        if (result.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
-            payPalClient.onBrowserSwitchResult(result);
-        }
     }
 
     @Override
