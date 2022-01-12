@@ -347,7 +347,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", mock(ThreeDSecureResultCallback.class));
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
@@ -369,7 +369,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
@@ -396,7 +396,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
@@ -420,7 +420,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
@@ -449,7 +449,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
@@ -471,7 +471,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt");
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());

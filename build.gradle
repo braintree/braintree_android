@@ -40,6 +40,8 @@ buildscript {
             "work"                       : "androidx.work:work-runtime:2.7.0-alpha05",
             "workTesting"                : "androidx.work:work-testing:2.5.0",
 
+            "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.4.0",
+
             "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
             "roomRuntime"                : "androidx.room:room-runtime:${versions.room}",
 

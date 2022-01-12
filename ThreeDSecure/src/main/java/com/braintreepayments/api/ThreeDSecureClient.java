@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -38,7 +39,7 @@ public class ThreeDSecureClient {
     private ThreeDSecureListener threeDSecureListener;
 
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
-    private final ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher;
+    private final ThreeDSecureActivityLauncher activityLauncher;
 
     public ThreeDSecureClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment, braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
@@ -50,21 +51,11 @@ public class ThreeDSecureClient {
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
 
-        this.threeDSecureLauncher = fragment.registerForActivityResult(new ThreeDSecureContract(), new ActivityResultCallback<CardinalResult>() {
-            @Override
-            public void onActivityResult(CardinalResult result) {
-                onCardinalResult(result, new ThreeDSecureResultCallback() {
-                    @Override
-                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                        if (threeDSecureResult != null) {
-                            threeDSecureListener.onThreeDSecureVerificationSuccess(threeDSecureResult);
-                        } else if (error != null) {
-                            threeDSecureListener.onThreeDSecureVerificationFailure(error);
-                        }
-                    }
-                });
-            }
-        });
+        ActivityResultRegistry activityResultRegistry =
+            fragment.requireActivity().getActivityResultRegistry();
+        this.activityLauncher =
+            new ThreeDSecureActivityLauncher(activityResultRegistry, this);
+        fragment.getLifecycle().addObserver(activityLauncher);
     }
 
     /**
@@ -283,8 +274,8 @@ public class ThreeDSecureClient {
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
-        if (threeDSecureLauncher != null) {
-            threeDSecureLauncher.launch(result);
+        if (activityLauncher != null) {
+            activityLauncher.launch(result);
         } else {
             Bundle extras = new Bundle();
             extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
@@ -296,16 +287,16 @@ public class ThreeDSecureClient {
         }
     }
 
-    private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
+    private void notify3DSComplete(ThreeDSecureResult result) {
         ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
-        callback.onResult(result, null);
+        threeDSecureListener.onThreeDSecureVerificationSuccess(result);
     }
 
-    void authenticateCardinalJWT(final ThreeDSecureResult threeDSecureResult, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
+    void authenticateCardinalJWT(final ThreeDSecureResult threeDSecureResult, final String cardinalJWT) {
         final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
 
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
@@ -334,14 +325,14 @@ public class ThreeDSecureClient {
                         } else {
                             braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                         }
-                        notify3DSComplete(result, callback);
+                        notify3DSComplete(result);
 
                     } catch (JSONException e) {
-                        callback.onResult(null, e);
+                        threeDSecureListener.onThreeDSecureVerificationFailure(e);
                     }
                 } else {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
-                    callback.onResult(null, httpError);
+                    threeDSecureListener.onThreeDSecureVerificationFailure(httpError);
                 }
             }
         });
@@ -373,7 +364,7 @@ public class ThreeDSecureClient {
                         if (result.hasError()) {
                             callback.onResult(null, new ErrorWithResponse(422, authResponse));
                         } else {
-                            notify3DSComplete(result, callback);
+                            notify3DSComplete(result);
                         }
                     } catch (JSONException e) {
                         callback.onResult(null, e);
@@ -383,7 +374,7 @@ public class ThreeDSecureClient {
         }
     }
 
-    public void onCardinalResult(CardinalResult cardinalResult, ThreeDSecureResultCallback callback) {
+    public void onCardinalResult(CardinalResult cardinalResult) {
 
         String jwt = cardinalResult.getJwt();
         ValidateResponse validateResponse = cardinalResult.getValidateResponse();
@@ -395,17 +386,20 @@ public class ThreeDSecureClient {
             case FAILURE:
             case SUCCESS:
             case NOACTION:
-                authenticateCardinalJWT(threeDSecureResult, jwt, callback);
+                authenticateCardinalJWT(threeDSecureResult, jwt);
 
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                 break;
             case ERROR:
             case TIMEOUT:
-                callback.onResult(null, new BraintreeException(validateResponse.getErrorDescription()));
+                Exception timeoutError =
+                    new BraintreeException(validateResponse.getErrorDescription());
+                threeDSecureListener.onThreeDSecureVerificationFailure(timeoutError);
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                 break;
             case CANCEL:
-                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
+                Exception canceledError = new UserCanceledException("User canceled 3DS.");
+                threeDSecureListener.onThreeDSecureVerificationFailure(canceledError);
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                 break;
         }
@@ -433,7 +427,7 @@ public class ThreeDSecureClient {
             case FAILURE:
             case SUCCESS:
             case NOACTION:
-                authenticateCardinalJWT(threeDSecureResult, jwt, callback);
+                authenticateCardinalJWT(threeDSecureResult, jwt);
 
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                 break;

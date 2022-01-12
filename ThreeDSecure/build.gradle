@@ -31,9 +31,10 @@ android {
 dependencies {
     api project(':BraintreeCore')
     api project(':Card')
-    implementation deps.cardinal
 
+    implementation deps.cardinal
     implementation deps.appCompat
+    implementation deps.lifecycleRuntime
 
     androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
