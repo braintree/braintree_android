@@ -30,6 +30,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
+    implementation deps.lifecycleRuntime
     implementation project(':BraintreeDataCollector')
 
     testImplementation deps.robolectric

@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,21 +10,23 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeRequestCodes;
 import com.braintreepayments.api.BrowserSwitchListener;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalListener;
 
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
-public class PayPalFragment extends BaseFragment implements BrowserSwitchListener {
+public class PayPalFragment extends BaseFragment implements BrowserSwitchListener, PayPalListener {
+
+    private BraintreeClient braintreeClient;
 
     private String deviceData;
     private PayPalClient payPalClient;
@@ -57,26 +60,21 @@ public class PayPalFragment extends BaseFragment implements BrowserSwitchListene
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalClient(braintreeClient);
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
         dataCollector = new DataCollector(braintreeClient);
+        payPalClient = new PayPalClient(this, braintreeClient);
+        payPalClient.setPayPalListener(this);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
                 dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
             }
             if (isBillingAgreement) {
-                payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
-                    if (payPalError != null) {
-                        handleError(payPalError);
-                    }
-                });
+                payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
             } else {
-                payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
-                    if (payPalError != null) {
-                        handleError(payPalError);
-                    }
-                });
+                payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
             }
         });
     }
@@ -84,17 +82,23 @@ public class PayPalFragment extends BaseFragment implements BrowserSwitchListene
     @Override
     public void onBrowserSwitchResult(BrowserSwitchResult result) {
         if (result.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
-            payPalClient.onBrowserSwitchResult(result, (paymentMethodNonce, error) -> {
-                if (paymentMethodNonce != null) {
-                    super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
-                    PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                            PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
-                    action.setDeviceData(deviceData);
-
-                    NavHostFragment.findNavController(this).navigate(action);
-                }
-            });
+            payPalClient.onBrowserSwitchResult(result);
         }
+    }
+
+    @Override
+    public void onPayPalTokenizeSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
+        super.onPaymentMethodNonceCreated(payPalAccountNonce);
+
+        PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
+                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(payPalAccountNonce);
+        action.setDeviceData(deviceData);
+
+        NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    @Override
+    public void onPayPalTokenizeError(@NonNull Exception error) {
+        handleError(error);
     }
 }

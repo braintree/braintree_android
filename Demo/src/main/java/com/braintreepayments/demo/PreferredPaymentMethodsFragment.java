@@ -54,7 +54,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
     private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
         BraintreeClient braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalClient(braintreeClient);
+        payPalClient = new PayPalClient(this, braintreeClient);
         venmoClient = new VenmoClient(braintreeClient);
         preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
         callback.onResult(null);
@@ -80,11 +80,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
         initializeFeatureClients(initError -> {
             PayPalCheckoutRequest payPalRequest = createPayPalCheckoutRequest(getActivity(), "1.00");
-            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
-                if (requestError != null) {
-                    handleError(requestError);
-                }
-            });
+            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
         });
     }
 
@@ -93,11 +89,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
         initializeFeatureClients(initError -> {
             PayPalVaultRequest payPalRequest = createPayPalVaultRequest(getActivity());
-            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
-                if (requestError != null) {
-                    handleError(requestError);
-                }
-            });
+            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
         });
     }
 
