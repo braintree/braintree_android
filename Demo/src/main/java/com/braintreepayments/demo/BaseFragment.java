@@ -32,17 +32,10 @@ public abstract class BaseFragment extends Fragment {
         showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
 
-    protected DemoActivity getDemoActivity() {
+    protected void showDialog(String message) {
         FragmentActivity activity = getActivity();
         if (activity instanceof DemoActivity) {
-            return ((DemoActivity) activity);
-        }
-        return null;
-    }
-
-    protected void showDialog(String message) {
-        DemoActivity demoActivity = getDemoActivity();
-        if (demoActivity != null) {
+            DemoActivity demoActivity = ((DemoActivity) activity);
             demoActivity.showDialog(message);
         }
     }
