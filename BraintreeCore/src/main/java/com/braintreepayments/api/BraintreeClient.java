@@ -22,8 +22,6 @@ public class BraintreeClient {
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLClient graphQLClient;
     private final BrowserSwitchClient browserSwitchClient;
-    private final BrowserSwitchLauncher browserSwitchLauncher;
-    private final BrowserSwitchObserver browserSwitchObserver;
     private final ConfigurationLoader configurationLoader;
     private final Context applicationContext;
     private final CrashReporter crashReporter;
@@ -66,7 +64,7 @@ public class BraintreeClient {
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient(authorizationLoader))
                 .analyticsClient(new AnalyticsClient(context, authorizationLoader))
-                .browserSwitchLauncher(new BrowserSwitchLauncher())
+                .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
                 .configurationLoader(new ConfigurationLoader(httpClient));
@@ -116,13 +114,11 @@ public class BraintreeClient {
         this.analyticsClient = params.getAnalyticsClient();
         this.applicationContext = params.getContext().getApplicationContext();
         this.authorizationLoader = params.getAuthorizationLoader();
-        this.browserSwitchLauncher = params.getBrowserSwitchLauncher();
+        this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLClient = params.getGraphQLClient();
         this.httpClient = params.getHttpClient();
         this.manifestValidator = params.getManifestValidator();
-        this.browserSwitchObserver = new BrowserSwitchObserver();
-        this.browserSwitchClient = new BrowserSwitchClient();
 
         String sessionId = params.getSessionId();
         if (sessionId == null) {
@@ -209,7 +205,7 @@ public class BraintreeClient {
     }
 
     void startBrowserSwitch(FragmentActivity activity, BrowserSwitchOptions browserSwitchOptions) throws BrowserSwitchException {
-        if (browserSwitchLauncher != null) {
+        if (browserSwitchClient != null) {
             browserSwitchClient.start(activity, browserSwitchOptions);
         }
     }
@@ -236,7 +232,7 @@ public class BraintreeClient {
                 .requestCode(requestCode);
         boolean result = true;
         try {
-            browserSwitchLauncher.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
+            browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
         } catch (BrowserSwitchException e) {
             result = false;
         }

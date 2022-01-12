@@ -16,7 +16,7 @@ class BraintreeClientParams {
 
     private String returnUrlScheme;
     private ConfigurationLoader configurationLoader;
-    private BrowserSwitchLauncher browserSwitchLauncher;
+    private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
     private UUIDHelper uuidHelper;
 
@@ -83,12 +83,12 @@ class BraintreeClientParams {
         return this;
     }
 
-    BrowserSwitchLauncher getBrowserSwitchLauncher() {
-        return browserSwitchLauncher;
+    BrowserSwitchClient getBrowserSwitchClient() {
+        return browserSwitchClient;
     }
 
-    BraintreeClientParams browserSwitchLauncher(BrowserSwitchLauncher browserSwitchClient) {
-        this.browserSwitchLauncher = browserSwitchClient;
+    BraintreeClientParams browserSwitchClient(BrowserSwitchClient browserSwitchClient) {
+        this.browserSwitchClient = browserSwitchClient;
         return this;
     }
 
