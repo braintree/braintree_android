@@ -23,8 +23,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeRequestCodes;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
