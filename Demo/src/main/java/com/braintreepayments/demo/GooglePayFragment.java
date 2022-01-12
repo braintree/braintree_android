@@ -1,39 +1,34 @@
 package com.braintreepayments.demo;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.GooglePayContract;
-import com.braintreepayments.api.GooglePayContractInput;
-import com.braintreepayments.api.GooglePayResult;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
+import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.GooglePayRequest;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
-public class GooglePayFragment extends BaseFragment {
+public class GooglePayFragment extends BaseFragment implements GooglePayListener {
 
     private ImageButton googlePayButton;
     private GooglePayClient googlePayClient;
 
-    ActivityResultLauncher<GooglePayContractInput> googlePayLauncher;
+    private BraintreeClient braintreeClient;
 
     @Nullable
     @Override
@@ -46,18 +41,19 @@ public class GooglePayFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        googlePayLauncher = registerForActivityResult(new GooglePayContract(),
-                result -> googlePayClient.onGooglePayResult(result, this::handleGooglePayActivityResult));
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
+        googlePayClient = new GooglePayClient(this, braintreeClient);
+        googlePayClient.setGooglePayListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        BraintreeClient braintreeClient = getBraintreeClient();
-        googlePayClient = new GooglePayClient(braintreeClient, googlePayLauncher);
 
         braintreeClient.getConfiguration((configuration, error) -> {
             if (configuration == null) {
@@ -119,19 +115,21 @@ public class GooglePayFragment extends BaseFragment {
         });
     }
 
-    private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-        if (error != null) {
-            handleError(error);
-        } else {
-            handleGooglePayActivityResult(paymentMethodNonce);
-        }
-    }
-
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         NavDirections action =
                 GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    @Override
+    public void onGooglePayTokenizeSuccess(@NonNull PaymentMethodNonce paymentMethodNonce) {
+        handleGooglePayActivityResult(paymentMethodNonce);
+    }
+
+    @Override
+    public void onGooglePayTokenizeError(@NonNull Exception error) {
+        handleError(error);
     }
 }

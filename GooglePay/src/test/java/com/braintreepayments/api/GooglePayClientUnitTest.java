@@ -962,7 +962,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.tokenize(pd, activityResultCallback);
+        sut.tokenize(pd);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
@@ -995,7 +995,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.tokenize(pd, activityResultCallback);
+        sut.tokenize(pd);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
