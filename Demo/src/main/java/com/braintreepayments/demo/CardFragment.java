@@ -152,7 +152,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillButton.setEnabled(true);
 
         final AppCompatActivity activity = (AppCompatActivity) requireActivity();
-        BraintreeClient braintreeClient = getBraintreeClient();
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
                 cardForm.cardRequired(true)
@@ -213,8 +212,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         smsCode.setText("");
 
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        BraintreeClient braintreeClient = getBraintreeClient();
-
         braintreeClient.getConfiguration((configuration, error) -> {
 
             if (capabilities.isUnionPay()) {

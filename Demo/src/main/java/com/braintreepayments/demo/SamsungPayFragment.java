@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
 
     private Button samsungPayButton;
     private SamsungPayClient samsungPayClient;
+    private BraintreeClient braintreeClient;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,7 +46,10 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
     @Override
     public void onResume() {
         super.onResume();
-        BraintreeClient braintreeClient = getBraintreeClient();
+
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
         samsungPayClient = new SamsungPayClient(braintreeClient);
         setupSamsungPayButton();
     }

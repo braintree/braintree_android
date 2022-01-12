@@ -46,12 +46,4 @@ public abstract class BaseFragment extends Fragment {
             demoActivity.showDialog(message);
         }
     }
-
-    protected BraintreeClient getBraintreeClient() {
-        DemoActivity demoActivity = getDemoActivity();
-        if (demoActivity != null) {
-            return demoActivity.getBraintreeClient();
-        }
-        return null;
-    }
 }
