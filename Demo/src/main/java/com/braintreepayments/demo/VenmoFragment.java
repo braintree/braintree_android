@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -19,18 +19,17 @@ import com.braintreepayments.api.Configuration;
 import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
-import com.braintreepayments.api.VenmoContract;
-import com.braintreepayments.api.VenmoContractInput;
+import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
 import com.braintreepayments.api.VenmoTokenizeAccountCallback;
 
-public class VenmoFragment extends BaseFragment {
+public class VenmoFragment extends BaseFragment implements VenmoListener {
 
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
 
-    ActivityResultLauncher<VenmoContractInput> venmoLauncher;
+    private BraintreeClient braintreeClient;
 
     @Nullable
     @Override
@@ -46,16 +45,11 @@ public class VenmoFragment extends BaseFragment {
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        venmoLauncher = registerForActivityResult(new VenmoContract(),
-            result -> venmoClient.onVenmoResult(requireActivity(), result, this::handleVenmoActivityResult));
-    }
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
 
-    public void handleVenmoActivityResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-        if (error != null) {
-            handleError(error);
-        } else {
-            handleVenmoResult(venmoAccountNonce);
-        }
+        venmoClient = new VenmoClient(this, braintreeClient);
+        venmoClient.setVenmoListener(this);
     }
 
     private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
@@ -70,12 +64,8 @@ public class VenmoFragment extends BaseFragment {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         FragmentActivity activity = getActivity();
-
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
-
-        BraintreeClient braintreeClient = getBraintreeClient();
-        venmoClient = new VenmoClient(braintreeClient, venmoLauncher);
 
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -100,5 +90,15 @@ public class VenmoFragment extends BaseFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onVenmoTokenizeSuccess(@NonNull VenmoAccountNonce venmoAccountNonce) {
+        handleVenmoResult(venmoAccountNonce);
+    }
+
+    @Override
+    public void onVenmoTokenizeError(@NonNull Exception error) {
+        handleError(error);
     }
 }

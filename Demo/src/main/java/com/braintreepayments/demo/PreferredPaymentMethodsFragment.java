@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     private Button singlePaymentButton;
     private Button venmoButton;
 
+    private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
     private VenmoClient venmoClient;
     private PreferredPaymentMethodsClient preferredPaymentMethodsClient;
@@ -52,59 +54,55 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
         return view;
     }
 
-    private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
-        BraintreeClient braintreeClient = getBraintreeClient();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Context context = requireContext();
+        braintreeClient = new BraintreeClient(context, new DemoAuthorizationProvider(context));
+
         payPalClient = new PayPalClient(this, braintreeClient);
-        venmoClient = new VenmoClient(braintreeClient);
+        venmoClient = new VenmoClient(this, braintreeClient);
         preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
-        callback.onResult(null);
     }
 
     public void launchPreferredPaymentMethods(View v) {
-        initializeFeatureClients(error -> {
-            preferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
-            preferredPaymentMethodsClient.fetchPreferredPaymentMethods(getActivity(), result -> {
-                String formatString = "PayPal Preferred: %b\nVenmo Preferred: %b";
-                preferredPaymentMethodsTextView.setText(
-                        String.format(formatString, result.isPayPalPreferred(), result.isVenmoPreferred()));
+        preferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
+        preferredPaymentMethodsClient.fetchPreferredPaymentMethods(getActivity(), result -> {
+            String formatString = "PayPal Preferred: %b\nVenmo Preferred: %b";
+            preferredPaymentMethodsTextView.setText(
+                    String.format(formatString, result.isPayPalPreferred(), result.isVenmoPreferred()));
 
-                billingAgreementButton.setEnabled(result.isPayPalPreferred());
-                singlePaymentButton.setEnabled(result.isPayPalPreferred());
-                venmoButton.setEnabled(result.isVenmoPreferred());
-            });
+            billingAgreementButton.setEnabled(result.isPayPalPreferred());
+            singlePaymentButton.setEnabled(result.isPayPalPreferred());
+            venmoButton.setEnabled(result.isVenmoPreferred());
         });
     }
 
     public void launchSinglePayment(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        initializeFeatureClients(initError -> {
-            PayPalCheckoutRequest payPalRequest = createPayPalCheckoutRequest(getActivity(), "1.00");
-            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
-        });
+        PayPalCheckoutRequest payPalRequest = createPayPalCheckoutRequest(getActivity(), "1.00");
+        payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
     }
 
     public void launchBillingAgreement(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        initializeFeatureClients(initError -> {
-            PayPalVaultRequest payPalRequest = createPayPalVaultRequest(getActivity());
-            payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
-        });
+        PayPalVaultRequest payPalRequest = createPayPalVaultRequest(getActivity());
+        payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest);
     }
 
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
-        initializeFeatureClients(initError -> {
-            VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-            venmoRequest.setProfileId(null);
-            venmoRequest.setShouldVault(false);
+        VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        venmoRequest.setProfileId(null);
+        venmoRequest.setShouldVault(false);
 
-            venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
-                if (requestError != null) {
-                    handleError(requestError);
-                }
-            });
+        venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
+            if (requestError != null) {
+                handleError(requestError);
+            }
         });
     }
 }

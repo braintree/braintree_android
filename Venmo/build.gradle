@@ -32,6 +32,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
+    implementation deps.lifecycleRuntime
 
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
