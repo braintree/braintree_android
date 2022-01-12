@@ -52,7 +52,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
@@ -97,7 +97,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
@@ -141,7 +141,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient(Fixtures.TOKENIZATION_KEY);
         CardClient cardClient = new CardClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
@@ -179,7 +179,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override
@@ -225,7 +225,7 @@ public class ThreeDSecureVerificationTest {
 
         BraintreeClient braintreeClient = getBraintreeClient();
         CardClient cardClient = new CardClient(braintreeClient);
-        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        final ThreeDSecureClient threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         cardClient.tokenize(card, new CardTokenizeCallback() {
             @Override

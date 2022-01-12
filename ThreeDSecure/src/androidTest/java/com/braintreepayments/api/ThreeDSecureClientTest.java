@@ -42,7 +42,7 @@ public class ThreeDSecureClientTest {
 
         BraintreeClient braintreeClient = new BraintreeClient(activity, clientToken);
         CardClient cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        threeDSecureClient = new ThreeDSecureClient(, braintreeClient);
 
         Card card = new Card();
         card.setNumber("4000000000000051");

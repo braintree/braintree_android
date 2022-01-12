@@ -108,7 +108,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return {@code boolean}
      * When `true`, the user will be presented with a 3D Secure challenge when calling
-     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult, ThreeDSecureResultCallback)}
+     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult)}
      */
     public boolean requiresUserAuthentication() {
         return acsUrl != null;

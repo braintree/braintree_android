@@ -74,7 +74,7 @@ public class ThreeDSecureV1UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
     }
@@ -114,7 +114,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());

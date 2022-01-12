@@ -241,7 +241,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
@@ -262,7 +262,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.true");
     }
@@ -282,7 +282,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.false");
     }
@@ -302,7 +302,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.2.1.0");
     }

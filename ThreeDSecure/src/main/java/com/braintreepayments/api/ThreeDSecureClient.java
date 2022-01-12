@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
@@ -33,23 +35,36 @@ public class ThreeDSecureClient {
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
 
+    private ThreeDSecureListener threeDSecureListener;
+
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private final ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher;
 
-    public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, null, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
-    }
-
-    public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient, @NonNull ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher) {
-        this(braintreeClient, threeDSecureLauncher, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+    public ThreeDSecureClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment, braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
+    ThreeDSecureClient(Fragment fragment, BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
-        this.threeDSecureLauncher = threeDSecureLauncher;
         this.browserSwitchHelper = browserSwitchHelper;
+
+        this.threeDSecureLauncher = fragment.registerForActivityResult(new ThreeDSecureContract(), new ActivityResultCallback<CardinalResult>() {
+            @Override
+            public void onActivityResult(CardinalResult result) {
+                onCardinalResult(result, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        if (threeDSecureResult != null) {
+                            threeDSecureListener.onThreeDSecureVerificationSuccess(threeDSecureResult);
+                        } else if (error != null) {
+                            threeDSecureListener.onThreeDSecureVerificationFailure(error);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -127,19 +142,17 @@ public class ThreeDSecureClient {
 
     /**
      * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
-     *
-     * @param activity Android FragmentActivity
+     *  @param activity Android FragmentActivity
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      * @param result   the {@link ThreeDSecureResult} returned for this request.
-     *                 Contains information about the 3DS verification request that will
-     *                 be invoked in this method.
-     * @param callback {@link ThreeDSecureResultCallback}
+ *                 Contains information about the 3DS verification request that will
+ *                 be invoked in this method.
      */
-    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result, @NonNull final ThreeDSecureResultCallback callback) {
+    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                startVerificationFlow(activity, configuration, request, result, callback);
+                startVerificationFlow(activity, configuration, request, result);
             }
         });
     }
@@ -221,7 +234,7 @@ public class ThreeDSecureClient {
                 ThreeDSecureResult result;
                 try {
                     result = ThreeDSecureResult.fromJson(lookupResponse);
-                    startVerificationFlow(activity, configuration, request, result, callback);
+                    startVerificationFlow(activity, configuration, request, result);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
                 }
@@ -229,7 +242,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    private void startVerificationFlow(FragmentActivity activity, Configuration configuration, ThreeDSecureRequest request, ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
+    private void startVerificationFlow(FragmentActivity activity, Configuration configuration, ThreeDSecureRequest request, ThreeDSecureResult result) {
         ThreeDSecureLookup lookup = result.getLookup();
 
         boolean showChallenge = lookup.getAcsUrl() != null;
@@ -245,7 +258,7 @@ public class ThreeDSecureClient {
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
-            callback.onResult(result, null);
+            threeDSecureListener.onThreeDSecureVerificationSuccess(result);
             return;
         }
 
@@ -262,7 +275,7 @@ public class ThreeDSecureClient {
             try {
                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
             } catch (BrowserSwitchException e) {
-                callback.onResult(null, e);
+                threeDSecureListener.onThreeDSecureVerificationFailure(e);
             }
             return;
         }
@@ -456,5 +469,9 @@ public class ThreeDSecureClient {
                 }
             }
         });
+    }
+
+    public void setThreeDSecureListener(ThreeDSecureListener threeDSecureListener) {
+        this.threeDSecureListener = threeDSecureListener;
     }
 }

@@ -13,15 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.InitializeFeatureClientsCallback;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
@@ -35,7 +32,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
-import com.braintreepayments.api.ThreeDSecureContract;
+import com.braintreepayments.api.ThreeDSecureListener;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -52,7 +49,7 @@ import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchListener {
+public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, BrowserSwitchListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
@@ -80,8 +77,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private DataCollector dataCollector;
 
     private String cardFormActionLabel;
-
-    private ActivityResultLauncher<ThreeDSecureResult> threeDSecureLauncher;
 
     @Nullable
     @Override
@@ -125,17 +120,21 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             }
         }
 
-        threeDSecureLauncher = registerForActivityResult(new ThreeDSecureContract(),
-                result -> threeDSecureClient.onCardinalResult(result, this::handleThreeDSecureResult));
+        BraintreeClient braintreeClient = getBraintreeClient();
+        americanExpressClient = new AmericanExpressClient(braintreeClient);
+        cardClient = new CardClient(braintreeClient);
+        unionPayClient = new UnionPayClient(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
+
+        threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
+        threeDSecureClient.setThreeDSecureListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         safelyCloseLoadingView();
-
-        // initializing clients checks if union pay is enabled
-        initializeFeatureClients(error -> { /* do nothing */ });
+        configureCardForm();
     }
 
     @Override
@@ -146,19 +145,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, enrollmentId);
     }
 
-    private void initializeFeatureClients(InitializeFeatureClientsCallback callback) {
-        BraintreeClient braintreeClient = getBraintreeClient();
-
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        americanExpressClient = new AmericanExpressClient(braintreeClient);
-        cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient, threeDSecureLauncher);
-        unionPayClient = new UnionPayClient(braintreeClient);
-        dataCollector = new DataCollector(braintreeClient);
-
+    private void configureCardForm() {
+        // initializing clients checks if union pay is enabled
         purchaseButton.setEnabled(true);
         autofillButton.setEnabled(true);
 
+        final AppCompatActivity activity = (AppCompatActivity) requireActivity();
+        BraintreeClient braintreeClient = getBraintreeClient();
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
                 cardForm.cardRequired(true)
@@ -349,10 +342,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         }
     }
 
-    private void handleThreeDSecureActivityResult(ActivityResult activityResult) {
-        threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
-    }
-
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
@@ -364,7 +353,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
                 if (threeDSecureResult != null) {
-                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();
@@ -446,5 +435,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
 
         return threeDSecureRequest;
+    }
+
+    @Override
+    public void onThreeDSecureVerificationSuccess(@NonNull ThreeDSecureResult threeDSecureResult) {
+        PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
+        handlePaymentMethodNonceCreated(paymentMethodNonce);
+    }
+
+    @Override
+    public void onThreeDSecureVerificationFailure(@NonNull Exception error) {
+        handleError(error);
     }
 }
