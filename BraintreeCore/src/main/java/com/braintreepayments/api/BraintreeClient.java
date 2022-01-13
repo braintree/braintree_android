@@ -215,7 +215,7 @@ public class BraintreeClient {
     }
 
     BrowserSwitchResult getBrowserSwitchResult(@NonNull FragmentActivity activity) {
-        return browserSwitchClient.deliverResult(activity);
+        return browserSwitchClient.getResult(activity);
     }
 
     public BrowserSwitchResult deliverBrowserSwitchResult(@NonNull FragmentActivity activity) {

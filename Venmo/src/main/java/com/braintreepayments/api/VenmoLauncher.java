@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 public class VenmoLauncher implements DefaultLifecycleObserver {
 
-    private static final String VENMO_RESULT = "ThreeDSecureResultObserver";
+    private static final String VENMO_RESULT = "VenmoObserver";
 
     private VenmoClient venmoClient;
     private ActivityResultRegistry activityResultRegistry;

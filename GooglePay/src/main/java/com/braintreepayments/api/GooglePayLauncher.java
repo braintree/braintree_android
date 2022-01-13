@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 public class GooglePayLauncher implements DefaultLifecycleObserver {
 
-    private static final String GOOGLE_PAY_RESULT = "ThreeDSecureResultObserver";
+    private static final String GOOGLE_PAY_RESULT = "GooglePayResult";
 
     private GooglePayClient googlePayClient;
     private ActivityResultRegistry activityResultRegistry;
