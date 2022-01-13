@@ -230,9 +230,10 @@ public class LocalPaymentClient {
     }
 
     public void deliverBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult browserSwitchResult =
-                braintreeClient.deliverBrowserSwitchResult(activity);
-        if (browserSwitchResult != null) {
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.LOCAL_PAYMENT) {
+            BrowserSwitchResult browserSwitchResult =
+                    braintreeClient.deliverBrowserSwitchResult(activity);
             onBrowserSwitchResult(browserSwitchResult);
         }
     }

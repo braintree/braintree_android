@@ -109,6 +109,10 @@ public class BraintreeClient {
         this(createDefaultParams(context, authorization, null, sessionId, integrationType));
     }
 
+    BraintreeClient(@NonNull Context context, @NonNull String initialAuthString, @NonNull BraintreeAuthProvider authProvider, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
+        this(createDefaultParams(context, initialAuthString, authProvider, sessionId, integrationType));
+    }
+
     @VisibleForTesting
     BraintreeClient(BraintreeClientParams params) {
         this.analyticsClient = params.getAnalyticsClient();
@@ -257,6 +261,10 @@ public class BraintreeClient {
 
     Authorization getAuthorization() {
         return authorizationLoader.getAuthorization();
+    }
+
+    void loadAuthorization(AuthorizationCallback callback) {
+        authorizationLoader.loadAuthorization(callback);
     }
 
     Context getApplicationContext() {

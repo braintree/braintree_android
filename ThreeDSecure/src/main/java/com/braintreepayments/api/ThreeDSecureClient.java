@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -40,20 +41,23 @@ public class ThreeDSecureClient {
     private final ThreeDSecureActivityLauncher activityLauncher;
 
     public ThreeDSecureClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment, braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+    }
+
+    public ThreeDSecureClient(FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(Fragment fragment, BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
+    ThreeDSecureClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
 
-        ActivityResultRegistry activityResultRegistry =
-            fragment.requireActivity().getActivityResultRegistry();
+        ActivityResultRegistry activityResultRegistry = activity.getActivityResultRegistry();
         this.activityLauncher =
             new ThreeDSecureActivityLauncher(activityResultRegistry, this);
-        fragment.getLifecycle().addObserver(activityLauncher);
+        lifecycle.addObserver(activityLauncher);
     }
 
     /**
@@ -472,9 +476,10 @@ public class ThreeDSecureClient {
     }
 
     public void deliverBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult browserSwitchResult =
-            braintreeClient.deliverBrowserSwitchResult(activity);
-        if (browserSwitchResult != null) {
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
+            BrowserSwitchResult browserSwitchResult =
+                    braintreeClient.deliverBrowserSwitchResult(activity);
             onBrowserSwitchResult(browserSwitchResult);
         }
     }

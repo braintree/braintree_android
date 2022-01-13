@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,21 +44,24 @@ public class VenmoClient {
     private final VenmoLauncher activityLauncher;
 
     public VenmoClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment, braintreeClient, new ApiClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+    }
+
+    public VenmoClient(FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new ApiClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     @VisibleForTesting
-    VenmoClient(Fragment fragment, BraintreeClient braintreeClient, ApiClient apiClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.apiClient = apiClient;
         this.braintreeClient = braintreeClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
 
-        ActivityResultRegistry activityResultRegistry =
-                fragment.requireActivity().getActivityResultRegistry();
+        ActivityResultRegistry activityResultRegistry = activity.getActivityResultRegistry();
         this.activityLauncher =
                 new VenmoLauncher(activityResultRegistry, this);
-        fragment.getLifecycle().addObserver(activityLauncher);
+        lifecycle.addObserver(activityLauncher);
     }
 
     /**

@@ -1,14 +1,16 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,18 +30,21 @@ public class PayPalClient {
     private PayPalBrowserSwitchObserver payPalBrowserSwitchObserver;
 
     public PayPalClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment, braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
+        this(fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
+    }
+
+    public PayPalClient(FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity.getLifecycle(), braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(Fragment fragment, BraintreeClient braintreeClient, ApiClient apiClient, PayPalInternalClient internalPayPalClient) {
+    PayPalClient(Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
         this.internalPayPalClient = internalPayPalClient;
 
-        this.payPalBrowserSwitchObserver =
-            new PayPalBrowserSwitchObserver(this);
-        fragment.getLifecycle().addObserver(payPalBrowserSwitchObserver);
+        this.payPalBrowserSwitchObserver = new PayPalBrowserSwitchObserver(this);
+        lifecycle.addObserver(payPalBrowserSwitchObserver);
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
@@ -312,10 +317,11 @@ public class PayPalClient {
     }
 
     public void deliverBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult result =
-                braintreeClient.deliverBrowserSwitchResult(activity);
-        if (result != null && result.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
-            onBrowserSwitchResult(result);
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
+            BrowserSwitchResult browserSwitchResult =
+                    braintreeClient.deliverBrowserSwitchResult(activity);
+            onBrowserSwitchResult(browserSwitchResult);
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.AutoResolveHelper;
@@ -54,19 +55,22 @@ public class GooglePayClient {
     private final GooglePayLauncher activityLauncher;
 
     public GooglePayClient(Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment, braintreeClient, new GooglePayInternalClient());
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
+    }
+
+    public GooglePayClient(FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new GooglePayInternalClient());
     }
 
     @VisibleForTesting
-    GooglePayClient(Fragment fragment, BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
+    GooglePayClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
         this.internalGooglePayClient = internalGooglePayClient;
 
-        ActivityResultRegistry activityResultRegistry =
-                fragment.requireActivity().getActivityResultRegistry();
+        ActivityResultRegistry activityResultRegistry = activity.getActivityResultRegistry();
         this.activityLauncher =
                 new GooglePayLauncher(activityResultRegistry, this);
-        fragment.getLifecycle().addObserver(activityLauncher);
+        lifecycle.addObserver(activityLauncher);
     }
 
     /**
