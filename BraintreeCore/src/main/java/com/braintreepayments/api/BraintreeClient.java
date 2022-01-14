@@ -63,7 +63,7 @@ public class BraintreeClient {
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
-                .graphQLClient(new BraintreeGraphQLClient(authorization))
+                .graphQLClient(new BraintreeGraphQLClient())
                 .analyticsClient(new AnalyticsClient(context, authorization))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
@@ -217,13 +217,22 @@ public class BraintreeClient {
     }
 
     void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
-        getConfiguration(new ConfigurationCallback() {
+        getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    graphQLClient.post(payload, configuration, responseCallback);
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
+                if (authorization != null) {
+                    getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                            if (configuration != null) {
+                                graphQLClient.post(payload, configuration, authorization, responseCallback);
+                            } else {
+                                responseCallback.onResult(null, configError);
+                            }
+                        }
+                    });
                 } else {
-                    responseCallback.onResult(null, error);
+                    responseCallback.onResult(null, authError);
                 }
             }
         });

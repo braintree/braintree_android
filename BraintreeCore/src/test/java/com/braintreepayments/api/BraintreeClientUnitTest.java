@@ -174,7 +174,7 @@ public class BraintreeClientUnitTest {
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), , same(httpResponseCallback));
     }
 
     @Test

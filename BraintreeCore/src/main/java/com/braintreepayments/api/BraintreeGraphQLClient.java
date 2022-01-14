@@ -8,16 +8,14 @@ import javax.net.ssl.SSLSocketFactory;
 class BraintreeGraphQLClient {
 
     private final HttpClient httpClient;
-    private final Authorization authorization;
 
-    BraintreeGraphQLClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
+    BraintreeGraphQLClient() {
+        this(new HttpClient(getSocketFactory(), new BraintreeGraphQLResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeGraphQLClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeGraphQLClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.authorization = authorization;
     }
 
     private static SSLSocketFactory getSocketFactory() {
@@ -28,7 +26,7 @@ class BraintreeGraphQLClient {
         }
     }
 
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, Authorization authorization, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -46,7 +44,7 @@ class BraintreeGraphQLClient {
         httpClient.sendRequest(request, callback);
     }
 
-    void post(String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String data, Configuration configuration, Authorization authorization, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -64,7 +62,7 @@ class BraintreeGraphQLClient {
         httpClient.sendRequest(request, callback);
     }
 
-    String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration, Authorization authorization) throws Exception {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             throw new BraintreeException(message);
