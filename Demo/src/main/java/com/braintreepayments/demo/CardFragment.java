@@ -20,8 +20,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.Configuration;
-import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
@@ -76,6 +74,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private UnionPayClient unionPayClient;
     private DataCollector dataCollector;
 
+    private String cardFormActionLabel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +84,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
         cardForm.setOnCardFormSubmitListener(this);
+
+        cardFormActionLabel = getString(R.string.purchase);
 
         smsCodeContainer = view.findViewById(R.id.sms_code_container);
         smsCode = view.findViewById(R.id.sms_code);
@@ -126,7 +128,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onResume();
         safelyCloseLoadingView();
 
-        // initializing clients checks if union pay is enabled
         initializeFeatureClients();
     }
 
@@ -150,6 +151,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillButton.setEnabled(true);
 
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        // check if union pay is enabled
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
                 cardForm.cardRequired(true)
@@ -157,7 +160,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .cvvRequired(configuration.isCvvChallengePresent())
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
                         .mobileNumberRequired(false)
-                        .actionLabel(getString(R.string.purchase))
+                        .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
                 if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
@@ -210,8 +213,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         smsCode.setText("");
 
         BraintreeClient braintreeClient = getBraintreeClient();
-
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
         braintreeClient.getConfiguration((configuration, error) -> {
             if (capabilities.isUnionPay()) {
                 if (!capabilities.isSupported()) {
@@ -226,7 +229,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .cvvRequired(true)
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
                         .mobileNumberRequired(true)
-                        .actionLabel(getString(R.string.purchase))
+                        .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
                 sendSmsButton.setVisibility(VISIBLE);
@@ -238,7 +241,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .cvvRequired(configuration.isCvvChallengePresent())
                         .postalCodeRequired(configuration.isPostalCodeChallengePresent())
                         .mobileNumberRequired(false)
-                        .actionLabel(getString(R.string.purchase))
+                        .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
                 if (!configuration.isCvvChallengePresent()) {

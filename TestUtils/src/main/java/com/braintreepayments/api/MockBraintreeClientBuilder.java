@@ -114,7 +114,6 @@ public class MockBraintreeClientBuilder {
 
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
 
