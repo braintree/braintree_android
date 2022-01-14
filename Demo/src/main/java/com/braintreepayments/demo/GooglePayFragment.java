@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
@@ -43,32 +44,30 @@ public class GooglePayFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        getBraintreeClient(braintreeClient -> {
+        BraintreeClient braintreeClient = getBraintreeClient();
+        googlePayClient = new GooglePayClient(braintreeClient);
 
-            googlePayClient = new GooglePayClient(braintreeClient);
+        braintreeClient.getConfiguration((configuration, error) -> {
+            if (configuration == null) {
+                return;
+            }
 
-            braintreeClient.getConfiguration((configuration, error) -> {
-                if (configuration == null) {
-                    return;
-                }
+            if (GooglePayCapabilities.isGooglePayEnabled(getActivity(), configuration)) {
 
-                if (GooglePayCapabilities.isGooglePayEnabled(getActivity(), configuration)) {
-
-                    googlePayClient.isReadyToPay(getActivity(), (isReadyToPay, e) -> {
-                        if (isReadyToPay) {
-                            googlePayButton.setVisibility(View.VISIBLE);
-                        } else {
-                            showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
-                                    "No user is logged in to the device.\n\n" +
-                                    "Google Play Services is missing or out of date.");
-                        }
-                    });
-                } else {
-                    showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
-                            "Google Payments are not enabled for the current merchant.\n\n" +
-                            "Google Play Services is missing or out of date.");
-                }
-            });
+                googlePayClient.isReadyToPay(getActivity(), (isReadyToPay, e) -> {
+                    if (isReadyToPay) {
+                        googlePayButton.setVisibility(View.VISIBLE);
+                    } else {
+                        showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                                "No user is logged in to the device.\n\n" +
+                                "Google Play Services is missing or out of date.");
+                    }
+                });
+            } else {
+                showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                        "Google Payments are not enabled for the current merchant.\n\n" +
+                        "Google Play Services is missing or out of date.");
+            }
         });
     }
 
@@ -85,28 +84,27 @@ public class GooglePayFragment extends BaseFragment {
     public void launchGooglePay(View v) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
-        getBraintreeClient(braintreeClient -> {
-            GooglePayRequest googlePayRequest = new GooglePayRequest();
-                    googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                            .setCurrencyCode(Settings.getGooglePayCurrency(activity))
-                            .setTotalPrice("1.00")
-                            .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                            .build());
-                    googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
-                    googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
-                    googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
-                    googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
-                    googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
-                    googlePayRequest.setShippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
-                    googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                            .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
-                            .build());
 
-            googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
-                if (requestPaymentError != null) {
-                    handleError(requestPaymentError);
-                }
-            });
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
+                .setCurrencyCode(Settings.getGooglePayCurrency(activity))
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .build());
+        googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
+        googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
+        googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
+        googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
+        googlePayRequest.setShippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
+        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
+                .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
+                .build());
+
+        googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
+            if (requestPaymentError != null) {
+                handleError(requestPaymentError);
+            }
         });
     }
 

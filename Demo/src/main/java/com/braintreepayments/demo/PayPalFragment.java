@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
@@ -57,32 +58,27 @@ public class PayPalFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        getBraintreeClient((braintreeClient) -> {
-            if (braintreeClient == null) {
-                return;
+        BraintreeClient braintreeClient = getBraintreeClient();
+        payPalClient = new PayPalClient(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
+
+        braintreeClient.getConfiguration((configuration, configError) -> {
+            if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
             }
-
-            payPalClient = new PayPalClient(braintreeClient);
-            dataCollector = new DataCollector(braintreeClient);
-
-            braintreeClient.getConfiguration((configuration, configError) -> {
-                if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
-                }
-                if (isBillingAgreement) {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
-                        if (payPalError != null) {
-                            handleError(payPalError);
-                        }
-                    });
-                } else {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
-                        if (payPalError != null) {
-                            handleError(payPalError);
-                        }
-                    });
-                }
-            });
+            if (isBillingAgreement) {
+                payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity), payPalError -> {
+                    if (payPalError != null) {
+                        handleError(payPalError);
+                    }
+                });
+            } else {
+                payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"), payPalError -> {
+                    if (payPalError != null) {
+                        handleError(payPalError);
+                    }
+                });
+            }
         });
     }
 

@@ -10,13 +10,15 @@ class AuthorizationLoader {
 
     AuthorizationLoader(@Nullable String initialAuthString, @Nullable ClientTokenProvider clientTokenProvider) {
         this.clientTokenProvider = clientTokenProvider;
-        this.authorization = Authorization.fromString(initialAuthString);
+        if (initialAuthString != null) {
+            this.authorization = Authorization.fromString(initialAuthString);
+        }
     }
 
     void loadAuthorization(@NonNull final AuthorizationCallback callback) {
         if (authorization != null) {
             callback.onAuthorizationResult(authorization, null);
-        } else {
+        } else if (clientTokenProvider != null) {
             clientTokenProvider.getClientToken(new ClientTokenCallback() {
                 @Override
                 public void onSuccess(@NonNull String clientToken) {
@@ -29,6 +31,8 @@ class AuthorizationLoader {
                     callback.onAuthorizationResult(null, exception);
                 }
             });
+        } else {
+            callback.onAuthorizationResult(null, new BraintreeException("unable to fetch client token"));
         }
     }
 

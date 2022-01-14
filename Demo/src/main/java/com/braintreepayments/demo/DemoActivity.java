@@ -33,16 +33,9 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
 
-    private static final String EXTRA_AUTHORIZATION = "com.braintreepayments.demo.EXTRA_AUTHORIZATION";
-    private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
-
     private BraintreeClient braintreeClient;
-    private DemoClientTokenProvider authProvider;
-
     private AppBarConfiguration appBarConfiguration;
 
-    protected String authorization;
-    protected String customerId;
     private DemoViewModel viewModel;
 
     @Override
@@ -50,12 +43,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_demo);
-
-        authProvider = new DemoClientTokenProvider();
-        if (savedInstanceState != null) {
-            authorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
-            customerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);
-        }
 
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
@@ -70,33 +57,22 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            handleAuthorizationState();
         }
-
         handleBrowserSwitchResultIfNecessary();
     }
 
-    public void getBraintreeClient(BraintreeClientCallback callback) {
-        if (braintreeClient != null) {
-            callback.onResult(braintreeClient);
-            return;
-        }
-        if (authorization != null) {
-            braintreeClient = new BraintreeClient(this, authorization);
-            callback.onResult(braintreeClient);
-            return;
-        }
-
-        authProvider.fetchAuthorization(this, (authorization, error) -> {
-            if (authorization != null) {
-                this.authorization = authorization;
-                braintreeClient = new BraintreeClient(DemoActivity.this, this.authorization);
-                callback.onResult(braintreeClient);
-            } else if (error != null) {
-                showDialog(error.getMessage());
+    public BraintreeClient getBraintreeClient() {
+        // lazily instantiate braintree client in case the demo has been reset
+        if (braintreeClient == null) {
+            if (Settings.useTokenizationKey(this)) {
+                String tokenizationKey = Settings.getTokenizationKey(this);
+                braintreeClient = new BraintreeClient(this, tokenizationKey);
+            } else {
+                braintreeClient =
+                        new BraintreeClient(this, new DemoClientTokenProvider(this));
             }
-        });
+        }
+        return braintreeClient;
     }
 
     private void handleBrowserSwitchResultIfNecessary() {
@@ -115,32 +91,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (authorization != null) {
-            outState.putString(EXTRA_AUTHORIZATION, authorization);
-            outState.putString(EXTRA_CUSTOMER_ID, customerId);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        handleAuthorizationState();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         viewModel.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void handleAuthorizationState() {
-        if (authorization == null ||
-                (Settings.useTokenizationKey(this) && !authorization.equals(Settings.getTokenizationKey(this))) ||
-                !TextUtils.equals(customerId, Settings.getCustomerId(this))) {
-            performReset();
-        }
     }
 
     private NavController getNavController() {
@@ -178,10 +131,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void performReset() {
         setProgressBarIndeterminateVisibility(true);
-
-        authorization = null;
         braintreeClient = null;
-        customerId = Settings.getCustomerId(this);
     }
 
     public void showDialog(String message) {
