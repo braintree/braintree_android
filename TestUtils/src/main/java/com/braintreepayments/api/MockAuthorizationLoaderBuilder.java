@@ -30,7 +30,7 @@ public class MockAuthorizationLoaderBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                AuthorizationCallback callback = (AuthorizationCallback) invocation.getArguments()[2];
+                AuthorizationCallback callback = (AuthorizationCallback) invocation.getArguments()[0];
                 if (authorization != null) {
                     callback.onAuthorizationResult(authorization, null);
                 } else if (authorizationError != null) {

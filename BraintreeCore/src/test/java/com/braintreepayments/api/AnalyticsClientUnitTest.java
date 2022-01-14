@@ -214,7 +214,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class), authorization);
+        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class), any(Authorization.class));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
 
