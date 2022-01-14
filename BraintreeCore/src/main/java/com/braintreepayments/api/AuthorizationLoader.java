@@ -1,15 +1,18 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
+
 class AuthorizationLoader {
 
-    public AuthorizationLoader(String initialAuthString) {
+    AuthorizationLoader(@Nullable String initialAuthString, @Nullable ClientTokenProvider clientTokenProvider) {
 
     }
 
-    void loadAuthorization() {
+    void loadAuthorization(AuthorizationCallback callback) {
 
     }
 
+    @Nullable
     Authorization getAuthorizationFromCache() {
         return null;
     }
