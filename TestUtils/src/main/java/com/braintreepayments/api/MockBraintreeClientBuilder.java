@@ -28,8 +28,8 @@ public class MockBraintreeClientBuilder {
     private Configuration configuration;
     private Exception configurationError;
 
-    private ActivityInfo activityInfo;
     private Authorization authorization;
+    private Exception authorizationError;
 
     private String sessionId;
     private String integration;
@@ -37,6 +37,8 @@ public class MockBraintreeClientBuilder {
 
     private boolean urlSchemeInAndroidManifest = true;
     private boolean canPerformBrowserSwitch = true;
+
+    private ActivityInfo activityInfo;
 
     public MockBraintreeClientBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -48,8 +50,13 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder authorization(Authorization authorization) {
+    public MockBraintreeClientBuilder authorizationSuccess(Authorization authorization) {
         this.authorization = authorization;
+        return this;
+    }
+
+    public MockBraintreeClientBuilder authorizationError(Exception authorizationError) {
+        this.authorizationError = authorizationError;
         return this;
     }
 
@@ -116,6 +123,19 @@ public class MockBraintreeClientBuilder {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                AuthorizationCallback callback = (AuthorizationCallback) invocation.getArguments()[0];
+                if (authorization != null) {
+                    callback.onAuthorizationResult(authorization, null);
+                } else if (authorizationError != null) {
+                    callback.onAuthorizationResult(null, authorizationError);
+                }
+                return null;
+            }
+        }).when(braintreeClient).getAuthorization(any(AuthorizationCallback.class));
 
         // HACK: some google pay tests fail when getReturnUrlScheme is stubbed but not invoked
         // TODO: create a wrapper around google wallet api to avoid having to use Powermock and Robolectric at the same time, which seems to be causing this issue

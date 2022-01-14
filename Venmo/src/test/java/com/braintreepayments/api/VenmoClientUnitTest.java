@@ -102,7 +102,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .authorizationSuccess(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -139,7 +139,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .authorizationSuccess(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -182,7 +182,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .authorizationSuccess(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -286,7 +286,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -314,7 +314,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -342,7 +342,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .integration("custom")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -408,7 +408,7 @@ public class VenmoClientUnitTest {
     public void tokenizeVenmoAccount_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -428,7 +428,7 @@ public class VenmoClientUnitTest {
     public void tokenizeVenmoAccount_whenShouldVaultIsFalse_persistsVenmoVaultFalse() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -449,7 +449,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .authorization(Authorization.fromString("sandbox_tk_abcd"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tk_abcd"))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
 
@@ -594,7 +594,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
 
@@ -675,7 +675,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -704,7 +704,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_doesNotPerformRequestIfTokenizationKeyUsed() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("another-session-id")
-                .authorization(Authorization.fromString("sandbox_tk_abcd"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tk_abcd"))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -720,7 +720,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -743,7 +743,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
 
@@ -771,7 +771,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -794,7 +794,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withFailedVaultCall_forwardsErrorToActivityResultListener() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
@@ -821,7 +821,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
 
@@ -850,7 +850,7 @@ public class VenmoClientUnitTest {
     public void onActivityResult_withFailedVaultCall_sendsAnalyticsEvent() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);

@@ -140,7 +140,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -162,7 +162,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -197,7 +197,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -224,7 +224,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -336,7 +336,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -379,7 +379,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -423,7 +423,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -458,7 +458,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -508,7 +508,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -542,7 +542,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -576,7 +576,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -614,7 +614,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -652,7 +652,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -688,7 +688,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -725,7 +725,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -763,7 +763,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -807,7 +807,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -842,7 +842,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -879,7 +879,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -911,7 +911,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(null)
                 .build();
 
@@ -953,7 +953,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -986,7 +986,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1021,7 +1021,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1054,7 +1054,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1087,7 +1087,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1112,7 +1112,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString("sandbox_tokenization_string"))
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1144,7 +1144,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1172,7 +1172,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1194,7 +1194,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
@@ -1216,7 +1216,7 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 

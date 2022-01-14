@@ -64,7 +64,7 @@ public class ThreeDSecureV1UnitTest {
     @Test
     public void continuePerformVerification_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
@@ -82,7 +82,7 @@ public class ThreeDSecureV1UnitTest {
     @Test
     public void performVerification_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() throws InvalidArgumentException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
                 .build();
@@ -102,7 +102,7 @@ public class ThreeDSecureV1UnitTest {
         String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
                 .returnUrlScheme(urlScheme)
@@ -130,7 +130,7 @@ public class ThreeDSecureV1UnitTest {
         String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
                 .returnUrlScheme(urlScheme)
@@ -158,7 +158,7 @@ public class ThreeDSecureV1UnitTest {
         String assetsUrl = "https://www.some-assets.com";
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
                 .returnUrlScheme(urlScheme)
