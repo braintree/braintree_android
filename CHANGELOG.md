@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Core
+  * Add `ClientTokenProvider` interface
+  * Add `ClientTokenCallback` interface
+  * Add BraintreeClient constructors that accept a `ClientTokenProvider`
+
 ## 4.8.1
 
 * GooglePay
