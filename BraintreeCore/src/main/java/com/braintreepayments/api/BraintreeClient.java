@@ -29,30 +29,33 @@ public class BraintreeClient {
     private final String integrationType;
     private final String returnUrlScheme;
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme) {
-        return createDefaultParams(context, authString, returnUrlScheme, null, IntegrationType.CUSTOM);
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String sessionId, @IntegrationType.Integration String integrationType) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, returnUrlScheme, sessionId, integrationType);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
-        Authorization authorization = Authorization.fromString(authString);
+    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
+        AuthorizationLoader authorizationLoader =
+            new AuthorizationLoader(initialAuthString, clientTokenProvider);
+
+        Authorization authorization = Authorization.fromString(initialAuthString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
                 .authorization(authorization)
@@ -76,7 +79,11 @@ public class BraintreeClient {
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
-        this(createDefaultParams(context, authorization));
+        this(createDefaultParams(context, authorization, null));
+    }
+
+    public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider) {
+        this(createDefaultParams(context, null, clientTokenProvider));
     }
 
     /**
@@ -91,11 +98,15 @@ public class BraintreeClient {
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String returnUrlScheme) {
-        this(createDefaultParams(context, authorization, returnUrlScheme));
+        this(createDefaultParams(context, authorization, null, returnUrlScheme));
+    }
+
+    public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String returnUrlScheme) {
+        this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
     }
 
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
-        this(createDefaultParams(context, authorization, sessionId, integrationType));
+        this(createDefaultParams(context, authorization, null, sessionId, integrationType));
     }
 
     @VisibleForTesting
