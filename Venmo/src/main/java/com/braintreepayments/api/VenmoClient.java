@@ -141,7 +141,7 @@ public class VenmoClient {
     }
 
     private void startVenmoActivityForResult(FragmentActivity activity, VenmoRequest request, Configuration configuration, String venmoProfileId, @Nullable String paymentContextId) {
-        sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorization() instanceof ClientToken);
+        sharedPrefsWriter.persistVenmoVaultOption(activity, request.getShouldVault() && braintreeClient.getAuthorizationType() == AuthorizationType.CLIENT_TOKEN);
 
         Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
         activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
@@ -189,7 +189,7 @@ public class VenmoClient {
                                     VenmoAccountNonce nonce = VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
 
                                     boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                                    boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
+                                    boolean isClientToken = braintreeClient.getAuthorizationType() == AuthorizationType.CLIENT_TOKEN;
 
                                     if (shouldVault && isClientToken) {
                                         vaultVenmoAccountNonce(nonce.getString(), callback);
@@ -216,7 +216,7 @@ public class VenmoClient {
                 String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
 
                 boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                boolean isClientToken = braintreeClient.getAuthorization() instanceof ClientToken;
+                boolean isClientToken = braintreeClient.getAuthorizationType() == AuthorizationType.CLIENT_TOKEN;
 
                 if (shouldVault && isClientToken) {
                     vaultVenmoAccountNonce(nonce, callback);

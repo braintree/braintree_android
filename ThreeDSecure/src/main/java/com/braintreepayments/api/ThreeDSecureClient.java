@@ -147,6 +147,7 @@ public class ThreeDSecureClient {
         final JSONObject lookupJSON = new JSONObject();
         try {
             lookupJSON
+                    // TODO: call async getAuthorization here
                     .put("authorizationFingerprint", braintreeClient.getAuthorization().getBearer())
                     .put("braintreeLibraryVersion", "Android-" + BuildConfig.VERSION_NAME)
                     .put("nonce", request.getNonce())

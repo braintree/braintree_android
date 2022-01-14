@@ -16,7 +16,7 @@ import java.util.Locale;
  */
 public class BraintreeClient {
 
-    private final Authorization authorization;
+    private final AuthorizationLoader authorizationLoader;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
     private final BraintreeGraphQLClient graphQLClient;
@@ -58,7 +58,7 @@ public class BraintreeClient {
         Authorization authorization = Authorization.fromString(initialAuthString);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
         return new BraintreeClientParams()
-                .authorization(authorization)
+                .authorizationLoader(authorizationLoader)
                 .context(context)
                 .setIntegrationType(integrationType)
                 .sessionId(sessionId)
@@ -113,7 +113,7 @@ public class BraintreeClient {
     BraintreeClient(BraintreeClientParams params) {
         this.analyticsClient = params.getAnalyticsClient();
         this.applicationContext = params.getContext().getApplicationContext();
-        this.authorization = params.getAuthorization();
+        this.authorizationLoader = params.getAuthorizationLoader();
         this.browserSwitchClient = params.getBrowserSwitchClient();
         this.configurationLoader = params.getConfigurationLoader();
         this.graphQLClient = params.getGraphQLClient();
@@ -137,8 +137,17 @@ public class BraintreeClient {
      *
      * @param callback {@link ConfigurationCallback}
      */
-    public void getConfiguration(@NonNull ConfigurationCallback callback) {
-        configurationLoader.loadConfiguration(applicationContext, authorization, callback);
+    public void getConfiguration(@NonNull final ConfigurationCallback callback) {
+        authorizationLoader.loadAuthorization(new AuthorizationCallback() {
+            @Override
+            public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception error) {
+                if (authorization != null) {
+                    configurationLoader.loadConfiguration(applicationContext, authorization, callback);
+                } else {
+                    callback.onResult(null, error);
+                }
+            }
+        });
     }
 
     void sendAnalyticsEvent(final String eventName) {
@@ -250,8 +259,14 @@ public class BraintreeClient {
         return configuration != null && configuration.isAnalyticsEnabled();
     }
 
+    // TODO: figure out if this is needed, or if something like getAuthorizationType()
+    // is more appropriate
     Authorization getAuthorization() {
-        return authorization;
+        return authorizationLoader.getAuthorizationFromCache();
+    }
+
+    AuthorizationType getAuthorizationType() {
+        return authorizationLoader.getAuthorizationType();
     }
 
     Context getApplicationContext() {

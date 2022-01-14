@@ -408,7 +408,7 @@ public class BraintreeClientUnitTest {
 
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
         return new BraintreeClientParams()
-                .authorization(authorization)
+                .authorizationLoader(authorization)
                 .context(context)
                 .sessionId("session-id")
                 .setIntegrationType(IntegrationType.CUSTOM)

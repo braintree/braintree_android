@@ -301,7 +301,8 @@ public class GooglePayClient {
                 .addParameter("braintree:sdkVersion", version)
                 .addParameter("braintree:metadata", metadata.toString());
 
-        if (braintreeClient.getAuthorization() instanceof TokenizationKey) {
+        if (braintreeClient.getAuthorizationType() == AuthorizationType.TOKENIZATION_KEY) {
+            // TODO: call async getAuthorization here
             parameters.addParameter("braintree:clientKey", braintreeClient.getAuthorization().getBearer());
         }
 
@@ -443,7 +444,8 @@ public class GooglePayClient {
                             .put("version", googlePayVersion)
                             .put("platform", "android")).toString());
 
-            if (braintreeClient.getAuthorization() instanceof TokenizationKey) {
+            if (braintreeClient.getAuthorizationType() == AuthorizationType.TOKENIZATION_KEY) {
+                // TODO: call async getAuthorization here
                 parameters
                         .put("braintree:clientKey", braintreeClient.getAuthorization().toString());
             } else {
