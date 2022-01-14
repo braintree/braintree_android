@@ -1151,7 +1151,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
@@ -1179,7 +1179,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
     }
 
@@ -1201,7 +1201,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"));
     }
 

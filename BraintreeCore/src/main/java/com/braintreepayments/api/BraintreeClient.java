@@ -149,8 +149,12 @@ public class BraintreeClient {
         });
     }
 
-    private void getAuthorization(@NonNull final AuthorizationCallback callback) {
+    void getAuthorization(@NonNull final AuthorizationCallback callback) {
         authorizationLoader.loadAuthorization(callback);
+    }
+
+    AuthorizationType getAuthorizationType() {
+        return authorizationLoader.getAuthorizationType();
     }
 
     void sendAnalyticsEvent(final String eventName) {
@@ -295,16 +299,6 @@ public class BraintreeClient {
 
     static boolean isAnalyticsEnabled(Configuration configuration) {
         return configuration != null && configuration.isAnalyticsEnabled();
-    }
-
-    // TODO: figure out if this is needed, or if something like getAuthorizationType()
-    // is more appropriate
-    Authorization getAuthorization() {
-        return authorizationLoader.getAuthorizationFromCache();
-    }
-
-    AuthorizationType getAuthorizationType() {
-        return authorizationLoader.getAuthorizationType();
     }
 
     Context getApplicationContext() {

@@ -148,14 +148,23 @@ public class GooglePayClient {
      * @param callback {@link GooglePayGetTokenizationParametersCallback}
      */
     public void getTokenizationParameters(@NonNull final GooglePayGetTokenizationParametersCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
+        braintreeClient.getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                if (configuration == null) {
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception error) {
+                if (authorization != null) {
+                    braintreeClient.getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
+                            if (configuration == null) {
+                                callback.onResult(null, null);
+                                return;
+                            }
+                            callback.onResult(getTokenizationParameters(configuration, authorization), getAllowedCardNetworks(configuration));
+                        }
+                    });
+                } else {
                     callback.onResult(null, null);
-                    return;
                 }
-                callback.onResult(getTokenizationParameters(configuration), getAllowedCardNetworks(configuration));
             }
         });
     }
@@ -190,33 +199,41 @@ public class GooglePayClient {
             return;
         }
 
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
+        braintreeClient.getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception e) {
-                if (configuration == null) {
-                    callback.onResult(e);
-                    return;
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
+                if (authorization != null) {
+                    braintreeClient.getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                            if (configuration == null) {
+                                callback.onResult(configError);
+                                return;
+                            }
+
+                            if (!configuration.isGooglePayEnabled()) {
+                                callback.onResult(new BraintreeException("Google Pay is not enabled for your Braintree account," +
+                                        " or Google Play Services are not configured correctly."));
+                                return;
+                            }
+
+                            setGooglePayRequestDefaults(configuration, authorization, request);
+                            braintreeClient.sendAnalyticsEvent("google-payment.started");
+
+                            PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
+                            Intent intent = new Intent(activity, GooglePayActivity.class)
+                                    .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
+                                    .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
+
+                            activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
+                        }
+                    });
+
+                } else {
+                    callback.onResult(authError);
                 }
-
-                if (!configuration.isGooglePayEnabled()) {
-                    callback.onResult(new BraintreeException("Google Pay is not enabled for your Braintree account," +
-                            " or Google Play Services are not configured correctly."));
-                    return;
-                }
-
-                setGooglePayRequestDefaults(configuration, request);
-
-                braintreeClient.sendAnalyticsEvent("google-payment.started");
-
-                PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
-                Intent intent = new Intent(activity, GooglePayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
-                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
-
-                activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
             }
         });
-
     }
 
     /**
@@ -277,7 +294,7 @@ public class GooglePayClient {
         }
     }
 
-    PaymentMethodTokenizationParameters getTokenizationParameters(Configuration configuration) {
+    PaymentMethodTokenizationParameters getTokenizationParameters(Configuration configuration, Authorization authorization) {
         String version;
 
         JSONObject metadata = new MetadataBuilder()
@@ -301,9 +318,8 @@ public class GooglePayClient {
                 .addParameter("braintree:sdkVersion", version)
                 .addParameter("braintree:metadata", metadata.toString());
 
-        if (braintreeClient.getAuthorizationType() == AuthorizationType.TOKENIZATION_KEY) {
-            // TODO: call async getAuthorization here
-            parameters.addParameter("braintree:clientKey", braintreeClient.getAuthorization().getBearer());
+        if (authorization instanceof TokenizationKey) {
+            parameters.addParameter("braintree:clientKey", authorization.getBearer());
         }
 
         return parameters.build();
@@ -426,7 +442,7 @@ public class GooglePayClient {
 
     }
 
-    private JSONObject buildCardTokenizationSpecification(Configuration configuration) {
+    private JSONObject buildCardTokenizationSpecification(Configuration configuration, Authorization authorization) {
         JSONObject cardJson = new JSONObject();
         JSONObject parameters = new JSONObject();
         String googlePayVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
@@ -444,10 +460,9 @@ public class GooglePayClient {
                             .put("version", googlePayVersion)
                             .put("platform", "android")).toString());
 
-            if (braintreeClient.getAuthorizationType() == AuthorizationType.TOKENIZATION_KEY) {
-                // TODO: call async getAuthorization here
+            if (authorization instanceof TokenizationKey) {
                 parameters
-                        .put("braintree:clientKey", braintreeClient.getAuthorization().toString());
+                        .put("braintree:clientKey", authorization.toString());
             } else {
                 String googlePayAuthFingerprint = configuration.getGooglePayAuthorizationFingerprint();
                 parameters
@@ -490,7 +505,7 @@ public class GooglePayClient {
         return json;
     }
 
-    private void setGooglePayRequestDefaults(Configuration configuration, GooglePayRequest request) {
+    private void setGooglePayRequestDefaults(Configuration configuration, Authorization authorization, GooglePayRequest request) {
 
         if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
             request.setAllowedPaymentMethod(CARD_PAYMENT_TYPE,
@@ -499,7 +514,7 @@ public class GooglePayClient {
 
         if (request.getTokenizationSpecificationForType(CARD_PAYMENT_TYPE) == null) {
             request.setTokenizationSpecificationForType("CARD",
-                    buildCardTokenizationSpecification(configuration));
+                    buildCardTokenizationSpecification(configuration, authorization));
         }
 
         boolean googlePayCanProcessPayPal = request.isPayPalEnabled() &&
