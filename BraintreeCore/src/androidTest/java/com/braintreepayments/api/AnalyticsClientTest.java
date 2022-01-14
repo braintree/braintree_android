@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -16,8 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class AnalyticsClientTest {
@@ -46,7 +46,7 @@ public class AnalyticsClientTest {
 
         Context context = activity.getApplicationContext();
         AnalyticsClient sut = new AnalyticsClient(activity);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, );
+        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
@@ -65,7 +65,7 @@ public class AnalyticsClientTest {
 
         Context context = activity.getApplicationContext();
         AnalyticsClient sut = new AnalyticsClient(activity);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, );
+        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
