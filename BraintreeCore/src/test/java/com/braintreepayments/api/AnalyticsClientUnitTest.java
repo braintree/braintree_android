@@ -11,6 +11,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -83,10 +84,9 @@ public class AnalyticsClientUnitTest {
     @Test
     public void sendEvent_enqueuesAnalyticsWriteToDbWorker() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, );
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization);
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
@@ -104,10 +104,9 @@ public class AnalyticsClientUnitTest {
     @Test
     public void sendEvent_enqueuesAnalyticsUploadWorker() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, );
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization);
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
@@ -204,7 +203,6 @@ public class AnalyticsClientUnitTest {
 
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         List<AnalyticsEvent> events = new ArrayList<>();
         events.add(new AnalyticsEvent("event0", 123));
@@ -216,7 +214,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class), );
+        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class), authorization);
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
 
@@ -247,7 +245,6 @@ public class AnalyticsClientUnitTest {
 
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         List<AnalyticsEvent> events = new ArrayList<>();
         events.add(new AnalyticsEvent("event0", 123));
@@ -273,7 +270,6 @@ public class AnalyticsClientUnitTest {
 
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         List<AnalyticsEvent> events = new ArrayList<>();
         events.add(new AnalyticsEvent("event0", 123));
@@ -282,7 +278,7 @@ public class AnalyticsClientUnitTest {
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
         Exception httpError = new Exception("error");
-        when(httpClient.post(anyString(), anyString(), any(Configuration.class), )).thenThrow(httpError);
+        when(httpClient.post(anyString(), anyString(), any(Configuration.class), any(Authorization.class))).thenThrow(httpError);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
@@ -293,16 +289,15 @@ public class AnalyticsClientUnitTest {
     public void reportCrash_whenLastKnownAnalyticsUrlExists_sendsCrashAnalyticsEvent() throws Exception {
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
-        sut.sendEvent(configuration, eventName, sessionId, integration, );
-        sut.reportCrash(context, sessionId, integration, 123, );
+        sut.sendEvent(configuration, eventName, sessionId, integration, authorization);
+        sut.reportCrash(context, sessionId, integration, 123, authorization);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), , any(HttpNoResponse.class), );
+        verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), same(authorization), any(HttpNoResponse.class));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
 
@@ -318,13 +313,26 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() {
+    public void reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
-        when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.reportCrash(context, sessionId, integration, 123, );
+        sut.sendEvent(configuration, eventName, sessionId, integration, authorization);
+
+        sut.reportCrash(context, sessionId, integration, 123, null);
+        verifyZeroInteractions(httpClient);
+    }
+
+    @Test
+    public void reportCrash_whenAuthorizationIsNull_doesNothing() {
+        DeviceMetadata metadata = createSampleDeviceMetadata();
+        when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+        sut.reportCrash(context, sessionId, integration, 123, authorization);
 
         verifyZeroInteractions(httpClient);
     }
