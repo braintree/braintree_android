@@ -1,5 +1,23 @@
 package com.braintreepayments.api;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_FIRST_USER;
+import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.GooglePayClient.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -27,24 +45,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collection;
-
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_FIRST_USER;
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.GooglePayClient.EXTRA_ENVIRONMENT;
-import static com.braintreepayments.api.GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayClientUnitTest {
@@ -133,7 +133,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() throws Exception {
+    public void isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(false))
                 .buildConfiguration();
@@ -155,7 +155,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_whenActivityIsNull_forwardsErrorToCallback() throws InvalidArgumentException {
+    public void isReadyToPay_whenActivityIsNull_forwardsErrorToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(true))
                 .buildConfiguration();
@@ -184,7 +184,7 @@ public class GooglePayClientUnitTest {
     // region requestPayment
 
     @Test
-    public void requestPayment_startsActivity() throws InvalidArgumentException {
+    public void requestPayment_startsActivity() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -211,7 +211,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_startsActivityWithOptionalValues() throws JSONException, InvalidArgumentException {
+    public void requestPayment_startsActivityWithOptionalValues() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -324,7 +324,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_includesATokenizationKeyWhenPresent() throws JSONException, InvalidArgumentException {
+    public void requestPayment_includesATokenizationKeyWhenPresent() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -367,7 +367,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_doesNotIncludeATokenizationKeyWhenNotPresent() throws JSONException, InvalidArgumentException {
+    public void requestPayment_doesNotIncludeATokenizationKeyWhenNotPresent() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -410,7 +410,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_sendsAnalyticsEvent() throws InvalidArgumentException {
+    public void requestPayment_sendsAnalyticsEvent() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -445,7 +445,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_postsExceptionWhenTransactionInfoIsNull() throws InvalidArgumentException {
+    public void requestPayment_postsExceptionWhenTransactionInfoIsNull() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -478,6 +478,7 @@ public class GooglePayClientUnitTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration)
                 .activityInfo(activityInfo)
                 .build();
@@ -495,7 +496,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenSandbox_setsTestEnvironment() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenSandbox_setsTestEnvironment() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -529,7 +530,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenProduction_setsProductionEnvironment() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenProduction_setsProductionEnvironment() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("production")
@@ -563,7 +564,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_withGoogleMerchantId_sendGoogleMerchantId() throws JSONException, InvalidArgumentException {
+    public void requestPayment_withGoogleMerchantId_sendGoogleMerchantId() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -601,7 +602,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_withGoogleMerchantName_sendGoogleMerchantName() throws JSONException, InvalidArgumentException {
+    public void requestPayment_withGoogleMerchantName_sendGoogleMerchantName() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -639,7 +640,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -675,7 +676,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -710,7 +711,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -748,7 +749,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_usesGooglePayConfigurationClientId() throws JSONException, InvalidArgumentException {
+    public void requestPayment_usesGooglePayConfigurationClientId() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -795,7 +796,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -830,7 +831,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() throws JSONException, InvalidArgumentException {
+    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -866,7 +867,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenRequestIsNull_fowardsExceptionToCallback() throws InvalidArgumentException {
+    public void requestPayment_whenRequestIsNull_fowardsExceptionToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -898,7 +899,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenManifestInvalid_fowardsExceptionToCallback() throws InvalidArgumentException {
+    public void requestPayment_whenManifestInvalid_fowardsExceptionToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -938,7 +939,7 @@ public class GooglePayClientUnitTest {
     // region tokenize
 
     @Test
-    public void tokenize_withCardToken_returnsGooglePayNonce() throws InvalidArgumentException {
+    public void tokenize_withCardToken_returnsGooglePayNonce() {
         String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD;
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -971,7 +972,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void tokenize_withPayPalToken_returnsPayPalAccountNonce() throws InvalidArgumentException {
+    public void tokenize_withPayPalToken_returnsPayPalAccountNonce() {
         String paymentDataJson = Fixtures.REPSONSE_GOOGLE_PAY_PAYPAL_ACCOUNT;
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -1008,7 +1009,7 @@ public class GooglePayClientUnitTest {
     // region onActivityResult
 
     @Test
-    public void onActivityResult_OnCancel_sendsAnalyticsAndReturnsErrorToCallback() throws InvalidArgumentException {
+    public void onActivityResult_OnCancel_sendsAnalyticsAndReturnsErrorToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1041,7 +1042,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_OnNonOkOrCanceledResult_sendsAnalyticsAndReturnsErrorToCallback() throws InvalidArgumentException {
+    public void onActivityResult_OnNonOkOrCanceledResult_sendsAnalyticsAndReturnsErrorToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1074,7 +1075,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_OnOkResponse_sendsAnalytics() throws InvalidArgumentException {
+    public void onActivityResult_OnOkResponse_sendsAnalytics() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1103,7 +1104,7 @@ public class GooglePayClientUnitTest {
 
     // region getAllowedCardNetworks
     @Test
-    public void getAllowedCardNetworks_returnsSupportedNetworks() throws InvalidArgumentException {
+    public void getAllowedCardNetworks_returnsSupportedNetworks() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
@@ -1134,7 +1135,7 @@ public class GooglePayClientUnitTest {
     // region getTokenizationParameters
 
     @Test
-    public void getTokenizationParameters_returnsCorrectParameters() throws Exception {
+    public void getTokenizationParameters_returnsCorrectParameters() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
@@ -1142,16 +1143,17 @@ public class GooglePayClientUnitTest {
                 .withAnalytics()
                 .buildConfiguration();
 
+        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
@@ -1162,7 +1164,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() throws InvalidArgumentException {
+    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
@@ -1170,21 +1172,22 @@ public class GooglePayClientUnitTest {
                 .withAnalytics()
                 .buildConfiguration();
 
+        Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
     }
 
     @Test
-    public void getTokenizationParameters_includesATokenizationKeyWhenPresent() throws Exception {
+    public void getTokenizationParameters_includesATokenizationKeyWhenPresent() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
@@ -1192,21 +1195,22 @@ public class GooglePayClientUnitTest {
                 .withAnalytics()
                 .buildConfiguration();
 
+        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, ).getParameters();
+        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"));
     }
 
     @Test
-    public void getTokenizationParameters_forwardsParametersAndAllowedCardsToCallback() throws InvalidArgumentException {
+    public void getTokenizationParameters_forwardsParametersAndAllowedCardsToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
