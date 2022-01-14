@@ -37,7 +37,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
 
     private BraintreeClient braintreeClient;
-    private DemoAuthorizationProvider authProvider;
+    private DemoClientTokenProvider authProvider;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -51,7 +51,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_demo);
 
-        authProvider = new DemoAuthorizationProvider();
+        authProvider = new DemoClientTokenProvider();
         if (savedInstanceState != null) {
             authorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
             customerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);

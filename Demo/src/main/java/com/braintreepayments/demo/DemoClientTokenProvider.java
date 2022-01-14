@@ -7,11 +7,11 @@ import androidx.annotation.StringRes;
 
 import com.braintreepayments.FetchAuthorizationCallback;
 
-public class DemoAuthorizationProvider {
+public class DemoClientTokenProvider {
 
     private final Merchant merchant;
 
-    public DemoAuthorizationProvider() {
+    public DemoClientTokenProvider() {
         merchant = new Merchant();
     }
 
