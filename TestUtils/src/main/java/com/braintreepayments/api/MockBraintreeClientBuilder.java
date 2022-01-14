@@ -28,6 +28,7 @@ public class MockBraintreeClientBuilder {
     private Configuration configuration;
     private Exception configurationError;
 
+    private AuthorizationType authorizationType;
     private Authorization authorization;
     private Exception authorizationError;
 
@@ -47,6 +48,11 @@ public class MockBraintreeClientBuilder {
 
     public MockBraintreeClientBuilder configurationError(Exception configurationError) {
         this.configurationError = configurationError;
+        return this;
+    }
+
+    public MockBraintreeClientBuilder authorizationType(AuthorizationType authorizationType) {
+        this.authorizationType = authorizationType;
         return this;
     }
 
@@ -123,6 +129,7 @@ public class MockBraintreeClientBuilder {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
+        when(braintreeClient.getAuthorizationType()).thenReturn(authorizationType);
 
         doAnswer(new Answer<Void>() {
             @Override
