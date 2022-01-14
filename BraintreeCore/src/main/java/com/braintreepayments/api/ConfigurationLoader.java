@@ -41,7 +41,7 @@ class ConfigurationLoader {
             callback.onResult(cachedConfig, null);
         } else {
 
-            httpClient.get(configUrl, null, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
+            httpClient.get(configUrl, null, , HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
 
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
@@ -61,7 +61,7 @@ class ConfigurationLoader {
                         callback.onResult(null, configurationException);
                     }
                 }
-            });
+            }, );
         }
     }
 

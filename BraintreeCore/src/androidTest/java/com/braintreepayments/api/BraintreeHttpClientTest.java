@@ -24,9 +24,9 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
+        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", , , null, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -34,7 +34,7 @@ public class BraintreeHttpClientTest {
                 assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
-        });
+        }, );
 
         countDownLatch.await();
     }
@@ -42,9 +42,9 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 10000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
+        braintreeHttpClient.get("https://api.braintreegateway.com/", , , null, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -52,7 +52,7 @@ public class BraintreeHttpClientTest {
                 assertTrue(httpError instanceof AuthorizationException);
                 countDownLatch.countDown();
             }
-        });
+        }, );
 
         countDownLatch.await();
     }

@@ -40,7 +40,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
@@ -217,7 +216,7 @@ public class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class));
+        verify(httpClient).post(anyString(), captor.capture(), any(Configuration.class), );
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
 
@@ -283,7 +282,7 @@ public class AnalyticsClientUnitTest {
         when(analyticsEventDao.getAllEvents()).thenReturn(events);
 
         Exception httpError = new Exception("error");
-        when(httpClient.post(anyString(), anyString(), any(Configuration.class))).thenThrow(httpError);
+        when(httpClient.post(anyString(), anyString(), any(Configuration.class), )).thenThrow(httpError);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
@@ -303,7 +302,7 @@ public class AnalyticsClientUnitTest {
         sut.reportCrash(context, sessionId, integration, 123);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), any(HttpNoResponse.class));
+        verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), , any(HttpNoResponse.class), );
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
 

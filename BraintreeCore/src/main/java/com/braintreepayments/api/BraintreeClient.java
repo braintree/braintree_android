@@ -55,8 +55,7 @@ public class BraintreeClient {
         AuthorizationLoader authorizationLoader =
             new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
-        Authorization authorization = Authorization.fromString(initialAuthString);
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         return new BraintreeClientParams()
                 .authorizationLoader(authorizationLoader)
                 .context(context)
@@ -138,7 +137,7 @@ public class BraintreeClient {
      * @param callback {@link ConfigurationCallback}
      */
     public void getConfiguration(@NonNull final ConfigurationCallback callback) {
-        authorizationLoader.loadAuthorization(new AuthorizationCallback() {
+        getAuthorization(new AuthorizationCallback() {
             @Override
             public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception error) {
                 if (authorization != null) {
@@ -148,6 +147,10 @@ public class BraintreeClient {
                 }
             }
         });
+    }
+
+    private void getAuthorization(@NonNull final AuthorizationCallback callback) {
+        authorizationLoader.loadAuthorization(callback);
     }
 
     void sendAnalyticsEvent(final String eventName) {
@@ -162,26 +165,44 @@ public class BraintreeClient {
     }
 
     void sendGET(final String url, final HttpResponseCallback responseCallback) {
-        getConfiguration(new ConfigurationCallback() {
+        getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    httpClient.get(url, configuration, responseCallback);
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
+                if (authorization != null) {
+                    getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                            if (configuration != null) {
+                                httpClient.get(url, configuration, authorization, responseCallback);
+                            } else {
+                                responseCallback.onResult(null, configError);
+                            }
+                        }
+                    });
                 } else {
-                    responseCallback.onResult(null, error);
+                    responseCallback.onResult(null, authError);
                 }
             }
         });
     }
 
     void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
-        getConfiguration(new ConfigurationCallback() {
+        getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    httpClient.post(url, data, configuration, responseCallback);
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
+                if (authorization != null) {
+                    getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                            if (configuration != null) {
+                                httpClient.post(url, data, configuration, authorization, responseCallback);
+                            } else {
+                                responseCallback.onResult(null, configError);
+                            }
+                        }
+                    });
                 } else {
-                    responseCallback.onResult(null, error);
+                    responseCallback.onResult(null, authError);
                 }
             }
         });

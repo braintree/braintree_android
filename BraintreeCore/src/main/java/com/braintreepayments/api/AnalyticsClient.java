@@ -48,7 +48,7 @@ class AnalyticsClient {
 
     AnalyticsClient(Context context, Authorization authorization) {
         this(
-                new BraintreeHttpClient(authorization),
+                new BraintreeHttpClient(),
                 AnalyticsDatabase.getInstance(context.getApplicationContext()),
                 WorkManager.getInstance(context.getApplicationContext()),
                 new DeviceInspector()
@@ -147,7 +147,7 @@ class AnalyticsClient {
                 JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
 
                 String analyticsUrl = configuration.getAnalyticsUrl();
-                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
+                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, );
                 analyticsEventDao.deleteEvents(events);
             }
             return ListenableWorker.Result.success();
@@ -171,7 +171,7 @@ class AnalyticsClient {
         List<AnalyticsEvent> events = Collections.singletonList(event);
         try {
             JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
-            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, new HttpNoResponse());
+            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, , new HttpNoResponse(), );
         } catch (JSONException e) { /* ignored */ }
     }
 
