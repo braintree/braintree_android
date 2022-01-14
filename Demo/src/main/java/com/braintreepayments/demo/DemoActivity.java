@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -46,6 +47,10 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
+
+        // perform reset on preference change
+        Settings.getPreferences(this)
+                .registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> performReset());
 
         viewModel = new ViewModelProvider(this).get(DemoViewModel.class);
     }
