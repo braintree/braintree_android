@@ -24,6 +24,6 @@ public abstract class AnalyticsBaseWorker extends Worker {
         Data inputData = getInputData();
         String authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION);
         Authorization authorization = Authorization.fromString(authString);
-        return new AnalyticsClient(getApplicationContext(), authorization);
+        return new AnalyticsClient(getApplicationContext());
     }
 }

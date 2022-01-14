@@ -64,7 +64,7 @@ public class BraintreeClient {
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
                 .graphQLClient(new BraintreeGraphQLClient())
-                .analyticsClient(new AnalyticsClient(context, authorization))
+                .analyticsClient(new AnalyticsClient(context))
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
@@ -154,11 +154,18 @@ public class BraintreeClient {
     }
 
     void sendAnalyticsEvent(final String eventName) {
-        getConfiguration(new ConfigurationCallback() {
+        getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (isAnalyticsEnabled(configuration)) {
-                    analyticsClient.sendEvent(configuration, eventName, sessionId, getIntegrationType());
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception error) {
+                if (authorization != null) {
+                    getConfiguration(new ConfigurationCallback() {
+                        @Override
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                            if (isAnalyticsEnabled(configuration)) {
+                                analyticsClient.sendEvent(configuration, eventName, sessionId, getIntegrationType(), authorization);
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -282,7 +289,8 @@ public class BraintreeClient {
     }
 
     void reportCrash() {
-        analyticsClient.reportCrash(applicationContext, sessionId, integrationType);
+        Authorization authorization = authorizationLoader.getAuthorizationFromCache();
+        analyticsClient.reportCrash(applicationContext, sessionId, integrationType, authorization);
     }
 
     static boolean isAnalyticsEnabled(Configuration configuration) {

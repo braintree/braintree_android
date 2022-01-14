@@ -46,7 +46,7 @@ class AnalyticsClient {
 
     private String lastKnownAnalyticsUrl;
 
-    AnalyticsClient(Context context, Authorization authorization) {
+    AnalyticsClient(Context context) {
         this(
                 new BraintreeHttpClient(),
                 AnalyticsDatabase.getInstance(context.getApplicationContext()),
@@ -63,22 +63,21 @@ class AnalyticsClient {
         this.analyticsDatabase = analyticsDatabase;
     }
 
-    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration) {
+    void sendEvent(Configuration configuration, String eventName, String sessionId, String integration, Authorization authorization) {
         long timestamp = System.currentTimeMillis();
-        sendEvent(configuration, eventName, sessionId, integration, timestamp);
+        sendEvent(configuration, eventName, sessionId, integration, timestamp, authorization);
     }
 
     @VisibleForTesting
-    UUID sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp) {
+    UUID sendEvent(Configuration configuration, String eventName, String sessionId, String integration, long timestamp, Authorization authorization) {
         lastKnownAnalyticsUrl = configuration.getAnalyticsUrl();
 
         String fullEventName = String.format("android.%s", eventName);
-        scheduleAnalyticsWrite(fullEventName, timestamp);
-        return scheduleAnalyticsUpload(configuration, httpClient.getAuthorization(), sessionId, integration);
+        scheduleAnalyticsWrite(fullEventName, timestamp, authorization);
+        return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration);
     }
 
-    private void scheduleAnalyticsWrite(String eventName, long timestamp) {
-        Authorization authorization = httpClient.getAuthorization();
+    private void scheduleAnalyticsWrite(String eventName, long timestamp, Authorization authorization) {
         Data inputData = new Data.Builder()
                 .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
                 .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
@@ -130,6 +129,8 @@ class AnalyticsClient {
 
     ListenableWorker.Result uploadAnalytics(Context context, Data inputData) {
         Configuration configuration = getConfigurationFromData(inputData);
+        Authorization authorization = getAuthorizationFromData(inputData);
+
         String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
         String integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION);
 
@@ -144,10 +145,10 @@ class AnalyticsClient {
             boolean shouldUploadAnalytics = !events.isEmpty();
             if (shouldUploadAnalytics) {
                 DeviceMetadata metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration);
-                JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
+                JSONObject analyticsRequest = serializeEvents(authorization, events, metadata);
 
                 String analyticsUrl = configuration.getAnalyticsUrl();
-                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, );
+                httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, authorization);
                 analyticsEventDao.deleteEvents(events);
             }
             return ListenableWorker.Result.success();
@@ -156,13 +157,13 @@ class AnalyticsClient {
         }
     }
 
-    void reportCrash(Context context, String sessionId, String integration) {
-        reportCrash(context, sessionId, integration, System.currentTimeMillis());
+    void reportCrash(Context context, String sessionId, String integration, Authorization authorization) {
+        reportCrash(context, sessionId, integration, System.currentTimeMillis(), authorization);
     }
 
     @VisibleForTesting
-    void reportCrash(Context context, String sessionId, String integration, long timestamp) {
-        if (lastKnownAnalyticsUrl == null) {
+    void reportCrash(Context context, String sessionId, String integration, long timestamp, Authorization authorization) {
+        if (lastKnownAnalyticsUrl == null || authorization == null) {
             return;
         }
 
@@ -170,8 +171,8 @@ class AnalyticsClient {
         AnalyticsEvent event = new AnalyticsEvent("android.crash", timestamp);
         List<AnalyticsEvent> events = Collections.singletonList(event);
         try {
-            JSONObject analyticsRequest = serializeEvents(httpClient.getAuthorization(), events, metadata);
-            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, , new HttpNoResponse(), );
+            JSONObject analyticsRequest = serializeEvents(authorization, events, metadata);
+            httpClient.post(lastKnownAnalyticsUrl, analyticsRequest.toString(), null, authorization, new HttpNoResponse());
         } catch (JSONException e) { /* ignored */ }
     }
 
@@ -198,6 +199,13 @@ class AnalyticsClient {
         return requestObject;
     }
 
+    private static Authorization getAuthorizationFromData(Data inputData) {
+        if (inputData != null) {
+            String authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION);
+            return Authorization.fromString(authString);
+        }
+        return null;
+    }
     private static Configuration getConfigurationFromData(Data inputData) {
         if (inputData != null) {
             String configJson = inputData.getString(WORK_INPUT_KEY_CONFIGURATION);

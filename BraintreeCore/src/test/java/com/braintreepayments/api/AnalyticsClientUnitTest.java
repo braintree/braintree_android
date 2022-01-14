@@ -86,7 +86,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123);
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123, );
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
@@ -107,7 +107,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123);
+        sut.sendEvent(configuration, eventName, sessionId, integration, 123, );
 
         ArgumentCaptor<OneTimeWorkRequest> captor = ArgumentCaptor.forClass(OneTimeWorkRequest.class);
         verify(workManager)
@@ -298,8 +298,8 @@ public class AnalyticsClientUnitTest {
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
-        sut.sendEvent(configuration, eventName, sessionId, integration);
-        sut.reportCrash(context, sessionId, integration, 123);
+        sut.sendEvent(configuration, eventName, sessionId, integration, );
+        sut.reportCrash(context, sessionId, integration, 123, );
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(httpClient).post(eq("analytics_url"), captor.capture(), (Configuration) isNull(), , any(HttpNoResponse.class), );
@@ -324,7 +324,7 @@ public class AnalyticsClientUnitTest {
         when(httpClient.getAuthorization()).thenReturn(authorization);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.reportCrash(context, sessionId, integration, 123);
+        sut.reportCrash(context, sessionId, integration, 123, );
 
         verifyZeroInteractions(httpClient);
     }

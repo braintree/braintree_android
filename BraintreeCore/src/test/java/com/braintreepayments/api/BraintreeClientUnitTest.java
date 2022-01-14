@@ -204,7 +204,7 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
-        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom");
+        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom", );
     }
 
     @Test
@@ -403,7 +403,7 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.reportCrash();
-        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM);
+        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM, );
     }
 
     private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
