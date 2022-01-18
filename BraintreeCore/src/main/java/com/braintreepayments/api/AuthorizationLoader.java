@@ -42,9 +42,18 @@ class AuthorizationLoader {
     }
 
     AuthorizationType getAuthorizationType() {
+        if (authorization instanceof InvalidAuthorization) {
+            return AuthorizationType.INVALID;
+        }
+
         if (authorization instanceof TokenizationKey) {
             return AuthorizationType.TOKENIZATION_KEY;
         }
-        return AuthorizationType.CLIENT_TOKEN;
+
+        if (clientTokenProvider != null) {
+            return AuthorizationType.CLIENT_TOKEN;
+        }
+
+        return AuthorizationType.INVALID;
     }
 }

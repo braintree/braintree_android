@@ -1,5 +1,5 @@
 package com.braintreepayments.api;
 
 enum AuthorizationType {
-    TOKENIZATION_KEY, CLIENT_TOKEN
+    INVALID, TOKENIZATION_KEY, CLIENT_TOKEN
 }
