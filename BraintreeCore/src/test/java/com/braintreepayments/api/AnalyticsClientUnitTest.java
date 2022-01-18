@@ -327,13 +327,15 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
-    public void reportCrash_whenAuthorizationIsNull_doesNothing() {
+    public void reportCrash_whenAuthorizationIsNull_doesNothing() throws JSONException {
         DeviceMetadata metadata = createSampleDeviceMetadata();
         when(deviceInspector.getDeviceMetadata(context, sessionId, integration)).thenReturn(metadata);
 
         AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
-        sut.reportCrash(context, sessionId, integration, 123, authorization);
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
 
+        sut.sendEvent(configuration, eventName, sessionId, integration, authorization);
+        sut.reportCrash(context, sessionId, integration, 123, null);
         verifyZeroInteractions(httpClient);
     }
 
