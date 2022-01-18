@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -93,5 +94,31 @@ public class AuthorizationLoaderUnitTest {
         Exception error = captor.getValue();
         assertTrue(error instanceof BraintreeException);
         assertEquals("Unable to fetch client token", error.getMessage());
+    }
+
+    @Test
+    public void getAuthorizationFromCache_returnsInitialAuthorization() {
+        String initialAuthString = Fixtures.TOKENIZATION_KEY;
+        sut = new AuthorizationLoader(initialAuthString, null);
+
+        Authorization cachedAuth = sut.getAuthorizationFromCache();
+        assertNotNull(cachedAuth);
+        assertEquals(initialAuthString, cachedAuth.toString());
+    }
+
+    @Test
+    public void getAuthorizationFromCache_returnsAuthorizationFromClientTokenProvider() {
+        String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
+        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder()
+                .clientToken(clientToken)
+                .build();
+        sut = new AuthorizationLoader(null, clientTokenProvider);
+
+        AuthorizationCallback callback = mock(AuthorizationCallback.class);
+        sut.loadAuthorization(callback);
+
+        Authorization cachedAuth = sut.getAuthorizationFromCache();
+        assertNotNull(cachedAuth);
+        assertEquals(clientToken, cachedAuth.toString());
     }
 }
