@@ -62,7 +62,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void continuePerformVerification_sendsAnalyticsEvent() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
@@ -80,7 +80,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void performVerification_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() throws InvalidArgumentException {
+    public void performVerification_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
@@ -97,7 +97,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenV1Flow_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+    public void continuePerformVerification_whenV1Flow_launchesBrowserSwitch() throws BrowserSwitchException {
         String urlScheme = "sample-scheme";
         String assetsUrl = "https://www.some-assets.com";
 
@@ -125,7 +125,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void initializeChallengeWithLookupResponse_whenV1Flow_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+    public void initializeChallengeWithLookupResponse_whenV1Flow_launchesBrowserSwitch() throws BrowserSwitchException {
         String urlScheme = "sample-scheme";
         String assetsUrl = "https://www.some-assets.com";
 
@@ -153,7 +153,7 @@ public class ThreeDSecureV1UnitTest {
     }
 
     @Test
-    public void initializeChallengeWithLookupResponse_whenV1Flow_and3DSecureRequestIsProvided_launchesBrowserSwitch() throws InvalidArgumentException, BrowserSwitchException {
+    public void initializeChallengeWithLookupResponse_whenV1Flow_and3DSecureRequestIsProvided_launchesBrowserSwitch() throws BrowserSwitchException {
         String urlScheme = "sample-scheme";
         String assetsUrl = "https://www.some-assets.com";
 

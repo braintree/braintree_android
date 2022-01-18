@@ -146,7 +146,7 @@ public class ThreeDSecureClient {
     public void prepareLookup(@NonNull final Context context, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecurePrepareLookupCallback callback) {
         braintreeClient.getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onAuthorizationResult(@Nullable @org.jetbrains.annotations.Nullable Authorization authorization, @Nullable Exception authError) {
+            public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
                 if (authorization != null) {
 
                     final JSONObject lookupJSON = new JSONObject();
@@ -164,11 +164,10 @@ public class ThreeDSecureClient {
 
                     braintreeClient.getConfiguration(new ConfigurationCallback() {
                         @Override
-                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                             if (configuration == null) {
-                                callback.onResult(null, null, error);
+                                callback.onResult(null, null, configError);
                                 return;
-
                             }
                             if (configuration.getCardinalAuthenticationJwt() == null) {
                                 Exception authError = new BraintreeException("Merchant is not configured for 3DS 2.0. " +
