@@ -89,17 +89,56 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
+    public void getConfiguration_onAuthorizationLoaderSuccess_forwardsInvocationToConfigurationLoader() {
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
                 .authorization(authorization)
                 .build();
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
-        ConfigurationCallback configurationCallback = mock(ConfigurationCallback.class);
-        sut.getConfiguration(configurationCallback);
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
 
-        verify(configurationLoader).loadConfiguration(same(applicationContext), same(authorization), same(configurationCallback));
+        verify(configurationLoader).loadConfiguration(applicationContext, authorization, callback);
+    }
+
+    @Test
+    public void getConfiguration_forwardsAuthorizationLoaderError() {
+        Exception authFetchError = new Exception("auth fetch error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(authFetchError)
+                .build();
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
+
+        verify(callback).onResult(null, authFetchError);
+    }
+
+    @Test
+    public void getAuthorization_forwardsInvocationToAuthorizationLoader() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        AuthorizationCallback callback = mock(AuthorizationCallback.class);
+        sut.getAuthorization(callback);
+
+        verify(authorizationLoader).loadAuthorization(callback);
+    }
+
+    @Test
+    public void getAuthorizationType_forwardsInvocationToAuthorizationLoader() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder().build();
+        when(authorizationLoader.getAuthorizationType()).thenReturn(AuthorizationType.CLIENT_TOKEN);
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        assertEquals(AuthorizationType.CLIENT_TOKEN, sut.getAuthorizationType());
     }
 
     @Test
