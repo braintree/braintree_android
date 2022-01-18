@@ -32,7 +32,7 @@ class AuthorizationLoader {
                 }
             });
         } else {
-            callback.onAuthorizationResult(null, new BraintreeException("unable to fetch client token"));
+            callback.onAuthorizationResult(null, new BraintreeException("Unable to fetch client token"));
         }
     }
 
