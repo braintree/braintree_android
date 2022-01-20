@@ -153,10 +153,6 @@ public class BraintreeClient {
         authorizationLoader.loadAuthorization(callback);
     }
 
-    AuthorizationType getAuthorizationType() {
-        return authorizationLoader.getAuthorizationType();
-    }
-
     void sendAnalyticsEvent(final String eventName) {
         getAuthorization(new AuthorizationCallback() {
             @Override

@@ -131,17 +131,6 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getAuthorizationType_forwardsInvocationToAuthorizationLoader() {
-        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder().build();
-        when(authorizationLoader.getAuthorizationType()).thenReturn(AuthorizationType.CLIENT_TOKEN);
-
-        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
-        BraintreeClient sut = new BraintreeClient(params);
-
-        assertEquals(AuthorizationType.CLIENT_TOKEN, sut.getAuthorizationType());
-    }
-
-    @Test
     public void sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         Configuration configuration = mock(Configuration.class);
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()

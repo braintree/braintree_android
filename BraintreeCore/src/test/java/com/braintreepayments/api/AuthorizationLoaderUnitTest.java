@@ -121,31 +121,4 @@ public class AuthorizationLoaderUnitTest {
         assertNotNull(cachedAuth);
         assertEquals(clientToken, cachedAuth.toString());
     }
-
-    @Test
-    public void getAuthorizationType_whenAuthIsTokenizationKey_returnsTOKENIZATION() {
-        String initialAuthString = Fixtures.TOKENIZATION_KEY;
-        sut = new AuthorizationLoader(initialAuthString, null);
-        assertEquals(AuthorizationType.TOKENIZATION_KEY, sut.getAuthorizationType());
-    }
-
-    @Test
-    public void getAuthorizationType_whenAuthIsInvalid_returnsINVALID() {
-        String initialAuthString = "invalid string";
-        sut = new AuthorizationLoader(initialAuthString, null);
-        assertEquals(AuthorizationType.INVALID, sut.getAuthorizationType());
-    }
-
-    @Test
-    public void getAuthorizationType_whenInitialAuthDoesNotExistAndClientTokenProviderExists_returnsCLIENT_TOKEN() {
-        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder().build();
-        sut = new AuthorizationLoader(null, clientTokenProvider);
-        assertEquals(AuthorizationType.CLIENT_TOKEN, sut.getAuthorizationType());
-    }
-
-    @Test
-    public void getAuthorizationType_whenInitialAuthAndClientTokenProviderDoNoExist_returnsINVALID() {
-        sut = new AuthorizationLoader(null, null);
-        assertEquals(AuthorizationType.INVALID, sut.getAuthorizationType());
-    }
 }

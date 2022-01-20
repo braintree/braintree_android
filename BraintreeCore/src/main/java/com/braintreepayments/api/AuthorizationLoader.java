@@ -40,20 +40,4 @@ class AuthorizationLoader {
     Authorization getAuthorizationFromCache() {
         return authorization;
     }
-
-    AuthorizationType getAuthorizationType() {
-        if (authorization instanceof InvalidAuthorization) {
-            return AuthorizationType.INVALID;
-        }
-
-        if (authorization instanceof TokenizationKey) {
-            return AuthorizationType.TOKENIZATION_KEY;
-        }
-
-        if (clientTokenProvider != null) {
-            return AuthorizationType.CLIENT_TOKEN;
-        }
-
-        return AuthorizationType.INVALID;
-    }
 }
