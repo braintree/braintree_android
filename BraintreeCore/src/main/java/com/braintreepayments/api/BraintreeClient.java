@@ -53,7 +53,7 @@ public class BraintreeClient {
 
     private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
         AuthorizationLoader authorizationLoader =
-            new AuthorizationLoader(initialAuthString, clientTokenProvider);
+                new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
         BraintreeHttpClient httpClient = new BraintreeHttpClient();
         return new BraintreeClientParams()
@@ -81,13 +81,19 @@ public class BraintreeClient {
         this(createDefaultParams(context, authorization, null));
     }
 
+    /**
+     * Create a new instance of {@link BraintreeClient} using a {@link ClientTokenProvider}.
+     *
+     * @param context             Android Context
+     * @param clientTokenProvider An implementation of {@link ClientTokenProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
+     */
     public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider) {
         this(createDefaultParams(context, null, clientTokenProvider));
     }
 
     /**
      * Create a new instance of {@link BraintreeClient} using a tokenization key or client token and a custom url scheme.
-     *
+     * <p>
      * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
      * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
      * Drop-in uses the same custom url scheme as the default BraintreeClient constructor.
@@ -100,6 +106,17 @@ public class BraintreeClient {
         this(createDefaultParams(context, authorization, null, returnUrlScheme));
     }
 
+    /**
+     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token and a custom url scheme.
+     * <p>
+     * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
+     * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
+     * Drop-in uses the same custom url scheme as the default BraintreeClient constructor.
+     *
+     * @param context             Android Context
+     * @param clientTokenProvider An implementation of {@link ClientTokenProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
+     * @param returnUrlScheme     A custom return url to use for browser and app switching
+     */
     public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String returnUrlScheme) {
         this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
     }
