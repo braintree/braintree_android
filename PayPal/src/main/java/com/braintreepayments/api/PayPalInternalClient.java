@@ -52,7 +52,6 @@ class PayPalInternalClient {
                                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                                 String url = String.format("/v1/%s", endpoint);
 
-                                // TODO: call async getAuthorization here
                                 String requestBody = payPalRequest.createRequestBody(configuration, authorization, successUrl, cancelUrl);
 
                                 braintreeClient.sendPOST(url, requestBody, new HttpResponseCallback() {
