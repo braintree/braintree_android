@@ -234,6 +234,69 @@ public class AnalyticsClientUnitTest {
     }
 
     @Test
+    public void uploadAnalytics_whenConfigurationIsNull_doesNothing() {
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+
+        ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+        verifyZeroInteractions(httpClient);
+    }
+
+    @Test
+    public void uploadAnalytics_whenAuthorizationIsNull_doesNothing() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+
+        ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+        verifyZeroInteractions(httpClient);
+    }
+
+    @Test
+    public void uploadAnalytics_whenSessionIdIsNull_doesNothing() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+
+        ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+        verifyZeroInteractions(httpClient);
+    }
+
+    @Test
+    public void uploadAnalytics_whenIntegrationIsNull_doesNothing() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        Data inputData = new Data.Builder()
+                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .build();
+
+        AnalyticsClient sut = new AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector);
+
+        ListenableWorker.Result result = sut.uploadAnalytics(context, inputData);
+        assertTrue(result instanceof ListenableWorker.Result.Failure);
+        verifyZeroInteractions(httpClient);
+    }
+
+    @Test
     public void uploadAnalytics_deletesDatabaseEventsOnSuccessResponse() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         Data inputData = new Data.Builder()

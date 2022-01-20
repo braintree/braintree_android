@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -134,7 +135,9 @@ class AnalyticsClient {
         String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
         String integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION);
 
-        if (configuration == null || sessionId == null || integration == null) {
+        boolean shouldFail =
+            Arrays.asList(configuration, authorization, sessionId, integration).contains(null);
+        if (shouldFail) {
             return ListenableWorker.Result.failure();
         }
 
@@ -202,7 +205,9 @@ class AnalyticsClient {
     private static Authorization getAuthorizationFromData(Data inputData) {
         if (inputData != null) {
             String authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION);
-            return Authorization.fromString(authString);
+            if (authString != null) {
+                return Authorization.fromString(authString);
+            }
         }
         return null;
     }
