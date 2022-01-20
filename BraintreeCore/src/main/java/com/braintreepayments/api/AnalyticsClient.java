@@ -135,9 +135,9 @@ class AnalyticsClient {
         String sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID);
         String integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION);
 
-        boolean shouldFail =
+        boolean isMissingInputData =
             Arrays.asList(configuration, authorization, sessionId, integration).contains(null);
-        if (shouldFail) {
+        if (isMissingInputData) {
             return ListenableWorker.Result.failure();
         }
 
