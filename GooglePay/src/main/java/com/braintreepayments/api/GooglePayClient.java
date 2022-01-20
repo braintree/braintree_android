@@ -225,6 +225,7 @@ public class GooglePayClient {
                                     .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
                                     .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
 
+                            // TODO: Use activity result API to launch this activity
                             activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
                         }
                     });
