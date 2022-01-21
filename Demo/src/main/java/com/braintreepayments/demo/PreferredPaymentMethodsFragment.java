@@ -35,7 +35,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     private PreferredPaymentMethodsClient preferredPaymentMethodsClient;
 
     @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         BraintreeClient braintreeClient = getBraintreeClient();
