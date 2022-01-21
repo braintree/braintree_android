@@ -27,8 +27,8 @@ class AuthorizationLoader {
                 }
 
                 @Override
-                public void onFailure(@NonNull Exception exception) {
-                    callback.onAuthorizationResult(null, exception);
+                public void onFailure(@NonNull Exception error) {
+                    callback.onAuthorizationResult(null, error);
                 }
             });
         } else {
