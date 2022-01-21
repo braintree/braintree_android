@@ -32,7 +32,10 @@ class AuthorizationLoader {
                 }
             });
         } else {
-            callback.onAuthorizationResult(null, new BraintreeException("Unable to fetch client token"));
+            String clientSDKSetupURL
+                = "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization";
+            String message = String.format("Authorization required. See %s for more info.", clientSDKSetupURL);
+            callback.onAuthorizationResult(null, new BraintreeException(message));
         }
     }
 
