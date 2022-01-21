@@ -93,7 +93,9 @@ public class AuthorizationLoaderUnitTest {
 
         Exception error = captor.getValue();
         assertTrue(error instanceof BraintreeException);
-        assertEquals("Unable to fetch client token", error.getMessage());
+        String expectedMessage =
+                "Authorization required. See https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization for more info.";
+        assertEquals(expectedMessage, error.getMessage());
     }
 
     @Test
