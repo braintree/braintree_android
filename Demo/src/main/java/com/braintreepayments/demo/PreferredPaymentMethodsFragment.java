@@ -1,5 +1,8 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
+import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PreferredPaymentMethodsClient;
 import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.VenmoPaymentMethodUsage;
+import com.braintreepayments.api.VenmoRequest;
 
 public class PreferredPaymentMethodsFragment extends BaseFragment {
 
@@ -26,6 +33,16 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     private PayPalClient payPalClient;
     private VenmoClient venmoClient;
     private PreferredPaymentMethodsClient preferredPaymentMethodsClient;
+
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        BraintreeClient braintreeClient = getBraintreeClient();
+        payPalClient = new PayPalClient(braintreeClient);
+        venmoClient = new VenmoClient(braintreeClient);
+        preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
+    }
 
     @Nullable
     @Override
@@ -44,15 +61,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
         return view;
     }
 
-    private void initializeFeatureClients() {
-        BraintreeClient braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalClient(braintreeClient);
-        venmoClient = new VenmoClient(braintreeClient);
-        preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);
-    }
-
     public void launchPreferredPaymentMethods(View v) {
-        initializeFeatureClients();
         preferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
         preferredPaymentMethodsClient.fetchPreferredPaymentMethods(getActivity(), result -> {
             String formatString = "PayPal Preferred: %b\nVenmo Preferred: %b";
@@ -68,17 +77,37 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     public void launchSinglePayment(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        initializeFeatureClients();
+        PayPalCheckoutRequest payPalRequest =
+            createPayPalCheckoutRequest(requireActivity(), "1.00");
+        payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
+            if (requestError != null) {
+                handleError(requestError);
+            }
+        });
     }
 
     public void launchBillingAgreement(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        initializeFeatureClients();
+        PayPalVaultRequest payPalRequest = createPayPalVaultRequest(requireActivity());
+        payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
+            if (requestError != null) {
+                handleError(requestError);
+            }
+        });
     }
 
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
-        initializeFeatureClients();
+
+        VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        venmoRequest.setProfileId(null);
+        venmoRequest.setShouldVault(false);
+
+        venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
+            if (requestError != null) {
+                handleError(requestError);
+            }
+        });
     }
 }
