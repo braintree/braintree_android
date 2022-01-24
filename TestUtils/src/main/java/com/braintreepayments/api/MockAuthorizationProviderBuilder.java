@@ -7,17 +7,17 @@ import static org.mockito.Mockito.mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class MockClientTokenProviderBuilder {
+public class MockAuthorizationProviderBuilder {
 
     private String clientToken;
     private Exception error;
 
-    public MockClientTokenProviderBuilder clientToken(String clientToken) {
+    public MockAuthorizationProviderBuilder clientToken(String clientToken) {
         this.clientToken = clientToken;
         return this;
     }
 
-    public MockClientTokenProviderBuilder error(Exception error) {
+    public MockAuthorizationProviderBuilder error(Exception error) {
         this.error = error;
         return this;
     }

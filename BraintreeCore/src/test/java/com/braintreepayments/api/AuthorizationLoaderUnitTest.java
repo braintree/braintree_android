@@ -37,7 +37,7 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_callsBackSuccessfulClientTokenFetch() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockAuthorizationProviderBuilder()
                 .clientToken(clientToken)
                 .build();
         sut = new AuthorizationLoader(null, authorizationProvider);
@@ -55,7 +55,7 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_cachesClientTokenInMemory() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockAuthorizationProviderBuilder()
                 .clientToken(clientToken)
                 .build();
         sut = new AuthorizationLoader(null, authorizationProvider);
@@ -70,7 +70,7 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_forwardsClientTokenFetchError() {
         Exception clientTokenFetchError = new Exception("error");
-        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockAuthorizationProviderBuilder()
                 .error(clientTokenFetchError)
                 .build();
         sut = new AuthorizationLoader(null, authorizationProvider);
@@ -111,7 +111,7 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void getAuthorizationFromCache_returnsAuthorizationFromClientTokenProvider() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockAuthorizationProviderBuilder()
                 .clientToken(clientToken)
                 .build();
         sut = new AuthorizationLoader(null, authorizationProvider);
