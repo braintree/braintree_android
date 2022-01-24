@@ -6,14 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.braintreepayments.api.ClientTokenCallback;
-import com.braintreepayments.api.ClientTokenProvider;
+import com.braintreepayments.api.AuthorizationProvider;
 
-public class DemoClientTokenProvider implements ClientTokenProvider {
+public class DemoAuthorizationProvider implements AuthorizationProvider {
 
     private final Merchant merchant;
     private final Context appContext;
 
-    public DemoClientTokenProvider(Context context) {
+    public DemoAuthorizationProvider(Context context) {
         merchant = new Merchant();
         appContext = context.getApplicationContext();
     }

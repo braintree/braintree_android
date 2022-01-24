@@ -37,10 +37,10 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_callsBackSuccessfulClientTokenFetch() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
                 .clientToken(clientToken)
                 .build();
-        sut = new AuthorizationLoader(null, clientTokenProvider);
+        sut = new AuthorizationLoader(null, authorizationProvider);
 
         AuthorizationCallback callback = mock(AuthorizationCallback.class);
         sut.loadAuthorization(callback);
@@ -55,25 +55,25 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_cachesClientTokenInMemory() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
                 .clientToken(clientToken)
                 .build();
-        sut = new AuthorizationLoader(null, clientTokenProvider);
+        sut = new AuthorizationLoader(null, authorizationProvider);
 
         AuthorizationCallback callback = mock(AuthorizationCallback.class);
         sut.loadAuthorization(callback);
         sut.loadAuthorization(callback);
 
-        verify(clientTokenProvider, times(1)).getClientToken(any(ClientTokenCallback.class));
+        verify(authorizationProvider, times(1)).getClientToken(any(ClientTokenCallback.class));
     }
 
     @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_forwardsClientTokenFetchError() {
         Exception clientTokenFetchError = new Exception("error");
-        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
                 .error(clientTokenFetchError)
                 .build();
-        sut = new AuthorizationLoader(null, clientTokenProvider);
+        sut = new AuthorizationLoader(null, authorizationProvider);
 
         AuthorizationCallback callback = mock(AuthorizationCallback.class);
         sut.loadAuthorization(callback);
@@ -111,10 +111,10 @@ public class AuthorizationLoaderUnitTest {
     @Test
     public void getAuthorizationFromCache_returnsAuthorizationFromClientTokenProvider() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
-        ClientTokenProvider clientTokenProvider = new MockClientTokenProviderBuilder()
+        AuthorizationProvider authorizationProvider = new MockClientTokenProviderBuilder()
                 .clientToken(clientToken)
                 .build();
-        sut = new AuthorizationLoader(null, clientTokenProvider);
+        sut = new AuthorizationLoader(null, authorizationProvider);
 
         AuthorizationCallback callback = mock(AuthorizationCallback.class);
         sut.loadAuthorization(callback);

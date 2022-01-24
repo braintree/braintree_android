@@ -6,10 +6,10 @@ import androidx.annotation.Nullable;
 class AuthorizationLoader {
 
     private Authorization authorization;
-    private final ClientTokenProvider clientTokenProvider;
+    private final AuthorizationProvider authorizationProvider;
 
-    AuthorizationLoader(@Nullable String initialAuthString, @Nullable ClientTokenProvider clientTokenProvider) {
-        this.clientTokenProvider = clientTokenProvider;
+    AuthorizationLoader(@Nullable String initialAuthString, @Nullable AuthorizationProvider authorizationProvider) {
+        this.authorizationProvider = authorizationProvider;
         if (initialAuthString != null) {
             this.authorization = Authorization.fromString(initialAuthString);
         }
@@ -18,8 +18,8 @@ class AuthorizationLoader {
     void loadAuthorization(@NonNull final AuthorizationCallback callback) {
         if (authorization != null) {
             callback.onAuthorizationResult(authorization, null);
-        } else if (clientTokenProvider != null) {
-            clientTokenProvider.getClientToken(new ClientTokenCallback() {
+        } else if (authorizationProvider != null) {
+            authorizationProvider.getClientToken(new ClientTokenCallback() {
                 @Override
                 public void onSuccess(@NonNull String clientToken) {
                     authorization = Authorization.fromString(clientToken);

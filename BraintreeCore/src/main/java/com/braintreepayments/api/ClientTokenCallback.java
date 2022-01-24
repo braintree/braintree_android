@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import androidx.annotation.NonNull;
 
 /**
- * Callback used to communicate {@link ClientTokenProvider#getClientToken(ClientTokenCallback)} result
+ * Callback used to communicate {@link AuthorizationProvider#getClientToken(ClientTokenCallback)} result
  * back to {@link BraintreeClient}.
  */
 public interface ClientTokenCallback {

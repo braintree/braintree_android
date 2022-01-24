@@ -2,10 +2,8 @@ package com.braintreepayments.demo;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -74,7 +72,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 braintreeClient = new BraintreeClient(this, tokenizationKey);
             } else {
                 braintreeClient =
-                        new BraintreeClient(this, new DemoClientTokenProvider(this));
+                        new BraintreeClient(this, new DemoAuthorizationProvider(this));
             }
         }
         return braintreeClient;
