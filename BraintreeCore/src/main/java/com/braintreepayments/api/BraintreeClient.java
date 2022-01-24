@@ -107,7 +107,7 @@ public class BraintreeClient {
     }
 
     /**
-     * Create a new instance of {@link BraintreeClient} using a tokenization key or client token and a custom url scheme.
+     * Create a new instance of {@link BraintreeClient} using a {@link ClientTokenProvider} and a custom url scheme.
      * <p>
      * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
      * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
