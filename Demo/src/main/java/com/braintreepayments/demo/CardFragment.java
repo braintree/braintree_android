@@ -76,6 +76,28 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     private String cardFormActionLabel;
 
+    @Override
+    public void onCreate(Bundle onSaveInstanceState) {
+        super.onCreate(onSaveInstanceState);
+
+        BraintreeClient braintreeClient = getBraintreeClient();
+        americanExpressClient = new AmericanExpressClient(braintreeClient);
+        cardClient = new CardClient(braintreeClient);
+        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        unionPayClient = new UnionPayClient(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
+
+        if (onSaveInstanceState != null) {
+            threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
+            isUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
+            enrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
+
+            if (isUnionPay) {
+                sendSmsButton.setVisibility(VISIBLE);
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,30 +127,17 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         viewModel.getThreeDSecureBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureBrowserSwitchResult);
         viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
 
+        purchaseButton.setEnabled(true);
+        autofillButton.setEnabled(true);
+
+        configureCardForm();
         return view;
-    }
-
-    @Override
-    public void onCreate(Bundle onSaveInstanceState) {
-        super.onCreate(onSaveInstanceState);
-
-        if (onSaveInstanceState != null) {
-            threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
-            isUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
-            enrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
-
-            if (isUnionPay) {
-                sendSmsButton.setVisibility(VISIBLE);
-            }
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         safelyCloseLoadingView();
-
-        initializeFeatureClients();
     }
 
     @Override
@@ -139,18 +148,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, enrollmentId);
     }
 
-    private void initializeFeatureClients() {
-        BraintreeClient braintreeClient = getBraintreeClient();
-        americanExpressClient = new AmericanExpressClient(braintreeClient);
-        cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
-        unionPayClient = new UnionPayClient(braintreeClient);
-        dataCollector = new DataCollector(braintreeClient);
-
-        purchaseButton.setEnabled(true);
-        autofillButton.setEnabled(true);
+    private void configureCardForm() {
 
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        BraintreeClient braintreeClient = getBraintreeClient();
 
         // check if union pay is enabled
         braintreeClient.getConfiguration((configuration, configError) -> {
