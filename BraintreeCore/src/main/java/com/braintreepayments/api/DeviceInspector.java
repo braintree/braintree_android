@@ -70,7 +70,6 @@ class DeviceInspector {
                 .sdkVersion(BuildConfig.VERSION_NAME)
                 .merchantAppId(context.getPackageName())
                 .merchantAppName(getAppName(context))
-                .isDeviceRooted(isDeviceRooted(buildTags))
                 .deviceManufacturer(Build.MANUFACTURER)
                 .deviceModel(Build.MODEL)
                 .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
@@ -135,28 +134,6 @@ class DeviceInspector {
             return "ApplicationNameUnknown";
         }
         return appName;
-    }
-
-    private boolean isDeviceRooted(String buildTags) {
-        boolean check1 = buildTags != null && buildTags.contains("test-keys");
-
-        boolean check2;
-        try {
-            check2 = superUserApkFile.exists();
-        } catch (Exception e) {
-            check2 = false;
-        }
-
-        boolean check3;
-        try {
-            Process process = runtime.exec(new String[]{"/system/xbin/which", "su"});
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            check3 = in.readLine() != null;
-        } catch (Exception e) {
-            check3 = false;
-        }
-
-        return (check1 || check2 || check3);
     }
 
     private String getNetworkType(Context context) {
