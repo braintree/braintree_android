@@ -346,7 +346,6 @@ public class AnalyticsClientUnitTest {
                 .isPayPalInstalled(true)
                 .isVenmoInstalled(true)
                 .isSimulator(false)
-                .isDeviceRooted(false)
                 .build();
     }
 }

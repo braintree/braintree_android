@@ -142,58 +142,6 @@ public class DeviceInspectorUnitTest {
     }
 
     @Test
-    public void getDeviceMetadata_whenSwitchUserCommandLineToolNotFound_returnsDeviceRootedAsFalse() throws IOException, JSONException {
-        when(superUserApkFile.exists()).thenReturn(false);
-
-        when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
-        when(process.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes()));
-
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
-    public void getDeviceMetadata_whenBuildTagsIncludeTestKeys_returnsDeviceRootedAsTrue() throws JSONException {
-        DeviceMetadata metadata = sut.getDeviceMetadata(
-                context, "session-id", "integration-type", "test-keys");
-        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
-    public void getDeviceMetadata_whenSuperUserApkFileExists_returnsDeviceRootedAsTrue() throws JSONException {
-        when(superUserApkFile.exists()).thenReturn(true);
-
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
-    public void getDeviceMetadata_whenSuCommandPresentOnSystemPath_returnsDeviceRootedAsTrue() throws IOException, JSONException {
-
-        when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenReturn(process);
-        when(process.getInputStream()).thenReturn(new ByteArrayInputStream("/path/to/su/command".getBytes()));
-
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        assertTrue(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
-    public void getDeviceMetadata_whenFileExistsThrows_returnsDeviceRootedAsFalse() throws JSONException {
-        when(superUserApkFile.exists()).thenThrow(new SecurityException());
-
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
-    public void getDeviceMetadata_whenRuntimeExecThrows_returnsFalse() throws IOException, JSONException {
-        when(runtime.exec(new String[]{"/system/xbin/which", "su"})).thenThrow(new IOException());
-
-        DeviceMetadata metadata = sut.getDeviceMetadata(context, "session-id", "integration-type", "");
-        assertFalse(metadata.toJSON().getBoolean("deviceRooted"));
-    }
-
-    @Test
     public void getDeviceMetadata_returnsDeviceManufacturer() throws JSONException {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "device-manufacturer");
 

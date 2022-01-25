@@ -19,7 +19,6 @@ class DeviceMetadata {
     private static final String SDK_VERSION_KEY = "sdkVersion";
     private static final String MERCHANT_APP_ID_KEY = "merchantAppId";
     private static final String MERCHANT_APP_NAME_KEY = "merchantAppName";
-    private static final String DEVICE_ROOTED_KEY = "deviceRooted";
     private static final String DEVICE_MANUFACTURER_KEY = "deviceManufacturer";
     private static final String DEVICE_MODEL_KEY = "deviceModel";
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
@@ -60,11 +59,6 @@ class DeviceMetadata {
 
         Builder integration(String integration) {
             instance.integration = integration;
-            return this;
-        }
-
-        Builder isDeviceRooted(boolean isDeviceRooted) {
-            instance.isDeviceRooted = isDeviceRooted;
             return this;
         }
 
@@ -134,7 +128,6 @@ class DeviceMetadata {
     private String devicePersistentUUID;
     private String dropInVersion;
     private String integration;
-    private boolean isDeviceRooted;
     private boolean isPayPalInstalled;
     private boolean isSimulator;
     private boolean isVenmoInstalled;
@@ -165,7 +158,6 @@ class DeviceMetadata {
                 .put(SDK_VERSION_KEY, sdkVersion)
                 .put(MERCHANT_APP_ID_KEY, merchantAppId)
                 .put(MERCHANT_APP_NAME_KEY, merchantAppName)
-                .put(DEVICE_ROOTED_KEY, isDeviceRooted)
                 .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
                 .put(DEVICE_MODEL_KEY, deviceModel)
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, devicePersistentUUID)
