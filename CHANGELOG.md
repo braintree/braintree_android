@@ -3,9 +3,9 @@
 ## unreleased
 
 * Core
-  * Add `ClientTokenProvider` interface
+  * Add `AuthorizationProvider` interface
   * Add `ClientTokenCallback` interface
-  * Add `BraintreeClient` constructors that accept a `ClientTokenProvider`
+  * Add `BraintreeClient` constructors that accept a `AuthorizationProvider`
 
 ## 4.8.1
 
