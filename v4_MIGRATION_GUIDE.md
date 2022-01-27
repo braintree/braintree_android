@@ -9,7 +9,7 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 1. [Gradle](#gradle)
 1. [Browser Switch](#browser-switch)
 1. [BraintreeFragment](#braintreefragment)
-1. [BraintreeClient](#braintreeclient)
+1. [AuthorizationProvider](#authorization-provider)
 1. [Event Handling](#event-handling)
 1. [Builder Pattern](#builder-pattern)
 1. [American Express](#american-express)
@@ -100,7 +100,7 @@ In v4, we decoupled the Braintree SDK from Android to offer more integration fle
 `BraintreeFragment` has been replaced by a `Client` for each respective payment feature. 
 See the below payment method sections for examples of instantiating and using the feature clients. 
 
-## BraintreeClient
+## Authorization Provider
 
 When creating a `BraintreeClient`, you can provide a tokenization key, client token, or an `AuthorizationProvider`. When given an authorization provider, the SDK will fetch a client token on your behalf. This makes it possible to construct a `BraintreeClient` instance in `onCreate`.
 
