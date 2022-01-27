@@ -164,6 +164,22 @@ class ExampleAuthorizationProvider implements AuthorizationProvider {
 }
 ```
 
+Then in an Activity, create an instance of `BraintreeClient`:
+
+```
+// ExampleActivity.java
+public class ExampleActivity extends AppCompatActivity {
+
+  private BraintreeClient braintreeClient;
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    braintreeClient = new BraintreeClient(this, new ExampleAuthorizationProvider());
+  }
+}
+```
+
 ## Event Handling
 
 In v3, there were several interfaces that would be called when events occurred: `PaymentMethodNonceCreatedListener`, `ConfigurationListener`, `BraintreeCancelListener`, and `BraintreeErrorListener`.
