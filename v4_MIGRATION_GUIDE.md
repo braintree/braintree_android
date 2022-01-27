@@ -166,7 +166,7 @@ class ExampleAuthorizationProvider implements AuthorizationProvider {
 
 Then in an Activity, create an instance of `BraintreeClient`:
 
-```
+```java
 // ExampleActivity.java
 public class ExampleActivity extends AppCompatActivity {
 
