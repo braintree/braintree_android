@@ -8,8 +8,8 @@ _Documentation for v4 will be published to https://developers.braintreepayments.
 
 1. [Gradle](#gradle)
 1. [Browser Switch](#browser-switch)
-1. [BraintreeFragment](#braintree-fragment)
-1. [BraintreeClient](#braintree-client)
+1. [BraintreeFragment](#braintreefragment)
+1. [BraintreeClient](#braintreeclient)
 1. [Event Handling](#event-handling)
 1. [Builder Pattern](#builder-pattern)
 1. [American Express](#american-express)
