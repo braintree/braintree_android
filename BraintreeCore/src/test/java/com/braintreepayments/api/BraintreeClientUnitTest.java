@@ -41,6 +41,7 @@ public class BraintreeClientUnitTest {
     private BraintreeHttpClient braintreeHttpClient;
     private BraintreeGraphQLClient braintreeGraphQLClient;
     private ConfigurationLoader configurationLoader;
+    private AuthorizationLoader authorizationLoader;
     private AnalyticsClient analyticsClient;
     private ManifestValidator manifestValidator;
     private BrowserSwitchClient browserSwitchClient;
@@ -54,6 +55,7 @@ public class BraintreeClientUnitTest {
         braintreeHttpClient = mock(BraintreeHttpClient.class);
         braintreeGraphQLClient = mock(BraintreeGraphQLClient.class);
         configurationLoader = mock(ConfigurationLoader.class);
+        authorizationLoader = mock(AuthorizationLoader.class);
         analyticsClient = mock(AnalyticsClient.class);
         manifestValidator = mock(ManifestValidator.class);
         browserSwitchClient = mock(BrowserSwitchClient.class);
@@ -87,72 +89,149 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getConfiguration_onSuccess_forwardsInvocationToConfigurationLoader() {
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+    public void getConfiguration_onAuthorizationLoaderSuccess_forwardsInvocationToConfigurationLoader() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
-        ConfigurationCallback configurationCallback = mock(ConfigurationCallback.class);
-        sut.getConfiguration(configurationCallback);
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
 
-        verify(configurationLoader).loadConfiguration(same(applicationContext), same(authorization), same(configurationCallback));
+        verify(configurationLoader).loadConfiguration(applicationContext, authorization, callback);
+    }
+
+    @Test
+    public void getConfiguration_forwardsAuthorizationLoaderError() {
+        Exception authFetchError = new Exception("auth fetch error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(authFetchError)
+                .build();
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
+
+        verify(callback).onResult(null, authFetchError);
+    }
+
+    @Test
+    public void getAuthorization_forwardsInvocationToAuthorizationLoader() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        AuthorizationCallback callback = mock(AuthorizationCallback.class);
+        sut.getAuthorization(callback);
+
+        verify(authorizationLoader).loadAuthorization(callback);
     }
 
     @Test
     public void sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         Configuration configuration = mock(Configuration.class);
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHttpClient).get(eq("sample-url"), same(configuration), same(authorization), same(httpResponseCallback));
+    }
+
+    @Test
+    public void sendGET_onGetAuthorizationFailure_forwardsErrorToCallback() {
+        Exception authorizationError = new Exception("authorization error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(authorizationError)
+                .build();
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        sut.sendGET("sample-url", httpResponseCallback);
+
+        verify(httpResponseCallback).onResult((String) isNull(), same(authorizationError));
     }
 
     @Test
     public void sendGET_onGetConfigurationFailure_forwardsErrorToCallback() {
-        Exception exception = new Exception("configuration error");
+        Exception configError = new Exception("configuration error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configurationError(exception)
+                .configurationError(configError)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGET("sample-url", httpResponseCallback);
 
-        verify(httpResponseCallback).onResult((String) isNull(), same(exception));
+        verify(httpResponseCallback).onResult((String) isNull(), same(configError));
     }
 
     @Test
     public void sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         Configuration configuration = mock(Configuration.class);
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendPOST("sample-url", "{}", httpResponseCallback);
 
-        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeHttpClient).post(eq("sample-url"), eq("{}"), same(configuration), same(authorization), same(httpResponseCallback));
+    }
+
+    @Test
+    public void sendPOST_onAuthorizationFailure_forwardsErrorToCallback() {
+        Exception authError = new Exception("authorization error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(authError)
+                .build();
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        sut.sendPOST("sample-url", "{}", httpResponseCallback);
+
+        verify(httpResponseCallback).onResult(null, authError);
     }
 
     @Test
     public void sendPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
         Exception exception = new Exception("configuration error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configurationError(exception)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -164,27 +243,50 @@ public class BraintreeClientUnitTest {
     @Test
     public void sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         Configuration configuration = mock(Configuration.class);
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
         sut.sendGraphQLPOST("{}", httpResponseCallback);
 
-        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(httpResponseCallback));
+        verify(braintreeGraphQLClient).post(eq("{}"), same(configuration), same(authorization), same(httpResponseCallback));
+    }
+
+    @Test
+    public void sendGraphQLPOST_onAuthorizationFailure_forwardsErrorToCallback() {
+        Exception authError = new Exception("authorization error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(authError)
+                .build();
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
+        sut.sendGraphQLPOST("{}", httpResponseCallback);
+
+        verify(httpResponseCallback).onResult(null, authError);
     }
 
     @Test
     public void sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
         Exception exception = new Exception("configuration error");
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configurationError(exception)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         HttpResponseCallback httpResponseCallback = mock(HttpResponseCallback.class);
@@ -196,24 +298,28 @@ public class BraintreeClientUnitTest {
     @Test
     public void sendAnalyticsEvent_sendsEventToAnalyticsClient() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
-        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom");
+        verify(analyticsClient).sendEvent(configuration, "event.started", "session-id", "custom", authorization);
     }
 
     @Test
-    public void sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
-        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configurationError(new Exception("error"))
+    public void sendAnalyticsEvent_whenAuthorizationLoadFails_doesNothing() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorizationError(new Exception("error"))
                 .build();
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder().build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -221,14 +327,15 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void sendAnalyticsEvent_whenAnalyticsConfigurationNull_doesNothing() {
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.isAnalyticsEnabled()).thenReturn(false);
+    public void sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configuration(configuration)
+                .configurationError(new Exception("error"))
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -238,11 +345,14 @@ public class BraintreeClientUnitTest {
     @Test
     public void sendAnalyticsEvent_whenAnalyticsNotEnabled_doesNothing() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANALYTICS);
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
         sut.sendAnalyticsEvent("event.started");
 
@@ -254,7 +364,7 @@ public class BraintreeClientUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.startBrowserSwitch(activity, browserSwitchOptions);
@@ -267,7 +377,7 @@ public class BraintreeClientUnitTest {
         BrowserSwitchResult browserSwitchResult = createSuccessfulBrowserSwitchResult();
         when(browserSwitchClient.getResult(activity)).thenReturn(browserSwitchResult);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity));
@@ -277,7 +387,7 @@ public class BraintreeClientUnitTest {
     public void deliverBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.deliverBrowserSwitchResult(activity);
@@ -286,7 +396,7 @@ public class BraintreeClientUnitTest {
 
     @Test
     public void canPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         FragmentActivity activity = mock(FragmentActivity.class);
@@ -305,7 +415,7 @@ public class BraintreeClientUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
         doNothing().when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertTrue(sut.canPerformBrowserSwitch(activity, 123));
@@ -316,7 +426,7 @@ public class BraintreeClientUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
         doThrow(new BrowserSwitchException("error")).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.canPerformBrowserSwitch(activity, 123);
@@ -327,7 +437,7 @@ public class BraintreeClientUnitTest {
     public void isUrlSchemeDeclaredInAndroidManifest_forwardsInvocationToManifestValidator() {
         when(manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, "a-url-scheme", FragmentActivity.class)).thenReturn(true);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertTrue(sut.isUrlSchemeDeclaredInAndroidManifest("a-url-scheme", FragmentActivity.class));
@@ -338,7 +448,7 @@ public class BraintreeClientUnitTest {
         ActivityInfo activityInfo = new ActivityInfo();
         when(manifestValidator.getActivityInfo(applicationContext, FragmentActivity.class)).thenReturn(activityInfo);
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         assertSame(activityInfo, sut.getManifestActivityInfo(FragmentActivity.class));
@@ -394,21 +504,23 @@ public class BraintreeClientUnitTest {
 
     @Test
     public void reportCrash_reportsCrashViaAnalyticsClient() throws JSONException {
+        when(authorizationLoader.getAuthorizationFromCache()).thenReturn(authorization);
+
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
 
-        BraintreeClientParams params = createDefaultParams(configurationLoader);
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         sut.reportCrash();
-        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM);
+        verify(analyticsClient).reportCrash(applicationContext, "session-id", IntegrationType.CUSTOM, authorization);
     }
 
-    private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader) {
+    private BraintreeClientParams createDefaultParams(ConfigurationLoader configurationLoader, AuthorizationLoader authorizationLoader) {
         return new BraintreeClientParams()
-                .authorization(authorization)
+                .authorizationLoader(authorizationLoader)
                 .context(context)
                 .sessionId("session-id")
                 .setIntegrationType(IntegrationType.CUSTOM)

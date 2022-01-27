@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertTrue;
+
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Before;
@@ -7,9 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeHttpClientTest {
@@ -22,11 +21,11 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, new HttpResponseCallback() {
+        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, authorization, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -40,11 +39,11 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient(authorization);
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.braintreegateway.com/", null, new HttpResponseCallback() {
+        braintreeHttpClient.get("https://api.braintreegateway.com/",null, authorization, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {

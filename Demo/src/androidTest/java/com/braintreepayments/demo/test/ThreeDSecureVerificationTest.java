@@ -35,12 +35,11 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
-        onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
-
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
+        onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
     }
 
     @Test(timeout = 40000)

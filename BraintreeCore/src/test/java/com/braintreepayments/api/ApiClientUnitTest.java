@@ -80,7 +80,7 @@ public class ApiClientUnitTest {
         Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(graphQLEnabledConfig)
-                .authorization(authorization)
+                .authorizationSuccess(authorization)
                 .build();
 
         ApiClient sut = new ApiClient(braintreeClient);

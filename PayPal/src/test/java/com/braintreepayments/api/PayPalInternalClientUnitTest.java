@@ -54,7 +54,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalVaultRequest_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .returnUrlScheme("sample-scheme")
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
@@ -118,7 +118,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalCheckoutRequest_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .returnUrlScheme("sample-scheme")
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
@@ -205,7 +205,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withTokenizationKey_sendsClientKeyParam() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
         when(tokenizationKey.getBearer()).thenReturn("tokenization-key-bearer");
 
@@ -228,7 +228,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withEmptyDisplayName_fallsBackToPayPalConfigurationDisplayName() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -250,7 +250,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withLocaleNotSpecified_omitsLocale() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -272,7 +272,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withMerchantAccountIdNotSpecified_omitsMerchantAccountId() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -294,7 +294,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -316,7 +316,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAdressEditability() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
@@ -341,7 +341,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -363,7 +363,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_INR))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -384,7 +384,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalCheckoutRequest_omitsEmptyLineItems() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -408,7 +408,7 @@ public class PayPalInternalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
@@ -432,7 +432,7 @@ public class PayPalInternalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
@@ -454,7 +454,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalCheckoutRequest_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(tokenizationKey)
+                .authorizationSuccess(tokenizationKey)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
@@ -480,7 +480,7 @@ public class PayPalInternalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .returnUrlScheme("sample-scheme")
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
@@ -513,7 +513,7 @@ public class PayPalInternalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .returnUrlScheme("sample-scheme")
                 .build();
@@ -547,7 +547,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalCheckoutRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
@@ -573,7 +573,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_withPayPalVaultRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
@@ -598,7 +598,7 @@ public class PayPalInternalClientUnitTest {
         Exception httpError = new Exception("http error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTErrorResponse(httpError)
                 .build();
 
@@ -614,7 +614,7 @@ public class PayPalInternalClientUnitTest {
     public void sendRequest_propagatesMalformedJSONResponseErrors() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse("{bad:")
                 .build();
 
@@ -627,10 +627,25 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_propagatesGetConfigurationErrors() {
+    public void sendRequest_onAuthorizationFailure_forwardsError() {
+        Exception authError = new Exception("authorization error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationError(authError)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        verify(payPalInternalClientCallback).onResult(null, authError);
+    }
+
+    @Test
+    public void sendRequest_onConfigurationFailure_forwardsError() {
         Exception configurationError = new Exception("configuration error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(clientToken)
+                .authorizationSuccess(clientToken)
                 .configurationError(configurationError)
                 .build();
 

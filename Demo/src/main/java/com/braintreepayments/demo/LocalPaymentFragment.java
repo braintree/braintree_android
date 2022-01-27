@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
@@ -38,49 +39,44 @@ public class LocalPaymentFragment extends BaseFragment {
     }
 
     public void launchIdeal(View v) {
-        getBraintreeClient(braintreeClient -> {
+        BraintreeClient braintreeClient = getBraintreeClient();
+        if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(getActivity()))) {
+            handleError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
+            return;
+        }
 
-            if (braintreeClient != null) {
-                if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(getActivity()))) {
-                    handleError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
-                    return;
+        localPaymentClient = new LocalPaymentClient(braintreeClient);
+        PostalAddress address = new PostalAddress();
+        address.setStreetAddress("Stadhouderskade 78");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Amsterdam");
+        address.setPostalCode("1072 AE");
+
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("207215300");
+        request.setEmail("android-test-buyer@paypal.com");
+        request.setGivenName("Test");
+        request.setSurname("Buyer");
+        request.setShippingAddressRequired(true);
+        request.setMerchantAccountId("altpay_eur");
+        request.setCurrencyCode("EUR");
+
+        localPaymentClient.startPayment(request, (transaction, error) -> {
+            if (transaction != null) {
+                try {
+                    localPaymentClient.approvePayment(getActivity(), transaction);
+                } catch (JSONException | BrowserSwitchException e) {
+                    e.printStackTrace();
                 }
+            }
 
-                localPaymentClient = new LocalPaymentClient(braintreeClient);
-                PostalAddress address = new PostalAddress();
-                address.setStreetAddress("Stadhouderskade 78");
-                address.setCountryCodeAlpha2("NL");
-                address.setLocality("Amsterdam");
-                address.setPostalCode("1072 AE");
-
-                LocalPaymentRequest request = new LocalPaymentRequest();
-                request.setPaymentType("ideal");
-                request.setAmount("1.10");
-                request.setAddress(address);
-                request.setPhone("207215300");
-                request.setEmail("android-test-buyer@paypal.com");
-                request.setGivenName("Test");
-                request.setSurname("Buyer");
-                request.setShippingAddressRequired(true);
-                request.setMerchantAccountId("altpay_eur");
-                request.setCurrencyCode("EUR");
-
-                localPaymentClient.startPayment(request, (transaction, error) -> {
-                    if (transaction != null) {
-                        try {
-                            localPaymentClient.approvePayment(getActivity(), transaction);
-                        } catch (JSONException | BrowserSwitchException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (error != null) {
-                        handleError(error);
-                    }
-                });
+            if (error != null) {
+                handleError(error);
             }
         });
-
     }
 
     public void handleLocalPaymentBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {

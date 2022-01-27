@@ -4,7 +4,7 @@ import android.content.Context;
 
 class BraintreeClientParams {
 
-    private Authorization authorization;
+    private AuthorizationLoader authorizationLoader;
     private AnalyticsClient analyticsClient;
     private BraintreeHttpClient httpClient;
     private Context context;
@@ -19,12 +19,12 @@ class BraintreeClientParams {
     private ManifestValidator manifestValidator;
     private UUIDHelper uuidHelper;
 
-    Authorization getAuthorization() {
-        return authorization;
+    AuthorizationLoader getAuthorizationLoader() {
+        return authorizationLoader;
     }
 
-    BraintreeClientParams authorization(Authorization authorization) {
-        this.authorization = authorization;
+    BraintreeClientParams authorizationLoader(AuthorizationLoader authorizationLoader) {
+        this.authorizationLoader = authorizationLoader;
         return this;
     }
 

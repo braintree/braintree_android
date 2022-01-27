@@ -14,6 +14,7 @@ import androidx.work.WorkerParameters;
  * This class is used internally by the SDK and should not be used directly.
  * It is not subject to semantic versioning and may change at any time.
  */
+// NEXT_MAJOR_VERSION: remove this class, it may no longer be needed
 public abstract class AnalyticsBaseWorker extends Worker {
 
     public AnalyticsBaseWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -21,9 +22,6 @@ public abstract class AnalyticsBaseWorker extends Worker {
     }
 
     protected AnalyticsClient createAnalyticsClientFromInputData() {
-        Data inputData = getInputData();
-        String authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION);
-        Authorization authorization = Authorization.fromString(authString);
-        return new AnalyticsClient(getApplicationContext(), authorization);
+        return new AnalyticsClient(getApplicationContext());
     }
 }

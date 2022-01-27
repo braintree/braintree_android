@@ -20,6 +20,7 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
@@ -61,13 +62,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString() throws InvalidArgumentException, JSONException {
+    public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("fake-df")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
@@ -94,13 +95,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws InvalidArgumentException, JSONException {
+    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("cardinal error"))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
@@ -127,13 +128,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_initializesCardinal() throws InvalidArgumentException {
+    public void prepareLookup_initializesCardinal() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("fake-df")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -147,14 +148,14 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_withoutCardinalJWT_postsException() throws Exception {
+    public void prepareLookup_withoutCardinalJWT_postsException() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
                 .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -173,13 +174,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_initializesCardinal() throws InvalidArgumentException {
+    public void performVerification_initializesCardinal() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -191,13 +192,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() throws InvalidArgumentException {
+    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -209,13 +210,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() throws InvalidArgumentException {
+    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("cardinal error"))
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -227,13 +228,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void continuePerformVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -247,13 +248,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsPresented_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void continuePerformVerification_whenChallengeIsPresented_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -268,13 +269,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void continuePerformVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -288,13 +289,13 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -308,7 +309,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_withoutCardinalJWT_postsException() throws Exception {
+    public void performVerification_withoutCardinalJWT_postsException() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -316,7 +317,7 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
@@ -334,11 +335,11 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
                 .build();
@@ -354,11 +355,11 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void authenticateCardinalJWT_whenSuccess_returnsThreeDSecureCardNonce() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenSuccess_returnsThreeDSecureCardNonce() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
                 .build();
@@ -375,17 +376,20 @@ public class ThreeDSecureV2UnitTest {
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
         CardNonce cardNonce = captor.getValue().getTokenizedCard();
-        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertNotNull(cardNonce);
+
+        ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
+        assertTrue(threeDSecureInfo.isLiabilityShifted());
+        assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
         assertEquals("12345678-1234-1234-1234-123456789012", cardNonce.getString());
     }
 
     @Test
-    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR)
                 .build();
@@ -403,12 +407,12 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         String authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR;
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(authResponseJson)
                 .build();
@@ -427,18 +431,21 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult actualResult = captor.getValue();
         CardNonce cardNonce = actualResult.getTokenizedCard();
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertNotNull(cardNonce);
+
+        ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
+        assertFalse(threeDSecureInfo.isLiabilityShifted());
+        assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
     }
 
     @Test
-    public void authenticateCardinalJWT_whenExceptionOccurs_sendsAnalyticsEvent() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenExceptionOccurs_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTErrorResponse(new BraintreeException("an error occurred!"))
                 .build();
@@ -456,11 +463,11 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void authenticateCardinalJWT_whenExceptionOccurs_returnsException() throws InvalidArgumentException, JSONException {
+    public void authenticateCardinalJWT_whenExceptionOccurs_returnsException() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTErrorResponse(new BraintreeException("an error occurred!"))
                 .build();

@@ -22,16 +22,14 @@ class BraintreeHttpClient {
     private static final String CLIENT_KEY_HEADER = "Client-Key";
 
     private final HttpClient httpClient;
-    private final Authorization authorization;
 
-    BraintreeHttpClient(Authorization authorization) {
-        this(authorization, new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
+    BraintreeHttpClient() {
+        this(new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
     }
 
     @VisibleForTesting
-    BraintreeHttpClient(Authorization authorization, HttpClient httpClient) {
+    BraintreeHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.authorization = authorization;
     }
 
     private static SSLSocketFactory getSocketFactory() {
@@ -42,32 +40,28 @@ class BraintreeHttpClient {
         }
     }
 
-    Authorization getAuthorization() {
-        return authorization;
-    }
-
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
      * If the path is a full url, it will be used instead of the previously provided url.
-     *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
+     * @param authorization
      * @param callback {@link HttpResponseCallback}
      */
-    void get(String path, Configuration configuration, HttpResponseCallback callback) {
-        get(path, configuration, HttpClient.NO_RETRY, callback);
+    void get(String path, Configuration configuration, Authorization authorization, HttpResponseCallback callback) {
+        get(path, configuration, authorization, HttpClient.NO_RETRY, callback);
     }
 
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
      * If the path is a full url, it will be used instead of the previously provided url.
-     *
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
-     * @param callback {@link HttpResponseCallback}
+     * @param authorization
      * @param retryStrategy retry strategy
+     * @param callback {@link HttpResponseCallback}
      */
-    void get(String path, Configuration configuration, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void get(String path, Configuration configuration, Authorization authorization, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -111,13 +105,13 @@ class BraintreeHttpClient {
     /**
      * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
-     *
      * @param path The path or url to request from the server via HTTP POST
      * @param data The body of the POST request
-     * @param callback {@link HttpResponseCallback}
      * @param configuration configuration for the Braintree Android SDK.
+     * @param authorization
+     * @param callback {@link HttpResponseCallback}
      */
-    void post(String path, String data, Configuration configuration, HttpResponseCallback callback) {
+    void post(String path, String data, Configuration configuration, Authorization authorization, HttpResponseCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -169,9 +163,10 @@ class BraintreeHttpClient {
      * @param path the path or url to request from the server via HTTP POST
      * @param data the body of the post request
      * @param configuration configuration for the Braintree Android SDK.
+     * @param authorization
      * @return the HTTP response body
      */
-    String post(String path, String data, Configuration configuration) throws Exception {
+    String post(String path, String data, Configuration configuration, Authorization authorization) throws Exception {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             throw new BraintreeException(message);
