@@ -73,6 +73,7 @@ public class PayPalRequest implements Parcelable {
     private String mDisplayName;
     private boolean mOfferCredit;
     private boolean mOfferPayLater;
+    private boolean mRequestBillingAgreement;
     private String mMerchantAccountId;
     private PayPalProductAttributes mProductAttributes;
     private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
@@ -289,6 +290,16 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
+     * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be
+     * prompted to consent to a billing agreement during checkout.
+     *
+     * @param requestBillingAgreement Whether to request billing agreement during checkout.
+     */
+    public void requestBillingAgreement(boolean requestBillingAgreement) {
+        mRequestBillingAgreement = requestBillingAgreement;
+    }
+
+    /**
      * Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -352,6 +363,10 @@ public class PayPalRequest implements Parcelable {
 
     public boolean shouldOfferPayLater() {
         return mOfferPayLater;
+    }
+
+    public boolean shouldRequestBillingAgreement() {
+        return mRequestBillingAgreement;
     }
 
     public String getMerchantAccountId() {
