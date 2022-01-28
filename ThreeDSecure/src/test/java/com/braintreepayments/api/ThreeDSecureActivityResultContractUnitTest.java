@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -63,6 +62,18 @@ public class ThreeDSecureActivityResultContractUnitTest {
         assertSame(threeDSecureResult, cardinalResult.getThreeSecureResult());
         assertSame(validateResponse, cardinalResult.getValidateResponse());
         assertSame(jwt, cardinalResult.getJWT());
+    }
+
+    @Test
+    public void parseResult_whenResultIsOKAndIntentIsNull_returnsCardinalResultWithError() {
+        sut = new ThreeDSecureActivityResultContract();
+
+        CardinalResult cardinalResult = sut.parseResult(Activity.RESULT_OK, null);
+        assertNotNull(cardinalResult);
+
+        BraintreeException error = (BraintreeException) cardinalResult.getError();
+        String expectedMessage = "An unknown Android error occurred with the activity result API.";
+        assertNotNull(expectedMessage, error.getMessage());
     }
 
     @Test
