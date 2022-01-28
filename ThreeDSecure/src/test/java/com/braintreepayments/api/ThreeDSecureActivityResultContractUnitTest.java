@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT;
+import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
+import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -38,7 +41,7 @@ public class ThreeDSecureActivityResultContractUnitTest {
         Intent result = sut.createIntent(context, threeDSecureResult);
 
         ThreeDSecureResult extraThreeDSecureResult =
-            result.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT);
+            result.getParcelableExtra(EXTRA_THREE_D_SECURE_RESULT);
         assertSame(threeDSecureResult, extraThreeDSecureResult);
     }
 
@@ -47,14 +50,13 @@ public class ThreeDSecureActivityResultContractUnitTest {
         sut = new ThreeDSecureActivityResultContract();
 
         Intent successIntent = new Intent();
-        successIntent.putExtra(
-                ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        successIntent.putExtra(EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
-        successIntent.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        successIntent.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 
         String jwt = "sample-jwt";
-        successIntent.putExtra(ThreeDSecureActivity.EXTRA_JWT, jwt);
+        successIntent.putExtra(EXTRA_JWT, jwt);
 
         CardinalResult cardinalResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(cardinalResult);
