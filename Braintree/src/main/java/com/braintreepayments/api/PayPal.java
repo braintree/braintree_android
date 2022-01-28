@@ -247,14 +247,20 @@ public class PayPal {
             parameters.put(TOKENIZATION_KEY, fragment.getAuthorization().getBearer());
         }
 
-        if (request.shouldRequestBillingAgreement()) {
-            parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true);
-        }
-
         if (!isBillingAgreement) {
             parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode)
                     .put(INTENT_KEY, request.getIntent());
+
+            boolean shouldRequestBillingAgreement = request.shouldRequestBillingAgreement();
+            if (shouldRequestBillingAgreement) {
+                parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true);
+            }
+
+            String billingAgreementDescription = request.getBillingAgreementDescription();
+            if (shouldRequestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
+                parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
+            }
 
             if (!request.getLineItems().isEmpty()) {
                 JSONArray lineItems = new JSONArray();

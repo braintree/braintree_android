@@ -705,7 +705,8 @@ public class PayPalUnitTest {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
         PayPalRequest request = new PayPalRequest("1")
-                .requestBillingAgreement(true);
+                .requestBillingAgreement(true)
+                .billingAgreementDescription("sample description");
         PayPal.requestOneTimePayment(fragment, request);
 
         ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
@@ -716,6 +717,7 @@ public class PayPalUnitTest {
 
         JSONObject json = new JSONObject(dataCaptor.getValue());
         assertTrue(json.getBoolean("request_billing_agreement"));
+        assertEquals("sample description", json.getString("description"));
     }
 
     @Test
