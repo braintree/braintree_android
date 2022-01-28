@@ -418,6 +418,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mDisplayName);
         parcel.writeByte(mOfferCredit ? (byte) 1:0);
         parcel.writeByte(mOfferPayLater ? (byte) 1:0);
+        parcel.writeByte(mRequestBillingAgreement ? (byte) 1:0);
         parcel.writeString(mMerchantAccountId);
         parcel.writeList(mLineItems);
         parcel.writeParcelable(mProductAttributes, i);
@@ -437,6 +438,7 @@ public class PayPalRequest implements Parcelable {
         mDisplayName = in.readString();
         mOfferCredit = in.readByte() > 0;
         mOfferPayLater = in.readByte() > 0;
+        mRequestBillingAgreement = in.readByte() > 0;
         mMerchantAccountId = in.readString();
         mLineItems = in.readArrayList(PayPalLineItem.class.getClassLoader());
         mProductAttributes = in.readParcelable(PayPalProductAttributes.class.getClassLoader());
