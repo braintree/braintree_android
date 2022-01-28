@@ -140,6 +140,7 @@ public class PayPalRequestUnitTest {
                 .displayName("Display Name")
                 .offerCredit(true)
                 .offerPayLater(true)
+                .requestBillingAgreement(true)
                 .merchantAccountId("merchant_account_id");
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<PayPalLineItem>();
@@ -166,6 +167,7 @@ public class PayPalRequestUnitTest {
         assertEquals("Display Name", result.getDisplayName());
         assertTrue(result.shouldOfferCredit());
         assertTrue(result.shouldOfferPayLater());
+        assertTrue(result.shouldRequestBillingAgreement());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());

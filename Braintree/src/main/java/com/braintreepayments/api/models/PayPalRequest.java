@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.StringDef;
 
+import com.braintreepayments.api.PayPal;
 import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 
 import java.lang.annotation.Retention;
@@ -295,8 +296,9 @@ public class PayPalRequest implements Parcelable {
      *
      * @param requestBillingAgreement Whether to request billing agreement during checkout.
      */
-    public void requestBillingAgreement(boolean requestBillingAgreement) {
+    public PayPalRequest requestBillingAgreement(boolean requestBillingAgreement) {
         mRequestBillingAgreement = requestBillingAgreement;
+        return this;
     }
 
     /**
