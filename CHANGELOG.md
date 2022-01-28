@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add `shouldRequestBillingAgreement` to `PayPalRequest`
+
 ## 3.18.1
 
 * Bump Cardinal version to `2.2.5-4`
