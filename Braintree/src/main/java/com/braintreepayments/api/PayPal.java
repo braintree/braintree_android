@@ -70,6 +70,7 @@ public class PayPal {
     private static final String RETURN_URL_KEY = "return_url";
     private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
     private static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
+    private static final String REQUEST_BILLING_AGREEMENT_KEY = "request_billing_agreement";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
@@ -250,6 +251,16 @@ public class PayPal {
             parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode)
                     .put(INTENT_KEY, request.getIntent());
+
+            boolean shouldRequestBillingAgreement = request.shouldRequestBillingAgreement();
+            if (shouldRequestBillingAgreement) {
+                parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true);
+            }
+
+            String billingAgreementDescription = request.getBillingAgreementDescription();
+            if (shouldRequestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
+                parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
+            }
 
             if (!request.getLineItems().isEmpty()) {
                 JSONArray lineItems = new JSONArray();

@@ -701,6 +701,26 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_allowsBillingAgreementToBeRequested() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("1")
+                .requestBillingAgreement(true)
+                .billingAgreementDescription("sample description");
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertTrue(json.getBoolean("request_billing_agreement"));
+        assertEquals("sample description", json.getString("description"));
+    }
+
+    @Test
     public void requestOneTimePayment_containsOfferPayPalCreditParam() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
