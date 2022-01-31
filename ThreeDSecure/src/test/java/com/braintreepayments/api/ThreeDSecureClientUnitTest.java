@@ -381,4 +381,10 @@ public class ThreeDSecureClientUnitTest {
 
         verify(listener).onThreeDSecureFailure(threeDSecureError);
     }
+
+    @Test
+    public void onCardinalResult_onSuccess_sendsAnalyticsEvent() {
+//    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
+
+    }
 }
