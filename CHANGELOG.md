@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Add `shouldRequestBillingAgreement` to `PayPalRequest`
+* Add `requestBillingAgreement` to `PayPalRequest`
 
 ## 3.18.1
 
