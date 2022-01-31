@@ -363,4 +363,22 @@ public class ThreeDSecureClientUnitTest {
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
     }
+
+    @Test
+    public void onCardinalResult_whenErrorExists_forwardsErrorToListener() {
+//    public void onActivityResult_whenResultNotOk_postsExceptionToCallback() {
+
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
+        sut.setListener(listener);
+
+        Exception threeDSecureError = new Exception("3DS error.");
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureError);
+        sut.onCardinalResult(cardinalResult);
+
+        verify(listener).onThreeDSecureFailure(threeDSecureError);
+    }
 }

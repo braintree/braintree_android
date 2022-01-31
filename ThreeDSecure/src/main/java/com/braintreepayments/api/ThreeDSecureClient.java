@@ -32,6 +32,7 @@ public class ThreeDSecureClient {
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
+    private ThreeDSecureListener listener;
 
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
@@ -428,6 +429,15 @@ public class ThreeDSecureClient {
     }
 
     public void onCardinalResult(CardinalResult cardinalResult) {
-        // TODO: implement
+        Exception threeDSecureError = cardinalResult.getError();
+        if (threeDSecureError != null && listener != null) {
+            listener.onThreeDSecureFailure(threeDSecureError);
+        } else {
+            // TODO: implement
+        }
+    }
+
+    public void setListener(ThreeDSecureListener listener) {
+        this.listener = listener;
     }
 }
