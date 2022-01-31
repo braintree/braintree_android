@@ -426,4 +426,8 @@ public class ThreeDSecureClient {
             }
         });
     }
+
+    public void onCardinalResult(CardinalResult cardinalResult) {
+        // TODO: implement
+    }
 }
