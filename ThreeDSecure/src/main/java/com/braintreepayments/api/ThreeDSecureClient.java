@@ -428,7 +428,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    public void onCardinalResult(CardinalResult cardinalResult) {
+    void onCardinalResult(CardinalResult cardinalResult) {
         Exception threeDSecureError = cardinalResult.getError();
         if (threeDSecureError != null && listener != null) {
             listener.onThreeDSecureFailure(threeDSecureError);
