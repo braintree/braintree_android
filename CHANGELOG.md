@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.19.0
 
 * Add `requestBillingAgreement` to `PayPalRequest`
 
