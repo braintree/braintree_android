@@ -43,10 +43,10 @@ dependencies {
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
     testImplementation deps.robolectric
-    testImplementation deps.powermockJunitLegacy
-    testImplementation deps.powermockRuleLegacy
-    testImplementation deps.powermockMockitoLegacy
-    testImplementation deps.powermockClassloadingLegacy
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
     testImplementation deps.assertJ
 }

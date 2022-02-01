@@ -256,6 +256,7 @@ public class ThreeDSecureV2UnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme("sample-return-url://")
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");

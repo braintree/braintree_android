@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -17,6 +16,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static junit.framework.Assert.assertEquals;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -30,9 +30,8 @@ public class VisaCheckoutAccountUnitTest {
     private VisaPaymentSummary visaPaymentSummary;
 
     @Before
-    public void beforeEach() throws Exception {
-        visaPaymentSummary = PowerMockito.mock(VisaPaymentSummary.class);
-        PowerMockito.whenNew(VisaPaymentSummary.class).withAnyArguments().thenReturn(visaPaymentSummary);
+    public void beforeEach() {
+        visaPaymentSummary = mock(VisaPaymentSummary.class);
     }
 
     @Test

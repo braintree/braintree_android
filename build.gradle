@@ -10,8 +10,8 @@ buildscript {
     ext.versions = [
             "kotlin"         : "1.5.32",
             "androidxTest"   : "1.4.0",
-            "powermock"      : "2.0.7",
-            "powermockLegacy": "1.6.6",
+            "powermock"      : '2.0.9',
+            "powermockLegacy": "1.7.4",
             "room"           : "2.2.6",
             // Version 19.0.0 of play-services-wallet has been released but should not be used per Google documentation
             "playServices"   : "18.1.3"

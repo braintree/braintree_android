@@ -66,6 +66,7 @@ public class ThreeDSecureV1UnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme("sample-url-scheme://")
                 .build();
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);

@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.Assertions.assertIsANonce;
@@ -177,7 +178,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performVerification(activity, request, callback);
 
-        verify(callback).onResult(any(ThreeDSecureResult.class), any(Exception.class));
+        verify(callback).onResult(any(ThreeDSecureResult.class), ArgumentMatchers.<Exception>isNull());
     }
 
     @Test
