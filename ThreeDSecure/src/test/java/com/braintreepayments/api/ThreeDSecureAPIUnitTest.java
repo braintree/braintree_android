@@ -3,10 +3,14 @@ package com.braintreepayments.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -17,7 +21,6 @@ public class ThreeDSecureAPIUnitTest {
     @Test
     public void performLookup_sendsGraphQLPost() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-
         sut = new ThreeDSecureAPI(braintreeClient);
 
         ThreeDSecureRequest threeDSecureRequest = mock(ThreeDSecureRequest.class);
@@ -36,5 +39,54 @@ public class ThreeDSecureAPIUnitTest {
 
         String data = dataCaptor.getValue();
         assertSame(mockData, data);
+    }
+
+    @Test
+    public void performLookup_onSuccess_callbackThreeDSecureResult() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
+                .build();
+        sut = new ThreeDSecureAPI(braintreeClient);
+
+        ThreeDSecureRequest threeDSecureRequest = mock(ThreeDSecureRequest.class);
+        when(threeDSecureRequest.build(anyString())).thenReturn("{}");
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
+
+        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+    }
+
+    @Test
+    public void performLookup_onInvalidJSONResponse_callbackJSONException() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse("invalid json")
+                .build();
+        sut = new ThreeDSecureAPI(braintreeClient);
+
+        ThreeDSecureRequest threeDSecureRequest = mock(ThreeDSecureRequest.class);
+        when(threeDSecureRequest.build(anyString())).thenReturn("{}");
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
+
+        verify(callback).onResult((ThreeDSecureResult) isNull(), any(JSONException.class));
+    }
+
+    @Test
+    public void performLookup_onPOSTfailure_callbackHTTPError() {
+        Exception httpError = new Exception("http error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTErrorResponse(httpError)
+                .build();
+        sut = new ThreeDSecureAPI(braintreeClient);
+
+        ThreeDSecureRequest threeDSecureRequest = mock(ThreeDSecureRequest.class);
+        when(threeDSecureRequest.build(anyString())).thenReturn("{}");
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
+
+        verify(callback).onResult((ThreeDSecureResult) isNull(), same(httpError));
     }
 }

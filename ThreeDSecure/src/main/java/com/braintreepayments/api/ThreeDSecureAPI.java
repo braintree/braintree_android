@@ -18,16 +18,16 @@ class ThreeDSecureAPI {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
-//                if (responseBody != null) {
-//                    try {
-//                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-//                        callback.onResult(result, null);
-//                    } catch (JSONException e) {
-//                        callback.onResult(null, e);
-//                    }
-//                } else {
-//                    callback.onResult(null, httpError);
-//                }
+                if (responseBody != null) {
+                    try {
+                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                        callback.onResult(result, null);
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
+                    callback.onResult(null, httpError);
+                }
             }
         });
     }
