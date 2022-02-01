@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.8.2
 
 * Venmo
   * Fix issue where null value causes VenmoAccountNonce#fromJSON() to throw.
