@@ -65,12 +65,12 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         return new VenmoAccountNonce(nonce, username, isDefault, json);
     }
 
-    VenmoAccountNonce(String nonce, String username, boolean isDefault, JSONObject json) throws JSONException {
+    VenmoAccountNonce(String nonce, String username, boolean isDefault, JSONObject json) {
         super(nonce, isDefault);
         this.username = username;
 
-        if (json.has(VENMO_PAYER_INFO_KEY)) {
-            JSONObject payerInfo = json.getJSONObject(VENMO_PAYER_INFO_KEY);
+        JSONObject payerInfo = json.optJSONObject(VENMO_PAYER_INFO_KEY);
+        if (payerInfo != null) {
             this.email = payerInfo.optString(VENMO_EMAIL_KEY);
             this.externalId = payerInfo.optString(VENMO_EXTERNAL_ID_KEY);
             this.firstName = payerInfo.optString(VENMO_FIRST_NAME_KEY);
