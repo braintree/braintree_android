@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {
@@ -41,6 +42,22 @@ public class VenmoAccountNonceUnitTest {
         assertEquals("venmo-first-name", venmoAccountNonce.getFirstName());
         assertEquals("venmo-last-name", venmoAccountNonce.getLastName());
         assertEquals("venmo-phone-number", venmoAccountNonce.getPhoneNumber());
+        assertFalse(venmoAccountNonce.isDefault());
+    }
+
+    @Test
+    public void fromJson_withPaymentMethodIdAndNullPayerInfo_parsesResponse() throws JSONException {
+        JSONObject json =
+            new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON);
+        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(json);
+
+        assertEquals("@sampleuser", venmoAccountNonce.getUsername());
+        assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
+        assertNull(venmoAccountNonce.getEmail());
+        assertNull(venmoAccountNonce.getExternalId());
+        assertNull(venmoAccountNonce.getFirstName());
+        assertNull(venmoAccountNonce.getLastName());
+        assertNull(venmoAccountNonce.getPhoneNumber());
         assertFalse(venmoAccountNonce.isDefault());
     }
 

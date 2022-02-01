@@ -2,10 +2,8 @@
 
 ## unreleased
 
-* Core
-  * Add `AuthorizationProvider` interface
-  * Add `ClientTokenCallback` interface
-  * Add `BraintreeClient` constructors that accept a `AuthorizationProvider`
+* Venmo
+  * Fix issue where null value causes VenmoAccountNonce#fromJSON() to throw.
 
 ## 4.8.1
 

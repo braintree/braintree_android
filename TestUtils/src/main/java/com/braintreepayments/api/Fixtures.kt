@@ -1953,6 +1953,14 @@ object Fixtures {
         }
     """
 
+    const val VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON = """
+        {
+          "paymentMethodId": "sample-payment-method-id",
+          "userName": "@sampleuser",
+          "payerInfo": null
+        }
+    """
+
     // language=JSON
     const val PAYMENT_METHOD_VENMO_PLAIN_OBJECT = """
         {
