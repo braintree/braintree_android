@@ -23,7 +23,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BraintreeClientFactory;
 import com.braintreepayments.api.BrowserSwitchResult;
+import com.braintreepayments.api.DemoAuthorizationProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +74,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 braintreeClient = new BraintreeClient(this, tokenizationKey);
             } else {
                 braintreeClient =
-                        new BraintreeClient(this, new DemoAuthorizationProvider(this));
+                    BraintreeClientFactory.createBraintreeClientWithAuthorizationProvider(this);
             }
         }
         return braintreeClient;
