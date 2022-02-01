@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -99,7 +100,7 @@ public class ThreeDSecureAPIUnitTest {
         sut = new ThreeDSecureAPI(braintreeClient);
 
         ThreeDSecureResult threeDSecureResult =
-            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
@@ -117,5 +118,54 @@ public class ThreeDSecureAPIUnitTest {
                 .put("jwt", "cardinal-jwt")
                 .put("paymentMethodNonce", "123456-12345-12345-a-adfa");
         JSONAssert.assertEquals(expectedJSON, new JSONObject(data), true);
+    }
+
+    @Test
+    public void authenticateCardinalJWT_onSuccess_callbackThreeDSecureResult() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
+                .build();
+        sut = new ThreeDSecureAPI(braintreeClient);
+
+        ThreeDSecureResult threeDSecureResult =
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        String cardinalJWT = "cardinal-jwt";
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+
+        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+    }
+
+    @Test
+    public void authenticateCardinalJWT_onThreeDSecureError_callbackThreeDSecureResultWithOriginalLookupNonce() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
+                .build();
+        sut = new ThreeDSecureAPI(braintreeClient);
+
+        ThreeDSecureResult threeDSecureResult =
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR);
+        String cardinalJWT = "cardinal-jwt";
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+
+        ArgumentCaptor<ThreeDSecureResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
+
+        ThreeDSecureResult result = captor.getValue();
+        assertNotNull(result.getTokenizedCard());
+    }
+
+    @Test
+    public void authenticateCardinalJWT_onInvalidJSONResponse_callbackJSONException() {
+
+    }
+
+    @Test
+    public void authenticateCardinalJWT_onPOSTfailure_callbackHTTPError() {
+
     }
 }
