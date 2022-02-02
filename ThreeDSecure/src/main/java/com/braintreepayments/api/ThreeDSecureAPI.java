@@ -33,7 +33,7 @@ class ThreeDSecureAPI {
         });
     }
 
-    void authenticateCardinalJWT(ThreeDSecureResult threeDSecureResult, String cardinalJWT, ThreeDSecureResultCallback callback) {
+    void authenticateCardinalJWT(ThreeDSecureResult threeDSecureResult, String cardinalJWT, final ThreeDSecureResultCallback callback) {
         final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
         final String lookupNonce = lookupCardNonce.getString();
 
@@ -51,25 +51,34 @@ class ThreeDSecureAPI {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
-//                if (responseBody != null) {
-//                    try {
-//                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-//                        if (result.hasError()) {
-//                            result.setTokenizedCard(lookupCardNonce);
-//                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-//                        } else {
-//                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-//                        }
-//                        notify3DSComplete(result, callback);
-//
-//                    } catch (JSONException e) {
-//                        callback.onResult(null, e);
-//                    }
-//                } else {
-//                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
-//                    callback.onResult(null, httpError);
-//                }
+                if (responseBody != null) {
+                    try {
+                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                        if (result.hasError()) {
+                            result.setTokenizedCard(lookupCardNonce);
+                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                        } else {
+                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                        }
+                        notify3DSComplete(result, callback);
+
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+                    callback.onResult(null, httpError);
+                }
             }
         });
+    }
+
+    private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
+        ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
+
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
+
+        callback.onResult(result, null);
     }
 }

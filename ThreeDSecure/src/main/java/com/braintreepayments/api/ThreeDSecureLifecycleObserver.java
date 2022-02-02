@@ -4,10 +4,11 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
-import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
-class ThreeDSecureLifecycleObserver implements DefaultLifecycleObserver {
+class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
 
     private static final String THREED_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecure.RESULT";
 
@@ -31,27 +32,14 @@ class ThreeDSecureLifecycleObserver implements DefaultLifecycleObserver {
         });
     }
 
-    @Override
-    public void onStart(@NonNull LifecycleOwner owner) {
-    }
-
-    @Override
-    public void onResume(@NonNull LifecycleOwner owner) {
-    }
-
-    @Override
-    public void onPause(@NonNull LifecycleOwner owner) {
-    }
-
-    @Override
-    public void onStop(@NonNull LifecycleOwner owner) {
-    }
-
-    @Override
-    public void onDestroy(@NonNull LifecycleOwner owner) {
-    }
-
     void launch(ThreeDSecureResult threeDSecureResult) {
         activityLauncher.launch(threeDSecureResult);
+    }
+
+    @Override
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
+        switch(event) {
+            case ON_RESUME:
+        }
     }
 }
