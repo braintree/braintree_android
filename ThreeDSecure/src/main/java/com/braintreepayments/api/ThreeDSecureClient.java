@@ -440,4 +440,43 @@ public class ThreeDSecureClient {
     public void setListener(ThreeDSecureListener listener) {
         this.listener = listener;
     }
+
+    void deliverBrowserSwitchResult(FragmentActivity activity) {
+        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        // V1 flow
+        if (listener != null) {
+            if (browserSwitchResult == null) {
+                listener.onThreeDSecureFailure(new BraintreeException("BrowserSwitchResult cannot be null"));
+                return;
+            }
+            int status = browserSwitchResult.getStatus();
+            switch (status) {
+                case BrowserSwitchStatus.CANCELED:
+                    listener.onThreeDSecureFailure(new UserCanceledException("User canceled 3DS."));
+                    break;
+                case BrowserSwitchStatus.SUCCESS:
+                default:
+                    Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
+                    if (deepLinkUrl != null) {
+                        String authResponse = deepLinkUrl.getQueryParameter("auth_response");
+                        try {
+                            ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
+                            if (result.hasError()) {
+                                listener.onThreeDSecureFailure(new ErrorWithResponse(422, authResponse));
+                            } else {
+                                ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
+
+                                braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
+                                braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
+
+                                listener.onThreeDSecureSuccess(result);
+                            }
+                        } catch (JSONException e) {
+                            listener.onThreeDSecureFailure(e);
+                        }
+                    }
+                    break;
+            }
+        }
+    }
 }

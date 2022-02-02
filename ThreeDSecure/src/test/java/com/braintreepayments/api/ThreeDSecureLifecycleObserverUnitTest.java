@@ -6,13 +6,16 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
@@ -75,5 +78,49 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ActivityResultCallback<CardinalResult> activityResultCallback = cardinalResultCaptor.getValue();
         activityResultCallback.onActivityResult(cardinalResult);
         verify(threeDSecureClient).onCardinalResult(cardinalResult);
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsFragment_threeDSecureClientDeliversResultWithFragmentActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = new FragmentActivity();
+        when(fragment.getActivity()).thenReturn(activity);
+
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient).deliverBrowserSwitchResult(same(activity));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_threeDSecureClientDeliversResultWithSameActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        FragmentActivity activity = new FragmentActivity();
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient).deliverBrowserSwitchResult(same(activity));
+    }
+
+    @Test
+    public void launch_launchesActivityWithThreeDSecureResult() throws JSONException {
+        ThreeDSecureResult threeDSecureResult =
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ActivityResultLauncher<ThreeDSecureResult> resultLauncher = mock(ActivityResultLauncher.class);
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        sut.activityLauncher = resultLauncher;
+
+        sut.launch(threeDSecureResult);
+        verify(resultLauncher).launch(threeDSecureResult);
     }
 }
