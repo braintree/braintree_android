@@ -29,6 +29,8 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
  */
 public class ThreeDSecureClient {
 
+    // TODO - reorganize methods
+
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
@@ -64,15 +66,45 @@ public class ThreeDSecureClient {
     }
 
     public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
+        continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
     }
 
     public void prepareLookup(@NonNull final Context context, @NonNull final ThreeDSecureRequest request) {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
+        initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
+        initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
     }
 
     /**
@@ -277,6 +309,7 @@ public class ThreeDSecureClient {
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
+            // TODO - unit test
             callback.onResult(result, null);
             return;
         }
@@ -292,8 +325,10 @@ public class ThreeDSecureClient {
                     .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                     .url(Uri.parse(browserSwitchUrl));
             try {
+                // TODO - unit test
                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
             } catch (BrowserSwitchException e) {
+                // TODO - unit test
                 callback.onResult(null, e);
             }
             return;
@@ -463,7 +498,6 @@ public class ThreeDSecureClient {
         this.listener = listener;
     }
 
-    // TODO - unit test
     void onBrowserSwitchResult(FragmentActivity activity) {
         BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
 

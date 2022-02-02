@@ -30,6 +30,7 @@ public class ThreeDSecureV1UnitTest {
     private FragmentActivity activity;
     private CardinalClient cardinalClient;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
+    private ThreeDSecureListener listener;
 
     private ThreeDSecureRequest threeDSecureRequest;
     private ThreeDSecureResult threeDSecureResult;
@@ -42,6 +43,7 @@ public class ThreeDSecureV1UnitTest {
         activity = mock(FragmentActivity.class);
         cardinalClient = mock(CardinalClient.class);
         browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
+        listener = mock(ThreeDSecureListener.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -73,9 +75,10 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        sut.setListener(listener);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
     }
@@ -92,7 +95,8 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.performVerification(activity, threeDSecureRequest, mock(ThreeDSecureResultCallback.class));
+        sut.setListener(listener);
+        sut.performVerification(activity, threeDSecureRequest);
 
         verify(cardinalClient, never()).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
     }
@@ -115,7 +119,8 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+        sut.setListener(listener);
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
@@ -143,7 +148,8 @@ public class ThreeDSecureV1UnitTest {
                 .thenReturn("https://browser.switch.url.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.initializeChallengeWithLookupResponse(activity, threeDSecureLookupResponse, mock(ThreeDSecureResultCallback.class));
+        sut.setListener(listener);
+        sut.initializeChallengeWithLookupResponse(activity, threeDSecureLookupResponse);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
@@ -171,7 +177,8 @@ public class ThreeDSecureV1UnitTest {
                 .thenReturn("https://browser.switch.url.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-        sut.initializeChallengeWithLookupResponse(activity, threeDSecureRequest, threeDSecureLookupResponse, mock(ThreeDSecureResultCallback.class));
+        sut.setListener(listener);
+        sut.initializeChallengeWithLookupResponse(activity, threeDSecureRequest, threeDSecureLookupResponse);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
