@@ -366,8 +366,6 @@ public class ThreeDSecureClientUnitTest {
 
     @Test
     public void onCardinalResult_whenErrorExists_forwardsErrorToListener() {
-//    public void onActivityResult_whenResultNotOk_postsExceptionToCallback() {
-
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
