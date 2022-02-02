@@ -344,7 +344,7 @@ public class ThreeDSecureClient {
         Intent intent = new Intent(activity, ThreeDSecureActivity.class);
         intent.putExtras(extras);
 
-        // TODO - start with activity result contract or deprecated method
+        // TODO - start with lifecycle observer or deprecated method
         activity.startActivityForResult(intent, THREE_D_SECURE);
     }
 
