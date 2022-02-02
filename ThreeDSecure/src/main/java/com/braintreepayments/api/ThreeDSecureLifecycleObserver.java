@@ -22,23 +22,20 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
         this.threeDSecureClient = threeDSecureClient;
     }
 
-    @Override
-    public void onCreate(@NonNull LifecycleOwner owner) {
-        activityLauncher = activityResultRegistry.register(THREED_SECURE_RESULT, owner, new ThreeDSecureActivityResultContract(), new ActivityResultCallback<CardinalResult>() {
-            @Override
-            public void onActivityResult(CardinalResult cardinalResult) {
-                threeDSecureClient.onCardinalResult(cardinalResult);
-            }
-        });
-    }
-
     void launch(ThreeDSecureResult threeDSecureResult) {
         activityLauncher.launch(threeDSecureResult);
     }
 
     @Override
     public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
-        switch(event) {
+        switch (event) {
+            case ON_CREATE:
+                activityLauncher = activityResultRegistry.register(THREED_SECURE_RESULT, lifecycleOwner, new ThreeDSecureActivityResultContract(), new ActivityResultCallback<CardinalResult>() {
+                    @Override
+                    public void onActivityResult(CardinalResult cardinalResult) {
+                        threeDSecureClient.onCardinalResult(cardinalResult);
+                    }
+                });
             case ON_RESUME:
         }
     }

@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
@@ -13,30 +14,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureLifecycleObserverUnitTest {
 
-    static class MockActivityResultRegistry extends ActivityResultRegistry {
+    @Captor
+    ArgumentCaptor<ActivityResultCallback<CardinalResult>> cardinalResultCaptor;
 
-        private final CardinalResult result;
-
-        MockActivityResultRegistry(CardinalResult result) {
-            this.result = result;
-        }
-
-        @Override
-        public <I, O> void onLaunch(int requestCode, @NonNull ActivityResultContract<I, O> contract, I input, @Nullable ActivityOptionsCompat options) {
-            dispatchResult(requestCode, result);
-        }
+    @Before
+    public void beforeEach() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -47,15 +48,14 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         FragmentActivity lifecycleOwner = new FragmentActivity();
-        sut.onCreate(lifecycleOwner);
+        sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
 
         String expectedKey = "com.braintreepayments.api.ThreeDSecure.RESULT";
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(ThreeDSecureActivityResultContract.class), Mockito.<ActivityResultCallback<CardinalResult>>any());
     }
 
     @Test
-    public void launch_launchesThreeDSecureActivityAndForwardsSuccessToThreeDSecureClient() throws JSONException {
-        // TODO: this test is failing; consider using a fragment launcher to test full lifecycle flow
+    public void onCreate_whenActivityResultReceived_forwardsActivityResultToThreeDSecureClient() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -63,16 +63,17 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "sample jwt", validateResponse);
 
-        MockActivityResultRegistry activityResultRegistry =
-                new MockActivityResultRegistry(cardinalResult);
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         FragmentActivity lifecycleOwner = new FragmentActivity();
-        sut.onCreate(lifecycleOwner);
+        sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
+        verify(activityResultRegistry).register(anyString(), any(LifecycleOwner.class), any(ThreeDSecureActivityResultContract.class), cardinalResultCaptor.capture());
 
-        sut.launch(threeDSecureResult);
+        ActivityResultCallback<CardinalResult> activityResultCallback = cardinalResultCaptor.getValue();
+        activityResultCallback.onActivityResult(cardinalResult);
         verify(threeDSecureClient).onCardinalResult(cardinalResult);
     }
 }
