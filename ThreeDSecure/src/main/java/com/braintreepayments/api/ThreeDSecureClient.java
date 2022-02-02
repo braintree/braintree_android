@@ -79,6 +79,7 @@ public class ThreeDSecureClient {
     }
 
     public void prepareLookup(@NonNull final Context context, @NonNull final ThreeDSecureRequest request) {
+        // TODO - determine how to return the prepare lookup result fields
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
