@@ -35,6 +35,8 @@ public class MockBraintreeClientBuilder {
     private String integration;
     private String returnUrlScheme;
 
+    private BrowserSwitchResult browserSwitchResult;
+
     private boolean urlSchemeInAndroidManifest = true;
     private boolean canPerformBrowserSwitch = true;
 
@@ -57,6 +59,11 @@ public class MockBraintreeClientBuilder {
 
     public MockBraintreeClientBuilder authorizationError(Exception authorizationError) {
         this.authorizationError = authorizationError;
+        return this;
+    }
+
+    public MockBraintreeClientBuilder deliverBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+        this.browserSwitchResult = browserSwitchResult;
         return this;
     }
 
@@ -146,6 +153,7 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
         when(braintreeClient.canPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
         when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
+        when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
 
         doAnswer(new Answer<Void>() {
             @Override

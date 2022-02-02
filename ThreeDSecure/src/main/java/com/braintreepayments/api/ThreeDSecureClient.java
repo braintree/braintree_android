@@ -75,21 +75,21 @@ public class ThreeDSecureClient {
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
     }
 
-        /**
-         * Verification is associated with a transaction amount and your merchant account. To specify a
-         * different merchant account (or, in turn, currency), you will need to specify the merchant
-         * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
-         * generating a client token</a>
-         * <p>
-         * During lookup the original payment method nonce is consumed and a new one is returned,
-         * which points to the original payment method, as well as the 3D Secure verification.
-         * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
-         * liability shift if authentication is successful or fail with a 3D Secure failure.
-         *
-         * @param activity Android FragmentActivity
-         * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-         * @param callback {@link ThreeDSecureResultCallback}
-         */
+    /**
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     * generating a client token</a>
+     * <p>
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
+     *
+     * @param activity Android FragmentActivity
+     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param callback {@link ThreeDSecureResultCallback}
+     */
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
             callback.onResult(null, new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
@@ -464,49 +464,18 @@ public class ThreeDSecureClient {
     }
 
     // TODO - unit test
-    void deliverBrowserSwitchResult(FragmentActivity activity) {
+    void onBrowserSwitchResult(FragmentActivity activity) {
         BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
 
-//        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
-//            @Override
-//            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-//
-//            }
-//        });
-        // V1 flow
-        if (listener != null) {
-            if (browserSwitchResult == null) {
-                listener.onThreeDSecureFailure(new BraintreeException("BrowserSwitchResult cannot be null"));
-                return;
+        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
             }
-            int status = browserSwitchResult.getStatus();
-            switch (status) {
-                case BrowserSwitchStatus.CANCELED:
-                    listener.onThreeDSecureFailure(new UserCanceledException("User canceled 3DS."));
-                    break;
-                case BrowserSwitchStatus.SUCCESS:
-                default:
-                    Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
-                    if (deepLinkUrl != null) {
-                        String authResponse = deepLinkUrl.getQueryParameter("auth_response");
-                        try {
-                            ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
-                            if (result.hasError()) {
-                                listener.onThreeDSecureFailure(new ErrorWithResponse(422, authResponse));
-                            } else {
-                                ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
-
-                                braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
-                                braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
-
-                                listener.onThreeDSecureSuccess(result);
-                            }
-                        } catch (JSONException e) {
-                            listener.onThreeDSecureFailure(e);
-                        }
-                    }
-                    break;
-            }
-        }
+        });
     }
 }

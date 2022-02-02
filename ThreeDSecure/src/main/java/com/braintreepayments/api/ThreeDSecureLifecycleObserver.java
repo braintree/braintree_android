@@ -49,7 +49,7 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                 }
 
                 if (activity != null) {
-                    threeDSecureClient.deliverBrowserSwitchResult(activity);
+                    threeDSecureClient.onBrowserSwitchResult(activity);
                 }
         }
     }

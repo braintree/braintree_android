@@ -89,7 +89,7 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).deliverBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         FragmentActivity activity = new FragmentActivity();
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).deliverBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
     }
 
     @Test
