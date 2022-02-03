@@ -2,7 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 
+import androidx.activity.result.ActivityResultRegistry;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
@@ -34,6 +36,8 @@ import static org.mockito.Mockito.when;
 public class ThreeDSecureV2UnitTest {
 
     private FragmentActivity activity;
+    private ActivityResultRegistry resultRegistry;
+    private Lifecycle lifecycle;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
 
@@ -62,6 +66,12 @@ public class ThreeDSecureV2UnitTest {
         basicRequest.setAmount("1.00");
         basicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         basicRequest.setV2UiCustomization(v2UiCustomization);
+
+        resultRegistry = mock(ActivityResultRegistry.class);
+        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
+
+        lifecycle = mock(Lifecycle.class);
+        when(activity.getLifecycle()).thenReturn(lifecycle);
     }
 
     @Test

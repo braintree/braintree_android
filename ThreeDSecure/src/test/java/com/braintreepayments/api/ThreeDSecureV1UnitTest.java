@@ -3,7 +3,9 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.activity.result.ActivityResultRegistry;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -28,6 +30,8 @@ import static org.mockito.Mockito.when;
 public class ThreeDSecureV1UnitTest {
 
     private FragmentActivity activity;
+    private ActivityResultRegistry resultRegistry;
+    private Lifecycle lifecycle;
     private CardinalClient cardinalClient;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
@@ -61,6 +65,13 @@ public class ThreeDSecureV1UnitTest {
 
         threeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
         threeDSecureResult = ThreeDSecureResult.fromJson(threeDSecureLookupResponse);
+
+        resultRegistry = mock(ActivityResultRegistry.class);
+        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
+
+        lifecycle = mock(Lifecycle.class);
+        when(activity.getLifecycle()).thenReturn(lifecycle);
+
     }
 
     @Test

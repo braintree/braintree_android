@@ -36,6 +36,7 @@ public class ThreeDSecureClient {
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
     private ThreeDSecureAPI api;
+    private ThreeDSecureLifecycleObserver observer;
 
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
@@ -49,11 +50,18 @@ public class ThreeDSecureClient {
         this.api = new ThreeDSecureAPI(braintreeClient);
     }
 
+    private void addObserver(@NonNull FragmentActivity activity) {
+        if (observer == null) {
+            observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
+        }
+        activity.getLifecycle().addObserver(observer);
+    }
+
 
     // TODO - doc strings
     // TODO - add lifecycle observer when methods are invoked
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
-        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
+        addObserver(activity);
         performVerification(activity, request, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -67,7 +75,7 @@ public class ThreeDSecureClient {
     }
 
     public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
-        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
+        addObserver(activity);
         continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -81,7 +89,7 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
-        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
+        addObserver(activity);
         initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -95,7 +103,7 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
-        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
+        addObserver(activity);
         initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -340,14 +348,17 @@ public class ThreeDSecureClient {
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
-        Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
+        if (observer != null) {
+             observer.launch(result);
+        } else {
+            Bundle extras = new Bundle();
+            extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
 
-        Intent intent = new Intent(activity, ThreeDSecureActivity.class);
-        intent.putExtras(extras);
+            Intent intent = new Intent(activity, ThreeDSecureActivity.class);
+            intent.putExtras(extras);
 
-        // TODO - start with lifecycle observer or deprecated method
-        activity.startActivityForResult(intent, THREE_D_SECURE);
+            activity.startActivityForResult(intent, THREE_D_SECURE);
+        }
     }
 
     /**

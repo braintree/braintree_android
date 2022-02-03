@@ -35,6 +35,8 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureClientUnitTest {
 
     private FragmentActivity activity;
+    private ActivityResultRegistry resultRegistry;
+    private Lifecycle lifecycle;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
 
     private ThreeDSecureResultCallback threeDSecureResultCallback;
@@ -66,6 +68,12 @@ public class ThreeDSecureClientUnitTest {
         basicRequest.setBillingAddress(billingAddress);
 
         threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        resultRegistry = mock(ActivityResultRegistry.class);
+        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
+
+        lifecycle = mock(Lifecycle.class);
+        when(activity.getLifecycle()).thenReturn(lifecycle);
     }
 
     @Test
@@ -438,12 +446,6 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
 
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-
-        Lifecycle lifecycle = mock(Lifecycle.class);
-        when(activity.getLifecycle()).thenReturn(lifecycle);
-
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
         sut.performVerification(activity, basicRequest);
@@ -463,12 +465,6 @@ public class ThreeDSecureClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
-
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-
-        Lifecycle lifecycle = mock(Lifecycle.class);
-        when(activity.getLifecycle()).thenReturn(lifecycle);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
@@ -490,12 +486,6 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
 
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-
-        Lifecycle lifecycle = mock(Lifecycle.class);
-        when(activity.getLifecycle()).thenReturn(lifecycle);
-
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
         sut.initializeChallengeWithLookupResponse(activity, Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
@@ -515,12 +505,6 @@ public class ThreeDSecureClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
-
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-
-        Lifecycle lifecycle = mock(Lifecycle.class);
-        when(activity.getLifecycle()).thenReturn(lifecycle);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
