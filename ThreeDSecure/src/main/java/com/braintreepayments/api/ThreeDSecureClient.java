@@ -346,7 +346,6 @@ public class ThreeDSecureClient {
 
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-        // TODO - unit test plz
         if (observer != null) {
              observer.launch(result);
         } else {

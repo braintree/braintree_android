@@ -357,7 +357,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_startsActivity_whenObserverIsNull() throws JSONException {
+    public void continuePerformVerification_whenObserverIsNull_startsActivity() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -367,8 +367,7 @@ public class ThreeDSecureV2UnitTest {
                 .configuration(threeDSecureEnabledConfig)
                 .build();
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
-        // xxxx - So, we test the callback continuePerformVerification via this.
-        // but, this automatically sets an observer so we need to use the old way
+
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
