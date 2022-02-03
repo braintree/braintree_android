@@ -33,6 +33,27 @@ class ThreeDSecureAPI {
         });
     }
 
+    // TODO - unit test
+    void performThreeDSecureLookup(final ThreeDSecureRequest request, String data, final ThreeDSecureResultCallback callback) {
+        String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
+        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
+
+            @Override
+            public void onResult(String responseBody, Exception httpError) {
+                if (responseBody != null) {
+                    try {
+                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                        callback.onResult(result, null);
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
+                    callback.onResult(null, httpError);
+                }
+            }
+        });
+    }
+
     void authenticateCardinalJWT(ThreeDSecureResult threeDSecureResult, String cardinalJWT, final ThreeDSecureResultCallback callback) {
         final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
         final String lookupNonce = lookupCardNonce.getString();
