@@ -50,9 +50,10 @@ public class ThreeDSecureClient {
     }
 
 
-    // TODO - create performVerification / prepareLookup methods without callback for all existing public methods
+    // TODO - doc strings
     // TODO - add lifecycle observer when methods are invoked
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
+        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
         performVerification(activity, request, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -66,6 +67,7 @@ public class ThreeDSecureClient {
     }
 
     public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
+        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
         continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -79,6 +81,7 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
+        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
         initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -92,6 +95,7 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
+        activity.getLifecycle().addObserver(new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this));
         initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {

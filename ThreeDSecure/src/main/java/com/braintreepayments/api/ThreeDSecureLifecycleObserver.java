@@ -15,8 +15,11 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
 
     private static final String THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecure.RESULT";
 
-    private final ThreeDSecureClient threeDSecureClient;
-    private final ActivityResultRegistry activityResultRegistry;
+    @VisibleForTesting
+    ThreeDSecureClient threeDSecureClient;
+
+    @VisibleForTesting
+    ActivityResultRegistry activityResultRegistry;
 
     @VisibleForTesting
     ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
