@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentMatcher;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 public class ThreeDSecureAPIUnitTest {
@@ -297,4 +297,29 @@ public class ThreeDSecureAPIUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
     }
 
+    @Test
+    public void performThreeDSecureLookup_whenSuccessful_returnsResult() throws JSONException {
+        String authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR;
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(authResponseJson)
+                .build();
+        ThreeDSecureRequest threeDSecureRequest = mock(ThreeDSecureRequest.class);
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.performThreeDSecureLookup(threeDSecureRequest, "some-mock-data-i-guess", callback);
+
+        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+    }
+
+    @Test
+    public void performThreeDSecureLookup_whenOnResultSuccessFails_returnsFailure() throws JSONException {
+       // when the onresult call fails with result, and the exception is caught, it should return the failure in onresult instead
+    }
+
+    @Test
+    public void performThreeDSecureLookup_whenPostRequestFails_returnFailure() {
+
+    }
 }

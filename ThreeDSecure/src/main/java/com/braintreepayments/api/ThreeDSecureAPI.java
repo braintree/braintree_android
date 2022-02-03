@@ -34,6 +34,7 @@ class ThreeDSecureAPI {
     }
 
     // TODO - unit test
+    // 1 From Charlie: Where does ApiClient come from? By that I mean how is it incorporated into this class? It seems to be a hidden dependency?
     void performThreeDSecureLookup(final ThreeDSecureRequest request, String data, final ThreeDSecureResultCallback callback) {
         String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
