@@ -34,21 +34,22 @@ public class ThreeDSecureClient {
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
+    private final ThreeDSecureAPI api;
     private ThreeDSecureListener listener;
-    private ThreeDSecureAPI api;
+
     @VisibleForTesting
     ThreeDSecureLifecycleObserver observer;
 
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
+    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
-        this.api = new ThreeDSecureAPI(braintreeClient);
+        this.api = threeDSecureAPI;
     }
 
     @VisibleForTesting
@@ -61,7 +62,6 @@ public class ThreeDSecureClient {
 
 
     // TODO - doc strings
-    // TODO - add lifecycle observer when methods are invoked
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
         addObserver(activity);
         performVerification(activity, request, new ThreeDSecureResultCallback() {
@@ -451,8 +451,8 @@ public class ThreeDSecureClient {
 
             switch (validateResponse.getActionCode()) {
                 case FAILURE:
-                case SUCCESS:
                 case NOACTION:
+                case SUCCESS:
                     api.authenticateCardinalJWT(threeDSecureResult, jwt, new ThreeDSecureResultCallback() {
                         @Override
                         public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {

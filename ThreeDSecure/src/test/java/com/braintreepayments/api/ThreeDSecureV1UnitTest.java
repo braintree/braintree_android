@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockitoDebugger;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
@@ -37,6 +36,7 @@ public class ThreeDSecureV1UnitTest {
     private CardinalClient cardinalClient;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
+    private ThreeDSecureAPI threeDSecureAPI;
 
     private ThreeDSecureRequest threeDSecureRequest;
     private ThreeDSecureResult threeDSecureResult;
@@ -50,6 +50,7 @@ public class ThreeDSecureV1UnitTest {
         cardinalClient = mock(CardinalClient.class);
         browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
         listener = mock(ThreeDSecureListener.class);
+        threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -87,7 +88,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
@@ -107,7 +108,7 @@ public class ThreeDSecureV1UnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.performVerification(activity, threeDSecureRequest);
 
@@ -131,7 +132,7 @@ public class ThreeDSecureV1UnitTest {
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
@@ -163,7 +164,7 @@ public class ThreeDSecureV1UnitTest {
 
         when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
 
@@ -187,7 +188,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), isNull(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.initializeChallengeWithLookupResponse(activity, threeDSecureLookupResponse);
 
@@ -216,7 +217,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), eq(threeDSecureRequest), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.initializeChallengeWithLookupResponse(activity, threeDSecureRequest, threeDSecureLookupResponse);
 
