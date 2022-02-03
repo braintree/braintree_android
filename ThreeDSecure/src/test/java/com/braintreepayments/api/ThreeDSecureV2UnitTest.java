@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -258,6 +259,8 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
+        sut.addObserver(activity);
+        sut.observer.activityLauncher = mock(ActivityResultLauncher.class);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
@@ -323,6 +326,8 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
         sut.setListener(listener);
+        sut.addObserver(activity);
+        sut.observer.activityLauncher = mock(ActivityResultLauncher.class);
 
         ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);

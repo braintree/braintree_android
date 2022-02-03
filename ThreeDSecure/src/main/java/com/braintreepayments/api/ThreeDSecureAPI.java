@@ -56,6 +56,9 @@ class ThreeDSecureAPI {
 
     void authenticateCardinalJWT(ThreeDSecureResult threeDSecureResult, String cardinalJWT, final ThreeDSecureResultCallback callback) {
         final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
+
+        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+
         final String lookupNonce = lookupCardNonce.getString();
 
         JSONObject body = new JSONObject();

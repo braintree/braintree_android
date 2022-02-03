@@ -36,7 +36,8 @@ public class ThreeDSecureClient {
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
     private ThreeDSecureAPI api;
-    private ThreeDSecureLifecycleObserver observer;
+    @VisibleForTesting
+    ThreeDSecureLifecycleObserver observer;
 
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
@@ -50,7 +51,8 @@ public class ThreeDSecureClient {
         this.api = new ThreeDSecureAPI(braintreeClient);
     }
 
-    private void addObserver(@NonNull FragmentActivity activity) {
+    @VisibleForTesting
+    void addObserver(@NonNull FragmentActivity activity) {
         if (observer == null) {
             observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
         }
@@ -347,7 +349,7 @@ public class ThreeDSecureClient {
 
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-
+        // TODO - unit test plz
         if (observer != null) {
              observer.launch(result);
         } else {
