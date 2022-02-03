@@ -9,6 +9,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -32,6 +33,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -153,7 +157,7 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         request.setBillingAddress(billingAddress);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.performVerification(activity, request);
 
@@ -510,6 +514,15 @@ public class ThreeDSecureClientUnitTest {
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
 
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(threeDSecureResult, null);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(), any(ThreeDSecureResultCallback.class));
+
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -517,17 +530,38 @@ public class ThreeDSecureClientUnitTest {
         CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
         sut.onCardinalResult(cardinalResult);
 
-//        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-//        verify(listener).onThreeDSecureFailure(captor.capture());
-//        assertTrue(captor.getValue() instanceof UserCanceledException);
-//        assertEquals("User canceled 3DS.", captor.getValue().getMessage());
-//
-//        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+        verify(listener).onThreeDSecureSuccess(threeDSecureResult);
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 
     @Test
     public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+
+        final Exception exception = new Exception("error");
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(null, exception);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(), any(ThreeDSecureResultCallback.class));
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
+        sut.setListener(listener);
+
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        sut.onCardinalResult(cardinalResult);
+
+        verify(listener).onThreeDSecureFailure(exception);
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 
     @Test

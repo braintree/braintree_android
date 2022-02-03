@@ -437,7 +437,6 @@ public class ThreeDSecureClient {
         }
     }
 
-    // TODO - unit test
     void onCardinalResult(CardinalResult cardinalResult) {
         Exception threeDSecureError = cardinalResult.getError();
         if (threeDSecureError != null && listener != null) {
