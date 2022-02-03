@@ -313,6 +313,27 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
+    public void continuePerformVerification_whenChallengeIsNotPresented_returnsResult() throws JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("reference-id")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        sut.setListener(listener);
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+
+        verify(listener).onThreeDSecureSuccess(threeDSecureResult);
+    }
+
+    @Test
     public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -334,6 +355,28 @@ public class ThreeDSecureV2UnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.2.1.0");
     }
+
+    @Test
+    public void continuePerformVerification_startsActivity_whenObserverIsNull() throws JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("reference-id")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        // xxxx - So, we test the callback continuePerformVerification via this.
+        // but, this automatically sets an observer so we need to use the old way
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, mock(ThreeDSecureResultCallback.class));
+
+        verify(activity).startActivityForResult(any(Intent.class), any(Integer.class));
+    }
+
 
     @Test
     public void performVerification_withoutCardinalJWT_postsException() {

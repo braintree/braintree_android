@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockitoDebugger;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
@@ -21,6 +22,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -139,6 +141,33 @@ public class ThreeDSecureV1UnitTest {
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(THREE_D_SECURE, browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://browser.switch.url.com"), browserSwitchOptions.getUrl());
+    }
+
+    @Test
+    public void continuePerformVerification_whenV1FlowCantStartBrowserSwitch_returnsError() throws BrowserSwitchException {
+        String urlScheme = "sample-scheme";
+        String assetsUrl = "https://www.some-assets.com";
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
+                .configuration(threeDSecureEnabledConfig)
+                .returnUrlScheme(urlScheme)
+                .build();
+        BrowserSwitchException expectedError = new BrowserSwitchException("error");
+
+        doThrow(expectedError).when(braintreeClient).startBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
+
+        when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, threeDSecureRequest, threeDSecureResult.getLookup()))
+                .thenReturn("https://browser.switch.url.com");
+
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
+        sut.setListener(listener);
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
+
+        verify(listener).onThreeDSecureFailure(expectedError);
     }
 
     @Test

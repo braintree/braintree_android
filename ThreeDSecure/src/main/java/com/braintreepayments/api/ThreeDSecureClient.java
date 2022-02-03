@@ -322,7 +322,6 @@ public class ThreeDSecureClient {
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
             braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
-            // TODO - unit test
             callback.onResult(result, null);
             return;
         }
@@ -338,10 +337,8 @@ public class ThreeDSecureClient {
                     .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                     .url(Uri.parse(browserSwitchUrl));
             try {
-                // TODO - unit test
                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
             } catch (BrowserSwitchException e) {
-                // TODO - unit test
                 callback.onResult(null, e);
             }
             return;
