@@ -18,11 +18,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 public class ThreeDSecureAPIUnitTest {
 
     private ThreeDSecureAPI sut;
+
 
     @Test
     public void performLookup_sendsPOSTRequest() {
@@ -223,105 +225,76 @@ public class ThreeDSecureAPIUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
     }
-    // TODO - Make sure these tests are covered
-//
-//    @Test
-//    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
-//        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-//
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-//                .configuration(threeDSecureEnabledConfig)
-//                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
-//                .build();
-//        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
-//
-//        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-//
-//        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-//        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", mock(ThreeDSecureResultCallback.class));
-//
-//        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-//        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-//    }
-//
-//    @Test
-//    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws JSONException {
-//        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-//
-//        String authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR;
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-//                .configuration(threeDSecureEnabledConfig)
-//                .sendPOSTSuccessfulResponse(authResponseJson)
-//                .build();
-//        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
-//
-//        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(
-//                Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE);
-//
-//        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-//
-//        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-//        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
-//
-//        ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
-//        verify(callback).onResult(captor.capture(), (Exception) isNull());
-//
-//        ThreeDSecureResult actualResult = captor.getValue();
-//        CardNonce cardNonce = actualResult.getTokenizedCard();
-//        assertNotNull(cardNonce);
-//
-//        ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
-//        assertFalse(threeDSecureInfo.isLiabilityShifted());
-//        assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
-//        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
-//        assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
-//    }
-//
-//    @Test
-//    public void authenticateCardinalJWT_whenExceptionOccurs_sendsAnalyticsEvent() throws JSONException {
-//        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-//
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-//                .configuration(threeDSecureEnabledConfig)
-//                .sendPOSTErrorResponse(new BraintreeException("an error occurred!"))
-//                .build();
-//        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
-//
-//        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-//
-//        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-//
-//        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-//        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
-//
-//        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-//        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
-//    }
-//
-//    @Test
-//    public void authenticateCardinalJWT_whenExceptionOccurs_returnsException() throws JSONException {
-//        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-//
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-//                .configuration(threeDSecureEnabledConfig)
-//                .sendPOSTErrorResponse(new BraintreeException("an error occurred!"))
-//                .build();
-//        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
-//
-//        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-//
-//        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient, cardinalClient, browserSwitchHelper);
-//
-//        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-//        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", callback);
-//
-//        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-//        verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
-//
-//        assertEquals("an error occurred!", captor.getValue().getMessage());
-//    }
+
+    @Test
+    public void authenticateCardinalJWT_whenSuccess_returnsResult_andSendsAnalyticsEvent() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
+                .build();
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        ThreeDSecureResultCallback threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+
+        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws JSONException {
+        String authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR;
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(authResponseJson)
+                .build();
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(
+                Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE);
+
+        ThreeDSecureResultCallback threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+
+        ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        verify(threeDSecureResultCallback).onResult(captor.capture(), (Exception) isNull());
+
+        ThreeDSecureResult actualResult = captor.getValue();
+        CardNonce cardNonce = actualResult.getTokenizedCard();
+        assertNotNull(cardNonce);
+
+        ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
+        assertFalse(threeDSecureInfo.isLiabilityShifted());
+        assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
+        assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
+
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenPostError_returnsException() throws JSONException {
+        Exception exception = new Exception("Error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendPOSTErrorResponse(exception)
+                .build();
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        ThreeDSecureResultCallback threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+
+        verify(threeDSecureResultCallback).onResult(null, exception);
+
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+    }
+
 }
