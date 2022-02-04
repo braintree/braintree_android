@@ -44,15 +44,27 @@ public class ThreeDSecureClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
+        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient), null);
+    }
+    // TODO - update doc string with activity
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public ThreeDSecureClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient), activity);
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI) {
+    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI, FragmentActivity activity) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
         this.api = threeDSecureAPI;
+        if (activity != null) {
+            addObserver(activity);
+        }
     }
 
     /**
@@ -93,7 +105,6 @@ public class ThreeDSecureClient {
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      */
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
-        addObserver(activity);
         performVerification(activity, request, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -107,7 +118,6 @@ public class ThreeDSecureClient {
     }
 
     public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
-        addObserver(activity);
         continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -121,7 +131,6 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
-        addObserver(activity);
         initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
@@ -135,7 +144,6 @@ public class ThreeDSecureClient {
     }
 
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
-        addObserver(activity);
         initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
             public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
