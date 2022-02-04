@@ -103,7 +103,6 @@ public class ThreeDSecureClient {
         this.listener = listener;
     }
 
-
     // region Cardinal Initialize/Prepare Callback Methods
 
     /**
