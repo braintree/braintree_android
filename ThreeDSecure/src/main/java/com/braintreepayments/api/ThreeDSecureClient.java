@@ -38,6 +38,11 @@ public class ThreeDSecureClient {
     @VisibleForTesting
     ThreeDSecureLifecycleObserver observer;
 
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
     }
@@ -50,6 +55,11 @@ public class ThreeDSecureClient {
         this.api = threeDSecureAPI;
     }
 
+    /**
+     * Add a {@link ThreeDSecureListener} to your client to receive results or errors from the 3DS payment flow.
+     *
+     * @param listener a {@link ThreeDSecureListener}
+     */
     public void setListener(ThreeDSecureListener listener) {
         this.listener = listener;
     }
@@ -65,6 +75,23 @@ public class ThreeDSecureClient {
     // region Launch 3DS With App/Browser Switch Encapsulation
 
     // TODO - doc strings
+
+    /**
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     * generating a client token</a>
+     * <p>
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
+     *
+     * The result of this verification will be returned to your {@link ThreeDSecureListener}.
+     *
+     * @param activity Android FragmentActivity
+     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+     */
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
         addObserver(activity);
         performVerification(activity, request, new ThreeDSecureResultCallback() {
