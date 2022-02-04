@@ -170,10 +170,10 @@ public class ThreeDSecureClient {
                 }
                 braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
-                final String data = request.build(cardinalClient.getConsumerSessionId());
+                final String sessionId = cardinalClient.getConsumerSessionId();
 
                 if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
-                    api.performThreeDSecureLookup(request, data, callback);
+                    api.performLookup(request, sessionId, callback);
                     return;
                 }
 
@@ -181,10 +181,10 @@ public class ThreeDSecureClient {
                     @Override
                     public void onResult(String consumerSessionId, Exception error) {
                         if (consumerSessionId != null) {
-                            api.performThreeDSecureLookup(request, data, callback);
+                            api.performLookup(request, sessionId, callback);
                             braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
                         } else {
-                            api.performThreeDSecureLookup(request, data, callback);
+                            api.performLookup(request, sessionId, callback);
                             braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
                         }
                     }

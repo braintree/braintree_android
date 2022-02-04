@@ -1,5 +1,19 @@
 package com.braintreepayments.api;
 
+import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Intent;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,27 +32,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureV2UnitTest {
 
     private FragmentActivity activity;
-    private ActivityResultRegistry resultRegistry;
-    private Lifecycle lifecycle;
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
 
@@ -68,10 +65,10 @@ public class ThreeDSecureV2UnitTest {
         basicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         basicRequest.setV2UiCustomization(v2UiCustomization);
 
-        resultRegistry = mock(ActivityResultRegistry.class);
+        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
         when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
 
-        lifecycle = mock(Lifecycle.class);
+        Lifecycle lifecycle = mock(Lifecycle.class);
         when(activity.getLifecycle()).thenReturn(lifecycle);
     }
 

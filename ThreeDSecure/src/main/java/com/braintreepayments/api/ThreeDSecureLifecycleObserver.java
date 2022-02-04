@@ -22,7 +22,7 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
     ActivityResultRegistry activityResultRegistry;
 
     @VisibleForTesting
-    ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
+    ActivityResultLauncher activityLauncher;
 
     ThreeDSecureLifecycleObserver(ActivityResultRegistry activityResultRegistry, ThreeDSecureClient threeDSecureClient) {
         this.activityResultRegistry = activityResultRegistry;

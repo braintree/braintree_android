@@ -7,7 +7,7 @@ class ThreeDSecureAPI {
 
     private final BraintreeClient braintreeClient;
 
-    public ThreeDSecureAPI(BraintreeClient braintreeClient) {
+    ThreeDSecureAPI(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 
@@ -15,28 +15,6 @@ class ThreeDSecureAPI {
         String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         String data = request.build(cardinalConsumerSessionId);
 
-        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    try {
-                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-                        callback.onResult(result, null);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    callback.onResult(null, httpError);
-                }
-            }
-        });
-    }
-
-    // TODO - unit test
-    // 1 From Charlie: Where does ApiClient come from? By that I mean how is it incorporated into this class? It seems to be a hidden dependency?
-    void performThreeDSecureLookup(final ThreeDSecureRequest request, String data, final ThreeDSecureResultCallback callback) {
-        String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
         braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
 
             @Override
