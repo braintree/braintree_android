@@ -81,7 +81,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     // TODO: Remove this method completely when all payment methods have been migrated to
-    //  encapsulated browser switch flow. For now, all flows other than 3DS will break.
+    //  encapsulated browser switch flow. For now, all browser switch flows other than 3DS will break.
     private void handleBrowserSwitchResultIfNecessary() {
 //        if (braintreeClient != null) {
 //            BrowserSwitchResult result = braintreeClient.deliverBrowserSwitchResult(this);

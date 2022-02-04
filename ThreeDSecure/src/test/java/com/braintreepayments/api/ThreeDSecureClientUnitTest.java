@@ -21,8 +21,10 @@ import android.net.Uri;
 
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
@@ -255,8 +257,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.invalid-manifest");
     }
@@ -302,14 +303,13 @@ public class ThreeDSecureClientUnitTest {
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(listener).onThreeDSecureSuccess(captor.capture());
+        verify(listener, never()).onThreeDSecureFailure(any(Exception.class));
 
         ThreeDSecureResult result = captor.getValue();
         CardNonce cardNonce = result.getTokenizedCard();
         assertIsANonce(cardNonce.getString());
         assertEquals("11", cardNonce.getLastTwo());
         assertTrue(cardNonce.getThreeDSecureInfo().wasVerified());
-
-        verify(listener, never()).onThreeDSecureFailure(any(Exception.class));
     }
 
     @Test
@@ -551,16 +551,11 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_setsLifecycleObserver() {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .build();
+    public void constructor_setsLifecycleObserver() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
 
         ArgumentCaptor<ThreeDSecureLifecycleObserver> captor = ArgumentCaptor.forClass(ThreeDSecureLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
@@ -571,16 +566,13 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void continuePerformVerification_setsLifecycleObserver() {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .build();
+    public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .build();
-
-        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        Fragment fragment = mock(Fragment.class);
+        when(fragment.requireActivity()).thenReturn(activity);
+        when(fragment.getLifecycle()).thenReturn(lifecycle);
+        ThreeDSecureClient sut = new ThreeDSecureClient(fragment, braintreeClient);
 
         ArgumentCaptor<ThreeDSecureLifecycleObserver> captor = ArgumentCaptor.forClass(ThreeDSecureLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
@@ -591,16 +583,12 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void initializeChallengeWithLookupResponse_setsLifecycleObserver() {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .build();
+    public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .build();
+        when(activity.getLifecycle()).thenReturn(lifecycle);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.initializeChallengeWithLookupResponse(activity, Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, braintreeClient);
 
         ArgumentCaptor<ThreeDSecureLifecycleObserver> captor = ArgumentCaptor.forClass(ThreeDSecureLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
@@ -611,22 +599,11 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void initializeChallengeWithLookupResponseOverload_setsLifecycleObserver() {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .build();
+    public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .build();
+        ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient);
 
-        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.initializeChallengeWithLookupResponse(activity, basicRequest, Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-
-        ArgumentCaptor<ThreeDSecureLifecycleObserver> captor = ArgumentCaptor.forClass(ThreeDSecureLifecycleObserver.class);
-        verify(lifecycle).addObserver(captor.capture());
-
-        ThreeDSecureLifecycleObserver observer = captor.getValue();
-        assertSame(resultRegistry, observer.activityResultRegistry);
-        assertSame(sut, observer.threeDSecureClient);
+        verify(lifecycle, never()).addObserver(any(LifecycleObserver.class));
     }
 }
