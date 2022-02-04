@@ -46,10 +46,11 @@ public class ThreeDSecureClient {
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient), null);
     }
-    // TODO - update doc string with activity
+
     /**
      * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
      *
+     * @param activity a {@link FragmentActivity}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public ThreeDSecureClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
