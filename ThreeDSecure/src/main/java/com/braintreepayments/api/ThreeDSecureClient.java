@@ -118,6 +118,12 @@ public class ThreeDSecureClient {
         });
     }
 
+    /**
+     *
+     * @param activity an Android FragmentActivity
+     * @param request the {@link ThreeDSecureRequest} with information used for authentication
+     * @param result a {@link ThreeDSecureResult} that contains information about the 3DS verification request.
+     */
     public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
         continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
             @Override
@@ -131,6 +137,12 @@ public class ThreeDSecureClient {
         });
     }
 
+    /**
+     * Initialize a challenge from a server side lookup call. Response is forwarded to the listener.
+     *
+     * @param activity Android FragmentActivity
+     * @param lookupResponse The lookup response String from the server side call to lookup the 3D Secure information.
+     */
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
         initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
@@ -144,6 +156,13 @@ public class ThreeDSecureClient {
         });
     }
 
+    /**
+     * Initialize a challenge from a server side lookup call. Response is forwarded to the listener.
+     *
+     * @param activity Android FragmentActivity
+     * @param request The {@link ThreeDSecureRequest} with optional UI customization.
+     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
+     */
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
         initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
             @Override
