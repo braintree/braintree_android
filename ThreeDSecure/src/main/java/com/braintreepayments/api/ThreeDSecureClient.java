@@ -29,8 +29,6 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
  */
 public class ThreeDSecureClient {
 
-    // TODO - reorganize methods
-
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
@@ -52,6 +50,10 @@ public class ThreeDSecureClient {
         this.api = threeDSecureAPI;
     }
 
+    public void setListener(ThreeDSecureListener listener) {
+        this.listener = listener;
+    }
+
     @VisibleForTesting
     void addObserver(@NonNull FragmentActivity activity) {
         if (observer == null) {
@@ -60,6 +62,7 @@ public class ThreeDSecureClient {
         activity.getLifecycle().addObserver(observer);
     }
 
+    // region Launch 3DS With App/Browser Switch Encapsulation
 
     // TODO - doc strings
     public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
@@ -117,6 +120,10 @@ public class ThreeDSecureClient {
             }
         });
     }
+
+    // endregion
+
+    // region Deprecated Launch 3DS
 
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
@@ -306,6 +313,8 @@ public class ThreeDSecureClient {
         });
     }
 
+    // endregion
+
     private void startVerificationFlow(FragmentActivity activity, Configuration configuration, ThreeDSecureRequest request, ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
@@ -358,6 +367,8 @@ public class ThreeDSecureClient {
             activity.startActivityForResult(intent, THREE_D_SECURE);
         }
     }
+
+    // region Deprecated Handle App/Browser Switch Results
 
     /**
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
@@ -437,6 +448,25 @@ public class ThreeDSecureClient {
         }
     }
 
+    // endregion
+
+    // region Internal Handle App/Browser Switch Results
+
+    void onBrowserSwitchResult(FragmentActivity activity) {
+        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
+    }
+
     void onCardinalResult(CardinalResult cardinalResult) {
         Exception threeDSecureError = cardinalResult.getError();
         if (threeDSecureError != null && listener != null) {
@@ -477,22 +507,5 @@ public class ThreeDSecureClient {
         }
     }
 
-    public void setListener(ThreeDSecureListener listener) {
-        this.listener = listener;
-    }
-
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-
-        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
-            @Override
-            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                if (threeDSecureResult != null) {
-                    listener.onThreeDSecureSuccess(threeDSecureResult);
-                } else if (error != null) {
-                    listener.onThreeDSecureFailure(error);
-                }
-            }
-        });
-    }
+    // endregion
 }
