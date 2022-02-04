@@ -46,9 +46,8 @@ public class ThreeDSecureClientUnitTest {
     private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureAPI threeDSecureAPI;
 
-    private ThreeDSecureResultCallback threeDSecureResultCallback;
     private ThreeDSecureListener listener;
-    private ThreeDSecureResultCallback callback;
+    private ThreeDSecureResultCallback threeDSecureResultCallback;
 
     private Configuration threeDSecureEnabledConfig;
 
@@ -62,7 +61,6 @@ public class ThreeDSecureClientUnitTest {
         listener = mock(ThreeDSecureListener.class);
         browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
         threeDSecureAPI = mock(ThreeDSecureAPI.class);
-        callback = mock(ThreeDSecureResultCallback.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -98,8 +96,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.initialized");
     }
@@ -125,8 +122,7 @@ public class ThreeDSecureClientUnitTest {
         request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
-        sut.setListener(listener);
-        sut.performVerification(activity, request, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, request, threeDSecureResultCallback);
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -159,8 +155,7 @@ public class ThreeDSecureClientUnitTest {
         request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
-        sut.setListener(listener);
-        sut.performVerification(activity, request, mock(ThreeDSecureResultCallback.class));
+        sut.performVerification(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -204,10 +199,9 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
 
-        sut.setListener(listener);
-        sut.performVerification(activity, request, callback);
+        sut.performVerification(activity, request, threeDSecureResultCallback);
 
-        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
     }
 
     @Test
@@ -222,10 +216,10 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setAmount("5");
-        sut.performVerification(activity, request, callback);
+        sut.performVerification(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
         assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
                 captor.getValue().getMessage());
     }
@@ -241,10 +235,10 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         sut.setListener(listener);
-        sut.performVerification(activity, basicRequest, callback);
+        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
                 "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +

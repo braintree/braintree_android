@@ -157,7 +157,6 @@ public class ThreeDSecureClient {
                 }
                 braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
-
                 if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
                     api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
                     return;

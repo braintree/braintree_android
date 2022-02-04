@@ -23,7 +23,6 @@ public class ThreeDSecureAPIUnitTest {
 
     private ThreeDSecureAPI sut;
 
-
     @Test
     public void performLookup_sendsPOSTRequest() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
