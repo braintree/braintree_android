@@ -8,7 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -44,28 +46,46 @@ public class ThreeDSecureClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient), null);
+        this(null, null, braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
     }
 
     /**
-     * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
+     * Create a new instance of {@link ThreeDSecureClient} from within an Activiy using a {@link BraintreeClient}.
      *
      * @param activity a {@link FragmentActivity}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public ThreeDSecureClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient), activity);
+        this(activity, activity.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
+    }
+
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public ThreeDSecureClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI, FragmentActivity activity) {
+    ThreeDSecureClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
         this.api = threeDSecureAPI;
-        if (activity != null) {
-            addObserver(activity);
+        if (activity != null && lifecycle != null) {
+            addObserver(activity, lifecycle);
         }
+    }
+
+    @VisibleForTesting
+    void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
+        if (observer == null) {
+            observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
+        }
+        lifecycle.addObserver(observer);
     }
 
     /**
@@ -77,48 +97,40 @@ public class ThreeDSecureClient {
         this.listener = listener;
     }
 
-    @VisibleForTesting
-    void addObserver(@NonNull FragmentActivity activity) {
-        if (observer == null) {
-            observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
-        }
-        activity.getLifecycle().addObserver(observer);
-    }
-
     // region Launch 3DS With App/Browser Switch Encapsulation
 
-    // TODO - doc strings
+//    /**
+//     * Verification is associated with a transaction amount and your merchant account. To specify a
+//     * different merchant account (or, in turn, currency), you will need to specify the merchant
+//     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+//     * generating a client token</a>
+//     * <p>
+//     * During lookup the original payment method nonce is consumed and a new one is returned,
+//     * which points to the original payment method, as well as the 3D Secure verification.
+//     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+//     * liability shift if authentication is successful or fail with a 3D Secure failure.
+//     *
+//     * The result of this verification will be returned to your {@link ThreeDSecureListener}.
+//     *
+//     * @param activity Android FragmentActivity
+//     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+//     */
+//    public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
+//        performVerification(activity, request, new ThreeDSecureResultCallback() {
+//            @Override
+//            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+//                if (threeDSecureResult != null) {
+//                    listener.onThreeDSecureSuccess(threeDSecureResult);
+//                } else if (error != null) {
+//                    listener.onThreeDSecureFailure(error);
+//                }
+//            }
+//        });
+//    }
 
     /**
-     * Verification is associated with a transaction amount and your merchant account. To specify a
-     * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
-     * generating a client token</a>
-     * <p>
-     * During lookup the original payment method nonce is consumed and a new one is returned,
-     * which points to the original payment method, as well as the 3D Secure verification.
-     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
-     * liability shift if authentication is successful or fail with a 3D Secure failure.
-     *
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}.
      * The result of this verification will be returned to your {@link ThreeDSecureListener}.
-     *
-     * @param activity Android FragmentActivity
-     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-     */
-    public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
-        performVerification(activity, request, new ThreeDSecureResultCallback() {
-            @Override
-            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                if (threeDSecureResult != null) {
-                    listener.onThreeDSecureSuccess(threeDSecureResult);
-                } else if (error != null) {
-                    listener.onThreeDSecureFailure(error);
-                }
-            }
-        });
-    }
-
-    /**
      *
      * @param activity an Android FragmentActivity
      * @param request the {@link ThreeDSecureRequest} with information used for authentication
@@ -138,7 +150,8 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Initialize a challenge from a server side lookup call. Response is forwarded to the listener.
+     * Initialize a challenge from a server side lookup call. The result of this challenge will be
+     * returned to your {@link ThreeDSecureListener}.
      *
      * @param activity Android FragmentActivity
      * @param lookupResponse The lookup response String from the server side call to lookup the 3D Secure information.
@@ -157,7 +170,8 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Initialize a challenge from a server side lookup call. Response is forwarded to the listener.
+     * Initialize a challenge from a server side lookup call. The result of this challenge will be
+     * returned to your {@link ThreeDSecureListener}.
      *
      * @param activity Android FragmentActivity
      * @param request The {@link ThreeDSecureRequest} with optional UI customization.
@@ -510,16 +524,18 @@ public class ThreeDSecureClient {
     void onBrowserSwitchResult(FragmentActivity activity) {
         BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
 
-        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
-            @Override
-            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                if (threeDSecureResult != null) {
-                    listener.onThreeDSecureSuccess(threeDSecureResult);
-                } else if (error != null) {
-                    listener.onThreeDSecureFailure(error);
+        if (browserSwitchResult != null) {
+            onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
+                @Override
+                public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                    if (threeDSecureResult != null) {
+                        listener.onThreeDSecureSuccess(threeDSecureResult);
+                    } else if (error != null) {
+                        listener.onThreeDSecureFailure(error);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     void onCardinalResult(CardinalResult cardinalResult) {

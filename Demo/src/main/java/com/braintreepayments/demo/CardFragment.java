@@ -84,7 +84,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         BraintreeClient braintreeClient = getBraintreeClient();
         americanExpressClient = new AmericanExpressClient(braintreeClient);
         cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
         threeDSecureClient.setListener(this);
 
         unionPayClient = new UnionPayClient(braintreeClient);
@@ -125,10 +125,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         if (isUnionPay) {
             sendSmsButton.setVisibility(VISIBLE);
         }
-
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getThreeDSecureBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureBrowserSwitchResult);
-        viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
 
         purchaseButton.setEnabled(true);
         autofillButton.setEnabled(true);
@@ -337,16 +333,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         } else {
             handleError(error);
         }
-    }
-
-    private void handleThreeDSecureBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult != null) {
-            threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, this::handleThreeDSecureResult);
-        }
-    }
-
-    private void handleThreeDSecureActivityResult(ActivityResult activityResult) {
-        threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
     }
 
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
