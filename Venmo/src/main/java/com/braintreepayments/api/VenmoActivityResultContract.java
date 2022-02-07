@@ -7,6 +7,7 @@ import android.content.Intent;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +21,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_ACCESS_TOKEN = "com.braintreepayments.api.ACCESS_TOKEN";
     static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.ENVIRONMENT";
     static final String EXTRA_BRAINTREE_DATA = "com.braintreepayments.api.EXTRA_BRAINTREE_DATA";
+    static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
+    static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     @NonNull
@@ -53,7 +56,16 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
     @Override
     public VenmoResult parseResult(int resultCode, @Nullable Intent intent) {
-        return null;
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
+            String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
+            String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
+
+        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
+
+        }
+
+            return null;
     }
 
     private static Intent getVenmoIntent() {

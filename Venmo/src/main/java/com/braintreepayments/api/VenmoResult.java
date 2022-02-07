@@ -4,19 +4,31 @@ import androidx.annotation.Nullable;
 
 class VenmoResult {
 
-    private final VenmoAccountNonce venmoAccountNonce;
     private final Exception error;
+    private final String paymentContextId;
+    private final String venmoAccountNonce;
+    private final String venmoUsername;
 
-    VenmoResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
+    VenmoResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce, @Nullable String venmoUsername, @Nullable Exception error) {
+        this.paymentContextId = paymentContextId;
         this.venmoAccountNonce = venmoAccountNonce;
+        this.venmoUsername = venmoUsername;
         this.error = error;
-    }
-
-    VenmoAccountNonce getVenmoAccountNonce() {
-        return venmoAccountNonce;
     }
 
     Exception getError() {
         return error;
+    }
+
+    public String getPaymentContextId() {
+        return paymentContextId;
+    }
+
+    public String getVenmoAccountNonce() {
+        return venmoAccountNonce;
+    }
+
+    public String getVenmoUsername() {
+        return venmoUsername;
     }
 }
