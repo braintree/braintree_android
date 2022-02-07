@@ -336,4 +336,8 @@ public class VenmoClient {
             }
         });
     }
+
+    public void onVenmoResult(VenmoResult venmoResult) {
+        
+    }
 }

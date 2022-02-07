@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
@@ -10,6 +11,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 class VenmoLifecycleObserver implements LifecycleEventObserver {
 
+    private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
+
     @VisibleForTesting
     VenmoClient venmoClient;
 
@@ -17,7 +20,7 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
     ActivityResultRegistry activityResultRegistry;
 
     @VisibleForTesting
-    ActivityResultLauncher activityLauncher;
+    ActivityResultLauncher<VenmoIntentData> activityLauncher;
 
     VenmoLifecycleObserver(ActivityResultRegistry activityResultRegistry, VenmoClient venmoClient) {
         this.activityResultRegistry = activityResultRegistry;
@@ -25,8 +28,18 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
     }
 
     @Override
-    public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
         if (event == Lifecycle.Event.ON_CREATE) {
+            activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, new VenmoActivityResultContract(), new ActivityResultCallback<VenmoResult>() {
+                @Override
+                public void onActivityResult(VenmoResult venmoResult) {
+                    venmoClient.onVenmoResult(venmoResult);
+                }
+            });
         }
+    }
+
+    public void launch(VenmoIntentData venmoIntentData) {
+        activityLauncher.launch(venmoIntentData);
     }
 }
