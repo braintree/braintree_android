@@ -1,15 +1,15 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_PAYMENT_METHOD_NONCE;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_USERNAME;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ACCESS_TOKEN;
 import static com.braintreepayments.api.VenmoClient.EXTRA_BRAINTREE_DATA;
 import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_RESOURCE_ID;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNotNull;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -23,9 +23,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -69,11 +66,15 @@ public class VenmoActivityResultContractUnitTest {
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent successIntent = new Intent();
-        // TODO: fill in intent details
+        successIntent.putExtra(EXTRA_RESOURCE_ID, "resource_id");
+        successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
+        successIntent.putExtra(EXTRA_USERNAME, "username");
 
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(venmoResult);
-
+        assertEquals("resource_id", venmoResult.getPaymentContextId());
+        assertEquals("payment_method_nonce", venmoResult.getVenmoAccountNonce());
+        assertEquals("username", venmoResult.getVenmoUsername());
     }
 
     @Test
@@ -83,9 +84,10 @@ public class VenmoActivityResultContractUnitTest {
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, null);
         assertNotNull(venmoResult);
 
-        BraintreeException error = (BraintreeException) venmoResult.getError();
+        Exception error = venmoResult.getError();
         String expectedMessage = "An unknown Android error occurred with the activity result API.";
         assertNotNull(expectedMessage, error.getMessage());
+        assertTrue(error instanceof BraintreeException);
     }
 
     @Test
