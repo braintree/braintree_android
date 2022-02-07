@@ -56,13 +56,18 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
     @Override
     public VenmoResult parseResult(int resultCode, @Nullable Intent intent) {
+        if (intent == null) {
+            return new VenmoResult(null, null, null, new Exception("An unknown Android error occurred with the activity result API."));
+        }
+
         if (resultCode == AppCompatActivity.RESULT_OK) {
             String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
             String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
-
+            VenmoResult venmoResult = new VenmoResult(paymentContextId, nonce, venmoUsername, null);
+            return venmoResult;
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-
+            return new VenmoResult(null, null, null, new UserCanceledException("User canceled Venmo."));
         }
 
             return null;
