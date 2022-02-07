@@ -583,7 +583,7 @@ public class ThreeDSecureClientUnitTest {
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureFailure(exception);
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 
