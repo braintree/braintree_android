@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -412,7 +413,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenErrorExists_forwardsErrorToListener() {
+    public void onCardinalResult_whenErrorExists_forwardsErrorToListener_andSendsAnalytics() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -517,6 +518,41 @@ public class ThreeDSecureClientUnitTest {
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shifted.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shift-possible.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+    }
+
+    @Test
+    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+
+        final ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
+        when(threeDSecureResult.hasError()).thenReturn(true);
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(threeDSecureResult, null);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(), any(ThreeDSecureResultCallback.class));
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
+        sut.setListener(listener);
+
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        sut.onCardinalResult(cardinalResult);
+
+        verify(listener).onThreeDSecureSuccess(threeDSecureResult);
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 
@@ -547,6 +583,7 @@ public class ThreeDSecureClientUnitTest {
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureFailure(exception);
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 

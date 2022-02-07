@@ -9,6 +9,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -405,11 +408,20 @@ public class ThreeDSecureV2UnitTest {
     @Test
     public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
+
+        final ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(threeDSecureResult, null);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), (String) isNull(), any(ThreeDSecureResultCallback.class));
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
-
-        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
@@ -420,8 +432,75 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.cardinal-sdk.action-code.success");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shifted.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shift-possible.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+    }
+
+    @Test
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenResultWithError_sendsAnalytics() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
+
+        final ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
+        when(threeDSecureResult.hasError()).thenReturn(true);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(threeDSecureResult, null);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), (String) isNull(), any(ThreeDSecureResultCallback.class));
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        data.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+
+        sut.onActivityResult(RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
+
+        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+    }
+
+    @Test
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenAuthenticateJWTReturnsError_sendsAnalytics() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
+
+        final ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
+        final Exception exception = new Exception("error");
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                ThreeDSecureResultCallback callback = (ThreeDSecureResultCallback) invocation.getArguments()[2];
+                callback.onResult(null, exception);
+                return null;
+            }
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), (String) isNull(), any(ThreeDSecureResultCallback.class));
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        data.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+
+        sut.onActivityResult(RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
+
+        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
     }
 
     @Test

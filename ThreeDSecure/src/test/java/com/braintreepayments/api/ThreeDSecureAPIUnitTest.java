@@ -218,9 +218,6 @@ public class ThreeDSecureAPIUnitTest {
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
-
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
     }
 
     @Test
@@ -237,9 +234,6 @@ public class ThreeDSecureAPIUnitTest {
         sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
-
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
     }
 
     @Test
@@ -269,9 +263,6 @@ public class ThreeDSecureAPIUnitTest {
         assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("Failed to authenticate, please try a different form of payment.", actualResult.getErrorMessage());
-
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
     }
 
     @Test
@@ -289,8 +280,5 @@ public class ThreeDSecureAPIUnitTest {
         sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onResult(null, exception);
-
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
     }
 }
