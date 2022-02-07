@@ -485,11 +485,7 @@ public class ThreeDSecureClient {
                         if (result.hasError()) {
                             callback.onResult(null, new ErrorWithResponse(422, authResponse));
                         } else {
-                            ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
-
-                            braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
-                            braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
-
+                            sendLiabilityShiftedAnalytics(result);
                             callback.onResult(result, null);                        }
                     } catch (JSONException e) {
                         callback.onResult(null, e);
@@ -507,7 +503,7 @@ public class ThreeDSecureClient {
      * @param callback   {@link ThreeDSecureResultCallback}
      */
     @Deprecated
-    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull ThreeDSecureResultCallback callback) {
+    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {
             callback.onResult(null, new UserCanceledException("User canceled 3DS."));
@@ -524,7 +520,22 @@ public class ThreeDSecureClient {
             case FAILURE:
             case SUCCESS:
             case NOACTION:
-                api.authenticateCardinalJWT(threeDSecureResult, jwt, callback);
+                api.authenticateCardinalJWT(threeDSecureResult, jwt, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        if (threeDSecureResult != null) {
+                            if (threeDSecureResult.hasError()) {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                            } else {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                                sendLiabilityShiftedAnalytics(threeDSecureResult);
+                            }
+                        } else if (error != null) {
+                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+                        }
+                        callback.onResult(threeDSecureResult, error);
+                    }
+                });
 
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                 break;
@@ -580,12 +591,20 @@ public class ThreeDSecureClient {
                         @Override
                         public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
                             if (threeDSecureResult != null) {
+                                if (threeDSecureResult.hasError()) {
+                                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                                } else {
+                                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                                    sendLiabilityShiftedAnalytics(threeDSecureResult);
+                                }
                                 listener.onThreeDSecureSuccess(threeDSecureResult);
                             } else if (error != null) {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
                                 listener.onThreeDSecureFailure(error);
                             }
                         }
                     });
+
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                     break;
                 case ERROR:
@@ -599,6 +618,13 @@ public class ThreeDSecureClient {
                     break;
             }
         }
+    }
+
+    private void sendLiabilityShiftedAnalytics(ThreeDSecureResult threeDSecureResult) {
+        ThreeDSecureInfo info = threeDSecureResult.getTokenizedCard().getThreeDSecureInfo();
+
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
     }
 
     // endregion

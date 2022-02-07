@@ -59,29 +59,16 @@ class ThreeDSecureAPI {
                         ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
                         if (result.hasError()) {
                             result.setTokenizedCard(lookupCardNonce);
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-                        } else {
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                         }
-                        notify3DSComplete(result, callback);
+                        callback.onResult(result, null);
 
                     } catch (JSONException e) {
                         callback.onResult(null, e);
                     }
                 } else {
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
                     callback.onResult(null, httpError);
                 }
             }
         });
-    }
-
-    private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
-        ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
-
-        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
-        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
-
-        callback.onResult(result, null);
     }
 }
