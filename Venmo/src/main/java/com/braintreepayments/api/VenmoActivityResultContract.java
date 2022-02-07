@@ -70,7 +70,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             return new VenmoResult(null, null, null, new UserCanceledException("User canceled Venmo."));
         }
 
-            return null;
+        return null;
     }
 
     private static Intent getVenmoIntent() {
