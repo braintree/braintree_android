@@ -3,10 +3,8 @@ package com.braintreepayments.api;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -191,24 +189,31 @@ public class VenmoAPIUnitTest {
     @Test
     public void vaultVenmoAccountNonce_tokenizeRESTSuccess_callsBackNonce() throws JSONException {
         ApiClient apiClient = new MockApiClientBuilder()
-                .tokenizeGraphQLSuccess(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON))
+                .tokenizeRESTSuccess(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
                 .build();
         VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
 
-        verify(callback).onResult(VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON)), null);
-    }
+        ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-    @Test
-    public void vaultVenmoAccountNonce_tokenizeRESTSuccess_responseMalformed_callsBackError() {
-
+        VenmoAccountNonce nonce = captor.getValue();
+        assertEquals("@sampleuser", nonce.getUsername());
     }
 
     @Test
     public void vaultVenmoAccountNonce_tokenizeRESTError_forwardsErrorToCallback() {
+        Exception error = new Exception("error");
+        ApiClient apiClient = new MockApiClientBuilder()
+                .tokenizeRESTError(error)
+                .build();
+        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
 
+        VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
+        sut.vaultVenmoAccountNonce("nonce", callback);
 
+        verify(callback).onResult((VenmoAccountNonce) isNull(), same(error));
     }
 }
