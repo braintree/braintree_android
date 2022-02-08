@@ -323,7 +323,10 @@ public class VenmoClientUnitTest {
                 .sessionId("session-id")
                 .integration("custom")
                 .authorizationSuccess(clientToken)
-                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
+                .build();
+
+        VenmoAPI venmoAPI = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
                 .build();
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -580,11 +583,13 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
-                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
 
+        VenmoAccountNonce nonce = mock(VenmoAccountNonce.class);
+        when(nonce.getString()).thenReturn("some-nonce");
+
         VenmoAPI venmoAPI = new MockVenmoApiBuilder()
-                .createPaymentContextSuccess("payment_id")
+                .createNonceFromPaymentContextSuccess(nonce)
                 .build();
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -595,13 +600,12 @@ public class VenmoClientUnitTest {
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
 
         VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector, venmoAPI);
-        sut.tokenizeVenmoAccount(activity, request, venmoTokenizeAccountCallback);
 
         Intent intent = new Intent();
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoAPI).vaultVenmoAccountNonce(eq("payment-context-id"), any(VenmoOnActivityResultCallback.class));
+        verify(venmoAPI).vaultVenmoAccountNonce(eq("some-nonce") , any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -707,7 +711,7 @@ public class VenmoClientUnitTest {
         VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
 
         VenmoAPI venmoAPI = new MockVenmoApiBuilder()
-                .createPaymentContextSuccess("payment_id")
+                .createNonceFromPaymentContextSuccess(venmoAccountNonce)
                 .vaultVenmoAccountNonceSuccess(venmoAccountNonce)
                 .build();
 
