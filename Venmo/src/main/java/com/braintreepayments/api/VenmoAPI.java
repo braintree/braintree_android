@@ -3,23 +3,20 @@ package com.braintreepayments.api;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VenmoAPI {
 
-    private BraintreeClient braintreeClient;
-    private ApiClient apiClient;
+    private final BraintreeClient braintreeClient;
+    private final ApiClient apiClient;
 
-    @VisibleForTesting
     VenmoAPI(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
     }
 
-    //TODO: Fix analytics calls
     public void createPaymentContext(@NonNull final VenmoRequest request, String venmoProfileId, final VenmoApiCallback callback) {
         JSONObject params = new JSONObject();
         try {
@@ -46,13 +43,11 @@ public class VenmoAPI {
                 if (responseBody != null) {
                     String paymentContextId = parsePaymentContextId(responseBody);
                     if (TextUtils.isEmpty(paymentContextId)) {
-//                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                         callback.onResult(null, new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
                         return;
                     }
                     callback.onResult(paymentContextId,null);
                 } else {
-//                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     callback.onResult(null, httpError);
                 }
             }
@@ -78,11 +73,9 @@ public class VenmoAPI {
 
                             callback.onResult(nonce, null);
                         } catch (JSONException exception) {
-                            //                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
                             callback.onResult(null, exception);
                         }
                     } else {
-                        //                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
                         callback.onResult(null, httpError);
                     }
                 }

@@ -32,8 +32,7 @@ public class VenmoClient {
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     private final BraintreeClient braintreeClient;
-    private final ApiClient apiClient;
-    private VenmoAPI venmoAPI;
+    private final VenmoAPI venmoAPI;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
 
@@ -41,14 +40,13 @@ public class VenmoClient {
         this(braintreeClient, new ApiClient(braintreeClient));
     }
 
-    VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient) {
-        this(braintreeClient, apiClient, new VenmoSharedPrefsWriter(), new DeviceInspector(), new VenmoAPI(braintreeClient, apiClient));
+    private VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient) {
+        this(braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     @VisibleForTesting
-    VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector, VenmoAPI venmoAPI) {
+    VenmoClient(BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
-        this.apiClient = apiClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
         this.venmoAPI = venmoAPI;
