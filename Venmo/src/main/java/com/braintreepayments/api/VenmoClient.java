@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,21 +37,41 @@ public class VenmoClient {
     private final VenmoAPI venmoAPI;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
+    private VenmoListener listener;
 
-    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new ApiClient(braintreeClient));
+    public VenmoClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
     }
 
-    private VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient) {
-        this(braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+    public VenmoClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
+    }
+
+    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
+        this(null, null, braintreeClient, new ApiClient(braintreeClient));
+    }
+
+    private VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient) {
+        this(braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector(), activity, lifecycle);
     }
 
     @VisibleForTesting
-    VenmoClient(BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    VenmoClient(BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector, FragmentActivity activity, Lifecycle lifecycle) {
         this.braintreeClient = braintreeClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
         this.venmoAPI = venmoAPI;
+    }
+
+    /**
+     * Add a {@link VenmoListener} to your client to receive results or errors from the Venmo flow.
+     * This method must be invoked on a {@link VenmoClient(Fragment, BraintreeClient)} or
+     * {@link VenmoClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param listener a {@link VenmoListener}
+     */
+    public void setListener(VenmoListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -68,12 +90,34 @@ public class VenmoClient {
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoListener#onVenmoFailure(Exception)}
+     *
+     * @param activity Android FragmentActivity
+     * @param request  {@link VenmoRequest}
+     */
+    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request) {
+        tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
+            @Override
+            public void onResult(@Nullable Exception error) {
+                if (error != null) {
+                    listener.onVenmoFailure(error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoTokenizeAccountCallback#onResult(Exception)}
+     *
+     * Deprecated. Use {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest)}.
      *
      * @param activity Android FragmentActivity
      * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoTokenizeAccountCallback}
      */
+    @Deprecated
     public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
