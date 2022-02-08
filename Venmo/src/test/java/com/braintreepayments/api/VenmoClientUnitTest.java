@@ -713,15 +713,16 @@ public class VenmoClientUnitTest {
         VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
 
         VenmoAPI venmoAPI = new MockVenmoApiBuilder()
-                .createNonceFromPaymentContextSuccess(venmoAccountNonce)
                 .vaultVenmoAccountNonceSuccess(venmoAccountNonce)
                 .build();
 
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
 
+        Intent intent = new Intent()
+                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "nonce");
         VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector, venmoAPI);
-        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         verify(onActivityResultCallback).onResult(same(venmoAccountNonce), (Exception) isNull());
     }
@@ -771,8 +772,10 @@ public class VenmoClientUnitTest {
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenReturn(true);
 
+        Intent intent = new Intent()
+                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "nonce");
         VenmoClient sut = new VenmoClient(braintreeClient, apiClient, sharedPrefsWriter, deviceInspector, venmoAPI);
-        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, new Intent(), onActivityResultCallback);
+        sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }

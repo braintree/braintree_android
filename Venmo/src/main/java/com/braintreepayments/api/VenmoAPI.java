@@ -104,13 +104,11 @@ public class VenmoAPI {
                     try {
                         VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(tokenizationResponse);
                         callback.onResult(venmoAccountNonce, null);
-//                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
                     } catch (JSONException e) {
                         callback.onResult(null, e);
                     }
                 } else {
                     callback.onResult(null, exception);
-//                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
                 }
             }
         });

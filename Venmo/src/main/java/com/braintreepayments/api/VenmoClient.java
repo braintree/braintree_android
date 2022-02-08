@@ -162,7 +162,7 @@ public class VenmoClient {
                                         if (nonce != null) {
                                             boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
                                             if (shouldVault && isClientTokenAuth) {
-                                                venmoAPI.vaultVenmoAccountNonce(nonce.getString(), callback);
+                                                vaultVenmoAccountNonce(nonce.getString(), callback);
                                             } else {
                                                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
                                                 callback.onResult(nonce, null);
@@ -178,7 +178,7 @@ public class VenmoClient {
 
                             boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
                             if (shouldVault && isClientTokenAuth) {
-                                venmoAPI.vaultVenmoAccountNonce(nonce, callback);
+                                vaultVenmoAccountNonce(nonce, callback);
                             } else {
                                 String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
                                 VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
@@ -195,6 +195,20 @@ public class VenmoClient {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
             callback.onResult(null, new UserCanceledException("User canceled Venmo."));
         }
+    }
+
+    private void vaultVenmoAccountNonce(String nonce, final VenmoOnActivityResultCallback callback) {
+        venmoAPI.vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
+            @Override
+            public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
+                if (venmoAccountNonce != null) {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                } else {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                }
+                callback.onResult(venmoAccountNonce, error);
+            }
+        });
     }
 
     private static Intent getVenmoIntent() {
