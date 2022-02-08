@@ -46,10 +46,6 @@ public class DemoViewModel extends ViewModel {
         return googlePayActivityResult;
     }
 
-    public MutableLiveData<ActivityResult> getVenmoActivityResult() {
-        return venmoActivityResult;
-    }
-
     public LiveData<BrowserSwitchResult> getLocalPaymentBrowserSwitchResult() {
         return localPaymentBrowserSwitchResult;
     }
