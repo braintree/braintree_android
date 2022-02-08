@@ -51,7 +51,7 @@ public class VenmoLifecycleObserverUnitTest {
     @Test
     public void onCreate_whenActivityResultReceived_forwardsActivityResultToVenmoClient() {
         VenmoResult venmoResult =
-                new VenmoResult("paymentContextId", "venmoAccount", "venmoUsername", null);
+                new VenmoResult("payment-context-id", "venmoAccount", "venmoUsername", false, null);
 
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
