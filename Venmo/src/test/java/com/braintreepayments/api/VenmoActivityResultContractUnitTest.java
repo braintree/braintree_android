@@ -40,7 +40,7 @@ public class VenmoActivityResultContractUnitTest {
     @Test
     public void createIntent_returnsIntentWithExtras() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom");
+        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom", false);
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent intent = sut.createIntent(context, input);
@@ -67,6 +67,7 @@ public class VenmoActivityResultContractUnitTest {
 
         Intent successIntent = new Intent();
         successIntent.putExtra(EXTRA_RESOURCE_ID, "resource_id");
+        successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
         successIntent.putExtra(EXTRA_USERNAME, "username");
 
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
@@ -87,34 +88,8 @@ public class VenmoActivityResultContractUnitTest {
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(venmoResult);
         assertEquals("resource_id", venmoResult.getVenmoAccountNonce());
-        assertEquals("username", venmoResult.getVenmoUsername());
-    }
-
-    @Test
-    public void parseResult_whenResultIsOK_andPaymentContextIDDoesNotExist_usesNonce() {
-        VenmoActivityResultContract sut = new VenmoActivityResultContract();
-
-        Intent successIntent = new Intent();
-        successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
-        successIntent.putExtra(EXTRA_USERNAME, "username");
-
-        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
-        assertNotNull(venmoResult);
         assertEquals("payment_method_nonce", venmoResult.getVenmoAccountNonce());
         assertEquals("username", venmoResult.getVenmoUsername());
-    }
-
-    @Test
-    public void parseResult_whenResultIsOKAndIntentIsNull_returnsVenmoResultWithError() {
-        VenmoActivityResultContract sut = new VenmoActivityResultContract();
-
-        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, null);
-        assertNotNull(venmoResult);
-
-        Exception error = venmoResult.getError();
-        String expectedMessage = "An unknown Android error occurred with the activity result API.";
-        assertNotNull(expectedMessage, error.getMessage());
-        assertTrue(error instanceof BraintreeException);
     }
 
     @Test

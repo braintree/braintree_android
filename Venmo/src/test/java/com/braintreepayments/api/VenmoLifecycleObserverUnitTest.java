@@ -70,7 +70,7 @@ public class VenmoLifecycleObserverUnitTest {
     @Test
     public void launch_launchesActivity() throws JSONException {
         VenmoIntentData venmoIntentData =
-                new VenmoIntentData(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO), "venmoAccount", "venmoUsername", "sessionId", "integrationType");
+                new VenmoIntentData(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO), "venmoAccount", "venmoUsername", "sessionId", "integrationType", false);
         ActivityResultLauncher<VenmoIntentData> resultLauncher = mock(ActivityResultLauncher.class);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 

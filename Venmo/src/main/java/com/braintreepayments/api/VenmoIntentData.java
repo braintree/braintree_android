@@ -7,13 +7,15 @@ class VenmoIntentData {
     private final String paymentContextId;
     private final String sessionId;
     private final String integrationType;
+    private final boolean shouldVault;
 
-    VenmoIntentData(Configuration configuration, String profileId, String paymentContextId, String sessionId, String integrationType) {
+    VenmoIntentData(Configuration configuration, String profileId, String paymentContextId, String sessionId, String integrationType, boolean shouldVault) {
        this.configuration = configuration;
        this.profileId = profileId;
        this.paymentContextId = paymentContextId;
        this.sessionId = sessionId;
        this.integrationType = integrationType;
+       this.shouldVault = shouldVault;
     }
 
     Configuration getConfiguration() {
@@ -34,5 +36,9 @@ class VenmoIntentData {
 
     public String getIntegrationType() {
         return integrationType;
+    }
+
+    public boolean shouldVault() {
+        return shouldVault;
     }
 }

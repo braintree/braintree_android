@@ -39,6 +39,9 @@ public class VenmoClient {
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
 
+    @VisibleForTesting
+    VenmoLifecycleObserver observer;
+
     public VenmoClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
     }
@@ -52,15 +55,23 @@ public class VenmoClient {
     }
 
     private VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient) {
-        this(braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector(), activity, lifecycle);
+        this(activity, lifecycle, braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     @VisibleForTesting
-    VenmoClient(BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector, FragmentActivity activity, Lifecycle lifecycle) {
+    VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
         this.venmoAPI = venmoAPI;
+        if (activity != null && lifecycle != null) {
+            addObserver(activity, lifecycle);
+        }
+    }
+
+    private void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
+        observer = new VenmoLifecycleObserver(activity.getActivityResultRegistry(), this);
+        lifecycle.addObserver(observer);
     }
 
     /**
@@ -170,11 +181,18 @@ public class VenmoClient {
                 if (authorization != null) {
                     boolean isClientTokenAuth = (authorization instanceof ClientToken);
                     boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
-                    sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
+                    // TODO: unit test this if block and the persistance of vault venmo options
+                    if (observer != null) {
+                        VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType(), shouldVault);
+                        observer.launch(intentData);
+                    } else {
+                        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
 
-                    Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
-                    activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
+                        Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
+                        activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
+                    }
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+
                 }
             }
         });

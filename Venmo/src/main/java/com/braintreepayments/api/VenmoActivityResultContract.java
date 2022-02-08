@@ -25,9 +25,12 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
+    private boolean shouldVault;
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull Context context, VenmoIntentData input) {
+        shouldVault = input.shouldVault();
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, input.getProfileId())
                 .putExtra(EXTRA_ACCESS_TOKEN, input.getConfiguration().getVenmoAccessToken())
@@ -57,7 +60,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     @Override
     public VenmoResult parseResult(int resultCode, @Nullable Intent intent) {
         if (intent == null) {
-            return new VenmoResult(null, null, null, false, new BraintreeException("An unknown Android error occurred with the activity result API."));
+            return new VenmoResult(null, null, null, shouldVault, new BraintreeException("An unknown Android error occurred with the activity result API."));
         }
 
         if (resultCode == AppCompatActivity.RESULT_OK) {
@@ -66,7 +69,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
             return new VenmoResult(paymentContextId, nonce, venmoUsername, false, null);
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            return new VenmoResult(null, null, null, false, new UserCanceledException("User canceled Venmo."));
+            return new VenmoResult(null, null, null, shouldVault, new UserCanceledException("User canceled Venmo."));
         }
 
         return null;

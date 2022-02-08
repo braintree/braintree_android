@@ -39,7 +39,7 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
         }
     }
 
-    public void launch(VenmoIntentData venmoIntentData) {
+    void launch(VenmoIntentData venmoIntentData) {
         activityLauncher.launch(venmoIntentData);
     }
 }
