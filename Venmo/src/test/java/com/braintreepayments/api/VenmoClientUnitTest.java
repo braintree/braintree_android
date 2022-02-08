@@ -483,10 +483,12 @@ public class VenmoClientUnitTest {
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
         InOrder order = inOrder(braintreeClient);
-        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected");
-        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+
         verify(venmoTokenizeAccountCallback).onResult(captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
+
+        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected");
+        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
 
     @Test
@@ -748,8 +750,8 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
         verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
 
     @Test
@@ -826,8 +828,8 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
         verify(onActivityResultCallback).onResult(null, error);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
 
     @Test
