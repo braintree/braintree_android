@@ -95,7 +95,7 @@ public class VenmoClientUnitTest {
         when(fragment.requireActivity()).thenReturn(activity);
         when(fragment.getLifecycle()).thenReturn(lifecycle);
 
-        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoAPI, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(activity, braintreeClient);
         ArgumentCaptor<VenmoLifecycleObserver> captor = ArgumentCaptor.forClass(VenmoLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
 
@@ -112,7 +112,7 @@ public class VenmoClientUnitTest {
         when(activity.getLifecycle()).thenReturn(lifecycle);
         when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
 
-        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoAPI, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(activity, braintreeClient);
         ArgumentCaptor<VenmoLifecycleObserver> captor = ArgumentCaptor.forClass(VenmoLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
 
@@ -125,7 +125,7 @@ public class VenmoClientUnitTest {
     public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoAPI, sharedPrefsWriter, deviceInspector);
+        VenmoClient sut = new VenmoClient(braintreeClient);
 
         verify(lifecycle, never()).addObserver(any(LifecycleObserver.class));
     }

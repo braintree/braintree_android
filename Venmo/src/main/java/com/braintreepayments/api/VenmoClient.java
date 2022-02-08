@@ -47,7 +47,7 @@ public class VenmoClient {
     }
 
     public VenmoClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
     }
 
     public VenmoClient(@NonNull BraintreeClient braintreeClient) {
