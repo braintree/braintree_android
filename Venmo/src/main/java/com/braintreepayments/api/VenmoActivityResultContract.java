@@ -7,6 +7,7 @@ import android.content.Intent;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
@@ -25,7 +26,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    private boolean shouldVault;
+    @VisibleForTesting
+    boolean shouldVault;
 
     @NonNull
     @Override
@@ -67,7 +69,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
             String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
-            return new VenmoResult(paymentContextId, nonce, venmoUsername, false, null);
+            return new VenmoResult(paymentContextId, nonce, venmoUsername, shouldVault, null);
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             return new VenmoResult(null, null, null, shouldVault, new UserCanceledException("User canceled Venmo."));
         }

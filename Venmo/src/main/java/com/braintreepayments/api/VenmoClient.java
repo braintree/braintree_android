@@ -192,7 +192,6 @@ public class VenmoClient {
                         activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
                     }
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
-
                 }
             }
         });

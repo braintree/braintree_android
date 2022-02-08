@@ -62,22 +62,17 @@ public class VenmoActivityResultContractUnitTest {
     }
 
     @Test
-    public void parseResult_whenResultIsOK_returnsVenmoResultWithNonce() {
+    public void createIntent_storesShouldVault() throws JSONException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
+        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom", true);
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
-        Intent successIntent = new Intent();
-        successIntent.putExtra(EXTRA_RESOURCE_ID, "resource_id");
-        successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
-        successIntent.putExtra(EXTRA_USERNAME, "username");
-
-        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
-        assertNotNull(venmoResult);
-        assertEquals("resource_id", venmoResult.getVenmoAccountNonce());
-        assertEquals("username", venmoResult.getVenmoUsername());
+        sut.createIntent(context, input);
+        assertTrue(sut.shouldVault);
     }
 
     @Test
-    public void parseResult_whenResultIsOK_andPaymentContextIDExists_usesPaymentContextID() {
+    public void parseResult_whenResultIsOK_andPaymentContextIDExists_returnsVenmoResultWithNonce() {
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent successIntent = new Intent();
@@ -87,7 +82,7 @@ public class VenmoActivityResultContractUnitTest {
 
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(venmoResult);
-        assertEquals("resource_id", venmoResult.getVenmoAccountNonce());
+        assertEquals("resource_id", venmoResult.getPaymentContextId());
         assertEquals("payment_method_nonce", venmoResult.getVenmoAccountNonce());
         assertEquals("username", venmoResult.getVenmoUsername());
     }
@@ -101,5 +96,18 @@ public class VenmoActivityResultContractUnitTest {
 
         UserCanceledException error = (UserCanceledException) venmoResult.getError();
         assertNotNull("User canceled Venmo.", error.getMessage());
+    }
+
+    @Test
+    public void parseResult_setsShouldVaultOnResult() {
+        VenmoActivityResultContract sut = new VenmoActivityResultContract();
+        sut.shouldVault = true;
+
+        Intent successIntent = new Intent();
+
+        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
+        assertNotNull(venmoResult);
+        assertTrue(venmoResult.shouldVault());
+
     }
 }
