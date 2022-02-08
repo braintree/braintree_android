@@ -4,5 +4,5 @@ import androidx.annotation.Nullable;
 
 interface VenmoApiCallback {
 
-    void onResult(@Nullable Exception exception);
+    void onResult(@Nullable String paymentContextId, @Nullable Exception exception);
 }

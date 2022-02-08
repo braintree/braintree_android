@@ -36,7 +36,7 @@ public class VenmoAPI {
             variables.put("input", input);
             params.put("variables", variables);
         } catch (JSONException e) {
-            callback.onResult(new BraintreeException("unexpected error"));
+            callback.onResult(null, new BraintreeException("unexpected error"));
         }
 
         braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
@@ -47,13 +47,13 @@ public class VenmoAPI {
                     String paymentContextId = parsePaymentContextId(responseBody);
                     if (TextUtils.isEmpty(paymentContextId)) {
 //                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-                        callback.onResult(new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
+                        callback.onResult(null, new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
                         return;
                     }
-                    callback.onResult(null);
+                    callback.onResult(paymentContextId,null);
                 } else {
 //                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-                    callback.onResult(httpError);
+                    callback.onResult(null, httpError);
                 }
             }
         });

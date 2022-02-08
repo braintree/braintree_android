@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -69,7 +71,7 @@ public class VenmoAPIUnitTest {
         VenmoApiCallback callback = mock(VenmoApiCallback.class);
         venmoAPI.createPaymentContext(request, request.getProfileId(), callback);
 
-        verify(callback).onResult((Exception) isNull());
+        verify(callback).onResult(anyString(), (Exception) isNull());
     }
 
     @Test
@@ -86,7 +88,7 @@ public class VenmoAPIUnitTest {
         venmoAPI.createPaymentContext(request, request.getProfileId(), callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult(captor.capture());
+        verify(callback).onResult((String) isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertTrue(error instanceof BraintreeException);
@@ -107,7 +109,7 @@ public class VenmoAPIUnitTest {
         VenmoApiCallback callback = mock(VenmoApiCallback.class);
         venmoAPI.createPaymentContext(request, request.getProfileId(), callback);
 
-        verify(callback).onResult(error);
+        verify(callback).onResult(null, error);
     }
 
     @Test
