@@ -47,8 +47,8 @@ public class MockVenmoApiBuilder {
         return this;
     }
 
-    public VenmoAPI build() {
-        VenmoAPI venmoAPI = mock(VenmoAPI.class);
+    public VenmoApi build() {
+        VenmoApi venmoApi = mock(VenmoApi.class);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -62,7 +62,7 @@ public class MockVenmoApiBuilder {
 
                 return null;
             }
-        }).when(venmoAPI).createPaymentContext(any(VenmoRequest.class), anyString(), any(VenmoApiCallback.class));
+        }).when(venmoApi).createPaymentContext(any(VenmoRequest.class), anyString(), any(VenmoApiCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -76,7 +76,7 @@ public class MockVenmoApiBuilder {
 
                 return null;
             }
-        }).when(venmoAPI).createNonceFromPaymentContext(anyString(), any(VenmoOnActivityResultCallback.class));
+        }).when(venmoApi).createNonceFromPaymentContext(anyString(), any(VenmoOnActivityResultCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -90,8 +90,8 @@ public class MockVenmoApiBuilder {
 
                 return null;
             }
-        }).when(venmoAPI).vaultVenmoAccountNonce(anyString(), any(VenmoOnActivityResultCallback.class));
+        }).when(venmoApi).vaultVenmoAccountNonce(anyString(), any(VenmoOnActivityResultCallback.class));
 
-        return venmoAPI;
+        return venmoApi;
     }
 }
