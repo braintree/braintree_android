@@ -820,9 +820,7 @@ public class VenmoClientUnitTest {
     @Test
     public void onActivityResult_sendsAnalyticsEventOnSuccess() {
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        Intent intent = new Intent()
-                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "123456-12345-12345-a-adfa")
-                .putExtra(EXTRA_USERNAME, "username");
+        Intent intent = new Intent();
 
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
