@@ -38,6 +38,9 @@ public class ThreeDSecureClient {
     private ThreeDSecureListener listener;
 
     @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
+
+    @VisibleForTesting
     ThreeDSecureLifecycleObserver observer;
 
     /**
@@ -99,6 +102,9 @@ public class ThreeDSecureClient {
      */
     public void setListener(ThreeDSecureListener listener) {
         this.listener = listener;
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
     }
 
     // region Cardinal Initialize/Prepare Callback Methods
@@ -525,20 +531,25 @@ public class ThreeDSecureClient {
     // region Internal Handle App/Browser Switch Results
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
 
-        if (browserSwitchResult != null) {
-            onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
-                @Override
-                public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-                    if (threeDSecureResult != null) {
-                        listener.onThreeDSecureSuccess(threeDSecureResult);
-                    } else if (error != null) {
-                        listener.onThreeDSecureFailure(error);
-                    }
-                }
-            });
+        if (pendingBrowserSwitchResult != null && listener != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
+    }
+
+    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
+        this.pendingBrowserSwitchResult = null;
     }
 
     void onCardinalResult(CardinalResult cardinalResult) {

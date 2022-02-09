@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.same;
@@ -406,10 +407,20 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenListenerNull_doesNothing() {
-        // We haven't implemented this behavior - what is our expectation around what should happen
-        // when the listener is null? Should we fail silently and avoid an NPE or should we let the
-        // app crash to alert the merchant of a setup problem?
+    public void onBrowserSwitchResult_whenListenerNull_setsPendingBrowserSwitchResult_andDoesNotDeliver() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        sut.onBrowserSwitchResult(activity);
+
+        assertSame(browserSwitchResult, sut.pendingBrowserSwitchResult);
+        verify(listener, never()).onThreeDSecureFailure(any(Exception.class));
+        verify(listener, never()).onThreeDSecureSuccess(any(ThreeDSecureResult.class));
     }
 
     @Test
@@ -642,5 +653,48 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut = new ThreeDSecureClient(braintreeClient);
 
         verify(lifecycle, never()).addObserver(any(LifecycleObserver.class));
+    }
+
+    @Test
+    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+
+        Uri uri = Uri.parse("http://demo-app.com")
+                .buildUpon()
+                .appendQueryParameter("auth_response", Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
+                .build();
+
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, uri);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        sut.pendingBrowserSwitchResult = browserSwitchResult;
+        sut.setListener(listener);
+
+        verify(listener).onThreeDSecureSuccess(any(ThreeDSecureResult.class));
+        verify(listener, never()).onThreeDSecureFailure(any(Exception.class));
+
+        assertNull(sut.pendingBrowserSwitchResult);
+    }
+
+    @Test
+    public void setListener_whenPendingBrowserSwitchResultDoesNotExist_doesNotInvokeListener() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+        sut.pendingBrowserSwitchResult = null;
+        sut.setListener(listener);
+
+        verify(listener, never()).onThreeDSecureSuccess(any(ThreeDSecureResult.class));
+        verify(listener, never()).onThreeDSecureFailure(any(Exception.class));
+
+        assertNull(sut.pendingBrowserSwitchResult);
     }
 }
