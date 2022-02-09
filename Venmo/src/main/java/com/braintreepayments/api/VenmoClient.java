@@ -218,7 +218,6 @@ public class VenmoClient {
         });
     }
 
-    // TODO - doc string this?
     void onVenmoResult(final VenmoResult venmoResult) {
         if (venmoResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
