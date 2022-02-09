@@ -63,7 +63,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
         }
-        handleBrowserSwitchResultIfNecessary();
     }
 
     public BraintreeClient getBraintreeClient() {
@@ -78,15 +77,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
         return braintreeClient;
-    }
-
-    private void handleBrowserSwitchResultIfNecessary() {
-        if (braintreeClient != null) {
-            BrowserSwitchResult result = braintreeClient.deliverBrowserSwitchResult(this);
-            if (result != null) {
-                viewModel.onBrowserSwitchResult(result);
-            }
-        }
     }
 
     @Override
