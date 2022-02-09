@@ -42,20 +42,41 @@ public class VenmoClient {
     @VisibleForTesting
     VenmoLifecycleObserver observer;
 
+    /**
+     * Create a new instace of {@link VenmoClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public VenmoClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
     }
 
+    /**
+     * Create a new instace of {@link VenmoClient} from within a Fragment using a {@link BraintreeClient}.
+     * @param fragment a {@link Fragment}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public VenmoClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new ApiClient(braintreeClient));
     }
 
-    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new ApiClient(braintreeClient));
-    }
-
+    // TODO - I'm not sure how to explain this one with its inclusion of ApiClient
+    /**
+     * Create a new instance of {@link VenmoClient} from...
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param lifecycle a {@link Lifecycle}
+     * @param braintreeClient a {@link BraintreeClient}
+     * @param apiClient a {@link ApiClient}
+     */
     private VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient) {
         this(activity, lifecycle, braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+    }
+
+    @Deprecated
+    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
+        this(null, null, braintreeClient, new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
@@ -197,6 +218,7 @@ public class VenmoClient {
         });
     }
 
+    // TODO - doc string this?
     void onVenmoResult(final VenmoResult venmoResult) {
         if (venmoResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
