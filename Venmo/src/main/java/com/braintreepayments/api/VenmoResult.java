@@ -22,19 +22,19 @@ class VenmoResult {
         return error;
     }
 
-    public String getPaymentContextId() {
+    String getPaymentContextId() {
         return paymentContextId;
     }
 
-    public String getVenmoAccountNonce() {
+    String getVenmoAccountNonce() {
         return venmoAccountNonce;
     }
 
-    public String getVenmoUsername() {
+    String getVenmoUsername() {
         return venmoUsername;
     }
 
-    public boolean shouldVault() {
+    boolean shouldVault() {
         return shouldVault;
     }
 }
