@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
+// NEXT_MAJOR_VERSION: Update to implement DefaultLifeCycleObserver when Java 7 support is explicitly dropped.
 class VenmoLifecycleObserver implements LifecycleEventObserver {
 
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
