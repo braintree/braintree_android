@@ -805,19 +805,23 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         Intent intent = new Intent()
-                .putExtra(EXTRA_RESOURCE_ID, "123456-12345-12345-a-adfa")
+                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "123456-12345-12345-a-adfa")
                 .putExtra(EXTRA_USERNAME, "username");
 
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoApi).createNonceFromPaymentContext(eq("123456-12345-12345-a-adfa"), any(VenmoOnActivityResultCallback.class));
-    }
+        ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
+        verify(onActivityResultCallback).onResult(captor.capture(), (Exception) isNull());
+
+        VenmoAccountNonce result = captor.getValue();
+        assertEquals("123456-12345-12345-a-adfa", result.getString());
+        assertEquals("username", result.getUsername());    }
 
     @Test
     public void onActivityResult_sendsAnalyticsEventOnSuccess() {
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         Intent intent = new Intent()
-                .putExtra(EXTRA_RESOURCE_ID, "123456-12345-12345-a-adfa")
+                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, "123456-12345-12345-a-adfa")
                 .putExtra(EXTRA_USERNAME, "username");
 
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
