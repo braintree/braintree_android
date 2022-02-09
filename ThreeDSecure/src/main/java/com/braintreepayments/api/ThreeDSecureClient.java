@@ -86,9 +86,7 @@ public class ThreeDSecureClient {
 
     @VisibleForTesting
     void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
-        if (observer == null) {
-            observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
-        }
+        observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
         lifecycle.addObserver(observer);
     }
 
