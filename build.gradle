@@ -22,6 +22,9 @@ buildscript {
             "annotation"                 : "androidx.annotation:annotation:1.2.0",
             "coreKtx"                    : "androidx.core:core-ktx:1.7.0",
 
+            // NEXT_MAJOR_VERSION: upgrade to 2.4.0 (or latest) when Java 7 support is explicitly dropped
+            "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.3.0",
+
             "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
