@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
@@ -53,7 +55,10 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                 }
 
                 if (activity != null) {
-                    threeDSecureClient.onBrowserSwitchResult(activity);
+                    BrowserSwitchResult pendingResult = threeDSecureClient.getBrowserSwitchResult(activity);
+                    if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
+                        threeDSecureClient.onBrowserSwitchResult(activity);
+                    }
                 }
         }
     }

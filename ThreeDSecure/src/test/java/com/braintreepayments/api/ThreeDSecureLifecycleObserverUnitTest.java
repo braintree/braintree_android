@@ -1,10 +1,13 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,12 +83,17 @@ public class ThreeDSecureLifecycleObserverUnitTest {
     public void onResume_whenLifeCycleObserverIsFragment_threeDSecureClientDeliversResultWithFragmentActivity() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
-        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         Fragment fragment = mock(Fragment.class);
         FragmentActivity activity = new FragmentActivity();
         when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
@@ -95,14 +103,38 @@ public class ThreeDSecureLifecycleObserverUnitTest {
     @Test
     public void onResume_whenLifeCycleObserverIsActivity_threeDSecureClientDeliversResultWithSameActivity() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = new FragmentActivity();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
-        FragmentActivity activity = new FragmentActivity();
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
         verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
+    }
+
+    @Test
+    public void onResume_whenPendingBrowserSwitchResultExists_andRequestCodeNotThreeDSecure_doesNothing() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = new FragmentActivity();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+
     }
 
     @Test
