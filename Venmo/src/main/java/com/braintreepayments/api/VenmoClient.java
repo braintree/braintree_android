@@ -34,7 +34,7 @@ public class VenmoClient {
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     private final BraintreeClient braintreeClient;
-    private final VenmoAPI venmoAPI;
+    private final VenmoApi venmoApi;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
@@ -63,7 +63,7 @@ public class VenmoClient {
     }
 
     private VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, ApiClient apiClient) {
-        this(activity, lifecycle, braintreeClient, new VenmoAPI(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
+        this(activity, lifecycle, braintreeClient, new VenmoApi(braintreeClient, apiClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
     /**
@@ -80,11 +80,11 @@ public class VenmoClient {
     }
 
     @VisibleForTesting
-    VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, VenmoAPI venmoAPI, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    VenmoClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, VenmoApi venmoApi, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
         this.braintreeClient = braintreeClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
-        this.venmoAPI = venmoAPI;
+        this.venmoApi = venmoApi;
         if (activity != null && lifecycle != null) {
             addObserver(activity, lifecycle);
         }
@@ -180,7 +180,7 @@ public class VenmoClient {
                 }
 
                 final String finalVenmoProfileId = venmoProfileId;
-                venmoAPI.createPaymentContext(request, venmoProfileId, new VenmoApiCallback() {
+                venmoApi.createPaymentContext(request, venmoProfileId, new VenmoApiCallback() {
                     @Override
                     public void onResult(@Nullable String paymentContextId, @Nullable Exception exception) {
                         if (exception == null) {
@@ -229,7 +229,7 @@ public class VenmoClient {
 
                         String paymentContextId = venmoResult.getPaymentContextId();
                         if (paymentContextId != null) {
-                            venmoAPI.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
+                            venmoApi.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
@@ -308,7 +308,7 @@ public class VenmoClient {
 
                         String paymentContextId = data.getStringExtra(EXTRA_RESOURCE_ID);
                         if (paymentContextId != null) {
-                            venmoAPI.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
+                            venmoApi.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                         if (nonce != null) {
@@ -350,7 +350,7 @@ public class VenmoClient {
     }
 
     private void vaultVenmoAccountNonce(String nonce, final VenmoOnActivityResultCallback callback) {
-        venmoAPI.vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
+        venmoApi.vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
             @Override
             public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                 if (venmoAccountNonce != null) {

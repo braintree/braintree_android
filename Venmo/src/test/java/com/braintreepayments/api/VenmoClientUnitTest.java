@@ -73,7 +73,7 @@ public class VenmoClientUnitTest {
         activity = mock(FragmentActivity.class);
         lifecycle = mock(Lifecycle.class);
         braintreeClient = mock(BraintreeClient.class);
-        venmoAPI = mock(VenmoAPI.class);
+        venmoAPI = mock(VenmoApi.class);
         deviceInspector = mock(DeviceInspector.class);
         listener = mock(VenmoListener.class);
 

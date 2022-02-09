@@ -15,11 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class VenmoAPIUnitTest {
+public class VenmoApiUnitTest {
 
     private BraintreeClient braintreeClient;
     private ApiClient apiClient;
@@ -32,7 +31,7 @@ public class VenmoAPIUnitTest {
 
     @Test
     public void createPaymentContext_createsPaymentContextViaGraphQL() throws JSONException {
-        VenmoAPI venmoAPI = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -63,7 +62,7 @@ public class VenmoAPIUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
-        VenmoAPI venmoAPI = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -79,7 +78,7 @@ public class VenmoAPIUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
                 .build();
-        VenmoAPI venmoAPI = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -101,7 +100,7 @@ public class VenmoAPIUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendGraphQLPOSTErrorResponse(error)
                 .build();
-        VenmoAPI venmoAPI = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -114,7 +113,7 @@ public class VenmoAPIUnitTest {
 
     @Test
     public void createNonceFromPaymentContext_queriesGraphQLPaymentContext() throws JSONException {
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
         sut.createNonceFromPaymentContext("payment-context-id", mock(VenmoOnActivityResultCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -134,7 +133,7 @@ public class VenmoAPIUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(graphQLResponse)
                 .build();
 
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -150,7 +149,7 @@ public class VenmoAPIUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse("not-json")
                 .build();
 
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -167,7 +166,7 @@ public class VenmoAPIUnitTest {
                 .sendGraphQLPOSTErrorResponse(error)
                 .build();
 
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -177,7 +176,7 @@ public class VenmoAPIUnitTest {
 
     @Test
     public void vaultVenmoAccountNonce_performsVaultRequest() throws JSONException {
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
         sut.vaultVenmoAccountNonce("nonce", mock(VenmoOnActivityResultCallback.class));
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
@@ -193,7 +192,7 @@ public class VenmoAPIUnitTest {
         ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
                 .build();
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
@@ -211,7 +210,7 @@ public class VenmoAPIUnitTest {
         ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(error)
                 .build();
-        VenmoAPI sut = new VenmoAPI(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
         VenmoOnActivityResultCallback callback = mock(VenmoOnActivityResultCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);

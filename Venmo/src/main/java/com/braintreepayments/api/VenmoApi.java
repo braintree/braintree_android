@@ -7,12 +7,12 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VenmoAPI {
+public class VenmoApi {
 
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
 
-    VenmoAPI(BraintreeClient braintreeClient, ApiClient apiClient) {
+    VenmoApi(BraintreeClient braintreeClient, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.apiClient = apiClient;
     }
