@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VenmoApi {
+class VenmoApi {
 
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
