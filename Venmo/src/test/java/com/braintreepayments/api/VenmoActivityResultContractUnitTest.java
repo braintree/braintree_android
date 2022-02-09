@@ -108,6 +108,5 @@ public class VenmoActivityResultContractUnitTest {
         VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(venmoResult);
         assertTrue(venmoResult.shouldVault());
-
     }
 }
