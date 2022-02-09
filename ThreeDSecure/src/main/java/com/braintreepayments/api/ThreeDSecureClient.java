@@ -242,35 +242,6 @@ public class ThreeDSecureClient {
 
     // region Launch 3DS With App/Browser Switch Encapsulation
 
-//    /**
-//     * Verification is associated with a transaction amount and your merchant account. To specify a
-//     * different merchant account (or, in turn, currency), you will need to specify the merchant
-//     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
-//     * generating a client token</a>
-//     * <p>
-//     * During lookup the original payment method nonce is consumed and a new one is returned,
-//     * which points to the original payment method, as well as the 3D Secure verification.
-//     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
-//     * liability shift if authentication is successful or fail with a 3D Secure failure.
-//     *
-//     * The result of this verification will be returned to your {@link ThreeDSecureListener}.
-//     *
-//     * @param activity Android FragmentActivity
-//     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-//     */
-//    public void performVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request) {
-//        performVerification(activity, request, new ThreeDSecureResultCallback() {
-//            @Override
-//            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
-//                if (threeDSecureResult != null) {
-//                    listener.onThreeDSecureSuccess(threeDSecureResult);
-//                } else if (error != null) {
-//                    listener.onThreeDSecureFailure(error);
-//                }
-//            }
-//        });
-//    }
-
     /**
      * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}.
      * The result of this verification will be returned to your {@link ThreeDSecureListener}.
