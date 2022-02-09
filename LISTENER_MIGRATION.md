@@ -39,7 +39,7 @@ class MerchantActivity : AppCompatActivity(), ThreeDSecureListener {
 class MerchantFragment: Fragment(), ThreeDSecureListener {
     
     lateinit var braintreeClient: BraintreeClient
-    lateinit var paypalClient: PayPalClient
+    lateinit var threeDSecureClient: ThreeDSecureClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
