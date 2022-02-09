@@ -17,7 +17,7 @@ class VenmoApi {
         this.apiClient = apiClient;
     }
 
-    public void createPaymentContext(@NonNull final VenmoRequest request, String venmoProfileId, final VenmoApiCallback callback) {
+    void createPaymentContext(@NonNull final VenmoRequest request, String venmoProfileId, final VenmoApiCallback callback) {
         JSONObject params = new JSONObject();
         try {
             params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
@@ -54,7 +54,7 @@ class VenmoApi {
         });
     }
 
-    public void createNonceFromPaymentContext(String paymentContextId, final VenmoOnActivityResultCallback callback) {
+    void createNonceFromPaymentContext(String paymentContextId, final VenmoOnActivityResultCallback callback) {
         JSONObject params = new JSONObject();
         try {
             params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName } } } }");
