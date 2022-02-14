@@ -90,7 +90,14 @@ public class PayPalClient {
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      */
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest) {
-        // TODO: implement
+        tokenizePayPalAccount(activity, payPalRequest, new PayPalFlowStartedCallback() {
+            @Override
+            public void onResult(@Nullable Exception error) {
+                if (error != null) {
+                    listener.onPayPalFailure(error);
+                }
+            }
+        });
     }
 
     /**

@@ -37,7 +37,6 @@ public class PayPalClientUnitTest {
     private Configuration payPalDisabledConfig;
 
     private PayPalBrowserSwitchResultCallback payPalBrowserSwitchResultCallback;
-    private PayPalFlowStartedCallback payPalFlowStartedCallback;
 
     @Before
     public void beforeEach() throws JSONException {
@@ -49,7 +48,6 @@ public class PayPalClientUnitTest {
         payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
 
         payPalBrowserSwitchResultCallback = mock(PayPalBrowserSwitchResultCallback.class);
-        payPalFlowStartedCallback = mock(PayPalFlowStartedCallback.class);
     }
 
     @Test
@@ -184,8 +182,6 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
-        verify(payPalFlowStartedCallback).onResult(null);
-
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
 
@@ -248,8 +244,6 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
-
-        verify(payPalFlowStartedCallback).onResult(null);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
