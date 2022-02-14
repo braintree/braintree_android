@@ -25,7 +25,9 @@ public class LocalPaymentClient {
     private final PayPalDataCollector payPalDataCollector;
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
-    private BrowserSwitchResult pendingBrowserSwitchResult;
+
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
 
     /**
      * Create a new instance of {@link LocalPaymentClient} from within an Activity using a {@link BraintreeClient}.
@@ -72,17 +74,18 @@ public class LocalPaymentClient {
     }
 
     /**
-     * Add a {@link LocalPaymentListener} to your client to receive results or errors from the PayPal flow.
+     * Add a {@link LocalPaymentListener} to your client to receive results or errors from the Local Payment flow.
      * This method must be invoked on a {@link LocalPaymentClient(Fragment, BraintreeClient)} or
      * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)} in order to receive results.
      *
+     * @param context an Android Context
      * @param listener a {@link LocalPaymentListener}
      */
-    public void setListener(LocalPaymentListener listener) {
+    public void setListener(Context context, LocalPaymentListener listener) {
         this.listener = listener;
-//        if (pendingBrowserSwitchResult != null) {
-//            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-//        }
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(context, pendingBrowserSwitchResult);
+        }
     }
 
     /**
@@ -201,8 +204,8 @@ public class LocalPaymentClient {
         }
     }
 
-    private void deliverBrowserSwitchResultToListener(FragmentActivity activity, final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(activity, browserSwitchResult, new LocalPaymentBrowserSwitchResultCallback() {
+    private void deliverBrowserSwitchResultToListener(Context context, final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(context, browserSwitchResult, new LocalPaymentBrowserSwitchResultCallback() {
             @Override
             public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
                 if (localPaymentNonce != null) {
