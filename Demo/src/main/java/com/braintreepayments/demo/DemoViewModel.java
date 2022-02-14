@@ -12,7 +12,6 @@ import com.braintreepayments.api.BrowserSwitchResult;
 
 public class DemoViewModel extends ViewModel {
 
-    private final MutableLiveData<BrowserSwitchResult> localPaymentBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
 
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
@@ -20,9 +19,6 @@ public class DemoViewModel extends ViewModel {
             return;
         }
         switch (browserSwitchResult.getRequestCode()) {
-            case BraintreeRequestCodes.LOCAL_PAYMENT:
-                localPaymentBrowserSwitchResult.setValue(browserSwitchResult);
-                break;
         }
     }
 
@@ -38,7 +34,4 @@ public class DemoViewModel extends ViewModel {
         return googlePayActivityResult;
     }
 
-    public LiveData<BrowserSwitchResult> getLocalPaymentBrowserSwitchResult() {
-        return localPaymentBrowserSwitchResult;
-    }
 }
