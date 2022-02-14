@@ -27,6 +27,7 @@ public class PayPalClient {
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
+    // TODO: doc strings
     public PayPalClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
     }

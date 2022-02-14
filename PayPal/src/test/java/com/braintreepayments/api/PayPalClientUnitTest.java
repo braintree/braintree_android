@@ -696,25 +696,6 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenBrowserSwitchResultIsNull_returnsExceptionToListener() {
-        // TODO: delete this test?
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(null)
-                .build();
-        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-
-        sut.onBrowserSwitchResult(activity);
-
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult((PayPalAccountNonce) isNull(), captor.capture());
-
-        Exception exception = captor.getValue();
-        assertTrue(exception instanceof BraintreeException);
-        assertEquals("BrowserSwitchResult cannot be null", exception.getMessage());
-    }
-
-    @Test
     public void onBrowserSwitchResult_whenPayPalInternalClientTokenizeResult_forwardsResultToListener() throws JSONException {
         PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
