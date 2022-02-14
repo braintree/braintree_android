@@ -43,6 +43,10 @@ public class PayPalClient {
     PayPalClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
+        if (activity != null && lifecycle != null) {
+            PayPalLifecycleObserver observer = new PayPalLifecycleObserver(this);
+            lifecycle.addObserver(observer);
+        }
     }
 
     /**

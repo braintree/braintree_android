@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
@@ -17,6 +18,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
@@ -52,22 +54,60 @@ public class PayPalClientUnitTest {
 
     @Test
     public void constructor_setsLifecycleObserver() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+
+        ArgumentCaptor<PayPalLifecycleObserver> captor = ArgumentCaptor.forClass(PayPalLifecycleObserver.class);
+        verify(lifecycle).addObserver(captor.capture());
+
+        PayPalLifecycleObserver observer = captor.getValue();
+        assertSame(sut, observer.payPalClient);
     }
 
     @Test
     public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        Fragment fragment = mock(Fragment.class);
+        when(fragment.getActivity()).thenReturn(activity);
+        when(fragment.getLifecycle()).thenReturn(lifecycle);
+
+        PayPalClient sut = new PayPalClient(fragment, braintreeClient);
+
+        ArgumentCaptor<PayPalLifecycleObserver> captor = ArgumentCaptor.forClass(PayPalLifecycleObserver.class);
+        verify(lifecycle).addObserver(captor.capture());
+
+        PayPalLifecycleObserver observer = captor.getValue();
+        assertSame(sut, observer.payPalClient);
     }
 
     @Test
     public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        FragmentActivity activity = mock(FragmentActivity.class);
+        when(activity.getLifecycle()).thenReturn(lifecycle);
+
+        PayPalClient sut = new PayPalClient(activity, braintreeClient);
+
+        ArgumentCaptor<PayPalLifecycleObserver> captor = ArgumentCaptor.forClass(PayPalLifecycleObserver.class);
+        verify(lifecycle).addObserver(captor.capture());
+
+        PayPalLifecycleObserver observer = captor.getValue();
+        assertSame(sut, observer.payPalClient);
     }
 
     @Test
     public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        PayPalClient sut = new PayPalClient(null, null, braintreeClient, payPalInternalClient);
+
+        ArgumentCaptor<PayPalLifecycleObserver> captor = ArgumentCaptor.forClass(PayPalLifecycleObserver.class);
+        verify(lifecycle, never()).addObserver(captor.capture());
     }
 
     @Test
