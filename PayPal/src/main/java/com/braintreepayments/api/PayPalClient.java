@@ -18,18 +18,16 @@ import org.json.JSONObject;
 public class PayPalClient {
 
     private final BraintreeClient braintreeClient;
-    private final ApiClient apiClient;
 
     private final PayPalInternalClient internalPayPalClient;
 
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new ApiClient(braintreeClient), new PayPalInternalClient(braintreeClient));
+        this(braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(BraintreeClient braintreeClient, ApiClient apiClient, PayPalInternalClient internalPayPalClient) {
+    PayPalClient(BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
-        this.apiClient = apiClient;
         this.internalPayPalClient = internalPayPalClient;
     }
 
@@ -242,23 +240,13 @@ public class PayPalClient {
                             payPalAccount.setIntent(payPalIntent);
                         }
 
-                        apiClient.tokenizeREST(payPalAccount, new TokenizeCallback() {
+                        internalPayPalClient.tokenize(payPalAccount, new PayPalBrowserSwitchResultCallback() {
                             @Override
-                            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                                if (tokenizationResponse != null) {
-                                    try {
-                                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
-                                        if (payPalAccountNonce.getCreditFinancing() != null) {
-                                            braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
-                                        }
-                                        callback.onResult(payPalAccountNonce, null);
-
-                                    } catch (JSONException e) {
-                                        callback.onResult(null, e);
-                                    }
-                                } else {
-                                    callback.onResult(null, exception);
+                            public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
+                                if (payPalAccountNonce != null && payPalAccountNonce.getCreditFinancing() != null) {
+                                    braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
                                 }
+                                callback.onResult(payPalAccountNonce, error);
                             }
                         });
 
