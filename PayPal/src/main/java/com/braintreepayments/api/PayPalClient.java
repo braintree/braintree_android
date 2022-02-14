@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,11 +31,11 @@ public class PayPalClient {
     }
     
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalInternalClient(braintreeClient));
+        this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
+    PayPalClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
     }
