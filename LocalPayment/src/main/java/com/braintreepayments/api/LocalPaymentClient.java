@@ -16,20 +16,22 @@ import org.json.JSONObject;
  */
 public class LocalPaymentClient {
 
-    private static final String LOCAL_PAYMENT_CANCEL = "local-payment-cancel";
-    private static final String LOCAL_PAYMENT_SUCCESSS = "local-payment-success";
+    static final String LOCAL_PAYMENT_CANCEL = "local-payment-cancel";
+    static final String LOCAL_PAYMENT_SUCCESS = "local-payment-success";
 
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
+    private final LocalPaymentApi localPaymentApi;
 
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector());
+        this(braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
-    LocalPaymentClient(@NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector) {
+    LocalPaymentClient(@NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector, LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
+        this.localPaymentApi = localPaymentApi;
     }
 
     /**
@@ -66,36 +68,18 @@ public class LocalPaymentClient {
                             return;
                         }
 
-                        String returnUrl = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESSS;
-                        String cancel = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
-
                         sendAnalyticsEvent(request.getPaymentType(), "local-payment.start-payment.selected");
 
-                        String url = "/v1/local_payments/create";
-                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HttpResponseCallback() {
-
+                        localPaymentApi.createPaymentMethod(request, new LocalPaymentStartCallback() {
                             @Override
-                            public void onResult(String responseBody, Exception httpError) {
-                                if (responseBody != null) {
-                                    try {
-                                        JSONObject responseJson = new JSONObject(responseBody);
-                                        String redirectUrl = responseJson.getJSONObject("paymentResource").getString("redirectUrl");
-                                        String paymentToken = responseJson.getJSONObject("paymentResource").getString("paymentToken");
-
-                                        sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
-                                        LocalPaymentResult transaction = new LocalPaymentResult(request, redirectUrl, paymentToken);
-                                        callback.onResult(transaction, null);
-                                    } catch (JSONException e) {
-                                        sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
-                                        callback.onResult(null, e);
-                                    }
-                                } else {
+                            public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
+                                if (localPaymentResult != null) {
+                                    sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
+                                } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
-                                    callback.onResult(null, httpError);
                                 }
                             }
                         });
-
                     } else {
                         callback.onResult(null, error);
                     }
@@ -174,46 +158,17 @@ public class LocalPaymentClient {
                     callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                     return;
                 }
-                JSONObject payload = new JSONObject();
 
-                try {
-                    payload.put("merchant_account_id", merchantAccountId);
-
-                    JSONObject paypalAccount = new JSONObject()
-                            .put("intent", "sale")
-                            .put("response", new JSONObject().put("webURL", responseString))
-                            .put("options", new JSONObject().put("validate", false))
-                            .put("response_type", "web")
-                            .put("correlation_id", payPalDataCollector.getClientMetadataId(context));
-                    payload.put("paypal_account", paypalAccount);
-
-                    JSONObject metaData = new JSONObject()
-                            .put("source", "client")
-                            .put("integration", braintreeClient.getIntegrationType())
-                            .put("sessionId", braintreeClient.getSessionId());
-                    payload.put("_meta", metaData);
-
-                    String url = "/v1/payment_methods/paypal_accounts";
-                    braintreeClient.sendPOST(url, payload.toString(), new HttpResponseCallback() {
-
-                        @Override
-                        public void onResult(String responseBody, Exception httpError) {
-                            if (responseBody != null) {
-                                try {
-                                    LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(responseBody));
-                                    sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
-                                    callback.onResult(result, null);
-                                } catch (JSONException jsonException) {
-                                    sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
-                                    callback.onResult(null, jsonException);
-                                }
-                            } else {
-                                sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
-                                callback.onResult(null, httpError);
-                            }
-                        }
-                    });
-                } catch (JSONException ignored) { /* do nothing */ }
+                localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context), new LocalPaymentBrowserSwitchResultCallback() {
+                    @Override
+                    public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                       if (localPaymentNonce != null) {
+                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
+                       } else if (error != null) {
+                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                       }
+                    }
+                });
         }
     }
 
