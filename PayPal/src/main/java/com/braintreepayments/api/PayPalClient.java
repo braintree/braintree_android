@@ -27,15 +27,35 @@ public class PayPalClient {
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
-    // TODO: doc strings
+    /**
+     * Create a new instance of {@link PayPalClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public PayPalClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 
+    /**
+     * Create a new instance of {@link PayPalClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public PayPalClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
     }
-    
+
+    /**
+     * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
+     *
+     * Deprecated. Use {@link PayPalClient(Fragment, BraintreeClient)} or
+     * {@link PayPalClient(FragmentActivity, BraintreeClient)}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    @Deprecated
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
     }
