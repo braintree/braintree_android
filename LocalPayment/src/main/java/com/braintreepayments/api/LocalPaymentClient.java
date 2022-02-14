@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,15 +27,27 @@ public class LocalPaymentClient {
     private LocalPaymentListener listener;
     private BrowserSwitchResult pendingBrowserSwitchResult;
 
+    public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+    }
+
+    public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+    }
+
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+        this(null, null, braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
-    LocalPaymentClient(@NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector, LocalPaymentApi localPaymentApi) {
+    LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle, @NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector, @NonNull LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.localPaymentApi = localPaymentApi;
+        if (activity != null && lifecycle != null) {
+            LocalPaymentLifecycleObserver observer = new LocalPaymentLifecycleObserver(this);
+            lifecycle.addObserver(observer);
+        }
     }
 
     /**
@@ -106,6 +119,15 @@ public class LocalPaymentClient {
         }
     }
 
+    /**
+     * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
+     *
+     * Errors encountered during the approval will be returned to the {@link LocalPaymentListener}.
+     *
+     * @param activity           Android FragmentActivity
+     * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
+     *                           and now has an approvalUrl and paymentId.
+     */
     public void approveLocalPayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) {
         try {
             approvePayment(activity, localPaymentResult);
@@ -117,10 +139,13 @@ public class LocalPaymentClient {
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
+     * Deprecated. Use {@link LocalPaymentClient#approveLocalPayment(FragmentActivity, LocalPaymentResult)}.
+     *
      * @param activity           Android FragmentActivity
      * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
      *                           and now has an approvalUrl and paymentId.
      */
+    @Deprecated
     public void approvePayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) throws JSONException, BrowserSwitchException {
         //noinspection ConstantConditions
         if (activity == null) {
@@ -175,10 +200,13 @@ public class LocalPaymentClient {
     }
 
     /**
+     * Deprecated. Use {@link LocalPaymentListener} to handle results.
+     *
      * @param context             Android Context
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
+    @Deprecated
     public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
