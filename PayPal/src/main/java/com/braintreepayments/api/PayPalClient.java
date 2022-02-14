@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
@@ -17,10 +18,17 @@ import org.json.JSONObject;
  */
 public class PayPalClient {
 
-    private final BraintreeClient braintreeClient;
+    private BraintreeClient braintreeClient;
+    private PayPalInternalClient internalPayPalClient;
 
-    private final PayPalInternalClient internalPayPalClient;
+    public PayPalClient(@NonNull FragmentActivity fragmentActivity, @NonNull BraintreeClient braintreeClient) {
+        // TODO: implement
+    }
 
+    public PayPalClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        // TODO: implement
+    }
+    
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalInternalClient(braintreeClient));
     }
@@ -29,6 +37,17 @@ public class PayPalClient {
     PayPalClient(BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
+    }
+
+    /**
+     * Add a {@link PayPalListener} to your client to receive results or errors from the PayPal flow.
+     * This method must be invoked on a {@link PayPalClient(Fragment, BraintreeClient)} or
+     * {@link PayPalClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param listener a {@link PayPalListener}
+     */
+    public void setListener(PayPalListener listener) {
+        // TODO: implement
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
@@ -54,11 +73,27 @@ public class PayPalClient {
 
     /**
      * Tokenize a PayPal account for vault or checkout.
+     * 
+     * This method must be invoked on a {@link PayPalClient(Fragment, BraintreeClient)} or
+     * {@link PayPalClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param activity      Android FragmentActivity
+     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
+     */
+    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest) {
+        // TODO: implement
+    }
+
+    /**
+     * Tokenize a PayPal account for vault or checkout.
+     * 
+     * Deprecated. Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)}
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback      {@link PayPalFlowStartedCallback}
      */
+    @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest, @NonNull final PayPalFlowStartedCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
@@ -192,10 +227,17 @@ public class PayPalClient {
         return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
+    void onBrowserSwitchResult(FragmentActivity activity) {
+        // TODO: implement
+    }
+
     /**
+     * Deprecated. Use {@link PayPalListener} to handle results.
+     *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
+    @Deprecated
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
