@@ -22,6 +22,7 @@ public class LocalPaymentClient {
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
     private final LocalPaymentApi localPaymentApi;
+    private LocalPaymentListener listener;
 
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
@@ -32,6 +33,20 @@ public class LocalPaymentClient {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.localPaymentApi = localPaymentApi;
+    }
+
+    /**
+     * Add a {@link LocalPaymentListener} to your client to receive results or errors from the PayPal flow.
+     * This method must be invoked on a {@link LocalPaymentClient(Fragment, BraintreeClient)} or
+     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param listener a {@link LocalPaymentListener}
+     */
+    public void setListener(LocalPaymentListener listener) {
+        this.listener = listener;
+//        if (pendingBrowserSwitchResult != null) {
+//            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+//        }
     }
 
     /**
@@ -78,6 +93,7 @@ public class LocalPaymentClient {
                                 } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
                                 }
+                                callback.onResult(localPaymentResult, error);
                             }
                         });
                     } else {
@@ -167,6 +183,7 @@ public class LocalPaymentClient {
                        } else if (error != null) {
                            sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
                        }
+                       callback.onResult(localPaymentNonce, error);
                     }
                 });
         }

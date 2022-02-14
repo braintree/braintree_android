@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -33,6 +32,7 @@ public class LocalPaymentClientUnitTest {
     private FragmentActivity activity;
     private LocalPaymentStartCallback localPaymentStartCallback;
     private LocalPaymentBrowserSwitchResultCallback localPaymentBrowserSwitchResultCallback;
+    private LocalPaymentListener listener;
 
     private BraintreeClient braintreeClient;
     private PayPalDataCollector payPalDataCollector;
@@ -46,6 +46,7 @@ public class LocalPaymentClientUnitTest {
         activity = mock(FragmentActivity.class);
         localPaymentStartCallback = mock(LocalPaymentStartCallback.class);
         localPaymentBrowserSwitchResultCallback = mock(LocalPaymentBrowserSwitchResultCallback.class);
+        listener = mock(LocalPaymentListener.class);
 
         braintreeClient = mock(BraintreeClient.class);
         payPalDataCollector = mock(PayPalDataCollector.class);
@@ -56,23 +57,21 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void startPayment_success_updatesOriginalRequestAndNotifiesListener() {
+    public void startPayment_success_forwardsResultToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .sendPOSTSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
+                .build();
+
+        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(localPaymentResult)
                 .build();
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        ArgumentCaptor<LocalPaymentResult> transactionCaptor = ArgumentCaptor.forClass(LocalPaymentResult.class);
-        verify(localPaymentStartCallback).onResult(transactionCaptor.capture(), (Exception) isNull());
-
-        LocalPaymentResult transaction = transactionCaptor.getValue();
-        assertSame(request, transaction.getRequest());
-        assertEquals("https://checkout.paypal.com/latinum?token=payment-token", transaction.getApprovalUrl());
-        assertEquals("local-payment-id-123", transaction.getPaymentId());
+        verify(localPaymentStartCallback).onResult(same(localPaymentResult), (Exception) isNull());
     }
 
     @Test
@@ -128,8 +127,7 @@ public class LocalPaymentClientUnitTest {
     public void startPayment_callsExceptionListener_configurationFetchError() {
         Exception configError = new Exception("config fetch error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalEnabledConfig)
-                .sendPOSTErrorResponse(configError)
+                .configurationError(configError)
                 .build();
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
@@ -322,6 +320,7 @@ public class LocalPaymentClientUnitTest {
         when(payPalDataCollector.getClientMetadataId(activity)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
+        sut.setListener(listener);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
@@ -335,7 +334,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult, localPaymentBrowserSwitchResultCallback);
 
-        verify(localPaymentBrowserSwitchResultCallback).onResult((LocalPaymentNonce) isNull(), same(postError));
+        verify(listener).onLocalPaymentFailure(same(postError));
         verify(braintreeClient).sendAnalyticsEvent(eq("ideal.local-payment.tokenize.failed"));
     }
 
@@ -371,8 +370,10 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("session-id")
                 .build();
         when(payPalDataCollector.getClientMetadataId(any(Context.class))).thenReturn("client-metadata-id");
+
+        LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
-                .tokenizeSuccess(LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)))
+                .tokenizeSuccess(successNonce)
                 .build();
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
@@ -388,22 +389,9 @@ public class LocalPaymentClientUnitTest {
         when(browserSwitchResult.getDeepLinkUrl()).thenReturn(Uri.parse(webUrl));
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult, localPaymentBrowserSwitchResultCallback);
+        sut.setListener(listener);
 
-        ArgumentCaptor<LocalPaymentNonce> resultCaptor = ArgumentCaptor.forClass(LocalPaymentNonce.class);
-        // TODO: update to listener
-        verify(localPaymentBrowserSwitchResultCallback).onResult(resultCaptor.capture(), (Exception) isNull());
-
-        LocalPaymentNonce localPaymentNonce = resultCaptor.getValue();
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", localPaymentNonce.getString());
-        assertEquals("084afbf1db15445587d30bc120a23b09", localPaymentNonce.getClientMetadataId());
-        assertEquals("jon@getbraintree.com", localPaymentNonce.getEmail());
-        assertEquals("Jon", localPaymentNonce.getGivenName());
-        assertEquals("Doe", localPaymentNonce.getSurname());
-        assertEquals("9KQSUZTL7YZQ4", localPaymentNonce.getPayerId());
-
-        PostalAddress shippingAddress = localPaymentNonce.getShippingAddress();
-        assertEquals("Jon Doe", shippingAddress.getRecipientName());
-        assertEquals("836486 of 22321 Park Lake", shippingAddress.getStreetAddress());
+        verify(listener).onLocalPaymentTokenizeSuccess(same(successNonce));
     }
 
     @Test

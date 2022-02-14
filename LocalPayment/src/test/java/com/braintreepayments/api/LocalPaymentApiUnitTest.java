@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -101,19 +102,22 @@ public class LocalPaymentApiUnitTest {
     }
 
     @Test
-    public void createPaymentMethod_onPOSTSuccess_returnsResultToCallback() {
+    public void createPaymentMethod_onPOSTSuccess_returnsResultWithOriginalRequestToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendPOSTSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
                 .build();
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
-        sut.createPaymentMethod(getIdealLocalPaymentRequest(), localPaymentStartCallback);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        sut.createPaymentMethod(request, localPaymentStartCallback);
 
         ArgumentCaptor<LocalPaymentResult> captor = ArgumentCaptor.forClass(LocalPaymentResult.class);
         verify(localPaymentStartCallback).onResult(captor.capture(), (Exception) isNull());
 
         LocalPaymentResult result = captor.getValue();
         assertNotNull(result);
+        assertSame(request, result.getRequest());
+        assertEquals("https://checkout.paypal.com/latinum?token=payment-token", result.getApprovalUrl());
         assertEquals("local-payment-id-123", result.getPaymentId());
     }
 
@@ -190,8 +194,6 @@ public class LocalPaymentApiUnitTest {
 
     @Test
     public void tokenize_onPOSTSuccess_returnsResultToCallback() throws JSONException {
-        LocalPaymentNonce expectedResult = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
-
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
@@ -207,7 +209,16 @@ public class LocalPaymentApiUnitTest {
 
         LocalPaymentNonce result = captor.getValue();
         assertNotNull(result);
-        assertEquals(expectedResult.getString(), result.getString());
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getString());
+        assertEquals("084afbf1db15445587d30bc120a23b09", result.getClientMetadataId());
+        assertEquals("jon@getbraintree.com", result.getEmail());
+        assertEquals("Jon", result.getGivenName());
+        assertEquals("Doe", result.getSurname());
+        assertEquals("9KQSUZTL7YZQ4", result.getPayerId());
+
+        PostalAddress shippingAddress = result.getShippingAddress();
+        assertEquals("Jon Doe", shippingAddress.getRecipientName());
+        assertEquals("836486 of 22321 Park Lake", shippingAddress.getStreetAddress());
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
