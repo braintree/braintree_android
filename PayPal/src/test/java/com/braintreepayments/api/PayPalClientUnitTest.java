@@ -16,11 +16,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,13 +73,53 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() {
+    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() throws JSONException {
+        PayPalAccountNonce nonce = mock(PayPalAccountNonce.class);
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .tokenizeSuccess(nonce)
+                .build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.pendingBrowserSwitchResult = browserSwitchResult;
+        sut.setListener(listener);
+
+        verify(listener).onPayPalSuccess(same(nonce));
+        verify(listener, never()).onPayPalFailure(any(Exception.class));
+        assertNull(sut.pendingBrowserSwitchResult);
     }
 
     @Test
     public void setListener_whenPendingBrowserSwitchResultDoesNotExist_doesNotInvokeListener() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .build();
 
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.pendingBrowserSwitchResult = null;
+        sut.setListener(listener);
+
+        verify(listener, never()).onPayPalSuccess(any(PayPalAccountNonce.class));
+        verify(listener, never()).onPayPalFailure(any(Exception.class));
+
+        assertNull(sut.pendingBrowserSwitchResult);
     }
 
     @Test

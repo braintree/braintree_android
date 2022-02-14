@@ -23,7 +23,9 @@ public class PayPalClient {
     private final PayPalInternalClient internalPayPalClient;
 
     private PayPalListener listener;
-    private BrowserSwitchResult pendingBrowserSwitchResult;
+
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
 
     public PayPalClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
