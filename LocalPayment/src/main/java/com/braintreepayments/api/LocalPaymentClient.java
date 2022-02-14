@@ -106,6 +106,14 @@ public class LocalPaymentClient {
         }
     }
 
+    public void approveLocalPayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) {
+        try {
+            approvePayment(activity, localPaymentResult);
+        } catch (Exception error) {
+            listener.onLocalPaymentFailure(error);
+        }
+    }
+
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
@@ -167,7 +175,7 @@ public class LocalPaymentClient {
     }
 
     /**
-     * @param context             Android Contex
+     * @param context             Android Context
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */

@@ -1,5 +1,17 @@
 package com.braintreepayments.api;
 
+import static com.ibm.icu.impl.Assert.fail;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 import android.net.Uri;
 
@@ -14,24 +26,11 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import static com.ibm.icu.impl.Assert.fail;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentClientUnitTest {
 
     private FragmentActivity activity;
     private LocalPaymentStartCallback localPaymentStartCallback;
-    private LocalPaymentBrowserSwitchResultCallback localPaymentBrowserSwitchResultCallback;
     private LocalPaymentListener listener;
 
     private BraintreeClient braintreeClient;
@@ -45,7 +44,6 @@ public class LocalPaymentClientUnitTest {
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
         localPaymentStartCallback = mock(LocalPaymentStartCallback.class);
-        localPaymentBrowserSwitchResultCallback = mock(LocalPaymentBrowserSwitchResultCallback.class);
         listener = mock(LocalPaymentListener.class);
 
         braintreeClient = mock(BraintreeClient.class);
@@ -265,7 +263,7 @@ public class LocalPaymentClientUnitTest {
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
-        sut.approvePayment(activity, transaction);
+        sut.approveLocalPayment(activity, transaction);
 
         ArgumentCaptor<BrowserSwitchOptions> optionsCaptor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), optionsCaptor.capture());
@@ -283,43 +281,58 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void approvePayment_sendsAnalyticsEvents() throws JSONException, BrowserSwitchException {
+    public void approvePayment_sendsAnalyticsEvents() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
-        sut.approvePayment(activity, transaction);
+        sut.approveLocalPayment(activity, transaction);
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.succeeded");
     }
 
     @Test
-    public void approvePayment_whenActivityIsNull_throwsError() throws BrowserSwitchException, JSONException {
+    public void approvePayment_whenActivityIsNull_returnsErrorToListener() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
+        sut.setListener(listener);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
 
-        try {
-            sut.approvePayment(null, transaction);
-            fail("Should throw");
-        } catch (RuntimeException exception) {
-            assertEquals("A FragmentActivity is required.", exception.getMessage());
-        }
+        sut.approveLocalPayment(null, transaction);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onLocalPaymentFailure(captor.capture());
+        assertEquals("A FragmentActivity is required.", captor.getValue().getMessage());
     }
 
     @Test
-    public void approvePayment_whenTransactionIsNull_throwsError() throws BrowserSwitchException, JSONException {
+    public void approvePayment_whenTransactionIsNull_returnsErrorToListener() {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
+        sut.setListener(listener);
 
-        try {
-            sut.approvePayment(activity, null);
-            fail("Should throw");
-        } catch (RuntimeException exception) {
-            assertEquals("A LocalPaymentTransaction is required.", exception.getMessage());
-        }
+        sut.approveLocalPayment(activity, null);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onLocalPaymentFailure(captor.capture());
+        assertEquals("A LocalPaymentTransaction is required.", captor.getValue().getMessage());
+    }
+
+    @Test
+    public void approvePayment_onBrowserSwitchStartError_returnsErrorToListener() throws BrowserSwitchException {
+        BrowserSwitchException browserSwitchError = new BrowserSwitchException("error");
+        doThrow(browserSwitchError).when(braintreeClient).startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
+        LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, payPalDataCollector, localPaymentApi);
+        sut.setListener(listener);
+
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        String approvalUrl = "https://sample.com/approval?token=sample-token";
+        LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
+
+        sut.approveLocalPayment(activity, transaction);
+        verify(listener).onLocalPaymentFailure(same(browserSwitchError));
     }
 
     @Test
