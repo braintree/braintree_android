@@ -6,6 +6,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
@@ -23,6 +24,7 @@ public class LocalPaymentClient {
     private final PayPalDataCollector payPalDataCollector;
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
+    private BrowserSwitchResult pendingBrowserSwitchResult;
 
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
@@ -135,6 +137,33 @@ public class LocalPaymentClient {
 
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
+    }
+
+    void onBrowserSwitchResult(FragmentActivity activity) {
+        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        if (pendingBrowserSwitchResult != null && listener != null) {
+            deliverBrowserSwitchResultToListener(activity, pendingBrowserSwitchResult);
+        }
+    }
+
+    private void deliverBrowserSwitchResultToListener(FragmentActivity activity, final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(activity, browserSwitchResult, new LocalPaymentBrowserSwitchResultCallback() {
+            @Override
+            public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                if (localPaymentNonce != null) {
+                    listener.onLocalPaymentSuccess(localPaymentNonce);
+                } else if (error != null) {
+                    listener.onLocalPaymentFailure(error);
+                }
+            }
+        });
+
+        this.pendingBrowserSwitchResult = null;
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
     }
 
     /**

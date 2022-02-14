@@ -11,7 +11,7 @@ public interface LocalPaymentListener {
      * Called when Local Payment tokenization is complete without error.
      * @param localPaymentNonce Local Payment tokenization result
      */
-    void onLocalPaymentTokenizeSuccess(@NonNull LocalPaymentNonce localPaymentNonce);
+    void onLocalPaymentSuccess(@NonNull LocalPaymentNonce localPaymentNonce);
 
     /**
      * Called when Local Payment tokenization has failed with an error.
