@@ -77,13 +77,12 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
         Fragment fragment = mock(Fragment.class);
         when(fragment.getActivity()).thenReturn(activity);
         when(fragment.getLifecycle()).thenReturn(lifecycle);
 
-        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        LocalPaymentClient sut = new LocalPaymentClient(fragment, braintreeClient);
 
         ArgumentCaptor<LocalPaymentLifecycleObserver> captor = ArgumentCaptor.forClass(LocalPaymentLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
@@ -95,12 +94,11 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
         FragmentActivity activity = mock(FragmentActivity.class);
         when(activity.getLifecycle()).thenReturn(lifecycle);
 
-        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, braintreeClient);
 
         ArgumentCaptor<LocalPaymentLifecycleObserver> captor = ArgumentCaptor.forClass(LocalPaymentLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());

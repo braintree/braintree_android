@@ -27,14 +27,35 @@ public class LocalPaymentClient {
     private LocalPaymentListener listener;
     private BrowserSwitchResult pendingBrowserSwitchResult;
 
+    /**
+     * Create a new instance of {@link LocalPaymentClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
 
+    /**
+     * Create a new instance of {@link LocalPaymentClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
 
+    /**
+     * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
+     *
+     * Deprecated. Use {@link LocalPaymentClient(Fragment, BraintreeClient)} or
+     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    @Deprecated
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
