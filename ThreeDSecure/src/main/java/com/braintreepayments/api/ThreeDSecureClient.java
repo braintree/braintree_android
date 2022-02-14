@@ -24,7 +24,7 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
  * <p>
  * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
  * merchant to the issuer, which may result in interchange savings. Please read our online
- * <a href="https://developers.braintreepayments.com/guides/3d-secure/overview">documentation</a>
+ * <a href="https://developer.paypal.com/braintree/docs/guides/3d-secure/overview">documentation</a>
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecureClient {
@@ -47,7 +47,7 @@ public class ThreeDSecureClient {
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     * account id when <a href="https://developer.paypal.com/braintree/docs/start/hello-client#get-a-client-token">
      * generating a client token</a>
      * <p>
      * During lookup the original payment method nonce is consumed and a new one is returned,
@@ -84,7 +84,7 @@ public class ThreeDSecureClient {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
                     callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                             "defines the same browser switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                             "for the correct configuration"));
                     return;
                 }

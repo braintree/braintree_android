@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 /**
  * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
+ * <a href="https://developer.paypal.com/braintree/docs/guides/credit-cards/overview">documentation</a>
  */
 public class CardClient {
 

@@ -43,7 +43,7 @@ The individual components may be of interest for advanced integrations and are e
 * Gradle
 * Android SDK >= 21
 * Host app does not integrate with the Kount SDK
-* Host app has a secure, authenticated server with a [Braintree server-side integration](https://developers.braintreepayments.com/android/start/hello-server)
+* Host app has a secure, authenticated server with a [Braintree server-side integration](https://developer.paypal.com/braintree/docs/start/hello-server)
 
 ## Committing
 

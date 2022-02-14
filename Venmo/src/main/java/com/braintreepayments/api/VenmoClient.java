@@ -16,7 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
+ * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developer.paypal.com/braintree/docs/guides/venmo/overview">documentation</a>
  */
 public class VenmoClient {
 

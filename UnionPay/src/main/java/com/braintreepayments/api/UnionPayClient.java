@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 /**
  * Used to check, enroll, and tokenize UnionPay cards. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/unionpay/overview">documentation</a>
+ * <a href="https://developer.paypal.com/braintree/docs/guides/unionpay/overview">documentation</a>
  */
 public class UnionPayClient {
 

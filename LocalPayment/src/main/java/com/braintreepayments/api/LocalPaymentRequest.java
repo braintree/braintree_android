@@ -114,7 +114,7 @@ public class LocalPaymentRequest {
      *                               the supported country codes for a given local payment type listed.
      *                               For local payments supported in multiple countries, this value
      *                               may determine which banks are presented to the customer.
-     *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
+     *                               @see <a href=https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v4#invoke-payment-flow>Supported Country Codes</a>
      */
     public void setPaymentTypeCountryCode(@Nullable String paymentTypeCountryCode) {
         this.paymentTypeCountryCode = paymentTypeCountryCode;

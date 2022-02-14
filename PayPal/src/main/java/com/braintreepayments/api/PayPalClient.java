@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/">documentation</a>
+ * <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
  */
 public class PayPalClient {
 
@@ -43,14 +43,14 @@ public class PayPalClient {
 
     private static Exception createPayPalError() {
         return new BraintreeException("PayPal is not enabled. " +
-                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
                 "for more information.");
     }
 
     private static Exception createBrowserSwitchError() {
         return new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
-                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                 "for the correct configuration");
     }
 
