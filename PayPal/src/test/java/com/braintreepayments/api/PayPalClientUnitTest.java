@@ -380,6 +380,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity);
 
@@ -428,6 +429,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity);
 
@@ -471,14 +473,15 @@ public class PayPalClientUnitTest {
                 .put("payment-type", "billing-agreement")
         );
 
+        Uri uri = Uri.parse(approvalUrl);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-
-        Uri uri = Uri.parse(approvalUrl);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+        sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity);
 
@@ -511,6 +514,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity);
 
@@ -522,7 +526,6 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .tokenizeSuccess(PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)))
                 .build();
-
 
         String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
 
@@ -545,6 +548,7 @@ public class PayPalClientUnitTest {
                 .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity);
 

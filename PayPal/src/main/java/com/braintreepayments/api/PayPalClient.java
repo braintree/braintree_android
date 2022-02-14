@@ -19,15 +19,18 @@ import org.json.JSONObject;
  */
 public class PayPalClient {
 
-    private BraintreeClient braintreeClient;
-    private PayPalInternalClient internalPayPalClient;
+    private final BraintreeClient braintreeClient;
+    private final PayPalInternalClient internalPayPalClient;
 
-    public PayPalClient(@NonNull FragmentActivity fragmentActivity, @NonNull BraintreeClient braintreeClient) {
-        // TODO: implement
+    private PayPalListener listener;
+    private BrowserSwitchResult pendingBrowserSwitchResult;
+
+    public PayPalClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 
     public PayPalClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        // TODO: implement
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
     }
     
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
@@ -48,7 +51,10 @@ public class PayPalClient {
      * @param listener a {@link PayPalListener}
      */
     public void setListener(PayPalListener listener) {
-        // TODO: implement
+        this.listener = listener;
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
@@ -229,7 +235,25 @@ public class PayPalClient {
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        // TODO: implement
+        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        if (pendingBrowserSwitchResult != null && listener != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
+    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
+            @Override
+            public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
+                if (payPalAccountNonce != null) {
+                    listener.onPayPalSuccess(payPalAccountNonce);
+                } else if (error != null) {
+                    listener.onPayPalFailure(error);
+                }
+            }
+        });
+        this.pendingBrowserSwitchResult = null;
     }
 
     /**
