@@ -61,6 +61,8 @@ class MerchantFragment: Fragment(), VenmoListener {
 
 ## 3DS
 
+## ThreeDSecure
+
 ```kotlin
 // MerchantActivity.kt
 class MerchantActivity : AppCompatActivity(), ThreeDSecureListener {
@@ -122,6 +124,59 @@ class MerchantFragment: Fragment(), ThreeDSecureListener {
     }
     
     override fun onThreeDSecureFailure(error: Exception) {
+        // handle error
+    }
+}
+```
+
+## PayPal
+
+```kotlin
+// MerchantActivity.kt
+class MerchantActivity : AppCompatActivity(), PayPalListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var payPalClient: PayPalClient
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        braintreeClient =
+          BraintreeClient(this, MerchantClientTokenProvider())
+          
+        payPalClient = VenmoClient(this, braintreeClient)
+        payPalClient.listener = this
+    }
+   
+    override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
+        // send nonce to server and create a transaction
+    }
+    
+    override fun onPayPalFailure(error: Exception) {
+        // handle error
+    }
+}
+// MerchantFragment.kt
+class MerchantFragment: Fragment(), PayPalListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var payPalClient: PayPalClient
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        braintreeClient =
+          BraintreeClient(this, MerchantClientTokenProvider())
+          
+        payPalClient = PayPalClient(this, braintreeClient)
+        payPalClient.listener = this
+    }
+    
+    override fun onPayPalSuccess(payPalAccountNonce: payPalAccountNonce) {
+        // send nonce to server and create a transaction
+    }
+    
+    override fun onPayPalFailure(error: Exception) {
         // handle error
     }
 }
