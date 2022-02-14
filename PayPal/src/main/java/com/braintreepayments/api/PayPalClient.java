@@ -269,6 +269,10 @@ public class PayPalClient {
         this.pendingBrowserSwitchResult = null;
     }
 
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
     /**
      * Deprecated. Use {@link PayPalListener} to handle results.
      *

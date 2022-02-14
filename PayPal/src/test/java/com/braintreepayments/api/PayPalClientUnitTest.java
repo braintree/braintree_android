@@ -747,4 +747,17 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(activity);
         verify(listener).onPayPalSuccess(same(payPalAccountNonce));
     }
+
+    @Test
+    public void getBrowserSwitchResult_getsBrowserSwitchResultFromBraintreeClient() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+        when(braintreeClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+
+        BrowserSwitchResult result = sut.getBrowserSwitchResult(activity);
+        assertSame(browserSwitchResult, result);
+    }
 }
