@@ -139,9 +139,10 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
+        when(braintreeClient.getApplicationContext()).thenReturn(activity);
         when(payPalDataCollector.getClientMetadataId(activity)).thenReturn("sample-correlation-id");
 
-        LocalPaymentClient sut = new LocalPaymentClient(null, null, braintreeClient, payPalDataCollector, localPaymentApi);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
         sut.setListener(listener);
 
