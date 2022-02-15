@@ -53,6 +53,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             braintreeData.put(META_KEY, meta);
             venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
         } catch (JSONException ignored) {
+            /* do nothing */
         }
 
         return venmoIntent;
