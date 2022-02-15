@@ -79,12 +79,14 @@ public class ThreeDSecureClient {
                     return;
                 }
 
+                //TODO NEXT_MAJOR_VERSION
+                //Change link to docs to https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup
                 boolean supportsBrowserSwitch = braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE);
                 if (!supportsBrowserSwitch) {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
                     callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                             "defines the same browser switch url as this app. See " +
-                            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                            " https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch" +
                             "for the correct configuration"));
                     return;
                 }
