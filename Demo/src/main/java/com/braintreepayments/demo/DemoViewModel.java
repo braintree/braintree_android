@@ -15,7 +15,6 @@ public class DemoViewModel extends ViewModel {
     private final MutableLiveData<BrowserSwitchResult> localPaymentBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<BrowserSwitchResult> payPalBrowserSwitchResult = new MutableLiveData<>();
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
-    private final MutableLiveData<ActivityResult> venmoActivityResult = new MutableLiveData<>();
 
     public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
         if (browserSwitchResult == null) {
@@ -35,9 +34,6 @@ public class DemoViewModel extends ViewModel {
         switch (requestCode) {
             case BraintreeRequestCodes.GOOGLE_PAY:
                 googlePayActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
-                break;
-            case BraintreeRequestCodes.VENMO:
-                venmoActivityResult.setValue(new ActivityResult(requestCode, resultCode, data));
                 break;
         }
     }
