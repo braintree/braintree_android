@@ -8,13 +8,11 @@ class VenmoResult {
     private final String paymentContextId;
     private final String venmoAccountNonce;
     private final String venmoUsername;
-    private final boolean shouldVault;
 
-    VenmoResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce, @Nullable String venmoUsername, boolean shouldVault, @Nullable Exception error) {
+    VenmoResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce, @Nullable String venmoUsername, @Nullable Exception error) {
         this.paymentContextId = paymentContextId;
         this.venmoAccountNonce = venmoAccountNonce;
         this.venmoUsername = venmoUsername;
-        this.shouldVault = shouldVault;
         this.error = error;
     }
 
@@ -32,9 +30,5 @@ class VenmoResult {
 
     String getVenmoUsername() {
         return venmoUsername;
-    }
-
-    boolean shouldVault() {
-        return shouldVault;
     }
 }

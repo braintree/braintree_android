@@ -40,7 +40,7 @@ public class VenmoActivityResultContractUnitTest {
     @Test
     public void createIntent_returnsIntentWithExtras() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom", false);
+        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom");
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent intent = sut.createIntent(context, input);
@@ -59,16 +59,6 @@ public class VenmoActivityResultContractUnitTest {
                         .put("version", BuildConfig.VERSION_NAME)
                 );
         JSONAssert.assertEquals(expectedBraintreeData, new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)), JSONCompareMode.STRICT);
-    }
-
-    @Test
-    public void createIntent_storesShouldVault() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        VenmoIntentData input = new VenmoIntentData(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom", true);
-        VenmoActivityResultContract sut = new VenmoActivityResultContract();
-
-        sut.createIntent(context, input);
-        assertTrue(sut.shouldVault);
     }
 
     @Test
@@ -96,17 +86,5 @@ public class VenmoActivityResultContractUnitTest {
 
         UserCanceledException error = (UserCanceledException) venmoResult.getError();
         assertNotNull("User canceled Venmo.", error.getMessage());
-    }
-
-    @Test
-    public void parseResult_setsShouldVaultOnResult() {
-        VenmoActivityResultContract sut = new VenmoActivityResultContract();
-        sut.shouldVault = true;
-
-        Intent successIntent = new Intent();
-
-        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_OK, successIntent);
-        assertNotNull(venmoResult);
-        assertTrue(venmoResult.shouldVault());
     }
 }

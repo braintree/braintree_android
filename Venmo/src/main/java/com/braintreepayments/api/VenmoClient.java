@@ -202,12 +202,11 @@ public class VenmoClient {
                 if (authorization != null) {
                     boolean isClientTokenAuth = (authorization instanceof ClientToken);
                     boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
+                    sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
                     if (observer != null) {
-                        VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType(), shouldVault);
+                        VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
                         observer.launch(intentData);
                     } else {
-                        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
-
                         Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
                         activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
                     }
@@ -233,7 +232,7 @@ public class VenmoClient {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
-                                        boolean shouldVault = venmoResult.shouldVault();
+                                        boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
                                         if (shouldVault && isClientTokenAuth) {
                                             vaultVenmoAccountNonce(nonce.getString(), new VenmoOnActivityResultCallback() {
                                                 @Override
@@ -258,7 +257,7 @@ public class VenmoClient {
                         } else {
                             String nonce = venmoResult.getVenmoAccountNonce();
 
-                            boolean shouldVault = venmoResult.shouldVault();
+                            boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
                             if (shouldVault && isClientTokenAuth) {
                                 vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
                                     @Override
