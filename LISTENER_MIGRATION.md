@@ -4,7 +4,6 @@ This is an in-process guide that will be updated as we update each payment metho
 ## Venmo
 
 ```kotlin
-
 // MerchantActivity.kt
 class MerchantActivity : AppCompatActivity(), VenmoListener {
     
@@ -56,10 +55,6 @@ class MerchantFragment: Fragment(), VenmoListener {
     }
 }
 ```
-
-
-
-## 3DS
 
 ## ThreeDSecure
 
@@ -144,7 +139,7 @@ class MerchantActivity : AppCompatActivity(), PayPalListener {
         braintreeClient =
           BraintreeClient(this, MerchantClientTokenProvider())
           
-        payPalClient = VenmoClient(this, braintreeClient)
+        payPalClient = PayPalClient(this, braintreeClient)
         payPalClient.listener = this
     }
    
@@ -177,6 +172,72 @@ class MerchantFragment: Fragment(), PayPalListener {
     }
     
     override fun onPayPalFailure(error: Exception) {
+        // handle error
+    }
+}
+```
+## Local Payment
+
+```kotlin
+// MerchantActivity.kt
+class MerchantActivity : AppCompatActivity(), LocalPaymentListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var localPaymentClient: LocalPaymentClient
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        braintreeClient =
+          BraintreeClient(this, MerchantClientTokenProvider())
+          
+        localPaymentClient = LocalPaymentClient(this, braintreeClient)
+        localPaymentClient.listener = this
+    }
+
+    private fun launchLocalPayment() {
+        ...
+        localPaymentClient.startPayment(localPaymentRequest) { localPaymentStartError ->
+            localPaymentClient.approveLocalPayment(this@MerchantActivity, localPaymentResult)
+        }
+    }
+   
+    override fun onLocalPaymentSuccess(localPaymentNonce: LocalPaymentNonce) {
+        // send nonce to server and create a transaction
+    }
+    
+    override fun onLocalPaymentFailure(error: Exception) {
+        // handle error
+    }
+}
+// MerchantFragment.kt
+class MerchantFragment: Fragment(), PayPalListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var localPaymentClient: LocalPaymentClient
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        braintreeClient =
+          BraintreeClient(this, MerchantClientTokenProvider())
+          
+        localPaymentClient = LocalPaymentClient(this, braintreeClient)
+        localPaymentClient.listener = this
+    }
+
+    private fun launchLocalPayment() {
+        ...
+        localPaymentClient.startPayment(localPaymentRequest) { localPaymentStartError ->
+            localPaymentClient.approveLocalPayment(requireActivity(), localPaymentResult)
+        }
+    }
+
+    override fun onLocalPaymentSuccess(localPaymentNonce: LocalPaymentNonce) {
+        // send nonce to server and create a transaction
+    }
+
+    override fun onLocalPaymentFailure(error: Exception) {
         // handle error
     }
 }
