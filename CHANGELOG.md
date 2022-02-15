@@ -4,6 +4,9 @@
 * ThreeDSecure
   * Add `ThreeDSecureListener` to receive results from the 3DS flow
   * Deprecate methods requiring a callback in favor of listener pattern
+* Venmo
+  * Add `VenmoListener` to receive results from the Venmo flow
+  * Deprecate methods requiring a callback in favor of listener pattern
 
 ## 4.8.3
 
