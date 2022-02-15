@@ -41,16 +41,20 @@ public class PayPalClient {
         return !braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
     }
 
+    //TODO NEXT_MAJOR_VERSION
+    //Change link to docs to https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4
     private static Exception createPayPalError() {
         return new BraintreeException("PayPal is not enabled. " +
-                "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
+                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
                 "for more information.");
     }
 
+    //TODO NEXT_MAJOR_VERSION
+    //Change link to docs to https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup
     private static Exception createBrowserSwitchError() {
         return new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
-                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
                 "for the correct configuration");
     }
 
