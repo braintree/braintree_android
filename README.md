@@ -23,9 +23,9 @@ dependencies {
 
 ## Documentation
 
-Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v3) for instructions on basic setup and usage.
+Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v3) for instructions on basic setup and usage.
 
-Next, read the [**full documentation**](https://developers.braintreepayments.com/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
+Next, read the [**full documentation**](https://developer.paypal.com/braintree/docs/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
 
 ## Versions
 
@@ -41,7 +41,7 @@ Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
 
 ## Help
 
-* [Read the docs](https://developers.braintreepayments.com/guides/overview)
+* [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
 * Find a bug? [Open an issue](https://github.com/braintree/braintree_android/issues)
 * Want to contribute? [Check out contributing guidelines](CONTRIBUTING.md) and [submit a pull request](https://help.github.com/articles/creating-a-pull-request).
 

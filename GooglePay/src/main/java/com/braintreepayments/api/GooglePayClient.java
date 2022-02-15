@@ -29,7 +29,7 @@ import java.util.Collection;
 
 /**
  * Used to create and tokenize Google Pay payment methods. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+ * <a href="https://developer.paypal.com/braintree/docs/guides/google-pay/overview">documentation</a>
  */
 public class GooglePayClient {
 

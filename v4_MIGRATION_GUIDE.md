@@ -2,7 +2,7 @@
 
 See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the basics for updating your Braintree integration from v3 to v4.
 
-_Documentation for v4 will be published to https://developers.braintreepayments.com once it is available for general release._
+_Documentation for v4 is available at https://developer.paypal.com/braintree/docs/start/hello-client/android/v4._
 
 ## Table of Contents
 
