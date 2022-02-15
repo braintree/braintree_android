@@ -8,19 +8,14 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BrowserSwitchException;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentListener;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.PostalAddress;
-
-import org.json.JSONException;
 
 public class LocalPaymentFragment extends BaseFragment implements LocalPaymentListener {
 
@@ -35,7 +30,7 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
 
         BraintreeClient braintreeClient = getBraintreeClient();
         localPaymentClient = new LocalPaymentClient(this, braintreeClient);
-        localPaymentClient.setListener(getContext(), this);
+        localPaymentClient.setListener(this);
 
         return view;
     }

@@ -199,7 +199,7 @@ class MerchantActivity : AppCompatActivity(), LocalPaymentListener {
           BraintreeClient(this, MerchantClientTokenProvider())
           
         localPaymentClient = LocalPaymentClient(this, braintreeClient)
-        localPaymentClient.setListener(getContext(), this)
+        localPaymentClient.listener = this
     }
 
     private fun launchLocalPayment() {
@@ -230,7 +230,7 @@ class MerchantFragment: Fragment(), PayPalListener {
           BraintreeClient(this, MerchantClientTokenProvider())
           
         localPaymentClient = LocalPaymentClient(this, braintreeClient)
-        localPaymentClient.setListener(getContext(), this)
+        localPaymentClient.listener = this
     }
 
     private fun launchLocalPayment() {

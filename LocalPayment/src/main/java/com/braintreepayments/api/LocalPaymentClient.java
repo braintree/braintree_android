@@ -78,13 +78,12 @@ public class LocalPaymentClient {
      * This method must be invoked on a {@link LocalPaymentClient(Fragment, BraintreeClient)} or
      * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)} in order to receive results.
      *
-     * @param context an Android Context
      * @param listener a {@link LocalPaymentListener}
      */
-    public void setListener(Context context, LocalPaymentListener listener) {
+    public void setListener(LocalPaymentListener listener) {
         this.listener = listener;
         if (pendingBrowserSwitchResult != null) {
-            deliverBrowserSwitchResultToListener(context, pendingBrowserSwitchResult);
+            deliverBrowserSwitchResultToListener(braintreeClient.getApplicationContext(), pendingBrowserSwitchResult);
         }
     }
 
