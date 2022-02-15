@@ -14,14 +14,6 @@ public class DemoViewModel extends ViewModel {
 
     private final MutableLiveData<ActivityResult> googlePayActivityResult = new MutableLiveData<>();
 
-    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult == null) {
-            return;
-        }
-        switch (browserSwitchResult.getRequestCode()) {
-        }
-    }
-
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case BraintreeRequestCodes.GOOGLE_PAY:

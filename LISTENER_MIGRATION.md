@@ -4,7 +4,6 @@ This is an in-process guide that will be updated as we update each payment metho
 ## Venmo
 
 ```kotlin
-
 // MerchantActivity.kt
 class MerchantActivity : AppCompatActivity(), VenmoListener {
     
@@ -56,12 +55,6 @@ class MerchantFragment: Fragment(), VenmoListener {
     }
 }
 ```
-
-
-
-## 3DS
-
-## ThreeDSecure
 
 ## ThreeDSecure
 
@@ -146,7 +139,7 @@ class MerchantActivity : AppCompatActivity(), PayPalListener {
         braintreeClient =
           BraintreeClient(this, MerchantClientTokenProvider())
           
-        payPalClient = VenmoClient(this, braintreeClient)
+        payPalClient = PayPalClient(this, braintreeClient)
         payPalClient.listener = this
     }
    
@@ -239,12 +232,12 @@ class MerchantFragment: Fragment(), PayPalListener {
             localPaymentClient.approveLocalPayment(requireActivity(), localPaymentResult)
         }
     }
-    
-    override fun onPayPalSuccess(payPalAccountNonce: payPalAccountNonce) {
+
+    override fun onLocalPaymentSuccess(localPaymentNonce: LocalPaymentNonce) {
         // send nonce to server and create a transaction
     }
-    
-    override fun onPayPalFailure(error: Exception) {
+
+    override fun onLocalPaymentFailure(error: Exception) {
         // handle error
     }
 }
