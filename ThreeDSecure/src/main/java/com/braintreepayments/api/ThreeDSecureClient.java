@@ -86,7 +86,7 @@ public class ThreeDSecureClient {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
                     callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                             "defines the same browser switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch" +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
                             "for the correct configuration"));
                     return;
                 }
