@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 class PayPalInternalClient {
 
@@ -20,15 +21,17 @@ class PayPalInternalClient {
 
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
+    private final ApiClient apiClient;
 
     PayPalInternalClient(BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector());
+        this(braintreeClient, new PayPalDataCollector(), new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector) {
+    PayPalInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
+        this.apiClient = apiClient;
 
         this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
         this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
@@ -102,6 +105,25 @@ class PayPalInternalClient {
                     });
                 } else {
                     callback.onResult(null, authError);
+                }
+            }
+        });
+    }
+
+    void tokenize(PayPalAccount payPalAccount, final PayPalBrowserSwitchResultCallback callback) {
+        apiClient.tokenizeREST(payPalAccount, new TokenizeCallback() {
+            @Override
+            public void onResult(JSONObject tokenizationResponse, Exception exception) {
+                if (tokenizationResponse != null) {
+                    try {
+                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
+                        callback.onResult(payPalAccountNonce, null);
+
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                } else {
+                    callback.onResult(null, exception);
                 }
             }
         });
