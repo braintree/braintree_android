@@ -177,7 +177,9 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
 
         String billingAgreementDescription = getBillingAgreementDescription();
         if (shouldRequestBillingAgreement && !TextUtils.isEmpty(billingAgreementDescription)) {
-            parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
+            JSONObject details = new JSONObject()
+                    .put(DESCRIPTION_KEY, billingAgreementDescription);
+            parameters.put(BILLING_AGREEMENT_DETAILS_KEY, details);
         }
 
         String currencyCode = getCurrencyCode();
