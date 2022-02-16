@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix issue where billing agreement description was not showing (fixes #509)
+
 ## 4.8.2
 
 * Venmo
