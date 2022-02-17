@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.GooglePayClient.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -14,11 +17,9 @@ class GooglePayActivityResultContract extends ActivityResultContract<GooglePayIn
     @NonNull
     @Override
     public Intent createIntent(@NonNull Context context, GooglePayIntentData input) {
-
-//        Intent intent = new Intent(activity, GooglePayActivity.class)
-//                .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
-//                .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
-        return null;
+        return new Intent(context, GooglePayActivity.class)
+                .putExtra(EXTRA_ENVIRONMENT, input.getGooglePayEnvironment())
+                .putExtra(EXTRA_PAYMENT_DATA_REQUEST, input.getPaymentDataRequest());
     }
 
     @Override
