@@ -8,7 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.AutoResolveHelper;
@@ -48,12 +50,20 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
 
+    public GooglePayClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new GooglePayInternalClient());
+    }
+
+    public GooglePayClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
+    }
+
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new GooglePayInternalClient());
+        this(null, null, braintreeClient, new GooglePayInternalClient());
     }
 
     @VisibleForTesting
-    GooglePayClient(BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
+    GooglePayClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
         this.internalGooglePayClient = internalGooglePayClient;
     }

@@ -23,6 +23,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
@@ -50,6 +51,7 @@ import java.util.Collection;
 public class GooglePayClientUnitTest {
 
     private FragmentActivity activity;
+    private Lifecycle lifecycle;
 
     private GooglePayRequest baseRequest;
 
@@ -62,6 +64,7 @@ public class GooglePayClientUnitTest {
     @Before
     public void beforeEach() {
         activity = mock(FragmentActivity.class);
+        lifecycle = mock(Lifecycle.class);
         readyToPayCallback = mock(GooglePayIsReadyToPayCallback.class);
         requestPaymentCallback = mock(GooglePayRequestPaymentCallback.class);
         activityResultCallback = mock(GooglePayOnActivityResultCallback.class);
@@ -76,6 +79,25 @@ public class GooglePayClientUnitTest {
 
         when(activityInfo.getThemeResource()).thenReturn(R.style.bt_transparent_activity);
     }
+
+    // region Constructor
+
+    @Test
+    public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
+
+    }
+
+    @Test
+    public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
+
+    }
+
+    @Test
+    public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
+
+    }
+
+    // endregion
 
     // region isReadyToPay
 
@@ -93,7 +115,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(activity, null, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
@@ -121,7 +143,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(activity, readyForGooglePayRequest, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
@@ -148,7 +170,7 @@ public class GooglePayClientUnitTest {
                 .isReadyToPay(true)
                 .build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         sut.isReadyToPay(activity, null, readyToPayCallback);
         verify(readyToPayCallback).onResult(false, null);
@@ -168,7 +190,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(null, null, readyToPayCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -203,7 +225,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -244,7 +266,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -349,7 +371,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -392,7 +414,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -436,7 +458,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         InOrder order = inOrder(braintreeClient);
@@ -465,7 +487,7 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
         GooglePayRequest googlePayRequest = new GooglePayRequest();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         InOrder order = inOrder(braintreeClient);
@@ -485,7 +507,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -515,7 +537,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -549,7 +571,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -586,7 +608,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -624,7 +646,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -662,7 +684,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -699,7 +721,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -735,7 +757,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -773,7 +795,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -817,7 +839,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -852,7 +874,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
 
         JSONArray allowedCardNetworks = getPaymentDataRequestJsonSentToGooglePay(activity)
@@ -886,7 +908,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, null, requestPaymentCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
@@ -918,7 +940,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         GooglePayRequest googlePayRequest = new GooglePayRequest();
         FragmentActivity activity = mock(FragmentActivity.class);
@@ -962,7 +984,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
@@ -995,7 +1017,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
@@ -1028,7 +1050,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.onActivityResult(RESULT_CANCELED, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
@@ -1061,7 +1083,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.onActivityResult(RESULT_FIRST_USER, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
@@ -1094,7 +1116,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
         sut.onActivityResult(RESULT_OK, new Intent(), activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
@@ -1119,7 +1141,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         Collection<Integer> allowedCardNetworks = sut.getAllowedCardNetworks(configuration);
 
@@ -1151,7 +1173,7 @@ public class GooglePayClientUnitTest {
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
 
@@ -1180,7 +1202,7 @@ public class GooglePayClientUnitTest {
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
@@ -1203,7 +1225,7 @@ public class GooglePayClientUnitTest {
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"));
@@ -1225,7 +1247,7 @@ public class GooglePayClientUnitTest {
                 .build();
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
 
         GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback = mock(GooglePayGetTokenizationParametersCallback.class);
         sut.getTokenizationParameters(getTokenizationParametersCallback);
