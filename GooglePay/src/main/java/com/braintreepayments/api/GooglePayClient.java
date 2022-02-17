@@ -276,6 +276,10 @@ public class GooglePayClient {
         }
     }
 
+    void onGooglePayResult(GooglePayResult googlePayResult) {
+
+    }
+
     /**
      * @param resultCode a code associated with the Activity result
      * @param data Android Intent

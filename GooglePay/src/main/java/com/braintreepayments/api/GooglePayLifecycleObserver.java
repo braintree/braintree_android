@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -18,8 +20,8 @@ public class GooglePayLifecycleObserver implements LifecycleEventObserver {
     @VisibleForTesting
     ActivityResultRegistry activityResultRegistry;
 
-//    @VisibleForTesting
-//    ActivityResultLauncher<> activityLauncher;
+    @VisibleForTesting
+    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
 
     GooglePayLifecycleObserver(ActivityResultRegistry activityResultRegistry, GooglePayClient googlePayClient) {
         this.activityResultRegistry = activityResultRegistry;
@@ -27,9 +29,18 @@ public class GooglePayLifecycleObserver implements LifecycleEventObserver {
     }
 
     @Override
-    public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
         if (event == Lifecycle.Event.ON_CREATE) {
-
+            activityLauncher = activityResultRegistry.register(GOOGLE_PAY_RESULT, lifecycleOwner, new GooglePayActivityResultContract(), new ActivityResultCallback<GooglePayResult>() {
+                @Override
+                public void onActivityResult(GooglePayResult googlePayResult) {
+                    googlePayClient.onGooglePayResult(googlePayResult);
+                }
+            });
         }
+    }
+
+    void launch(GooglePayIntentData googlePayIntentData) {
+        activityLauncher.launch(googlePayIntentData);
     }
 }
