@@ -10,7 +10,7 @@ public class GooglePayActivityResultContractUnitTest {
     }
 
     @Test
-    public void parseResult_whenResultIsOK_andPaymentContextIDExists_returnsGooglePayResultWithPaymentData() {
+    public void parseResult_whenResultIsOK_andPaymentDataExists_returnsGooglePayResultWithPaymentData() {
 
     }
 
