@@ -24,13 +24,6 @@ public class AuthorizationUnitTest {
     }
 
     @Test
-    public void fromString_returnsValidPayPalUAT() {
-        Authorization authorization = Authorization.fromString(Fixtures.BASE64_PAYPAL_UAT);
-
-        assertTrue(authorization instanceof PayPalUAT);
-    }
-
-    @Test
     public void fromString_whenPassedNull_returnsInvalidToken() {
         Authorization result = Authorization.fromString(null);
 

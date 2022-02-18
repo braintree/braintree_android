@@ -77,7 +77,7 @@ class BraintreeHttpClient {
         }
 
         String targetPath;
-        if (authorization instanceof ClientToken || authorization instanceof PayPalUAT) {
+        if (authorization instanceof ClientToken) {
             targetPath = Uri.parse(path)
                     .buildUpon()
                     .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer())
