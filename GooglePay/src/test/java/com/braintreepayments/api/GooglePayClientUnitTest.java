@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_FIRST_USER;
 import static android.app.Activity.RESULT_OK;
 import static com.braintreepayments.api.GooglePayClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST;
+import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -34,6 +35,8 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
+import net.bytebuddy.asm.Advice;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +61,7 @@ public class GooglePayClientUnitTest {
     private GooglePayIsReadyToPayCallback readyToPayCallback;
     private GooglePayRequestPaymentCallback requestPaymentCallback;
     private GooglePayOnActivityResultCallback activityResultCallback;
+    private GooglePayListener listener;
 
     private ActivityInfo activityInfo;
 
@@ -68,6 +72,7 @@ public class GooglePayClientUnitTest {
         readyToPayCallback = mock(GooglePayIsReadyToPayCallback.class);
         requestPaymentCallback = mock(GooglePayRequestPaymentCallback.class);
         activityResultCallback = mock(GooglePayOnActivityResultCallback.class);
+        listener = mock(GooglePayListener.class);
         activityInfo = mock(ActivityInfo.class);
 
         baseRequest = new GooglePayRequest();
@@ -1024,6 +1029,65 @@ public class GooglePayClientUnitTest {
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof PayPalAccountNonce);
+    }
+
+    // endregion
+
+    // region onGooglePayResult
+
+    @Test
+    public void onGooglePayResult_whenPaymentDataExists_returnsResultToListener_andSendsAnalytics() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
+        sut.setListener(listener);
+
+        String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD;
+        PaymentData paymentData = PaymentData.fromJson(paymentDataJson);
+        GooglePayResult googlePayResult = new GooglePayResult(paymentData, null);
+        sut.onGooglePayResult(googlePayResult);
+
+        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(listener).onGooglePaySuccess(captor.capture());
+
+        PaymentMethodNonce nonce = captor.getValue();
+        JSONObject result = new JSONObject(paymentData.toJson());
+        PaymentMethodNonce expectedNonce = GooglePayCardNonce.fromJSON(result);
+        assertEquals(nonce.getString(), expectedNonce.getString());
+    }
+
+    @Test
+    public void onGooglePayResult_whenErrorExists_returnsErrorToListener_andSendsAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
+        sut.setListener(listener);
+
+        Exception error = new Exception("Error");
+        GooglePayResult googlePayResult = new GooglePayResult(null, error);
+        sut.onGooglePayResult(googlePayResult);
+
+        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
+        verify(listener).onGooglePayFailure(error);
+    }
+
+    @Test
+    public void onGooglePayResult_whenUserCanceledErrorExists_returnsErrorToListener_andSendsAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(activity, lifecycle, braintreeClient, internalGooglePayClient);
+        sut.setListener(listener);
+
+        UserCanceledException userCanceledError = new UserCanceledException("User canceled Google Pay.");
+        GooglePayResult googlePayResult = new GooglePayResult(null, userCanceledError);
+        sut.onGooglePayResult(googlePayResult);
+
+        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
+        verify(listener).onGooglePayFailure(userCanceledError);
     }
 
     // endregion

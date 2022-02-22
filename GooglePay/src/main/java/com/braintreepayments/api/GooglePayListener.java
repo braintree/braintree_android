@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 public interface GooglePayListener {
 
     /**
-     * Called when a {@link GooglePayCardNonce} is created without error.
-     * @param googlePayCardNonce a {@link GooglePayCardNonce}
+     * Called when a {@link PaymentMethodNonce} is created without error.
+     * @param paymentMethodNonce a {@link PaymentMethodNonce}
      */
-    void onGooglePaySuccess(@NonNull GooglePayCardNonce googlePayCardNonce);
+    void onGooglePaySuccess(@NonNull PaymentMethodNonce paymentMethodNonce);
 
     /**
      * Called when there was an error during the Google Pay flow.
