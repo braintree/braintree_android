@@ -50,15 +50,37 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
     private GooglePayListener listener;
+    @VisibleForTesting
+    GooglePayLifecycleObserver observer;
 
+    /**
+     * Create a new instance of {@link GooglePayClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public GooglePayClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient, new GooglePayInternalClient());
     }
 
+    /**
+     * Create a new instance of {@link GooglePayClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public GooglePayClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
     }
 
+    /**
+     * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
+     *
+     * Deprecated. Use {@link GooglePayClient(Fragment, BraintreeClient)} or
+     * {@link GooglePayClient(FragmentActivity, BraintreeClient)} instead.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new GooglePayInternalClient());
     }
@@ -68,8 +90,8 @@ public class GooglePayClient {
         this.braintreeClient = braintreeClient;
         this.internalGooglePayClient = internalGooglePayClient;
         if (activity != null && lifecycle != null) {
-            GooglePayLifecycleObserver observer = new GooglePayLifecycleObserver(activity.getActivityResultRegistry(), this);
-            lifecycle.addObserver(observer);
+            this.observer = new GooglePayLifecycleObserver(activity.getActivityResultRegistry(), this);
+            lifecycle.addObserver(this.observer);
         }
     }
 
@@ -195,6 +217,17 @@ public class GooglePayClient {
         });
     }
 
+    public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request) {
+       requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
+           @Override
+           public void onResult(@Nullable Exception error) {
+               if (error != null) {
+                   listener.onGooglePayFailure(error);
+               }
+           }
+       });
+    }
+
     /**
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
      *
@@ -247,12 +280,17 @@ public class GooglePayClient {
                             braintreeClient.sendAnalyticsEvent("google-payment.started");
 
                             PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
-                            Intent intent = new Intent(activity, GooglePayActivity.class)
-                                    .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
-                                    .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
 
-                            // TODO: Use activity result API to launch this activity
-                            activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
+                            if (observer != null) {
+                                GooglePayIntentData intent = new GooglePayIntentData(getGooglePayEnvironment(configuration), paymentDataRequest);
+                                observer.launch(intent);
+                            } else {
+                                Intent intent = new Intent(activity, GooglePayActivity.class)
+                                        .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
+                                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
+
+                                activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
+                            }
                         }
                     });
 
