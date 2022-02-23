@@ -16,6 +16,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +24,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
@@ -89,16 +92,48 @@ public class GooglePayClientUnitTest {
 
     @Test
     public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
+        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
+        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
+        Fragment fragment = mock(Fragment.class);
+        when(fragment.requireActivity()).thenReturn(activity);
+        when(fragment.getLifecycle()).thenReturn(lifecycle);
+
+        GooglePayClient sut = new GooglePayClient(fragment, braintreeClient);
+        ArgumentCaptor<GooglePayLifecycleObserver> captor = ArgumentCaptor.forClass(GooglePayLifecycleObserver.class);
+        verify(lifecycle).addObserver(captor.capture());
+
+        GooglePayLifecycleObserver observer = captor.getValue();
+        assertSame(resultRegistry, observer.activityResultRegistry);
+        assertSame(sut, observer.googlePayClient);
     }
 
     @Test
     public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
+        when(activity.getLifecycle()).thenReturn(lifecycle);
+        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
+
+        GooglePayClient sut = new GooglePayClient(activity, braintreeClient);
+        ArgumentCaptor<GooglePayLifecycleObserver> captor = ArgumentCaptor.forClass(GooglePayLifecycleObserver.class);
+        verify(lifecycle).addObserver(captor.capture());
+
+        GooglePayLifecycleObserver observer = captor.getValue();
+        assertSame(resultRegistry, observer.activityResultRegistry);
+        assertSame(sut, observer.googlePayClient);
 
     }
 
     @Test
     public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(braintreeClient);
+
+        verify(lifecycle, never()).addObserver(any(GooglePayLifecycleObserver.class));
 
     }
 

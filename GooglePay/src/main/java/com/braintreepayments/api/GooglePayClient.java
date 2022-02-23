@@ -56,7 +56,7 @@ public class GooglePayClient {
     }
 
     public GooglePayClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
     }
 
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
@@ -67,6 +67,10 @@ public class GooglePayClient {
     GooglePayClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
         this.internalGooglePayClient = internalGooglePayClient;
+        if (activity != null && lifecycle != null) {
+            GooglePayLifecycleObserver observer = new GooglePayLifecycleObserver(activity.getActivityResultRegistry(), this);
+            lifecycle.addObserver(observer);
+        }
     }
 
     /**
