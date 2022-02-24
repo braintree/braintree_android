@@ -28,8 +28,6 @@ abstract class Authorization {
         try {
             if (isTokenizationKey(authorizationString)) {
                 return new TokenizationKey(authorizationString);
-            } else if (isPayPalUAT(authorizationString)){
-                return new PayPalUAT(authorizationString);
             } else if (isClientToken(authorizationString)) {
                 return new ClientToken(authorizationString);
             } else {
@@ -61,10 +59,6 @@ abstract class Authorization {
 
     static boolean isTokenizationKey(String tokenizationKey) {
         return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
-    }
-
-    static boolean isPayPalUAT(String payPalUAT) {
-        return !TextUtils.isEmpty(payPalUAT) && payPalUAT.matches(PayPalUAT.MATCHER);
     }
 
     static boolean isClientToken(String clientToken) {

@@ -2,7 +2,6 @@ package com.braintreepayments.demo.internal;
 
 import com.braintreepayments.demo.models.ClientToken;
 import com.braintreepayments.demo.models.Nonce;
-import com.braintreepayments.demo.models.PayPalUAT;
 import com.braintreepayments.demo.models.PaymentMethodToken;
 import com.braintreepayments.demo.models.Transaction;
 
@@ -18,9 +17,6 @@ public interface ApiClient {
 
     @GET("/client_token")
     void getClientToken(@Query("customer_id") String customerId, @Query("merchant_account_id") String merchantAccountId, Callback<ClientToken> callback);
-
-    @GET("/id-token")
-    void getPayPalUAT(@Query("countryCode") String countryCode, Callback<PayPalUAT> callback);
 
     @FormUrlEncoded
     @POST("/nonce/transaction")

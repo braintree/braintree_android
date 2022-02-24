@@ -46,7 +46,6 @@
     <string name="authorization_type">Authorization Type</string>
     <string name="client_token">Client Token</string>
     <string name="tokenization_key">Tokenization Key</string>
-    <string name="paypal_uat">PayPal UAT</string>
     <string name="customer">Customer</string>
     <string name="customer_summary">The customer id to use</string>
     <string name="merchant_account">Merchant Account</string>

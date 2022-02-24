@@ -114,29 +114,6 @@ public class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    public void get_withPayPalUAT_forwardsHttpRequestToHttpClient() throws MalformedURLException, URISyntaxException {
-        Authorization payPalUAT = Authorization.fromString(Fixtures.BASE64_PAYPAL_UAT);
-        BraintreeHttpClient sut = new BraintreeHttpClient(httpClient);
-
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getClientApiUrl()).thenReturn("https://example.com");
-
-        HttpResponseCallback callback = mock(HttpResponseCallback.class);
-        sut.get("sample/path", configuration, payPalUAT, callback);
-
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), eq(HttpClient.NO_RETRY), same(callback));
-
-        HttpRequest httpRequest = captor.getValue();
-        Map<String, String> headers = httpRequest.getHeaders();
-        String expectedUrlString = String.format("https://example.com/sample/path?authorizationFingerprint=%s", payPalUAT.getBearer());
-        assertEquals(new URL(expectedUrlString), httpRequest.getURL());
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers.get("User-Agent"));
-        assertNull(headers.get("Client-Key"));
-        assertEquals("GET", httpRequest.getMethod());
-    }
-
-    @Test
     public void get_withInvalidToken_forwardsExceptionToCallback() {
         Authorization authorization = new InvalidAuthorization("invalid", "token invalid");
         BraintreeHttpClient sut = new BraintreeHttpClient(httpClient);
