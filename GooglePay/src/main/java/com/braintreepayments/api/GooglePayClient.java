@@ -218,14 +218,14 @@ public class GooglePayClient {
     }
 
     public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request) {
-       requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
-           @Override
-           public void onResult(@Nullable Exception error) {
-               if (error != null) {
-                   listener.onGooglePayFailure(error);
-               }
-           }
-       });
+        requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
+            @Override
+            public void onResult(@Nullable Exception error) {
+                if (error != null) {
+                    listener.onGooglePayFailure(error);
+                }
+            }
+        });
     }
 
     /**
