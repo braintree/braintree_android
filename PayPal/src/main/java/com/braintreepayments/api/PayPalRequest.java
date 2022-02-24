@@ -24,6 +24,7 @@ public abstract class PayPalRequest implements Parcelable {
     static final String ADDRESS_OVERRIDE_KEY = "address_override";
     static final String LOCALE_CODE_KEY = "locale_code";
     static final String REQUEST_BILLING_AGREEMENT_KEY = "request_billing_agreement";
+    static final String BILLING_AGREEMENT_DETAILS_KEY = "billing_agreement_details";
     static final String DESCRIPTION_KEY = "description";
     static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     static final String TOKENIZATION_KEY = "client_key";
