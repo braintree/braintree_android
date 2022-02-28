@@ -46,7 +46,6 @@ public class SEPADebitNonce extends PaymentMethodNonce {
         this.mandateType = mandateType;
     }
 
-
     /**
      * @return The IBAN last four characters.
      */
