@@ -2411,4 +2411,23 @@ object Fixtures {
           "payment_shipping_method":""
         }
     """
+
+    //region SEPA Debit
+
+    // language=JSON
+    const val SEPA_DEBIT_TOKENIZE_RESPONSE = """
+        {
+             "type": "SEPADebit",
+             "nonce": "1194c322-9763-08b7-4777-0b9b5e5cc3e4",
+             "description": "SEPA Debit",
+             "consumed": false,
+             "details": {
+                "ibanLastChars": "1234", 
+                "customerId": "a-customer-id", 
+                "mandateType": "ONE_OFF"
+              }
+         }
+    """
+
+    //endregion
 }
