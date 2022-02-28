@@ -1,6 +1,90 @@
 # Migration Guide
 This is an in-process guide that will be updated as we update each payment method to support this flow. For now, this includes a code snippet of what the basic flows will look like in a merchant Activity/Fragment.
 
+## Google Pay
+
+```kotlin
+// MerchantActivity.kt
+class MerchantActivity : AppCompatActivity(), GooglePayListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var googlePayClient: GooglePayClient
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        braintreeClient =
+            BraintreeClient(this, MerchantClientTokenProvider())
+
+        googlePayClient = GooglePayClient(this, braintreeClient)
+        googlePayClient.listener = this
+    }
+
+    fun showGooglePay() {
+        ...
+        googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
+            if (isReadyToPay) {
+               // show Google Pay button
+            }
+        }
+    }
+
+    fun onGooglePayButtonClick(view: View) {
+        ...
+        googlePayClient.requestPayment(this, googlePayRequest)
+    }
+
+    override fun onGooglePaySuccess(paymentMethodNonce: PaymentMethodNonce) {
+        // send nonce to server and create a transaction
+    }
+
+    override fun onGooglePayFailure(error: Exception) {
+        // handle error
+    }
+}
+
+
+// MerchantFragment.kt
+class MerchantFragment: Fragment(), GooglePayListener {
+
+    lateinit var braintreeClient: BraintreeClient
+    lateinit var googlePayClient: GooglePayClien
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        braintreeClient =
+            BraintreeClient(this, MerchantClientTokenProvider())
+
+        googlePayClient = GooglePayClient(this, braintreeClient)
+        googlePayClient.listener = this
+    }
+
+    fun showGooglePay() {
+        ...
+        googlePayClient.isReadyToPay(requireActivity()) { isReadyToPay, error ->
+            if (isReadyToPay) {
+                // show Google Pay button
+            }
+        }
+    }
+
+    fun onGooglePayButtonClick(view: View) {
+        ...
+        googlePayClient.requestPayment(requireActivity(), googlePayRequest)
+    }
+
+    override fun onGooglePaySuccess(paymentMethodNonce: PaymentMethodNonce) {
+        // send nonce to server and create a transaction
+    }
+
+    override fun onGooglePayFailure(error: Exception) {
+        // handle error
+
+    }
+}
+```
+
 ## Venmo
 
 ```kotlin
@@ -18,6 +102,11 @@ class MerchantActivity : AppCompatActivity(), VenmoListener {
           
         venmoClient = VenmoClient(this, braintreeClient)
         venmoClient.listener = this
+    }
+    
+    fun launchVenmo() {
+        ...
+        venmoClient.tokenizeVenmoAccount(this, venmoRequest)
     }
    
     override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
@@ -44,6 +133,11 @@ class MerchantFragment: Fragment(), VenmoListener {
           
         venmoClient = VenmoClient(this, braintreeClient)
         venmoClient.listener = this
+    }
+
+    fun launchVenmo() {
+        ...
+        venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest)
     }
     
     override fun onVenmoSuccess(venmoAccountNonce: venmoAccountNonce) {

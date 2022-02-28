@@ -37,7 +37,7 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
         braintreeClient = getBraintreeClient();
-        googlePayClient = new GooglePayClient(braintreeClient);
+        googlePayClient = new GooglePayClient(this, braintreeClient);
         googlePayClient.setListener(this);
 
         return view;

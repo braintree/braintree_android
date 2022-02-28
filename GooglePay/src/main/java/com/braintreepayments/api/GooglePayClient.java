@@ -217,6 +217,12 @@ public class GooglePayClient {
         });
     }
 
+    /**
+     * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
+     *
+     * @param activity Android FragmentActivity
+     * @param request The {@link GooglePayRequest} containing options for the transaction.
+     */
     public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request) {
         requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
             @Override
@@ -231,10 +237,13 @@ public class GooglePayClient {
     /**
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
      *
+     * Deprecated. Use {@link GooglePayClient#requestPayment(FragmentActivity, GooglePayRequest)}.
+     *
      * @param activity Android FragmentActivity
      * @param request The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayRequestPaymentCallback}
      */
+    @Deprecated
     public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request, @NonNull final GooglePayRequestPaymentCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
@@ -354,10 +363,13 @@ public class GooglePayClient {
     }
 
     /**
+     * Deprecated. Use {@link GooglePayListener} to receive results.
+     *
      * @param resultCode a code associated with the Activity result
      * @param data Android Intent
      * @param callback {@link GooglePayOnActivityResultCallback}
      */
+    @Deprecated
     public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final GooglePayOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
