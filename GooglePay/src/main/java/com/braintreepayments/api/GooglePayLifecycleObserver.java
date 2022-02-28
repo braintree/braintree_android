@@ -10,7 +10,7 @@ import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 // NEXT_MAJOR_VERSION: Update to implement DefaultLifeCycleObserver when Java 7 support is explicitly dropped.
-public class GooglePayLifecycleObserver implements LifecycleEventObserver {
+class GooglePayLifecycleObserver implements LifecycleEventObserver {
 
     private static final String GOOGLE_PAY_RESULT = "com.braintreepayments.api.GooglePay.RESULT";
 
