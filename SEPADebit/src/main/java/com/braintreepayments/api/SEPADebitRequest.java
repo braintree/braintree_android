@@ -8,12 +8,28 @@ import androidx.annotation.Nullable;
  */
 public class SEPADebitRequest {
 
+    private String accountHolderName;
     private String iban;
     private String customerId;
     private String bankReferenceToken;
     private SEPADebitMandateType mandateType;
     private PostalAddress billingAddress;
     private String merchantAccountId;
+
+    /**
+     * @return The account holder name
+     */
+    @Nullable
+    public String getAccountHolderName() {
+        return accountHolderName;
+    }
+
+    /**
+     * @param accountHolderName The full IBAN.
+     */
+    public void setAccountHolderName(@Nullable String accountHolderName) {
+        this.accountHolderName = accountHolderName;
+    }
 
     /**
      * @return The full IBAN.
