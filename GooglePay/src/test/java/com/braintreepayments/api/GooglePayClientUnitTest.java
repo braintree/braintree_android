@@ -122,7 +122,6 @@ public class GooglePayClientUnitTest {
         GooglePayLifecycleObserver observer = captor.getValue();
         assertSame(resultRegistry, observer.activityResultRegistry);
         assertSame(sut, observer.googlePayClient);
-
     }
 
     @Test
@@ -132,7 +131,6 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient);
 
         verify(lifecycle, never()).addObserver(any(GooglePayLifecycleObserver.class));
-
     }
 
     // endregion
@@ -245,7 +243,29 @@ public class GooglePayClientUnitTest {
 
     @Test
     public void requestPayment_withObserver_launchesWithObserver() {
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .paypalClientId("paypal-client-id-for-google-payment")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
+                .withAnalytics()
+                .buildConfiguration();
 
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
+                .activityInfo(activityInfo)
+                .build();
+
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(null, null, braintreeClient, internalGooglePayClient);
+        sut.observer = mock(GooglePayLifecycleObserver.class);
+        sut.requestPayment(activity, baseRequest);
+
+        verify(sut.observer).launch(any(GooglePayIntentData.class));
     }
 
     @Test
@@ -271,13 +291,121 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(null, null, braintreeClient, internalGooglePayClient);
         sut.requestPayment(activity, baseRequest, requestPaymentCallback);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAY));
+        verify(activity).startActivityForResult(any(Intent.class), eq(BraintreeRequestCodes.GOOGLE_PAY));
     }
 
     @Test
-    public void requestPayment_withObserver_launchesWithOptionalValues() {
+    public void requestPayment_withObserver_launchesWithOptionalValues() throws JSONException {
+        Configuration configuration = new TestConfigurationBuilder()
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .paypalClientId("paypal-client-id-for-google-payment")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
+                .withAnalytics()
+                .buildConfiguration();
 
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
+                .activityInfo(activityInfo)
+                .build();
+
+        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.setAllowPrepaidCards(true);
+        googlePayRequest.setBillingAddressFormat(1);
+        googlePayRequest.setBillingAddressRequired(true);
+        googlePayRequest.setEmailRequired(true);
+        googlePayRequest.setPhoneNumberRequired(true);
+        googlePayRequest.setShippingAddressRequired(true);
+        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
+        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode("USD")
+                .build());
+
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+
+        GooglePayClient sut = new GooglePayClient(null, null, braintreeClient, internalGooglePayClient);
+        sut.observer = mock(GooglePayLifecycleObserver.class);
+        sut.requestPayment(activity, googlePayRequest);
+
+        ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(GooglePayIntentData.class);
+        verify(sut.observer).launch(captor.capture());
+
+        GooglePayIntentData intent = captor.getValue();
+
+        assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getGooglePayEnvironment());
+        PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
+
+        JSONObject paymentDataRequestJson = new JSONObject(paymentDataRequest.toJson());
+
+        assertEquals(2, paymentDataRequestJson.get("apiVersion"));
+        assertEquals(0, paymentDataRequestJson.get("apiVersionMinor"));
+
+        assertEquals(true, paymentDataRequestJson.get("emailRequired"));
+        assertEquals(true, paymentDataRequestJson.get("shippingAddressRequired"));
+
+        JSONObject transactionInfoJson = paymentDataRequestJson.getJSONObject("transactionInfo");
+        assertEquals("FINAL", transactionInfoJson.getString("totalPriceStatus"));
+        assertEquals("1.00", transactionInfoJson.getString("totalPrice"));
+        assertEquals("USD", transactionInfoJson.getString("currencyCode"));
+
+        JSONArray allowedPaymentMethods = paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
+        JSONObject paypal = allowedPaymentMethods.getJSONObject(0);
+        assertEquals("PAYPAL", paypal.getString("type"));
+
+        JSONArray purchaseUnits = paypal.getJSONObject("parameters")
+                .getJSONObject("purchase_context")
+                .getJSONArray("purchase_units");
+        assertEquals(1, purchaseUnits.length());
+
+        JSONObject purchaseUnit = purchaseUnits.getJSONObject(0);
+        assertEquals("paypal-client-id-for-google-payment", purchaseUnit.getJSONObject("payee")
+                .getString("client_id"));
+        assertEquals("true", purchaseUnit.getString("recurring_payment"));
+
+        JSONObject paypalTokenizationSpecification = paypal.getJSONObject("tokenizationSpecification");
+        assertEquals("PAYMENT_GATEWAY", paypalTokenizationSpecification.getString("type"));
+
+        JSONObject paypalTokenizationSpecificationParams = paypalTokenizationSpecification.getJSONObject("parameters");
+        assertEquals("braintree", paypalTokenizationSpecificationParams.getString("gateway"));
+        assertEquals("v1", paypalTokenizationSpecificationParams.getString("braintree:apiVersion"));
+
+        String googlePayModuleVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
+        assertEquals(googlePayModuleVersion, paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals("integration_merchant_id", paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
+        assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"));
+        assertEquals("paypal-client-id-for-google-payment", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
+
+        JSONObject card = allowedPaymentMethods.getJSONObject(1);
+        assertEquals("CARD", card.getString("type"));
+
+        JSONObject cardParams = card.getJSONObject("parameters");
+        assertTrue(cardParams.getBoolean("billingAddressRequired"));
+        assertTrue(cardParams.getBoolean("allowPrepaidCards"));
+
+        assertEquals("PAN_ONLY", cardParams.getJSONArray("allowedAuthMethods").getString(0));
+        assertEquals("CRYPTOGRAM_3DS", cardParams.getJSONArray("allowedAuthMethods").getString(1));
+
+        assertEquals("VISA", cardParams.getJSONArray("allowedCardNetworks").getString(0));
+        assertEquals("MASTERCARD", cardParams.getJSONArray("allowedCardNetworks").getString(1));
+        assertEquals("AMEX", cardParams.getJSONArray("allowedCardNetworks").getString(2));
+        assertEquals("DISCOVER", cardParams.getJSONArray("allowedCardNetworks").getString(3));
+
+        JSONObject tokenizationSpecification = card.getJSONObject("tokenizationSpecification");
+        assertEquals("PAYMENT_GATEWAY", tokenizationSpecification.getString("type"));
+
+        JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
+        assertEquals("braintree", cardTokenizationSpecificationParams.getString("gateway"));
+        assertEquals("v1", cardTokenizationSpecificationParams.getString("braintree:apiVersion"));
+        assertEquals(googlePayModuleVersion, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals("integration_merchant_id", cardTokenizationSpecificationParams.getString("braintree:merchantId"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", cardTokenizationSpecificationParams.getString("braintree:metadata"));
+        assertEquals("sandbox_tokenization_string", cardTokenizationSpecificationParams.getString("braintree:clientKey"));
     }
 
     @Test
