@@ -10,11 +10,11 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
@@ -23,9 +23,10 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
-public class GooglePayFragment extends BaseFragment {
+public class GooglePayFragment extends BaseFragment implements GooglePayListener {
 
     private ImageButton googlePayButton;
+    private BraintreeClient braintreeClient;
     private GooglePayClient googlePayClient;
 
     @Nullable
@@ -35,8 +36,9 @@ public class GooglePayFragment extends BaseFragment {
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getGooglePayActivityResult().observe(getViewLifecycleOwner(), this::handleGooglePayActivityResult);
+        braintreeClient = getBraintreeClient();
+        googlePayClient = new GooglePayClient(braintreeClient);
+        googlePayClient.setListener(this);
 
         return view;
     }
@@ -44,8 +46,6 @@ public class GooglePayFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        BraintreeClient braintreeClient = getBraintreeClient();
-        googlePayClient = new GooglePayClient(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, error) -> {
             if (configuration == null) {
@@ -101,11 +101,7 @@ public class GooglePayFragment extends BaseFragment {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.requestPayment(getActivity(), googlePayRequest, (requestPaymentError) -> {
-            if (requestPaymentError != null) {
-                handleError(requestPaymentError);
-            }
-        });
+        googlePayClient.requestPayment(getActivity(), googlePayRequest);
     }
 
     private void handleGooglePayActivityResult(ActivityResult activityResult) {
@@ -126,5 +122,15 @@ public class GooglePayFragment extends BaseFragment {
         NavDirections action =
                 GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    @Override
+    public void onGooglePaySuccess(@NonNull PaymentMethodNonce paymentMethodNonce) {
+        handleGooglePayActivityResult(paymentMethodNonce);
+    }
+
+    @Override
+    public void onGooglePayFailure(@NonNull Exception error) {
+        handleError(error);
     }
 }
