@@ -49,7 +49,6 @@ public class GooglePayLifecycleObserverUnitTest {
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(GooglePayActivityResultContract.class), Mockito.<ActivityResultCallback<GooglePayResult>>any());
     }
 
-
     @Test
     public void onCreate_whenActivityResultReceived_forwardsActivityResultToGooglePayClient() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);

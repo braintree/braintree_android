@@ -81,6 +81,7 @@ public class GooglePayClient {
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
+    @Deprecated
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new GooglePayInternalClient());
     }
