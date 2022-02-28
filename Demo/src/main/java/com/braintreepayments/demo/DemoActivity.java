@@ -37,8 +37,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
 
-    private DemoViewModel viewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +49,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         // perform reset on preference change
         Settings.getPreferences(this)
                 .registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> performReset());
-
-        viewModel = new ViewModelProvider(this).get(DemoViewModel.class);
     }
 
     @Override
@@ -88,7 +84,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        viewModel.onActivityResult(requestCode, resultCode, data);
     }
 
     private NavController getNavController() {
