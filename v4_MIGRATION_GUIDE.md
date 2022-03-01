@@ -196,8 +196,8 @@ The American Express feature is now supported by implementing the following depe
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:american-express:4.8.2'
-  implementation 'com.braintreepayments.api:card:4.8.2'
+  implementation 'com.braintreepayments.api:american-express:4.8.3'
+  implementation 'com.braintreepayments.api:card:4.8.3'
 }
 ```
 
@@ -256,7 +256,7 @@ The Card feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.8.2'
+  implementation 'com.braintreepayments.api:card:4.8.3'
 }
 ```
 
@@ -304,7 +304,7 @@ The Data Collector feature is now supported in the following dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:data-collector:4.8.2'
+  implementation 'com.braintreepayments.api:data-collector:4.8.3'
 }
 ```
 
@@ -339,7 +339,7 @@ The Local Payment feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:local-payment:4.8.2'
+  implementation 'com.braintreepayments.api:local-payment:4.8.3'
 }
 ```
 
@@ -420,7 +420,7 @@ The Google Pay feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:google-pay:4.8.2'
+  implementation 'com.braintreepayments.api:google-pay:4.8.3'
 }
 ```
 
@@ -497,7 +497,7 @@ The PayPal feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:paypal:4.8.2'
+  implementation 'com.braintreepayments.api:paypal:4.8.3'
 }
 ```
 
@@ -585,7 +585,7 @@ The SamsungPay feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:samsung-pay:4.8.2'
+  implementation 'com.braintreepayments.api:samsung-pay:4.8.3'
 }
 ```
 
@@ -683,7 +683,7 @@ The Union Pay feature is now supported by implementing the following dependencie
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:union-pay:4.8.2'
+  implementation 'com.braintreepayments.api:union-pay:4.8.3'
 }
 ```
 
@@ -750,7 +750,7 @@ The Venmo feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:venmo:4.8.2'
+  implementation 'com.braintreepayments.api:venmo:4.8.3'
 }
 ```
 
@@ -806,7 +806,7 @@ The 3D Secure feature is now supported in a single dependency:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:three-d-secure:4.8.2'
+  implementation 'com.braintreepayments.api:three-d-secure:4.8.3'
 }
 ```
 
