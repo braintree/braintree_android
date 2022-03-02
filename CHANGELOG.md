@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Google Pay
+  * Add `GooglePayListener` to receive results from the Google Pay flow
+  * Deprecate methods requiring a callback in favor of listener pattern 
 * ThreeDSecure
   * Add `ThreeDSecureListener` to receive results from the 3DS flow
   * Deprecate methods requiring a callback in favor of listener pattern
