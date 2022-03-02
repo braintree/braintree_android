@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-
 import androidx.annotation.NonNull;
 
 /**
