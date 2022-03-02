@@ -18,7 +18,6 @@
   * Add `LocalPaymentListener` to receive results from the Local Payment flow
   * Deprecate methods requiring a callback in favor of listener pattern
 
-
 ## 4.8.3
 
 * PayPal
