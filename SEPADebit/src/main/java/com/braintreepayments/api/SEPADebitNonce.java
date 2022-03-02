@@ -63,7 +63,7 @@ public class SEPADebitNonce extends PaymentMethodNonce {
     }
 
     /**
-     * @return The mandate type - either recurring or one off.
+     * @return The {@link SEPADebitMandateType}.
      */
     @SEPADebitMandateType
     @Nullable

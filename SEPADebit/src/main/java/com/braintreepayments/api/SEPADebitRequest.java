@@ -11,7 +11,6 @@ public class SEPADebitRequest {
     private String accountHolderName;
     private String iban;
     private String customerId;
-    private String bankReferenceToken;
     private SEPADebitMandateType mandateType;
     private PostalAddress billingAddress;
     private String merchantAccountId;
@@ -25,7 +24,7 @@ public class SEPADebitRequest {
     }
 
     /**
-     * @param accountHolderName The full IBAN.
+     * @param accountHolderName The account holder name.
      */
     public void setAccountHolderName(@Nullable String accountHolderName) {
         this.accountHolderName = accountHolderName;
@@ -62,22 +61,7 @@ public class SEPADebitRequest {
     }
 
     /**
-     * @return The bank reference token.
-     */
-    @NonNull
-    public String getBankReferenceToken() {
-        return bankReferenceToken;
-    }
-
-    /**
-     * @param bankReferenceToken The bank reference token.
-     */
-    public void setBankReferenceToken(@NonNull String bankReferenceToken) {
-        this.bankReferenceToken = bankReferenceToken;
-    }
-
-    /**
-     * @return The mandate type - either recurring or one off.
+     * @return The {@link SEPADebitMandateType}.
      */
     @NonNull
     public SEPADebitMandateType getMandateType() {
@@ -85,7 +69,7 @@ public class SEPADebitRequest {
     }
 
     /**
-     * @param mandateType The mandate type - either recurring or one off.
+     * @param mandateType The {@link SEPADebitMandateType}.
      */
     public void setMandateType(@NonNull SEPADebitMandateType mandateType) {
         this.mandateType = mandateType;
