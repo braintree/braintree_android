@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import android.util.Log;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +14,12 @@ class SEPADebitApi {
     private final HttpClient httpClient;
 
     SEPADebitApi() {
-        this.httpClient = new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser());
+        this(new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
+    }
+
+    @VisibleForTesting
+    SEPADebitApi(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     void createMandate(SEPADebitRequest sepaDebitRequest, final CreateMandateCallback callback) {
