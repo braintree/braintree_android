@@ -1,25 +1,41 @@
 package com.braintreepayments.api;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 class SEPADebitAPI {
 
     // TODO: switch this to ApiClient when Sandbox is ready
-    private final BraintreeHttpClient httpClient;
+    private final HttpClient httpClient;
 
-    SEPADebitAPI(BraintreeHttpClient httpClient) {
+    SEPADebitAPI(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
-    void createMandate(SEPADebitRequest request) {
+    void createMandate(SEPADebitRequest sepaDebitRequest) {
+        HttpRequest httpRequest;
+        try {
+            httpRequest = buildHttpRequest(sepaDebitRequest);
+        } catch (JSONException e) {
+            // TODO: handle error
+            return;
+        }
+        httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+            @Override
+            public void onResult(String responseBody, Exception httpError) {
 
+                Log.d("RESPONSE", responseBody);
+            }
+        });
         // construct HTTP request
         // make HTTP request
         // callback result
     }
 
     private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest) throws JSONException {
+        // TODO: handle optional request params
         JSONObject billingAddress = new JSONObject()
                 .putOpt("address_line_1", sepaDebitRequest.getBillingAddress().getStreetAddress())
                 .putOpt("address_line_2", sepaDebitRequest.getBillingAddress().getExtendedAddress())
