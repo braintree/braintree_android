@@ -1,6 +1,9 @@
 package com.braintreepayments.api;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -54,9 +57,15 @@ public class SEPADebitClient {
      * @param sepaDebitRequest the {@link SEPADebitRequest}.
      */
     public void tokenize(FragmentActivity activity, SEPADebitRequest sepaDebitRequest) {
-        // create mandate request from sepaDebitRequest properties
-        // browser switch to show mandate
-        sepaDebitAPI.createMandate(sepaDebitRequest);
+        sepaDebitAPI.createMandate(sepaDebitRequest, new CreateMandateCallback() {
+            @Override
+            public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
+                if (result != null) {
+                    Log.d("GOT A RESULT");
+                }
+                // browser switch to show mandate
+            }
+        });
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {

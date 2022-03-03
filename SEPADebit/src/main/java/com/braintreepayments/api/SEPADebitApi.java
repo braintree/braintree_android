@@ -17,22 +17,36 @@ class SEPADebitApi {
         this.httpClient = new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser());
     }
 
-    void createMandate(SEPADebitRequest sepaDebitRequest) {
+    void createMandate(SEPADebitRequest sepaDebitRequest, final CreateMandateCallback callback) {
         HttpRequest httpRequest;
         try {
             httpRequest = buildHttpRequest(sepaDebitRequest);
+            httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+                @Override
+                public void onResult(String responseBody, Exception httpError) {
+                    try {
+                        CreateMandateResult result = parseResponse(responseBody);
+                        callback.onResult(result, null);
+                    } catch (JSONException e) {
+                        callback.onResult(null, e);
+                    }
+                }
+            });
         } catch (JSONException e) {
-            // TODO: handle error
-            return;
+            callback.onResult(null, e);
         }
-        httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                Log.d("RESPONSE", responseBody);
-            }
-        });
+    }
 
-        // callback result
+    private CreateMandateResult parseResponse(String responseBody) throws JSONException {
+        JSONObject json = new JSONObject(responseBody);
+        JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");
+        String approvalUrl = sepaDebitAccount.getString("approvalUrl");
+        String ibanLastFour = sepaDebitAccount.getString("ibaneLastChars");
+        String customerId = sepaDebitAccount.getString("customerId");
+        String bankReferenceToken = sepaDebitAccount.getString("bankReferenceToken");
+        String mandateType = sepaDebitAccount.getString("mandateType");
+
+        return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
     private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest) throws JSONException {
