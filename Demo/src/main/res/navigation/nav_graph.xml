@@ -158,7 +158,6 @@
     <fragment
         android:id="@+id/SEPADebitFragment"
         android:name="com.braintreepayments.demo.SEPADebitFragment"
-        android:label="fragment_sepa_debit"
         tools:layout="@layout/fragment_sepa_debit" >
         <action
             android:id="@+id/action_sepaDebitFragment_to_displayNonceFragment"
