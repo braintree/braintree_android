@@ -165,6 +165,5 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
-
-
+    
 </navigation>
