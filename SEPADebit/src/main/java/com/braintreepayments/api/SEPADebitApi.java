@@ -41,7 +41,7 @@ class SEPADebitApi {
         JSONObject json = new JSONObject(responseBody);
         JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");
         String approvalUrl = sepaDebitAccount.getString("approvalUrl");
-        String ibanLastFour = sepaDebitAccount.getString("ibaneLastChars");
+        String ibanLastFour = sepaDebitAccount.getString("ibanLastChars");
         String customerId = sepaDebitAccount.getString("customerId");
         String bankReferenceToken = sepaDebitAccount.getString("bankReferenceToken");
         String mandateType = sepaDebitAccount.getString("mandateType");

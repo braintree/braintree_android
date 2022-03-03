@@ -61,7 +61,7 @@ public class SEPADebitClient {
             @Override
             public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                 if (result != null) {
-                    Log.d("GOT A RESULT");
+                    Log.d("GOT A RESULT", result.getApprovalUrl());
                 }
                 // browser switch to show mandate
             }
