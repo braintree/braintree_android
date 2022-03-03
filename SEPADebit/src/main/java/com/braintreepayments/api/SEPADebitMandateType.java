@@ -1,19 +1,35 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.StringDef;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import androidx.annotation.NonNull;
 
 /**
  * Mandate type for the SEPA Debit request.
  */
-@Retention(RetentionPolicy.SOURCE)
-@StringDef({
-        SEPADebitMandateType.RECURRENT,
-        SEPADebitMandateType.ONE_OFF
-})
-public @interface SEPADebitMandateType {
-    String RECURRENT = "RECURRENT";
-    String ONE_OFF = "ONE_OFF";
+public enum SEPADebitMandateType {
+    RECURRENT("RECURRENT"),
+    ONE_OFF("ONE_OFF")
+    ;
+
+    private final String mandateType;
+
+    SEPADebitMandateType(final String mandateType) {
+        this.mandateType = mandateType;
+    }
+
+    static SEPADebitMandateType fromString(String mandateType) {
+        switch (mandateType) {
+            case "RECURRENT":
+                return SEPADebitMandateType.RECURRENT;
+            case "ONE_OFF":
+                return SEPADebitMandateType.ONE_OFF;
+            default:
+                return null;
+        }
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return mandateType;
+    }
 }

@@ -22,24 +22,24 @@ public class SEPADebitNonce extends PaymentMethodNonce {
 
     private final String ibanLastFour;
     private final String customerId;
-    private final String mandateType;
+    private final SEPADebitMandateType mandateType;
 
     static SEPADebitNonce fromJSON(JSONObject inputJson) throws JSONException {
         String nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY);
         JSONObject details = inputJson.optJSONObject(DETAILS_KEY);
         String ibanLastFour = null;
         String customerId = null;
-        String mandateType = null;
+        SEPADebitMandateType mandateType = null;
         if (details != null) {
             ibanLastFour = details.optString(IBAN_LAST_FOUR_KEY);
             customerId = details.optString(CUSTOMER_ID_KEY);
-            mandateType = details.optString(MANDATE_TYPE_KEY);
+            mandateType = SEPADebitMandateType.fromString(details.optString(MANDATE_TYPE_KEY));
         }
 
         return new SEPADebitNonce(nonce, false, ibanLastFour, customerId, mandateType);
     }
 
-    private SEPADebitNonce(String nonce, boolean isDefault, String ibanLastFour, String customerId, String mandateType) {
+    private SEPADebitNonce(String nonce, boolean isDefault, String ibanLastFour, String customerId, SEPADebitMandateType mandateType) {
         super(nonce, isDefault);
         this.ibanLastFour = ibanLastFour;
         this.customerId = customerId;
@@ -65,9 +65,8 @@ public class SEPADebitNonce extends PaymentMethodNonce {
     /**
      * @return The {@link SEPADebitMandateType}.
      */
-    @SEPADebitMandateType
     @Nullable
-    public String getMandateType() {
+    public SEPADebitMandateType getMandateType() {
         return mandateType;
     }
 
@@ -75,7 +74,7 @@ public class SEPADebitNonce extends PaymentMethodNonce {
         super(in);
         ibanLastFour = in.readString();
         customerId = in.readString();
-        mandateType = in.readString();
+        mandateType = SEPADebitMandateType.fromString(in.readString());
     }
 
     @Override
@@ -83,7 +82,7 @@ public class SEPADebitNonce extends PaymentMethodNonce {
         super.writeToParcel(dest, flags);
         dest.writeString(ibanLastFour);
         dest.writeString(customerId);
-        dest.writeString(mandateType);
+        dest.writeString(mandateType.toString());
     }
 
     public static final Creator<SEPADebitNonce> CREATOR = new Creator<SEPADebitNonce>() {
