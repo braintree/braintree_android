@@ -3,11 +3,14 @@ package com.braintreepayments.api;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 /**
  * Used to integrate with SEPA Debit.
  */
 public class SEPADebitClient {
+
+    private SEPADebitApi sepaDebitAPI;
 
     /**
      * Create a new instance of {@link SEPADebitClient} from within an Activity using a {@link BraintreeClient}.
@@ -26,7 +29,12 @@ public class SEPADebitClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public SEPADebitClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADebitApi());
 
+    }
+
+    SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
+        this.sepaDebitAPI = sepaDebitAPI;
     }
 
     /**
@@ -48,6 +56,7 @@ public class SEPADebitClient {
     public void tokenize(FragmentActivity activity, SEPADebitRequest sepaDebitRequest) {
         // create mandate request from sepaDebitRequest properties
         // browser switch to show mandate
+        sepaDebitAPI.createMandate(sepaDebitRequest);
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {

@@ -5,13 +5,16 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class SEPADebitAPI {
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+
+class SEPADebitApi {
 
     // TODO: switch this to ApiClient when Sandbox is ready
     private final HttpClient httpClient;
 
-    SEPADebitAPI(HttpClient httpClient) {
-        this.httpClient = httpClient;
+    SEPADebitApi() {
+        this.httpClient = new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser());
     }
 
     void createMandate(SEPADebitRequest sepaDebitRequest) {
@@ -25,12 +28,10 @@ class SEPADebitAPI {
         httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
             @Override
             public void onResult(String responseBody, Exception httpError) {
-
                 Log.d("RESPONSE", responseBody);
             }
         });
-        // construct HTTP request
-        // make HTTP request
+
         // callback result
     }
 
@@ -65,5 +66,13 @@ class SEPADebitAPI {
         return request;
     }
 
+    // TODO: Remove this when feature is in sandbox and ApiClient can be used
+    private static SSLSocketFactory getSocketFactory() {
+        try {
+            return new TLSSocketFactory(BraintreeGatewayCertificate.getCertInputStream());
+        } catch (SSLException e) {
+            return null;
+        }
+    }
 
 }
