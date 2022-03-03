@@ -17,6 +17,7 @@
     <string name="ideal_bank_icon">iDEAL bank icon</string>
     <string name="local_payment_button">Local Payment</string>
     <string name="preferred_payment_methods_button">Pref Payment Methods</string>
+    <string name="sepa_debit_button">SEPA Debit</string>
     <string name="cards">Credit or Debit Cards</string>
     <string name="samsung_pay">Samsung Pay</string>
     <string name="create_transaction">Create a Transaction</string>
@@ -118,4 +119,6 @@
 
     <!-- SamsungPay -->
     <string name="bt_start_samsung_pay">Start SamsungPay</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
