@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".SEPADebitFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+    <Button
+        android:id="@+id/sepa_debit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sepa_debit_button" />
+
+    </LinearLayout>
 
 </FrameLayout>
