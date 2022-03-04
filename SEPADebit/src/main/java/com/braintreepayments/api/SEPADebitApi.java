@@ -22,10 +22,10 @@ class SEPADebitApi {
         this.httpClient = httpClient;
     }
 
-    void createMandate(SEPADebitRequest sepaDebitRequest, final CreateMandateCallback callback) {
+    void createMandate(SEPADebitRequest sepaDebitRequest, Configuration configuration, final CreateMandateCallback callback) {
         HttpRequest httpRequest;
         try {
-            httpRequest = buildHttpRequest(sepaDebitRequest);
+            httpRequest = buildHttpRequest(sepaDebitRequest, configuration);
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
@@ -54,26 +54,38 @@ class SEPADebitApi {
         return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
-    private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest) throws JSONException {
-        // TODO: handle optional request params
-        JSONObject billingAddress = new JSONObject()
-                .putOpt("address_line_1", sepaDebitRequest.getBillingAddress().getStreetAddress())
-                .putOpt("address_line_2", sepaDebitRequest.getBillingAddress().getExtendedAddress())
-                .putOpt("admin_area_1", sepaDebitRequest.getBillingAddress().getLocality())
-                .putOpt("admin_area_2", sepaDebitRequest.getBillingAddress().getRegion())
-                .putOpt("postal_code", sepaDebitRequest.getBillingAddress().getPostalCode())
-                .putOpt("country_code", sepaDebitRequest.getBillingAddress().getCountryCodeAlpha2());
+    private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest, Configuration configuration) throws JSONException {
         JSONObject sepaDebitData = new JSONObject()
-                .putOpt("account_holder_name", sepaDebitRequest.getAccountHolderName())
-                .putOpt("customer_id", sepaDebitRequest.getCustomerId())
-                .put("iban", sepaDebitRequest.getIban())
-                .put("mandate_type", sepaDebitRequest.getMandateType().toString())
-                .put("billing_address", billingAddress);
+            .putOpt("account_holder_name", sepaDebitRequest.getAccountHolderName())
+            .putOpt("customer_id", sepaDebitRequest.getCustomerId())
+            .putOpt("iban", sepaDebitRequest.getIban());
+
+        if (sepaDebitRequest.getMandateType() != null) {
+            sepaDebitData.putOpt("mandate_type", sepaDebitRequest.getMandateType().toString());
+        }
+
+        if (sepaDebitRequest.getBillingAddress() != null) {
+            JSONObject billingAddress = new JSONObject()
+                    .putOpt("address_line_1", sepaDebitRequest.getBillingAddress().getStreetAddress())
+                    .putOpt("address_line_2", sepaDebitRequest.getBillingAddress().getExtendedAddress())
+                    .putOpt("admin_area_1", sepaDebitRequest.getBillingAddress().getLocality())
+                    .putOpt("admin_area_2", sepaDebitRequest.getBillingAddress().getRegion())
+                    .putOpt("postal_code", sepaDebitRequest.getBillingAddress().getPostalCode())
+                    .putOpt("country_code", sepaDebitRequest.getBillingAddress().getCountryCodeAlpha2());
+
+            sepaDebitData.put("billing_address", billingAddress);
+        }
+
         JSONObject requestData = new JSONObject()
                 .put("sepa_debit", sepaDebitData)
-                .put("cancel_url", "https://example.com")
-                .put("return_url", "https://example.com")
-                .put("merchant_account_id", "eur_pwpp_multi_account_merchant_account");
+                .put("cancel_url", "https://example.com") // TODO: set this in browser switch flow
+                .put("return_url", "https://example.com"); // TODO: set this in browser switch flow
+
+        if (sepaDebitRequest.getMerchantAccountId() != null) {
+            requestData.put("merchant_account_id", sepaDebitRequest.getMerchantAccountId());
+        } else {
+            requestData.putOpt("merchant_account_id", configuration.getMerchantAccountId());
+        }
 
         HttpRequest request = new HttpRequest()
                 .baseUrl("http://10.0.2.2:3000/")

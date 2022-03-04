@@ -55,7 +55,7 @@ public class SEPADebitApiUnitTest {
         request.setMandateType(SEPADebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
 
-        sut.createMandate(request, createMandateCallback);
+        sut.createMandate(request, null, createMandateCallback);
 
         ArgumentCaptor<CreateMandateResult> captor = ArgumentCaptor.forClass(CreateMandateResult.class);
         verify(createMandateCallback).onResult(captor.capture(), (Exception) isNull());

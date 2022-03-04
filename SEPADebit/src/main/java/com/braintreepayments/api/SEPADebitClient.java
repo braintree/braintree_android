@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle;
 public class SEPADebitClient {
 
     private SEPADebitApi sepaDebitAPI;
+    private BraintreeClient braintreeClient;
 
     /**
      * Create a new instance of {@link SEPADebitClient} from within an Activity using a {@link BraintreeClient}.
@@ -38,6 +39,7 @@ public class SEPADebitClient {
 
     SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
         this.sepaDebitAPI = sepaDebitAPI;
+        this.braintreeClient = braintreeClient;
     }
 
     /**
@@ -56,14 +58,23 @@ public class SEPADebitClient {
      * @param activity an Android FragmentActivity
      * @param sepaDebitRequest the {@link SEPADebitRequest}.
      */
-    public void tokenize(FragmentActivity activity, SEPADebitRequest sepaDebitRequest) {
-        sepaDebitAPI.createMandate(sepaDebitRequest, new CreateMandateCallback() {
+    public void tokenize(FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
-                if (result != null) {
-                    Log.d("GOT A RESULT", result.getApprovalUrl());
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration != null) {
+                    sepaDebitAPI.createMandate(sepaDebitRequest, configuration, new CreateMandateCallback() {
+                        @Override
+                        public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
+                            if (result != null) {
+                                Log.d("GOT A RESULT", result.getApprovalUrl());
+                            }
+                            // browser switch to show mandate
+                        }
+                    });
+                } else {
+                    // TODO: handle error
                 }
-                // browser switch to show mandate
             }
         });
     }
