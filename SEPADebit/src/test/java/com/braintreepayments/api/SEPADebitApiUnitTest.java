@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import org.json.JSONException;
@@ -65,8 +66,6 @@ public class SEPADebitApiUnitTest {
 
     @Test
     public void createMandate_buildHttpRequest_withAllParams() throws JSONException {
-        SEPADebitApi sut = new SEPADebitApi(httpClient);
-
         PostalAddress billingAddress = new PostalAddress();
         billingAddress.setStreetAddress("Kantstraße 70");
         billingAddress.setExtendedAddress("#170");
@@ -83,6 +82,7 @@ public class SEPADebitApiUnitTest {
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("a_merchant_account_id");
 
+        SEPADebitApi sut = new SEPADebitApi(httpClient);
         sut.createMandate(request, null, createMandateCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -111,6 +111,24 @@ public class SEPADebitApiUnitTest {
         assertEquals("Annaberg-buchholz", billingAddressData.get("admin_area_2"));
         assertEquals("09456", billingAddressData.get("postal_code"));
         assertEquals("FR", billingAddressData.get("country_code"));
+    }
+
+    @Test
+    public void createMandate_whenMerchantIdNotSetOnRequest_usesConfiguration() throws JSONException {
+        SEPADebitRequest request = new SEPADebitRequest();
+
+        Configuration mockConfiguration = mock(Configuration.class);
+        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
+
+        SEPADebitApi sut = new SEPADebitApi(httpClient);
+        sut.createMandate(request, mockConfiguration, createMandateCallback);
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
+
+        HttpRequest result = captor.getValue();
+        JSONObject data =new JSONObject(new String(result.getData()));
+        assertEquals("a_merchant_account_id", data.get("merchant_account_id"));
     }
 
     @Test
