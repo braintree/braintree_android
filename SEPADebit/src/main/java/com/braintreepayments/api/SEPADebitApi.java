@@ -82,8 +82,8 @@ class SEPADebitApi {
 
         JSONObject requestData = new JSONObject()
                 .put("sepa_debit", sepaDebitData)
-                .put("cancel_url", "https://example.com") // TODO: set this in browser switch flow
-                .put("return_url", "https://example.com"); // TODO: set this in browser switch flow
+                .put("cancel_url", "https://example.com") // TODO: FUTURE PR set this in browser switch flow
+                .put("return_url", "https://example.com"); // TODO: FUTURE PR set this in browser switch flow
 
         if (sepaDebitRequest.getMerchantAccountId() != null) {
             requestData.put("merchant_account_id", sepaDebitRequest.getMerchantAccountId());
@@ -109,5 +109,4 @@ class SEPADebitApi {
             return null;
         }
     }
-
 }

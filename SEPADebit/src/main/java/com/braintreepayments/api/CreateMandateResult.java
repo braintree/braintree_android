@@ -16,23 +16,23 @@ class CreateMandateResult {
        this.mandateType = SEPADebitMandateType.fromString(mandateType);
     }
 
-    public String getApprovalUrl() {
+    String getApprovalUrl() {
         return approvalUrl;
     }
 
-    public String getIbanLastFour() {
+    String getIbanLastFour() {
         return ibanLastFour;
     }
 
-    public String getCustomerId() {
+    String getCustomerId() {
         return customerId;
     }
 
-    public String getBankReferenceToken() {
+    String getBankReferenceToken() {
         return bankReferenceToken;
     }
 
-    public SEPADebitMandateType getMandateType() {
+    SEPADebitMandateType getMandateType() {
         return mandateType;
     }
 

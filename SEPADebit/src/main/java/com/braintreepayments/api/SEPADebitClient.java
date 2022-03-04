@@ -34,7 +34,6 @@ public class SEPADebitClient {
      */
     public SEPADebitClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADebitApi());
-
     }
 
     SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
