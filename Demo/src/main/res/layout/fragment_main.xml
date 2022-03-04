@@ -101,4 +101,29 @@
             android:text="@string/preferred_payment_methods_button"
             android:textSize="12sp" />
     </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/sepa_debit"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sepa_debit_button"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/future_feature"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="12sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </TableRow>
 </TableLayout>
