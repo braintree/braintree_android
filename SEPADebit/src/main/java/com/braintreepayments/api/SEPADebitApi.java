@@ -29,11 +29,15 @@ class SEPADebitApi {
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
-                    try {
-                        CreateMandateResult result = parseResponse(responseBody);
-                        callback.onResult(result, null);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
+                    if (responseBody != null) {
+                        try {
+                            CreateMandateResult result = parseResponse(responseBody);
+                            callback.onResult(result, null);
+                        } catch (JSONException e) {
+                            callback.onResult(null, e);
+                        }
+                    } else if (httpError != null) {
+                        callback.onResult(null, httpError);
                     }
                 }
             });

@@ -1,8 +1,11 @@
 package com.braintreepayments.api;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -133,11 +136,52 @@ public class SEPADebitApiUnitTest {
 
     @Test
     public void createMandate_onInvalidResponseJSON_callsBackError() {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
+                callback.onResult("not-json", null);
+                return null;
+            }
+        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
 
+        SEPADebitRequest request = new SEPADebitRequest();
+
+        Configuration mockConfiguration = mock(Configuration.class);
+        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
+
+        SEPADebitApi sut = new SEPADebitApi(httpClient);
+        sut.createMandate(request, mockConfiguration, createMandateCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(createMandateCallback).onResult((CreateMandateResult) isNull(), captor.capture());
+        Exception error = captor.getValue();
+
+        assertNotNull(error);
+        assertTrue(error instanceof JSONException);
     }
 
     @Test
     public void createMandate_onHttpResponseError_callsBackError() {
+        final Exception exception = new Exception("http-error");
 
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
+                callback.onResult(null, exception);
+                return null;
+            }
+        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
+
+        SEPADebitRequest request = new SEPADebitRequest();
+
+        Configuration mockConfiguration = mock(Configuration.class);
+        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
+
+        SEPADebitApi sut = new SEPADebitApi(httpClient);
+        sut.createMandate(request, mockConfiguration, createMandateCallback);
+
+        verify(createMandateCallback).onResult((CreateMandateResult) isNull(), same(exception));
     }
 }
