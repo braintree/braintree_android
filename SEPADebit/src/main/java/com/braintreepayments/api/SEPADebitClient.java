@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ public class SEPADebitClient {
 
     private SEPADebitApi sepaDebitAPI;
     private BraintreeClient braintreeClient;
+    private SEPADebitListener listener;
 
     /**
      * Create a new instance of {@link SEPADebitClient} from within an Activity using a {@link BraintreeClient}.
@@ -52,7 +54,8 @@ public class SEPADebitClient {
      * @param listener a {@link SEPADebitListener}
      */
     public void setListener(SEPADebitListener listener) {
-
+        // TODO: handle delivering pending browser switch result when listener is set
+        this.listener = listener;
     }
 
     /**
@@ -65,23 +68,28 @@ public class SEPADebitClient {
     public void tokenize(final FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                 if (configuration != null) {
                     sepaDebitAPI.createMandate(sepaDebitRequest, configuration, new CreateMandateCallback() {
                         @Override
                         public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                             if (result != null) {
-                                Log.d("GOT A RESULT", result.getApprovalUrl());
-                                try {
-                                    startBrowserSwitch(activity, result);
-                                } catch (JSONException | BrowserSwitchException exception) {
-                                    // TODO: return error to listener
+                                if (URLUtil.isValidUrl(result.getApprovalUrl())) {
+                                    try {
+                                        startBrowserSwitch(activity, result);
+                                    } catch (JSONException | BrowserSwitchException exception) {
+                                        listener.onSEPADebitFailure(exception);
+                                    }
+                                } else {
+                                    listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
+                            } else if (error != null) {
+                                listener.onSEPADebitFailure(error);
                             }
                         }
                     });
-                } else {
-                    // TODO: handle error
+                } else if (configError != null) {
+                    listener.onSEPADebitFailure(configError);
                 }
             }
         });
