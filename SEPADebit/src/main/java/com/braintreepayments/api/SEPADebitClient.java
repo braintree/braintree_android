@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.net.Uri;
-import android.util.Log;
 import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
@@ -18,8 +17,8 @@ import org.json.JSONException;
  */
 public class SEPADebitClient {
 
-    private SEPADebitApi sepaDebitAPI;
-    private BraintreeClient braintreeClient;
+    private final SEPADebitApi sepaDebitAPI;
+    private final BraintreeClient braintreeClient;
     private SEPADebitListener listener;
 
     /**
@@ -105,6 +104,10 @@ public class SEPADebitClient {
         // parse deep link URL from browser switch result
         // call SEPADebitAPI#tokenize method
         // deliver result to listener
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
     }
 
     private void startBrowserSwitch(FragmentActivity activity, CreateMandateResult createMandateResult) throws JSONException, BrowserSwitchException {

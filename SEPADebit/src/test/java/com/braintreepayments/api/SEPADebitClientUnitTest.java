@@ -70,14 +70,13 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         Fragment fragment = mock(Fragment.class);
         when(fragment.getActivity()).thenReturn(activity);
         when(fragment.getLifecycle()).thenReturn(lifecycle);
 
-        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        SEPADebitClient sut = new SEPADebitClient(fragment, braintreeClient);
 
         ArgumentCaptor<SEPADebitLifecycleObserver> captor = ArgumentCaptor.forClass(SEPADebitLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
@@ -88,13 +87,12 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         FragmentActivity activity = mock(FragmentActivity.class);
         when(activity.getLifecycle()).thenReturn(lifecycle);
 
-        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        SEPADebitClient sut = new SEPADebitClient(activity, braintreeClient);
 
         ArgumentCaptor<SEPADebitLifecycleObserver> captor = ArgumentCaptor.forClass(SEPADebitLifecycleObserver.class);
         verify(lifecycle).addObserver(captor.capture());
