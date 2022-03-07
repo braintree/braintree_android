@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -39,6 +40,7 @@ public class SEPADebitClient {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADebitApi());
     }
 
+    @VisibleForTesting
     SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
         this.sepaDebitAPI = sepaDebitAPI;
         this.braintreeClient = braintreeClient;
