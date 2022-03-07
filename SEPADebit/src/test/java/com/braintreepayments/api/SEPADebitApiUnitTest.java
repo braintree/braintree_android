@@ -27,11 +27,28 @@ public class SEPADebitApiUnitTest {
 
     private HttpClient httpClient;
     private CreateMandateCallback createMandateCallback;
+    private SEPADebitRequest request;
+    private PostalAddress billingAddress;
 
     @Before
     public void beforeEach() {
         httpClient = mock(HttpClient.class);
         createMandateCallback = mock(CreateMandateCallback.class);
+
+        request = new SEPADebitRequest();
+        request.setAccountHolderName("John Doe");
+        request.setCustomerId("a-customer-id");
+        request.setIban("FR7618106000321234566666610");
+        request.setMandateType(SEPADebitMandateType.RECURRENT);
+        request.setMerchantAccountId("a_merchant_account_id");
+
+        billingAddress = new PostalAddress();
+        billingAddress.setStreetAddress("Kantstraße 70");
+        billingAddress.setExtendedAddress("#170");
+        billingAddress.setLocality("Freistaat Sachsen");
+        billingAddress.setRegion("Annaberg-buchholz");
+        billingAddress.setPostalCode("09456");
+        billingAddress.setCountryCodeAlpha2("FR");
     }
 
     @Test
@@ -46,13 +63,6 @@ public class SEPADebitApiUnitTest {
         }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
-
-        SEPADebitRequest request = new SEPADebitRequest();
-        request.setAccountHolderName("John Doe");
-        request.setCustomerId("a-customer-id");
-        request.setIban("FR7618106000321234566666610");
-        request.setMandateType(SEPADebitMandateType.RECURRENT);
-        request.setMerchantAccountId("a_merchant_account_id");
 
         sut.createMandate(request, null, createMandateCallback);
 
@@ -69,21 +79,7 @@ public class SEPADebitApiUnitTest {
 
     @Test
     public void createMandate_buildHttpRequest_withAllParams() throws JSONException {
-        PostalAddress billingAddress = new PostalAddress();
-        billingAddress.setStreetAddress("Kantstraße 70");
-        billingAddress.setExtendedAddress("#170");
-        billingAddress.setLocality("Freistaat Sachsen");
-        billingAddress.setRegion("Annaberg-buchholz");
-        billingAddress.setPostalCode("09456");
-        billingAddress.setCountryCodeAlpha2("FR");
-
-        SEPADebitRequest request = new SEPADebitRequest();
-        request.setAccountHolderName("John Doe");
-        request.setCustomerId("a-customer-id");
-        request.setIban("FR7618106000321234566666610");
-        request.setMandateType(SEPADebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
-        request.setMerchantAccountId("a_merchant_account_id");
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
         sut.createMandate(request, null, createMandateCallback);
@@ -91,13 +87,13 @@ public class SEPADebitApiUnitTest {
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
 
-        HttpRequest result = captor.getValue();
-        assertEquals("POST", result.getMethod());
-        assertEquals("application/json", result.getHeaders().get("Content-Type"));
-        assertEquals("development_testing_pwpp_multi_account_merchant", result.getHeaders().get("Client-Key"));
-        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/sepa_debit", result.getPath());
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals("POST", httpRequest.getMethod());
+        assertEquals("application/json", httpRequest.getHeaders().get("Content-Type"));
+        assertEquals("development_testing_pwpp_multi_account_merchant", httpRequest.getHeaders().get("Client-Key"));
+        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/sepa_debit", httpRequest.getPath());
 
-        JSONObject data =new JSONObject(new String(result.getData()));
+        JSONObject data =new JSONObject(new String(httpRequest.getData()));
         JSONObject sepaDebitData = data.getJSONObject("sepa_debit");
         assertEquals("a_merchant_account_id", data.get("merchant_account_id"));
 
@@ -129,8 +125,8 @@ public class SEPADebitApiUnitTest {
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
 
-        HttpRequest result = captor.getValue();
-        JSONObject data =new JSONObject(new String(result.getData()));
+        HttpRequest httpRequest = captor.getValue();
+        JSONObject data =new JSONObject(new String(httpRequest.getData()));
         assertEquals("a_merchant_account_id", data.get("merchant_account_id"));
     }
 
@@ -144,8 +140,6 @@ public class SEPADebitApiUnitTest {
                 return null;
             }
         }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
-
-        SEPADebitRequest request = new SEPADebitRequest();
 
         Configuration mockConfiguration = mock(Configuration.class);
         when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
@@ -173,8 +167,6 @@ public class SEPADebitApiUnitTest {
                 return null;
             }
         }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
-
-        SEPADebitRequest request = new SEPADebitRequest();
 
         Configuration mockConfiguration = mock(Configuration.class);
         when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
