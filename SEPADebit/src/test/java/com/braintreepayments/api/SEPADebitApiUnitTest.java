@@ -87,13 +87,13 @@ public class SEPADebitApiUnitTest {
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
 
-        HttpRequest result = captor.getValue();
-        assertEquals("POST", result.getMethod());
-        assertEquals("application/json", result.getHeaders().get("Content-Type"));
-        assertEquals("development_testing_pwpp_multi_account_merchant", result.getHeaders().get("Client-Key"));
-        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/sepa_debit", result.getPath());
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals("POST", httpRequest.getMethod());
+        assertEquals("application/json", httpRequest.getHeaders().get("Content-Type"));
+        assertEquals("development_testing_pwpp_multi_account_merchant", httpRequest.getHeaders().get("Client-Key"));
+        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/sepa_debit", httpRequest.getPath());
 
-        JSONObject data =new JSONObject(new String(result.getData()));
+        JSONObject data =new JSONObject(new String(httpRequest.getData()));
         JSONObject sepaDebitData = data.getJSONObject("sepa_debit");
         assertEquals("a_merchant_account_id", data.get("merchant_account_id"));
 
