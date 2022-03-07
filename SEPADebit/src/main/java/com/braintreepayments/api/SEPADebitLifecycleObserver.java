@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -9,8 +10,11 @@ import androidx.lifecycle.LifecycleOwner;
 // NEXT_MAJOR_VERSION: Update to implement DefaultLifeCycleObserver when Java 7 support is explicitly dropped.
 class SEPADebitLifecycleObserver implements LifecycleEventObserver {
 
-    SEPADebitLifecycleObserver(@NonNull SEPADebitClient sepaDebitClient) {
+    @VisibleForTesting
+    SEPADebitClient sepaDebitClient;
 
+    SEPADebitLifecycleObserver(@NonNull SEPADebitClient sepaDebitClient) {
+        this.sepaDebitClient = sepaDebitClient;
     }
 
     @Override

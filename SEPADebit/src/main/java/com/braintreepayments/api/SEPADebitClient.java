@@ -29,7 +29,7 @@ public class SEPADebitClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public SEPADebitClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-
+        this(activity, activity.getLifecycle(), braintreeClient, new SEPADebitApi());
     }
 
     /**
@@ -46,6 +46,10 @@ public class SEPADebitClient {
     SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
         this.sepaDebitAPI = sepaDebitAPI;
         this.braintreeClient = braintreeClient;
+        if (activity != null && lifecycle != null) {
+            SEPADebitLifecycleObserver observer = new SEPADebitLifecycleObserver(this);
+            lifecycle.addObserver(observer);
+        }
     }
 
     /**
@@ -81,6 +85,7 @@ public class SEPADebitClient {
                                         listener.onSEPADebitFailure(exception);
                                     }
                                 } else {
+                                    // TODO: handle this differently - null means the mandate is already approved
                                     listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
                             } else if (error != null) {
