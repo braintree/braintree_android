@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+
+import org.json.JSONException;
 
 /**
  * Used to integrate with SEPA Debit.
@@ -57,7 +60,7 @@ public class SEPADebitClient {
      * @param activity an Android FragmentActivity
      * @param sepaDebitRequest the {@link SEPADebitRequest}.
      */
-    public void tokenize(FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
+    public void tokenize(final FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -67,8 +70,12 @@ public class SEPADebitClient {
                         public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                             if (result != null) {
                                 Log.d("GOT A RESULT", result.getApprovalUrl());
+                                try {
+                                    startBrowserSwitch(activity, result);
+                                } catch (JSONException | BrowserSwitchException exception) {
+                                    // TODO: return error to listener
+                                }
                             }
-                            // browser switch to show mandate
                         }
                     });
                 } else {
@@ -83,5 +90,16 @@ public class SEPADebitClient {
         // parse deep link URL from browser switch result
         // call SEPADebitAPI#tokenize method
         // deliver result to listener
+    }
+
+    private void startBrowserSwitch(FragmentActivity activity, CreateMandateResult createMandateResult) throws JSONException, BrowserSwitchException {
+        // TODO: figure out what metadata we need
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.SEPA)
+                .url(Uri.parse(createMandateResult.getApprovalUrl()))
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+
+        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 }
