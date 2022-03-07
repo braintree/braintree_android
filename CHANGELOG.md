@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+* BraintreeCore
+  * Update pinned certificates used by `BraintreeGraphQLClient`
+
 ## 4.8.3
 
 * PayPal
