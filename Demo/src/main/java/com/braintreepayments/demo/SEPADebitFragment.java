@@ -50,6 +50,7 @@ public class SEPADebitFragment extends BaseFragment implements SEPADebitListener
         request.setIban("FR7618106000321234566666610");
         request.setMandateType(SEPADebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
+        request.setMerchantAccountId("eur_pwpp_multi_account_merchant_account");
 
         sepaDebitClient.tokenize(requireActivity(), request);
     }

@@ -32,7 +32,11 @@ dependencies {
     api project(':BraintreeCore')
 
     testImplementation deps.robolectric
-    testImplementation deps.jsonAssert
+    testImplementation deps.junitTest
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
     testImplementation project(':TestUtils')
 
     androidTestImplementation project(':TestUtils')
