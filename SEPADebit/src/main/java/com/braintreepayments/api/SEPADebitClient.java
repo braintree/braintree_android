@@ -143,7 +143,7 @@ public class SEPADebitClient {
                 .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
                 .put(CUSTOMER_ID_KEY, createMandateResult.getCustomerId())
                 .put(BANK_REFERENCE_TOKEN_KEY, createMandateResult.getBankReferenceToken())
-                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType());
+                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.SEPA)

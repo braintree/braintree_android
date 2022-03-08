@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +115,7 @@ public class SEPADebitClientUnitTest {
     }
 
     @Test
-    public void tokenize_onCreateMandateRequestSuccess_launchesBrowserSwitch() throws BrowserSwitchException {
+    public void tokenize_onCreateMandateRequestSuccess_launchesBrowserSwitch() throws BrowserSwitchException, JSONException {
         SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
@@ -128,7 +130,11 @@ public class SEPADebitClientUnitTest {
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
         assertEquals(BraintreeRequestCodes.SEPA, browserSwitchOptions.getRequestCode());
-        // TODO: assert on metadata once it is added
+        JSONObject metadata = browserSwitchOptions.getMetadata();
+        assertEquals("1234", metadata.get("ibanLastFour"));
+        assertEquals("fake-customer-id", metadata.get("customerId"));
+        assertEquals("fake-bank-reference-token", metadata.get("bankReferenceToken"));
+        assertEquals("ONE_OFF", metadata.get("mandateType"));
     }
 
     @Test
