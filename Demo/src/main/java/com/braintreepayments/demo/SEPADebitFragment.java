@@ -17,6 +17,9 @@ import com.braintreepayments.api.SEPADebitMandateType;
 import com.braintreepayments.api.SEPADebitNonce;
 import com.braintreepayments.api.SEPADebitRequest;
 
+import java.math.BigInteger;
+import java.util.UUID;
+
 public class SEPADebitFragment extends BaseFragment implements SEPADebitListener {
 
     private SEPADebitClient sepaDebitClient;
@@ -46,13 +49,21 @@ public class SEPADebitFragment extends BaseFragment implements SEPADebitListener
 
         SEPADebitRequest request = new SEPADebitRequest();
         request.setAccountHolderName("John Doe");
-        request.setCustomerId("a-customer-id");
-        request.setIban("FR7618106000321234566666615");
+        request.setCustomerId(generateRandomCustomerId());
+        request.setIban(generateRandomIban());
         request.setMandateType(SEPADebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("eur_pwpp_multi_account_merchant_account");
 
         sepaDebitClient.tokenize(requireActivity(), request);
+    }
+
+    private String generateRandomCustomerId() {
+        return UUID.randomUUID().toString().substring(0,20);
+    }
+
+    private String generateRandomIban() {
+        return "FR" + String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16)).substring(0,25);
     }
 
     @Override

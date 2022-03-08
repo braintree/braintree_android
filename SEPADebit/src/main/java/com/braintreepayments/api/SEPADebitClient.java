@@ -119,7 +119,7 @@ public class SEPADebitClient {
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri != null) {
-                         parseUrl(deepLinkUri);
+                    parseUrl(deepLinkUri);
                 }
                 break;
         }
