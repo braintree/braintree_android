@@ -46,6 +46,10 @@ class SEPADebitApi {
         }
     }
 
+    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
+        // TODO: implement (future PR)
+    }
+
     private CreateMandateResult parseResponse(String responseBody) throws JSONException {
         JSONObject json = new JSONObject(responseBody);
         JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");

@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -214,5 +215,105 @@ public class SEPADebitClientUnitTest {
         sut.tokenize(activity, sepaDebitRequest);
 
         verify(listener).onSEPADebitFailure(same(error));
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsUserCanceledExceptionToListener() {
+        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.CANCELED);
+        braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        sut.setListener(listener);
+
+        sut.onBrowserSwitchResult(activity);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onSEPADebitFailure(captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled SEPA Debit.", exception.getMessage());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkContainsSuccess_callsTokenize() throws JSONException {
+        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+
+        JSONObject metadata = new JSONObject()
+                .put("ibanLastFour", "1234")
+                .put("customerId", "customer-id")
+                .put("bankReferenceToken", "bank-reference-token")
+                .put("mandateType", "ONE_OFF");
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(Uri.parse("com.braintreepayments.demo.braintree://sepa/success?success=true"));
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(metadata);
+
+        braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        sut.setListener(listener);
+
+        sut.onBrowserSwitchResult(activity);
+
+        verify(sepaDebitApi).tokenize(eq("1234"), eq("customer-id"), eq("bank-reference-token"), eq("ONE_OFF"));
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkContainsCancel_returnsErrorToListener() {
+        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(Uri.parse("com.braintreepayments.demo.braintree://sepa/cancel?error_code=internal_error"));
+
+        braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        sut.setListener(listener);
+
+        sut.onBrowserSwitchResult(activity);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onSEPADebitFailure(captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("An unexpected error occurred.", exception.getMessage());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkURLIsNull_returnsErrorToListener() {
+        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(null);
+
+        braintreeClient = new MockBraintreeClientBuilder()
+                .deliverBrowserSwitchResult(browserSwitchResult)
+                .build();
+
+        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        sut.setListener(listener);
+
+        sut.onBrowserSwitchResult(activity);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onSEPADebitFailure(captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("Unknown error", exception.getMessage());
     }
 }

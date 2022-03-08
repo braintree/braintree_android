@@ -23,7 +23,7 @@ public class SEPADebitClient {
     private static final String BANK_REFERENCE_TOKEN_KEY = "bankReferenceToken";
     private static final String MANDATE_TYPE_KEY = "mandateType";
 
-    private final SEPADebitApi sepaDebitAPI;
+    private final SEPADebitApi sepaDebitApi;
     private final BraintreeClient braintreeClient;
     private SEPADebitListener listener;
 
@@ -48,8 +48,8 @@ public class SEPADebitClient {
     }
 
     @VisibleForTesting
-    SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
-        this.sepaDebitAPI = sepaDebitAPI;
+    SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitApi) {
+        this.sepaDebitApi = sepaDebitApi;
         this.braintreeClient = braintreeClient;
         if (activity != null && lifecycle != null) {
             SEPADebitLifecycleObserver observer = new SEPADebitLifecycleObserver(this);
@@ -79,7 +79,7 @@ public class SEPADebitClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                 if (configuration != null) {
-                    sepaDebitAPI.createMandate(sepaDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
+                    sepaDebitApi.createMandate(sepaDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
                         @Override
                         public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                             if (result != null) {
@@ -108,7 +108,6 @@ public class SEPADebitClient {
 
     void onBrowserSwitchResult(FragmentActivity activity) {
         BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-        // deliver result to listener
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
@@ -124,12 +123,14 @@ public class SEPADebitClient {
                         String customerId = metadata.optString(CUSTOMER_ID_KEY);
                         String bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY);
                         String mandateType = metadata.optString(MANDATE_TYPE_KEY);
-                        // TODO: call SEPADebitApi#tokenize with metadata params
+
+                        sepaDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken, mandateType);
                     } else if (deepLinkUri.getPath().contains("cancel")) {
-                        // TODO: return unexpected error
+                        listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
                     }
+                } else {
+                    listener.onSEPADebitFailure(new BraintreeException("Unknown error"));
                 }
-                // error
                 break;
         }
     }
