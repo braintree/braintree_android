@@ -24,6 +24,7 @@ public class SEPADebitRequest {
     }
 
     /**
+     * Required.
      * @param accountHolderName The account holder name.
      */
     public void setAccountHolderName(@Nullable String accountHolderName) {
@@ -39,6 +40,7 @@ public class SEPADebitRequest {
     }
 
     /**
+     * Required.
      * @param iban The full IBAN.
      */
     public void setIban(@NonNull String iban) {
@@ -54,6 +56,7 @@ public class SEPADebitRequest {
     }
 
     /**
+     * Required.
      * @param customerId The customer ID.
      */
     public void setCustomerId(@Nullable String customerId) {
@@ -69,6 +72,7 @@ public class SEPADebitRequest {
     }
 
     /**
+     * Required.
      * @param mandateType The {@link SEPADebitMandateType}.
      */
     public void setMandateType(@NonNull SEPADebitMandateType mandateType) {
@@ -84,7 +88,7 @@ public class SEPADebitRequest {
     }
 
     /**
-     * Optional.
+     * Required.
      * @param billingAddress The user's billing address.
      */
     public void setBillingAddress(@Nullable PostalAddress billingAddress) {

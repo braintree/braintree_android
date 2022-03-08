@@ -38,7 +38,7 @@ public class SEPADebitClientUnitTest {
         activity = mock(FragmentActivity.class);
         lifecycle = mock(Lifecycle.class);
         braintreeClient = new MockBraintreeClientBuilder()
-                .returnUrlScheme("example-scheme://")
+                .returnUrlScheme("com.example")
                 .configuration(mock(Configuration.class))
                 .build();
         listener = mock(SEPADebitListener.class);
@@ -126,7 +126,7 @@ public class SEPADebitClientUnitTest {
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
-        assertEquals("example-scheme://", browserSwitchOptions.getReturnUrlScheme());
+        assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
         assertEquals(BraintreeRequestCodes.SEPA, browserSwitchOptions.getRequestCode());
         // TODO: assert on metadata once it is added
     }
@@ -134,7 +134,7 @@ public class SEPADebitClientUnitTest {
     @Test
     public void tokenize_onCreateMandateRequestSuccess_whenApprovalURLInvalid_returnsErrorToListener() {
         createMandateResult = new CreateMandateResult(
-                "null",
+                "",
                 "1234",
                 "fake-customer-id",
                 "fake-bank-reference-token",

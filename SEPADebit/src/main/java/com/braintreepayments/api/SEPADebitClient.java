@@ -73,7 +73,7 @@ public class SEPADebitClient {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                 if (configuration != null) {
-                    sepaDebitAPI.createMandate(sepaDebitRequest, configuration, new CreateMandateCallback() {
+                    sepaDebitAPI.createMandate(sepaDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
                         @Override
                         public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                             if (result != null) {
@@ -83,8 +83,9 @@ public class SEPADebitClient {
                                     } catch (JSONException | BrowserSwitchException exception) {
                                         listener.onSEPADebitFailure(exception);
                                     }
+                                } else if (result.getApprovalUrl().equals("null")) {
+                                    // TODO: call SEPADebitApi#tokenize - null means the mandate is already approved
                                 } else {
-                                    // TODO: handle this differently - null means the mandate is already approved
                                     listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
                             } else if (error != null) {

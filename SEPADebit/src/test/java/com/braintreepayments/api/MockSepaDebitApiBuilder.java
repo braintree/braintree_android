@@ -1,10 +1,9 @@
 package com.braintreepayments.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-
-import android.content.Context;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -30,7 +29,7 @@ public class MockSepaDebitApiBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                CreateMandateCallback callback = (CreateMandateCallback) invocation.getArguments()[2];
+                CreateMandateCallback callback = (CreateMandateCallback) invocation.getArguments()[3];
                 if (createMandateResultSuccess != null) {
                     callback.onResult(createMandateResultSuccess, null);
                 } else if (createMandateError != null) {
@@ -38,7 +37,7 @@ public class MockSepaDebitApiBuilder {
                 }
                 return null;
             }
-        }).when(sepaDebitApi).createMandate(any(SEPADebitRequest.class), any(Configuration.class), any(CreateMandateCallback.class));
+        }).when(sepaDebitApi).createMandate(any(SEPADebitRequest.class), any(Configuration.class), anyString(), any(CreateMandateCallback.class));
 
         return sepaDebitApi;
     }
