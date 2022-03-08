@@ -18,6 +18,11 @@ import org.json.JSONObject;
  */
 public class SEPADebitClient {
 
+    private static final String IBAN_LAST_FOUR_KEY = "ibanLastFour";
+    private static final String CUSTOMER_ID_KEY = "customerId";
+    private static final String BANK_REFERENCE_TOKEN_KEY = "bankReferenceToken";
+    private static final String MANDATE_TYPE_KEY = "mandateType";
+
     private final SEPADebitApi sepaDebitAPI;
     private final BraintreeClient braintreeClient;
     private SEPADebitListener listener;
@@ -103,13 +108,7 @@ public class SEPADebitClient {
 
     void onBrowserSwitchResult(FragmentActivity activity) {
         BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-        // get browserSwitchResult from BraintreeClient
-        // parse deep link URL from browser switch result
-        // call SEPADebitAPI#tokenize method
         // deliver result to listener
-
-        // TODO: find out what metadata is needed
-        JSONObject metadata = browserSwitchResult.getRequestMetadata();
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
@@ -119,15 +118,19 @@ public class SEPADebitClient {
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri != null) {
-                    parseUrl(deepLinkUri);
+                    if (deepLinkUri.getPath().contains("success") && deepLinkUri.getQueryParameter("success").equals("true")) {
+                        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+                        String ibanLastFour = metadata.optString(IBAN_LAST_FOUR_KEY);
+                        String customerId = metadata.optString(CUSTOMER_ID_KEY);
+                        String bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY);
+                        String mandateType = metadata.optString(MANDATE_TYPE_KEY);
+                        // TODO: call SEPADebitApi#tokenize with metadata params
+                    } else if (deepLinkUri.getPath().contains("cancel")) {
+                        // TODO: return unexpected error
+                    }
                 }
+                // error
                 break;
-        }
-    }
-
-    private void parseUrl(Uri deeplinkUrl) {
-        if (deeplinkUrl.getPath().contains("success")) {
-
         }
     }
 
@@ -136,11 +139,16 @@ public class SEPADebitClient {
     }
 
     private void startBrowserSwitch(FragmentActivity activity, CreateMandateResult createMandateResult) throws JSONException, BrowserSwitchException {
-        // TODO: figure out what metadata we need
+        JSONObject metadata = new JSONObject()
+                .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
+                .put(CUSTOMER_ID_KEY, createMandateResult.getCustomerId())
+                .put(BANK_REFERENCE_TOKEN_KEY, createMandateResult.getBankReferenceToken())
+                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType());
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.SEPA)
                 .url(Uri.parse(createMandateResult.getApprovalUrl()))
+                .metadata(metadata)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());
 
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
