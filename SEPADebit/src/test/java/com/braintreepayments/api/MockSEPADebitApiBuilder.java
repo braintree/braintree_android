@@ -8,17 +8,17 @@ import static org.mockito.Mockito.mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class MockSepaDebitApiBuilder {
+public class MockSEPADebitApiBuilder {
 
     private Exception createMandateError;
     private CreateMandateResult createMandateResultSuccess;
 
-    public MockSepaDebitApiBuilder createMandateResultSuccess(CreateMandateResult createMandateResultSuccess) {
+    public MockSEPADebitApiBuilder createMandateResultSuccess(CreateMandateResult createMandateResultSuccess) {
         this.createMandateResultSuccess = createMandateResultSuccess;
         return this;
     }
 
-    public MockSepaDebitApiBuilder createMandateError(Exception createMandateError) {
+    public MockSEPADebitApiBuilder createMandateError(Exception createMandateError) {
         this.createMandateError = createMandateError;
         return this;
     }

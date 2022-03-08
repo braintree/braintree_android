@@ -56,10 +56,9 @@ public class SEPADebitClientUnitTest {
         sepaDebitRequest = new SEPADebitRequest();
     }
 
-
     @Test
     public void constructor_setsLifecycleObserver() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
@@ -106,7 +105,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         SEPADebitClient sut = new SEPADebitClient(null, null, braintreeClient, sepaDebitApi);
@@ -117,7 +116,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void tokenize_onCreateMandateRequestSuccess_launchesBrowserSwitch() throws BrowserSwitchException, JSONException {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
 
@@ -148,7 +147,7 @@ public class SEPADebitClientUnitTest {
                 "ONE_OFF"
         );
 
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
 
@@ -175,7 +174,7 @@ public class SEPADebitClientUnitTest {
                 "ONE_OFF"
         );
 
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
 
@@ -191,7 +190,7 @@ public class SEPADebitClientUnitTest {
     public void tokenize_onCreateMandateRequestSuccess_whenStartBrowserSwitchFails_returnsErrorToListener() throws BrowserSwitchException {
         doThrow(BrowserSwitchException.class).when(braintreeClient).startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
 
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
 
@@ -214,7 +213,7 @@ public class SEPADebitClientUnitTest {
                 .configurationError(error)
                 .build();
 
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
 
         SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
         sut.setListener(listener);
@@ -227,7 +226,7 @@ public class SEPADebitClientUnitTest {
     @Test
     public void tokenize_onCreateMandateError_returnsErrorToListener() {
         Exception error = new Exception("error");
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder()
                 .createMandateError(error)
                 .build();
 
@@ -241,7 +240,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsUserCanceledExceptionToListener() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.CANCELED);
@@ -264,7 +263,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkContainsSuccess_callsTokenize() throws JSONException {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
 
         JSONObject metadata = new JSONObject()
                 .put("ibanLastFour", "1234")
@@ -291,7 +290,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkContainsCancel_returnsErrorToListener() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
@@ -316,7 +315,7 @@ public class SEPADebitClientUnitTest {
 
     @Test
     public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_whenDeepLinkURLIsNull_returnsErrorToListener() {
-        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder().build();
+        SEPADebitApi sepaDebitApi = new MockSEPADebitApiBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
