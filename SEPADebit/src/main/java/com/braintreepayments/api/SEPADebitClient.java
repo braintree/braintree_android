@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Used to integrate with SEPA Debit.
@@ -101,10 +102,33 @@ public class SEPADebitClient {
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
+        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
         // get browserSwitchResult from BraintreeClient
         // parse deep link URL from browser switch result
         // call SEPADebitAPI#tokenize method
         // deliver result to listener
+
+        // TODO: find out what metadata is needed
+        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+
+        int result = browserSwitchResult.getStatus();
+        switch (result) {
+            case BrowserSwitchStatus.CANCELED:
+                listener.onSEPADebitFailure(new UserCanceledException("User canceled SEPA Debit."));
+                break;
+            case BrowserSwitchStatus.SUCCESS:
+                Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+                if (deepLinkUri != null) {
+                         parseUrl(deepLinkUri);
+                }
+                break;
+        }
+    }
+
+    private void parseUrl(Uri deeplinkUrl) {
+        if (deeplinkUrl.getPath().contains("success")) {
+
+        }
     }
 
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
