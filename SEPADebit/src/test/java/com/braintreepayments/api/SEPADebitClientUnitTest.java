@@ -166,6 +166,28 @@ public class SEPADebitClientUnitTest {
     }
 
     @Test
+    public void tokenize_onCreateMandateRequestSuccess_whenApprovalURLNull_callsSEPADebitAPI_tokenize() throws BrowserSwitchException {
+        createMandateResult = new CreateMandateResult(
+                "null",
+                "1234",
+                "fake-customer-id",
+                "fake-bank-reference-token",
+                "ONE_OFF"
+        );
+
+        SEPADebitApi sepaDebitApi = new MockSepaDebitApiBuilder()
+                .createMandateResultSuccess(createMandateResult)
+                .build();
+
+        SEPADebitClient sut = new SEPADebitClient(activity, lifecycle, braintreeClient, sepaDebitApi);
+        sut.setListener(listener);
+
+        sut.tokenize(activity, sepaDebitRequest);
+        verify(braintreeClient, never()).startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
+        verify(sepaDebitApi).tokenize("1234", "fake-customer-id", "fake-bank-reference-token", "ONE_OFF");
+    }
+
+    @Test
     public void tokenize_onCreateMandateRequestSuccess_whenStartBrowserSwitchFails_returnsErrorToListener() throws BrowserSwitchException {
         doThrow(BrowserSwitchException.class).when(braintreeClient).startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
 
@@ -264,7 +286,7 @@ public class SEPADebitClientUnitTest {
 
         sut.onBrowserSwitchResult(activity);
 
-        verify(sepaDebitApi).tokenize(eq("1234"), eq("customer-id"), eq("bank-reference-token"), eq("ONE_OFF"));
+        verify(sepaDebitApi).tokenize("1234", "customer-id", "bank-reference-token", "ONE_OFF");
     }
 
     @Test

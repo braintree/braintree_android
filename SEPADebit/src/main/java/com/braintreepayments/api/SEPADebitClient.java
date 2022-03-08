@@ -90,7 +90,8 @@ public class SEPADebitClient {
                                         listener.onSEPADebitFailure(exception);
                                     }
                                 } else if (result.getApprovalUrl().equals("null")) {
-                                    // TODO: call SEPADebitApi#tokenize - null means the mandate is already approved
+                                    // Mandate has already been approved
+                                    sepaDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString());
                                 } else {
                                     listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
