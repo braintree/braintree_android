@@ -33,7 +33,7 @@ class SEPADebitLifecycleObserver implements LifecycleEventObserver {
 
             if (activity != null) {
                 BrowserSwitchResult pendingResult = sepaDebitClient.getBrowserSwitchResult(activity);
-                if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.SEPA) {
+                if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.SEPA_DEBIT) {
                     sepaDebitClient.onBrowserSwitchResult(activity);
                 }
             }

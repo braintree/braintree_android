@@ -148,7 +148,7 @@ public class SEPADebitClient {
                 .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.SEPA)
+                .requestCode(BraintreeRequestCodes.SEPA_DEBIT)
                 .url(Uri.parse(createMandateResult.getApprovalUrl()))
                 .metadata(metadata)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());

@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
         BraintreeRequestCodes.GOOGLE_PAY,
         BraintreeRequestCodes.SAMSUNG_PAY,
         BraintreeRequestCodes.LOCAL_PAYMENT,
-        BraintreeRequestCodes.SEPA,
+        BraintreeRequestCodes.SEPA_DEBIT,
 })
 public @interface BraintreeRequestCodes {
     int THREE_D_SECURE = 13487;
@@ -27,5 +27,5 @@ public @interface BraintreeRequestCodes {
     int GOOGLE_PAY = 13593;
     int SAMSUNG_PAY = 13595;
     int LOCAL_PAYMENT = 13596;
-    int SEPA = 13597;
+    int SEPA_DEBIT = 13597;
 }

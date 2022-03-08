@@ -25,7 +25,7 @@ public class SEPADebitLifecycleObserverUnitTest {
         when(fragment.getActivity()).thenReturn(activity);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA);
+        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA_DEBIT);
 
         SEPADebitClient sepaDebitClient = mock(SEPADebitClient.class);
         when(sepaDebitClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
@@ -42,7 +42,7 @@ public class SEPADebitLifecycleObserverUnitTest {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA);
+        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA_DEBIT);
 
         SEPADebitClient sepaDebitClient = mock(SEPADebitClient.class);
         when(sepaDebitClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);

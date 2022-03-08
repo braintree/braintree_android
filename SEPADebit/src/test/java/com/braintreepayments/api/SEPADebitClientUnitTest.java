@@ -129,7 +129,7 @@ public class SEPADebitClientUnitTest {
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
-        assertEquals(BraintreeRequestCodes.SEPA, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.SEPA_DEBIT, browserSwitchOptions.getRequestCode());
         JSONObject metadata = browserSwitchOptions.getMetadata();
         assertEquals("1234", metadata.get("ibanLastFour"));
         assertEquals("fake-customer-id", metadata.get("customerId"));
