@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Braintree Core
+  * Add `AuthorizationProvider` interface for asynchronously fetching authorization
 * Google Pay
   * Add `GooglePayListener` to receive results from the Google Pay flow
   * Deprecate methods requiring a callback in favor of listener pattern 
