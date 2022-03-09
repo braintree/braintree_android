@@ -35,8 +35,8 @@
             android:id="@+id/action_mainFragment_to_preferredPaymentMethodsFragment"
             app:destination="@id/preferredPaymentMethodsFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_sepaDebitFragment"
-            app:destination="@id/SEPADebitFragment" />
+            android:id="@+id/action_mainFragment_to_sepaDirectDebitFragment"
+            app:destination="@id/SEPADirectDebitFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -156,11 +156,11 @@
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
-        android:id="@+id/SEPADebitFragment"
-        android:name="com.braintreepayments.demo.SEPADebitFragment"
-        tools:layout="@layout/fragment_sepa_debit" >
+        android:id="@+id/SEPADirectDebitFragment"
+        android:name="com.braintreepayments.demo.SEPADirectDebitFragment"
+        tools:layout="@layout/fragment_sepa_direct_debit" >
         <action
-            android:id="@+id/action_sepaDebitFragment_to_displayNonceFragment"
+            android:id="@+id/action_sepaDirectDebitFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />

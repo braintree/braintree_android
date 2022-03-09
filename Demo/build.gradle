@@ -87,7 +87,7 @@ dependencies {
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':SamsungPay')
-    implementation project(':SEPADebit')
+    implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
     implementation project(':UnionPay')
     implementation project(':Venmo')
