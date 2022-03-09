@@ -4,6 +4,7 @@
 
 * Braintree Core
   * Add `AuthorizationProvider` interface for asynchronously fetching authorization
+  * Update pinned certificates used by `BraintreeGraphQLClient`
 * Google Pay
   * Add `GooglePayListener` to receive results from the Google Pay flow
   * Deprecate methods requiring a callback in favor of listener pattern 
