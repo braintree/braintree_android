@@ -34,7 +34,7 @@ public class SEPADebitRequest {
     /**
      * @return The full IBAN.
      */
-    @NonNull
+    @Nullable
     public String getIban() {
         return iban;
     }
@@ -43,7 +43,7 @@ public class SEPADebitRequest {
      * Required.
      * @param iban The full IBAN.
      */
-    public void setIban(@NonNull String iban) {
+    public void setIban(@Nullable String iban) {
         this.iban = iban;
     }
 
@@ -66,7 +66,7 @@ public class SEPADebitRequest {
     /**
      * @return The {@link SEPADebitMandateType}.
      */
-    @NonNull
+    @Nullable
     public SEPADebitMandateType getMandateType() {
         return mandateType;
     }
@@ -75,7 +75,7 @@ public class SEPADebitRequest {
      * Required.
      * @param mandateType The {@link SEPADebitMandateType}.
      */
-    public void setMandateType(@NonNull SEPADebitMandateType mandateType) {
+    public void setMandateType(@Nullable SEPADebitMandateType mandateType) {
         this.mandateType = mandateType;
     }
 
