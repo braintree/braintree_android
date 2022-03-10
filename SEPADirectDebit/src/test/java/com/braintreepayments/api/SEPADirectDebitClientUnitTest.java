@@ -183,7 +183,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(activity, sepaDirectDebitRequest);
         verify(braintreeClient, never()).startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
-        verify(sepaDirectDebitApi).tokenize("1234", "fake-customer-id", "fake-bank-reference-token", "ONE_OFF");
+        verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("fake-customer-id"), eq("fake-bank-reference-token"), eq("ONE_OFF"), any(SEPADirectDebitTokenizeCallback.class));
     }
 
     @Test
@@ -285,7 +285,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.onBrowserSwitchResult(activity);
 
-        verify(sepaDirectDebitApi).tokenize("1234", "customer-id", "bank-reference-token", "ONE_OFF");
+        verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"), eq("bank-reference-token"), eq("ONE_OFF"), any(SEPADirectDebitTokenizeCallback.class));
     }
 
     @Test

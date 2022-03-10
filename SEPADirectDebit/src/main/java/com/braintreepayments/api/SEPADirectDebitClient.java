@@ -91,7 +91,12 @@ public class SEPADirectDebitClient {
                                     }
                                 } else if (result.getApprovalUrl().equals("null")) {
                                     // Mandate has already been approved
-                                    sepaDirectDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString());
+                                    sepaDirectDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString(), new SEPADirectDebitTokenizeCallback() {
+                                        @Override
+                                        public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception error) {
+                                            // TODO: return nonce or error to listener
+                                        }
+                                    });
                                 } else {
                                     listener.onSEPADirectDebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
@@ -125,7 +130,12 @@ public class SEPADirectDebitClient {
                         String bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY);
                         String mandateType = metadata.optString(MANDATE_TYPE_KEY);
 
-                        sepaDirectDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken, mandateType);
+                        sepaDirectDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken, mandateType, new SEPADirectDebitTokenizeCallback() {
+                            @Override
+                            public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception error) {
+                                // TODO: return nonce or error to listener
+                            }
+                        });
                     } else if (deepLinkUri.getPath().contains("cancel")) {
                         listener.onSEPADirectDebitFailure(new BraintreeException("An unexpected error occurred."));
                     }

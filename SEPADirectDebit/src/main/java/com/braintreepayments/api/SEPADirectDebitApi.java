@@ -46,14 +46,20 @@ class SEPADirectDebitApi {
         }
     }
 
-    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
+    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType, final SEPADirectDebitTokenizeCallback callback) {
         try {
             HttpRequest httpRequest = buildTokenizeHttpRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
                    if (responseBody != null) {
-                       parseTokenizeResponse(responseBody);
+                       try {
+                           SEPADirectDebitNonce nonce = parseTokenizeResponse(responseBody);
+                           callback.onResult(nonce, null);
+                       } catch (JSONException e) {
+                           // TODO: handle error
+                           e.printStackTrace();
+                       }
                    }
                 }
             });
@@ -63,8 +69,9 @@ class SEPADirectDebitApi {
         }
     }
 
-    private SEPADirectDebitNonce parseTokenizeResponse(String responseBody) {
-        return null;
+    private SEPADirectDebitNonce parseTokenizeResponse(String responseBody) throws JSONException {
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        return SEPADirectDebitNonce.fromJSON(jsonResponse);
     }
 
     private HttpRequest buildTokenizeHttpRequest(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) throws JSONException {
