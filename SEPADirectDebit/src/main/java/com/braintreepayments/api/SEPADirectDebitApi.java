@@ -47,7 +47,20 @@ class SEPADirectDebitApi {
     }
 
     void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
-        // TODO: implement (future PR)
+        try {
+            HttpRequest httpRequest = buildTokenizeHttpRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
+            httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+                @Override
+                public void onResult(String responseBody, Exception httpError) {
+                   if (responseBody != null) {
+                       parseTokenizeResponse(responseBody);
+                   }
+                }
+            });
+        } catch (JSONException e) {
+            // TODO: callback error
+            e.printStackTrace();
+        }
     }
 
     private SEPADirectDebitNonce parseTokenizeResponse(String responseBody) {
