@@ -22,10 +22,10 @@ class SEPADebitApi {
         this.httpClient = httpClient;
     }
 
-    void createMandate(SEPADebitRequest sepaDebitRequest, Configuration configuration, final CreateMandateCallback callback) {
+    void createMandate(SEPADebitRequest sepaDebitRequest, Configuration configuration, String returnUrlScheme, final CreateMandateCallback callback) {
         HttpRequest httpRequest;
         try {
-            httpRequest = buildHttpRequest(sepaDebitRequest, configuration);
+            httpRequest = buildHttpRequest(sepaDebitRequest, configuration, returnUrlScheme);
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
@@ -46,6 +46,10 @@ class SEPADebitApi {
         }
     }
 
+    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
+        // TODO: implement (future PR)
+    }
+
     private CreateMandateResult parseResponse(String responseBody) throws JSONException {
         JSONObject json = new JSONObject(responseBody);
         JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");
@@ -58,7 +62,7 @@ class SEPADebitApi {
         return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
-    private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest, Configuration configuration) throws JSONException {
+    private HttpRequest buildHttpRequest(SEPADebitRequest sepaDebitRequest, Configuration configuration, String returnUrlScheme) throws JSONException {
         JSONObject sepaDebitData = new JSONObject()
             .putOpt("account_holder_name", sepaDebitRequest.getAccountHolderName())
             .putOpt("customer_id", sepaDebitRequest.getCustomerId())
@@ -80,10 +84,13 @@ class SEPADebitApi {
             sepaDebitData.put("billing_address", billingAddress);
         }
 
+        String cancelUrl = String.format("%s://sepa/cancel", returnUrlScheme);
+        String successUrl = String.format("%s://sepa/success", returnUrlScheme);
+
         JSONObject requestData = new JSONObject()
                 .put("sepa_debit", sepaDebitData)
-                .put("cancel_url", "https://example.com") // TODO: FUTURE PR set this in browser switch flow
-                .put("return_url", "https://example.com"); // TODO: FUTURE PR set this in browser switch flow
+                .put("cancel_url", cancelUrl)
+                .put("return_url", successUrl);
 
         if (sepaDebitRequest.getMerchantAccountId() != null) {
             requestData.put("merchant_account_id", sepaDebitRequest.getMerchantAccountId());

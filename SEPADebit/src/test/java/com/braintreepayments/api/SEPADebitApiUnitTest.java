@@ -29,6 +29,7 @@ public class SEPADebitApiUnitTest {
     private CreateMandateCallback createMandateCallback;
     private SEPADebitRequest request;
     private PostalAddress billingAddress;
+    private String returnUrl;
 
     @Before
     public void beforeEach() {
@@ -49,6 +50,8 @@ public class SEPADebitApiUnitTest {
         billingAddress.setRegion("Annaberg-buchholz");
         billingAddress.setPostalCode("09456");
         billingAddress.setCountryCodeAlpha2("FR");
+
+        returnUrl = "com.example";
     }
 
     @Test
@@ -64,7 +67,7 @@ public class SEPADebitApiUnitTest {
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
 
-        sut.createMandate(request, null, createMandateCallback);
+        sut.createMandate(request, null, returnUrl, createMandateCallback);
 
         ArgumentCaptor<CreateMandateResult> captor = ArgumentCaptor.forClass(CreateMandateResult.class);
         verify(createMandateCallback).onResult(captor.capture(), (Exception) isNull());
@@ -82,7 +85,7 @@ public class SEPADebitApiUnitTest {
         request.setBillingAddress(billingAddress);
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
-        sut.createMandate(request, null, createMandateCallback);
+        sut.createMandate(request, null, returnUrl, createMandateCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
@@ -120,7 +123,7 @@ public class SEPADebitApiUnitTest {
         when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, createMandateCallback);
+        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
@@ -145,7 +148,7 @@ public class SEPADebitApiUnitTest {
         when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, createMandateCallback);
+        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(createMandateCallback).onResult((CreateMandateResult) isNull(), captor.capture());
@@ -172,7 +175,7 @@ public class SEPADebitApiUnitTest {
         when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
 
         SEPADebitApi sut = new SEPADebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, createMandateCallback);
+        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
 
         verify(createMandateCallback).onResult((CreateMandateResult) isNull(), same(exception));
     }

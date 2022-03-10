@@ -1,20 +1,31 @@
 package com.braintreepayments.api;
 
-import android.util.Log;
+import android.net.Uri;
+import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Used to integrate with SEPA Debit.
  */
 public class SEPADebitClient {
 
-    private SEPADebitApi sepaDebitAPI;
-    private BraintreeClient braintreeClient;
+    private static final String IBAN_LAST_FOUR_KEY = "ibanLastFour";
+    private static final String CUSTOMER_ID_KEY = "customerId";
+    private static final String BANK_REFERENCE_TOKEN_KEY = "bankReferenceToken";
+    private static final String MANDATE_TYPE_KEY = "mandateType";
+
+    private final SEPADebitApi sepaDebitApi;
+    private final BraintreeClient braintreeClient;
+    private SEPADebitListener listener;
 
     /**
      * Create a new instance of {@link SEPADebitClient} from within an Activity using a {@link BraintreeClient}.
@@ -23,7 +34,7 @@ public class SEPADebitClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public SEPADebitClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-
+        this(activity, activity.getLifecycle(), braintreeClient, new SEPADebitApi());
     }
 
     /**
@@ -36,9 +47,14 @@ public class SEPADebitClient {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADebitApi());
     }
 
-    SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitAPI) {
-        this.sepaDebitAPI = sepaDebitAPI;
+    @VisibleForTesting
+    SEPADebitClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, SEPADebitApi sepaDebitApi) {
+        this.sepaDebitApi = sepaDebitApi;
         this.braintreeClient = braintreeClient;
+        if (activity != null && lifecycle != null) {
+            SEPADebitLifecycleObserver observer = new SEPADebitLifecycleObserver(this);
+            lifecycle.addObserver(observer);
+        }
     }
 
     /**
@@ -47,7 +63,8 @@ public class SEPADebitClient {
      * @param listener a {@link SEPADebitListener}
      */
     public void setListener(SEPADebitListener listener) {
-
+        // TODO: handle delivering pending browser switch result when listener is set
+        this.listener = listener;
     }
 
     /**
@@ -57,31 +74,85 @@ public class SEPADebitClient {
      * @param activity an Android FragmentActivity
      * @param sepaDebitRequest the {@link SEPADebitRequest}.
      */
-    public void tokenize(FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
+    public void tokenize(final FragmentActivity activity, final SEPADebitRequest sepaDebitRequest) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                 if (configuration != null) {
-                    sepaDebitAPI.createMandate(sepaDebitRequest, configuration, new CreateMandateCallback() {
+                    sepaDebitApi.createMandate(sepaDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
                         @Override
                         public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
                             if (result != null) {
-                                Log.d("GOT A RESULT", result.getApprovalUrl());
+                                if (URLUtil.isValidUrl(result.getApprovalUrl())) {
+                                    try {
+                                        startBrowserSwitch(activity, result);
+                                    } catch (JSONException | BrowserSwitchException exception) {
+                                        listener.onSEPADebitFailure(exception);
+                                    }
+                                } else if (result.getApprovalUrl().equals("null")) {
+                                    // Mandate has already been approved
+                                    sepaDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString());
+                                } else {
+                                    listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
+                                }
+                            } else if (error != null) {
+                                listener.onSEPADebitFailure(error);
                             }
-                            // browser switch to show mandate
                         }
                     });
-                } else {
-                    // TODO: handle error
+                } else if (configError != null) {
+                    listener.onSEPADebitFailure(configError);
                 }
             }
         });
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        // get browserSwitchResult from BraintreeClient
-        // parse deep link URL from browser switch result
-        // call SEPADebitAPI#tokenize method
-        // deliver result to listener
+        BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        int result = browserSwitchResult.getStatus();
+        switch (result) {
+            case BrowserSwitchStatus.CANCELED:
+                listener.onSEPADebitFailure(new UserCanceledException("User canceled SEPA Debit."));
+                break;
+            case BrowserSwitchStatus.SUCCESS:
+                Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+                if (deepLinkUri != null) {
+                    if (deepLinkUri.getPath().contains("success") && deepLinkUri.getQueryParameter("success").equals("true")) {
+                        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+                        String ibanLastFour = metadata.optString(IBAN_LAST_FOUR_KEY);
+                        String customerId = metadata.optString(CUSTOMER_ID_KEY);
+                        String bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY);
+                        String mandateType = metadata.optString(MANDATE_TYPE_KEY);
+
+                        sepaDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken, mandateType);
+                    } else if (deepLinkUri.getPath().contains("cancel")) {
+                        listener.onSEPADebitFailure(new BraintreeException("An unexpected error occurred."));
+                    }
+                } else {
+                    listener.onSEPADebitFailure(new BraintreeException("Unknown error"));
+                }
+                break;
+        }
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    private void startBrowserSwitch(FragmentActivity activity, CreateMandateResult createMandateResult) throws JSONException, BrowserSwitchException {
+        JSONObject metadata = new JSONObject()
+                .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
+                .put(CUSTOMER_ID_KEY, createMandateResult.getCustomerId())
+                .put(BANK_REFERENCE_TOKEN_KEY, createMandateResult.getBankReferenceToken())
+                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.SEPA_DEBIT)
+                .url(Uri.parse(createMandateResult.getApprovalUrl()))
+                .metadata(metadata)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+
+        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 }
