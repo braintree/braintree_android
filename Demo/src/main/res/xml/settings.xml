@@ -2,18 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/authorization">
-
-        <ListPreference
-            android:key="authorization_type"
-            android:title="@string/authorization_type"
-            android:entries="@array/authorization_types"
-            android:entryValues="@array/authorization_types"
-            android:defaultValue="@string/client_token"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/customer">
 
         <EditTextPreference
