@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
@@ -22,7 +23,7 @@ import com.visa.checkout.VisaPaymentSummary;
 
 import java.math.BigDecimal;
 
-public class VisaCheckoutFragment extends BaseFragment {
+public class VisaCheckoutFragment extends Fragment {
 
     private CheckoutButton checkoutButton;
     private VisaCheckoutClient visaCheckoutClient;
@@ -73,8 +74,6 @@ public class VisaCheckoutFragment extends BaseFragment {
     }
 
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
         VisaCheckoutFragmentDirections.ActionVisaCheckoutFragmentToDisplayNonceFragment action =
             VisaCheckoutFragmentDirections.actionVisaCheckoutFragmentToDisplayNonceFragment(paymentMethodNonce);
 

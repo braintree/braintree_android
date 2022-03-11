@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -28,7 +29,7 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountConstants;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet;
 import com.samsung.android.sdk.samsungpay.v2.payment.sheet.SheetItemType;
 
-public class SamsungPayFragment extends BaseFragment implements SamsungPayListener {
+public class SamsungPayFragment extends Fragment implements SamsungPayListener {
 
     private Button samsungPayButton;
     private SamsungPayClient samsungPayClient;
@@ -161,8 +162,6 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
 
     @Override
     public void onSamsungPayStartSuccess(@NonNull SamsungPayNonce samsungPayNonce, @NonNull CustomSheetPaymentInfo paymentInfo) {
-        super.onPaymentMethodNonceCreated(samsungPayNonce);
-
         NavDirections action =
                 SamsungPayFragmentDirections.actionSamsungPayFragmentToDisplayNonceFragment(samsungPayNonce);
         NavHostFragment.findNavController(this).navigate(action);

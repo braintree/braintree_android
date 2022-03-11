@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -25,7 +26,7 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
-public class GooglePayFragment extends BaseFragment implements GooglePayListener {
+public class GooglePayFragment extends Fragment implements GooglePayListener {
 
     private ImageButton googlePayButton;
     private BraintreeClient braintreeClient;
@@ -77,16 +78,6 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         });
     }
 
-    @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
-        GooglePayFragmentDirections.ActionGooglePayFragmentToDisplayNonceFragment action =
-                GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
-
-        NavHostFragment.findNavController(this).navigate(action);
-    }
-
     public void launchGooglePay(View v) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -110,29 +101,11 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         googlePayClient.requestPayment(getActivity(), googlePayRequest);
     }
 
-    private void handleGooglePayActivityResult(ActivityResult activityResult) {
-        int resultCode = activityResult.getResultCode();
-        Intent data = activityResult.getData();
-        googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
-            if (error != null) {
-                alertPresenter.showErrorDialog(this, error);
-            } else {
-                handleGooglePayActivityResult(paymentMethodNonce);
-            }
-        });
-    }
-
-    private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
+    @Override
+    public void onGooglePaySuccess(@NonNull PaymentMethodNonce paymentMethodNonce) {
         NavDirections action =
                 GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
         NavHostFragment.findNavController(this).navigate(action);
-    }
-
-    @Override
-    public void onGooglePaySuccess(@NonNull PaymentMethodNonce paymentMethodNonce) {
-        handleGooglePayActivityResult(paymentMethodNonce);
     }
 
     @Override

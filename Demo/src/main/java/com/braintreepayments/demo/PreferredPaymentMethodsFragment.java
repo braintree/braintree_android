@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PayPalCheckoutRequest;
@@ -23,7 +24,7 @@ import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
 
-public class PreferredPaymentMethodsFragment extends BaseFragment {
+public class PreferredPaymentMethodsFragment extends Fragment {
 
     private Button preferredPaymentMethodsButton;
     private TextView preferredPaymentMethodsTextView;

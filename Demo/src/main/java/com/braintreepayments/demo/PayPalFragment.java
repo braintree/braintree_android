@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -22,9 +23,7 @@ import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-import java.util.Random;
-
-public class PayPalFragment extends BaseFragment implements PayPalListener {
+public class PayPalFragment extends Fragment implements PayPalListener {
 
     private String deviceData;
     private String amount;

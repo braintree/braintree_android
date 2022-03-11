@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
@@ -19,7 +20,7 @@ import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.PostalAddress;
 
-public class LocalPaymentFragment extends BaseFragment implements LocalPaymentListener {
+public class LocalPaymentFragment extends Fragment implements LocalPaymentListener {
 
     private LocalPaymentClient localPaymentClient;
 
@@ -77,26 +78,15 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         });
     }
 
-    protected void handleLocalPaymentResult(LocalPaymentNonce localPaymentNonce, Exception error) {
-        super.onPaymentMethodNonceCreated(localPaymentNonce);
-
-        if (error != null) {
-            alertPresenter.showErrorDialog(this, error);
-            return;
-        }
-
+    @Override
+    public void onLocalPaymentSuccess(@NonNull LocalPaymentNonce localPaymentNonce) {
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
                 LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 
     @Override
-    public void onLocalPaymentSuccess(@NonNull LocalPaymentNonce localPaymentNonce) {
-        handleLocalPaymentResult(localPaymentNonce, null);
-    }
-
-    @Override
     public void onLocalPaymentFailure(@NonNull Exception error) {
-        handleLocalPaymentResult(null, error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }

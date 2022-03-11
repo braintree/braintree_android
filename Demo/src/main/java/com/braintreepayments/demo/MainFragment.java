@@ -8,12 +8,13 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.braintreepayments.api.PaymentMethodNonce;
 
-public class MainFragment extends BaseFragment {
+public class MainFragment extends Fragment {
 
     static final String EXTRA_PAYMENT_RESULT = "payment_result";
     static final String EXTRA_DEVICE_DATA = "device_data";

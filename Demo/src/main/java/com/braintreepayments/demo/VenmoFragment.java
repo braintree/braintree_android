@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
@@ -22,7 +23,7 @@ import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
 
-public class VenmoFragment extends BaseFragment implements VenmoListener {
+public class VenmoFragment extends Fragment implements VenmoListener {
 
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
@@ -45,8 +46,6 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
     }
 
     private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
-        super.onPaymentMethodNonceCreated(venmoAccountNonce);
-
         NavDirections action =
                 VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
         NavHostFragment.findNavController(this).navigate(action);
