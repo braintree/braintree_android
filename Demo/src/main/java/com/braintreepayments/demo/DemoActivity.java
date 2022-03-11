@@ -77,14 +77,19 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.request_settings:
-                NavController navController = getNavController();
-                navController.navigate(R.id.open_settings_fragment);
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        
+        if (itemId == R.id.change_authorization || itemId == R.id.change_environment) {
+            // TODO: show change auth / environment fragment
+            return false;
         }
+
+        if (itemId == R.id.request_settings) {
+            NavController navController = getNavController();
+            navController.navigate(R.id.open_settings_fragment);
+            return true;
+        }
+        return false;
     }
 
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
