@@ -29,7 +29,6 @@ import java.util.List;
 
 public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
 
-    private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
 
     private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
@@ -92,7 +91,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void performReset() {
         setProgressBarIndeterminateVisibility(true);
-        braintreeClient = null;
     }
 
     public void showDialog(String message) {
