@@ -45,7 +45,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             String environment = Settings.getEnvironment(this);
-            actionBar.setTitle(String.format("ENV: %s", environment));
+            String authType = Settings.getAuthorizationType(this);
+            actionBar.setTitle(String.format("%s / %s", environment, authType));
         }
     }
 
@@ -76,7 +77,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         int itemId = item.getItemId();
 
         if (itemId == R.id.change_authorization || itemId == R.id.change_environment) {
-            // TODO: show change auth / environment fragment
+            NavController navController = getNavController();
+            navController.navigate(R.id.action_goto_change_auth_environment);
             return false;
         }
 
