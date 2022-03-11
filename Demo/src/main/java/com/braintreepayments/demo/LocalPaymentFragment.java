@@ -24,6 +24,7 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
     private LocalPaymentClient localPaymentClient;
 
     private BraintreeClient braintreeClient;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     @Nullable
     @Override
@@ -41,7 +42,9 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
 
     public void launchIdeal(View v) {
         if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(getActivity()))) {
-            handleError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
+            Exception error =
+                    new Exception("To use this feature, enable the \"Sandbox\" environment.");
+            alertPresenter.showErrorDialog(this, error);
             return;
         }
 
@@ -69,7 +72,7 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
             }
 
             if (error != null) {
-                handleError(error);
+                alertPresenter.showErrorDialog(this, error);
             }
         });
     }
@@ -78,7 +81,7 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         super.onPaymentMethodNonceCreated(localPaymentNonce);
 
         if (error != null) {
-            handleError(error);
+            alertPresenter.showErrorDialog(this, error);
             return;
         }
 

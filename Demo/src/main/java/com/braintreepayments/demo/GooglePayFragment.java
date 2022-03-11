@@ -31,6 +31,8 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
     private BraintreeClient braintreeClient;
     private GooglePayClient googlePayClient;
 
+    private AlertPresenter alertPresenter = new AlertPresenter();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,15 +62,17 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
                     if (isReadyToPay) {
                         googlePayButton.setVisibility(View.VISIBLE);
                     } else {
-                        showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                        String message = "Google Payments are not available. The following issues could be the cause:\n\n" +
                                 "No user is logged in to the device.\n\n" +
-                                "Google Play Services is missing or out of date.");
+                                "Google Play Services is missing or out of date.";
+                        alertPresenter.showDialog(this, message);
                     }
                 });
             } else {
-                showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                String message = "Google Payments are not available. The following issues could be the cause:\n\n" +
                         "Google Payments are not enabled for the current merchant.\n\n" +
-                        "Google Play Services is missing or out of date.");
+                        "Google Play Services is missing or out of date.";
+                alertPresenter.showDialog(this, message);
             }
         });
     }
@@ -78,7 +82,7 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         GooglePayFragmentDirections.ActionGooglePayFragmentToDisplayNonceFragment action =
-            GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
+                GooglePayFragmentDirections.actionGooglePayFragmentToDisplayNonceFragment(paymentMethodNonce);
 
         NavHostFragment.findNavController(this).navigate(action);
     }
@@ -111,7 +115,7 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         Intent data = activityResult.getData();
         googlePayClient.onActivityResult(resultCode, data, (paymentMethodNonce, error) -> {
             if (error != null) {
-                handleError(error);
+                alertPresenter.showErrorDialog(this, error);
             } else {
                 handleGooglePayActivityResult(paymentMethodNonce);
             }
@@ -133,6 +137,6 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
 
     @Override
     public void onGooglePayFailure(@NonNull Exception error) {
-        handleError(error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }

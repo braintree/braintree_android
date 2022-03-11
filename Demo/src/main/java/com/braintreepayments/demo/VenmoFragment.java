@@ -28,6 +28,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
     private VenmoClient venmoClient;
     private BraintreeClient braintreeClient;
 
+    private AlertPresenter alertPresenter = new AlertPresenter();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,9 +68,9 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
                 venmoClient.tokenizeVenmoAccount(activity, venmoRequest);
             } else if (configuration.isVenmoEnabled()) {
-                showDialog("Please install the Venmo app first.");
+                alertPresenter.showDialog(this, "Please install the Venmo app first.");
             } else {
-                showDialog("Venmo is not enabled for the current merchant.");
+                alertPresenter.showDialog(this, "Venmo is not enabled for the current merchant.");
             }
         });
     }
@@ -80,6 +82,6 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
     @Override
     public void onVenmoFailure(@NonNull Exception error) {
-        handleError(error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }

@@ -36,6 +36,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
     private PreferredPaymentMethodsClient preferredPaymentMethodsClient;
 
     private BraintreeClient braintreeClient;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,7 +85,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
             createPayPalCheckoutRequest(requireActivity(), "1.00");
         payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
             if (requestError != null) {
-                handleError(requestError);
+                alertPresenter.showErrorDialog(this, requestError);
             }
         });
     }
@@ -95,7 +96,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
         PayPalVaultRequest payPalRequest = createPayPalVaultRequest(requireActivity());
         payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
             if (requestError != null) {
-                handleError(requestError);
+                alertPresenter.showErrorDialog(this, requestError);
             }
         });
     }
@@ -109,7 +110,7 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
 
         venmoClient.tokenizeVenmoAccount(getActivity(), venmoRequest, requestError -> {
             if (requestError != null) {
-                handleError(requestError);
+                alertPresenter.showErrorDialog(this, requestError);
             }
         });
     }

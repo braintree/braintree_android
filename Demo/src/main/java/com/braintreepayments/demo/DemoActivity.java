@@ -77,13 +77,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 || super.onSupportNavigateUp();
     }
 
-    public void showDialog(String message) {
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);

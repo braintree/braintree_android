@@ -34,6 +34,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
     private SamsungPayClient samsungPayClient;
 
     private BraintreeClient braintreeClient;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
                                 String.format("Samsung Pay is not available: %s", error.toString());
                     }
                 }
-                showDialog(dialogMessage);
+                alertPresenter.showDialog(this, dialogMessage);
             }
         });
     }
@@ -121,7 +122,9 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
                     break;
             }
 
-            showDialog("Samsung Pay failed with error code " + ((SamsungPayException) error).getErrorCode());
+            String dialogMessage =
+                    "Samsung Pay failed with error code " + ((SamsungPayException) error).getErrorCode();
+            alertPresenter.showDialog(this, dialogMessage);
         }
     }
 

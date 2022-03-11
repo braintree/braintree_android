@@ -33,6 +33,8 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
     private PayPalClient payPalClient;
     private DataCollector dataCollector;
 
+    private AlertPresenter alertPresenter = new AlertPresenter();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -107,6 +109,6 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     @Override
     public void onPayPalFailure(@NonNull Exception error) {
-        handleError(error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }

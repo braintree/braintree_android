@@ -28,6 +28,7 @@ public class VisaCheckoutFragment extends BaseFragment {
     private VisaCheckoutClient visaCheckoutClient;
 
     private BraintreeClient braintreeClient;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     @Nullable
     @Override
@@ -41,7 +42,7 @@ public class VisaCheckoutFragment extends BaseFragment {
             if (profileBuilder != null) {
                 setupVisaCheckoutButton(profileBuilder);
             } else {
-                handleError(error);
+                alertPresenter.showErrorDialog(this, error);
             }
         });
         return view;
@@ -64,7 +65,7 @@ public class VisaCheckoutFragment extends BaseFragment {
                     if (paymentMethodNonce != null) {
                         handlePaymentMethodNonceCreated(paymentMethodNonce);
                     } else {
-                        handleError(error);
+                        alertPresenter.showErrorDialog(requireContext(), error);
                     }
                 });
             }
