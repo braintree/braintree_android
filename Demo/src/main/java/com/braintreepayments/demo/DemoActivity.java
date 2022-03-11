@@ -22,12 +22,19 @@ import androidx.navigation.ui.NavigationUI;
 public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
 
     private AppBarConfiguration appBarConfiguration;
+    private ActionBarController actionBarController = new ActionBarController();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
         setupActionBar();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        actionBarController.updateTitle(this);
     }
 
     @Override
@@ -39,15 +46,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private NavController getNavController() {
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         return NavHostFragment.findNavController(navHostFragment);
-    }
-
-    private void updateActionBarTitle() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            String environment = Settings.getEnvironment(this);
-            String authType = Settings.getAuthorizationType(this);
-            actionBar.setTitle(String.format("%s / %s", environment, authType));
-        }
     }
 
     private void setupActionBar() {

@@ -5,13 +5,17 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/mainFragment">
 
+    <action android:id="@+id/action_goto_change_auth_environment"
+        app:destination="@id/change_auth_and_environment"
+        />
+
+    <action android:id="@+id/action_goto_main"
+        app:destination="@id/mainFragment"
+        />
+
     <fragment
         android:id="@+id/change_auth_and_environment"
         android:name="com.braintreepayments.demo.ChangeAuthAndEnvironmentFragment"
-        />
-
-    <action android:id="@+id/action_goto_change_auth_environment"
-        app:destination="@id/change_auth_and_environment"
         />
 
     <fragment

@@ -71,6 +71,15 @@ public class Settings {
         return getPreferences(context).getString("authorization_type", context.getString(R.string.client_token));
     }
 
+    public static void setAuthorizationType(Context context, String authType) {
+        getPreferences(context)
+                .edit()
+                .putString("authorization_type", authType)
+                .apply();
+
+        DemoApplication.resetApiClient();
+    }
+
     public static String getCustomerId(Context context) {
         return getPreferences(context).getString("customer", null);
     }
