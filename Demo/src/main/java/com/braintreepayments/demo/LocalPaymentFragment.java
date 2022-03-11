@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
 
     private LocalPaymentClient localPaymentClient;
 
+    private BraintreeClient braintreeClient;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -28,7 +32,7 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
+        braintreeClient = createBraintreeClient(requireContext());
         localPaymentClient = new LocalPaymentClient(this, braintreeClient);
         localPaymentClient.setListener(this);
 

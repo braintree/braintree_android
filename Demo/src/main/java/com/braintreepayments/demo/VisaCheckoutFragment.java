@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,13 +27,15 @@ public class VisaCheckoutFragment extends BaseFragment {
     private CheckoutButton checkoutButton;
     private VisaCheckoutClient visaCheckoutClient;
 
+    private BraintreeClient braintreeClient;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_visa_checkout, container, false);
         checkoutButton = view.findViewById(R.id.visa_checkout_button);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
+        braintreeClient = createBraintreeClient(requireContext());
         visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
         visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
             if (profileBuilder != null) {

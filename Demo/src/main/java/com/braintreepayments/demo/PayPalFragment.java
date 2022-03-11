@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
@@ -42,8 +43,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
-        braintreeClient = getBraintreeClient();
-
+        braintreeClient = createBraintreeClient(requireContext());
         payPalClient = new PayPalClient(this, braintreeClient);
         payPalClient.setListener(this);
 

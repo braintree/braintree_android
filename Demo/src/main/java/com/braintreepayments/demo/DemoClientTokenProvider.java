@@ -5,8 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+<<<<<<< HEAD:Demo/src/main/java/com/braintreepayments/demo/DemoClientTokenProvider.java
 import com.braintreepayments.api.ClientTokenCallback;
 import com.braintreepayments.api.ClientTokenProvider;
+=======
+import com.braintreepayments.api.AuthorizationProvider;
+import com.braintreepayments.api.ClientTokenCallback;
+>>>>>>> 0f200af9 (Remove getBraintreeClient() method from DemoActivity.):Demo/src/main/java/com/braintreepayments/demo/DemoAuthorizationProvider.java
 import com.braintreepayments.demo.Merchant;
 import com.braintreepayments.demo.R;
 import com.braintreepayments.demo.Settings;
