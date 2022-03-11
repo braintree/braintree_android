@@ -52,8 +52,6 @@ public class VenmoFragment extends Fragment implements VenmoListener {
     }
 
     public void launchVenmo(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
         FragmentActivity activity = getActivity();
 
         boolean shouldVault =

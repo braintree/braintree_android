@@ -61,9 +61,7 @@ public class PayPalFragment extends Fragment implements PayPalListener {
     }
 
     private void launchPayPal(boolean isBillingAgreement) {
-        FragmentActivity activity = getActivity();
-        activity.setProgressBarIndeterminateVisibility(true);
-
+        FragmentActivity activity = requireActivity();
         dataCollector = new DataCollector(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, configError) -> {

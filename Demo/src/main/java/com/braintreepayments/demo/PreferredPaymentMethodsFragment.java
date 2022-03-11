@@ -80,8 +80,6 @@ public class PreferredPaymentMethodsFragment extends Fragment {
     }
 
     public void launchSinglePayment(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
         PayPalCheckoutRequest payPalRequest =
             createPayPalCheckoutRequest(requireActivity(), "1.00");
         payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
@@ -92,10 +90,8 @@ public class PreferredPaymentMethodsFragment extends Fragment {
     }
 
     public void launchBillingAgreement(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
         PayPalVaultRequest payPalRequest = createPayPalVaultRequest(requireActivity());
-        payPalClient.tokenizePayPalAccount(getActivity(), payPalRequest, requestError -> {
+        payPalClient.tokenizePayPalAccount(requireActivity(), payPalRequest, requestError -> {
             if (requestError != null) {
                 alertPresenter.showErrorDialog(this, requestError);
             }
@@ -103,8 +99,6 @@ public class PreferredPaymentMethodsFragment extends Fragment {
     }
 
     public void launchVenmo(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
         VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         venmoRequest.setProfileId(null);
         venmoRequest.setShouldVault(false);

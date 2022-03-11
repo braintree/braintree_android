@@ -270,7 +270,6 @@ public class CardFragment extends Fragment implements OnCardFormSubmitListener, 
     }
 
     public void onPurchase(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
         if (isUnionPay) {
             UnionPayCard unionPayCard = new UnionPayCard();
             unionPayCard.setNumber(cardForm.getCardNumber());
