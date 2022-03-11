@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.fragment.app.Fragment;
@@ -27,8 +28,21 @@ public class ChangeAuthAndEnvironmentFragment extends Fragment {
 
         Context context = requireContext();
         environmentTextView.setText(Settings.getEnvironment(context));
+        environmentTextView.setAdapter(createEnvironmentsAdapter());
+
         authorizationTextView.setText(Settings.getAuthorizationType(context));
+        authorizationTextView.setAdapter(createAuthorizationTypesAdapter());
 
         return view;
+    }
+
+    private ArrayAdapter<String> createEnvironmentsAdapter() {
+        String[] environments = getResources().getStringArray(R.array.environments);
+        return new ArrayAdapter(requireContext(), R.layout.dropdown_item, environments);
+    }
+
+    private ArrayAdapter<String> createAuthorizationTypesAdapter() {
+        String[] authorizationTypes = getResources().getStringArray(R.array.authorization_types);
+        return new ArrayAdapter(requireContext(), R.layout.dropdown_item, authorizationTypes);
     }
 }
