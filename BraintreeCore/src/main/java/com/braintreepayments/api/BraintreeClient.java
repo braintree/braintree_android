@@ -87,7 +87,7 @@ public class BraintreeClient {
      * @param context             Android Context
      * @param authorizationProvider An implementation of {@link AuthorizationProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
      */
-    BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider) {
+    public BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider) {
         this(createDefaultParams(context, null, authorizationProvider));
     }
 
@@ -117,7 +117,7 @@ public class BraintreeClient {
      * @param authorizationProvider An implementation of {@link AuthorizationProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
-    BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider, @NonNull String returnUrlScheme) {
+    public BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider, @NonNull String returnUrlScheme) {
         this(createDefaultParams(context, null, authorizationProvider, returnUrlScheme));
     }
 

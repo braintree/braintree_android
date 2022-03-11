@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
  * Callback used to communicate {@link AuthorizationProvider#getClientToken(ClientTokenCallback)} result
  * back to {@link BraintreeClient}.
  */
-interface ClientTokenCallback {
+public interface ClientTokenCallback {
 
     /**
      * Invoke this method once a client token has been successfully fetched from the merchant server.
