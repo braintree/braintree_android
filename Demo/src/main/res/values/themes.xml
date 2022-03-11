@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="DemoAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="DemoAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Ref: https://stackoverflow.com/a/9733538 -->
         <item name="android:actionOverflowButtonStyle">@style/overflow_button</item>
     </style>
