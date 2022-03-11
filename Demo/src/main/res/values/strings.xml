@@ -4,7 +4,9 @@
 
     <!-- MainActivity -->
     <string name="reset">Reset</string>
-    <string name="settings">Settings</string>
+    <string name="request_settings">Request Settings</string>
+    <string name="change_environment">Change Environment</string>
+    <string name="change_authorization">Change Authorization</string>
     <string name="nonce_placeholder">Nonce: %s</string>
     <string name="ideal_id_placeholder">iDEAL payment id: \n %s</string>
     <string name="ideal_status_placeholder">iDEAL payment status: \n %s</string>
