@@ -2,7 +2,6 @@ package com.braintreepayments.demo;
 
 import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +16,11 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.GooglePayListener;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
+import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.GooglePayRequest;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -32,7 +31,7 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
     private BraintreeClient braintreeClient;
     private GooglePayClient googlePayClient;
 
-    private AlertPresenter alertPresenter = new AlertPresenter();
+    private final AlertPresenter alertPresenter = new AlertPresenter();
 
     @Nullable
     @Override
@@ -57,9 +56,8 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
                 return;
             }
 
-            if (GooglePayCapabilities.isGooglePayEnabled(getActivity(), configuration)) {
-
-                googlePayClient.isReadyToPay(getActivity(), (isReadyToPay, e) -> {
+            if (GooglePayCapabilities.isGooglePayEnabled(requireActivity(), configuration)) {
+                googlePayClient.isReadyToPay(requireActivity(), (isReadyToPay, e) -> {
                     if (isReadyToPay) {
                         googlePayButton.setVisibility(View.VISIBLE);
                     } else {
@@ -79,8 +77,7 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
     }
 
     public void launchGooglePay(View v) {
-        FragmentActivity activity = getActivity();
-        activity.setProgressBarIndeterminateVisibility(true);
+        FragmentActivity activity = requireActivity();
 
         GooglePayRequest googlePayRequest = new GooglePayRequest();
         googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
@@ -98,7 +95,7 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.requestPayment(getActivity(), googlePayRequest);
+        googlePayClient.requestPayment(activity, googlePayRequest);
     }
 
     @Override
