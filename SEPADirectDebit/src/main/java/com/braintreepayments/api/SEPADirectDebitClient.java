@@ -81,7 +81,7 @@ public class SEPADirectDebitClient {
                 if (configuration != null) {
                     sepaDirectDebitApi.createMandate(sepaDirectDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
                         @Override
-                        public void onResult(@Nullable CreateMandateResult result, @Nullable Exception error) {
+                        public void onResult(@Nullable CreateMandateResult result, @Nullable Exception createMandateError) {
                             if (result != null) {
                                 if (URLUtil.isValidUrl(result.getApprovalUrl())) {
                                     try {
@@ -93,15 +93,19 @@ public class SEPADirectDebitClient {
                                     // Mandate has already been approved
                                     sepaDirectDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString(), new SEPADirectDebitTokenizeCallback() {
                                         @Override
-                                        public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception error) {
-                                            // TODO: return nonce or error to listener
+                                        public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception tokenizeError) {
+                                            if (sepaDirectDebitNonce != null) {
+                                                listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                            } else if (tokenizeError != null) {
+                                                listener.onSEPADirectDebitFailure(tokenizeError);
+                                            }
                                         }
                                     });
                                 } else {
                                     listener.onSEPADirectDebitFailure(new BraintreeException("An unexpected error occurred."));
                                 }
-                            } else if (error != null) {
-                                listener.onSEPADirectDebitFailure(error);
+                            } else if (createMandateError != null) {
+                                listener.onSEPADirectDebitFailure(createMandateError);
                             }
                         }
                     });

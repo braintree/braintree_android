@@ -138,13 +138,51 @@ public class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeSuccess_forwardsResultToListener() {
+    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeSuccess_forwardsResultToListener() throws JSONException {
+        // null approval URL indicates mandate approved
+        createMandateResult = new CreateMandateResult(
+                "null",
+                "1234",
+                "fake-customer-id",
+                "fake-bank-reference-token",
+                "ONE_OFF"
+        );
 
+        SEPADirectDebitNonce nonce = SEPADirectDebitNonce.fromJSON(new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
+        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder()
+                .createMandateResultSuccess(createMandateResult)
+                .tokenizeSuccess(nonce)
+                .build();
+
+        SEPADirectDebitClient sut = new SEPADirectDebitClient(activity, lifecycle, braintreeClient, sepaDirectDebitApi);
+        sut.setListener(listener);
+
+        sut.tokenize(activity, sepaDirectDebitRequest);
+        verify(listener).onSEPADirectDebitSuccess(nonce);
     }
 
     @Test
     public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeFailure_forwardsErrorToListener() {
+        // null approval URL indicates mandate approved
+        createMandateResult = new CreateMandateResult(
+                "null",
+                "1234",
+                "fake-customer-id",
+                "fake-bank-reference-token",
+                "ONE_OFF"
+        );
 
+        Exception exception = new Exception("tokenize error");
+        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder()
+                .createMandateResultSuccess(createMandateResult)
+                .tokenizeError(exception)
+                .build();
+
+        SEPADirectDebitClient sut = new SEPADirectDebitClient(activity, lifecycle, braintreeClient, sepaDirectDebitApi);
+        sut.setListener(listener);
+
+        sut.tokenize(activity, sepaDirectDebitRequest);
+        verify(listener).onSEPADirectDebitFailure(exception);
     }
 
     @Test
