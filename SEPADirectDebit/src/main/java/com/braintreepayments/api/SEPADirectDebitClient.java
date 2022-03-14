@@ -137,7 +137,11 @@ public class SEPADirectDebitClient {
                         sepaDirectDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken, mandateType, new SEPADirectDebitTokenizeCallback() {
                             @Override
                             public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception error) {
-                                // TODO: return nonce or error to listener
+                                if (sepaDirectDebitNonce != null) {
+                                    listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                } else if (error != null) {
+                                    listener.onSEPADirectDebitFailure(error);
+                                }
                             }
                         });
                     } else if (deepLinkUri.getPath().contains("cancel")) {
