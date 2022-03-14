@@ -24,8 +24,17 @@ jobs:
         with:
           name: main-aar
           path: |
+            AmericanExpress/build/outputs/aar/AmericanExpress-release.aar
             BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+            BraintreeDataCollector/build/outputs/aar/BraintreeDataCollector-release.aar
             Card/build/outputs/aar/Card-release.aar
+            GooglePay/build/outputs/aar/GooglePay-release.aar
+            LocalPayment/build/outputs/aar/LocalPayment-release.aar
+            PayPal/build/outputs/aar/PayPal-release.aar
+            SamsungPay/build/outputs/aar/SamsungPay-release.aar
+            ThreeDSecure/build/outputs/aar/ThreeDSecure-release.aar
+            UnionPay/build/outputs/aar/UnionPay-release.aar
+            Venmo/build/outputs/aar/Venmo-release.aar
       # Assemble artifacts from current branch
       - name: Checkout Current Branch
         uses: actions/checkout@v2
@@ -36,8 +45,17 @@ jobs:
         with:
           name: current-aar
           path: |
+            AmericanExpress/build/outputs/aar/AmericanExpress-release.aar
             BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+            BraintreeDataCollector/build/outputs/aar/BraintreeDataCollector-release.aar
             Card/build/outputs/aar/Card-release.aar
+            GooglePay/build/outputs/aar/GooglePay-release.aar
+            LocalPayment/build/outputs/aar/LocalPayment-release.aar
+            PayPal/build/outputs/aar/PayPal-release.aar
+            SamsungPay/build/outputs/aar/SamsungPay-release.aar
+            ThreeDSecure/build/outputs/aar/ThreeDSecure-release.aar
+            UnionPay/build/outputs/aar/UnionPay-release.aar
+            Venmo/build/outputs/aar/Venmo-release.aar
       # Set up Diffuse
       - name: Install Diffuse
         run: brew install JakeWharton/repo/diffuse
@@ -50,8 +68,27 @@ jobs:
           java-version: '11'
 
       # Run Diffuse analysis
+      - name: Run Diffuse Analysis - AmericanExpress
+        run: diffuse diff --aar main-aar/AmericanExpress/build/outputs/aar/AmericanExpress-release.aar current-aar/AmericanExpress/build/outputs/aar/AmericanExpress-release.aar
       - name: Run Diffuse Analysis - BraintreeCore
         run: diffuse diff --aar main-aar/BraintreeCore/build/outputs/aar/BraintreeCore-release.aar current-aar/BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+      - name: Run Diffuse Analysis - BraintreeDataCollector
+        run: diffuse diff --aar main-aar/BraintreeDataCollector/build/outputs/aar/BraintreeDataCollector-release.aar current-aar/BraintreeDataCollector/build/outputs/aar/BraintreeDataCollector-release.aar
       - name: Run Diffuse Analysis - Card
         run: diffuse diff --aar main-aar/Card/build/outputs/aar/Card-release.aar current-aar/Card/build/outputs/aar/Card-release.aar
+      - name: Run Diffuse Analysis - GooglePay
+        run: diffuse diff --aar main-aar/GooglePay/build/outputs/aar/GooglePay-release.aar current-aar/GooglePay/build/outputs/aar/GooglePay-release.aar
+      - name: Run Diffuse Analysis - LocalPayment
+        run: diffuse diff --aar main-aar/LocalPayment/build/outputs/aar/LocalPayment-release.aar current-aar/LocalPayment/build/outputs/aar/LocalPayment-release.aar
+      - name: Run Diffuse Analysis - PayPal
+        run: diffuse diff --aar main-aar/PayPal/build/outputs/aar/PayPal-release.aar current-aar/PayPal/build/outputs/aar/PayPal-release.aar
+      - name: Run Diffuse Analysis - SamsungPay
+        run: diffuse diff --aar main-aar/SamsungPay/build/outputs/aar/SamsungPay-release.aar current-aar/SamsungPay/build/outputs/aar/SamsungPay-release.aar
+      - name: Run Diffuse Analysis - ThreeDSecure
+        run: diffuse diff --aar main-aar/ThreeDSecure/build/outputs/aar/ThreeDSecure-release.aar current-aar/ThreeDSecure/build/outputs/aar/ThreeDSecure-release.aar
+      - name: Run Diffuse Analysis - UnionPay
+        run: diffuse diff --aar main-aar/UnionPay/build/outputs/aar/UnionPay-release.aar current-aar/UnionPay/build/outputs/aar/UnionPay-release.aar
+      - name: Run Diffuse Analysis - Venmo
+        run: diffuse diff --aar main-aar/Venmo/build/outputs/aar/Venmo-release.aar current-aar/Venmo/build/outputs/aar/Venmo-release.aar
+
 
