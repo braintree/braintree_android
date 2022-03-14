@@ -8,7 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -32,17 +34,80 @@ public class ThreeDSecureClient {
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
+    private final ThreeDSecureAPI api;
+    private ThreeDSecureListener listener;
 
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
+
+    @VisibleForTesting
+    ThreeDSecureLifecycleObserver observer;
+
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public ThreeDSecureClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
+    }
+
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public ThreeDSecureClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
+    }
+
+    /**
+     * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
+     *
+     * Deprecated. Use {@link ThreeDSecureClient(Fragment, BraintreeClient)} or
+     * {@link ThreeDSecureClient(FragmentActivity, BraintreeClient)} instead.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    @Deprecated
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper());
+        this(null, null, braintreeClient, new CardinalClient(), new ThreeDSecureV1BrowserSwitchHelper(), new ThreeDSecureAPI(braintreeClient));
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper) {
+    ThreeDSecureClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, CardinalClient cardinalClient, ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper, ThreeDSecureAPI threeDSecureAPI) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.browserSwitchHelper = browserSwitchHelper;
+        this.api = threeDSecureAPI;
+        if (activity != null && lifecycle != null) {
+            addObserver(activity, lifecycle);
+        }
     }
+
+    @VisibleForTesting
+    void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
+        observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
+        lifecycle.addObserver(observer);
+    }
+
+    /**
+     * Add a {@link ThreeDSecureListener} to your client to receive results or errors from the 3DS payment flow.
+     * This method must be invoked on a {@link ThreeDSecureClient(Fragment, BraintreeClient)} or
+     * {@link ThreeDSecureClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param listener a {@link ThreeDSecureListener}
+     */
+    public void setListener(ThreeDSecureListener listener) {
+        this.listener = listener;
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
+    // region Cardinal Initialize/Prepare Callback Methods
 
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
@@ -99,7 +164,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
                 if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
-                    performThreeDSecureLookup(request, callback);
+                    api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
                     return;
                 }
 
@@ -107,33 +172,14 @@ public class ThreeDSecureClient {
                     @Override
                     public void onResult(String consumerSessionId, Exception error) {
                         if (consumerSessionId != null) {
-                            performThreeDSecureLookup(request, callback);
+                            api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
                             braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
                         } else {
-                            performThreeDSecureLookup(request, callback);
+                            api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
                             braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
                         }
                     }
                 });
-            }
-        });
-    }
-
-    /**
-     * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
-     *
-     * @param activity Android FragmentActivity
-     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param result   the {@link ThreeDSecureResult} returned for this request.
-     *                 Contains information about the 3DS verification request that will
-     *                 be invoked in this method.
-     * @param callback {@link ThreeDSecureResultCallback}
-     */
-    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result, @NonNull final ThreeDSecureResultCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                startVerificationFlow(activity, configuration, request, result, callback);
             }
         });
     }
@@ -198,13 +244,108 @@ public class ThreeDSecureClient {
         });
     }
 
+    // endregion
+
+    // region Launch 3DS With App/Browser Switch Encapsulation
+
+    /**
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}.
+     * The result of this verification will be returned to your {@link ThreeDSecureListener}.
+     *
+     * @param activity an Android FragmentActivity
+     * @param request the {@link ThreeDSecureRequest} with information used for authentication
+     * @param result a {@link ThreeDSecureResult} that contains information about the 3DS verification request.
+     */
+    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result) {
+        continuePerformVerification(activity, request, result, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Initialize a challenge from a server side lookup call. The result of this challenge will be
+     * returned to your {@link ThreeDSecureListener}.
+     *
+     * @param activity Android FragmentActivity
+     * @param lookupResponse The lookup response String from the server side call to lookup the 3D Secure information.
+     */
+    public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse) {
+        initializeChallengeWithLookupResponse(activity, lookupResponse, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Initialize a challenge from a server side lookup call. The result of this challenge will be
+     * returned to your {@link ThreeDSecureListener}.
+     *
+     * @param activity Android FragmentActivity
+     * @param request The {@link ThreeDSecureRequest} with optional UI customization.
+     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
+     */
+    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse) {
+        initializeChallengeWithLookupResponse(activity, request, lookupResponse, new ThreeDSecureResultCallback() {
+            @Override
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
+                }
+            }
+        });
+    }
+
+    // endregion
+
+    // region Deprecated Launch 3DS
+
+    /**
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
+     *
+     * Deprecated. Use {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult)} instead.
+     *
+     * @param activity Android FragmentActivity
+     * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param result   the {@link ThreeDSecureResult} returned for this request.
+     *                 Contains information about the 3DS verification request that will
+     *                 be invoked in this method.
+     * @param callback {@link ThreeDSecureResultCallback}
+     */
+    @Deprecated
+    public void continuePerformVerification(@NonNull final FragmentActivity activity, @NonNull final ThreeDSecureRequest request, @NonNull final ThreeDSecureResult result, @NonNull final ThreeDSecureResultCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                startVerificationFlow(activity, configuration, request, result, callback);
+            }
+        });
+    }
+
     /**
      * Initialize a challenge from a server side lookup call.
+     *
+     * Deprecated. Use {@link ThreeDSecureClient#initializeChallengeWithLookupResponse(FragmentActivity, String)} instead.
      *
      * @param activity Android FragmentActivity
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      * @param callback {@link ThreeDSecureResultCallback}
      */
+    @Deprecated
     public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity, @NonNull String lookupResponse, @NonNull ThreeDSecureResultCallback callback) {
         initializeChallengeWithLookupResponse(activity, null, lookupResponse, callback);
     }
@@ -212,11 +353,14 @@ public class ThreeDSecureClient {
     /**
      * Initialize a challenge from a server side lookup call.
      *
+     * Deprecated. Use {@link ThreeDSecureClient#initializeChallengeWithLookupResponse(FragmentActivity, ThreeDSecureRequest, String)} instead.
+     *
      * @param activity Android FragmentActivity
      * @param request The {@link ThreeDSecureRequest} with optional UI customization.
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      * @param callback {@link ThreeDSecureResultCallback}
      */
+    @Deprecated
     public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity, @Nullable final ThreeDSecureRequest request, @NonNull final String lookupResponse, @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -231,6 +375,8 @@ public class ThreeDSecureClient {
             }
         });
     }
+
+    // endregion
 
     private void startVerificationFlow(FragmentActivity activity, Configuration configuration, ThreeDSecureRequest request, ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
@@ -272,71 +418,28 @@ public class ThreeDSecureClient {
 
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
+        if (observer != null) {
+             observer.launch(result);
+        } else {
+            Bundle extras = new Bundle();
+            extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
 
-        Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
+            Intent intent = new Intent(activity, ThreeDSecureActivity.class);
+            intent.putExtras(extras);
 
-        Intent intent = new Intent(activity, ThreeDSecureActivity.class);
-        intent.putExtras(extras);
-
-        activity.startActivityForResult(intent, THREE_D_SECURE);
-    }
-
-    private void notify3DSComplete(ThreeDSecureResult result, ThreeDSecureResultCallback callback) {
-        ThreeDSecureInfo info = result.getTokenizedCard().getThreeDSecureInfo();
-
-        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
-        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
-
-        callback.onResult(result, null);
-    }
-
-    void authenticateCardinalJWT(final ThreeDSecureResult threeDSecureResult, final String cardinalJWT, final ThreeDSecureResultCallback callback) {
-        final CardNonce lookupCardNonce = threeDSecureResult.getTokenizedCard();
-
-        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
-
-        final String lookupNonce = lookupCardNonce.getString();
-        JSONObject body = new JSONObject();
-        try {
-            body.put("jwt", cardinalJWT);
-            body.put("paymentMethodNonce", lookupNonce);
-        } catch (JSONException ignored) {
+            activity.startActivityForResult(intent, THREE_D_SECURE);
         }
-
-        String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + lookupNonce + "/three_d_secure/authenticate_from_jwt");
-        String data = body.toString();
-
-        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    try {
-                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-                        if (result.hasError()) {
-                            result.setTokenizedCard(lookupCardNonce);
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-                        } else {
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-                        }
-                        notify3DSComplete(result, callback);
-
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
-                    callback.onResult(null, httpError);
-                }
-            }
-        });
     }
+
+    // region Deprecated Handle App/Browser Switch Results
 
     /**
+     * Deprecated. Use {@link ThreeDSecureListener}. To handle results.
+     *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link ThreeDSecureResultCallback}
      */
+    @Deprecated
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final ThreeDSecureResultCallback callback) {
         // V1 flow
         //noinspection ConstantConditions
@@ -359,8 +462,8 @@ public class ThreeDSecureClient {
                         if (result.hasError()) {
                             callback.onResult(null, new ErrorWithResponse(422, authResponse));
                         } else {
-                            notify3DSComplete(result, callback);
-                        }
+                            sendLiabilityShiftedAnalytics(result);
+                            callback.onResult(result, null);                        }
                     } catch (JSONException e) {
                         callback.onResult(null, e);
                     }
@@ -370,11 +473,14 @@ public class ThreeDSecureClient {
     }
 
     /**
+     * Deprecated. Use {@link ThreeDSecureListener}. To handle results.
+     *
      * @param resultCode a code associated with the Activity result
      * @param data       Android Intent
      * @param callback   {@link ThreeDSecureResultCallback}
      */
-    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull ThreeDSecureResultCallback callback) {
+    @Deprecated
+    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final ThreeDSecureResultCallback callback) {
         // V2 flow
         if (resultCode != RESULT_OK) {
             callback.onResult(null, new UserCanceledException("User canceled 3DS."));
@@ -391,7 +497,22 @@ public class ThreeDSecureClient {
             case FAILURE:
             case SUCCESS:
             case NOACTION:
-                authenticateCardinalJWT(threeDSecureResult, jwt, callback);
+                api.authenticateCardinalJWT(threeDSecureResult, jwt, new ThreeDSecureResultCallback() {
+                    @Override
+                    public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                        if (threeDSecureResult != null) {
+                            if (threeDSecureResult.hasError()) {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                            } else {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                                sendLiabilityShiftedAnalytics(threeDSecureResult);
+                            }
+                        } else if (error != null) {
+                            braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+                        }
+                        callback.onResult(threeDSecureResult, error);
+                    }
+                });
 
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                 break;
@@ -407,25 +528,90 @@ public class ThreeDSecureClient {
         }
     }
 
-    private void performThreeDSecureLookup(final ThreeDSecureRequest request, final ThreeDSecureResultCallback callback) {
-        String url = ApiClient.versionedPath(ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() + "/three_d_secure/lookup");
-        String data = request.build(cardinalClient.getConsumerSessionId());
+    // endregion
 
-        braintreeClient.sendPOST(url, data, new HttpResponseCallback() {
+    // region Internal Handle App/Browser Switch Results
 
+    void onBrowserSwitchResult(FragmentActivity activity) {
+        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        if (pendingBrowserSwitchResult != null && listener != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
+    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
             @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    try {
-                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
-                        callback.onResult(result, null);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    callback.onResult(null, httpError);
+            public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                if (threeDSecureResult != null) {
+                    listener.onThreeDSecureSuccess(threeDSecureResult);
+                } else if (error != null) {
+                    listener.onThreeDSecureFailure(error);
                 }
             }
         });
+        this.pendingBrowserSwitchResult = null;
     }
+
+    void onCardinalResult(CardinalResult cardinalResult) {
+        Exception threeDSecureError = cardinalResult.getError();
+        if (threeDSecureError != null && listener != null) {
+            listener.onThreeDSecureFailure(threeDSecureError);
+        } else {
+            ThreeDSecureResult threeDSecureResult = cardinalResult.getThreeSecureResult();
+            ValidateResponse validateResponse = cardinalResult.getValidateResponse();
+            String jwt = cardinalResult.getJWT();
+
+            braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s", validateResponse.getActionCode().name().toLowerCase()));
+
+            switch (validateResponse.getActionCode()) {
+                case FAILURE:
+                case NOACTION:
+                case SUCCESS:
+                    api.authenticateCardinalJWT(threeDSecureResult, jwt, new ThreeDSecureResultCallback() {
+                        @Override
+                        public void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error) {
+                            if (threeDSecureResult != null) {
+                                if (threeDSecureResult.hasError()) {
+                                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                                } else {
+                                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                                    sendLiabilityShiftedAnalytics(threeDSecureResult);
+                                }
+                                listener.onThreeDSecureSuccess(threeDSecureResult);
+                            } else if (error != null) {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+                                listener.onThreeDSecureFailure(error);
+                            }
+                        }
+                    });
+
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+                    break;
+                case ERROR:
+                case TIMEOUT:
+                    listener.onThreeDSecureFailure(new BraintreeException(validateResponse.getErrorDescription()));
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
+                    break;
+                case CANCEL:
+                    listener.onThreeDSecureFailure(new UserCanceledException("User canceled 3DS."));
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+                    break;
+            }
+        }
+    }
+
+    private void sendLiabilityShiftedAnalytics(ThreeDSecureResult threeDSecureResult) {
+        ThreeDSecureInfo info = threeDSecureResult.getTokenizedCard().getThreeDSecureInfo();
+
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
+        braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    // endregion
 }

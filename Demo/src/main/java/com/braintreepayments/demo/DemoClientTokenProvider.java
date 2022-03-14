@@ -1,21 +1,22 @@
-package com.braintreepayments.api;
+package com.braintreepayments.demo;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.braintreepayments.api.ClientTokenCallback;
+import com.braintreepayments.api.ClientTokenProvider;
 import com.braintreepayments.demo.Merchant;
 import com.braintreepayments.demo.R;
 import com.braintreepayments.demo.Settings;
 
-// TODO: move back to com.braintreepayments.demo when AuthorizationProvider is released
-public class DemoAuthorizationProvider implements AuthorizationProvider {
+public class DemoClientTokenProvider implements ClientTokenProvider {
 
     private final Merchant merchant;
     private final Context appContext;
 
-    public DemoAuthorizationProvider(Context context) {
+    public DemoClientTokenProvider(Context context) {
         merchant = new Merchant();
         appContext = context.getApplicationContext();
     }

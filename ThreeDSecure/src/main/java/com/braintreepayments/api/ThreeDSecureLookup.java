@@ -114,6 +114,7 @@ public class ThreeDSecureLookup implements Parcelable {
         return acsUrl != null;
     }
 
+    // NEXT_MAJOR_VERSION: make package-private
     public ThreeDSecureLookup() {}
 
     @Override

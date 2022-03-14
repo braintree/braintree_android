@@ -1,5 +1,7 @@
 # Braintree Android v4 Migration Guide
 
+Version `4.9.0` of the SDK contains new APIs to improve merchant integrations. For a guide the latest changes, see the [v4.9.0+ Migration Guide](/v4.9.0+_MIGRATION_GUIDE.md).
+
 See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the basics for updating your Braintree integration from v3 to v4.
 
 _Documentation for v4 is available at https://developer.paypal.com/braintree/docs/start/hello-client/android/v4._
@@ -10,7 +12,7 @@ _Documentation for v4 is available at https://developer.paypal.com/braintree/doc
 1. [Browser Switch](#browser-switch)
 1. [BraintreeFragment](#braintree-fragment)
 1. [Event Handling](#event-handling)
-1. [Builder Patter](#builder-pattern)
+1. [Builder Pattern](#builder-pattern)
 1. [American Express](#american-express)
 1. [Card](#card)
 1. [Data Collector](#data-collector)
