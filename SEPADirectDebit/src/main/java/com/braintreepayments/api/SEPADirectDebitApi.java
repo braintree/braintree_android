@@ -56,16 +56,16 @@ class SEPADirectDebitApi {
                        try {
                            SEPADirectDebitNonce nonce = parseTokenizeResponse(responseBody);
                            callback.onResult(nonce, null);
-                       } catch (JSONException e) {
-                           // TODO: handle error
-                           e.printStackTrace();
+                       } catch (JSONException jsonException) {
+                           callback.onResult(null, jsonException);
                        }
+                   } else if (httpError != null) {
+                       callback.onResult(null, httpError);
                    }
                 }
             });
         } catch (JSONException e) {
-            // TODO: callback error
-            e.printStackTrace();
+            callback.onResult(null, e);
         }
     }
 

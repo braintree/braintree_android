@@ -226,4 +226,43 @@ public class SEPADirectDebitApiUnitTest {
         assertEquals("a-customer-id", result.getCustomerId());
         assertEquals(SEPADirectDebitMandateType.ONE_OFF, result.getMandateType());
     }
+
+    @Test
+    public void tokenize_onSuccessfulHttpResponse_whenJSONResponseInvalid_callsBackJSONException() {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
+                callback.onResult("not-json", null);
+                return null;
+            }
+        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
+
+        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(sepaDirectDebitTokenizeCallback).onResult((SEPADirectDebitNonce) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof JSONException);
+    }
+
+    @Test
+    public void tokenize_onHttpError_callsBackError() {
+        final Exception error = new Exception("http error");
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
+                callback.onResult(null, error);
+                return null;
+            }
+        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
+
+        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+
+        verify(sepaDirectDebitTokenizeCallback).onResult(null, error);
+    }
 }
