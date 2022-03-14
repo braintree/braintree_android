@@ -25,6 +25,7 @@ jobs:
           name: main-aar
           path: |
             BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+            Card/build/outputs/aar/Card-release.aar
       # Assemble artifacts from current branch
       - name: Checkout Current Branch
         uses: actions/checkout@v2
@@ -36,6 +37,7 @@ jobs:
           name: current-aar
           path: |
             BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+            Card/build/outputs/aar/Card-release.aar
       # Set up Diffuse
       - name: Install Diffuse
         run: brew install JakeWharton/repo/diffuse
@@ -50,4 +52,6 @@ jobs:
       # Run Diffuse analysis
       - name: Run Diffuse Analysis - BraintreeCore
         run: diffuse diff --aar main-aar/BraintreeCore/build/outputs/aar/BraintreeCore-release.aar current-aar/BraintreeCore/build/outputs/aar/BraintreeCore-release.aar
+      - name: Run Diffuse Analysis - Card
+        run: diffuse diff --aar main-aar/Card/build/outputs/aar/Card-release.aar current-aar/Card/build/outputs/aar/Card-release.aar
 
