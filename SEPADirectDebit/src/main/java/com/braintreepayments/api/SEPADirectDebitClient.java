@@ -63,7 +63,6 @@ public class SEPADirectDebitClient {
      * @param listener a {@link SEPADirectDebitListener}
      */
     public void setListener(SEPADirectDebitListener listener) {
-        // TODO: handle delivering pending browser switch result when listener is set
         this.listener = listener;
     }
 
