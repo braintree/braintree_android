@@ -56,6 +56,7 @@ dependencies {
     testImplementation deps.kotlinStdLib
     testImplementation deps.kotlinCoroutinesCore
     testImplementation deps.mockk
+    testImplementation deps.androidxTestCore
 }
 
 // region signing and publishing

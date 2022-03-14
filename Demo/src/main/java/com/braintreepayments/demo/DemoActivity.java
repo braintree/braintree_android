@@ -16,16 +16,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeClientFactory;
-import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.DemoAuthorizationProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +32,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
-
-    private DemoViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +45,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         // perform reset on preference change
         Settings.getPreferences(this)
                 .registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> performReset());
-
-        viewModel = new ViewModelProvider(this).get(DemoViewModel.class);
     }
 
     @Override
@@ -63,7 +55,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
         }
-//        handleBrowserSwitchResultIfNecessary();
     }
 
     public BraintreeClient getBraintreeClient() {
@@ -80,15 +71,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         return braintreeClient;
     }
 
-    private void handleBrowserSwitchResultIfNecessary() {
-        if (braintreeClient != null) {
-            BrowserSwitchResult result = braintreeClient.deliverBrowserSwitchResult(this);
-            if (result != null) {
-                viewModel.onBrowserSwitchResult(result);
-            }
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -98,7 +80,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        viewModel.onActivityResult(requestCode, resultCode, data);
     }
 
     private NavController getNavController() {

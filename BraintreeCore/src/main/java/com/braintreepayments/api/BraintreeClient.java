@@ -29,31 +29,31 @@ public class BraintreeClient {
     private final String integrationType;
     private final String returnUrlScheme;
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, AuthorizationProvider authorizationProvider) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, authorizationProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, AuthorizationProvider authorizationProvider, String returnUrlScheme) {
-        return createDefaultParams(context, authString, authorizationProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, AuthorizationProvider authorizationProvider, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String sessionId, @IntegrationType.Integration String integrationType) {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, authorizationProvider, returnUrlScheme, sessionId, integrationType);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, AuthorizationProvider authorizationProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
         AuthorizationLoader authorizationLoader =
-                new AuthorizationLoader(initialAuthString, authorizationProvider);
+                new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
         BraintreeHttpClient httpClient = new BraintreeHttpClient();
         return new BraintreeClientParams()
@@ -82,13 +82,13 @@ public class BraintreeClient {
     }
 
     /**
-     * Create a new instance of {@link BraintreeClient} using a {@link AuthorizationProvider}.
+     * Create a new instance of {@link BraintreeClient} using a {@link ClientTokenProvider}.
      *
      * @param context             Android Context
-     * @param authorizationProvider An implementation of {@link AuthorizationProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
+     * @param clientTokenProvider An implementation of {@link ClientTokenProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
      */
-    BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider) {
-        this(createDefaultParams(context, null, authorizationProvider));
+    public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider) {
+        this(createDefaultParams(context, null, clientTokenProvider));
     }
 
     /**
@@ -107,18 +107,18 @@ public class BraintreeClient {
     }
 
     /**
-     * Create a new instance of {@link BraintreeClient} using a {@link AuthorizationProvider} and a custom url scheme.
+     * Create a new instance of {@link BraintreeClient} using a {@link ClientTokenProvider} and a custom url scheme.
      * <p>
      * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
      * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
      * Drop-in uses the same custom url scheme as the default BraintreeClient constructor.
      *
      * @param context             Android Context
-     * @param authorizationProvider An implementation of {@link AuthorizationProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
+     * @param clientTokenProvider An implementation of {@link ClientTokenProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
-    BraintreeClient(@NonNull Context context, @NonNull AuthorizationProvider authorizationProvider, @NonNull String returnUrlScheme) {
-        this(createDefaultParams(context, null, authorizationProvider, returnUrlScheme));
+    public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String returnUrlScheme) {
+        this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
     }
 
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {

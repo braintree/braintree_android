@@ -6,7 +6,9 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,20 +18,73 @@ import org.json.JSONObject;
  */
 public class LocalPaymentClient {
 
-    private static final String LOCAL_PAYMENT_CANCEL = "local-payment-cancel";
-    private static final String LOCAL_PAYMENT_SUCCESSS = "local-payment-success";
+    static final String LOCAL_PAYMENT_CANCEL = "local-payment-cancel";
+    static final String LOCAL_PAYMENT_SUCCESS = "local-payment-success";
 
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
+    private final LocalPaymentApi localPaymentApi;
+    private LocalPaymentListener listener;
 
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
+
+    /**
+     * Create a new instance of {@link LocalPaymentClient} from within an Activity using a {@link BraintreeClient}.
+     *
+     * @param activity a {@link FragmentActivity}
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
+        this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+    }
+
+    /**
+     * Create a new instance of {@link LocalPaymentClient} from within a Fragment using a {@link BraintreeClient}.
+     *
+     * @param fragment a {@link Fragment
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+    }
+
+    /**
+     * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
+     *
+     * Deprecated. Use {@link LocalPaymentClient(Fragment, BraintreeClient)} or
+     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
+    @Deprecated
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector());
+        this(null, null, braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
-    LocalPaymentClient(@NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector) {
+    LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle, @NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector, @NonNull LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
+        this.localPaymentApi = localPaymentApi;
+        if (activity != null && lifecycle != null) {
+            LocalPaymentLifecycleObserver observer = new LocalPaymentLifecycleObserver(this);
+            lifecycle.addObserver(observer);
+        }
+    }
+
+    /**
+     * Add a {@link LocalPaymentListener} to your client to receive results or errors from the Local Payment flow.
+     * This method must be invoked on a {@link LocalPaymentClient(Fragment, BraintreeClient)} or
+     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)} in order to receive results.
+     *
+     * @param listener a {@link LocalPaymentListener}
+     */
+    public void setListener(LocalPaymentListener listener) {
+        this.listener = listener;
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(braintreeClient.getApplicationContext(), pendingBrowserSwitchResult);
+        }
     }
 
     /**
@@ -66,36 +121,19 @@ public class LocalPaymentClient {
                             return;
                         }
 
-                        String returnUrl = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESSS;
-                        String cancel = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
-
                         sendAnalyticsEvent(request.getPaymentType(), "local-payment.start-payment.selected");
 
-                        String url = "/v1/local_payments/create";
-                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HttpResponseCallback() {
-
+                        localPaymentApi.createPaymentMethod(request, new LocalPaymentStartCallback() {
                             @Override
-                            public void onResult(String responseBody, Exception httpError) {
-                                if (responseBody != null) {
-                                    try {
-                                        JSONObject responseJson = new JSONObject(responseBody);
-                                        String redirectUrl = responseJson.getJSONObject("paymentResource").getString("redirectUrl");
-                                        String paymentToken = responseJson.getJSONObject("paymentResource").getString("paymentToken");
-
-                                        sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
-                                        LocalPaymentResult transaction = new LocalPaymentResult(request, redirectUrl, paymentToken);
-                                        callback.onResult(transaction, null);
-                                    } catch (JSONException e) {
-                                        sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
-                                        callback.onResult(null, e);
-                                    }
-                                } else {
+                            public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
+                                if (localPaymentResult != null) {
+                                    sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
+                                } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
-                                    callback.onResult(null, httpError);
                                 }
+                                callback.onResult(localPaymentResult, error);
                             }
                         });
-
                     } else {
                         callback.onResult(null, error);
                     }
@@ -107,10 +145,30 @@ public class LocalPaymentClient {
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
+     * Errors encountered during the approval will be returned to the {@link LocalPaymentListener}.
+     *
      * @param activity           Android FragmentActivity
      * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
      *                           and now has an approvalUrl and paymentId.
      */
+    public void approveLocalPayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) {
+        try {
+            approvePayment(activity, localPaymentResult);
+        } catch (Exception error) {
+            listener.onLocalPaymentFailure(error);
+        }
+    }
+
+    /**
+     * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
+     *
+     * Deprecated. Use {@link LocalPaymentClient#approveLocalPayment(FragmentActivity, LocalPaymentResult)}.
+     *
+     * @param activity           Android FragmentActivity
+     * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}
+     *                           and now has an approvalUrl and paymentId.
+     */
+    @Deprecated
     public void approvePayment(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) throws JSONException, BrowserSwitchException {
         //noinspection ConstantConditions
         if (activity == null) {
@@ -137,11 +195,41 @@ public class LocalPaymentClient {
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
+    void onBrowserSwitchResult(FragmentActivity activity) {
+        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+
+        if (pendingBrowserSwitchResult != null && listener != null) {
+            deliverBrowserSwitchResultToListener(activity, pendingBrowserSwitchResult);
+        }
+    }
+
+    private void deliverBrowserSwitchResultToListener(Context context, final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(context, browserSwitchResult, new LocalPaymentBrowserSwitchResultCallback() {
+            @Override
+            public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                if (localPaymentNonce != null) {
+                    listener.onLocalPaymentSuccess(localPaymentNonce);
+                } else if (error != null) {
+                    listener.onLocalPaymentFailure(error);
+                }
+            }
+        });
+
+        this.pendingBrowserSwitchResult = null;
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
     /**
-     * @param context             Android Contex
+     * Deprecated. Use {@link LocalPaymentListener} to handle results.
+     *
+     * @param context             Android Context
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
+    @Deprecated
     public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
@@ -174,46 +262,18 @@ public class LocalPaymentClient {
                     callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                     return;
                 }
-                JSONObject payload = new JSONObject();
 
-                try {
-                    payload.put("merchant_account_id", merchantAccountId);
-
-                    JSONObject paypalAccount = new JSONObject()
-                            .put("intent", "sale")
-                            .put("response", new JSONObject().put("webURL", responseString))
-                            .put("options", new JSONObject().put("validate", false))
-                            .put("response_type", "web")
-                            .put("correlation_id", payPalDataCollector.getClientMetadataId(context));
-                    payload.put("paypal_account", paypalAccount);
-
-                    JSONObject metaData = new JSONObject()
-                            .put("source", "client")
-                            .put("integration", braintreeClient.getIntegrationType())
-                            .put("sessionId", braintreeClient.getSessionId());
-                    payload.put("_meta", metaData);
-
-                    String url = "/v1/payment_methods/paypal_accounts";
-                    braintreeClient.sendPOST(url, payload.toString(), new HttpResponseCallback() {
-
-                        @Override
-                        public void onResult(String responseBody, Exception httpError) {
-                            if (responseBody != null) {
-                                try {
-                                    LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(responseBody));
-                                    sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
-                                    callback.onResult(result, null);
-                                } catch (JSONException jsonException) {
-                                    sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
-                                    callback.onResult(null, jsonException);
-                                }
-                            } else {
-                                sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
-                                callback.onResult(null, httpError);
-                            }
-                        }
-                    });
-                } catch (JSONException ignored) { /* do nothing */ }
+                localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context), new LocalPaymentBrowserSwitchResultCallback() {
+                    @Override
+                    public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                       if (localPaymentNonce != null) {
+                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
+                       } else if (error != null) {
+                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                       }
+                       callback.onResult(localPaymentNonce, error);
+                    }
+                });
         }
     }
 

@@ -2,6 +2,28 @@
 
 ## unreleased
 
+* Braintree Core
+  * Add `ClientTokenProvider` interface for asynchronously fetching client token authorization
+  * Add new `BraintreeClient` constructors that accept `ClientTokenProvider`
+  * Update pinned certificates used by `BraintreeGraphQLClient`
+* Google Pay
+  * Add `GooglePayListener` to receive results from the Google Pay flow
+  * Deprecate methods requiring a callback in favor of listener pattern 
+* ThreeDSecure
+  * Add `ThreeDSecureListener` to receive results from the 3DS flow
+  * Deprecate methods requiring a callback in favor of listener pattern
+* Venmo
+  * Add `VenmoListener` to receive results from the Venmo flow
+  * Deprecate methods requiring a callback in favor of listener pattern
+* PayPal
+  * Add `PayPalListener` to receive results from the PayPal flow
+  * Deprecate methods requiring a callback in favor of listener pattern
+* Local Payment 
+  * Add `LocalPaymentListener` to receive results from the Local Payment flow
+  * Deprecate methods requiring a callback in favor of listener pattern
+
+## 4.8.3
+
 * PayPal
   * Fix issue where billing agreement description was not showing (fixes #509)
 

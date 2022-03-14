@@ -28,6 +28,7 @@ import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
+import com.braintreepayments.api.ThreeDSecureListener;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -47,7 +48,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener {
+public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
@@ -83,7 +84,9 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         BraintreeClient braintreeClient = getBraintreeClient();
         americanExpressClient = new AmericanExpressClient(braintreeClient);
         cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
+        threeDSecureClient.setListener(this);
+
         unionPayClient = new UnionPayClient(braintreeClient);
         dataCollector = new DataCollector(braintreeClient);
 
@@ -122,10 +125,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         if (isUnionPay) {
             sendSmsButton.setVisibility(VISIBLE);
         }
-
-        DemoViewModel viewModel = new ViewModelProvider(getActivity()).get(DemoViewModel.class);
-        viewModel.getThreeDSecureBrowserSwitchResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureBrowserSwitchResult);
-        viewModel.getThreeDSecureActivityResult().observe(getViewLifecycleOwner(), this::handleThreeDSecureActivityResult);
 
         purchaseButton.setEnabled(true);
         autofillButton.setEnabled(true);
@@ -336,16 +335,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         }
     }
 
-    private void handleThreeDSecureBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        if (browserSwitchResult != null) {
-            threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, this::handleThreeDSecureResult);
-        }
-    }
-
-    private void handleThreeDSecureActivityResult(ActivityResult activityResult) {
-        threeDSecureClient.onActivityResult(activityResult.getResultCode(), activityResult.getData(), this::handleThreeDSecureResult);
-    }
-
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
@@ -357,7 +346,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
                 if (threeDSecureResult != null) {
-                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
                 } else {
                     handleError(error);
                     safelyCloseLoadingView();
@@ -439,5 +428,15 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
 
         return threeDSecureRequest;
+    }
+
+    @Override
+    public void onThreeDSecureSuccess(@NonNull ThreeDSecureResult threeDSecureResult) {
+        handleThreeDSecureResult(threeDSecureResult, null);
+    }
+
+    @Override
+    public void onThreeDSecureFailure(@NonNull Exception error) {
+        handleThreeDSecureResult(null, error);
     }
 }

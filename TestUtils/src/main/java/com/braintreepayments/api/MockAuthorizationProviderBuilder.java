@@ -22,8 +22,8 @@ public class MockAuthorizationProviderBuilder {
         return this;
     }
 
-    AuthorizationProvider build() {
-        AuthorizationProvider authorizationProvider = mock(AuthorizationProvider.class);
+    ClientTokenProvider build() {
+        ClientTokenProvider clientTokenProvider = mock(ClientTokenProvider.class);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -36,8 +36,8 @@ public class MockAuthorizationProviderBuilder {
                 }
                 return null;
             }
-        }).when(authorizationProvider).getClientToken(any(ClientTokenCallback.class));
+        }).when(clientTokenProvider).getClientToken(any(ClientTokenCallback.class));
 
-        return authorizationProvider;
+        return clientTokenProvider;
     }
 }
