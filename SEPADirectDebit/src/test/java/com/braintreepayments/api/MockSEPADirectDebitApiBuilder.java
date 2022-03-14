@@ -12,6 +12,8 @@ public class MockSEPADirectDebitApiBuilder {
 
     private Exception createMandateError;
     private CreateMandateResult createMandateResultSuccess;
+    private Exception tokenizeError;
+    private SEPADirectDebitNonce tokenizeSuccess;
 
     public MockSEPADirectDebitApiBuilder createMandateResultSuccess(CreateMandateResult createMandateResultSuccess) {
         this.createMandateResultSuccess = createMandateResultSuccess;
@@ -20,6 +22,16 @@ public class MockSEPADirectDebitApiBuilder {
 
     public MockSEPADirectDebitApiBuilder createMandateError(Exception createMandateError) {
         this.createMandateError = createMandateError;
+        return this;
+    }
+
+    public MockSEPADirectDebitApiBuilder tokenizeSuccess(SEPADirectDebitNonce tokenizeSuccess) {
+        this.tokenizeSuccess = tokenizeSuccess;
+        return this;
+    }
+
+    public MockSEPADirectDebitApiBuilder tokenizeError(Exception tokenizeError) {
+        this.tokenizeError = tokenizeError;
         return this;
     }
 
@@ -38,6 +50,19 @@ public class MockSEPADirectDebitApiBuilder {
                 return null;
             }
         }).when(sepaDirectDebitApi).createMandate(any(SEPADirectDebitRequest.class), any(Configuration.class), anyString(), any(CreateMandateCallback.class));
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                SEPADirectDebitTokenizeCallback callback = (SEPADirectDebitTokenizeCallback) invocation.getArguments()[4];
+                if (tokenizeSuccess != null) {
+                    callback.onResult(tokenizeSuccess, null);
+                } else if (tokenizeError != null) {
+                    callback.onResult(null, tokenizeError);
+                }
+                return null;
+            }
+        }).when(sepaDirectDebitApi).tokenize(anyString(), anyString(), anyString(), anyString(), any(SEPADirectDebitTokenizeCallback.class));
 
         return sepaDirectDebitApi;
     }
