@@ -138,6 +138,16 @@ public class SEPADirectDebitClientUnitTest {
     }
 
     @Test
+    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeSuccess_forwardsResultToListener() {
+
+    }
+
+    @Test
+    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeFailure_forwardsErrorToListener() {
+
+    }
+
+    @Test
     public void tokenize_onCreateMandateRequestSuccess_whenApprovalURLInvalid_returnsErrorToListener() {
         createMandateResult = new CreateMandateResult(
                 "",
@@ -286,6 +296,16 @@ public class SEPADirectDebitClientUnitTest {
         sut.onBrowserSwitchResult(activity);
 
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"), eq("bank-reference-token"), eq("ONE_OFF"), any(SEPADirectDebitTokenizeCallback.class));
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_onTokenizeSuccess_forwardsResultToListener() {
+
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusSuccess_onTokenizeFailure_forwardsErrorToListener() {
+
     }
 
     @Test
