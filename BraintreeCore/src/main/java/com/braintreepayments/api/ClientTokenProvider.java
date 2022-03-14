@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
  * Implement this interface to provide an asynchronous way for {@link BraintreeClient} to fetch
  * a client token from your server when it is needed.
  */
-public interface AuthorizationProvider {
+public interface ClientTokenProvider {
 
     /**
      * Method used by {@link BraintreeClient} to fetch a client token.

@@ -3,8 +3,8 @@
 ## unreleased
 
 * Braintree Core
-  * Add `AuthorizationProvider` interface for asynchronously fetching authorization
-  * Add new `BraintreeClient` constructors that accept `AuthorizationProvider`
+  * Add `ClientTokenProvider` interface for asynchronously fetching client token authorization
+  * Add new `BraintreeClient` constructors that accept `ClientTokenProvider`
   * Update pinned certificates used by `BraintreeGraphQLClient`
 * Google Pay
   * Add `GooglePayListener` to receive results from the Google Pay flow
