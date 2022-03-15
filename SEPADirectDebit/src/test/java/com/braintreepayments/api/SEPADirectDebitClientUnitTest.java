@@ -115,7 +115,7 @@ public class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    public void tokenize_onCreateMandateRequestSuccess_launchesBrowserSwitch() throws BrowserSwitchException, JSONException {
+    public void tokenize_onCreateMandateRequestSuccess_launchesBrowserSwitch_andSendsAnalytics() throws BrowserSwitchException, JSONException {
         SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder()
                 .createMandateResultSuccess(createMandateResult)
                 .build();
@@ -123,9 +123,13 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut = new SEPADirectDebitClient(activity, lifecycle, braintreeClient, sepaDirectDebitApi);
 
         sut.tokenize(activity, sepaDirectDebitRequest);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
         verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
+
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
@@ -138,7 +142,7 @@ public class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeSuccess_forwardsResultToListener() throws JSONException {
+    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeSuccess_forwardsResultToListener_andSendsAnalytics() throws JSONException {
         // null approval URL indicates mandate approved
         createMandateResult = new CreateMandateResult(
                 "null",
@@ -159,10 +163,11 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(activity, sepaDirectDebitRequest);
         verify(listener).onSEPADirectDebitSuccess(nonce);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
     }
 
     @Test
-    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeFailure_forwardsErrorToListener() {
+    public void tokenize_onCreateMandateRequestSuccess_whenMandateAlreadyApproved_onTokenizeFailure_forwardsErrorToListener_andSendsAnalytics() {
         // null approval URL indicates mandate approved
         createMandateResult = new CreateMandateResult(
                 "null",
@@ -183,6 +188,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(activity, sepaDirectDebitRequest);
         verify(listener).onSEPADirectDebitFailure(exception);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
     }
 
     @Test
@@ -206,6 +212,7 @@ public class SEPADirectDebitClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onSEPADirectDebitFailure(captor.capture());
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
