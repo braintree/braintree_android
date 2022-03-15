@@ -163,6 +163,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(activity, sepaDirectDebitRequest);
         verify(listener).onSEPADirectDebitSuccess(nonce);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
     }
 
@@ -188,6 +189,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(activity, sepaDirectDebitRequest);
         verify(listener).onSEPADirectDebitFailure(exception);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
     }
 
@@ -212,6 +214,7 @@ public class SEPADirectDebitClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onSEPADirectDebitFailure(captor.capture());
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
 
         Exception exception = captor.getValue();
@@ -294,7 +297,7 @@ public class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsUserCanceledExceptionToListener() {
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsUserCanceledExceptionToListener_andSendsAnalytics() {
         SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
