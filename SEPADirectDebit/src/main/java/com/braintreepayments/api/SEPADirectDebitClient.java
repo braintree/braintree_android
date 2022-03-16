@@ -75,52 +75,42 @@ public class SEPADirectDebitClient {
      */
     public void tokenize(final FragmentActivity activity, final SEPADirectDebitRequest sepaDirectDebitRequest) {
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.selected.started");
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
+        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
+        sepaDirectDebitApi.createMandate(sepaDirectDebitRequest, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
             @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
-                if (configuration != null) {
-                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
-                    sepaDirectDebitApi.createMandate(sepaDirectDebitRequest, configuration, braintreeClient.getReturnUrlScheme(), new CreateMandateCallback() {
-                        @Override
-                        public void onResult(@Nullable CreateMandateResult result, @Nullable Exception createMandateError) {
-                            if (result != null) {
-                                if (URLUtil.isValidUrl(result.getApprovalUrl())) {
-                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
-                                    try {
-                                        startBrowserSwitch(activity, result);
-                                    } catch (JSONException | BrowserSwitchException exception) {
-                                        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
-                                        listener.onSEPADirectDebitFailure(exception);
-                                    }
-                                } else if (result.getApprovalUrl().equals("null")) {
-                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
-                                    // Mandate has already been approved
-                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
-                                    sepaDirectDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString(), new SEPADirectDebitTokenizeCallback() {
-                                        @Override
-                                        public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception tokenizeError) {
-                                            if (sepaDirectDebitNonce != null) {
-                                                braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
-                                                listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
-                                            } else if (tokenizeError != null) {
-                                                braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
-                                                listener.onSEPADirectDebitFailure(tokenizeError);
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
-                                    listener.onSEPADirectDebitFailure(new BraintreeException("An unexpected error occurred."));
-                                }
-                            } else if (createMandateError != null) {
-                                braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
-                                listener.onSEPADirectDebitFailure(createMandateError);
-                            }
+            public void onResult(@Nullable CreateMandateResult result, @Nullable Exception createMandateError) {
+                if (result != null) {
+                    if (URLUtil.isValidUrl(result.getApprovalUrl())) {
+                        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
+                        try {
+                            startBrowserSwitch(activity, result);
+                        } catch (JSONException | BrowserSwitchException exception) {
+                            braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
+                            listener.onSEPADirectDebitFailure(exception);
                         }
-                    });
-                } else if (configError != null) {
-                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.configuration.failure");
-                    listener.onSEPADirectDebitFailure(configError);
+                    } else if (result.getApprovalUrl().equals("null")) {
+                        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
+                        // Mandate has already been approved
+                        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
+                        sepaDirectDebitApi.tokenize(result.getIbanLastFour(), result.getCustomerId(), result.getBankReferenceToken(), result.getMandateType().toString(), new SEPADirectDebitTokenizeCallback() {
+                                                                                                                                                                      @Override
+                                                                                                                                                                      public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception tokenizeError) {
+                                if (sepaDirectDebitNonce != null) {
+                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
+                                    listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                } else if (tokenizeError != null) {
+                                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
+                                    listener.onSEPADirectDebitFailure(tokenizeError);
+                                }
+                }
+            });
+                    } else {
+                        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
+                        listener.onSEPADirectDebitFailure(new BraintreeException("An unexpected error occurred."));
+                    }
+                } else if (createMandateError != null) {
+                    braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
+                    listener.onSEPADirectDebitFailure(createMandateError);
                 }
             }
         });
