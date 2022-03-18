@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.9.0
 
 * Braintree Core
   * Add `ClientTokenProvider` interface for asynchronously fetching client token authorization
