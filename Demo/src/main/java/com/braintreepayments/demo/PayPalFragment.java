@@ -1,9 +1,9 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +21,6 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
-import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends Fragment implements PayPalListener {
 
@@ -44,7 +43,10 @@ public class PayPalFragment extends Fragment implements PayPalListener {
         billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
-        braintreeClient = createBraintreeClient(requireContext());
+        Context context = requireContext();
+        braintreeClient =
+            new BraintreeClient(context, new DemoClientTokenProvider(context));
+
         payPalClient = new PayPalClient(this, braintreeClient);
         payPalClient.setListener(this);
 

@@ -1,9 +1,9 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +43,10 @@ public class PreferredPaymentMethodsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        braintreeClient = createBraintreeClient(requireContext());
+        Context context = requireContext();
+        braintreeClient =
+                new BraintreeClient(context, new DemoClientTokenProvider(context));
+
         payPalClient = new PayPalClient(braintreeClient);
         venmoClient = new VenmoClient(braintreeClient);
         preferredPaymentMethodsClient = new PreferredPaymentMethodsClient(braintreeClient);

@@ -2,9 +2,9 @@ package com.braintreepayments.demo;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -86,7 +86,10 @@ public class CardFragment extends Fragment implements OnCardFormSubmitListener, 
     public void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
 
-        braintreeClient = createBraintreeClient(requireContext());
+        Context context = requireContext();
+        braintreeClient =
+                new BraintreeClient(context, new DemoClientTokenProvider(context));
+
         americanExpressClient = new AmericanExpressClient(braintreeClient);
         cardClient = new CardClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);

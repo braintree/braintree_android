@@ -1,7 +1,6 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.BraintreeClientFactory.createBraintreeClient;
-
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -38,7 +37,10 @@ public class VenmoFragment extends Fragment implements VenmoListener {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        braintreeClient = createBraintreeClient(requireContext());
+        Context context = requireContext();
+        braintreeClient =
+                new BraintreeClient(context, new DemoClientTokenProvider(context));
+
         venmoClient = new VenmoClient(this, braintreeClient);
         venmoClient.setListener(this);
 
