@@ -159,28 +159,6 @@ public class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    public void tokenize_buildsHttpRequest_withAllParams() throws JSONException {
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
-
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
-
-        HttpRequest httpRequest = captor.getValue();
-        assertEquals("POST", httpRequest.getMethod());
-        assertEquals("application/json", httpRequest.getHeaders().get("Content-Type"));
-        assertEquals("development_testing_pwpp_multi_account_merchant", httpRequest.getHeaders().get("Client-Key"));
-        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/payment_methods/sepa_debit_accounts", httpRequest.getPath());
-
-        JSONObject data =new JSONObject(new String(httpRequest.getData()));
-        JSONObject accountData = data.getJSONObject("sepa_debit_account");
-        assertEquals("a-customer-id", accountData.get("customer_id"));
-        assertEquals("1234", accountData.get("iban_last_chars"));
-        assertEquals("ONE_OFF", accountData.get("mandate_type"));
-        assertEquals("a-bank-reference-token", accountData.get("bank_reference_token"));
-    }
-
-    @Test
     public void tokenize_onSuccessfulHttpResponse_callsBackSEPADirectDebitNonce() {
         doAnswer(new Answer<Void>() {
             @Override
@@ -262,67 +240,5 @@ public class SEPADirectDebitApiUnitTest {
         assertEquals("1234", accountData.get("iban_last_chars"));
         assertEquals("ONE_OFF", accountData.get("mandate_type"));
         assertEquals("a-bank-reference-token", accountData.get("bank_reference_token"));
-    }
-
-    @Test
-    public void tokenize_onSuccessfulHttpResponse_callsBackSEPADirectDebitNonce() {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
-                callback.onResult(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE, null);
-                return null;
-            }
-        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
-
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
-
-        ArgumentCaptor<SEPADirectDebitNonce> captor = ArgumentCaptor.forClass(SEPADirectDebitNonce.class);
-        verify(sepaDirectDebitTokenizeCallback).onResult(captor.capture(), (Exception) isNull());
-
-        SEPADirectDebitNonce result = captor.getValue();
-        assertEquals("1234", result.getIbanLastFour());
-        assertEquals("a-customer-id", result.getCustomerId());
-        assertEquals(SEPADirectDebitMandateType.ONE_OFF, result.getMandateType());
-    }
-
-    @Test
-    public void tokenize_onSuccessfulHttpResponse_whenJSONResponseInvalid_callsBackJSONException() {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
-                callback.onResult("not-json", null);
-                return null;
-            }
-        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
-
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
-
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(sepaDirectDebitTokenizeCallback).onResult((SEPADirectDebitNonce) isNull(), captor.capture());
-
-        Exception exception = captor.getValue();
-        assertTrue(exception instanceof JSONException);
-    }
-
-    @Test
-    public void tokenize_onHttpError_callsBackError() {
-        final Exception error = new Exception("http error");
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[1];
-                callback.onResult(null, error);
-                return null;
-            }
-        }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
-
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
-
-        verify(sepaDirectDebitTokenizeCallback).onResult(null, error);
     }
 }
