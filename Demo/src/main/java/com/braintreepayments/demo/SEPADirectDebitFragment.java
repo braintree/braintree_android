@@ -70,8 +70,8 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
     public void onSEPADirectDebitSuccess(@NonNull SEPADirectDebitNonce sepaDirectDebitNonce) {
         super.onPaymentMethodNonceCreated(sepaDirectDebitNonce);
 
-        PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(sepaDirectDebitNonce);
+        SEPADirectDebitFragmentDirections.ActionSepaDirectDebitFragmentToDisplayNonceFragment action =
+                SEPADirectDebitFragmentDirections.actionSepaDirectDebitFragmentToDisplayNonceFragment(sepaDirectDebitNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 

@@ -25,13 +25,13 @@ class SEPADirectDebitApi {
     void createMandate(SEPADirectDebitRequest sepaDirectDebitRequest, Configuration configuration, String returnUrlScheme, final CreateMandateCallback callback) {
         HttpRequest httpRequest;
         try {
-            httpRequest = buildHttpRequest(sepaDirectDebitRequest, configuration, returnUrlScheme);
+            httpRequest = buildCreateMandateHttpRequest(sepaDirectDebitRequest, configuration, returnUrlScheme);
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
                     if (responseBody != null) {
                         try {
-                            CreateMandateResult result = parseResponse(responseBody);
+                            CreateMandateResult result = parseCreateMandateResponse(responseBody);
                             callback.onResult(result, null);
                         } catch (JSONException e) {
                             callback.onResult(null, e);
@@ -46,11 +46,53 @@ class SEPADirectDebitApi {
         }
     }
 
-    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
-        // TODO: implement (future PR)
+    void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType, final SEPADirectDebitTokenizeCallback callback) {
+        try {
+            HttpRequest httpRequest = buildTokenizeHttpRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
+            httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+                @Override
+                public void onResult(String responseBody, Exception httpError) {
+                   if (responseBody != null) {
+                       try {
+                           SEPADirectDebitNonce nonce = parseTokenizeResponse(responseBody);
+                           callback.onResult(nonce, null);
+                       } catch (JSONException jsonException) {
+                           callback.onResult(null, jsonException);
+                       }
+                   } else if (httpError != null) {
+                       callback.onResult(null, httpError);
+                   }
+                }
+            });
+        } catch (JSONException e) {
+            callback.onResult(null, e);
+        }
     }
 
-    private CreateMandateResult parseResponse(String responseBody) throws JSONException {
+    private SEPADirectDebitNonce parseTokenizeResponse(String responseBody) throws JSONException {
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        return SEPADirectDebitNonce.fromJSON(jsonResponse);
+    }
+
+    private HttpRequest buildTokenizeHttpRequest(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) throws JSONException {
+        JSONObject accountData = new JSONObject()
+                .put("iban_last_chars", ibanLastFour)
+                .put("customer_id", customerId)
+                .put("bank_reference_token", bankReferenceToken)
+                .put("mandate_type", mandateType);
+        JSONObject requestData = new JSONObject()
+                .put("sepa_debit_account", accountData);
+
+        return new HttpRequest()
+                .baseUrl("http://10.0.2.2:3000/")
+                .method("POST")
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Client-Key", "development_testing_pwpp_multi_account_merchant")
+                .path("merchants/pwpp_multi_account_merchant/client_api/v1/payment_methods/sepa_debit_accounts")
+                .data(requestData.toString());
+    }
+
+    private CreateMandateResult parseCreateMandateResponse(String responseBody) throws JSONException {
         JSONObject json = new JSONObject(responseBody);
         JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");
         String approvalUrl = sepaDebitAccount.getString("approvalUrl");
@@ -62,7 +104,7 @@ class SEPADirectDebitApi {
         return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
-    private HttpRequest buildHttpRequest(SEPADirectDebitRequest sepaDirectDebitRequest, Configuration configuration, String returnUrlScheme) throws JSONException {
+    private HttpRequest buildCreateMandateHttpRequest(SEPADirectDebitRequest sepaDirectDebitRequest, Configuration configuration, String returnUrlScheme) throws JSONException {
         JSONObject sepaDebitData = new JSONObject()
             .putOpt("account_holder_name", sepaDirectDebitRequest.getAccountHolderName())
             .putOpt("customer_id", sepaDirectDebitRequest.getCustomerId())
