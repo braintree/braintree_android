@@ -42,7 +42,6 @@ public class SEPADirectDebitClientUnitTest {
         lifecycle = mock(Lifecycle.class);
         braintreeClient = new MockBraintreeClientBuilder()
                 .returnUrlScheme("com.example")
-                .configuration(mock(Configuration.class))
                 .build();
         listener = mock(SEPADirectDebitListener.class);
 
@@ -262,24 +261,6 @@ public class SEPADirectDebitClientUnitTest {
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BrowserSwitchException);
-    }
-
-    @Test
-    public void tokenize_onConfigurationError_returnsErrorToListener_andSendsAnalytics() {
-        Exception error = new Exception("config error");
-        braintreeClient = new MockBraintreeClientBuilder()
-                .configurationError(error)
-                .build();
-
-        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
-
-        SEPADirectDebitClient sut = new SEPADirectDebitClient(activity, lifecycle, braintreeClient, sepaDirectDebitApi);
-        sut.setListener(listener);
-
-        sut.tokenize(activity, sepaDirectDebitRequest);
-
-        verify(listener).onSEPADirectDebitFailure(same(error));
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.configuration.failure");
     }
 
     @Test

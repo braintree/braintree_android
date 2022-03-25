@@ -11,7 +11,7 @@ public class SEPADirectDebitRequest {
     private String accountHolderName;
     private String iban;
     private String customerId;
-    private SEPADirectDebitMandateType mandateType;
+    private SEPADirectDebitMandateType mandateType = SEPADirectDebitMandateType.ONE_OFF;
     private PostalAddress billingAddress;
     private String merchantAccountId;
 
@@ -66,16 +66,16 @@ public class SEPADirectDebitRequest {
     /**
      * @return The {@link SEPADirectDebitMandateType}.
      */
-    @Nullable
+    @NonNull
     public SEPADirectDebitMandateType getMandateType() {
         return mandateType;
     }
 
     /**
-     * Required.
-     * @param mandateType The {@link SEPADebitMandateType}.
+     * Optional. If not set, defaults to ONE_OFF.
+     * @param mandateType The {@link SEPADirectDebitMandateType}.
      */
-    public void setMandateType(@Nullable SEPADirectDebitMandateType mandateType) {
+    public void setMandateType(@NonNull SEPADirectDebitMandateType mandateType) {
         this.mandateType = mandateType;
     }
 

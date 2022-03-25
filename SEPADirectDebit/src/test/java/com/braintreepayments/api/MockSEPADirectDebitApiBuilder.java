@@ -41,7 +41,7 @@ public class MockSEPADirectDebitApiBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                CreateMandateCallback callback = (CreateMandateCallback) invocation.getArguments()[3];
+                CreateMandateCallback callback = (CreateMandateCallback) invocation.getArguments()[2];
                 if (createMandateResultSuccess != null) {
                     callback.onResult(createMandateResultSuccess, null);
                 } else if (createMandateError != null) {
@@ -49,7 +49,20 @@ public class MockSEPADirectDebitApiBuilder {
                 }
                 return null;
             }
-        }).when(sepaDirectDebitApi).createMandate(any(SEPADirectDebitRequest.class), any(Configuration.class), anyString(), any(CreateMandateCallback.class));
+        }).when(sepaDirectDebitApi).createMandate(any(SEPADirectDebitRequest.class), anyString(), any(CreateMandateCallback.class));
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                SEPADirectDebitTokenizeCallback callback = (SEPADirectDebitTokenizeCallback) invocation.getArguments()[4];
+                if (tokenizeSuccess != null) {
+                    callback.onResult(tokenizeSuccess, null);
+                } else if (tokenizeError != null) {
+                    callback.onResult(null, tokenizeError);
+                }
+                return null;
+            }
+        }).when(sepaDirectDebitApi).tokenize(anyString(), anyString(), anyString(), anyString(), any(SEPADirectDebitTokenizeCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override

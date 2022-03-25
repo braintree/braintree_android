@@ -69,7 +69,7 @@ public class SEPADirectDebitApiUnitTest {
 
         SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
 
-        sut.createMandate(request, null, returnUrl, createMandateCallback);
+        sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<CreateMandateResult> captor = ArgumentCaptor.forClass(CreateMandateResult.class);
         verify(createMandateCallback).onResult(captor.capture(), (Exception) isNull());
@@ -87,7 +87,7 @@ public class SEPADirectDebitApiUnitTest {
         request.setBillingAddress(billingAddress);
 
         SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.createMandate(request, null, returnUrl, createMandateCallback);
+        sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
@@ -118,24 +118,6 @@ public class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    public void createMandate_whenMerchantIdNotSetOnRequest_usesConfiguration() throws JSONException {
-        SEPADirectDebitRequest request = new SEPADirectDebitRequest();
-
-        Configuration mockConfiguration = mock(Configuration.class);
-        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
-
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
-
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
-
-        HttpRequest httpRequest = captor.getValue();
-        JSONObject data =new JSONObject(new String(httpRequest.getData()));
-        assertEquals("a_merchant_account_id", data.get("merchant_account_id"));
-    }
-
-    @Test
     public void createMandate_onInvalidResponseJSON_callsBackError() {
         doAnswer(new Answer<Void>() {
             @Override
@@ -146,11 +128,8 @@ public class SEPADirectDebitApiUnitTest {
             }
         }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
 
-        Configuration mockConfiguration = mock(Configuration.class);
-        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
-
         SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
+        sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(createMandateCallback).onResult((CreateMandateResult) isNull(), captor.capture());
@@ -173,35 +152,10 @@ public class SEPADirectDebitApiUnitTest {
             }
         }).when(httpClient).sendRequest(any(HttpRequest.class), any(HttpResponseCallback.class));
 
-        Configuration mockConfiguration = mock(Configuration.class);
-        when(mockConfiguration.getMerchantAccountId()).thenReturn("a_merchant_account_id");
-
         SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.createMandate(request, mockConfiguration, returnUrl, createMandateCallback);
+        sut.createMandate(request, returnUrl, createMandateCallback);
 
         verify(createMandateCallback).onResult((CreateMandateResult) isNull(), same(exception));
-    }
-
-    @Test
-    public void tokenize_buildsHttpRequest_withAllParams() throws JSONException {
-        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
-
-        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
-
-        HttpRequest httpRequest = captor.getValue();
-        assertEquals("POST", httpRequest.getMethod());
-        assertEquals("application/json", httpRequest.getHeaders().get("Content-Type"));
-        assertEquals("development_testing_pwpp_multi_account_merchant", httpRequest.getHeaders().get("Client-Key"));
-        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/payment_methods/sepa_debit_accounts", httpRequest.getPath());
-
-        JSONObject data =new JSONObject(new String(httpRequest.getData()));
-        JSONObject accountData = data.getJSONObject("sepa_debit_account");
-        assertEquals("a-customer-id", accountData.get("customer_id"));
-        assertEquals("1234", accountData.get("iban_last_chars"));
-        assertEquals("ONE_OFF", accountData.get("mandate_type"));
-        assertEquals("a-bank-reference-token", accountData.get("bank_reference_token"));
     }
 
     @Test
@@ -264,5 +218,27 @@ public class SEPADirectDebitApiUnitTest {
         sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
 
         verify(sepaDirectDebitTokenizeCallback).onResult(null, error);
+    }
+
+    @Test
+    public void tokenize_buildsHttpRequest_withAllParams() throws JSONException {
+        SEPADirectDebitApi sut = new SEPADirectDebitApi(httpClient);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+
+        ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.<HttpResponseCallback>any());
+
+        HttpRequest httpRequest = captor.getValue();
+        assertEquals("POST", httpRequest.getMethod());
+        assertEquals("application/json", httpRequest.getHeaders().get("Content-Type"));
+        assertEquals("development_testing_pwpp_multi_account_merchant", httpRequest.getHeaders().get("Client-Key"));
+        assertEquals("merchants/pwpp_multi_account_merchant/client_api/v1/payment_methods/sepa_debit_accounts", httpRequest.getPath());
+
+        JSONObject data =new JSONObject(new String(httpRequest.getData()));
+        JSONObject accountData = data.getJSONObject("sepa_debit_account");
+        assertEquals("a-customer-id", accountData.get("customer_id"));
+        assertEquals("1234", accountData.get("iban_last_chars"));
+        assertEquals("ONE_OFF", accountData.get("mandate_type"));
+        assertEquals("a-bank-reference-token", accountData.get("bank_reference_token"));
     }
 }

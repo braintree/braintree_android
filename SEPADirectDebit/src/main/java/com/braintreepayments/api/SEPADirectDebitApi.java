@@ -22,10 +22,10 @@ class SEPADirectDebitApi {
         this.httpClient = httpClient;
     }
 
-    void createMandate(SEPADirectDebitRequest sepaDirectDebitRequest, Configuration configuration, String returnUrlScheme, final CreateMandateCallback callback) {
+    void createMandate(SEPADirectDebitRequest sepaDirectDebitRequest, String returnUrlScheme, final CreateMandateCallback callback) {
         HttpRequest httpRequest;
         try {
-            httpRequest = buildCreateMandateHttpRequest(sepaDirectDebitRequest, configuration, returnUrlScheme);
+            httpRequest = buildCreateMandateHttpRequest(sepaDirectDebitRequest, returnUrlScheme);
             httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
@@ -104,15 +104,12 @@ class SEPADirectDebitApi {
         return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
-    private HttpRequest buildCreateMandateHttpRequest(SEPADirectDebitRequest sepaDirectDebitRequest, Configuration configuration, String returnUrlScheme) throws JSONException {
+    private HttpRequest buildCreateMandateHttpRequest(SEPADirectDebitRequest sepaDirectDebitRequest, String returnUrlScheme) throws JSONException {
         JSONObject sepaDebitData = new JSONObject()
             .putOpt("account_holder_name", sepaDirectDebitRequest.getAccountHolderName())
             .putOpt("customer_id", sepaDirectDebitRequest.getCustomerId())
-            .putOpt("iban", sepaDirectDebitRequest.getIban());
-
-        if (sepaDirectDebitRequest.getMandateType() != null) {
-            sepaDebitData.putOpt("mandate_type", sepaDirectDebitRequest.getMandateType().toString());
-        }
+            .putOpt("iban", sepaDirectDebitRequest.getIban())
+            .putOpt("mandate_type", sepaDirectDebitRequest.getMandateType().toString());
 
         if (sepaDirectDebitRequest.getBillingAddress() != null) {
             JSONObject billingAddress = new JSONObject()
@@ -135,9 +132,7 @@ class SEPADirectDebitApi {
                 .put("return_url", successUrl);
 
         if (sepaDirectDebitRequest.getMerchantAccountId() != null) {
-            requestData.put("merchant_account_id", sepaDirectDebitRequest.getMerchantAccountId());
-        } else {
-            requestData.putOpt("merchant_account_id", configuration.getMerchantAccountId());
+            requestData.putOpt("merchant_account_id", sepaDirectDebitRequest.getMerchantAccountId());
         }
 
         HttpRequest request = new HttpRequest()
