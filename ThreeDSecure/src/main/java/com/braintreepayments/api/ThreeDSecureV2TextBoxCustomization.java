@@ -18,7 +18,50 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     private final TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
 
     public ThreeDSecureV2TextBoxCustomization() {
-        super.cardinalValue = cardinalTextBoxCustomization;
+    }
+
+    /**
+     * @param textFontName Font type for the UI element.
+     */
+    public void setTextFontName(@Nullable String textFontName) {
+        cardinalTextBoxCustomization.setTextFontName(textFontName);
+    }
+
+    /**
+     * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
+     */
+    public void setTextColor(@Nullable String textColor) {
+        cardinalTextBoxCustomization.setTextColor(textColor);
+    }
+
+    /**
+     * @param textFontSize Font size for the UI element.
+     */
+    public void setTextFontSize(int textFontSize) {
+        cardinalTextBoxCustomization.setTextFontSize(textFontSize);
+    }
+
+    /**
+     * @return Font type for the UI element.
+     */
+    @Nullable
+    public String getTextFontName() {
+        return cardinalTextBoxCustomization.getTextFontName();
+    }
+
+    /**
+     * @return Color code in Hex format.
+     */
+    @Nullable
+    public String getTextColor() {
+        return cardinalTextBoxCustomization.getTextColor();
+    }
+
+    /**
+     * @return Font size for the UI element.
+     */
+    public int getTextFontSize() {
+        return cardinalTextBoxCustomization.getTextFontSize();
     }
 
     /**

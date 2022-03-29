@@ -18,7 +18,50 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
     public ThreeDSecureV2LabelCustomization() {
-        super.cardinalValue = cardinalLabelCustomization;
+    }
+
+    /**
+     * @param textFontName Font type for the UI element.
+     */
+    public void setTextFontName(@Nullable String textFontName) {
+        cardinalLabelCustomization.setTextFontName(textFontName);
+    }
+
+    /**
+     * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
+     */
+    public void setTextColor(@Nullable String textColor) {
+        cardinalLabelCustomization.setTextColor(textColor);
+    }
+
+    /**
+     * @param textFontSize Font size for the UI element.
+     */
+    public void setTextFontSize(int textFontSize) {
+        cardinalLabelCustomization.setTextFontSize(textFontSize);
+    }
+
+    /**
+     * @return Font type for the UI element.
+     */
+    @Nullable
+    public String getTextFontName() {
+        return cardinalLabelCustomization.getTextFontName();
+    }
+
+    /**
+     * @return Color code in Hex format.
+     */
+    @Nullable
+    public String getTextColor() {
+        return cardinalLabelCustomization.getTextColor();
+    }
+
+    /**
+     * @return Font size for the UI element.
+     */
+    public int getTextFontSize() {
+        return cardinalLabelCustomization.getTextFontSize();
     }
 
     /**

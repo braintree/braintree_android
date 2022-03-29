@@ -5,17 +5,15 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
-import com.cardinalcommerce.shared.userinterfaces.Customization;
-
 /**
  * Base customization options for 3D Secure 2 flows.
  */
+// TODO: Deprecate
 public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String textFontName;
     private String textColor;
     private int textFontSize;
-    protected Customization cardinalValue;
 
     ThreeDSecureV2BaseCustomization() {}
 
@@ -24,7 +22,6 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
      */
     public void setTextFontName(@Nullable String textFontName) {
         this.textFontName = textFontName;
-        cardinalValue.setTextFontName(textFontName);
     }
 
     /**
@@ -32,7 +29,6 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
      */
     public void setTextColor(@Nullable String textColor) {
         this.textColor = textColor;
-        cardinalValue.setTextColor(textColor);
     }
 
     /**
@@ -40,7 +36,6 @@ public class ThreeDSecureV2BaseCustomization implements Parcelable {
      */
     public void setTextFontSize(int textFontSize) {
         this.textFontSize = textFontSize;
-        cardinalValue.setTextFontSize(textFontSize);
     }
 
     /**
