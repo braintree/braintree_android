@@ -12,9 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
  */
 public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private int borderWidth;
-    private String borderColor;
-    private int cornerRadius;
     private final TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
 
     public ThreeDSecureV2TextBoxCustomization() {
@@ -68,7 +65,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param borderWidth Width (integer value) of the text box border.
      */
     public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
         cardinalTextBoxCustomization.setBorderWidth(borderWidth);
     }
 
@@ -76,7 +72,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param borderColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setBorderColor(@Nullable String borderColor) {
-        this.borderColor = borderColor;
         cardinalTextBoxCustomization.setBorderColor(borderColor);
     }
 
@@ -84,7 +79,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param cornerRadius Radius (integer value) for the text box corners.
      */
     public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
         cardinalTextBoxCustomization.setCornerRadius(cornerRadius);
     }
 
@@ -92,7 +86,7 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @return Width (integer value) of the text box border.
      */
     public int getBorderWidth() {
-        return borderWidth;
+        return cardinalTextBoxCustomization.getBorderWidth();
     }
 
     /**
@@ -100,14 +94,14 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      */
     @Nullable
     public String getBorderColor() {
-        return borderColor;
+        return cardinalTextBoxCustomization.getBorderColor();
     }
 
     /**
      * @return Radius (integer value) for the text box corners.
      */
     public int getCornerRadius() {
-        return cornerRadius;
+        return cardinalTextBoxCustomization.getCornerRadius();
     }
 
     TextBoxCustomization getCardinalTextBoxCustomization() {
@@ -121,17 +115,21 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        super.writeToParcel(parcel, i);
-        parcel.writeInt(borderWidth);
-        parcel.writeString(borderColor);
-        parcel.writeInt(cornerRadius);
+        parcel.writeString(cardinalTextBoxCustomization.getTextFontName());
+        parcel.writeString(cardinalTextBoxCustomization.getTextColor());
+        parcel.writeInt(cardinalTextBoxCustomization.getTextFontSize());
+        parcel.writeInt(cardinalTextBoxCustomization.getBorderWidth());
+        parcel.writeString(cardinalTextBoxCustomization.getBorderColor());
+        parcel.writeInt(cardinalTextBoxCustomization.getCornerRadius());
     }
 
     private ThreeDSecureV2TextBoxCustomization(Parcel in) {
-        super(in);
-        borderWidth = in.readInt();
-        borderColor = in.readString();
-        cornerRadius = in.readInt();
+        cardinalTextBoxCustomization.setTextFontName(in.readString());
+        cardinalTextBoxCustomization.setTextColor(in.readString());
+        cardinalTextBoxCustomization.setTextFontSize(in.readInt());
+        cardinalTextBoxCustomization.setBorderWidth(in.readInt());
+        cardinalTextBoxCustomization.setBorderColor(in.readString());
+        cardinalTextBoxCustomization.setCornerRadius(in.readInt());
     }
 
     public static final Creator<ThreeDSecureV2TextBoxCustomization> CREATOR = new Creator<ThreeDSecureV2TextBoxCustomization>() {

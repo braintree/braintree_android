@@ -15,6 +15,9 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     private String backgroundColor;
     private String headerText;
     private String buttonText;
+    private String textFontName;
+    private String textColor;
+    private int textFontSize;
     private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
     public ThreeDSecureV2ToolbarCustomization() {
@@ -123,14 +126,18 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        super.writeToParcel(parcel, i);
+        parcel.writeString(textFontName);
+        parcel.writeString(textColor);
+        parcel.writeInt(textFontSize);
         parcel.writeString(backgroundColor);
         parcel.writeString(headerText);
         parcel.writeString(buttonText);
     }
 
     private ThreeDSecureV2ToolbarCustomization(Parcel in) {
-        super(in);
+        textFontName = in.readString();
+        textColor = in.readString();
+        textFontSize = in.readInt();
         backgroundColor = in.readString();
         headerText = in.readString();
         buttonText = in.readString();
