@@ -12,11 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
  */
 public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String backgroundColor;
-    private int cornerRadius;
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
     private final ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
 
     public ThreeDSecureV2ButtonCustomization() {
@@ -26,7 +21,6 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      * @param textFontName Font type for the UI element.
      */
     public void setTextFontName(@Nullable String textFontName) {
-        this.textFontName = textFontName;
         cardinalButtonCustomization.setTextFontName(textFontName);
     }
 
@@ -34,7 +28,6 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setTextColor(@Nullable String textColor) {
-        this.textColor = textColor;
         cardinalButtonCustomization.setTextColor(textColor);
     }
 
@@ -42,7 +35,6 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      * @param textFontSize Font size for the UI element.
      */
     public void setTextFontSize(int textFontSize) {
-        this.textFontSize = textFontSize;
         cardinalButtonCustomization.setTextFontSize(textFontSize);
     }
 
@@ -51,7 +43,7 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      */
     @Nullable
     public String getTextFontName() {
-        return textFontName;
+        return cardinalButtonCustomization.getTextFontName();
     }
 
     /**
@@ -59,21 +51,20 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      */
     @Nullable
     public String getTextColor() {
-        return textColor;
+        return cardinalButtonCustomization.getTextColor();
     }
 
     /**
      * @return Font size for the UI element.
      */
     public int getTextFontSize() {
-        return textFontSize;
+        return cardinalButtonCustomization.getTextFontSize();
     }
 
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
-        this.backgroundColor = backgroundColor;
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
     }
 
@@ -81,7 +72,6 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      * @param cornerRadius Radius (integer value) for the button corners.
      */
     public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
         cardinalButtonCustomization.setCornerRadius(cornerRadius);
     }
 
@@ -90,14 +80,14 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
      */
     @Nullable
     public String getBackgroundColor() {
-        return backgroundColor;
+        return cardinalButtonCustomization.getBackgroundColor();
     }
 
     /**
      * @return Radius (integer value) for the button corners.
      */
     public int getCornerRadius() {
-        return cornerRadius;
+        return cardinalButtonCustomization.getCornerRadius();
     }
 
     ButtonCustomization getCardinalButtonCustomization() {
@@ -111,19 +101,19 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(textFontName);
-        parcel.writeString(textColor);
-        parcel.writeInt(textFontSize);
-        parcel.writeString(backgroundColor);
-        parcel.writeInt(cornerRadius);
+        parcel.writeString(cardinalButtonCustomization.getTextFontName());
+        parcel.writeString(cardinalButtonCustomization.getTextColor());
+        parcel.writeInt(cardinalButtonCustomization.getTextFontSize());
+        parcel.writeString(cardinalButtonCustomization.getBackgroundColor());
+        parcel.writeInt(cardinalButtonCustomization.getCornerRadius());
     }
 
     protected ThreeDSecureV2ButtonCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        backgroundColor = in.readString();
-        cornerRadius = in.readInt();
+        cardinalButtonCustomization.setTextFontName(in.readString());
+        cardinalButtonCustomization.setTextColor(in.readString());
+        cardinalButtonCustomization.setTextFontSize(in.readInt());
+        cardinalButtonCustomization.setBackgroundColor(in.readString());
+        cardinalButtonCustomization.setCornerRadius(in.readInt());
     }
 
     public static final Creator<ThreeDSecureV2ButtonCustomization> CREATOR = new Creator<ThreeDSecureV2ButtonCustomization>() {
