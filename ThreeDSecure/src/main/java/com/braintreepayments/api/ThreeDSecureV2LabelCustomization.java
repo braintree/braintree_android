@@ -15,6 +15,9 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     private String headingTextColor;
     private String headingTextFontName;
     private int headingTextFontSize;
+    private String textFontName;
+    private String textColor;
+    private int textFontSize;
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
     public ThreeDSecureV2LabelCustomization() {
@@ -46,7 +49,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getTextFontName() {
-        return cardinalLabelCustomization.getTextFontName();
+        return textFontName;
     }
 
     /**
@@ -54,14 +57,14 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getTextColor() {
-        return cardinalLabelCustomization.getTextColor();
+        return textColor;
     }
 
     /**
      * @return Font size for the UI element.
      */
     public int getTextFontSize() {
-        return cardinalLabelCustomization.getTextFontSize();
+        return textFontSize;
     }
 
     /**
@@ -121,7 +124,9 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     private ThreeDSecureV2LabelCustomization(Parcel in) {
-        super(in);
+        textFontName = in.readString();
+        textColor = in.readString();
+        textFontSize = in.readInt();
         headingTextColor = in.readString();
         headingTextFontName = in.readString();
         headingTextFontSize = in.readInt();
@@ -129,7 +134,9 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        super.writeToParcel(parcel, i);
+        parcel.writeString(textFontName);
+        parcel.writeString(textColor);
+        parcel.writeInt(textFontSize);
         parcel.writeString(headingTextColor);
         parcel.writeString(headingTextFontName);
         parcel.writeInt(headingTextFontSize);
