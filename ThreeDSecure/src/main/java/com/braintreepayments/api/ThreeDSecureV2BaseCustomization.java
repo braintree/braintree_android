@@ -6,9 +6,10 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 /**
- * Base customization options for 3D Secure 2 flows.
+ * Deprecated. Base customization options for 3D Secure 2 flows.
  */
-// TODO: Deprecate
+// NEXT_MAJOR_VERSION: Remove this class
+@Deprecated
 public class ThreeDSecureV2BaseCustomization implements Parcelable {
 
     private String textFontName;

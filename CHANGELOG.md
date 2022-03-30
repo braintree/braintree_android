@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure  
+  * Support AndroidX and remove Jetifier requirement (fixes #315)
+  * Bump Cardinal version to `2.2.6-1`
+  * Fix null pointer error in V2 UI customization
+  * Deprecate `ThreeDSecureV2BaseCustomization`
+* SamsungPay
+  * Support AndroidX and remove Jetifier requirement
+
 ## 4.9.0
 
 * Braintree Core
