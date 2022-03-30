@@ -12,12 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
  */
 public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String backgroundColor;
-    private String headerText;
-    private String buttonText;
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
     private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
     public ThreeDSecureV2ToolbarCustomization() {
@@ -71,7 +65,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
-        this.backgroundColor = backgroundColor;
         cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
     }
 
@@ -79,7 +72,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param headerText Text for the header.
      */
     public void setHeaderText(@Nullable String headerText) {
-        this.headerText = headerText;
         cardinalToolbarCustomization.setHeaderText(headerText);
     }
 
@@ -87,7 +79,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param buttonText Text for the button. For example, “Cancel”.
      */
     public void setButtonText(@Nullable String buttonText) {
-        this.buttonText = buttonText;
         cardinalToolbarCustomization.setButtonText(buttonText);
     }
 
@@ -96,7 +87,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      */
     @Nullable
     public String getBackgroundColor() {
-        return backgroundColor;
+        return cardinalToolbarCustomization.getBackgroundColor();
     }
 
     /**
@@ -104,7 +95,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      */
     @Nullable
     public String getHeaderText() {
-        return headerText;
+        return cardinalToolbarCustomization.getHeaderText();
     }
 
     /**
@@ -112,7 +103,7 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      */
     @Nullable
     public String getButtonText() {
-        return buttonText;
+        return cardinalToolbarCustomization.getButtonText();
     }
 
     ToolbarCustomization getCardinalToolbarCustomization() {
@@ -126,21 +117,21 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(textFontName);
-        parcel.writeString(textColor);
-        parcel.writeInt(textFontSize);
-        parcel.writeString(backgroundColor);
-        parcel.writeString(headerText);
-        parcel.writeString(buttonText);
+        parcel.writeString(cardinalToolbarCustomization.getTextFontName());
+        parcel.writeString(cardinalToolbarCustomization.getTextColor());
+        parcel.writeInt(cardinalToolbarCustomization.getTextFontSize());
+        parcel.writeString(cardinalToolbarCustomization.getBackgroundColor());
+        parcel.writeString(cardinalToolbarCustomization.getHeaderText());
+        parcel.writeString(cardinalToolbarCustomization.getButtonText());
     }
 
     private ThreeDSecureV2ToolbarCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        backgroundColor = in.readString();
-        headerText = in.readString();
-        buttonText = in.readString();
+        cardinalToolbarCustomization.setTextFontName(in.readString());
+        cardinalToolbarCustomization.setTextColor(in.readString());
+        cardinalToolbarCustomization.setTextFontSize(in.readInt());
+        cardinalToolbarCustomization.setBackgroundColor(in.readString());
+        cardinalToolbarCustomization.setHeaderText(in.readString());
+        cardinalToolbarCustomization.setButtonText(in.readString());
     }
 
     public static final Creator<ThreeDSecureV2ToolbarCustomization> CREATOR = new Creator<ThreeDSecureV2ToolbarCustomization>() {
