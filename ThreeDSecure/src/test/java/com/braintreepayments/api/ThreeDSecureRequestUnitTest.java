@@ -45,6 +45,9 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
         labelCustomization.setHeadingTextColor("#FFA5FF");
 
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        textBoxCustomization.setBorderColor("#000000");
+
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
 
@@ -100,6 +103,9 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
+
+        assertEquals(expected.getV2UiCustomization().getTextBoxCustomization().getBorderColor(),
+                actual.getV2UiCustomization().getTextBoxCustomization().getBorderColor());
 
         assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
                 actual.getV1UiCustomization().getRedirectButtonText());
