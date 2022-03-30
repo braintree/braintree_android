@@ -119,8 +119,8 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         cardinalLabelCustomization.setTextColor(in.readString());
         cardinalLabelCustomization.setTextFontSize(in.readInt());
         cardinalLabelCustomization.setHeadingTextColor(in.readString());
-        cardinalLabelCustomization.setTextFontName(in.readString());
-        cardinalLabelCustomization.setTextFontSize(in.readInt());
+        cardinalLabelCustomization.setHeadingTextFontName(in.readString());
+        cardinalLabelCustomization.setHeadingTextFontSize(in.readInt());
     }
 
     @Override
