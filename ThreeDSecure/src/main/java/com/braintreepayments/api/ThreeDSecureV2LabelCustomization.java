@@ -12,12 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
  */
 public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String headingTextColor;
-    private String headingTextFontName;
-    private int headingTextFontSize;
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
     public ThreeDSecureV2LabelCustomization() {
@@ -49,7 +43,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getTextFontName() {
-        return textFontName;
+        return cardinalLabelCustomization.getTextFontName();
     }
 
     /**
@@ -57,21 +51,20 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getTextColor() {
-        return textColor;
+        return cardinalLabelCustomization.getTextColor();
     }
 
     /**
      * @return Font size for the UI element.
      */
     public int getTextFontSize() {
-        return textFontSize;
+        return cardinalLabelCustomization.getTextFontSize();
     }
 
     /**
      * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setHeadingTextColor(@Nullable String headingTextColor) {
-        this.headingTextColor = headingTextColor;
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
     }
 
@@ -79,7 +72,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param headingTextFontName Font type for the heading label text.
      */
     public void setHeadingTextFontName(@Nullable String headingTextFontName) {
-        this.headingTextFontName = headingTextFontName;
         cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
     }
 
@@ -87,7 +79,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param headingTextFontSize Font size for the heading label text.
      */
     public void setHeadingTextFontSize(int headingTextFontSize) {
-        this.headingTextFontSize = headingTextFontSize;
         cardinalLabelCustomization.setHeadingTextFontSize(headingTextFontSize);
     }
 
@@ -96,7 +87,7 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getHeadingTextColor() {
-        return headingTextColor;
+        return cardinalLabelCustomization.getHeadingTextColor();
     }
 
     /**
@@ -104,14 +95,14 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      */
     @Nullable
     public String getHeadingTextFontName() {
-        return headingTextFontName;
+        return cardinalLabelCustomization.getHeadingTextFontName();
     }
 
     /**
      * @return Font size for the heading label text.
      */
     public int getHeadingTextFontSize() {
-        return headingTextFontSize;
+        return cardinalLabelCustomization.getHeadingTextFontSize();
     }
 
     LabelCustomization getCardinalLabelCustomization() {
@@ -124,22 +115,22 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     private ThreeDSecureV2LabelCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        headingTextColor = in.readString();
-        headingTextFontName = in.readString();
-        headingTextFontSize = in.readInt();
+        cardinalLabelCustomization.setTextFontName(in.readString());
+        cardinalLabelCustomization.setTextColor(in.readString());
+        cardinalLabelCustomization.setTextFontSize(in.readInt());
+        cardinalLabelCustomization.setHeadingTextColor(in.readString());
+        cardinalLabelCustomization.setTextFontName(in.readString());
+        cardinalLabelCustomization.setTextFontSize(in.readInt());
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(textFontName);
-        parcel.writeString(textColor);
-        parcel.writeInt(textFontSize);
-        parcel.writeString(headingTextColor);
-        parcel.writeString(headingTextFontName);
-        parcel.writeInt(headingTextFontSize);
+        parcel.writeString(cardinalLabelCustomization.getTextFontName());
+        parcel.writeString(cardinalLabelCustomization.getTextColor());
+        parcel.writeInt(cardinalLabelCustomization.getTextFontSize());
+        parcel.writeString(cardinalLabelCustomization.getHeadingTextColor());
+        parcel.writeString(cardinalLabelCustomization.getHeadingTextFontName());
+        parcel.writeInt(cardinalLabelCustomization.getHeadingTextFontSize());
     }
 
     public static final Creator<ThreeDSecureV2LabelCustomization> CREATOR = new Creator<ThreeDSecureV2LabelCustomization>() {
