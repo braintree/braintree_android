@@ -50,6 +50,7 @@ public class ThreeDSecureRequestUnitTest {
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
+        v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
         v1UiCustomization.setRedirectButtonText("return-button-text");
