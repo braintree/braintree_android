@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Local Payment
+  * Deliver browser switch result asynchronously on main thread
+* PayPal
+  * Deliver browser switch result asynchronously on main thread (fixes #500)
+* ThreeDSecure
+  * Deliver browser switch result asynchronously on main thread
+
 ## 4.9.0
 
 * Braintree Core

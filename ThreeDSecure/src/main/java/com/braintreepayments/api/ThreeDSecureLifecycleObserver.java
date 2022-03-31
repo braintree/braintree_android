@@ -2,6 +2,9 @@ package com.braintreepayments.api;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
@@ -55,10 +58,35 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                 }
 
                 if (activity != null) {
-                    BrowserSwitchResult pendingResult = threeDSecureClient.getBrowserSwitchResult(activity);
-                    if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
-                        threeDSecureClient.onBrowserSwitchResult(activity);
-                    }
+
+                    /*
+                     * WORKAROUND: Android 9 onResume() / onNewIntent() are called in an unpredictable way.
+                     *
+                     * We instruct merchants to call `setIntent(intent)` in onNewIntent so the SDK can
+                     * process deep links to activities that are already running e.g. "singleTop" launch
+                     * mode activities.
+                     *
+                     * On Android 9, onResume() can be called multiple times – once before and once after
+                     * onNewIntent(). The SDK parses the deep link URI to determine if a browser-based
+                     * payment flow is successful.
+                     *
+                     * In order to make sure the deep link intent is available to the SDK when the activity
+                     * is RESUMED, we run browser switching logic on the next loop of the main thread.
+                     * This prevents false negatives from occurring, where the SDK thinks the user has
+                     * returned to the app without completing the flow, when in fact the deep link intent
+                     * has not yet been delivered via onNewIntent.
+                     */
+                    final FragmentActivity finalActivity = activity;
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            BrowserSwitchResult pendingResult =
+                                threeDSecureClient.getBrowserSwitchResult(finalActivity);
+                            if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
+                                threeDSecureClient.onBrowserSwitchResult(finalActivity);
+                            }
+                        }
+                    });
                 }
         }
     }
