@@ -107,7 +107,7 @@ public class DataCollector {
      * Collect device information for fraud identification purposes from PayPal only.
      *
      * @param context Android Context
-     * @param configuration
+     * @param configuration the merchant configuration
      * @return The client metadata id associated with the collected data.
      */
     private String getPayPalClientMetadataId(Context context, Configuration configuration) {

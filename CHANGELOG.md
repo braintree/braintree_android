@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* DataCollector
+  * Use configuration environment to set Magnes environment correctly
+
 ## 4.10.0
 
 * ThreeDSecure  
