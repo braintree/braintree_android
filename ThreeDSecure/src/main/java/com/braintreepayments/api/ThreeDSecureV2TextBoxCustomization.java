@@ -12,12 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
  */
 public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
-    private int borderWidth;
-    private String borderColor;
-    private int cornerRadius;
     private final TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
 
     public ThreeDSecureV2TextBoxCustomization() {
@@ -27,7 +21,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param textFontName Font type for the UI element.
      */
     public void setTextFontName(@Nullable String textFontName) {
-        this.textFontName = textFontName;
         cardinalTextBoxCustomization.setTextFontName(textFontName);
     }
 
@@ -35,7 +28,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setTextColor(@Nullable String textColor) {
-        this.textColor = textColor;
         cardinalTextBoxCustomization.setTextColor(textColor);
     }
 
@@ -43,7 +35,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param textFontSize Font size for the UI element.
      */
     public void setTextFontSize(int textFontSize) {
-        this.textFontSize = textFontSize;
         cardinalTextBoxCustomization.setTextFontSize(textFontSize);
     }
 
@@ -74,7 +65,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param borderWidth Width (integer value) of the text box border.
      */
     public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
         cardinalTextBoxCustomization.setBorderWidth(borderWidth);
     }
 
@@ -82,7 +72,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param borderColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setBorderColor(@Nullable String borderColor) {
-        this.borderColor = borderColor;
         cardinalTextBoxCustomization.setBorderColor(borderColor);
     }
 
@@ -90,7 +79,6 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
      * @param cornerRadius Radius (integer value) for the text box corners.
      */
     public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
         cardinalTextBoxCustomization.setCornerRadius(cornerRadius);
     }
 
@@ -136,12 +124,12 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
     }
 
     private ThreeDSecureV2TextBoxCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        borderWidth = in.readInt();
-        borderColor = in.readString();
-        cornerRadius = in.readInt();
+        String textFontName = in.readString();
+        String textColor = in.readString();
+        int textFontSize = in.readInt();
+        int borderWidth = in.readInt();
+        String borderColor = in.readString();
+        int cornerRadius = in.readInt();
 
         if (textFontName != null) {
             cardinalTextBoxCustomization.setTextFontName(textFontName);

@@ -12,12 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
  */
 public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
-    private String headingTextColor;
-    private String headingTextFontName;
-    private int headingTextFontSize;
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
     public ThreeDSecureV2LabelCustomization() {
@@ -27,7 +21,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param textFontName Font type for the UI element.
      */
     public void setTextFontName(@Nullable String textFontName) {
-        this.textFontName = textFontName;
         cardinalLabelCustomization.setTextFontName(textFontName);
     }
 
@@ -35,7 +28,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setTextColor(@Nullable String textColor) {
-        this.textColor = textColor;
         cardinalLabelCustomization.setTextColor(textColor);
     }
 
@@ -43,7 +35,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param textFontSize Font size for the UI element.
      */
     public void setTextFontSize(int textFontSize) {
-        this.textFontSize = textFontSize;
         cardinalLabelCustomization.setTextFontSize(textFontSize);
     }
 
@@ -74,7 +65,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setHeadingTextColor(@Nullable String headingTextColor) {
-        this.headingTextColor = headingTextColor;
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
     }
 
@@ -82,7 +72,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param headingTextFontName Font type for the heading label text.
      */
     public void setHeadingTextFontName(@Nullable String headingTextFontName) {
-        this.headingTextFontName = headingTextFontName;
         cardinalLabelCustomization.setHeadingTextFontName(headingTextFontName);
     }
 
@@ -90,7 +79,6 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
      * @param headingTextFontSize Font size for the heading label text.
      */
     public void setHeadingTextFontSize(int headingTextFontSize) {
-        this.headingTextFontSize = headingTextFontSize;
         cardinalLabelCustomization.setHeadingTextFontSize(headingTextFontSize);
     }
 
@@ -127,12 +115,12 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     private ThreeDSecureV2LabelCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        headingTextColor = in.readString();
-        headingTextFontName = in.readString();
-        headingTextFontSize = in.readInt();
+        String textFontName = in.readString();
+        String textColor = in.readString();
+        int textFontSize = in.readInt();
+        String headingTextColor = in.readString();
+        String headingTextFontName = in.readString();
+        int headingTextFontSize = in.readInt();
 
         if (textFontName != null) {
             cardinalLabelCustomization.setTextFontName(textFontName);

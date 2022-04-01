@@ -12,12 +12,6 @@ import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
  */
 public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
 
-    private String textFontName;
-    private String textColor;
-    private int textFontSize;
-    private String backgroundColor;
-    private String headerText;
-    private String buttonText;
     private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
     public ThreeDSecureV2ToolbarCustomization() {
@@ -27,7 +21,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param textFontName Font type for the UI element.
      */
     public void setTextFontName(@Nullable String textFontName) {
-        this.textFontName = textFontName;
         cardinalToolbarCustomization.setTextFontName(textFontName);
     }
 
@@ -35,7 +28,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setTextColor(@Nullable String textColor) {
-        this.textColor = textColor;
         cardinalToolbarCustomization.setTextColor(textColor);
     }
 
@@ -43,7 +35,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param textFontSize Font size for the UI element.
      */
     public void setTextFontSize(int textFontSize) {
-        this.textFontSize = textFontSize;
         cardinalToolbarCustomization.setTextFontSize(textFontSize);
     }
 
@@ -74,7 +65,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
-        this.backgroundColor = backgroundColor;
         cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
     }
 
@@ -82,7 +72,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param headerText Text for the header.
      */
     public void setHeaderText(@Nullable String headerText) {
-        this.headerText = headerText;
         cardinalToolbarCustomization.setHeaderText(headerText);
     }
 
@@ -90,7 +79,6 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
      * @param buttonText Text for the button. For example, “Cancel”.
      */
     public void setButtonText(@Nullable String buttonText) {
-        this.buttonText = buttonText;
         cardinalToolbarCustomization.setButtonText(buttonText);
     }
 
@@ -138,12 +126,12 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     }
 
     private ThreeDSecureV2ToolbarCustomization(Parcel in) {
-        textFontName = in.readString();
-        textColor = in.readString();
-        textFontSize = in.readInt();
-        backgroundColor = in.readString();
-        headerText = in.readString();
-        buttonText = in.readString();
+        String textFontName = in.readString();
+        String textColor = in.readString();
+        int textFontSize = in.readInt();
+        String backgroundColor = in.readString();
+        String headerText = in.readString();
+        String buttonText = in.readString();
 
         if (textFontName != null) {
             cardinalToolbarCustomization.setTextFontName(textFontName);
