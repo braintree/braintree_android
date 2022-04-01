@@ -278,7 +278,7 @@ public class LocalPaymentClient {
                                 }
                             });
                         } else if (error != null) {
-                            // TODO: return error and unit test
+                            callback.onResult(null, error);
                         }
                     }
                 });
