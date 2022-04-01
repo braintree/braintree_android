@@ -121,6 +121,10 @@ public class BraintreeClient {
         this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
     }
 
+    BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
+        this(createDefaultParams(context, null, clientTokenProvider, sessionId, integrationType));
+    }
+
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
         this(createDefaultParams(context, authorization, null, sessionId, integrationType));
     }

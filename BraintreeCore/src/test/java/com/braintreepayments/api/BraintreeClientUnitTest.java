@@ -1,5 +1,20 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -15,21 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class BraintreeClientUnitTest {
@@ -474,11 +474,22 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getSessionId_returnsSessionIdDefinedInConstructor() {
+    public void getSessionId_withAuthString_returnsSessionIdDefinedInConstructor() {
         Context context = ApplicationProvider.getApplicationContext();
         String authorization = Fixtures.BASE64_CLIENT_TOKEN;
         String sessionId = "custom-session-id";
         BraintreeClient sut = new BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN);
+
+        assertEquals("custom-session-id", sut.getSessionId());
+    }
+
+    @Test
+    public void getSessionId_withClientTokenProvider_returnsSessionIdDefinedInConstructor() {
+        Context context = ApplicationProvider.getApplicationContext();
+        ClientTokenProvider clientTokenProvider = mock(ClientTokenProvider.class);
+        String sessionId = "custom-session-id";
+        BraintreeClient sut =
+            new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
 
         assertEquals("custom-session-id", sut.getSessionId());
     }
@@ -493,11 +504,22 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getIntegrationType_returnsIntegrationTypeDefinedInConstructor() {
+    public void getIntegrationType_withAuthString_returnsIntegrationTypeDefinedInConstructor() {
         Context context = ApplicationProvider.getApplicationContext();
         String authorization = Fixtures.BASE64_CLIENT_TOKEN;
         String sessionId = "custom-session-id";
         BraintreeClient sut = new BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN);
+
+        assertEquals("dropin", sut.getIntegrationType());
+    }
+
+    @Test
+    public void getIntegrationType_withClientTokenProvider_returnsIntegrationTypeDefinedInConstructor() {
+        Context context = ApplicationProvider.getApplicationContext();
+        ClientTokenProvider clientTokenProvider = mock(ClientTokenProvider.class);
+        String sessionId = "custom-session-id";
+        BraintreeClient sut =
+            new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
 
         assertEquals("dropin", sut.getIntegrationType());
     }
