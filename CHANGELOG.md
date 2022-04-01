@@ -7,8 +7,13 @@
   * Bump Cardinal version to `2.2.6-1`
   * Fix null pointer error in V2 UI customization
   * Deprecate `ThreeDSecureV2BaseCustomization`
+  * Deliver browser switch result asynchronously on main thread
 * SamsungPay
   * Support AndroidX and remove Jetifier requirement
+* Local Payment
+  * Deliver browser switch result asynchronously on main thread
+* PayPal
+  * Deliver browser switch result asynchronously on main thread (fixes #500)
 
 ## 4.9.0
 
