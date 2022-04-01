@@ -16,7 +16,7 @@ public class PayPalDataCollectorTest {
     @Test
     public void getClientMetadataId_returnsClientMetadataId() {
         PayPalDataCollector sut = new PayPalDataCollector();
-        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext());
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), );
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }

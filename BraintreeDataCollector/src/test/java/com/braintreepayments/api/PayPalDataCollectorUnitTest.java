@@ -61,7 +61,7 @@ public class PayPalDataCollectorUnitTest {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
         PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
 
-        String result = sut.getClientMetadataId(null);
+        String result = sut.getClientMetadataId(null, );
         assertEquals("", result);
     }
 
@@ -73,7 +73,7 @@ public class PayPalDataCollectorUnitTest {
                 .thenReturn(mock(MagnesResult.class));
 
         PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
-        sut.getClientMetadataId(context);
+        sut.getClientMetadataId(context, );
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -100,7 +100,7 @@ public class PayPalDataCollectorUnitTest {
                 .thenReturn(mock(MagnesResult.class));
 
         PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
-        sut.getClientMetadataId(context, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, payPalDataCollectorRequest, );
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -123,7 +123,7 @@ public class PayPalDataCollectorUnitTest {
                 .thenReturn(magnesResult);
 
         PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
-        String result = sut.getClientMetadataId(context);
+        String result = sut.getClientMetadataId(context, );
 
         assertEquals("paypal-clientmetadata-id", result);
     }
@@ -136,7 +136,7 @@ public class PayPalDataCollectorUnitTest {
                 .thenThrow(new InvalidInputException("invalid input"));
 
         PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
-        String result = sut.getClientMetadataId(context);
+        String result = sut.getClientMetadataId(context, );
 
         assertEquals("", result);
     }

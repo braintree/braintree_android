@@ -65,7 +65,7 @@ public class DataCollector {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        String clientMetadataId = getPayPalClientMetadataId(context);
+                        String clientMetadataId = getPayPalClientMetadataId(context, configuration);
                         if (!TextUtils.isEmpty(clientMetadataId)) {
                             deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
                         }
@@ -107,11 +107,12 @@ public class DataCollector {
      * Collect device information for fraud identification purposes from PayPal only.
      *
      * @param context Android Context
+     * @param configuration
      * @return The client metadata id associated with the collected data.
      */
-    private String getPayPalClientMetadataId(Context context) {
+    private String getPayPalClientMetadataId(Context context, Configuration configuration) {
         try {
-            return payPalDataCollector.getClientMetadataId(context);
+            return payPalDataCollector.getClientMetadataId(context, configuration);
         } catch (NoClassDefFoundError ignored) {
         }
         return "";
