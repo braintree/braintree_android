@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.10.0
 
 * ThreeDSecure  
   * Support AndroidX and remove Jetifier requirement (fixes #315)
