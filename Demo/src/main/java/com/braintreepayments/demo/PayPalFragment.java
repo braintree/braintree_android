@@ -61,19 +61,15 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         dataCollector = new DataCollector(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
-
             if (Settings.shouldCollectDeviceData(requireActivity())) {
-                dataCollector.collectDeviceData(requireActivity(), new DataCollectorCallback() {
-                    @Override
-                    public void onResult(@Nullable String deviceData, @Nullable Exception error) {
-                        if (deviceData != null) {
-//                            this.deviceData = deviceData;
-                        } 
-                        if (isBillingAgreement) {
-                            payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
-                        } else {
-                            payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
-                        }
+                dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
+                    if (deviceDataResult != null) {
+                        deviceData = deviceDataResult;
+                    }
+                    if (isBillingAgreement) {
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+                    } else {
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
                     }
                 });
             } else {
