@@ -33,6 +33,9 @@ import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
+import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
+import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
+import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
 import com.braintreepayments.api.UnionPayCapabilities;
@@ -403,6 +406,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
         additionalInformation.setAccountId("account-id");
 
+        ThreeDSecureV2ButtonCustomization submitButtonCustomization = new ThreeDSecureV2ButtonCustomization();
+        submitButtonCustomization.setBackgroundColor("#D3D3D3");
+        submitButtonCustomization.setTextColor("#000000");
+
         ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
         toolbarCustomization.setBackgroundColor("#FF5A5F");
@@ -410,8 +417,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         toolbarCustomization.setTextColor("#222222");
         toolbarCustomization.setTextFontSize(18);
 
+        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        labelCustomization.setHeadingTextColor("#0082CB");
+        labelCustomization.setTextFontSize(14);
+
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        textBoxCustomization.setBorderColor("#0082CB");
+
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
+        v2UiCustomization.setLabelCustomization(labelCustomization);
+        v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
+        v2UiCustomization.setButtonCustomization(submitButtonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
         v1UiCustomization.setRedirectButtonText("Return to Demo App");

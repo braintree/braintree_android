@@ -37,6 +37,7 @@ dependencies {
     api project(':Card')
 
     api deps.samsungPay
+    implementation deps.annotation
 
     testImplementation deps.robolectric
     testImplementation deps.junitTest
