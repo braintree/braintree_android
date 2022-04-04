@@ -4,6 +4,7 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalChecko
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorCallback;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
@@ -59,13 +61,23 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         dataCollector = new DataCollector(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
-            if (getActivity().getIntent().getBooleanExtra(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                dataCollector.collectDeviceData(activity, (deviceData, dataCollectorError) -> this.deviceData = deviceData);
-            }
-            if (isBillingAgreement) {
-                payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+            if (Settings.shouldCollectDeviceData(requireActivity())) {
+                dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
+                    if (deviceDataResult != null) {
+                        deviceData = deviceDataResult;
+                    }
+                    if (isBillingAgreement) {
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+                    } else {
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                    }
+                });
             } else {
-                payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                if (isBillingAgreement) {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+                } else {
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                }
             }
         });
     }
