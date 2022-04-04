@@ -19,13 +19,14 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
+import com.braintreepayments.api.PayPalNativeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private String deviceData;
     private BraintreeClient braintreeClient;
-    private PayPalClient payPalClient;
+    private PayPalNativeClient payPalClient;
     private DataCollector dataCollector;
 
     @Nullable
@@ -39,7 +40,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalClient(this, braintreeClient);
+        payPalClient = new PayPalNativeClient(this, braintreeClient);
         payPalClient.setListener(this);
         return view;
     }
@@ -75,7 +76,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
@@ -84,7 +85,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     @Override
     public void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
-       handlePayPalResult(payPalAccountNonce);
+        handlePayPalResult(payPalAccountNonce);
     }
 
     @Override
