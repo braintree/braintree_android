@@ -1,0 +1,128 @@
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                jvmArgs '-noverify'
+            }
+        }
+    }
+}
+
+dependencies {
+    api project(':BraintreeCore')
+
+    implementation deps.appCompat
+    implementation project(':BraintreeDataCollector')
+
+    implementation('com.paypal.checkout:android-sdk:0.6.1') {
+//        exclude group: 'com.paypal.android.sdk:data-collector'
+        exclude group: 'com.paypal.android.sdk', module: 'data-collector'
+    }
+
+    testImplementation deps.robolectric
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
+    testImplementation deps.jsonAssert
+    testImplementation deps.mockitoCore
+    testImplementation project(':TestUtils')
+}
+
+// region signing and publishing
+
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    repositories {
+        sonatype()
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                artifact sourcesJar
+                artifact javadocsJar
+
+                groupId = 'com.braintreepayments.api'
+                artifactId = 'paypal'
+                version = rootProject.versionName
+
+                pom {
+                    name = 'paypal'
+                    packaging = 'aar'
+                    description = 'PayPal dependencies for Braintree Android.'
+                    url = 'https://github.com/braintree/braintree_android'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// endregion
