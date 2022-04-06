@@ -86,7 +86,6 @@ task :assumptions do
 end
 
 task :release_braintree do
-
   release_tasks = [
     ":AmericanExpress:publishToSonatype",
     ":BraintreeCore:publishToSonatype",
