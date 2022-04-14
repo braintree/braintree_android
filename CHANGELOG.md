@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.10.1
 
 * DataCollector
   * Use configuration environment to set Magnes environment correctly
