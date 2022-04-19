@@ -467,7 +467,6 @@ public class GooglePayActivity extends AppCompatActivity {
       .setCurrencyCode("USD")
       .build());
     googlePayRequest.setBillingAddressRequired(true);
-    googlePayRequest.setGoogleMerchantId("merchant-id-from-google");
 
     googlePayClient.requestPayment(this, googlePayRequest, (success, error) -> {
       if (error != null) {
