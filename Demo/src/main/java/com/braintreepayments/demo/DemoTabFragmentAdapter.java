@@ -8,9 +8,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.braintreepayments.demo.fragments.SettingsFragment;
 
-public class DemoTabViewAdapter extends FragmentStateAdapter {
+public class DemoTabFragmentAdapter extends FragmentStateAdapter {
 
-    public DemoTabViewAdapter(@NonNull FragmentActivity fragmentActivity) {
+    public DemoTabFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 

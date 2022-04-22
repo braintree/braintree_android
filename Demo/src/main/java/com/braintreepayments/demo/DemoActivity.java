@@ -30,7 +30,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setContentView(R.layout.activity_demo);
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new DemoTabViewAdapter(this));
+        viewPager.setAdapter(new DemoTabFragmentAdapter(this));
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
