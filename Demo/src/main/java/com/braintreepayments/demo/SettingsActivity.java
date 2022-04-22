@@ -4,7 +4,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.braintreepayments.demo.fragments.SettingsFragment;
+import com.braintreepayments.demo.fragments.SettingsTabFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment())
+                .replace(android.R.id.content, new SettingsTabFragment())
                 .commit();
     }
 

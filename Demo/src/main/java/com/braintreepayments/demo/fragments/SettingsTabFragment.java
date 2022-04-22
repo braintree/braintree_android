@@ -11,7 +11,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.braintreepayments.demo.R;
 import com.braintreepayments.demo.views.SummaryEditTestPreference;
 
-public class SettingsFragment extends PreferenceFragmentCompat
+public class SettingsTabFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener {
 
     @Override

@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.braintreepayments.demo.fragments.SettingsFragment;
+import com.braintreepayments.demo.fragments.SettingsTabFragment;
 
 public class TabFragmentAdapter extends FragmentStateAdapter {
 
@@ -21,10 +21,10 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
             case FEATURES:
                 return new DemoTabFragment();
             case CONFIG:
-                return new ConfigurationFragment();
+                return new ConfigTabFragment();
             case SETTINGS:
             default:
-                return new SettingsFragment();
+                return new SettingsTabFragment();
         }
     }
 

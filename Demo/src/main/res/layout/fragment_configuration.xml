@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
     android:padding="10dp"
-    tools:context=".ConfigurationFragment">
+    tools:context=".ConfigTabFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/environment_dropdown_menu"

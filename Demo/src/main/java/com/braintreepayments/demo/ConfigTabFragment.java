@@ -11,14 +11,14 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.fragment.app.Fragment;
 
-public class ConfigurationFragment extends Fragment {
+public class ConfigTabFragment extends Fragment {
 
     private AutoCompleteTextView environmentTextView;
     private AutoCompleteTextView authorizationTextView;
 
     private ActionBarController actionBarController = new ActionBarController();
 
-    public ConfigurationFragment() {
+    public ConfigTabFragment() {
     }
 
     @Override

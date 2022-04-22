@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/change_auth_and_environment"
-        android:name="com.braintreepayments.demo.ConfigurationFragment"
+        android:name="com.braintreepayments.demo.ConfigTabFragment"
         />
 
     <fragment
@@ -101,7 +101,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.braintreepayments.demo.fragments.SettingsFragment" />
+        android:name="com.braintreepayments.demo.fragments.SettingsTabFragment" />
     <action
         android:id="@+id/open_settings_fragment"
         app:destination="@id/settingsFragment" />
