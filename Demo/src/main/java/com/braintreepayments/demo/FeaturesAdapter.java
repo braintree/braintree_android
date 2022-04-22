@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.Feature;
-
 public class FeaturesAdapter extends RecyclerView.Adapter<FeatureViewHolder> {
 
     @NonNull

@@ -1,7 +1,5 @@
 package com.braintreepayments.demo;
 
-import java.util.Arrays;
-
 public enum DemoTab {
     FEATURES(0),
     CONFIG(1),
