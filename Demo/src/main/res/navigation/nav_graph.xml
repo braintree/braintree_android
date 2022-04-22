@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_featuresFragment_to_payPalFragment"
             app:destination="@id/payPalFragment" />
+        <action
+            android:id="@+id/action_featuresFragment_to_venmoFragment"
+            app:destination="@id/venmoFragment" />
     </fragment>
 
     <fragment

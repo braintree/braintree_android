@@ -51,6 +51,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchPayPal();
                 break;
             case VENMO:
+                launchVenmo();
                 break;
             case GOOGLE_PAY:
                 break;
@@ -76,11 +77,16 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
         navigate(action);
     }
 
-    public void launchPayPal() {
+    private void launchPayPal() {
         FeaturesFragmentDirections.ActionFeaturesFragmentToPayPalFragment action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToPayPalFragment();
         action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
 
+        navigate(action);
+    }
+
+    private void launchVenmo() {
+        NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVenmoFragment();
         navigate(action);
     }
 
