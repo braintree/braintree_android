@@ -7,17 +7,17 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.braintreepayments.demo.fragments.SettingsTabFragment;
 
-public class TabFragmentAdapter extends FragmentStateAdapter {
+public class TabFragmentStateAdapter extends FragmentStateAdapter {
 
-    public TabFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
+    public TabFragmentStateAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        TabFragment tabFragment = TabFragment.from(position);
-        switch (tabFragment) {
+        Tab tab = Tab.from(position);
+        switch (tab) {
             case DEMO:
                 return new DemoTabFragment();
             case CONFIG:
