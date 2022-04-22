@@ -1,15 +1,9 @@
 package com.braintreepayments.demo;
 
 public enum TabFragment {
-    FEATURES(0),
-    CONFIG(1),
-    SETTINGS(2);
-
-    private final int value;
-
-    TabFragment(int value) {
-        this.value = value;
-    }
+    DEMO(0, "Demo"),
+    CONFIG(1, "Config"),
+    SETTINGS(2, "Settings");
 
     public static TabFragment from(int value) {
         for (TabFragment tabFragment : TabFragment.values()) {
@@ -18,5 +12,17 @@ public enum TabFragment {
             }
         }
         return null;
+    }
+
+    private final int value;
+    private final String displayName;
+
+    TabFragment(int value, String displayName) {
+        this.value = value;
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }

@@ -18,7 +18,7 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         TabFragment tabFragment = TabFragment.from(position);
         switch (tabFragment) {
-            case FEATURES:
+            case DEMO:
                 return new DemoTabFragment();
             case CONFIG:
                 return new ConfigTabFragment();

@@ -19,7 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
+public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private AppBarConfiguration appBarConfiguration;
     private ActionBarController actionBarController = new ActionBarController();
@@ -34,24 +34,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-
-            String tabText = null;
             TabFragment tabFragment = TabFragment.from(position);
-            switch (tabFragment) {
-                case FEATURES:
-                    tabText = "Features";
-                    break;
-                case CONFIG:
-                    tabText = "Config";
-                    break;
-                case SETTINGS:
-                    tabText = "Settings";
-                    break;
-            }
-            tab.setText(tabText);
-
+            tab.setText(tabFragment.getDisplayName());
         }).attach();
-        setupActionBar();
     }
 
     @Override
@@ -64,67 +49,5 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    private NavController getNavController() {
-        return null;
-//        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//        return NavHostFragment.findNavController(navHostFragment);
-    }
-
-    private void setupActionBar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        NavController navController = getNavController();
-        if (navController != null) {
-            appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-            NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
-        }
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = getNavController();
-        if (navController == null) {
-            return super.onSupportNavigateUp();
-        }
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        NavController navController = getNavController();
-//
-//        if (navController != null) {
-//            int itemId = item.getItemId();
-//
-//            if (itemId == R.id.change_authorization || itemId == R.id.change_environment) {
-//                navController.navigate(R.id.action_goto_change_auth_environment);
-//                return false;
-//            }
-//
-//            if (itemId == R.id.request_settings) {
-//                navController.navigate(R.id.open_settings_fragment);
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        String env = getResources().getStringArray(R.array.environments)[itemPosition];
-        if (!Settings.getEnvironment(this).equals(env)) {
-            Settings.setEnvironment(this, env);
-        }
-        return true;
     }
 }
