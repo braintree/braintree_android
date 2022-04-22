@@ -30,13 +30,13 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setContentView(R.layout.activity_demo);
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new DemoTabFragmentAdapter(this));
+        viewPager.setAdapter(new TabFragmentAdapter(this));
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
 
             String tabText = null;
-            DemoTab demoTab = DemoTab.from(position);
+            Tab demoTab = Tab.from(position);
             switch (demoTab) {
                 case FEATURES:
                     tabText = "Features";

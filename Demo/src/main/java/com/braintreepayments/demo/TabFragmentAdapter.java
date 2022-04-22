@@ -8,16 +8,16 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.braintreepayments.demo.fragments.SettingsFragment;
 
-public class DemoTabFragmentAdapter extends FragmentStateAdapter {
+public class TabFragmentAdapter extends FragmentStateAdapter {
 
-    public DemoTabFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
+    public TabFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        DemoTab tab = DemoTab.from(position);
+        Tab tab = Tab.from(position);
         switch (tab) {
             case FEATURES:
                 return NavHostFragment.create(R.navigation.nav_graph);
