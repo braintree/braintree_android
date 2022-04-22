@@ -60,6 +60,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchSamsungPay();
                 break;
             case VISA_CHECKOUT:
+                launchVisaCheckout();
                 break;
             case LOCAL_PAYMENT:
                 break;
@@ -101,6 +102,11 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
     private void launchSamsungPay() {
         NavDirections action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToSamsungPayFragment();
+        navigate(action);
+    }
+
+    private void launchVisaCheckout() {
+        NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVisaCheckoutFragment();
         navigate(action);
     }
 
