@@ -54,6 +54,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchVenmo();
                 break;
             case GOOGLE_PAY:
+                launchGooglePay();
                 break;
             case SAMSUNG_PAY:
                 break;
@@ -87,6 +88,12 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
 
     private void launchVenmo() {
         NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVenmoFragment();
+        navigate(action);
+    }
+
+    private void launchGooglePay() {
+        NavDirections action =
+                FeaturesFragmentDirections.actionFeaturesFragmentToGooglePayFragment();
         navigate(action);
     }
 
