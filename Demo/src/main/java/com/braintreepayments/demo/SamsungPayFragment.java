@@ -1,6 +1,7 @@
 package com.braintreepayments.demo;
 
-import android.content.Context;
+import static com.braintreepayments.demo.factories.BraintreeClientFactory.createBraintreeClient;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +18,8 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.SamsungPayClient;
 import com.braintreepayments.api.SamsungPayError;
 import com.braintreepayments.api.SamsungPayException;
-import com.braintreepayments.api.SamsungPayNonce;
 import com.braintreepayments.api.SamsungPayListener;
+import com.braintreepayments.api.SamsungPayNonce;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
@@ -40,10 +41,7 @@ public class SamsungPayFragment extends Fragment implements SamsungPayListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_samsung_pay, container, false);
 
-        Context context = requireContext();
-        braintreeClient =
-                new BraintreeClient(context, new DemoClientTokenProvider(context));
-
+        braintreeClient = createBraintreeClient(requireContext());
         samsungPayClient = new SamsungPayClient(braintreeClient);
 
         samsungPayButton = view.findViewById(R.id.samsung_pay_button);
@@ -69,7 +67,7 @@ public class SamsungPayFragment extends Fragment implements SamsungPayListener {
                 } else {
                     if (error instanceof SamsungPayException) {
                         SamsungPayException samsungPayError = (SamsungPayException) error;
-                        @SamsungPayError int errorCode = samsungPayError.getErrorCode();
+                        int errorCode = samsungPayError.getErrorCode();
                         switch (errorCode) {
                             case SamsungPayError.SAMSUNG_PAY_APP_NEEDS_UPDATE:
                                 dialogMessage = "Need to update Samsung Pay app...";
@@ -92,6 +90,7 @@ public class SamsungPayFragment extends Fragment implements SamsungPayListener {
                                 String.format("Samsung Pay is not available: %s", error.toString());
                     }
                 }
+
                 alertPresenter.showDialog(this, dialogMessage);
             }
         });

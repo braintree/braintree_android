@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.factories.BraintreeClientFactory.createBraintreeClient;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,10 +41,7 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
-        Context context = requireContext();
-        braintreeClient =
-                new BraintreeClient(context, new DemoClientTokenProvider(context));
-
+        braintreeClient = createBraintreeClient(requireContext());
         googlePayClient = new GooglePayClient(this, braintreeClient);
         googlePayClient.setListener(this);
 

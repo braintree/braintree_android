@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.factories.BraintreeClientFactory.createBraintreeClient;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,10 +35,7 @@ public class LocalPaymentFragment extends Fragment implements LocalPaymentListen
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
 
-        Context context = requireContext();
-        braintreeClient =
-                new BraintreeClient(context, new DemoClientTokenProvider(context));
-
+        braintreeClient = createBraintreeClient(requireContext());
         localPaymentClient = new LocalPaymentClient(this, braintreeClient);
         localPaymentClient.setListener(this);
 
