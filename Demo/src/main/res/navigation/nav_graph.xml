@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/featuresFragment">
 
     <action android:id="@+id/action_goto_change_auth_environment"
         app:destination="@id/change_auth_and_environment"
@@ -16,6 +16,12 @@
     <fragment
         android:id="@+id/change_auth_and_environment"
         android:name="com.braintreepayments.demo.ConfigurationFragment"
+        />
+
+    <fragment
+        android:id="@+id/featuresFragment"
+        android:name="com.braintreepayments.demo.FeaturesFragment"
+        tools:layout="@layout/fragment_features"
         />
 
     <fragment
