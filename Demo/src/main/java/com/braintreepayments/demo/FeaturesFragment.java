@@ -57,6 +57,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchGooglePay();
                 break;
             case SAMSUNG_PAY:
+                launchSamsungPay();
                 break;
             case VISA_CHECKOUT:
                 break;
@@ -94,6 +95,12 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
     private void launchGooglePay() {
         NavDirections action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToGooglePayFragment();
+        navigate(action);
+    }
+
+    private void launchSamsungPay() {
+        NavDirections action =
+                FeaturesFragmentDirections.actionFeaturesFragmentToSamsungPayFragment();
         navigate(action);
     }
 

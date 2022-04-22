@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_featuresFragment_to_googlePayFragment"
             app:destination="@id/googlePayFragment" />
+        <action
+            android:id="@+id/action_featuresFragment_to_samsungPayFragment"
+            app:destination="@id/samsungPayFragment" />
     </fragment>
 
     <fragment
