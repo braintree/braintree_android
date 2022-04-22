@@ -36,8 +36,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
 
             String tabText = null;
-            Tab demoTab = Tab.from(position);
-            switch (demoTab) {
+            TabFragment tabFragment = TabFragment.from(position);
+            switch (tabFragment) {
                 case FEATURES:
                     tabText = "Features";
                     break;

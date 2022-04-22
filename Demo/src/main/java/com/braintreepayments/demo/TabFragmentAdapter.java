@@ -17,8 +17,8 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Tab tab = Tab.from(position);
-        switch (tab) {
+        TabFragment tabFragment = TabFragment.from(position);
+        switch (tabFragment) {
             case FEATURES:
                 return NavHostFragment.create(R.navigation.nav_graph);
             case CONFIG:
