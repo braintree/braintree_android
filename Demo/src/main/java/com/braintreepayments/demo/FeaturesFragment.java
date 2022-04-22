@@ -63,6 +63,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchVisaCheckout();
                 break;
             case LOCAL_PAYMENT:
+                launchLocalPayment();
                 break;
             case PREFERRED_PAYMENT_METHODS:
                 break;
@@ -107,6 +108,12 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
 
     private void launchVisaCheckout() {
         NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVisaCheckoutFragment();
+        navigate(action);
+    }
+
+    private void launchLocalPayment() {
+        NavDirections action =
+                FeaturesFragmentDirections.actionFeaturesFragmentToLocalPaymentFragment();
         navigate(action);
     }
 
