@@ -48,6 +48,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchCards();
                 break;
             case PAYPAL:
+                launchPayPal();
                 break;
             case VENMO:
                 break;
@@ -70,6 +71,14 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
 
         FeaturesFragmentDirections.ActionFeaturesFragmentToCardFragment action =
             FeaturesFragmentDirections.actionFeaturesFragmentToCardFragment();
+        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+
+        navigate(action);
+    }
+
+    public void launchPayPal() {
+        FeaturesFragmentDirections.ActionFeaturesFragmentToPayPalFragment action =
+                FeaturesFragmentDirections.actionFeaturesFragmentToPayPalFragment();
         action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
 
         navigate(action);

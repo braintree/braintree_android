@@ -27,6 +27,9 @@
             android:id="@+id/action_featuresFragment_to_cardFragment"
             app:destination="@id/cardFragment"
             app:popUpTo="@id/featuresFragment" />
+        <action
+            android:id="@+id/action_featuresFragment_to_payPalFragment"
+            app:destination="@id/payPalFragment" />
     </fragment>
 
     <fragment
