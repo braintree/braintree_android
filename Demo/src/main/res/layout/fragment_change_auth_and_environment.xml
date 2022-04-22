@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
+    android:padding="10dp"
     tools:context=".ChangeAuthAndEnvironmentFragment">
 
     <com.google.android.material.textfield.TextInputLayout
