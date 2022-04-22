@@ -22,7 +22,12 @@
         android:id="@+id/featuresFragment"
         android:name="com.braintreepayments.demo.FeaturesFragment"
         tools:layout="@layout/fragment_features"
-        />
+        >
+        <action
+            android:id="@+id/action_featuresFragment_to_cardFragment"
+            app:destination="@id/cardFragment"
+            app:popUpTo="@id/featuresFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/mainFragment"
