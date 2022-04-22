@@ -170,7 +170,7 @@ public class CardFragment extends Fragment implements OnCardFormSubmitListener, 
                         .actionLabel(cardFormActionLabel)
                         .setup(activity);
 
-                if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                if (getArguments().getBoolean(FeaturesFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
                     dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
                 }
             } else {
