@@ -19,8 +19,6 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
 
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
 
-    private ActionBarController actionBarController = new ActionBarController();
-
     public FeaturesFragment() {
     }
 
@@ -40,12 +38,6 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
 
         recyclerView.setAdapter(new FeaturesAdapter(this));
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        actionBarController.updateTitle(this);
     }
 
     @Override
