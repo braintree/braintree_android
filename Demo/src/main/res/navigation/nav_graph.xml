@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/change_auth_and_environment"
-        android:name="com.braintreepayments.demo.ChangeAuthAndEnvironmentFragment"
+        android:name="com.braintreepayments.demo.ConfigurationFragment"
         />
 
     <fragment

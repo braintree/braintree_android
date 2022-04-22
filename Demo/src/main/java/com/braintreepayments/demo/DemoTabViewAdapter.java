@@ -22,7 +22,7 @@ public class DemoTabViewAdapter extends FragmentStateAdapter {
             case FEATURES:
                 return NavHostFragment.create(R.navigation.nav_graph);
             case CONFIG:
-                return new ChangeAuthAndEnvironmentFragment();
+                return new ConfigurationFragment();
             case SETTINGS:
             default:
                 return new SettingsFragment();

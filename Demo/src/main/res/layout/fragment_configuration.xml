@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
     android:padding="10dp"
-    tools:context=".ChangeAuthAndEnvironmentFragment">
+    tools:context=".ConfigurationFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/environment_dropdown_menu"
@@ -54,16 +54,5 @@
             tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="16dp"
-        android:text="Continue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/authorization_dropdown_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
