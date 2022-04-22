@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,6 +65,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 launchLocalPayment();
                 break;
             case PREFERRED_PAYMENT_METHODS:
+                launchPreferredPaymentMethods();
                 break;
         }
     }
@@ -78,7 +78,7 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
             FeaturesFragmentDirections.actionFeaturesFragmentToCardFragment();
         action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
 
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchPayPal() {
@@ -86,38 +86,44 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
                 FeaturesFragmentDirections.actionFeaturesFragmentToPayPalFragment();
         action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
 
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchVenmo() {
         NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVenmoFragment();
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchGooglePay() {
         NavDirections action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToGooglePayFragment();
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchSamsungPay() {
         NavDirections action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToSamsungPayFragment();
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchVisaCheckout() {
         NavDirections action = FeaturesFragmentDirections.actionFeaturesFragmentToVisaCheckoutFragment();
-        navigate(action);
+        navigateWith(action);
     }
 
     private void launchLocalPayment() {
         NavDirections action =
                 FeaturesFragmentDirections.actionFeaturesFragmentToLocalPaymentFragment();
-        navigate(action);
+        navigateWith(action);
     }
 
-    private void navigate(NavDirections action) {
+    private void launchPreferredPaymentMethods() {
+        NavDirections action =
+                FeaturesFragmentDirections.actionFeaturesFragmentToPreferredPaymentMethodsFragment();
+        navigateWith(action);
+    }
+
+    private void navigateWith(NavDirections action) {
         Fragment parentFragment = getParentFragment();
         if (parentFragment != null) {
             NavController navController = NavHostFragment.findNavController(parentFragment);

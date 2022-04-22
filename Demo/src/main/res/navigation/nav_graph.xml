@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_featuresFragment_to_localPaymentFragment"
             app:destination="@id/localPaymentFragment" />
+        <action
+            android:id="@+id/action_featuresFragment_to_preferredPaymentMethodsFragment"
+            app:destination="@id/preferredPaymentMethodsFragment" />
     </fragment>
 
     <fragment
