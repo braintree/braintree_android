@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,8 +41,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 case FEATURES:
                     tabText = "Features";
                     break;
-                case ENVIRONMENT:
-                    tabText = "Environment";
+                case CONFIG:
+                    tabText = "Config";
                     break;
                 case SETTINGS:
                     tabText = "Settings";
@@ -95,32 +93,32 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 || super.onSupportNavigateUp();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        NavController navController = getNavController();
-
-        if (navController != null) {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.change_authorization || itemId == R.id.change_environment) {
-                navController.navigate(R.id.action_goto_change_auth_environment);
-                return false;
-            }
-
-            if (itemId == R.id.request_settings) {
-                navController.navigate(R.id.open_settings_fragment);
-                return true;
-            }
-        }
-
-        return false;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        NavController navController = getNavController();
+//
+//        if (navController != null) {
+//            int itemId = item.getItemId();
+//
+//            if (itemId == R.id.change_authorization || itemId == R.id.change_environment) {
+//                navController.navigate(R.id.action_goto_change_auth_environment);
+//                return false;
+//            }
+//
+//            if (itemId == R.id.request_settings) {
+//                navController.navigate(R.id.open_settings_fragment);
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         String env = getResources().getStringArray(R.array.environments)[itemPosition];

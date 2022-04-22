@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum DemoTab {
     FEATURES(0),
-    ENVIRONMENT(1),
+    CONFIG(1),
     SETTINGS(2);
 
     private final int value;

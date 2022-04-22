@@ -21,7 +21,7 @@ public class DemoTabViewAdapter extends FragmentStateAdapter {
         switch (tab) {
             case FEATURES:
                 return NavHostFragment.create(R.navigation.nav_graph);
-            case ENVIRONMENT:
+            case CONFIG:
                 return new ChangeAuthAndEnvironmentFragment();
             case SETTINGS:
             default:
