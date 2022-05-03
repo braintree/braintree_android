@@ -35,6 +35,11 @@ public class DemoClientTokenProvider implements ClientTokenProvider {
         }
     }
 
+    @Override
+    public boolean shouldUseCachedToken() {
+        return true;
+    }
+
     private static String getString(Context context, @StringRes int id) {
         return context.getResources().getString(id);
     }

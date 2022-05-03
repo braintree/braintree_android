@@ -6,16 +6,22 @@ import androidx.annotation.Nullable;
 class AuthorizationLoader {
 
     private Authorization authorization;
+
     private final ClientTokenProvider clientTokenProvider;
 
     AuthorizationLoader(@Nullable String initialAuthString, @Nullable ClientTokenProvider clientTokenProvider) {
         this.clientTokenProvider = clientTokenProvider;
         if (initialAuthString != null) {
-            this.authorization = Authorization.fromString(initialAuthString);
+            authorization = Authorization.fromString(initialAuthString);
         }
     }
 
     void loadAuthorization(@NonNull final AuthorizationCallback callback) {
+        // Clear the token prior to making the request if the token shouldn't be cached any longer
+        if (clientTokenProvider != null && clientTokenProvider.shouldUseCachedToken() && authorization != null) {
+            authorization = null;
+        }
+
         if (authorization != null) {
             callback.onAuthorizationResult(authorization, null);
         } else if (clientTokenProvider != null) {
@@ -33,7 +39,7 @@ class AuthorizationLoader {
             });
         } else {
             String clientSDKSetupURL
-                = "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization";
+                    = "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization";
             String message = String.format("Authorization required. See %s for more info.", clientSDKSetupURL);
             callback.onAuthorizationResult(null, new BraintreeException(message));
         }
