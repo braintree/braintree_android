@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 class AuthorizationLoader {
 
     private Authorization authorization;
+    private boolean invalidateNextAuthorizationRequest = false;
     private final ClientTokenProvider clientTokenProvider;
 
     AuthorizationLoader(@Nullable String initialAuthString, @Nullable ClientTokenProvider clientTokenProvider) {
@@ -16,6 +17,10 @@ class AuthorizationLoader {
     }
 
     void loadAuthorization(@NonNull final AuthorizationCallback callback) {
+        if (invalidateNextAuthorizationRequest && clientTokenProvider != null) {
+            authorization = null;
+        }
+
         if (authorization != null) {
             callback.onAuthorizationResult(authorization, null);
         } else if (clientTokenProvider != null) {
@@ -42,5 +47,9 @@ class AuthorizationLoader {
     @Nullable
     Authorization getAuthorizationFromCache() {
         return authorization;
+    }
+
+    void invalidateClientToken() {
+        invalidateNextAuthorizationRequest = true;
     }
 }

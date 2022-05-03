@@ -321,4 +321,8 @@ public class BraintreeClient {
     Context getApplicationContext() {
         return applicationContext;
     }
+
+    public void invalidateClientToken() {
+        authorizationLoader.invalidateClientToken();
+    }
 }
