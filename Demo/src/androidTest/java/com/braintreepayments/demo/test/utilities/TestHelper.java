@@ -12,13 +12,17 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.DeviceAutomator;
 import com.braintreepayments.api.ExpirationDateHelper;
+import com.google.android.material.textfield.TextInputLayout;
 
 import static com.braintreepayments.AutomatorAction.click;
 import static com.braintreepayments.AutomatorAssertion.text;
 import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withClass;
+import static com.braintreepayments.UiObjectMatcher.withContentDescription;
 import static com.braintreepayments.UiObjectMatcher.withResourceId;
 import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextContaining;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class TestHelper {

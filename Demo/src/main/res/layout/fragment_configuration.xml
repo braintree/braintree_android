@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Environment"
+        android:contentDescription="Environment"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         app:layout_constraintEnd_toEndOf="parent"
