@@ -281,6 +281,7 @@ public class ThreeDSecureClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancellation());
     }
 
     @Test
@@ -404,6 +405,7 @@ public class ThreeDSecureClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancellation());
     }
 
     @Test
@@ -498,8 +500,10 @@ public class ThreeDSecureClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onThreeDSecureFailure(captor.capture());
-        assertTrue(captor.getValue() instanceof UserCanceledException);
-        assertEquals("User canceled 3DS.", captor.getValue().getMessage());
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled 3DS.", exception.getMessage());
+        assertTrue(((UserCanceledException) exception).isExplicitCancellation());
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
     }
