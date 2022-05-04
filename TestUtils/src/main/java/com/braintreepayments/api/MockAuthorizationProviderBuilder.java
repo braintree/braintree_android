@@ -36,9 +36,9 @@ public class MockAuthorizationProviderBuilder {
                 if (clientTokens != null) {
                     callback.onSuccess(clientTokens.get(0));
 
+                    // shift array until one item left, at which point all subsequent calls
+                    // will return the last item
                     if (clientTokens.size() - 1 > 0) {
-                        // shift array until one item left, at which point all subsequent calls
-                        // will return the last item
                         clientTokens.remove(0);
                     }
 
