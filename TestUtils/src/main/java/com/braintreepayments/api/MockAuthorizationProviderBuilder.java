@@ -7,13 +7,17 @@ import static org.mockito.Mockito.mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MockAuthorizationProviderBuilder {
 
-    private String clientToken;
+    private List<String> clientTokens;
     private Exception error;
 
-    public MockAuthorizationProviderBuilder clientToken(String clientToken) {
-        this.clientToken = clientToken;
+    public MockAuthorizationProviderBuilder clientToken(String... clientTokens) {
+        this.clientTokens = new ArrayList<>(Arrays.asList(clientTokens));
         return this;
     }
 
@@ -29,8 +33,15 @@ public class MockAuthorizationProviderBuilder {
             @Override
             public Void answer(InvocationOnMock invocation) {
                 ClientTokenCallback callback = (ClientTokenCallback) invocation.getArguments()[0];
-                if (clientToken != null) {
-                    callback.onSuccess(clientToken);
+                if (clientTokens != null) {
+                    callback.onSuccess(clientTokens.get(0));
+
+                    if (clientTokens.size() - 1 > 0) {
+                        // shift array until one item left, at which point all subsequent calls
+                        // will return the last item
+                        clientTokens.remove(0);
+                    }
+
                 } else if (error != null) {
                     callback.onFailure(error);
                 }
