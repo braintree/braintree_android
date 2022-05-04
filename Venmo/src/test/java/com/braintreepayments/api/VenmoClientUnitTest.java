@@ -835,7 +835,9 @@ public class VenmoClientUnitTest {
         verify(onActivityResultCallback).onResult((VenmoAccountNonce) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled Venmo.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancellation());
     }
 
     @Test
