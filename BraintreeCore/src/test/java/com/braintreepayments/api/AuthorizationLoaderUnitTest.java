@@ -35,6 +35,32 @@ public class AuthorizationLoaderUnitTest {
     }
 
     @Test
+    public void loadAuthorization_whenInitialAuthExistsAndInvalidateClientTokenCalled_returnsInitialValue() {
+        String initialAuthString = Fixtures.TOKENIZATION_KEY;
+        sut = new AuthorizationLoader(initialAuthString, null);
+
+        AuthorizationCallback callback = mock(AuthorizationCallback.class);
+        sut.loadAuthorization(callback);
+
+        ArgumentCaptor<Authorization> captor = ArgumentCaptor.forClass(Authorization.class);
+        verify(callback).onAuthorizationResult(captor.capture(), (Exception) isNull());
+
+        Authorization authorization = captor.getValue();
+        assertEquals(initialAuthString, authorization.toString());
+
+        sut.invalidateClientToken();
+
+        AuthorizationCallback callback2 = mock(AuthorizationCallback.class);
+        sut.loadAuthorization(callback2);
+
+        ArgumentCaptor<Authorization> captor2 = ArgumentCaptor.forClass(Authorization.class);
+        verify(callback2).onAuthorizationResult(captor2.capture(), (Exception) isNull());
+
+        Authorization authorization2 = captor2.getValue();
+        assertEquals(initialAuthString, authorization2.toString());
+    }
+
+    @Test
     public void loadAuthorization_whenInitialAuthDoesNotExist_callsBackSuccessfulClientTokenFetch() {
         String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
         ClientTokenProvider clientTokenProvider = new MockAuthorizationProviderBuilder()
@@ -65,6 +91,22 @@ public class AuthorizationLoaderUnitTest {
         sut.loadAuthorization(callback);
 
         verify(clientTokenProvider, times(1)).getClientToken(any(ClientTokenCallback.class));
+    }
+
+    @Test
+    public void loadAuthorization_whenInitialAuthDoesNotExistAndInvalidateClientTokenCalled_returnsNewClientToken() {
+        String clientToken = Fixtures.BASE64_CLIENT_TOKEN;
+        ClientTokenProvider clientTokenProvider = new MockAuthorizationProviderBuilder()
+                .clientToken(clientToken)
+                .build();
+        sut = new AuthorizationLoader(null, clientTokenProvider);
+
+        AuthorizationCallback callback = mock(AuthorizationCallback.class);
+        sut.loadAuthorization(callback);
+        sut.invalidateClientToken();
+        sut.loadAuthorization(callback);
+
+        verify(clientTokenProvider, times(2)).getClientToken(any(ClientTokenCallback.class));
     }
 
     @Test
