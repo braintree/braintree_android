@@ -5,15 +5,15 @@ package com.braintreepayments.api;
  */
 public class UserCanceledException extends BraintreeException {
 
-    private boolean isExplicitCancellation;
+    private boolean isExplicitCancelation;
 
     UserCanceledException(String message) {
         super(message);
     }
 
-    UserCanceledException(String message, boolean isExplicitCancellation) {
+    UserCanceledException(String message, boolean isExplicitCancelation) {
         super(message);
-        this.isExplicitCancellation = isExplicitCancellation;
+        this.isExplicitCancelation = isExplicitCancelation;
     }
 
     /**
@@ -26,7 +26,7 @@ public class UserCanceledException extends BraintreeException {
      * mean the user returned to the app through multi-tasking without completing the flow, the user
      * closed the browser tab, or the user pressed the back button.
      */
-    public boolean isExplicitCancellation() {
-        return isExplicitCancellation;
+    public boolean isExplicitCancelation() {
+        return isExplicitCancelation;
     }
 }

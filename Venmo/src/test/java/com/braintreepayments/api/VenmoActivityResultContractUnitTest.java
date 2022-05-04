@@ -87,6 +87,6 @@ public class VenmoActivityResultContractUnitTest {
 
         UserCanceledException error = (UserCanceledException) venmoResult.getError();
         assertNotNull("User canceled Venmo.", error.getMessage());
-        assertFalse(error.isExplicitCancellation());
+        assertFalse(error.isExplicitCancelation());
     }
 }

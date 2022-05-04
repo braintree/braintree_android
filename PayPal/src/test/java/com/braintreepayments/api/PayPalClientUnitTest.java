@@ -667,7 +667,7 @@ public class PayPalClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
-        assertTrue(((UserCanceledException) exception).isExplicitCancellation());
+        assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
@@ -693,7 +693,7 @@ public class PayPalClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
-        assertFalse(((UserCanceledException) exception).isExplicitCancellation());
+        assertFalse(((UserCanceledException) exception).isExplicitCancelation());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }

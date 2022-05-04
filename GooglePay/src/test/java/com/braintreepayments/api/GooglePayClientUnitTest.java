@@ -1354,7 +1354,7 @@ public class GooglePayClientUnitTest {
         Exception exception = captor.getValue();
         assertEquals("User canceled Google Pay.", exception.getMessage());
         assertTrue(exception instanceof UserCanceledException);
-        assertTrue(((UserCanceledException) exception).isExplicitCancellation());
+        assertTrue(((UserCanceledException) exception).isExplicitCancelation());
     }
 
     @Test

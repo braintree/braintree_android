@@ -74,7 +74,7 @@ public class GooglePayActivityResultContractUnitTest {
         Exception error = result.getError();
         assertTrue(error instanceof UserCanceledException);
         assertEquals("User canceled Google Pay.", error.getMessage());
-        assertTrue(((UserCanceledException) error).isExplicitCancellation());
+        assertTrue(((UserCanceledException) error).isExplicitCancelation());
         assertNull(result.getPaymentData());
     }
 
