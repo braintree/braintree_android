@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Add `isExplicitCancelation` parameter to `UserCanceledException`
+
 ## 4.10.1
 
 * DataCollector
