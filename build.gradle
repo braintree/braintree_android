@@ -5,6 +5,7 @@ buildscript {
         maven {
             url = "https://plugins.gradle.org/m2/"
         }
+        jcenter()
     }
 
     ext.versions = [
@@ -32,7 +33,7 @@ buildscript {
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.1.1",
-            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.6-1",
+            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.6-2",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
@@ -90,9 +91,9 @@ allprojects {
         flatDir {
             dirs "${rootDir}/libs"
         }
-        mavenLocal()
         google()
         mavenCentral()
+        jcenter()
     }
 }
 
