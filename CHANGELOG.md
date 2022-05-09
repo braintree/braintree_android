@@ -2,6 +2,8 @@
 
 ## unreleased
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.6-2`
 
 ## 4.10.1
 
