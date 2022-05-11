@@ -131,6 +131,18 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
+    public void invalidateClientToken_forwardsInvocationToAuthorizationLoader() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder().build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        sut.invalidateClientToken();
+
+        verify(authorizationLoader).invalidateClientToken();
+    }
+
+    @Test
     public void sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         Configuration configuration = mock(Configuration.class);
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
