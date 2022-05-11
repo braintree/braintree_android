@@ -17,6 +17,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.mockito.Matchers.any;
@@ -666,6 +667,7 @@ public class PayPalClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
+        assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
@@ -691,6 +693,7 @@ public class PayPalClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled PayPal.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancelation());
 
         verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }

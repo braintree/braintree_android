@@ -3,6 +3,7 @@
 ## Unreleased
 * Adds `invalidateClientToken` method to `BraintreeClient`, which invalidates the cached client
 token authorization provided by the `ClientTokenProvider`
+* Add `isExplicitCancelation` parameter to `UserCanceledException`
 
 ## 4.10.1
 
