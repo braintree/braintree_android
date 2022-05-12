@@ -25,6 +25,9 @@ abstract class Authorization {
      * @return {@link Authorization}
      */
     static Authorization fromString(@Nullable String authorizationString) {
+        if (authorizationString != null) {
+            authorizationString = authorizationString.trim();
+        }
         try {
             if (isTokenizationKey(authorizationString)) {
                 return new TokenizationKey(authorizationString);
