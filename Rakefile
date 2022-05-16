@@ -94,6 +94,7 @@ task :release_braintree do
     ":GooglePay:publishToSonatype",
     ":LocalPayment:publishToSonatype",
     ":PayPal:publishToSonatype",
+    ":PayPalNativeCheckout:publishToSonatype",
     ":SharedUtils:publishToSonatype",
     ":ThreeDSecure:publishToSonatype",
     ":UnionPay:publishToSonatype",
