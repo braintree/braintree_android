@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## 4.11.0
+
 * Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
 * Trim tokenization key and client token before parsing
