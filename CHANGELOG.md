@@ -1,8 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## Unreleased
-* Adds `invalidateClientToken` method to `BraintreeClient`, which invalidates the cached client
-token authorization provided by the `ClientTokenProvider`
+* Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
 * Trim tokenization key and client token before parsing
 
