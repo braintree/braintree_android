@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/paypal_single_payment_button"
+            android:id="@+id/paypal_native_launch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/paypal_native_launch" />
