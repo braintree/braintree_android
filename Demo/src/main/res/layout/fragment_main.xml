@@ -9,7 +9,18 @@
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".MainFragment">
-
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/paypal_native"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/paypal_native"
+            android:textSize="12sp" />
+    </TableRow>
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">

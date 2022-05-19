@@ -31,6 +31,7 @@ public class MainFragment extends BaseFragment {
     private Button localPaymentsButton;
     private Button preferredPaymentMethodsButton;
     private Button samsungButton;
+    private Button payPalNativeButton;
 
     @Nullable
     @Override
@@ -45,6 +46,7 @@ public class MainFragment extends BaseFragment {
         localPaymentsButton = view.findViewById(R.id.local_payment);
         preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods);
         samsungButton = view.findViewById(R.id.samsung_pay);
+        payPalNativeButton = view.findViewById(R.id.paypal_native);
 
         cardsButton.setOnClickListener(this::launchCards);
         payPalButton.setOnClickListener(this::launchPayPal);
@@ -54,6 +56,7 @@ public class MainFragment extends BaseFragment {
         venmoButton.setOnClickListener(this::launchVenmo);
         preferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
         samsungButton.setOnClickListener(this::launchSamsungPay);
+        payPalNativeButton.setOnClickListener(this::launchPayPalNative);
 
         return view;
     }
@@ -127,6 +130,11 @@ public class MainFragment extends BaseFragment {
     public void launchSamsungPay(View v) {
         NavDirections action =
                 MainFragmentDirections.actionMainFragmentToSamsungPayFragment();
+        Navigation.findNavController(v).navigate(action);
+    }
+
+    public void launchPayPalNative(View v) {
+        NavDirections action = MainFragmentDirections.actionMainFragmentToPayPalNativeFragment();
         Navigation.findNavController(v).navigate(action);
     }
 }
