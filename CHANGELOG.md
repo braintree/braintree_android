@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.6-2`
+
 ## 4.11.0
 
 * Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
