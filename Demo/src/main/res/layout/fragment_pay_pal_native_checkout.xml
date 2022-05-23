@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".PayPalNativeFragment">
+    tools:context=".PayPalNativeCheckoutFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,10 +14,10 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/paypal_native_launch"
+            android:id="@+id/paypal_native_checkout_launch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/paypal_native_launch" />
+            android:text="@string/paypal_native_checkout_launch" />
 
     </LinearLayout>
 

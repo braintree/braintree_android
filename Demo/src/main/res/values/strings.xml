@@ -93,7 +93,7 @@
     <string name="paypal_display_name_summary">Name to be displayed in the PayPal flow</string>
     <string name="paypal_landing_page_type_billing">Billing</string>
     <string name="paypal_landing_page_type_login">Login</string>
-    <string name="paypal_native_launch">Launch PayPal Native</string>
+    <string name="paypal_native_checkout_launch">Launch PayPal Native Checkout</string>
     <string name="venmo">Venmo</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>

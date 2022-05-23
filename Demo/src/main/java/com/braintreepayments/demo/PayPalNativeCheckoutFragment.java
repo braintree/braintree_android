@@ -12,23 +12,23 @@ import android.widget.Button;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 
-public class PayPalNativeFragment extends Fragment {
-    public Button launchPayPalNativeButton;
-    public PayPalNativeFragment() {
+public class PayPalNativeCheckoutFragment extends Fragment {
+    public Button launchPayPalNativeCheckoutButton;
+    public PayPalNativeCheckoutFragment() {
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pay_pal_native, container, false);
-        launchPayPalNativeButton = view.findViewById(R.id.paypal_native_launch);
-        launchPayPalNativeButton.setOnClickListener(this::launchPayPalNative);
+        View view = inflater.inflate(R.layout.fragment_pay_pal_native_checkout, container, false);
+        launchPayPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout_launch);
+        launchPayPalNativeCheckoutButton.setOnClickListener(this::launchPayPalNativeCheckout);
 
         return view;
     }
 
-    private void launchPayPalNative(View v) {
+    private void launchPayPalNativeCheckout(View v) {
         PayPalNativeCheckoutClient client = new PayPalNativeCheckoutClient();
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("100");
         client.tokenize(request);

@@ -35,8 +35,8 @@
             android:id="@+id/action_mainFragment_to_preferredPaymentMethodsFragment"
             app:destination="@id/preferredPaymentMethodsFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_payPalNativeFragment"
-            app:destination="@id/payPalNativeFragment" />
+            android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
+            app:destination="@id/payPalNativeCheckoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -156,9 +156,9 @@
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
-        android:id="@+id/payPalNativeFragment"
-        android:name="com.braintreepayments.demo.PayPalNativeFragment"
+        android:id="@+id/payPalNativeCheckoutFragment"
+        android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
         android:label="fragment_pay_pal_native"
-        tools:layout="@layout/fragment_pay_pal_native" />
+        tools:layout="@layout/fragment_pay_pal_native_checkout" />
 
 </navigation>
