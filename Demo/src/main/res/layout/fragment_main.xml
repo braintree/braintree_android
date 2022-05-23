@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/paypal_native"
+            android:text="@string/paypal_native_checkout"
             android:textSize="12sp" />
     </TableRow>
     <TableRow

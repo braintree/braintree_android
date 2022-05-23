@@ -158,7 +158,7 @@
     <fragment
         android:id="@+id/payPalNativeCheckoutFragment"
         android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
-        android:label="fragment_pay_pal_native"
+        android:label="fragment_pay_pal_native_checkout"
         tools:layout="@layout/fragment_pay_pal_native_checkout" />
 
 </navigation>
