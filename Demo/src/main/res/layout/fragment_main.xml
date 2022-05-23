@@ -9,18 +9,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".MainFragment">
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <Button
-            android:id="@+id/paypal_native_checkout"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/paypal_native_checkout"
-            android:textSize="12sp" />
-    </TableRow>
+
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -111,5 +100,27 @@
             android:layout_weight="1"
             android:text="@string/preferred_payment_methods_button"
             android:textSize="12sp" />
+    </TableRow>
+    
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/paypal_native_checkout"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/paypal_native_checkout"
+            android:textSize="12sp" />
+        <Button
+            android:id="@+id/future_feature"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="12sp"
+            tools:ignore="SpeakableTextPresentCheck" />
     </TableRow>
 </TableLayout>
