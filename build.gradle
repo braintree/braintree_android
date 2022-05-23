@@ -6,7 +6,6 @@ buildscript {
         maven {
             url = "https://plugins.gradle.org/m2/"
         }
-        jcenter()
     }
 
     ext.versions = [
@@ -95,7 +94,6 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        jcenter()
     }
 }
 
