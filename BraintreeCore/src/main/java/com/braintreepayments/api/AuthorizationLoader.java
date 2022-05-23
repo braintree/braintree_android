@@ -43,4 +43,10 @@ class AuthorizationLoader {
     Authorization getAuthorizationFromCache() {
         return authorization;
     }
+
+    void invalidateClientToken() {
+        if (clientTokenProvider != null) {
+            authorization = null;
+        }
+    }
 }

@@ -1,9 +1,15 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-* Add `isExplicitCancelation` parameter to `UserCanceledException`
+
 * ThreeDSecure
   * Bump Cardinal version to `2.2.6-2`
+
+## 4.11.0
+
+* Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
+* Add `isExplicitCancelation` parameter to `UserCanceledException`
+* Trim tokenization key and client token before parsing
 
 ## 4.10.1
 

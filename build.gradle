@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
         google()
         maven {
@@ -92,17 +93,18 @@ allprojects {
             dirs "${rootDir}/libs"
         }
         google()
+        jcenter()
         mavenCentral()
         jcenter()
     }
 }
 
-version '4.10.2-SNAPSHOT'
+version '4.11.1-SNAPSHOT'
 ext {
     compileSdkVersion = 31
     minSdkVersion = 21
     targetSdkVersion = 31
-    versionCode = 145
+    versionCode = 146
     versionName = version
 }
 
