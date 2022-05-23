@@ -6,7 +6,7 @@ public class PayPalNativeCheckoutRequest {
 
     private final String amount;
 
-    PayPalNativeCheckoutRequest(@NonNull String amount) {
+    public PayPalNativeCheckoutRequest(@NonNull String amount) {
         this.amount = amount;
     }
 

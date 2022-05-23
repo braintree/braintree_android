@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_mainFragment_to_sepaDirectDebitFragment"
             app:destination="@id/SEPADirectDebitFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
+            app:destination="@id/payPalNativeCheckoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -156,6 +159,11 @@
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
+        android:id="@+id/payPalNativeCheckoutFragment"
+        android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
+        android:label="fragment_paypal_native_checkout"
+        tools:layout="@layout/fragment_paypal_native_checkout" />
+    <fragment
         android:id="@+id/SEPADirectDebitFragment"
         android:name="com.braintreepayments.demo.SEPADirectDebitFragment"
         tools:layout="@layout/fragment_sepa_direct_debit" >
@@ -165,5 +173,5 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
-    
+
 </navigation>
