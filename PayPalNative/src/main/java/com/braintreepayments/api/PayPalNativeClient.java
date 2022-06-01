@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,6 +12,15 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.approve.Approval;
+import com.paypal.checkout.approve.OnApprove;
+import com.paypal.checkout.cancel.OnCancel;
+import com.paypal.checkout.config.CheckoutConfig;
+import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.createorder.CreateOrder;
+import com.paypal.checkout.createorder.CreateOrderActions;
+import com.paypal.checkout.error.ErrorInfo;
+import com.paypal.checkout.error.OnError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,29 +152,6 @@ public class PayPalNativeClient {
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest, @NonNull final PayPalFlowStartedCallback callback) {
-
-
-
-//        CheckoutConfig checkoutConfig = new CheckoutConfig(
-//        )
-//        PayPalCheckout.setConfig();
-//
-//        OnApprove onApprove = new OnApprove() {
-//            @Override
-//            public void onApprove(@NonNull Approval approval) {
-//
-//            }
-//        };
-//        CreateOrder createOrder = new CreateOrder() {
-//            @Override
-//            public void create(CreateOrderActions createOrderActions) {
-//
-//            }
-//        };
-//
-//        PayPalCheckout.registerCallbacks(onApprove, null, null);
-//        PayPalCheckout.startCheckout(createOrder);
-
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -218,7 +205,12 @@ public class PayPalNativeClient {
                     callback.onResult(manifestInvalidError);
                     return;
                 }
-                sendPayPalRequest(activity, payPalCheckoutRequest, callback);
+                sendPayPalRequest(
+                        activity,
+                        payPalCheckoutRequest,
+                        configuration,
+                        callback
+                );
             }
         });
 
@@ -246,32 +238,107 @@ public class PayPalNativeClient {
                     return;
                 }
 
-                sendPayPalRequest(activity, payPalVaultRequest, callback);
+                sendPayPalRequest(
+                        activity,
+                        payPalVaultRequest,
+                        configuration,
+                        callback
+                );
             }
         });
     }
 
-    private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
+    private void sendPayPalRequest(
+            final FragmentActivity activity,
+            final PayPalRequest payPalRequest,
+            final Configuration configuration,
+            final PayPalFlowStartedCallback callback
+    ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
-            public void onResult(PayPalResponse payPalResponse, Exception error) {
+            public void onResult(final PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
-                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
+//                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
+//                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
 
-                    // pairingId is order id or BA token!
-                    payPalResponse.getPairingId();
+                    // TODO: Get return URL
+
+                    Environment env;
+                    if ("sandbox".equals(configuration.getEnvironment())) {
+                        env = Environment.SANDBOX;
+                    } else if ("production".equals(configuration.getEnvironment())) {
+                        env = Environment.LIVE;
+                    } else {
+                        callback.onResult(new IllegalArgumentException("Invalid PayPal Environment"));
+                        return;
+                    }
 
                     // Start PayPalCheckout flow
-                    PayPalCheckout.setConfig();
+                    PayPalCheckout.setConfig(
+                            new CheckoutConfig(
+                                    activity.getApplication(),
+                                    configuration.getPayPalClientId(),
+                                    env,
+                                    "com.braintreepayments.demo://paypalpay"
+                            )
+                    );
 
+                    PayPalCheckout.registerCallbacks(
+                            new OnApprove() {
+                                @Override
+                                public void onApprove(Approval approval) {
 
-                    try {
-                        startBrowserSwitch(activity, payPalResponse);
-                        callback.onResult(null);
-                    } catch (JSONException | BrowserSwitchException exception) {
-                        callback.onResult(exception);
-                    }
+                                    PayPalAccount payPalAccount = new PayPalAccount();
+
+                                    // TODO: SET CORRELATION ID HERE
+//                                    payPalAccount.setClientMetadataId(approval.getData());
+
+                                    internalPayPalClient.tokenize(payPalAccount, new PayPalBrowserSwitchResultCallback() {
+                                        @Override
+                                        public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
+                                            if (payPalAccountNonce != null) {
+//                                                braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                                listener.onPayPalSuccess(payPalAccountNonce);
+                                            } else {
+                                                listener.onPayPalFailure(new Exception(""));
+                                            }
+
+                                            Toast.makeText(activity, "After Tokenize", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                }
+                            },
+                            new OnCancel() {
+                                @Override
+                                public void onCancel() {
+                                    Toast.makeText(activity, "ON CANCEL", Toast.LENGTH_LONG).show();
+
+                                    // TODO: Invoke failure callback here
+                                }
+                            },
+                            new OnError() {
+                                @Override
+                                public void onError(ErrorInfo errorInfo) {
+                                    Toast.makeText(activity, "ON ERROR", Toast.LENGTH_LONG).show();
+
+                                    // TODO: Invoke failure callback here
+                                }
+                            }
+                    );
+
+                    PayPalCheckout.startCheckout(new CreateOrder() {
+                        @Override
+                        public void create(@NonNull CreateOrderActions createOrderActions) {
+                            if (payPalRequest instanceof PayPalCheckoutRequest) {
+                                createOrderActions.set(payPalResponse.getPairingId());
+                            } else if (payPalRequest instanceof PayPalVaultRequest) {
+                                createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
+                            }
+                        }
+                    });
+
+                    callback.onResult(null);
                 } else {
                     callback.onResult(error);
                 }
