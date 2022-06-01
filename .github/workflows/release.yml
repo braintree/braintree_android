@@ -257,6 +257,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -286,6 +289,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -315,6 +321,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -344,6 +353,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -373,6 +385,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -402,6 +417,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -431,6 +449,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -460,6 +481,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -489,6 +513,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -518,6 +545,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -547,6 +577,9 @@ jobs:
       - name: Change Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
+      - name: Change README Version
+          run: |
+            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:

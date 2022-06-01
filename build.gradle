@@ -125,3 +125,19 @@ subprojects {
         }
     }
 }
+
+task changeReleaseVersion {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + versionParam + "'")
+        gradleFile.write(gradleFileText)
+    }
+}
+
+task changeREADMEVersion {
+    doLast {
+        def gradleFile = new File('README.md')
+        def gradleFileText = gradleFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
+        gradleFile.write(gradleFileText)
+    }
+}
