@@ -217,7 +217,7 @@ jobs:
   # Wait until all module unit tests are finished before continuing release process
   unit_test_finished:
     needs: |
-      [
+    [
       unit_test_american_express,
       unit_test_braintree_core,
       unit_test_braintree_data_collector,
@@ -230,7 +230,7 @@ jobs:
       unit_test_union_pay,
       unit_test_venmo,
       unit_test_visa_checkout
-      ]
+    ]
     name: All Unit Tests Finished
     runs-on: ubuntu-latest
     steps:
@@ -258,8 +258,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -290,8 +290,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -322,8 +322,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -354,8 +354,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -386,8 +386,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -418,8 +418,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -450,8 +450,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -482,8 +482,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -514,8 +514,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -546,8 +546,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -578,8 +578,8 @@ jobs:
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
       - name: Change README Version
-          run: |
-            ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -592,7 +592,7 @@ jobs:
 
   releasing_finished:
     needs: |
-      [
+    [
       publish_american_express,
       publish_braintree_core,
       publish_braintree_data_collector,
@@ -604,7 +604,7 @@ jobs:
       publish_three_d_secure,
       publish_union_pay,
       publish_venmo
-      ]
+    ]
     name: Releases Finished
     runs-on: ubuntu-latest
     steps:
