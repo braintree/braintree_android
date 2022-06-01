@@ -1,0 +1,27 @@
+name: 'Publish Module'
+description: 'Publishes module'
+inputs:
+  module:
+    description: 'Module'
+    required: true
+    default: ''
+  sonatype_usr:
+    description: 'Sonatype user'
+    required: true
+    default: ''
+  sonatype_pwd:
+    description: 'Sonatype password'
+    required: true
+    default: ''
+  signing_key_id:
+    description: 'Signing key id'
+    required: true
+    default: ''
+  signing_key_pwd:
+    description: 'Signing key password'
+    required: true
+    default: ''
+  signing_key_file:
+    description: 'Signing key file'
+    required: true
+    default: ''
