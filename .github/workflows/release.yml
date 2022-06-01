@@ -5,3 +5,30 @@ on:
       version:
         description: 'Version to release'
         required: true
+env:
+  SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
+jobs:
+  #First we build
+  build_aar:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Set up Java 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+      #After decoding the secret key, place the file in ~ /. Gradle/ secring.gpg
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Assemble
+        run: ./gradlew --stacktrace assemble
+        env:
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_FILE: ${{ env.SIGNING_KEY_FILE_PATH }}
