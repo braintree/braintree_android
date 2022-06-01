@@ -25,3 +25,8 @@ inputs:
     description: 'Signing key file'
     required: true
     default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: echo "published module"
+      shell: bash
