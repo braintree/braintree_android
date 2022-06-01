@@ -145,3 +145,25 @@ task changeREADMEVersion {
         gradleFile.write(gradleFileText)
     }
 }
+
+task incrementSNAPSHOTVersion {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def (major, minor, patch) = versionParam.tokenize('.')
+        def patchInteger = patch.toInteger()
+        def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
+        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
+        gradleFile.write(gradleFileText)
+    }
+}
+
+task incrementVersionCode {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def versionText = gradleFile.text.find("versionCode = \\d+")
+        def params = versionText.split("=")
+        def newVersionCode = params[1].trim().toInteger() + 1
+        def gradleFileText = gradleFile.text.replaceFirst("versionCode = \\d+", "versionCode = " + newVersionCode)
+        gradleFile.write(gradleFileText)
+    }
+}
