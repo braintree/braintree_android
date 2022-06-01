@@ -216,7 +216,7 @@ jobs:
 
   # Wait until all module unit tests are finished before continuing release process
   unit_test_finished:
-    needs: [ unit_test_american_epxress, unit_test_braintree_core, unit_test_braintree_data_collector, unit_test_card, unit_test_google_pay, unit_test_local_payment, unit_test_paypal, unit_test_samsung_pay, unit_test_three_d_secure, unit_test_union_pay, unit_test_venmo, unit_test_visa_checkou ]
+    needs: [ unit_test_american_express, unit_test_braintree_core, unit_test_braintree_data_collector, unit_test_card, unit_test_google_pay, unit_test_local_payment, unit_test_paypal, unit_test_samsung_pay, unit_test_three_d_secure, unit_test_union_pay, unit_test_venmo, unit_test_visa_checkou ]
     name: All Unit Tests Finished
     runs-on: ubuntu-latest
     steps:
