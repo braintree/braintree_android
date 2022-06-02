@@ -514,24 +514,25 @@ jobs:
     steps:
       - run: echo "Release finished"
 
-#  bump_version:
-#    needs: [ releasing_finished ]
-#    name: Bump Version
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-#      - name: Set github user
-#        uses: ./.github/actions/set_github_user
-#      - name: Update Version
-#        run: |
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
-#          git commit -am 'Release ${{ github.event.inputs.version }}'
-#          git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
-#
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
-#          ./gradlew incrementVersionCode
-#          git commit -am 'Prepare for development'
-#          git push origin master ${{ github.event.inputs.version }}
+  bump_version:
+    needs: [ releasing_finished ]
+    name: Bump Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Set github user
+        uses: ./.github/actions/set_github_user
+      - name: Update Version
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
+          git commit -am 'Release ${{ github.event.inputs.version }}'
+          git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
+
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
+          ./gradlew incrementVersionCode
+          git commit -am 'Prepare for development'
+          git push origin master ${{ github.event.inputs.version }}
 

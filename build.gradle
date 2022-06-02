@@ -140,9 +140,17 @@ task changeGradleReleaseVersion {
 
 task changeREADMEVersion {
     doLast {
-        def gradleFile = new File('README.md')
-        def gradleFileText = gradleFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
-        gradleFile.write(gradleFileText)
+        def readmeFile = new File('README.md')
+        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
+        readmeFile.write(readmeFileText)
+    }
+}
+
+task changeMigrationGuideVersion {
+    doLast {
+        def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
+        def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
+        migrationGuideFile.write(migrationGuideFileText)
     }
 }
 
