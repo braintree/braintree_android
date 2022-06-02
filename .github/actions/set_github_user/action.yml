@@ -3,7 +3,8 @@ description: 'Sets github user for a particular workflow'
 runs:
   using: "composite"
   steps:
-    - run: |
+    - name: Configure User
+      run: |
         git config user.name braintreeps
         git config user.email code@getbraintree.com
       shell: bash
