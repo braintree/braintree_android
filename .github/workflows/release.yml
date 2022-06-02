@@ -523,8 +523,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Set GitHub User
         uses: ./.github/actions/set_github_user
-      - name: Update Version
-        run: |
+#      - name: Update Version
+#        run: |
 #          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
 #          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
 #          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
