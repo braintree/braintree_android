@@ -523,17 +523,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Set GitHub User
         uses: ./.github/actions/set_github_user
-#      - name: Update Version
-#        run: |
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
-#          git commit -am 'Release ${{ github.event.inputs.version }}'
-#          git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
-#
-#          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
-#          ./gradlew incrementVersionCode
-#          git commit -am 'Prepare for development'
-#          git push origin master ${{ github.event.inputs.version }}
+      - name: Update Version
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
+
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
+          ./gradlew incrementVersionCode
+          git commit -am 'Test version changes"
+          git push origin github-actions-release
 
