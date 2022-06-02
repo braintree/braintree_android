@@ -521,7 +521,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Set github user
+      - name: Set GitHub User
         uses: ./.github/actions/set_github_user
       - name: Update Version
         run: |
