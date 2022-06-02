@@ -12,7 +12,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       # After decoding the secret key, place the file in ~ /. Gradle/ secring.gpg
       - name: Decode Signing Key
@@ -32,7 +34,9 @@ jobs:
     name: AmericanExpress Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -42,7 +46,9 @@ jobs:
     name: BraintreeCore Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -52,7 +58,9 @@ jobs:
     name: BraintreeDataCollector Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -62,7 +70,9 @@ jobs:
     name: Card Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -72,7 +82,9 @@ jobs:
     name: GooglePay Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -82,7 +94,9 @@ jobs:
     name: LocalPayment Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -92,7 +106,9 @@ jobs:
     name: PayPal Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -102,7 +118,9 @@ jobs:
     name: SamsungPay Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -112,7 +130,9 @@ jobs:
     name: ThreeDSecure Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -122,7 +142,9 @@ jobs:
     name: UnionPay Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -132,7 +154,9 @@ jobs:
     name: Venmo Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -142,7 +166,9 @@ jobs:
     name: VisaCheckout Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -176,7 +202,9 @@ jobs:
 #    name: Publish AmericanExpress
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -201,7 +229,9 @@ jobs:
 #    name: Publish BraintreeCore
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -226,7 +256,9 @@ jobs:
 #    name: Publish BraintreeDataCollector
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -251,7 +283,9 @@ jobs:
 #    name: Publish Card
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -276,7 +310,9 @@ jobs:
 #    name: Publish GooglePay
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -301,7 +337,9 @@ jobs:
 #    name: Publish LocalPayment
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -326,7 +364,9 @@ jobs:
 #    name: Publish PayPal
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -351,7 +391,9 @@ jobs:
 #    name: Publish SamsungPay
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -376,7 +418,9 @@ jobs:
 #    name: Publish ThreeDSecure
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -401,7 +445,9 @@ jobs:
 #    name: Publish UnionPay
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
@@ -426,7 +472,9 @@ jobs:
 #    name: Publish Venmo
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Setup
+#      - name: Checkout Repository
+#        uses: actions/checkout@v2
+#      - name: Setup Java 8
 #        uses: ./.github/actions/setup
 #      - name: Decode Signing Key
 #        uses: ./.github/actions/decode_signing_key_action
