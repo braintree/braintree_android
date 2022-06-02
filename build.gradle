@@ -86,6 +86,10 @@ plugins {
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
+ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''
+ext["signing.password"] = System.getenv('SIGNING_KEY_PASSWORD') ?: ''
+ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
+
 allprojects {
     repositories {
         flatDir {
@@ -123,5 +127,63 @@ subprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
+    }
+}
+
+task changeGradleReleaseVersion {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + versionParam + "'")
+        gradleFile.write(gradleFileText)
+    }
+}
+
+task changeREADMEVersion {
+    doLast {
+        def readmeFile = new File('README.md')
+        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
+        readmeFile.write(readmeFileText)
+    }
+}
+
+task changeMigrationGuideVersion {
+    doLast {
+        def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
+        def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
+        migrationGuideFile.write(migrationGuideFileText)
+
+        def newMigrationGuideFile = new File('v4.9.0+_MIGRATION_GUIDE.md')
+        def newMigrationGuideFileText = newMigrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
+        newMigrationGuideFile.write(newMigrationGuideFileText)
+    }
+}
+
+task updateCHANGELOGVersion {
+    doLast {
+        def changelogFile = new File('CHANGELOG.md')
+        def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam)
+        changelogFile.write(changelogFileText)
+    }
+}
+
+task incrementSNAPSHOTVersion {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def (major, minor, patch) = versionParam.tokenize('.')
+        def patchInteger = patch.toInteger()
+        def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
+        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
+        gradleFile.write(gradleFileText)
+    }
+}
+
+task incrementVersionCode {
+    doLast {
+        def gradleFile = new File('build.gradle')
+        def versionText = gradleFile.text.find("versionCode = \\d+")
+        def params = versionText.split("=")
+        def newVersionCode = params[1].trim().toInteger() + 1
+        def gradleFileText = gradleFile.text.replaceFirst("versionCode = \\d+", "versionCode = " + newVersionCode)
+        gradleFile.write(gradleFileText)
     }
 }

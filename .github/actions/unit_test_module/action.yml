@@ -1,0 +1,12 @@
+name: Unit Test Module
+description: 'Runs unit test for specified module'
+inputs:
+  module:
+    description: 'Module'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: ./gradlew --stacktrace :${{ inputs.module }}:testRelease
+      shell: bash

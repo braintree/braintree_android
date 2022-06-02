@@ -5,3 +5,557 @@ on:
       version:
         description: 'Version to release'
         required: true
+env:
+  SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
+jobs:
+  build_aar:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      # After decoding the secret key, place the file in ~ /. Gradle/ secring.gpg
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Assemble
+        run: ./gradlew --stacktrace assemble
+        env:
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_FILE: ${{ env.SIGNING_KEY_FILE_PATH }}
+
+  # Once building is finished, we unit test every module in parallel
+  unit_test_american_express:
+    name: AmericanExpress Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: AmericanExpress
+  unit_test_braintree_core:
+    name: BraintreeCore Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: BraintreeCore
+  unit_test_braintree_data_collector:
+    name: BraintreeDataCollector Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: BraintreeDataCollector
+  unit_test_card:
+    name: Card Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: Card
+  unit_test_google_pay:
+    name: GooglePay Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: GooglePay
+  unit_test_local_payment:
+    name: LocalPayment Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: LocalPayment
+  unit_test_paypal:
+    name: PayPal Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: PayPal
+  unit_test_samsung_pay:
+    name: SamsungPay Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: SamsungPay
+  unit_test_three_d_secure:
+    name: ThreeDSecure Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: ThreeDSecure
+  unit_test_union_pay:
+    name: UnionPay Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: UnionPay
+  unit_test_venmo:
+    name: Venmo Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: Venmo
+  unit_test_visa_checkout:
+    name: VisaCheckout Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: VisaCheckout
+
+  # Wait until all module unit tests are finished before continuing release process
+  unit_test_finished:
+    needs: [
+      unit_test_american_express,
+      unit_test_braintree_core,
+      unit_test_braintree_data_collector,
+      unit_test_card,
+      unit_test_google_pay,
+      unit_test_local_payment,
+      unit_test_paypal,
+      unit_test_samsung_pay,
+      unit_test_three_d_secure,
+      unit_test_union_pay,
+      unit_test_venmo,
+      unit_test_visa_checkout
+    ]
+    name: All Unit Tests Finished
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Unit tests finished"
+
+  # After build and unit tests are finished, publish all modules in parallel
+  publish_american_express:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish AmericanExpress
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: AmericanExpress
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_braintree_core:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish BraintreeCore
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: BraintreeCore
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_braintree_data_collector:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish BraintreeDataCollector
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: BraintreeDataCollector
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_card:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish Card
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: Card
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_google_pay:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish GooglePay
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: GooglePay
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_local_payment:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish LocalPayment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: LocalPayment
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_paypal:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish PayPal
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: PayPal
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_samsung_pay:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish SamsungPay
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: SamsungPay
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_three_d_secure:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish ThreeDSecure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: ThreeDSecure
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_union_pay:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish UnionPay
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: UnionPay
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+  publish_venmo:
+    needs: [ unit_test_finished, build_aar ]
+    name: Publish Venmo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Decode Signing Key
+        uses: ./.github/actions/decode_signing_key_action
+        with:
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
+      - name: Publish Module
+        uses: ./.github/actions/publish_module
+        with:
+          module: Venmo
+          sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
+
+  releasing_finished:
+    needs: [
+      publish_american_express,
+      publish_braintree_core,
+      publish_braintree_data_collector,
+      publish_card,
+      publish_google_pay,
+      publish_local_payment,
+      publish_paypal,
+      publish_samsung_pay,
+      publish_three_d_secure,
+      publish_union_pay,
+      publish_venmo
+    ]
+    name: Releases Finished
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Release finished"
+
+  bump_version:
+    needs: [ releasing_finished ]
+    name: Bump Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Set GitHub User
+        uses: ./.github/actions/set_github_user
+      - name: Update Version
+        run: |
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
+          git commit -am 'Release ${{ github.event.inputs.version }}'
+          git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
+
+          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
+          ./gradlew incrementVersionCode
+          git commit -am 'Prepare for development'
+          git push origin master ${{ github.event.inputs.version }}
+
+  create_github_release:
+    needs: [ bump_version ]
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Save changelog entries to a file
+        run: |
+          sed -e '1,/##/d' -e '/##/,$d' CHANGELOG.md > changelog_entries.md
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
+          body_path: changelog_entries.md
+          draft: false
+          prerelease: false
+
