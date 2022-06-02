@@ -522,9 +522,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Set GitHub User
-        run: |
-          git config user.name braintreeps
-          git config user.email code@getbraintree.com
+        uses: ./.github/actions/set_github_user
       - name: Update Version
         run: |
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
