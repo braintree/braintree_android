@@ -1,0 +1,12 @@
+name: Setup
+description: 'Checks out repository and sets up Java 8'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+    - name: Set up Java 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'zulu'
