@@ -253,12 +253,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -285,12 +283,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -317,12 +313,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -349,12 +343,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -381,12 +373,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -413,12 +403,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -445,12 +433,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -477,12 +463,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -509,12 +493,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -541,12 +523,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:
@@ -573,12 +553,10 @@ jobs:
         with:
           signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
-      - name: Change Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeReleaseVersion
-      - name: Change README Version
-        run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
+      - name: Update Versions
+        uses: ./.github/actions/update_versions
+        with:
+          version: ${{ github.event.inputs.version }}
       - name: Publish Module
         uses: ./.github/actions/publish_module
         with:

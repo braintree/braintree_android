@@ -130,7 +130,7 @@ subprojects {
     }
 }
 
-task changeReleaseVersion {
+task changeGradleReleaseVersion {
     doLast {
         def gradleFile = new File('build.gradle')
         def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + versionParam + "'")
@@ -143,6 +143,14 @@ task changeREADMEVersion {
         def gradleFile = new File('README.md')
         def gradleFileText = gradleFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
         gradleFile.write(gradleFileText)
+    }
+}
+
+task updateCHANGELOGVersion {
+    doLast {
+        def changelogFile = new File('CHANGELOG.md')
+        def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam)
+        changelogFile.write(changelogFileText)
     }
 }
 
