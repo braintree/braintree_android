@@ -17,6 +17,9 @@ runs:
     - name: Update README Version
       run: ./gradlew -PversionParam=${{ inputs.version }} changeREADMEVersion
       shell: bash
+    - name: Update Migration Guide Versions
+      run: ./gradlew -PversionParam=${{ inputs.version }} changeMigrationGuideVersion
+      shell: bash
     - name: Update CHANGELOG Version
       run: ./gradlew -PversionParam=${{ inputs.version }} updateCHANGELOGVersion
       shell: bash

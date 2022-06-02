@@ -151,6 +151,10 @@ task changeMigrationGuideVersion {
         def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
         def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
         migrationGuideFile.write(migrationGuideFileText)
+
+        def newMigrationGuideFile = new File('v4.9.0+_MIGRATION_GUIDE.md')
+        def newMigrationGuideFileText = newMigrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
+        newMigrationGuideFile.write(newMigrationGuideFileText)
     }
 }
 
