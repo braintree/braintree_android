@@ -188,29 +188,26 @@ public class PayPalNativeCheckoutClient {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
         }
 
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+        braintreeClient.getConfiguration((configuration, error) -> {
 
-                if (payPalConfigInvalid(configuration)) {
-                    Exception configInvalidError = createPayPalError();
-                    callback.onResult(configInvalidError);
-                    return;
-                }
-
-                if (browserSwitchNotPossible(activity)) {
-                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                    Exception manifestInvalidError = createBrowserSwitchError();
-                    callback.onResult(manifestInvalidError);
-                    return;
-                }
-                sendPayPalRequest(
-                    activity,
-                    payPalCheckoutRequest,
-                    configuration,
-                    callback
-                );
+            if (payPalConfigInvalid(configuration)) {
+                Exception configInvalidError = createPayPalError();
+                callback.onResult(configInvalidError);
+                return;
             }
+
+            if (browserSwitchNotPossible(activity)) {
+                braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                Exception manifestInvalidError = createBrowserSwitchError();
+                callback.onResult(manifestInvalidError);
+                return;
+            }
+            sendPayPalRequest(
+                activity,
+                payPalCheckoutRequest,
+                configuration,
+                callback
+            );
         });
 
     }
@@ -221,29 +218,26 @@ public class PayPalNativeCheckoutClient {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
         }
 
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
-                if (payPalConfigInvalid(configuration)) {
-                    Exception configInvalidError = createPayPalError();
-                    callback.onResult(configInvalidError);
-                    return;
-                }
-
-                if (browserSwitchNotPossible(activity)) {
-                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                    Exception manifestInvalidError = createBrowserSwitchError();
-                    callback.onResult(manifestInvalidError);
-                    return;
-                }
-
-                sendPayPalRequest(
-                    activity,
-                    payPalVaultRequest,
-                    configuration,
-                    callback
-                );
+        braintreeClient.getConfiguration((configuration, error) -> {
+            if (payPalConfigInvalid(configuration)) {
+                Exception configInvalidError = createPayPalError();
+                callback.onResult(configInvalidError);
+                return;
             }
+
+            if (browserSwitchNotPossible(activity)) {
+                braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                Exception manifestInvalidError = createBrowserSwitchError();
+                callback.onResult(manifestInvalidError);
+                return;
+            }
+
+            sendPayPalRequest(
+                activity,
+                payPalVaultRequest,
+                configuration,
+                callback
+            );
         });
     }
 
@@ -253,51 +247,45 @@ public class PayPalNativeCheckoutClient {
         final Configuration configuration,
         final PayPalFlowStartedCallback callback
     ) {
-        internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
-            @Override
-            public void onResult(final PayPalResponse payPalResponse, Exception error) {
-                if (payPalResponse != null) {
-                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.app-switch.started", analyticsPrefix));
+        internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
+            if (payPalResponse != null) {
+                String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
+                braintreeClient.sendAnalyticsEvent(String.format("%s.app-switch.started", analyticsPrefix));
 
-                    Environment environment;
-                    if ("sandbox".equals(configuration.getEnvironment())) {
-                        environment = Environment.SANDBOX;
-                    } else if ("production".equals(configuration.getEnvironment())) {
-                        environment = Environment.LIVE;
-                    } else {
-                        callback.onResult(new IllegalArgumentException("Invalid PayPal Environment"));
-                        return;
-                    }
-
-                    // Start PayPalCheckout flow
-                    PayPalCheckout.setConfig(
-                        new CheckoutConfig(
-                            activity.getApplication(),
-                            configuration.getPayPalClientId(),
-                            environment,
-                            payPalRequest.getNativeConfig().getReturnUrl()
-                        )
-                    );
-
-                    registerCallbacks(configuration, payPalRequest, payPalResponse);
-
-                    PayPalCheckout.startCheckout(new CreateOrder() {
-                        @Override
-                        public void create(@NonNull CreateOrderActions createOrderActions) {
-                            if (payPalRequest instanceof PayPalCheckoutRequest) {
-                                createOrderActions.set(payPalResponse.getPairingId());
-                            } else if (payPalRequest instanceof PayPalVaultRequest) {
-                                createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
-                            } else {
-                                callback.onResult(new Exception("Unsupported action type"));
-                            }
-                        }
-                    });
-                    callback.onResult(null);
+                Environment environment;
+                if ("sandbox".equals(configuration.getEnvironment())) {
+                    environment = Environment.SANDBOX;
+                } else if ("production".equals(configuration.getEnvironment())) {
+                    environment = Environment.LIVE;
                 } else {
-                    callback.onResult(error);
+                    callback.onResult(new IllegalArgumentException("Invalid PayPal Environment"));
+                    return;
                 }
+
+                // Start PayPalCheckout flow
+                PayPalCheckout.setConfig(
+                    new CheckoutConfig(
+                        activity.getApplication(),
+                        configuration.getPayPalClientId(),
+                        environment,
+                        payPalRequest.getNativeConfig().getReturnUrl()
+                    )
+                );
+
+                registerCallbacks(configuration, payPalRequest, payPalResponse);
+
+                PayPalCheckout.startCheckout(createOrderActions -> {
+                    if (payPalRequest instanceof PayPalCheckoutRequest) {
+                        createOrderActions.set(payPalResponse.getPairingId());
+                    } else if (payPalRequest instanceof PayPalVaultRequest) {
+                        createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
+                    } else {
+                        callback.onResult(new Exception("Unsupported action type"));
+                    }
+                });
+                callback.onResult(null);
+            } else {
+                callback.onResult(error);
             }
         });
     }
@@ -308,37 +296,21 @@ public class PayPalNativeCheckoutClient {
         final PayPalResponse payPalResponse
     ) {
         PayPalCheckout.registerCallbacks(
-                new OnApprove() {
-                    @Override
-                    public void onApprove(@NonNull Approval approval) {
+                approval -> {
 
-                        PayPalAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
+                    PayPalAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
 
-                        internalPayPalClient.tokenize(payPalAccount, new PayPalBrowserSwitchResultCallback() {
-                            @Override
-                            public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
-                                if (payPalAccountNonce != null) {
-                                    listener.onPayPalSuccess(payPalAccountNonce);
-                                } else {
-                                    listener.onPayPalFailure(new Exception("PaypalAccountNonce is null"));
-                                }
-                            }
-                        });
+                    internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
+                        if (payPalAccountNonce != null) {
+                            listener.onPayPalSuccess(payPalAccountNonce);
+                        } else {
+                            listener.onPayPalFailure(new Exception("PaypalAccountNonce is null"));
+                        }
+                    });
 
-                    }
                 },
-                new OnCancel() {
-                    @Override
-                    public void onCancel() {
-                        listener.onPayPalFailure(new Exception("User has canceled"));
-                    }
-                },
-                new OnError() {
-                    @Override
-                    public void onError(@NonNull ErrorInfo errorInfo) {
-                        listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()));
-                    }
-                }
+                () -> listener.onPayPalFailure(new Exception("User has canceled")),
+                errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
         );
     }
 
@@ -350,10 +322,11 @@ public class PayPalNativeCheckoutClient {
         PayPalAccount payPalAccount = new PayPalAccount();
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
+        String paymentType = payPalRequest instanceof PayPalVaultRequest ? "billing-agreement" : "single-payment";
         payPalAccount.setClientMetadataId(configuration.getPayPalClientId());
         payPalAccount.setIntent(payPalResponse.getIntent());
         payPalAccount.setSource("paypal-browser");
-        payPalAccount.setPaymentType("single-payment");
+        payPalAccount.setPaymentType(paymentType);
 
         if (merchantAccountId != null) {
             payPalAccount.setMerchantAccountId(merchantAccountId);
@@ -375,14 +348,11 @@ public class PayPalNativeCheckoutClient {
     }
 
     private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
-            @Override
-            public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
-                if (payPalAccountNonce != null) {
-                    listener.onPayPalSuccess(payPalAccountNonce);
-                } else if (error != null) {
-                    listener.onPayPalFailure(error);
-                }
+        onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
+            if (payPalAccountNonce != null) {
+                listener.onPayPalSuccess(payPalAccountNonce);
+            } else if (error != null) {
+                listener.onPayPalFailure(error);
             }
         });
         this.pendingBrowserSwitchResult = null;

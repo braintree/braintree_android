@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalLifecycleObserverUnitTest {
+public class PayPalNativeLifecycleObserverUnitTest {
 
     @Test
     public void onResume_whenLifeCycleObserverIsFragment_payPalClientDeliversResultWithFragmentActivity() {
@@ -29,10 +29,10 @@ public class PayPalLifecycleObserverUnitTest {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
-        PayPalNativeClient payPalClient = mock(PayPalNativeClient.class);
+        PayPalNativeCheckoutClient payPalClient = mock(PayPalNativeCheckoutClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
-        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+        PayPalNativeLifecycleObserver sut = new PayPalNativeLifecycleObserver(payPalClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
@@ -46,10 +46,10 @@ public class PayPalLifecycleObserverUnitTest {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
-        PayPalNativeClient payPalClient = mock(PayPalNativeClient.class);
+        PayPalNativeCheckoutClient payPalClient = mock(PayPalNativeCheckoutClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
-        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+        PayPalNativeLifecycleObserver sut = new PayPalNativeLifecycleObserver(payPalClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
@@ -63,10 +63,10 @@ public class PayPalLifecycleObserverUnitTest {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
-        PayPalNativeClient payPalClient = mock(PayPalNativeClient.class);
+        PayPalNativeCheckoutClient payPalClient = mock(PayPalNativeCheckoutClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
-        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+        PayPalNativeLifecycleObserver sut = new PayPalNativeLifecycleObserver(payPalClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
