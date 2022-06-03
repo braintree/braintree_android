@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 public class PayPalInternalClientUnitTest {
 
     private Context context;
+    private Configuration configuration;
 
     private ClientToken clientToken;
     private TokenizationKey tokenizationKey;
@@ -46,6 +47,7 @@ public class PayPalInternalClientUnitTest {
     @Before
     public void beforeEach() {
         context = mock(Context.class);
+        configuration = mock(Configuration.class);
         clientToken = mock(ClientToken.class);
         tokenizationKey = mock(TokenizationKey.class);
 
@@ -409,7 +411,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws JSONException {
-        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -433,7 +435,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws JSONException {
-        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -481,7 +483,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
-        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -514,7 +516,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
-        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
