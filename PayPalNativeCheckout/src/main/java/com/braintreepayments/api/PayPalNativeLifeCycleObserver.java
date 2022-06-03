@@ -15,9 +15,9 @@ import androidx.lifecycle.LifecycleOwner;
 class PayPalNativeLifecycleObserver implements LifecycleEventObserver {
 
     @VisibleForTesting
-    final PayPalNativeClient payPalClient;
+    final PayPalNativeCheckoutClient payPalClient;
 
-    PayPalNativeLifecycleObserver(PayPalNativeClient payPalClient) {
+    PayPalNativeLifecycleObserver(PayPalNativeCheckoutClient payPalClient) {
         this.payPalClient = payPalClient;
     }
 

@@ -68,6 +68,7 @@ public abstract class PayPalRequest implements Parcelable {
     private String merchantAccountId;
     private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
+    private PayPalNativeCheckoutConfig nativeConfig;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -204,6 +205,15 @@ public abstract class PayPalRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
+    /**
+     * Optional: The config that is used to setup Native Checkout
+     *
+     * @param nativeConfig a config for setting up the native client
+     */
+    public void setNativeConfig(PayPalNativeCheckoutConfig nativeConfig) {
+        this.nativeConfig = nativeConfig;
+    }
+
     @Nullable
     public String getLocaleCode() {
         return localeCode;
@@ -253,6 +263,11 @@ public abstract class PayPalRequest implements Parcelable {
         return landingPageType;
     }
 
+    @NonNull
+    public PayPalNativeCheckoutConfig getNativeConfig() {
+        return nativeConfig;
+    }
+
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalRequest(Parcel in) {
@@ -266,6 +281,7 @@ public abstract class PayPalRequest implements Parcelable {
         merchantAccountId = in.readString();
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
+        nativeConfig = in.readParcelable(PayPalNativeCheckoutConfig.class.getClassLoader());
     }
 
     @Override
@@ -285,5 +301,6 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(merchantAccountId);
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
+        parcel.writeParcelable(nativeConfig, i);
     }
 }

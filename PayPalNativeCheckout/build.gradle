@@ -30,17 +30,26 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
 dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
+    implementation project(':BraintreeDataCollector')
+
+    implementation('com.paypal.checkout:android-sdk:0.6.1') {
+        exclude group: 'com.paypal.android.sdk', module: 'data-collector'
+    }
 
     testImplementation deps.robolectric
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockRule
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
     testImplementation deps.mockitoCore
     testImplementation project(':TestUtils')
 }
+
 
 // region signing and publishing
 

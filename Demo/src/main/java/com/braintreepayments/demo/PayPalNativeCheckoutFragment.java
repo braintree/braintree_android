@@ -6,7 +6,6 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultR
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -19,16 +18,14 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalListener;
-import com.braintreepayments.api.PayPalNativeCheckoutRequest;
-import com.braintreepayments.api.PayPalNativeClient;
-import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalListener {
 
     private String deviceData;
     private BraintreeClient braintreeClient;
-    private PayPalNativeClient payPalClient;
+    private PayPalNativeCheckoutClient payPalClient;
     private DataCollector dataCollector;
 
     public Button launchPayPalNativeCheckoutButton;
@@ -48,7 +45,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         launchPayPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout_launch);
         launchPayPalNativeCheckoutButton.setOnClickListener((View.OnClickListener) v -> launchPayPalNativeCheckout(false));
         braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalNativeClient(this, braintreeClient);
+        payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
         payPalClient.setListener(this);
         return view;
     }

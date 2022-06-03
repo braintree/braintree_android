@@ -4,7 +4,6 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalChecko
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +16,16 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.DataCollectorCallback;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
-import com.braintreepayments.api.PayPalNativeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private String deviceData;
     private BraintreeClient braintreeClient;
-    private PayPalNativeClient payPalClient;
+    private PayPalClient payPalClient;
     private DataCollector dataCollector;
 
     @Nullable
@@ -42,7 +39,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalNativeClient(this, braintreeClient);
+        payPalClient = new PayPalClient(this, braintreeClient);
         payPalClient.setListener(this);
         return view;
     }
