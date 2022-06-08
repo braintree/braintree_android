@@ -427,7 +427,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         PayPalResponse payPalResponse = captor.getValue();
         assertEquals("risk-correlation-id", payPalResponse.getClientMetadataId());
@@ -450,7 +450,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         PayPalResponse payPalResponse = captor.getValue();
         assertNull(payPalRequest.getRiskCorrelationId());
@@ -500,7 +500,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
@@ -535,7 +535,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=commit";
@@ -567,7 +567,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
@@ -591,7 +591,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
@@ -630,7 +630,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(payPalInternalClientCallback).onResult((PayPalResponse) isNull(), any(JSONException.class));
+        verify(payPalInternalClientCallback).onResult(isNull(), any(JSONException.class));
     }
 
     @Test
@@ -691,7 +691,7 @@ public class PayPalInternalClientUnitTest {
         sut.tokenize(payPalAccount, callback);
 
         ArgumentCaptor<PayPalAccountNonce> captor = ArgumentCaptor.forClass(PayPalAccountNonce.class);
-        verify(callback).onResult(captor.capture(), (Exception) isNull());
+        verify(callback).onResult(captor.capture(), isNull());
 
         PayPalAccountNonce expectedNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
         PayPalAccountNonce result = captor.getValue();
@@ -712,6 +712,6 @@ public class PayPalInternalClientUnitTest {
 
         sut.tokenize(payPalAccount, callback);
 
-        verify(callback).onResult((PayPalAccountNonce) isNull(), same(error));
+        verify(callback).onResult(isNull(), same(error));
     }
 }

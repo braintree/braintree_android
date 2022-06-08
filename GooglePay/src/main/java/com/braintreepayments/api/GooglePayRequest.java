@@ -196,7 +196,7 @@ public class GooglePayRequest implements Parcelable {
     }
 
     public void setEnvironment(@Nullable String environment) {
-        this.environment = "PRODUCTION".equals(environment.toUpperCase()) ? "PRODUCTION" : "TEST";
+        this.environment = "PRODUCTION".equalsIgnoreCase(environment) ? "PRODUCTION" : "TEST";
     }
 
     /**

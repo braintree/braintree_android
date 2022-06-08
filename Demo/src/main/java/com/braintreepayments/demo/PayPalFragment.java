@@ -85,7 +85,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);

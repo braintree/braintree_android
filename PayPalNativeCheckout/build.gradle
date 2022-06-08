@@ -50,7 +50,6 @@ dependencies {
     testImplementation project(':TestUtils')
 }
 
-
 // region signing and publishing
 
 task javadocs(type: Javadoc) {

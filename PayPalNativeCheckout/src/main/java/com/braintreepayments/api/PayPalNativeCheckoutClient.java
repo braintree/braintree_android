@@ -255,7 +255,7 @@ public class PayPalNativeCheckoutClient {
                 Environment environment;
                 if ("sandbox".equals(configuration.getEnvironment())) {
                     environment = Environment.SANDBOX;
-                } else if ("production".equals(configuration.getEnvironment())) {
+                } else if ("live".equals(configuration.getEnvironment())) {
                     environment = Environment.LIVE;
                 } else {
                     callback.onResult(new IllegalArgumentException("Invalid PayPal Environment"));
@@ -297,7 +297,6 @@ public class PayPalNativeCheckoutClient {
     ) {
         PayPalCheckout.registerCallbacks(
                 approval -> {
-
                     PayPalAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
 
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {

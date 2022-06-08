@@ -115,7 +115,7 @@ public class GooglePayRequestUnitTest {
         assertTrue(parceled.isPhoneNumberRequired());
         assertTrue(parceled.isShippingAddressRequired());
         assertTrue(parceled.isBillingAddressRequired());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
+        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, parceled.getBillingAddressFormat());
         assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
         assertTrue(parceled.getAllowPrepaidCards());
         assertEquals("PRODUCTION", parceled.getEnvironment());

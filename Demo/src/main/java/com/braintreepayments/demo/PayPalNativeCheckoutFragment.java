@@ -31,7 +31,6 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
     public Button launchPayPalNativeCheckoutButton;
 
     public PayPalNativeCheckoutFragment() {
-
     }
 
     @Override
@@ -43,7 +42,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         View view = inflater.inflate(R.layout.fragment_paypal_native_checkout, container, false);
 
         launchPayPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout_launch);
-        launchPayPalNativeCheckoutButton.setOnClickListener((View.OnClickListener) v -> launchPayPalNativeCheckout(false));
+        launchPayPalNativeCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(false));
         braintreeClient = getBraintreeClient();
         payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
         payPalClient.setListener(this);
@@ -83,7 +82,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalNativeCheckoutFragmentDirections.ActionPayPalNativeCheckoutFragmentToDisplayNonceFragment action =
-                    PayPalNativeCheckoutFragmentDirections.actionPayPalNativeCheckoutFragmentToDisplayNonceFragment(paymentMethodNonce);
+                PayPalNativeCheckoutFragmentDirections.actionPayPalNativeCheckoutFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);

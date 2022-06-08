@@ -9,9 +9,18 @@ import androidx.lifecycle.Lifecycle;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -27,8 +36,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(RobolectricTestRunner.class)
-public class PayPalClientUnitTest {
+import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.config.CheckoutConfig;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest( { PayPalCheckout.class })
+public class PayPalNativeCheckoutClientUnitTest {
 
     private FragmentActivity activity;
     private Lifecycle lifecycle;
@@ -156,7 +169,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenPayPalNotEnabled_returnsErroToListener() {
+    public void tokenizePayPalAccount_whenPayPalNotEnabled_returnsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -198,7 +211,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_startsBrowser() throws JSONException, BrowserSwitchException {
+    public void tokenizePayPalAccount_startsNativeCheckout() throws JSONException, BrowserSwitchException {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
@@ -214,7 +227,17 @@ public class PayPalClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
+        ArgumentCaptor<CheckoutConfig> configCaptor = ArgumentCaptor.forClass(CheckoutConfig.class);
+
+        PowerMockito.mockStatic(PayPalCheckout.class);
+        PayPalCheckout myName = PowerMockito.mock(PayPalCheckout.class);
+        PowerMockito.doNothing().when(myName);
+        PayPalCheckout.setConfig(configCaptor.capture());
+
+        configCaptor.getValue();
+
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
@@ -253,14 +276,15 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected");
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.app-switch.started");
     }
 
     @Test
-    public void requestOneTimePayment_startsBrowser() throws JSONException, BrowserSwitchException {
+    public void requestOneTimePayment_startsNativeCheckout() throws JSONException, BrowserSwitchException {
         PayPalCheckoutRequest payPalCheckoutRequest = new PayPalCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -277,7 +301,18 @@ public class PayPalClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
 
+        ArgumentCaptor<CheckoutConfig> configCaptor = ArgumentCaptor.forClass(CheckoutConfig.class);
+
+        PayPalCheckout mockCheckout = mock(PayPalCheckout.class);
+        PowerMockito.mockStatic(PayPalCheckout.class);
+        PowerMockito.when(PayPalCheckout.INSTANCE).thenReturn(mockCheckout);
+        PayPalCheckout myName = PowerMockito.mock(PayPalCheckout.class);
+        PowerMockito.doNothing().when(myName);
+        PayPalCheckout.setConfig(configCaptor.capture());
+
+        configCaptor.getValue();
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
         ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
@@ -360,10 +395,11 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.app-switch.started");
     }
 
     @Test
