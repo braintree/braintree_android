@@ -6,9 +6,6 @@ import android.content.SharedPreferences;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 class BraintreeSharedPreferences {
 
     private static volatile BraintreeSharedPreferences INSTANCE;
@@ -41,7 +38,9 @@ class BraintreeSharedPreferences {
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (Exception ignored) {
+            // In the rare case that we are unable to obtain a reference to encrypted shared
+            // preferences, all preference update and retrieval logic will no-op
             return null;
         }
     }
