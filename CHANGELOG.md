@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* SharedUtils
+  * Update `BraintreeSharedPreferences` to no-op when a reference to Android `EncryptedSharedPreferences` cannot be obtained (fixes #561)
 * ThreeDSecure
   * Bump Cardinal version to `2.2.6-2`
 
