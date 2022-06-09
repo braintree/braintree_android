@@ -1,5 +1,5 @@
-name: 'Publish Module'
-description: 'Publishes module'
+name: 'Publish All Modules'
+description: 'Publishes all modules'
 inputs:
   sonatype_usr:
     description: 'Sonatype user'
