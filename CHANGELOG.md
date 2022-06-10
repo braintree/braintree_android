@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.12.0
 
 * SharedUtils
   * Update `BraintreeSharedPreferences` to no-op when a reference to Android `EncryptedSharedPreferences` cannot be obtained (fixes #561)
