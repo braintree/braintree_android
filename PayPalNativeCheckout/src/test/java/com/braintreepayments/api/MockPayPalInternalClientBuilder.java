@@ -12,10 +12,10 @@ import static org.mockito.Mockito.mock;
 public class MockPayPalInternalClientBuilder {
 
     private Exception error;
-    private PayPalResponse successResponse;
-    private PayPalAccountNonce tokenizeSuccess;
+    private PayPalNativeCheckoutResponse successResponse;
+    private PayPalNativeCheckoutAccountNonce tokenizeSuccess;
 
-    public MockPayPalInternalClientBuilder sendRequestSuccess(PayPalResponse successResponse) {
+    public MockPayPalInternalClientBuilder sendRequestSuccess(PayPalNativeCheckoutResponse successResponse) {
         this.successResponse = successResponse;
         return this;
     }
@@ -25,18 +25,18 @@ public class MockPayPalInternalClientBuilder {
         return this;
     }
 
-    public MockPayPalInternalClientBuilder tokenizeSuccess(PayPalAccountNonce tokenizeSuccess) {
+    public MockPayPalInternalClientBuilder tokenizeSuccess(PayPalNativeCheckoutAccountNonce tokenizeSuccess) {
         this.tokenizeSuccess = tokenizeSuccess;
         return this;
     }
 
-    public PayPalInternalClient build() {
-        PayPalInternalClient payPalInternalClient = mock(PayPalInternalClient.class);
+    public PayPalNativeCheckoutInternalClient build() {
+        PayPalNativeCheckoutInternalClient payPalInternalClient = mock(PayPalNativeCheckoutInternalClient.class);
 
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalInternalClientCallback callback = (PayPalInternalClientCallback) invocation.getArguments()[2];
+                PayPalNativeCheckoutInternalClientCallback callback = (PayPalNativeCheckoutInternalClientCallback) invocation.getArguments()[2];
                 if (successResponse != null) {
                     callback.onResult(successResponse, null);
                 } else if (error != null) {
@@ -44,16 +44,16 @@ public class MockPayPalInternalClientBuilder {
                 }
                 return null;
             }
-        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalRequest.class), any(PayPalInternalClientCallback.class));
+        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalNativeRequest.class), any(PayPalNativeCheckoutInternalClientCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalBrowserSwitchResultCallback callback = (PayPalBrowserSwitchResultCallback) invocation.getArguments()[1];
+                PayPalNativeCheckoutBrowserSwitchResultCallback callback = (PayPalNativeCheckoutBrowserSwitchResultCallback) invocation.getArguments()[1];
                 callback.onResult(tokenizeSuccess, null);
                 return null;
             }
-        }).when(payPalInternalClient).tokenize(any(PayPalAccount.class), any(PayPalBrowserSwitchResultCallback.class));
+        }).when(payPalInternalClient).tokenize(any(PayPalNativeCheckoutAccount.class), any(PayPalNativeCheckoutBrowserSwitchResultCallback.class));
 
         return payPalInternalClient;
     }

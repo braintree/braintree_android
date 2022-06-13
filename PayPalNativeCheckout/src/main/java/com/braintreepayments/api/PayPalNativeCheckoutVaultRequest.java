@@ -10,11 +10,11 @@ import org.json.JSONObject;
 /**
  * Represents the parameters that are needed to start the PayPal Vault flow
  */
-public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
+public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
 
-    public PayPalVaultRequest() {
+    public PayPalNativeCheckoutVaultRequest() {
     }
 
     /**
@@ -90,7 +90,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         return parameters.toString();
     }
 
-    PayPalVaultRequest(Parcel in) {
+    PayPalNativeCheckoutVaultRequest(Parcel in) {
         super(in);
         shouldOfferCredit = in.readByte() != 0;
     }
@@ -106,15 +106,15 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         return 0;
     }
 
-    public static final Creator<PayPalVaultRequest> CREATOR = new Creator<PayPalVaultRequest>() {
+    public static final Creator<PayPalNativeCheckoutVaultRequest> CREATOR = new Creator<PayPalNativeCheckoutVaultRequest>() {
         @Override
-        public PayPalVaultRequest createFromParcel(Parcel in) {
-            return new PayPalVaultRequest(in);
+        public PayPalNativeCheckoutVaultRequest createFromParcel(Parcel in) {
+            return new PayPalNativeCheckoutVaultRequest(in);
         }
 
         @Override
-        public PayPalVaultRequest[] newArray(int size) {
-            return new PayPalVaultRequest[size];
+        public PayPalNativeCheckoutVaultRequest[] newArray(int size) {
+            return new PayPalNativeCheckoutVaultRequest[size];
         }
     };
 }

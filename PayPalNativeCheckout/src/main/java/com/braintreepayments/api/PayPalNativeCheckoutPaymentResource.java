@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * A PayPal payment resource
  */
-class PayPalPaymentResource {
+class PayPalNativeCheckoutPaymentResource {
 
     private static final String PAYMENT_RESOURCE_KEY = "paymentResource";
     private static final String REDIRECT_URL_KEY = "redirectUrl";
@@ -36,10 +36,10 @@ class PayPalPaymentResource {
      * @return a PayPal payment resource
      * @throws JSONException when json input is invalid
      */
-    static PayPalPaymentResource fromJson(String jsonString) throws JSONException {
+    static PayPalNativeCheckoutPaymentResource fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
-        PayPalPaymentResource payPalPaymentResource = new PayPalPaymentResource();
+        PayPalNativeCheckoutPaymentResource payPalPaymentResource = new PayPalNativeCheckoutPaymentResource();
         JSONObject redirectJson = json.optJSONObject(PAYMENT_RESOURCE_KEY);
         if (redirectJson != null) {
             payPalPaymentResource.redirectUrl(Json.optString(redirectJson, REDIRECT_URL_KEY, ""));

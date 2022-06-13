@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class PayPalInternalClient {
+class PayPalNativeCheckoutInternalClient {
 
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
@@ -23,12 +23,12 @@ class PayPalInternalClient {
     private final PayPalDataCollector payPalDataCollector;
     private final ApiClient apiClient;
 
-    PayPalInternalClient(BraintreeClient braintreeClient) {
+    PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(), new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, ApiClient apiClient) {
+    PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.apiClient = apiClient;
@@ -37,7 +37,7 @@ class PayPalInternalClient {
         this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
     }
 
-    void sendRequest(final Context context, final PayPalRequest payPalRequest, final PayPalInternalClientCallback callback) {
+    void sendRequest(final Context context, final PayPalNativeRequest payPalRequest, final PayPalNativeCheckoutInternalClientCallback callback) {
         braintreeClient.getAuthorization(new AuthorizationCallback() {
             @Override
             public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
@@ -50,7 +50,7 @@ class PayPalInternalClient {
                                 return;
                             }
                             try {
-                                final boolean isBillingAgreement = payPalRequest instanceof PayPalVaultRequest;
+                                final boolean isBillingAgreement = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
                                 String endpoint = isBillingAgreement
                                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                                 String url = String.format("/v1/%s", endpoint);
@@ -63,10 +63,10 @@ class PayPalInternalClient {
                                     public void onResult(String responseBody, Exception httpError) {
                                         if (responseBody != null) {
                                             try {
-                                                PayPalResponse payPalResponse = new PayPalResponse(payPalRequest)
+                                                PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalRequest)
                                                         .successUrl(successUrl);
 
-                                                PayPalPaymentResource paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
+                                                PayPalNativeCheckoutPaymentResource paypalPaymentResource = PayPalNativeCheckoutPaymentResource.fromJson(responseBody);
                                                 String redirectUrl = paypalPaymentResource.getRedirectUrl();
                                                 if (redirectUrl != null) {
                                                     Uri parsedRedirectUri = Uri.parse(redirectUrl);
@@ -110,13 +110,13 @@ class PayPalInternalClient {
         });
     }
 
-    void tokenize(PayPalAccount payPalAccount, final PayPalBrowserSwitchResultCallback callback) {
+    void tokenize(PayPalNativeCheckoutAccount payPalAccount, final PayPalNativeCheckoutBrowserSwitchResultCallback callback) {
         apiClient.tokenizeREST(payPalAccount, new TokenizeCallback() {
             @Override
             public void onResult(JSONObject tokenizationResponse, Exception exception) {
                 if (tokenizationResponse != null) {
                     try {
-                        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
+                        PayPalNativeCheckoutAccountNonce payPalAccountNonce = PayPalNativeCheckoutAccountNonce.fromJSON(tokenizationResponse);
                         callback.onResult(payPalAccountNonce, null);
 
                     } catch (JSONException e) {

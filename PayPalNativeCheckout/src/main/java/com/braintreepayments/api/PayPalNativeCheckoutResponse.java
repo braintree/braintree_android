@@ -1,15 +1,15 @@
 package com.braintreepayments.api;
 
-class PayPalResponse {
+class PayPalNativeCheckoutResponse {
 
     private String approvalUrl;
     private String clientMetadataId;
     private String pairingId;
-    private final PayPalRequest payPalRequest;
+    private final PayPalNativeRequest payPalRequest;
 
     private String successUrl;
 
-    PayPalResponse(PayPalRequest payPalRequest) {
+    PayPalNativeCheckoutResponse(PayPalNativeRequest payPalRequest) {
         this.payPalRequest = payPalRequest;
     }
 
@@ -17,7 +17,7 @@ class PayPalResponse {
         return approvalUrl;
     }
 
-    PayPalResponse approvalUrl(String value) {
+    PayPalNativeCheckoutResponse approvalUrl(String value) {
         approvalUrl = value;
         return this;
     }
@@ -26,27 +26,27 @@ class PayPalResponse {
         return clientMetadataId;
     }
 
-    PayPalResponse clientMetadataId(String value) {
+    PayPalNativeCheckoutResponse clientMetadataId(String value) {
         clientMetadataId = value;
         return this;
     }
 
     String getIntent() {
-        if (payPalRequest instanceof PayPalCheckoutRequest) {
-            return ((PayPalCheckoutRequest) payPalRequest).getIntent();
+        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
+            return ((PayPalNativeCheckoutRequest) payPalRequest).getIntent();
         }
         return null;
     }
 
     String getUserAction() {
-        if (payPalRequest instanceof PayPalCheckoutRequest) {
-            return ((PayPalCheckoutRequest) payPalRequest).getUserAction();
+        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
+            return ((PayPalNativeCheckoutRequest) payPalRequest).getUserAction();
         }
         return "";
     }
 
     boolean isBillingAgreement() {
-        return payPalRequest instanceof PayPalVaultRequest;
+        return payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
     }
 
     String getMerchantAccountId() {
@@ -57,7 +57,7 @@ class PayPalResponse {
         return pairingId;
     }
 
-    PayPalResponse pairingId(String value) {
+    PayPalNativeCheckoutResponse pairingId(String value) {
         pairingId = value;
         return this;
     }
@@ -66,7 +66,7 @@ class PayPalResponse {
         return successUrl;
     }
 
-    PayPalResponse successUrl(String value) {
+    PayPalNativeCheckoutResponse successUrl(String value) {
         successUrl = value;
         return this;
     }

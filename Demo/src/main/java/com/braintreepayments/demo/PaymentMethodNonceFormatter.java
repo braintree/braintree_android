@@ -1,11 +1,12 @@
 package com.braintreepayments.demo;
 
 import com.braintreepayments.api.BinData;
+import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
-import com.braintreepayments.api.PayPalAccountNonce;
+import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VisaCheckoutAddress;
@@ -21,7 +22,9 @@ public class PaymentMethodNonceFormatter {
             return convertCardNonceToString((CardNonce) nonce);
         } else if (nonce instanceof PayPalAccountNonce) {
             return convertPayPalNonceToString((PayPalAccountNonce) nonce);
-        } else if (nonce instanceof GooglePayCardNonce) {
+        } else if (nonce instanceof PayPalNativeCheckoutAccountNonce) {
+            return convertPayPalNativeCheckoutNonceToString((PayPalNativeCheckoutAccountNonce) nonce);
+        }  else if (nonce instanceof GooglePayCardNonce) {
             return convertGooglePayNonceToString((GooglePayCardNonce) nonce);
         } else if (nonce instanceof VisaCheckoutNonce) {
             return convertVisaCheckoutNonceToString((VisaCheckoutNonce) nonce);
@@ -43,6 +46,17 @@ public class PaymentMethodNonceFormatter {
     }
 
     private static String convertPayPalNonceToString(PayPalAccountNonce nonce) {
+        return "First Name: " + nonce.getFirstName() + "\n" +
+                "Last Name: " + nonce.getLastName() + "\n" +
+                "Email: " + nonce.getEmail() + "\n" +
+                "Phone: " + nonce.getPhone() + "\n" +
+                "Payer ID: " + nonce.getPayerId() + "\n" +
+                "Client Metadata ID: " + nonce.getClientMetadataId() + "\n" +
+                "Billing Address: " + formatPayPalAddress(nonce.getBillingAddress()) + "\n" +
+                "Shipping Address: " + formatPayPalAddress(nonce.getShippingAddress());
+    }
+
+    private static String convertPayPalNativeCheckoutNonceToString(PayPalNativeCheckoutAccountNonce nonce) {
         return "First Name: " + nonce.getFirstName() + "\n" +
                 "Last Name: " + nonce.getLastName() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +

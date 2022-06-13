@@ -2,27 +2,27 @@ package com.braintreepayments.demo;
 
 import android.content.Context;
 
-import com.braintreepayments.api.PayPalCheckoutRequest;
-import com.braintreepayments.api.PayPalPaymentIntent;
-import com.braintreepayments.api.PayPalRequest;
-import com.braintreepayments.api.PayPalVaultRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
+import com.braintreepayments.api.PayPalNativeRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.PayPalNativeCheckoutConfig;
 
 import java.util.UUID;
 
-public class PayPalRequestFactory {
+public class PayPalNativeCheckoutRequestFactory {
 
-    public static PayPalVaultRequest createPayPalVaultRequest(Context context) {
-        PayPalVaultRequest request = new PayPalVaultRequest();
+    public static PayPalNativeCheckoutVaultRequest createPayPalVaultRequest(Context context) {
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING);
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
         }
 
         if (Settings.isPayPalCreditOffered(context)) {
@@ -41,32 +41,37 @@ public class PayPalRequestFactory {
             request.setShippingAddressOverride(postalAddress);
         }
 
+        PayPalNativeCheckoutConfig nativeConfig = new PayPalNativeCheckoutConfig();
+        nativeConfig.setCorrelationId(UUID.randomUUID().toString());
+        nativeConfig.setReturnUrl("com.braintreepayments.demo://paypalpay");
+
+        request.setNativeConfig(nativeConfig);
         return request;
     }
 
-    public static PayPalCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
+    public static PayPalNativeCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(amount);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING);
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
         }
 
         String intentType = Settings.getPayPalIntentType(context);
         if (intentType.equals(context.getString(R.string.paypal_intent_authorize))) {
-            request.setIntent(PayPalPaymentIntent.AUTHORIZE);
+            request.setIntent(PayPalNativeCheckoutPaymentIntent.AUTHORIZE);
         } else if (intentType.equals(context.getString(R.string.paypal_intent_order))) {
-            request.setIntent(PayPalPaymentIntent.ORDER);
+            request.setIntent(PayPalNativeCheckoutPaymentIntent.ORDER);
         } else if (intentType.equals(context.getString(R.string.paypal_intent_sale))) {
-            request.setIntent(PayPalPaymentIntent.SALE);
+            request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
-            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+            request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
@@ -81,6 +86,11 @@ public class PayPalRequestFactory {
             request.setShippingAddressOverride(shippingAddress);
         }
 
+        PayPalNativeCheckoutConfig nativeConfig = new PayPalNativeCheckoutConfig();
+        nativeConfig.setCorrelationId(UUID.randomUUID().toString());
+        nativeConfig.setReturnUrl("com.braintreepayments.demo://paypalpay");
+
+        request.setNativeConfig(nativeConfig);
         return request;
     }
 }

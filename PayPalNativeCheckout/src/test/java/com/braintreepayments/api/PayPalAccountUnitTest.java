@@ -20,8 +20,8 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
-        sut.setIntent(PayPalPaymentIntent.SALE);
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
+        sut.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
         sut.setClientMetadataId("correlation_id");
         sut.setSource("paypal-sdk");
         sut.setMerchantAccountId("alt_merchant_account_id");
@@ -33,7 +33,7 @@ public class PayPalAccountUnitTest {
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
-        assertEquals(PayPalPaymentIntent.SALE, jsonAccount.getString("intent"));
+        assertEquals(PayPalNativeCheckoutPaymentIntent.SALE, jsonAccount.getString("intent"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
         assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
@@ -42,7 +42,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void usesCorrectInfoForMetadata() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setSource("paypal-app");
 
         JSONObject json = sut.buildJSON();
@@ -54,7 +54,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void setsIntegrationMethod() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setIntegration("test-integration");
 
         JSONObject json = sut.buildJSON();
@@ -65,7 +65,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setPaymentType("single-payment");
 
         JSONObject json = sut.buildJSON();
@@ -76,7 +76,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setPaymentType("billing-agreement");
 
         JSONObject json = sut.buildJSON();
@@ -87,7 +87,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
@@ -102,7 +102,7 @@ public class PayPalAccountUnitTest {
                 .put("data2", "data2")
                 .put("data3", "data3");
 
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setUrlResponseData(urlResponseData);
 
         JSONObject json = sut.buildJSON();
@@ -117,7 +117,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         JSONObject jsonObject = sut.buildJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
 

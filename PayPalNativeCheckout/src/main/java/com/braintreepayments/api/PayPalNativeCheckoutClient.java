@@ -11,15 +11,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.paypal.checkout.PayPalCheckout;
-import com.paypal.checkout.approve.Approval;
-import com.paypal.checkout.approve.OnApprove;
-import com.paypal.checkout.cancel.OnCancel;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
-import com.paypal.checkout.createorder.CreateOrder;
-import com.paypal.checkout.createorder.CreateOrderActions;
-import com.paypal.checkout.error.ErrorInfo;
-import com.paypal.checkout.error.OnError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,9 +24,9 @@ import org.json.JSONObject;
 public class PayPalNativeCheckoutClient {
 
     private final BraintreeClient braintreeClient;
-    private final PayPalInternalClient internalPayPalClient;
+    private final PayPalNativeCheckoutInternalClient internalPayPalClient;
 
-    private PayPalListener listener;
+    private PayPalNativeCheckoutListener listener;
 
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
@@ -45,7 +38,7 @@ public class PayPalNativeCheckoutClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public PayPalNativeCheckoutClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
+        this(activity, activity.getLifecycle(), braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
     /**
@@ -55,7 +48,7 @@ public class PayPalNativeCheckoutClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public PayPalNativeCheckoutClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalInternalClient(braintreeClient));
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
     /**
@@ -68,11 +61,11 @@ public class PayPalNativeCheckoutClient {
      */
     @Deprecated
     public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
+        this(null, null, braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalNativeCheckoutClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
+    PayPalNativeCheckoutClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, PayPalNativeCheckoutInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
         if (activity != null && lifecycle != null) {
@@ -82,13 +75,13 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
-     * Add a {@link PayPalListener} to your client to receive results or errors from the PayPal flow.
+     * Add a {@link PayPalNativeCheckoutListener} to your client to receive results or errors from the PayPal flow.
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
      *
-     * @param listener a {@link PayPalListener}
+     * @param listener a {@link PayPalNativeCheckoutListener}
      */
-    public void setListener(PayPalListener listener) {
+    public void setListener(PayPalNativeCheckoutListener listener) {
         this.listener = listener;
         if (pendingBrowserSwitchResult != null) {
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
@@ -127,10 +120,10 @@ public class PayPalNativeCheckoutClient {
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
      *
      * @param activity      Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
+     * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest) {
-        tokenizePayPalAccount(activity, payPalRequest, new PayPalFlowStartedCallback() {
+    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
+        tokenizePayPalAccount(activity, payPalRequest, new PayPalNativeCheckoutFlowStartedCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
                 if (error != null) {
@@ -143,46 +136,46 @@ public class PayPalNativeCheckoutClient {
     /**
      * Tokenize a PayPal account for vault or checkout.
      * <p>
-     * Deprecated. Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)}
+     * Deprecated. Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalNativeRequest)}
      *
      * @param activity      Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     * @param callback      {@link PayPalFlowStartedCallback}
+     * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
+     * @param callback      {@link PayPalNativeCheckoutFlowStartedCallback}
      */
     @Deprecated
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest, @NonNull final PayPalFlowStartedCallback callback) {
-        if (payPalRequest instanceof PayPalCheckoutRequest) {
-            sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
-        } else if (payPalRequest instanceof PayPalVaultRequest) {
-            sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
+    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest, @NonNull final PayPalNativeCheckoutFlowStartedCallback callback) {
+        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
+            sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest, callback);
+        } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
+            sendVaultRequest(activity, (PayPalNativeCheckoutVaultRequest) payPalRequest, callback);
         }
     }
 
     /**
      * @param activity              Android FragmentActivity
-     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
-     * @param callback              {@link PayPalFlowStartedCallback}
-     * @deprecated Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
+     * @param payPalCheckoutRequest a {@link PayPalNativeCheckoutRequest} used to customize the request.
+     * @param callback              {@link PayPalNativeCheckoutFlowStartedCallback}
+     * @deprecated Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalNativeRequest, PayPalNativeCheckoutFlowStartedCallback)} instead.
      * Starts the One-Time Payment (Checkout) flow for PayPal.
      */
     @Deprecated
-    public void requestOneTimePayment(@NonNull final FragmentActivity activity, @NonNull final PayPalCheckoutRequest payPalCheckoutRequest, @NonNull final PayPalFlowStartedCallback callback) {
+    public void requestOneTimePayment(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeCheckoutRequest payPalCheckoutRequest, @NonNull final PayPalNativeCheckoutFlowStartedCallback callback) {
         tokenizePayPalAccount(activity, payPalCheckoutRequest, callback);
     }
 
     /**
      * @param activity           Android FragmentActivity
-     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
-     * @param callback           {@link PayPalFlowStartedCallback}
-     * @deprecated Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)} instead.
+     * @param payPalVaultRequest a {@link PayPalNativeCheckoutVaultRequest} used to customize the request.
+     * @param callback           {@link PayPalNativeCheckoutFlowStartedCallback}
+     * @deprecated Use {@link PayPalNativeCheckoutClient#tokenizePayPalAccount(FragmentActivity, PayPalNativeRequest, PayPalNativeCheckoutFlowStartedCallback)} instead.
      * Starts the Billing Agreement (Vault) flow for PayPal.
      */
     @Deprecated
-    public void requestBillingAgreement(@NonNull final FragmentActivity activity, @NonNull final PayPalVaultRequest payPalVaultRequest, @NonNull final PayPalFlowStartedCallback callback) {
+    public void requestBillingAgreement(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeCheckoutVaultRequest payPalVaultRequest, @NonNull final PayPalNativeCheckoutFlowStartedCallback callback) {
         tokenizePayPalAccount(activity, payPalVaultRequest, callback);
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest payPalCheckoutRequest, final PayPalNativeCheckoutFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
@@ -212,7 +205,7 @@ public class PayPalNativeCheckoutClient {
 
     }
 
-    private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
+    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeCheckoutVaultRequest payPalVaultRequest, final PayPalNativeCheckoutFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
         if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
@@ -243,9 +236,9 @@ public class PayPalNativeCheckoutClient {
 
     private void sendPayPalRequest(
         final FragmentActivity activity,
-        final PayPalRequest payPalRequest,
+        final PayPalNativeRequest payPalRequest,
         final Configuration configuration,
-        final PayPalFlowStartedCallback callback
+        final PayPalNativeCheckoutFlowStartedCallback callback
     ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
@@ -275,9 +268,9 @@ public class PayPalNativeCheckoutClient {
                 registerCallbacks(configuration, payPalRequest, payPalResponse);
 
                 PayPalCheckout.startCheckout(createOrderActions -> {
-                    if (payPalRequest instanceof PayPalCheckoutRequest) {
+                    if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
                         createOrderActions.set(payPalResponse.getPairingId());
-                    } else if (payPalRequest instanceof PayPalVaultRequest) {
+                    } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
                         createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
                     } else {
                         callback.onResult(new Exception("Unsupported action type"));
@@ -292,12 +285,12 @@ public class PayPalNativeCheckoutClient {
 
     private void registerCallbacks(
         final Configuration configuration,
-        final PayPalRequest payPalRequest,
-        final PayPalResponse payPalResponse
+        final PayPalNativeRequest payPalRequest,
+        final PayPalNativeCheckoutResponse payPalResponse
     ) {
         PayPalCheckout.registerCallbacks(
                 approval -> {
-                    PayPalAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
+                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
 
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
@@ -313,15 +306,15 @@ public class PayPalNativeCheckoutClient {
         );
     }
 
-    private PayPalAccount setupAccount(
+    private PayPalNativeCheckoutAccount setupAccount(
         final Configuration configuration,
-        final PayPalRequest payPalRequest,
-        final PayPalResponse payPalResponse
+        final PayPalNativeRequest payPalRequest,
+        final PayPalNativeCheckoutResponse payPalResponse
     ) {
-        PayPalAccount payPalAccount = new PayPalAccount();
+        PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
-        String paymentType = payPalRequest instanceof PayPalVaultRequest ? "billing-agreement" : "single-payment";
+        String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
         payPalAccount.setClientMetadataId(configuration.getPayPalClientId());
         payPalAccount.setIntent(payPalResponse.getIntent());
         payPalAccount.setSource("paypal-browser");
@@ -334,8 +327,8 @@ public class PayPalNativeCheckoutClient {
         return payPalAccount;
     }
 
-    private static String getAnalyticsEventPrefix(PayPalRequest request) {
-        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
+    private static String getAnalyticsEventPrefix(PayPalNativeRequest request) {
+        return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
@@ -362,13 +355,13 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
-     * Deprecated. Use {@link PayPalListener} to handle results.
+     * Deprecated. Use {@link PayPalNativeCheckoutListener} to handle results.
      *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link PayPalBrowserSwitchResultCallback}
+     * @param callback            {@link PayPalNativeCheckoutBrowserSwitchResultCallback}
      */
     @Deprecated
-    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalNativeCheckoutBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
@@ -397,7 +390,7 @@ public class PayPalNativeCheckoutClient {
                     Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                     if (deepLinkUri != null) {
                         JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, successUrl, approvalUrl, tokenKey);
-                        PayPalAccount payPalAccount = new PayPalAccount();
+                        PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
                         payPalAccount.setClientMetadataId(clientMetadataId);
                         payPalAccount.setIntent(payPalIntent);
                         payPalAccount.setSource("paypal-browser");
@@ -412,9 +405,9 @@ public class PayPalNativeCheckoutClient {
                             payPalAccount.setIntent(payPalIntent);
                         }
 
-                        internalPayPalClient.tokenize(payPalAccount, new PayPalBrowserSwitchResultCallback() {
+                        internalPayPalClient.tokenize(payPalAccount, new PayPalNativeCheckoutBrowserSwitchResultCallback() {
                             @Override
-                            public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
+                            public void onResult(@Nullable PayPalNativeCheckoutAccountNonce payPalAccountNonce, @Nullable Exception error) {
                                 if (payPalAccountNonce != null && payPalAccountNonce.getCreditFinancing() != null) {
                                     braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
                                 }
@@ -429,7 +422,7 @@ public class PayPalNativeCheckoutClient {
                 } catch (UserCanceledException e) {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
-                } catch (JSONException | PayPalBrowserSwitchException e) {
+                } catch (JSONException | PayPalNativeCheckoutBrowserSwitchException e) {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
@@ -437,7 +430,7 @@ public class PayPalNativeCheckoutClient {
         }
     }
 
-    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, UserCanceledException, PayPalBrowserSwitchException {
+    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, UserCanceledException, PayPalNativeCheckoutBrowserSwitchException {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
@@ -461,7 +454,7 @@ public class PayPalNativeCheckoutClient {
 
             return urlResponseData;
         } else {
-            throw new PayPalBrowserSwitchException("The response contained inconsistent data.");
+            throw new PayPalNativeCheckoutBrowserSwitchException("The response contained inconsistent data.");
         }
     }
 }

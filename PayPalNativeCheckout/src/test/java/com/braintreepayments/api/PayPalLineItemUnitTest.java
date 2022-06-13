@@ -13,7 +13,7 @@ public class PayPalLineItemUnitTest {
 
     @Test
     public void toJson_setsKeysAndValues() throws JSONException {
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "2");
+        PayPalNativeCheckoutLineItem item = new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "An Item", "1", "2");
         item.setDescription("A new item");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");

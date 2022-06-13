@@ -1,7 +1,7 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
+import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.createPayPalCheckoutRequest;
+import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.createPayPalVaultRequest;
 
 import android.os.Bundle;
 
@@ -16,12 +16,12 @@ import android.widget.Button;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PayPalListener;
+import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
+import com.braintreepayments.api.PayPalNativeCheckoutListener;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalListener {
+public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalNativeCheckoutListener {
 
     private String deviceData;
     private BraintreeClient braintreeClient;
@@ -90,7 +90,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
     }
 
     @Override
-    public void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
+    public void onPayPalSuccess(@NonNull PayPalNativeCheckoutAccountNonce payPalAccountNonce) {
         handlePayPalResult(payPalAccountNonce);
     }
 

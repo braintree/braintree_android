@@ -17,7 +17,7 @@ public class PayPalCreditFinancingAmountUnitTest {
 
     @Test
     public void fromJson_returnsEmptyObjectWhenNull() {
-        PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(null);
+        PayPalNativeCheckoutCreditFinancingAmount creditFinancingAmount = PayPalNativeCheckoutCreditFinancingAmount.fromJson(null);
         assertNotNull(creditFinancingAmount);
         assertNull(creditFinancingAmount.getCurrency());
         assertNull(creditFinancingAmount.getValue());
@@ -26,7 +26,7 @@ public class PayPalCreditFinancingAmountUnitTest {
     @Test
     public void canCreateCreditFinancingAmount_fromStandardJson() throws JSONException {
         String json = "{\"currency\": \"USD\", \"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+        PayPalNativeCheckoutCreditFinancingAmount creditFinancingAmount = PayPalNativeCheckoutCreditFinancingAmount.fromJson(new JSONObject(json));
 
         assertEquals("USD", creditFinancingAmount.getCurrency());
         assertEquals("123.45", creditFinancingAmount.getValue());
@@ -35,7 +35,7 @@ public class PayPalCreditFinancingAmountUnitTest {
     @Test
     public void canCreateCreditFinancingAmount_fromJsonMissingCurrency() throws JSONException {
         String json = "{\"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+        PayPalNativeCheckoutCreditFinancingAmount creditFinancingAmount = PayPalNativeCheckoutCreditFinancingAmount.fromJson(new JSONObject(json));
 
         assertNull(creditFinancingAmount.getCurrency());
         assertEquals("123.45", creditFinancingAmount.getValue());
@@ -44,7 +44,7 @@ public class PayPalCreditFinancingAmountUnitTest {
     @Test
     public void canCreateCreditFinancingAmount_fromJsonMissingValue() throws JSONException {
         String json = "{\"currency\": \"USD\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+        PayPalNativeCheckoutCreditFinancingAmount creditFinancingAmount = PayPalNativeCheckoutCreditFinancingAmount.fromJson(new JSONObject(json));
 
         assertNull(creditFinancingAmount.getValue());
         assertEquals("USD", creditFinancingAmount.getCurrency());
@@ -53,13 +53,13 @@ public class PayPalCreditFinancingAmountUnitTest {
     @Test
     public void writeToParcel_serializesCorrectly() throws JSONException {
         String json = "{\"currency\": \"USD\", \"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount preSerialized = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+        PayPalNativeCheckoutCreditFinancingAmount preSerialized = PayPalNativeCheckoutCreditFinancingAmount.fromJson(new JSONObject(json));
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.CREATOR.createFromParcel(parcel);
+        PayPalNativeCheckoutCreditFinancingAmount creditFinancingAmount = PayPalNativeCheckoutCreditFinancingAmount.CREATOR.createFromParcel(parcel);
 
         assertNotNull(creditFinancingAmount);
         assertEquals("USD", creditFinancingAmount.getCurrency());

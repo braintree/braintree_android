@@ -19,7 +19,7 @@ public class PayPalCreditFinancingUnitTest {
 
     @Test
     public void fromJson_returnsNullWhenEmpty() throws JSONException {
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.fromJson(null);
+        PayPalNativeCheckoutCreditFinancing payPalCreditFinancing = PayPalNativeCheckoutCreditFinancing.fromJson(null);
         assertNotNull(payPalCreditFinancing);
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(0, payPalCreditFinancing.getTerm());
@@ -35,7 +35,7 @@ public class PayPalCreditFinancingUnitTest {
         JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
                 .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
 
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        PayPalNativeCheckoutCreditFinancing payPalCreditFinancing = PayPalNativeCheckoutCreditFinancing.fromJson(creditFinancingJsonObject);
 
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
@@ -54,12 +54,12 @@ public class PayPalCreditFinancingUnitTest {
         JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
                 .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
 
-        PayPalCreditFinancing preSerialized = PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        PayPalNativeCheckoutCreditFinancing preSerialized = PayPalNativeCheckoutCreditFinancing.fromJson(creditFinancingJsonObject);
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.CREATOR.createFromParcel(parcel);
+        PayPalNativeCheckoutCreditFinancing payPalCreditFinancing = PayPalNativeCheckoutCreditFinancing.CREATOR.createFromParcel(parcel);
 
         assertNotNull(payPalCreditFinancing);
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());

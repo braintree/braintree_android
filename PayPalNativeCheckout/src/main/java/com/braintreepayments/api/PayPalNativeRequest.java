@@ -16,9 +16,9 @@ import java.util.Collection;
 
 /**
  * Represents the parameters that are needed to tokenize a PayPal account.
- * See {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
+ * See {@link PayPalNativeCheckoutRequest} and {@link PayPalNativeCheckoutVaultRequest}.
  */
-public abstract class PayPalRequest implements Parcelable {
+public abstract class PayPalNativeRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
     static final String ADDRESS_OVERRIDE_KEY = "address_override";
@@ -44,7 +44,7 @@ public abstract class PayPalRequest implements Parcelable {
     static final String LINE_ITEMS_KEY = "line_items";
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
+    @StringDef({PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING, PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {
     }
 
@@ -67,13 +67,13 @@ public abstract class PayPalRequest implements Parcelable {
     private String displayName;
     private String merchantAccountId;
     private String riskCorrelationId;
-    private final ArrayList<PayPalLineItem> lineItems;
+    private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private PayPalNativeCheckoutConfig nativeConfig;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
      */
-    public PayPalRequest() {
+    public PayPalNativeRequest() {
         shippingAddressRequired = false;
         lineItems = new ArrayList<>();
     }
@@ -89,7 +89,7 @@ public abstract class PayPalRequest implements Parcelable {
 
     /**
      * Defaults to false. Set to true to enable user editing of the shipping address.
-     * Only applies when {@link PayPalRequest#setShippingAddressOverride(PostalAddress)} is set
+     * Only applies when {@link PayPalNativeRequest#setShippingAddressOverride(PostalAddress)} is set
      * with a {@link PostalAddress}.
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
@@ -198,9 +198,9 @@ public abstract class PayPalRequest implements Parcelable {
     /**
      * Optional: The line items for this transaction. It can include up to 249 line items.
      *
-     * @param lineItems a collection of {@link PayPalLineItem}
+     * @param lineItems a collection of {@link PayPalNativeCheckoutLineItem}
      */
-    public void setLineItems(@NonNull Collection<PayPalLineItem> lineItems) {
+    public void setLineItems(@NonNull Collection<PayPalNativeCheckoutLineItem> lineItems) {
         this.lineItems.clear();
         this.lineItems.addAll(lineItems);
     }
@@ -253,7 +253,7 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     @NonNull
-    public ArrayList<PayPalLineItem> getLineItems() {
+    public ArrayList<PayPalNativeCheckoutLineItem> getLineItems() {
         return lineItems;
     }
 
@@ -270,7 +270,7 @@ public abstract class PayPalRequest implements Parcelable {
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
-    protected PayPalRequest(Parcel in) {
+    protected PayPalNativeRequest(Parcel in) {
         localeCode = in.readString();
         billingAgreementDescription = in.readString();
         shippingAddressRequired = in.readByte() != 0;
@@ -280,7 +280,7 @@ public abstract class PayPalRequest implements Parcelable {
         displayName = in.readString();
         merchantAccountId = in.readString();
         riskCorrelationId = in.readString();
-        lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
+        lineItems = in.createTypedArrayList(PayPalNativeCheckoutLineItem.CREATOR);
         nativeConfig = in.readParcelable(PayPalNativeCheckoutConfig.class.getClassLoader());
     }
 

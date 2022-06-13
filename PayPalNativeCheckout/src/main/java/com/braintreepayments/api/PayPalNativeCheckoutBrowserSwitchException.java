@@ -3,9 +3,9 @@ package com.braintreepayments.api;
 /**
  * Exception for whenever the browser has returned an 'error' in its response.
  */
-public class PayPalBrowserSwitchException extends Exception {
+public class PayPalNativeCheckoutBrowserSwitchException extends Exception {
 
-    PayPalBrowserSwitchException(String detailMessage) {
+    PayPalNativeCheckoutBrowserSwitchException(String detailMessage) {
         super(detailMessage);
     }
 }

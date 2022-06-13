@@ -9,7 +9,7 @@ import org.json.JSONObject;
 /**
  * The currency and amount in a PayPal credit financing response
  */
-public class PayPalCreditFinancingAmount implements Parcelable {
+public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
 
     private static final String CURRENCY_KEY = "currency";
     private static final String VALUE_KEY = "value";
@@ -17,10 +17,10 @@ public class PayPalCreditFinancingAmount implements Parcelable {
     private String currency;
     private String value;
 
-    private PayPalCreditFinancingAmount() {}
+    private PayPalNativeCheckoutCreditFinancingAmount() {}
 
-    static PayPalCreditFinancingAmount fromJson(JSONObject amount) {
-        PayPalCreditFinancingAmount result = new PayPalCreditFinancingAmount();
+    static PayPalNativeCheckoutCreditFinancingAmount fromJson(JSONObject amount) {
+        PayPalNativeCheckoutCreditFinancingAmount result = new PayPalNativeCheckoutCreditFinancingAmount();
 
         if (amount == null) {
             return result;
@@ -64,18 +64,18 @@ public class PayPalCreditFinancingAmount implements Parcelable {
         dest.writeString(value);
     }
 
-    private PayPalCreditFinancingAmount(Parcel in) {
+    private PayPalNativeCheckoutCreditFinancingAmount(Parcel in) {
         currency = in.readString();
         value = in.readString();
     }
 
-    public static final Creator<PayPalCreditFinancingAmount> CREATOR = new Creator<PayPalCreditFinancingAmount>() {
-        public PayPalCreditFinancingAmount createFromParcel(Parcel source) {
-            return new PayPalCreditFinancingAmount(source);
+    public static final Creator<PayPalNativeCheckoutCreditFinancingAmount> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancingAmount>() {
+        public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
+            return new PayPalNativeCheckoutCreditFinancingAmount(source);
         }
 
-        public PayPalCreditFinancingAmount[] newArray(int size) {
-            return new PayPalCreditFinancingAmount[size];
+        public PayPalNativeCheckoutCreditFinancingAmount[] newArray(int size) {
+            return new PayPalNativeCheckoutCreditFinancingAmount[size];
         }
     };
 }

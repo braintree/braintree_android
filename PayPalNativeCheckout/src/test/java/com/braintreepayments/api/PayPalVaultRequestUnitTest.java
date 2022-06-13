@@ -18,7 +18,7 @@ public class PayPalVaultRequestUnitTest {
 
     @Test
     public void newPayPalVaultRequest_setsDefaultValues() {
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
 
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
@@ -31,14 +31,14 @@ public class PayPalVaultRequestUnitTest {
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
-        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
 
         assertEquals("US", request.getLocaleCode());
@@ -47,13 +47,13 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
+        assertEquals(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
     }
 
     @Test
     public void parcelsCorrectly() {
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
         request.setLocaleCode("en-US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -64,19 +64,19 @@ public class PayPalVaultRequestUnitTest {
         postalAddress.setRecipientName("Postal Address");
         request.setShippingAddressOverride(postalAddress);
 
-        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
 
-        ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "1"));
+        ArrayList<PayPalNativeCheckoutLineItem> lineItems = new ArrayList<>();
+        lineItems.add(new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "An Item", "1", "1"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        PayPalVaultRequest result = PayPalVaultRequest.CREATOR.createFromParcel(parcel);
+        PayPalNativeCheckoutVaultRequest result = PayPalNativeCheckoutVaultRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals("en-US", result.getLocaleCode());
         assertEquals("Billing Agreement Description",
@@ -86,7 +86,7 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(result.isShippingAddressEditable());
         assertEquals("Postal Address", result.getShippingAddressOverride()
                 .getRecipientName());
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
+        assertEquals(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals("Display Name", result.getDisplayName());
         assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());

@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Use to construct a PayPal account tokenization request
  */
-class PayPalAccount extends PaymentMethod {
+class PayPalNativeCheckoutAccount extends PaymentMethod {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
@@ -23,7 +23,7 @@ class PayPalAccount extends PaymentMethod {
     private String merchantAccountId;
     private String paymentType;
 
-    PayPalAccount() {
+    PayPalNativeCheckoutAccount() {
         super();
     }
 
@@ -81,9 +81,9 @@ class PayPalAccount extends PaymentMethod {
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
+     * @param intent Can be either {@link PayPalNativeCheckoutPaymentIntent#AUTHORIZE} or {@link PayPalNativeCheckoutPaymentIntent#SALE}.
      */
-    void setIntent(@PayPalPaymentIntent String intent) {
+    void setIntent(@PayPalNativeCheckoutPaymentIntent String intent) {
         this.intent = intent;
     }
 

@@ -5,13 +5,13 @@ import androidx.annotation.NonNull;
 /**
  * Implement this interface to receive PayPal result notifications.
  */
-public interface PayPalListener {
+public interface PayPalNativeCheckoutListener {
 
     /**
      * Called when PayPal tokenization is complete without error.
      * @param payPalAccountNonce PayPal tokenization result
      */
-    void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce);
+    void onPayPalSuccess(@NonNull PayPalNativeCheckoutAccountNonce payPalAccountNonce);
 
     /**
      * Called when PayPal tokenization has failed with an error.

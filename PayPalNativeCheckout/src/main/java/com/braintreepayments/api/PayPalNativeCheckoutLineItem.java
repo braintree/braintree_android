@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class PayPalLineItem implements Parcelable {
+public class PayPalNativeCheckoutLineItem implements Parcelable {
 
     /**
      * The type of PayPal line item.
@@ -22,7 +22,7 @@ public class PayPalLineItem implements Parcelable {
      * {@link #KIND_DEBIT} A line item that debits.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalLineItem.KIND_CREDIT, PayPalLineItem.KIND_DEBIT})
+    @StringDef({PayPalNativeCheckoutLineItem.KIND_CREDIT, PayPalNativeCheckoutLineItem.KIND_DEBIT})
     @interface PayPalLineItemKind {
     }
 
@@ -55,10 +55,10 @@ public class PayPalLineItem implements Parcelable {
      * @param quantity   The quantity of the item.
      * @param unitAmount The unit amount.
      */
-    public PayPalLineItem(@NonNull @PayPalLineItemKind String kind,
-                          @NonNull String name,
-                          @NonNull String quantity,
-                          @NonNull String unitAmount) {
+    public PayPalNativeCheckoutLineItem(@NonNull @PayPalLineItemKind String kind,
+                                        @NonNull String name,
+                                        @NonNull String quantity,
+                                        @NonNull String unitAmount) {
         this.kind = kind;
         this.name = name;
         this.quantity = quantity;
@@ -195,7 +195,7 @@ public class PayPalLineItem implements Parcelable {
         return new JSONObject();
     }
 
-    PayPalLineItem(Parcel in) {
+    PayPalNativeCheckoutLineItem(Parcel in) {
         description = in.readString();
         kind = in.readString();
         name = in.readString();
@@ -206,15 +206,15 @@ public class PayPalLineItem implements Parcelable {
         url = in.readString();
     }
 
-    public static final Creator<PayPalLineItem> CREATOR = new Creator<PayPalLineItem>() {
+    public static final Creator<PayPalNativeCheckoutLineItem> CREATOR = new Creator<PayPalNativeCheckoutLineItem>() {
         @Override
-        public PayPalLineItem createFromParcel(Parcel in) {
-            return new PayPalLineItem(in);
+        public PayPalNativeCheckoutLineItem createFromParcel(Parcel in) {
+            return new PayPalNativeCheckoutLineItem(in);
         }
 
         @Override
-        public PayPalLineItem[] newArray(int size) {
-            return new PayPalLineItem[size];
+        public PayPalNativeCheckoutLineItem[] newArray(int size) {
+            return new PayPalNativeCheckoutLineItem[size];
         }
     };
 
