@@ -7,9 +7,6 @@ import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
 import com.braintreepayments.api.PayPalNativeRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PostalAddress;
-import com.braintreepayments.api.PayPalNativeCheckoutConfig;
-
-import java.util.UUID;
 
 public class PayPalNativeCheckoutRequestFactory {
 
@@ -40,12 +37,7 @@ public class PayPalNativeCheckoutRequestFactory {
 
             request.setShippingAddressOverride(postalAddress);
         }
-
-        PayPalNativeCheckoutConfig nativeConfig = new PayPalNativeCheckoutConfig();
-        nativeConfig.setCorrelationId(UUID.randomUUID().toString());
-        nativeConfig.setReturnUrl("com.braintreepayments.demo://paypalpay");
-
-        request.setNativeConfig(nativeConfig);
+        request.setReturnUrl("com.braintreepayments.demo://paypalpay");
         return request;
     }
 
@@ -85,12 +77,7 @@ public class PayPalNativeCheckoutRequestFactory {
 
             request.setShippingAddressOverride(shippingAddress);
         }
-
-        PayPalNativeCheckoutConfig nativeConfig = new PayPalNativeCheckoutConfig();
-        nativeConfig.setCorrelationId(UUID.randomUUID().toString());
-        nativeConfig.setReturnUrl("com.braintreepayments.demo://paypalpay");
-
-        request.setNativeConfig(nativeConfig);
+        request.setReturnUrl("com.braintreepayments.demo://paypalpay");
         return request;
     }
 }

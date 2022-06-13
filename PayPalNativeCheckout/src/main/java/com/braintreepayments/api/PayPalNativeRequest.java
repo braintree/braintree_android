@@ -68,7 +68,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private String merchantAccountId;
     private String riskCorrelationId;
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
-    private PayPalNativeCheckoutConfig nativeConfig;
+    private String returnUrl;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -205,13 +205,13 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
-    /**
-     * Optional: The config that is used to setup Native Checkout
-     *
-     * @param nativeConfig a config for setting up the native client
-     */
-    public void setNativeConfig(PayPalNativeCheckoutConfig nativeConfig) {
-        this.nativeConfig = nativeConfig;
+    public void setReturnUrl(@NonNull String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+
+    public String getReturnUrl() {
+        return returnUrl;
     }
 
     @Nullable
@@ -263,11 +263,6 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return landingPageType;
     }
 
-    @NonNull
-    public PayPalNativeCheckoutConfig getNativeConfig() {
-        return nativeConfig;
-    }
-
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalNativeRequest(Parcel in) {
@@ -281,7 +276,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         merchantAccountId = in.readString();
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalNativeCheckoutLineItem.CREATOR);
-        nativeConfig = in.readParcelable(PayPalNativeCheckoutConfig.class.getClassLoader());
+        returnUrl = in.readString();
     }
 
     @Override
@@ -301,6 +296,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         parcel.writeString(merchantAccountId);
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
-        parcel.writeParcelable(nativeConfig, i);
+        parcel.writeString(returnUrl);
+
     }
 }

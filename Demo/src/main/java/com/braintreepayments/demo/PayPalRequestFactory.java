@@ -7,9 +7,6 @@ import com.braintreepayments.api.PayPalPaymentIntent;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PostalAddress;
-import com.braintreepayments.api.PayPalNativeCheckoutConfig;
-
-import java.util.UUID;
 
 public class PayPalRequestFactory {
 

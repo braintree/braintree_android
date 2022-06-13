@@ -261,7 +261,7 @@ public class PayPalNativeCheckoutClient {
                         activity.getApplication(),
                         configuration.getPayPalClientId(),
                         environment,
-                        payPalRequest.getNativeConfig().getReturnUrl()
+                        payPalRequest.getReturnUrl()
                     )
                 );
 
