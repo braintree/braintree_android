@@ -722,6 +722,27 @@ object Fixtures {
     """
 
     // language=JSON
+    const val CONFIGURATION_WITH_LIVE_PAYPAL_NATIVE = """
+        {
+          "clientApiUrl": "client-api-url",
+          "environment": "sandbox",
+          "paypalEnabled": true,
+          "paypal": {
+            "displayName": "paypal_merchant",
+            "clientId": "paypal_client_id",
+            "privacyUrl": "http://www.example.com/privacy",
+            "userAgreementUrl": "http://www.example.com/user_agreement",
+            "baseUrl": "http://localhost:9000",
+            "directBaseUrl": "https://www.paypal.com",
+            "environment": "live",
+            "touchDisabled": true,
+            "currencyIsoCode": "USD"
+          },
+          "merchantId": "merchant-id"
+        }
+    """
+
+    // language=JSON
     const val CONFIGURATION_WITH_LIVE_PAYPAL_INR = """
         {
           "clientApiUrl": "client-api-url",

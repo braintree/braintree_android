@@ -38,74 +38,64 @@ class PayPalNativeCheckoutInternalClient {
     }
 
     void sendRequest(final Context context, final PayPalNativeRequest payPalRequest, final PayPalNativeCheckoutInternalClientCallback callback) {
-        braintreeClient.getAuthorization(new AuthorizationCallback() {
-            @Override
-            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception authError) {
-                if (authorization != null) {
-                    braintreeClient.getConfiguration(new ConfigurationCallback() {
-                        @Override
-                        public void onResult(@Nullable final Configuration configuration, @Nullable Exception configError) {
-                            if (configuration == null) {
-                                callback.onResult(null, configError);
-                                return;
-                            }
-                            try {
-                                final boolean isBillingAgreement = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
-                                String endpoint = isBillingAgreement
-                                        ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
-                                String url = String.format("/v1/%s", endpoint);
+        braintreeClient.getAuthorization((authorization, authError) -> {
+            if (authorization != null) {
+                braintreeClient.getConfiguration((configuration, configError) -> {
+                    if (configuration == null) {
+                        callback.onResult(null, configError);
+                        return;
+                    }
+                    try {
+                        final boolean isBillingAgreement = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
+                        String endpoint = isBillingAgreement
+                                ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
+                        String url = String.format("/v1/%s", endpoint);
 
-                                String requestBody = payPalRequest.createRequestBody(configuration, authorization, successUrl, cancelUrl);
+                        String requestBody = payPalRequest.createRequestBody(configuration, authorization, successUrl, cancelUrl);
 
-                                braintreeClient.sendPOST(url, requestBody, new HttpResponseCallback() {
+                        braintreeClient.sendPOST(url, requestBody, (responseBody, httpError) -> {
+                            if (responseBody != null) {
+                                try {
+                                    PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalRequest)
+                                            .successUrl(successUrl);
 
-                                    @Override
-                                    public void onResult(String responseBody, Exception httpError) {
-                                        if (responseBody != null) {
-                                            try {
-                                                PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalRequest)
-                                                        .successUrl(successUrl);
+                                    PayPalNativeCheckoutPaymentResource paypalPaymentResource = PayPalNativeCheckoutPaymentResource.fromJson(responseBody);
+                                    String redirectUrl = paypalPaymentResource.getRedirectUrl();
+                                    if (redirectUrl != null) {
+                                        Uri parsedRedirectUri = Uri.parse(redirectUrl);
 
-                                                PayPalNativeCheckoutPaymentResource paypalPaymentResource = PayPalNativeCheckoutPaymentResource.fromJson(responseBody);
-                                                String redirectUrl = paypalPaymentResource.getRedirectUrl();
-                                                if (redirectUrl != null) {
-                                                    Uri parsedRedirectUri = Uri.parse(redirectUrl);
+                                        String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
+                                        String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
+                                        String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
+                                                ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
 
-                                                    String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
-                                                    String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
-                                                    String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
-                                                            ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
-
-                                                    if (pairingId != null) {
-                                                        payPalResponse
-                                                                .pairingId(pairingId)
-                                                                .clientMetadataId(clientMetadataId);
-                                                    }
-
-                                                    String approvalUrl = parsedRedirectUri
-                                                            .buildUpon()
-                                                            .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
-                                                            .toString();
-                                                    payPalResponse.approvalUrl(approvalUrl);
-                                                }
-                                                callback.onResult(payPalResponse, null);
-
-                                            } catch (JSONException exception) {
-                                                callback.onResult(null, exception);
-                                            }
-                                        } else {
-                                            callback.onResult(null, httpError);
+                                        if (pairingId != null) {
+                                            payPalResponse
+                                                    .pairingId(pairingId)
+                                                    .clientMetadataId(clientMetadataId);
                                         }
+
+                                        String approvalUrl = parsedRedirectUri
+                                                .buildUpon()
+                                                .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
+                                                .toString();
+                                        payPalResponse.approvalUrl(approvalUrl);
                                     }
-                                });
-                            } catch (JSONException exception) {
-                                callback.onResult(null, exception);
+                                    callback.onResult(payPalResponse, null);
+
+                                } catch (JSONException exception) {
+                                    callback.onResult(null, exception);
+                                }
+                            } else {
+                                callback.onResult(null, httpError);
                             }
-                        }
-                    });
-                } else {
-                    callback.onResult(null, authError);
-                }
+                        });
+                    } catch (JSONException exception) {
+                        callback.onResult(null, exception);
+                    }
+                });
+            } else {
+                callback.onResult(null, authError);
             }
         });
     }

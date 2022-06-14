@@ -28,19 +28,6 @@ public class PayPalNativeCheckoutClient {
 
     private PayPalNativeCheckoutListener listener;
 
-    @VisibleForTesting
-    BrowserSwitchResult pendingBrowserSwitchResult;
-
-    /**
-     * Create a new instance of {@link PayPalNativeCheckoutClient} from within an Activity using a {@link BraintreeClient}.
-     *
-     * @param activity        a {@link FragmentActivity}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalNativeCheckoutClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
-    }
-
     /**
      * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
      *
@@ -51,27 +38,10 @@ public class PayPalNativeCheckoutClient {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
-    /**
-     * Create a new instance of {@link PayPalNativeCheckoutClient} using a {@link BraintreeClient}.
-     * <p>
-     * Deprecated. Use {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
-     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    @Deprecated
-    public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
-    }
-
     @VisibleForTesting
     PayPalNativeCheckoutClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, PayPalNativeCheckoutInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
-        if (activity != null && lifecycle != null) {
-            PayPalNativeLifecycleObserver observer = new PayPalNativeLifecycleObserver(this);
-            lifecycle.addObserver(observer);
-        }
     }
 
     /**
@@ -83,9 +53,6 @@ public class PayPalNativeCheckoutClient {
      */
     public void setListener(PayPalNativeCheckoutListener listener) {
         this.listener = listener;
-        if (pendingBrowserSwitchResult != null) {
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
@@ -123,12 +90,9 @@ public class PayPalNativeCheckoutClient {
      * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
-        tokenizePayPalAccount(activity, payPalRequest, new PayPalNativeCheckoutFlowStartedCallback() {
-            @Override
-            public void onResult(@Nullable Exception error) {
-                if (error != null) {
-                    listener.onPayPalFailure(error);
-                }
+        tokenizePayPalAccount(activity, payPalRequest, error -> {
+            if (error != null) {
+                listener.onPayPalFailure(error);
             }
         });
     }
@@ -301,6 +265,7 @@ public class PayPalNativeCheckoutClient {
                     });
 
                 },
+                null,
                 () -> listener.onPayPalFailure(new Exception("User has canceled")),
                 errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
         );
@@ -329,132 +294,5 @@ public class PayPalNativeCheckoutClient {
 
     private static String getAnalyticsEventPrefix(PayPalNativeRequest request) {
         return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
-    }
-
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-
-        if (pendingBrowserSwitchResult != null && listener != null) {
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
-    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
-            if (payPalAccountNonce != null) {
-                listener.onPayPalSuccess(payPalAccountNonce);
-            } else if (error != null) {
-                listener.onPayPalFailure(error);
-            }
-        });
-        this.pendingBrowserSwitchResult = null;
-    }
-
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    /**
-     * Deprecated. Use {@link PayPalNativeCheckoutListener} to handle results.
-     *
-     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link PayPalNativeCheckoutBrowserSwitchResultCallback}
-     */
-    @Deprecated
-    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalNativeCheckoutBrowserSwitchResultCallback callback) {
-        //noinspection ConstantConditions
-        if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
-            return;
-        }
-        JSONObject metadata = browserSwitchResult.getRequestMetadata();
-        String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
-        String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
-        String payPalIntent = Json.optString(metadata, "intent", null);
-        String approvalUrl = Json.optString(metadata, "approval-url", null);
-        String successUrl = Json.optString(metadata, "success-url", null);
-        String paymentType = Json.optString(metadata, "payment-type", "unknown");
-
-        boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
-        String tokenKey = isBillingAgreement ? "ba_token" : "token";
-        String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
-
-        int result = browserSwitchResult.getStatus();
-        switch (result) {
-            case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new UserCanceledException("User canceled PayPal."));
-                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
-                break;
-            case BrowserSwitchStatus.SUCCESS:
-                try {
-                    Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
-                    if (deepLinkUri != null) {
-                        JSONObject urlResponseData = parseUrlResponseData(deepLinkUri, successUrl, approvalUrl, tokenKey);
-                        PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
-                        payPalAccount.setClientMetadataId(clientMetadataId);
-                        payPalAccount.setIntent(payPalIntent);
-                        payPalAccount.setSource("paypal-browser");
-                        payPalAccount.setUrlResponseData(urlResponseData);
-                        payPalAccount.setPaymentType(paymentType);
-
-                        if (merchantAccountId != null) {
-                            payPalAccount.setMerchantAccountId(merchantAccountId);
-                        }
-
-                        if (payPalIntent != null) {
-                            payPalAccount.setIntent(payPalIntent);
-                        }
-
-                        internalPayPalClient.tokenize(payPalAccount, new PayPalNativeCheckoutBrowserSwitchResultCallback() {
-                            @Override
-                            public void onResult(@Nullable PayPalNativeCheckoutAccountNonce payPalAccountNonce, @Nullable Exception error) {
-                                if (payPalAccountNonce != null && payPalAccountNonce.getCreditFinancing() != null) {
-                                    braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
-                                }
-                                callback.onResult(payPalAccountNonce, error);
-                            }
-                        });
-
-                        braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.succeeded", analyticsPrefix));
-                    } else {
-                        callback.onResult(null, new BraintreeException("Unknown error"));
-                    }
-                } catch (UserCanceledException e) {
-                    callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
-                } catch (JSONException | PayPalNativeCheckoutBrowserSwitchException e) {
-                    callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
-                }
-                break;
-        }
-    }
-
-    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, UserCanceledException, PayPalNativeCheckoutBrowserSwitchException {
-        String status = uri.getLastPathSegment();
-
-        if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
-            throw new UserCanceledException("User canceled PayPal.");
-        }
-
-        String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
-        String responseXoToken = uri.getQueryParameter(tokenKey);
-        if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
-            JSONObject client = new JSONObject();
-            client.put("environment", null);
-
-            JSONObject urlResponseData = new JSONObject();
-            urlResponseData.put("client", client);
-
-            JSONObject response = new JSONObject();
-            response.put("webURL", uri.toString());
-            urlResponseData.put("response", response);
-
-            urlResponseData.put("response_type", "web");
-
-            return urlResponseData;
-        } else {
-            throw new PayPalNativeCheckoutBrowserSwitchException("The response contained inconsistent data.");
-        }
     }
 }
