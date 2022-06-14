@@ -99,6 +99,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     public void tokenizePayPalAccount_sendsAnalyticsEvents() {
         PayPalNativeCheckoutVaultRequest payPalVaultRequest = new PayPalNativeCheckoutVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalVaultRequest.setReturnUrl("returnUrl://paypalpay");
 
         PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
@@ -112,6 +113,7 @@ public class PayPalNativeCheckoutClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .canPerformBrowserSwitch(true)
                 .build();
+        PowerMockito.mockStatic(PayPalCheckout.class);
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.setListener(listener);
@@ -155,23 +157,9 @@ public class PayPalNativeCheckoutClientUnitTest {
                 payPalCheckoutRequest.getReturnUrl()
             )
         );
-        OnApprove onApprove = approval -> {
-            PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
-            String paymentType = "single-payment";
-            payPalAccount.setClientMetadataId(payPalEnabledConfig.getPayPalClientId());
-            payPalAccount.setIntent(payPalResponse.getIntent());
-            payPalAccount.setSource("paypal-browser");
-            payPalAccount.setPaymentType(paymentType);
-            payPalInternalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
-                if (payPalAccountNonce != null) {
-                    listener.onPayPalSuccess(payPalAccountNonce);
-                } else {
-                    listener.onPayPalFailure(new Exception("PaypalAccountNonce is null"));
-                }
-            });
-        };
-        OnCancel onCancel = () -> listener.onPayPalFailure(new Exception("User has canceled"));
-        OnError onError = errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()));
+        OnApprove onApprove = approval -> { };
+        OnCancel onCancel = () -> { };
+        OnError onError = errorInfo -> { };
 
         PayPalCheckout.registerCallbacks(
             onApprove,
@@ -244,6 +232,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalCheckoutRequest.setReturnUrl("returnUrl://paypalpay");
 
         PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
@@ -256,6 +245,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
                 .build();
+        PowerMockito.mockStatic(PayPalCheckout.class);
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.setListener(listener);
