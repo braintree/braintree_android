@@ -11,6 +11,7 @@ import com.braintreepayments.api.PostalAddress;
 public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(Context context) {
+
         PayPalVaultRequest request = new PayPalVaultRequest();
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
