@@ -41,7 +41,7 @@ public class PayPalInternalClientUnitTest {
     private PayPalDataCollector payPalDataCollector;
     private ApiClient apiClient;
 
-    PayPalNativeCheckoutInternalClientCallback payPalInternalClientCallback;
+    PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback payPalInternalClientCallback;
 
     @Before
     public void beforeEach() {
@@ -52,7 +52,7 @@ public class PayPalInternalClientUnitTest {
 
         payPalDataCollector = mock(PayPalDataCollector.class);
         apiClient = mock(ApiClient.class);
-        payPalInternalClientCallback = mock(PayPalNativeCheckoutInternalClientCallback.class);
+        payPalInternalClientCallback = mock(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class);
     }
 
     @Test
@@ -78,7 +78,6 @@ public class PayPalInternalClientUnitTest {
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setLandingPageType("sample-landing-page-type");
         payPalRequest.setDisplayName("sample-display-name");
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
@@ -151,7 +150,6 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setShouldRequestBillingAgreement(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setLandingPageType("sample-landing-page-type");
         payPalRequest.setDisplayName("sample-display-name");
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
@@ -507,10 +505,8 @@ public class PayPalInternalClientUnitTest {
         PayPalNativeCheckoutResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
         assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
         assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
     @Test
@@ -543,10 +539,8 @@ public class PayPalInternalClientUnitTest {
         assertFalse(payPalResponse.isBillingAgreement());
         assertEquals("authorize", payPalResponse.getIntent());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
         assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
         assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
     @Test
@@ -567,12 +561,6 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<PayPalNativeCheckoutResponse> captor = ArgumentCaptor.forClass(PayPalNativeCheckoutResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
-
-        String expectedUrl =
-                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
-
-        PayPalNativeCheckoutResponse payPalResponse = captor.getValue();
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
     @Test
@@ -591,12 +579,6 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<PayPalNativeCheckoutResponse> captor = ArgumentCaptor.forClass(PayPalNativeCheckoutResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
-
-        String expectedUrl =
-                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026ba_token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=";
-
-        PayPalNativeCheckoutResponse payPalResponse = captor.getValue();
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
     @Test
@@ -667,7 +649,7 @@ public class PayPalInternalClientUnitTest {
     public void tokenize_tokenizesWithApiClient() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
-        PayPalNativeCheckoutBrowserSwitchResultCallback callback = mock(PayPalNativeCheckoutBrowserSwitchResultCallback.class);
+        PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
         PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
 
@@ -683,7 +665,7 @@ public class PayPalInternalClientUnitTest {
                 .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
-        PayPalNativeCheckoutBrowserSwitchResultCallback callback = mock(PayPalNativeCheckoutBrowserSwitchResultCallback.class);
+        PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
         PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
 
@@ -705,7 +687,7 @@ public class PayPalInternalClientUnitTest {
                 .tokenizeRESTError(error)
                 .build();
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
-        PayPalNativeCheckoutBrowserSwitchResultCallback callback = mock(PayPalNativeCheckoutBrowserSwitchResultCallback.class);
+        PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
         PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
 

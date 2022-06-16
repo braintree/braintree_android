@@ -21,42 +21,23 @@ import java.util.Collection;
 public abstract class PayPalNativeRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
-    static final String ADDRESS_OVERRIDE_KEY = "address_override";
     static final String LOCALE_CODE_KEY = "locale_code";
     static final String REQUEST_BILLING_AGREEMENT_KEY = "request_billing_agreement";
     static final String BILLING_AGREEMENT_DETAILS_KEY = "billing_agreement_details";
     static final String DESCRIPTION_KEY = "description";
     static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     static final String TOKENIZATION_KEY = "client_key";
-    static final String RETURN_URL_KEY = "return_url";
     static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
     static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
-    static final String CANCEL_URL_KEY = "cancel_url";
     static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     static final String AMOUNT_KEY = "amount";
     static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
     static final String INTENT_KEY = "intent";
     static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
     static final String DISPLAY_NAME_KEY = "brand_name";
-    static final String SHIPPING_ADDRESS_KEY = "shipping_address";
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String CORRELATION_ID_KEY = "correlation_id";
     static final String LINE_ITEMS_KEY = "line_items";
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING, PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN})
-    @interface PayPalLandingPageType {
-    }
-
-    /**
-     * A non-PayPal account landing page is used.
-     */
-    public static final String LANDING_PAGE_TYPE_BILLING = "billing";
-
-    /**
-     * A PayPal account login page is used.
-     */
-    public static final String LANDING_PAGE_TYPE_LOGIN = "login";
 
     private String localeCode;
     private String billingAgreementDescription;
@@ -165,19 +146,6 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Optional: Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
-     *
-     * @param landingPageType Must be a {@link PayPalLandingPageType} value:
-     *                        <ul>
-     *                        <li>{@link #LANDING_PAGE_TYPE_BILLING}</li>
-     *                        <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
-     */
-    public void setLandingPageType(@Nullable @PayPalLandingPageType String landingPageType) {
-        this.landingPageType = landingPageType;
-    }
-
-    /**
      * Optional: Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -228,15 +196,6 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return shippingAddressRequired;
     }
 
-    public boolean isShippingAddressEditable() {
-        return shippingAddressEditable;
-    }
-
-    @Nullable
-    public PostalAddress getShippingAddressOverride() {
-        return shippingAddressOverride;
-    }
-
     @Nullable
     public String getDisplayName() {
         return displayName;
@@ -257,13 +216,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return lineItems;
     }
 
-    @PayPalLandingPageType
-    @Nullable
-    public String getLandingPageType() {
-        return landingPageType;
-    }
-
-    abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
+    abstract String createRequestBody(Configuration configuration, Authorization authorization) throws JSONException;
 
     protected PayPalNativeRequest(Parcel in) {
         localeCode = in.readString();

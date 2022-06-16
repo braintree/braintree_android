@@ -102,8 +102,6 @@ public class PayPalNativeCheckoutClientUnitTest {
         payPalVaultRequest.setReturnUrl("returnUrl://paypalpay");
 
         PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalVaultRequest)
-                .approvalUrl("https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .sendRequestSuccess(payPalResponse)
@@ -131,8 +129,6 @@ public class PayPalNativeCheckoutClientUnitTest {
         payPalCheckoutRequest.setReturnUrl("returnUrl://paypalpay");
 
         PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalCheckoutRequest)
-                .approvalUrl("https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .sendRequestSuccess(payPalResponse)
@@ -235,8 +231,6 @@ public class PayPalNativeCheckoutClientUnitTest {
         payPalCheckoutRequest.setReturnUrl("returnUrl://paypalpay");
 
         PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalCheckoutRequest)
-                .approvalUrl("https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .sendRequestSuccess(payPalResponse)
@@ -281,7 +275,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
-        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class));
     }
 
     @Test
@@ -297,7 +291,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
-        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class));
     }
 
     @Test

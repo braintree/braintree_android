@@ -15,13 +15,6 @@ public class PayPalNativeCheckoutRequestFactory {
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
-        String landingPageType = Settings.getPayPalLandingPageType(context);
-        if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING);
-        } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
-        }
-
         if (Settings.isPayPalCreditOffered(context)) {
             request.setShouldOfferCredit(true);
         }
@@ -45,13 +38,6 @@ public class PayPalNativeCheckoutRequestFactory {
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(amount);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
-
-        String landingPageType = Settings.getPayPalLandingPageType(context);
-        if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_BILLING);
-        } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalNativeRequest.LANDING_PAGE_TYPE_LOGIN);
-        }
 
         String intentType = Settings.getPayPalIntentType(context);
         if (intentType.equals(context.getString(R.string.paypal_intent_authorize))) {

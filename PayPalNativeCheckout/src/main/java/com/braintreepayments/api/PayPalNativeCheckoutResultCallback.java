@@ -3,10 +3,9 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 
 /**
- * Callback for receiving result of
- * {@link PayPalNativeCheckoutClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalNativeCheckoutBrowserSwitchResultCallback)}.
+ * Callback for receiving result of the checkout result
  */
-public interface PayPalNativeCheckoutBrowserSwitchResultCallback {
+public interface PayPalNativeCheckoutResultCallback {
 
     /**
      * @param payPalAccountNonce {@link PayPalNativeCheckoutAccountNonce}

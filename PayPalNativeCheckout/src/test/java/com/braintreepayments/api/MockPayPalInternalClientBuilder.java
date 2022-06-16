@@ -36,7 +36,7 @@ public class MockPayPalInternalClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalNativeCheckoutInternalClientCallback callback = (PayPalNativeCheckoutInternalClientCallback) invocation.getArguments()[2];
+                PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback callback = (PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback) invocation.getArguments()[2];
                 if (successResponse != null) {
                     callback.onResult(successResponse, null);
                 } else if (error != null) {
@@ -44,16 +44,16 @@ public class MockPayPalInternalClientBuilder {
                 }
                 return null;
             }
-        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalNativeRequest.class), any(PayPalNativeCheckoutInternalClientCallback.class));
+        }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalNativeRequest.class), any(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalNativeCheckoutBrowserSwitchResultCallback callback = (PayPalNativeCheckoutBrowserSwitchResultCallback) invocation.getArguments()[1];
+                PayPalNativeCheckoutResultCallback callback = (PayPalNativeCheckoutResultCallback) invocation.getArguments()[1];
                 callback.onResult(tokenizeSuccess, null);
                 return null;
             }
-        }).when(payPalInternalClient).tokenize(any(PayPalNativeCheckoutAccount.class), any(PayPalNativeCheckoutBrowserSwitchResultCallback.class));
+        }).when(payPalInternalClient).tokenize(any(PayPalNativeCheckoutAccount.class), any(PayPalNativeCheckoutResultCallback.class));
 
         return payPalInternalClient;
     }

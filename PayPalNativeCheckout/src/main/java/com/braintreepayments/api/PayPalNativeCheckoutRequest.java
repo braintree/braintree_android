@@ -159,10 +159,8 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
         return shouldRequestBillingAgreement;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+    String createRequestBody(Configuration configuration, Authorization authorization) throws JSONException {
         JSONObject parameters = new JSONObject()
-                .put(RETURN_URL_KEY, successUrl)
-                .put(CANCEL_URL_KEY, cancelUrl)
                 .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater);
 
         if (authorization instanceof ClientToken) {
@@ -202,7 +200,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
 
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());
-        experienceProfile.put(LANDING_PAGE_TYPE_KEY, getLandingPageType());
         String displayName = getDisplayName();
         if (TextUtils.isEmpty(displayName)) {
             displayName = configuration.getPayPalDisplayName();
@@ -211,21 +208,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
 
         if (getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, getLocaleCode());
-        }
-
-        if (getShippingAddressOverride() != null) {
-            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !isShippingAddressEditable());
-
-            PostalAddress shippingAddress = getShippingAddressOverride();
-            parameters.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
-            parameters.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            parameters.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
-            parameters.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
-            parameters.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            parameters.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            parameters.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
-        } else {
-            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }
 
         if (getMerchantAccountId() != null) {

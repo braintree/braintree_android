@@ -212,11 +212,8 @@ public class PayPalNativeCheckoutClient {
                 Environment environment;
                 if ("sandbox".equals(configuration.getEnvironment())) {
                     environment = Environment.SANDBOX;
-                } else if ("live".equals(configuration.getEnvironment())) {
-                    environment = Environment.LIVE;
                 } else {
-                    callback.onResult(new IllegalArgumentException("Invalid PayPal Environment"));
-                    return;
+                    environment = Environment.LIVE;
                 }
 
                 // Start PayPalCheckout flow
@@ -255,7 +252,6 @@ public class PayPalNativeCheckoutClient {
         PayPalCheckout.registerCallbacks(
                 approval -> {
                     PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
-
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
                             listener.onPayPalSuccess(payPalAccountNonce);
@@ -263,7 +259,6 @@ public class PayPalNativeCheckoutClient {
                             listener.onPayPalFailure(new Exception("PaypalAccountNonce is null"));
                         }
                     });
-
                 },
                 null,
                 () -> listener.onPayPalFailure(new Exception("User has canceled")),
