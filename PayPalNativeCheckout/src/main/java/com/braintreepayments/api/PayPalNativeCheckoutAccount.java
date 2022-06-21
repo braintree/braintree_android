@@ -5,8 +5,6 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Iterator;
-
 /**
  * Use to construct a PayPal account tokenization request
  */
@@ -18,7 +16,6 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchant_account_id";
 
     private String clientMetadataId;
-    private JSONObject urlResponseData = new JSONObject();
     private String intent;
     private String merchantAccountId;
     private String paymentType;
@@ -41,12 +38,6 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
             paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
         }
 
-        Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
-        while (urlResponseDataKeyIterator.hasNext()) {
-            String key = urlResponseDataKeyIterator.next();
-            paymentMethodNonceJson.put(key, urlResponseData.get(key));
-        }
-
         if (merchantAccountId != null) {
             json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId);
         }
@@ -62,20 +53,6 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
      */
     void setClientMetadataId(String clientMetadataId) {
         this.clientMetadataId = clientMetadataId;
-    }
-
-    /**
-     * Response data from callback url. Used by PayPal wrappers to construct
-     * a request to create a PayPal account.
-     * <p>
-     * Response data will be merged into the payment method json on {@link #buildJSON()}
-     *
-     * @param urlResponseData The data parsed from the PayPal callback url.
-     */
-    void setUrlResponseData(JSONObject urlResponseData) {
-        if (urlResponseData != null) {
-            this.urlResponseData = urlResponseData;
-        }
     }
 
     /**

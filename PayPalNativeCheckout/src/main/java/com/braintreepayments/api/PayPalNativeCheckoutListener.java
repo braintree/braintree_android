@@ -18,5 +18,4 @@ public interface PayPalNativeCheckoutListener {
      * @param error explains reason for PayPal failure.
      */
     void onPayPalFailure(@NonNull Exception error);
-
 }

@@ -54,7 +54,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenPayPalNotEnabled_returnsErrorToListener() {
+    public void tokenizePayPalAccount_whenPayPalNotEnabled_returnsErrorToListener() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -74,7 +74,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() {
+    public void tokenizePayPalAccount_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -96,7 +96,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_sendsAnalyticsEvents() {
+    public void tokenizePayPalAccount_sendsAnalyticsEvents() throws Exception {
         PayPalNativeCheckoutVaultRequest payPalVaultRequest = new PayPalNativeCheckoutVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalVaultRequest.setReturnUrl("returnUrl://paypalpay");
@@ -122,7 +122,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_startsNativeCheckout() {
+    public void requestOneTimePayment_startsNativeCheckout() throws Exception {
         PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -181,7 +181,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_whenPayPalNotEnabled_returnsErrorToListener() {
+    public void requestOneTimePayment_whenPayPalNotEnabled_returnsErrorToListener() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -201,7 +201,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() {
+    public void requestOneTimePayment_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -224,7 +224,7 @@ public class PayPalNativeCheckoutClientUnitTest {
 
 
     @Test
-    public void requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
+    public void requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() throws Exception {
         PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -250,7 +250,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_sendsPayPalPayLaterOfferedAnalyticsEvent() {
+    public void requestOneTimePayment_sendsPayPalPayLaterOfferedAnalyticsEvent() throws Exception {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -263,7 +263,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_sendsPayPalRequestViaInternalClient() {
+    public void tokenizePayPalAccount_sendsPayPalRequestViaInternalClient() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -279,7 +279,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_sendsPayPalRequestViaInternalClient() {
+    public void requestOneTimePayment_sendsPayPalRequestViaInternalClient() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -295,7 +295,7 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_sendsPayPalCreditOfferedAnalyticsEvent() {
+    public void tokenizePayPalAccount_sendsPayPalCreditOfferedAnalyticsEvent() throws Exception {
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 

@@ -15,5 +15,5 @@ public interface DataCollectorCallback {
      * @param deviceData the device information collected for fraud detection
      * @param error an exception that occurred while fetching device data
      */
-    void onResult(@Nullable String deviceData, @Nullable Exception error);
+    void onResult(@Nullable String deviceData, @Nullable Exception error) throws Exception;
 }
