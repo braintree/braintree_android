@@ -68,9 +68,9 @@ public class PayPalNativeCheckoutClient {
     }
 
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest payPalCheckoutRequest) {
-        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
+        braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+            braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.paylater.offered");
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
@@ -83,9 +83,9 @@ public class PayPalNativeCheckoutClient {
     }
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeCheckoutVaultRequest payPalVaultRequest) {
-        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
+        braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.selected");
         if (payPalVaultRequest.getShouldOfferCredit()) {
-            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+            braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.credit.offered");
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
@@ -181,6 +181,6 @@ public class PayPalNativeCheckoutClient {
     }
 
     private static String getAnalyticsEventPrefix(PayPalNativeRequest request) {
-        return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
+        return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal-native.billing-agreement" : "paypal-native.single-payment";
     }
 }
