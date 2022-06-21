@@ -35,7 +35,7 @@ public class MockPayPalInternalClientBuilder {
 
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) {
+            public Void answer(InvocationOnMock invocation) throws Exception {
                 PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback callback = (PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback) invocation.getArguments()[2];
                 if (successResponse != null) {
                     callback.onResult(successResponse, null);

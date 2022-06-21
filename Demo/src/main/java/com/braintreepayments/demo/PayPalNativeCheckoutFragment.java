@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalNativeCheckoutListener {
 
+    private final String TAG = PayPalNativeCheckoutFragment.class.getName();
     private String deviceData;
     private BraintreeClient braintreeClient;
     private PayPalNativeCheckoutClient payPalClient;
@@ -61,18 +63,19 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
                     if (deviceDataResult != null) {
                         deviceData = deviceDataResult;
                     }
-                    if (isBillingAgreement) {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
-                    } else {
+                    try {
                         payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                    } catch (Exception e) {
+                        Log.i(TAG, "Unsupported type");
                     }
                 });
             } else {
-                if (isBillingAgreement) {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
-                } else {
+                try {
                     payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                } catch (Exception e) {
+                    Log.i(TAG, "Unsupported type");
                 }
+
             }
         });
     }

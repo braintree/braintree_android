@@ -407,7 +407,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws JSONException {
+    public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws Exception {
         when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -431,7 +431,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws JSONException {
+    public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws Exception {
         when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -479,7 +479,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws Exception {
         when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -510,7 +510,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws Exception {
         when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -544,7 +544,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalCheckoutRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws Exception {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorizationSuccess(clientToken)
@@ -564,7 +564,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalVaultRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_setsApprovalUrlUserActionToEmptyStringOnDefault() throws Exception {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorizationSuccess(clientToken)
@@ -582,7 +582,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_propagatesHttpErrors() throws JSONException {
+    public void sendRequest_propagatesHttpErrors() throws Exception {
         Exception httpError = new Exception("http error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -599,7 +599,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_propagatesMalformedJSONResponseErrors() throws JSONException {
+    public void sendRequest_propagatesMalformedJSONResponseErrors() throws Exception {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorizationSuccess(clientToken)
@@ -615,7 +615,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_onAuthorizationFailure_forwardsError() {
+    public void sendRequest_onAuthorizationFailure_forwardsError() throws Exception {
         Exception authError = new Exception("authorization error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationError(authError)
@@ -630,7 +630,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_onConfigurationFailure_forwardsError() {
+    public void sendRequest_onConfigurationFailure_forwardsError() throws Exception {
         Exception configurationError = new Exception("configuration error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(clientToken)

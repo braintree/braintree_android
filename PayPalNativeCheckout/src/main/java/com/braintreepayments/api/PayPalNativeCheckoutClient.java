@@ -133,8 +133,6 @@ public class PayPalNativeCheckoutClient {
                         createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
                     }
                 });
-            } else {
-                throw new Exception("Checkout response was empty");
             }
         });
     }
