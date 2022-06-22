@@ -159,8 +159,10 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
         return shouldRequestBillingAgreement;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization) throws JSONException {
+    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
+                .put(RETURN_URL_KEY, successUrl)
+                .put(CANCEL_URL_KEY, cancelUrl)
                 .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater);
 
         if (authorization instanceof ClientToken) {

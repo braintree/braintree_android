@@ -27,8 +27,10 @@ public abstract class PayPalNativeRequest implements Parcelable {
     static final String DESCRIPTION_KEY = "description";
     static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     static final String TOKENIZATION_KEY = "client_key";
+    static final String RETURN_URL_KEY = "return_url";
     static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
     static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
+    static final String CANCEL_URL_KEY = "cancel_url";
     static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     static final String AMOUNT_KEY = "amount";
     static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
@@ -216,7 +218,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return lineItems;
     }
 
-    abstract String createRequestBody(Configuration configuration, Authorization authorization) throws JSONException;
+    abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalNativeRequest(Parcel in) {
         localeCode = in.readString();

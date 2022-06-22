@@ -17,6 +17,9 @@ class PayPalNativeCheckoutInternalClient {
     private final PayPalDataCollector payPalDataCollector;
     private final ApiClient apiClient;
 
+    private final String cancelUrl;
+    private final String successUrl;
+
     interface PayPalNativeCheckoutInternalClientCallback {
         void onResult(@Nullable PayPalNativeCheckoutResponse payPalResponse, @Nullable Exception error);
     }
@@ -30,6 +33,8 @@ class PayPalNativeCheckoutInternalClient {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.apiClient = apiClient;
+        this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+        this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
     }
 
     void sendRequest(final Context context, final PayPalNativeRequest payPalRequest, final PayPalNativeCheckoutInternalClientCallback callback) {
@@ -46,13 +51,12 @@ class PayPalNativeCheckoutInternalClient {
                                 ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                         String url = String.format("/v1/%s", endpoint);
 
-                        String requestBody = payPalRequest.createRequestBody(configuration, authorization);
+                        String requestBody = payPalRequest.createRequestBody(configuration, authorization, successUrl, cancelUrl);
 
                         braintreeClient.sendPOST(url, requestBody, (responseBody, httpError) -> {
                             if (responseBody != null) {
                                 try {
                                     PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalRequest);
-
                                     PayPalNativeCheckoutPaymentResource paypalPaymentResource = PayPalNativeCheckoutPaymentResource.fromJson(responseBody);
                                     String redirectUrl = paypalPaymentResource.getRedirectUrl();
                                     if (redirectUrl != null) {
