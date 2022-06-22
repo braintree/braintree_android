@@ -54,48 +54,6 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenPayPalNotEnabled_returnsErrorToListener() throws Exception {
-        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalDisabledConfig)
-                .build();
-
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-        sut.setListener(listener);
-        sut.tokenizePayPalAccount(activity, new PayPalNativeCheckoutVaultRequest());
-
-        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onPayPalFailure(errorCaptor.capture());
-        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-        assertEquals("PayPal is not enabled. " +
-                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
-                "for more information.", errorCaptor.getValue().getMessage());
-    }
-
-    @Test
-    public void tokenizePayPalAccount_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() throws Exception {
-        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(false)
-                .build();
-
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-        sut.setListener(listener);
-        sut.tokenizePayPalAccount(activity, new PayPalNativeCheckoutVaultRequest());
-
-        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onPayPalFailure(errorCaptor.capture());
-        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-        assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
-                "defines the same browser switch url as this app. See " +
-                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
-                "for the correct configuration", errorCaptor.getValue().getMessage());
-    }
-
-    @Test
     public void tokenizePayPalAccount_sendsAnalyticsEvents() throws Exception {
         PayPalNativeCheckoutVaultRequest payPalVaultRequest = new PayPalNativeCheckoutVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -117,8 +75,8 @@ public class PayPalNativeCheckoutClientUnitTest {
         sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected");
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.app-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.selected");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.app-switch.started");
     }
 
     @Test
@@ -181,49 +139,6 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_whenPayPalNotEnabled_returnsErrorToListener() throws Exception {
-        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalDisabledConfig)
-                .build();
-
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-        sut.setListener(listener);
-        sut.tokenizePayPalAccount(activity, new PayPalNativeCheckoutRequest("1.00"));
-
-        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onPayPalFailure(errorCaptor.capture());
-        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-        assertEquals("PayPal is not enabled. " +
-                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
-                "for more information.", errorCaptor.getValue().getMessage());
-    }
-
-    @Test
-    public void requestOneTimePayment_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() throws Exception {
-        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(false)
-                .build();
-
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
-        sut.setListener(listener);
-        sut.tokenizePayPalAccount(activity, new PayPalNativeCheckoutRequest("1.00"));
-
-        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onPayPalFailure(errorCaptor.capture());
-        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
-        assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
-                "defines the same browser switch url as this app. See " +
-                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
-                "for the correct configuration", errorCaptor.getValue().getMessage());
-    }
-
-
-    @Test
     public void requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() throws Exception {
         PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
@@ -245,8 +160,8 @@ public class PayPalNativeCheckoutClientUnitTest {
         sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.app-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.single-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.single-payment.app-switch.started");
     }
 
     @Test
@@ -259,7 +174,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         request.setShouldOfferPayLater(true);
         sut.tokenizePayPalAccount(activity, request);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.single-payment.paylater.offered");
     }
 
     @Test
@@ -305,6 +220,6 @@ public class PayPalNativeCheckoutClientUnitTest {
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+        verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.credit.offered");
     }
 }

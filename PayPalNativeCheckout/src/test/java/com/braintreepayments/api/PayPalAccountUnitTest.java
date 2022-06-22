@@ -96,26 +96,6 @@ public class PayPalAccountUnitTest {
     }
 
     @Test
-    public void build_addsAllUrlResponseData() throws JSONException {
-        JSONObject urlResponseData = new JSONObject()
-                .put("data1", "data1")
-                .put("data2", "data2")
-                .put("data3", "data3");
-
-        PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
-        sut.setUrlResponseData(urlResponseData);
-
-        JSONObject json = sut.buildJSON();
-        JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
-
-        JSONObject expectedPaymentMethodNonceJSON = new JSONObject()
-                .put("data1", "data1")
-                .put("data2", "data2")
-                .put("data3", "data3");
-        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
-    }
-
-    @Test
     public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
         PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         JSONObject jsonObject = sut.buildJSON();

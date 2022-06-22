@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalInternalClientUnitTest {
+public class PayPalNativeCheckoutInternalClientUnitTest {
 
     private Context context;
     private Configuration configuration;
@@ -66,15 +66,6 @@ public class PayPalInternalClientUnitTest {
 
         PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
 
-        PostalAddress shippingAddressOverride = new PostalAddress();
-        shippingAddressOverride.setRecipientName("Brianna Tree");
-        shippingAddressOverride.setStreetAddress("123 Fake St.");
-        shippingAddressOverride.setExtendedAddress("Apt. v.0");
-        shippingAddressOverride.setLocality("Oakland");
-        shippingAddressOverride.setRegion("CA");
-        shippingAddressOverride.setPostalCode("12345");
-        shippingAddressOverride.setCountryCodeAlpha2("US");
-
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -83,7 +74,6 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setShippingAddressRequired(true);
         payPalRequest.setShippingAddressEditable(true);
         payPalRequest.setShouldOfferCredit(true);
-        payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -101,18 +91,8 @@ public class PayPalInternalClientUnitTest {
                 .put("description", "Billing Agreement Description")
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
-                        .put("landing_page_type", "sample-landing-page-type")
                         .put("brand_name", "sample-display-name")
-                        .put("locale_code", "US")
-                        .put("address_override", false))
-                .put("shipping_address", new JSONObject()
-                        .put("line1", "123 Fake St.")
-                        .put("line2", "Apt. v.0")
-                        .put("city", "Oakland")
-                        .put("state", "CA")
-                        .put("postal_code", "12345")
-                        .put("country_code", "US")
-                        .put("recipient_name", "Brianna Tree"))
+                        .put("locale_code", "US"))
                 .put("merchant_account_id", "sample-merchant-account-id");
 
         JSONAssert.assertEquals(expected, actual, true);
@@ -128,15 +108,6 @@ public class PayPalInternalClientUnitTest {
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
         PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
-
-        PostalAddress shippingAddressOverride = new PostalAddress();
-        shippingAddressOverride.setRecipientName("Brianna Tree");
-        shippingAddressOverride.setStreetAddress("123 Fake St.");
-        shippingAddressOverride.setExtendedAddress("Apt. v.0");
-        shippingAddressOverride.setLocality("Oakland");
-        shippingAddressOverride.setRegion("CA");
-        shippingAddressOverride.setPostalCode("12345");
-        shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalNativeCheckoutLineItem item = new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "Item 0", "1", "2");
         item.setDescription("A new item");
@@ -156,7 +127,6 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setShippingAddressEditable(true);
         payPalRequest.setShouldOfferPayLater(true);
         payPalRequest.setLineItems(Collections.singletonList(item));
-        payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -189,17 +159,8 @@ public class PayPalInternalClientUnitTest {
                                 .put("url", "http://example.com")))
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
-                        .put("landing_page_type", "sample-landing-page-type")
                         .put("brand_name", "sample-display-name")
-                        .put("locale_code", "US")
-                        .put("address_override", false))
-                .put("line1", "123 Fake St.")
-                .put("line2", "Apt. v.0")
-                .put("city", "Oakland")
-                .put("state", "CA")
-                .put("postal_code", "12345")
-                .put("country_code", "US")
-                .put("recipient_name", "Brianna Tree")
+                        .put("locale_code", "US"))
                 .put("merchant_account_id", "sample-merchant-account-id");
 
         JSONAssert.assertEquals(expected, actual, true);
@@ -295,53 +256,6 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse() throws JSONException {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorizationSuccess(tokenizationKey)
-                .build();
-
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
-
-        PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
-        payPalRequest.setShippingAddressOverride(null);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
-
-        String result = captor.getValue();
-        JSONObject actual = new JSONObject(result);
-
-        assertEquals(false, ((JSONObject) actual.get("experience_profile")).get("address_override"));
-    }
-
-    @Test
-    public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAdressEditability() throws JSONException {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
-                .authorizationSuccess(clientToken)
-                .build();
-        when(clientToken.getBearer()).thenReturn("client-token-bearer");
-
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
-
-        PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
-        payPalRequest.setShippingAddressEditable(false);
-        payPalRequest.setShippingAddressOverride(new PostalAddress());
-
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"), captor.capture(), any(HttpResponseCallback.class));
-
-        String result = captor.getValue();
-        JSONObject actual = new JSONObject(result);
-
-        assertEquals(true, ((JSONObject) actual.get("experience_profile")).get("address_override"));
-    }
-
-    @Test
     public void sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -432,7 +346,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -480,7 +394,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -511,7 +425,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -531,9 +445,6 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<PayPalNativeCheckoutResponse> captor = ArgumentCaptor.forClass(PayPalNativeCheckoutResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
-
-        String expectedUrl =
-                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026token=EC-HERMES-SANDBOX-EC-TOKEN\u0026offer_paypal_credit=true\u0026version=1\u0026useraction=commit";
 
         PayPalNativeCheckoutResponse payPalResponse = captor.getValue();
         assertFalse(payPalResponse.isBillingAgreement());
