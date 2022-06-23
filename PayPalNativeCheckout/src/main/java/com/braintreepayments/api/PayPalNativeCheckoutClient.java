@@ -170,7 +170,7 @@ public class PayPalNativeCheckoutClient {
         String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
         payPalAccount.setClientMetadataId(configuration.getPayPalClientId());
         payPalAccount.setIntent(payPalResponse.getIntent());
-        payPalAccount.setSource("paypal-native-checkout");
+        payPalAccount.setSource("paypal-browser");
         payPalAccount.setPaymentType(paymentType);
 
         if (merchantAccountId != null) {
