@@ -50,20 +50,16 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
         SEPADirectDebitRequest request = new SEPADirectDebitRequest();
         request.setAccountHolderName("John Doe");
         request.setCustomerId(generateRandomCustomerId());
-        request.setIban(generateRandomIban());
+        request.setIban("FR7618106000321234566666608");
         request.setMandateType(SEPADirectDebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
-        request.setMerchantAccountId("eur_pwpp_multi_account_merchant_account");
+        request.setMerchantAccountId("EUR-sepa-direct-debit");
 
         sepaDirectDebitClient.tokenize(requireActivity(), request);
     }
 
     private String generateRandomCustomerId() {
         return UUID.randomUUID().toString().substring(0,20);
-    }
-
-    private String generateRandomIban() {
-        return "FR" + String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16)).substring(0,25);
     }
 
     @Override
