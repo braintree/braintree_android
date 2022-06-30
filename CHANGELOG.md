@@ -5,13 +5,27 @@
 token authorization provided by the `ClientTokenProvider`
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
 * Trim tokenization key and client token before parsing
-* Adding in [PayPalNativeCheckout] module to use the native checkout for PayPal
-* Adds `PayPalNativeCheckoutClient` that handles launching the native checkout session, the session
-start parameters are similar to that of `PaypalClient` with the main difference being it doesn't
-use the browserSwitch to checkout on web but instead consumes the native checkout sdk. This provides
-a much more native feel to checking out with PayPal.
-* Adds in the `PayPalNativeCheckoutFragment` that shows how to launch the native checkout sdk
-
+* PayPalNativeCheckout
+  * Adding in [PayPalNativeCheckout] module to use the native checkout for PayPal
+  * Adds `PayPalNativeCheckoutClient` that handles launching the native checkout session, the session
+    start parameters are similar to that of `PaypalClient` with the main difference being it doesn't
+    use the browserSwitch to checkout on web but instead consumes the native checkout sdk. This provides
+    a much more native feel to checking out with PayPal.
+  * Adds `PayPalNativeCheckoutAccount` to represent tokenizing a PayPal request
+  * Adds `PayPalNativeCheckoutAccountNonce` that represents the value returned from the web
+  * Adds `PayPalNativeCheckoutFragment` that shows how to launch the native checkout sdk
+  * Adds `PayPalNativeCheckoutCreditFinancing` to represent the PayPal credit financing response
+  * Adds `PayPalNativeCheckoutCreditFinancingAmount` to represent the PayPal finance amount
+  * Adds `PayPalNativeCheckoutLineItem` to represent a line item for checkout flows
+  * Adds `PayPalNativeCheckoutListener` to receive result notifications
+  * Adds `PayPalNativeCheckoutPaymentIntent` to represent the payment intent for an order
+  * Adds `PayPalNativeCheckoutPaymentResource` to represent the data returned from the internal checkout client
+    to fetch the return url
+  * Adds `PayPalNativeCheckoutRequest` to represent all items needed to begin the native checkout flow
+  * Adds `PayPalNativeCheckoutVaultRequest` to represent all items needed to begin the native vault flow
+  * Adds `PayPalNativeRequest` to represent the base items needed for checkout and vault requests
+  * Adds `PayPalNativeCheckoutResultCallback` to listen to the result returned from the checkout response
+  * 
 ## 4.10.1
 
 * DataCollector
