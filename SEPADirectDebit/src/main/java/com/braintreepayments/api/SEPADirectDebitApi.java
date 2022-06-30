@@ -10,23 +10,16 @@ import javax.net.ssl.SSLSocketFactory;
 
 class SEPADirectDebitApi {
 
-    // TODO: switch this to ApiClient when Sandbox is ready
-    private final HttpClient httpClient;
+    private final BraintreeClient braintreeClient;
 
-    SEPADirectDebitApi() {
-        this(new HttpClient(getSocketFactory(), new BraintreeHttpResponseParser()));
-    }
-
-    @VisibleForTesting
-    SEPADirectDebitApi(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
+    SEPADirectDebitApi(BraintreeClient braintreeClient) { this.braintreeClient = braintreeClient; }
 
     void createMandate(SEPADirectDebitRequest sepaDirectDebitRequest, String returnUrlScheme, final CreateMandateCallback callback) {
-        HttpRequest httpRequest;
         try {
-            httpRequest = buildCreateMandateHttpRequest(sepaDirectDebitRequest, returnUrlScheme);
-            httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+            JSONObject jsonObject = buildCreateMandateRequest(sepaDirectDebitRequest, returnUrlScheme);
+            String url = "v1/sepa_debit";
+            braintreeClient.sendPOST(url, jsonObject.toString(), new HttpResponseCallback() {
+
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
                     if (responseBody != null) {
@@ -48,8 +41,10 @@ class SEPADirectDebitApi {
 
     void tokenize(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType, final SEPADirectDebitTokenizeCallback callback) {
         try {
-            HttpRequest httpRequest = buildTokenizeHttpRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
-            httpClient.sendRequest(httpRequest, new HttpResponseCallback() {
+            JSONObject jsonObject = buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
+            String url = "v1/payment_methods/sepa_debit_accounts";
+            braintreeClient.sendPOST(url, jsonObject.toString(), new HttpResponseCallback() {
+
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
                    if (responseBody != null) {
@@ -74,40 +69,34 @@ class SEPADirectDebitApi {
         return SEPADirectDebitNonce.fromJSON(jsonResponse);
     }
 
-    private HttpRequest buildTokenizeHttpRequest(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) throws JSONException {
+    private JSONObject buildTokenizeRequest(String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) throws JSONException {
         JSONObject accountData = new JSONObject()
-                .put("iban_last_chars", ibanLastFour)
-                .put("customer_id", customerId)
+                .put("last_4", ibanLastFour)
+                .put("merchant_or_partner_customer_id", customerId)
                 .put("bank_reference_token", bankReferenceToken)
                 .put("mandate_type", mandateType);
         JSONObject requestData = new JSONObject()
                 .put("sepa_debit_account", accountData);
 
-        return new HttpRequest()
-                .baseUrl("http://10.0.2.2:3000/")
-                .method("POST")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Client-Key", "development_testing_pwpp_multi_account_merchant")
-                .path("merchants/pwpp_multi_account_merchant/client_api/v1/payment_methods/sepa_debit_accounts")
-                .data(requestData.toString());
+        return requestData;
     }
 
     private CreateMandateResult parseCreateMandateResponse(String responseBody) throws JSONException {
         JSONObject json = new JSONObject(responseBody);
         JSONObject sepaDebitAccount = json.getJSONObject("message").getJSONObject("body").getJSONObject("sepaDebitAccount");
         String approvalUrl = sepaDebitAccount.getString("approvalUrl");
-        String ibanLastFour = sepaDebitAccount.getString("ibanLastChars");
-        String customerId = sepaDebitAccount.getString("customerId");
+        String ibanLastFour = sepaDebitAccount.getString("last4");
+        String customerId = sepaDebitAccount.getString("merchantOrPartnerCustomerId");
         String bankReferenceToken = sepaDebitAccount.getString("bankReferenceToken");
         String mandateType = sepaDebitAccount.getString("mandateType");
 
         return new CreateMandateResult(approvalUrl, ibanLastFour, customerId, bankReferenceToken, mandateType);
     }
 
-    private HttpRequest buildCreateMandateHttpRequest(SEPADirectDebitRequest sepaDirectDebitRequest, String returnUrlScheme) throws JSONException {
+    private JSONObject buildCreateMandateRequest(SEPADirectDebitRequest sepaDirectDebitRequest, String returnUrlScheme) throws JSONException {
         JSONObject sepaDebitData = new JSONObject()
             .putOpt("account_holder_name", sepaDirectDebitRequest.getAccountHolderName())
-            .putOpt("customer_id", sepaDirectDebitRequest.getCustomerId())
+            .putOpt("merchant_or_partner_customer_id", sepaDirectDebitRequest.getCustomerId())
             .putOpt("iban", sepaDirectDebitRequest.getIban())
             .putOpt("mandate_type", sepaDirectDebitRequest.getMandateType().toString());
 
@@ -135,22 +124,6 @@ class SEPADirectDebitApi {
             requestData.putOpt("merchant_account_id", sepaDirectDebitRequest.getMerchantAccountId());
         }
 
-        HttpRequest request = new HttpRequest()
-                .baseUrl("http://10.0.2.2:3000/")
-                .method("POST")
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Client-Key", "development_testing_pwpp_multi_account_merchant")
-                .path("merchants/pwpp_multi_account_merchant/client_api/v1/sepa_debit")
-                .data(requestData.toString());
-        return request;
-    }
-
-    // TODO: Remove this when feature is in sandbox and ApiClient can be used
-    private static SSLSocketFactory getSocketFactory() {
-        try {
-            return new TLSSocketFactory(BraintreeGatewayCertificate.getCertInputStream());
-        } catch (SSLException e) {
-            return null;
-        }
+        return requestData;
     }
 }

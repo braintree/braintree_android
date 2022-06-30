@@ -34,7 +34,7 @@ public class SEPADirectDebitClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public SEPADirectDebitClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new SEPADirectDebitApi());
+        this(activity, activity.getLifecycle(), braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
 
     /**
@@ -44,7 +44,7 @@ public class SEPADirectDebitClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public SEPADirectDebitClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADirectDebitApi());
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
 
     @VisibleForTesting
