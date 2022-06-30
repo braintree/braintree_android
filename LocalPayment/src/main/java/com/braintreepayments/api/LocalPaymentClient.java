@@ -239,7 +239,7 @@ public class LocalPaymentClient {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
 
         final String paymentType = Json.optString(metadata, "payment-type", null);
-        String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
+        final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
@@ -256,22 +256,30 @@ public class LocalPaymentClient {
                     return;
                 }
 
-                String responseString = deepLinkUri.toString();
+                final String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
                     callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
                     return;
                 }
-
-                localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context), new LocalPaymentBrowserSwitchResultCallback() {
+                braintreeClient.getConfiguration(new ConfigurationCallback() {
                     @Override
-                    public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
-                       if (localPaymentNonce != null) {
-                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
-                       } else if (error != null) {
-                           sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
-                       }
-                       callback.onResult(localPaymentNonce, error);
+                    public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                        if (configuration != null) {
+                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
+                                @Override
+                                public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                                    if (localPaymentNonce != null) {
+                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
+                                    } else if (error != null) {
+                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                                    }
+                                    callback.onResult(localPaymentNonce, error);
+                                }
+                            });
+                        } else if (error != null) {
+                            callback.onResult(null, error);
+                        }
                     }
                 });
         }

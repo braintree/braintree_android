@@ -1,6 +1,39 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.12.0
+
+* SharedUtils
+  * Update `BraintreeSharedPreferences` to no-op when a reference to Android `EncryptedSharedPreferences` cannot be obtained (fixes #561)
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.6-2`
+
+## 4.11.0
+
+* Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
+* Add `isExplicitCancelation` parameter to `UserCanceledException`
+* Trim tokenization key and client token before parsing
+
+## 4.10.1
+
+* DataCollector
+  * Use configuration environment to set Magnes environment correctly
+
+## 4.10.0
+
+* ThreeDSecure  
+  * Support AndroidX and remove Jetifier requirement (fixes #315)
+  * Bump Cardinal version to `2.2.6-1`
+  * Fix null pointer error in V2 UI customization
+  * Deprecate `ThreeDSecureV2BaseCustomization`
+  * Deliver browser switch result asynchronously on main thread
+* SamsungPay
+  * Support AndroidX and remove Jetifier requirement
+* Local Payment
+  * Deliver browser switch result asynchronously on main thread
+* PayPal
+  * Deliver browser switch result asynchronously on main thread (fixes #500)
+
+## 4.9.0
 
 * Braintree Core
   * Add `ClientTokenProvider` interface for asynchronously fetching client token authorization

@@ -121,6 +121,10 @@ public class BraintreeClient {
         this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
     }
 
+    BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
+        this(createDefaultParams(context, null, clientTokenProvider, sessionId, integrationType));
+    }
+
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
         this(createDefaultParams(context, authorization, null, sessionId, integrationType));
     }
@@ -316,5 +320,15 @@ public class BraintreeClient {
 
     Context getApplicationContext() {
         return applicationContext;
+    }
+
+    /**
+     * For clients using a {@link ClientTokenProvider}, call this method to invalidate the existing,
+     * cached client token. A new client token will be fetched by the SDK when it is needed.
+     *
+     * For clients not using a {@link ClientTokenProvider}, this method does nothing.
+     */
+    public void invalidateClientToken() {
+        authorizationLoader.invalidateClientToken();
     }
 }

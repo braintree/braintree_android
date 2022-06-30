@@ -1,0 +1,11 @@
+name: Set GitHub User
+description: 'Sets github user for a particular workflow'
+runs:
+  using: "composite"
+  steps:
+    - name: Configure User
+      run: git config user.name braintreeps
+      shell: bash
+    - name: Configure Email
+      run: git config user.email code@getbraintree.com
+      shell: bash

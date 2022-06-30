@@ -522,7 +522,7 @@ public class ThreeDSecureClient {
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                 break;
             case CANCEL:
-                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
+                callback.onResult(null, new UserCanceledException("User canceled 3DS.", true));
                 braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                 break;
         }
@@ -595,7 +595,7 @@ public class ThreeDSecureClient {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                     break;
                 case CANCEL:
-                    listener.onThreeDSecureFailure(new UserCanceledException("User canceled 3DS."));
+                    listener.onThreeDSecureFailure(new UserCanceledException("User canceled 3DS.", true));
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                     break;
             }

@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.cardinalcommerce.cardinalmobilesdk.a.a.c;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -21,11 +20,10 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureActivityUnitTest {
-
-    private static final c CARDINAL_ERROR = new c(0, "");
 
     @Test
     public void onCreate_invokesCardinalWithLookupData() throws JSONException {
@@ -67,7 +65,8 @@ public class ThreeDSecureActivityUnitTest {
         ThreeDSecureActivity sut = spy(new ThreeDSecureActivity());
         sut.setIntent(intent);
 
-        ValidateResponse cardinalValidateResponse = new ValidateResponse( false, CardinalActionCode.SUCCESS, CARDINAL_ERROR);
+        ValidateResponse cardinalValidateResponse = mock(ValidateResponse.class);
+        when(cardinalValidateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
         sut.onValidated(null, cardinalValidateResponse, "jwt");
         verify(sut).finish();
 

@@ -6,7 +6,6 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -281,6 +280,7 @@ public class ThreeDSecureClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancelation());
     }
 
     @Test
@@ -404,6 +404,7 @@ public class ThreeDSecureClientUnitTest {
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
+        assertFalse(((UserCanceledException) exception).isExplicitCancelation());
     }
 
     @Test
@@ -498,8 +499,10 @@ public class ThreeDSecureClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onThreeDSecureFailure(captor.capture());
-        assertTrue(captor.getValue() instanceof UserCanceledException);
-        assertEquals("User canceled 3DS.", captor.getValue().getMessage());
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled 3DS.", exception.getMessage());
+        assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
     }

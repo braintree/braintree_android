@@ -1,0 +1,19 @@
+name: Decode signing key
+description: 'Decodes gpg key into file'
+inputs:
+  signing_key_file:
+    description: 'Signing key file'
+    required: true
+    default: ''
+  signing_file_path:
+    description: 'Signing file path'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "${{inputs.signing_key_file}}" > ~/secretKey.gpg.b64
+        base64 -d ~/secretKey.gpg.b64 > ${{ inputs.signing_file_path }}
+      shell: bash
+

@@ -86,9 +86,24 @@ task :assumptions do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :AmericanExpress:publishToSonatype :BraintreeCore:publishToSonatype :BraintreeDataCollector:publishToSonatype :Card:publishToSonatype :GooglePay:publishToSonatype :LocalPayment:publishToSonatype :PayPal:publishToSonatype :SEPADirectDebit:publishToSonatype :SharedUtils:publishToSonatype :ThreeDSecure:publishToSonatype :UnionPay:publishToSonatype :Venmo:publishToSonatype :SamsungPay:publishToSonatype"
+  release_tasks = [
+    ":AmericanExpress:publishToSonatype",
+    ":BraintreeCore:publishToSonatype",
+    ":BraintreeDataCollector:publishToSonatype",
+    ":Card:publishToSonatype",
+    ":GooglePay:publishToSonatype",
+    ":LocalPayment:publishToSonatype",
+    ":PayPal:publishToSonatype",
+    ":SharedUtils:publishToSonatype",
+    ":ThreeDSecure:publishToSonatype",
+    ":UnionPay:publishToSonatype",
+    ":Venmo:publishToSonatype",
+    ":SamsungPay:publishToSonatype",
+  ].join " "
 
+  sh "./gradlew clean #{release_tasks}"
   sh "./gradlew closeAndReleaseRepository"
+
   puts "Braintree modules have been released"
 end
 
