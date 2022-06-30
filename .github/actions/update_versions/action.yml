@@ -1,0 +1,25 @@
+name: Update Version Numbers
+description: 'Updates version numbers in README, gradle, and CHANGELOG'
+inputs:
+  version:
+    description: 'Version'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Check for Unreleased Section of CHANGELOG
+      run: grep "## unreleased" CHANGELOG.md || (echo "::error::No unreleased section found in CHANGELOG"; exit 1)
+      shell: bash
+    - name: Update Gradle Version
+      run: ./gradlew -PversionParam=${{ inputs.version }} changeGradleReleaseVersion
+      shell: bash
+    - name: Update README Version
+      run: ./gradlew -PversionParam=${{ inputs.version }} changeREADMEVersion
+      shell: bash
+    - name: Update Migration Guide Versions
+      run: ./gradlew -PversionParam=${{ inputs.version }} changeMigrationGuideVersion
+      shell: bash
+    - name: Update CHANGELOG Version
+      run: ./gradlew -PversionParam=${{ inputs.version }} updateCHANGELOGVersion
+      shell: bash

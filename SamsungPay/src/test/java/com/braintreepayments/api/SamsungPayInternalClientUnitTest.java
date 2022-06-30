@@ -32,6 +32,7 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.EXTRA_ERROR_REASON;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -352,5 +353,6 @@ public class SamsungPayInternalClientUnitTest {
 
         UserCanceledException error = captor.getValue();
         assertEquals("User canceled Samsung Pay.", error.getMessage());
+        assertTrue(error.isExplicitCancelation());
     }
 }

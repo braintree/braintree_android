@@ -41,14 +41,15 @@ class PayPalDataCollector {
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context Android Context
+     * @param configuration the merchant configurationn
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    String getClientMetadataId(Context context) {
+    String getClientMetadataId(Context context, Configuration configuration) {
         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
-        return getClientMetadataId(context, request);
+        return getClientMetadataId(context, request, configuration);
     }
 
     /**
@@ -61,10 +62,11 @@ class PayPalDataCollector {
      *
      * @param context Android Context.
      * @param request configures what data to collect.
+     * @param configuration the merchant configuration
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
+    String getClientMetadataId(Context context, PayPalDataCollectorRequest request, Configuration configuration) {
         if (context == null || context.getApplicationContext() == null) {
             return "";
         }
@@ -73,7 +75,7 @@ class PayPalDataCollector {
             MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context.getApplicationContext())
                     .setMagnesSource(MagnesSource.BRAINTREE)
                     .disableBeacon(request.isDisableBeacon())
-                    .setMagnesEnvironment(Environment.LIVE)
+                    .setMagnesEnvironment(getMagnesEnvironment(configuration.getEnvironment()))
                     .setAppGuid(request.getApplicationGuid());
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
@@ -86,5 +88,12 @@ class PayPalDataCollector {
             Log.e("Exception", "Error fetching client metadata ID. Contact Braintree Support for assistance.", e);
             return "";
         }
+    }
+
+    private Environment getMagnesEnvironment(String environment) {
+        if ("sandbox".equals(environment)) {
+            return Environment.SANDBOX;
+        }
+        return Environment.LIVE;
     }
 }

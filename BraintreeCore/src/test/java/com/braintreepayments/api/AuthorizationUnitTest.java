@@ -17,8 +17,22 @@ public class AuthorizationUnitTest {
     }
 
     @Test
+    public void fromString_returnsValidClientTokenWhenBase64IncludesSpaces() {
+        Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN_WITH_SPACES);
+
+        assertTrue(authorization instanceof ClientToken);
+    }
+
+    @Test
     public void fromString_returnsValidTokenizationKey() {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
+
+        assertTrue(authorization instanceof TokenizationKey);
+    }
+
+    @Test
+    public void fromString_returnsValidTokenizationKeyIncludesSpaces() {
+        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY_WITH_SPACES);
 
         assertTrue(authorization instanceof TokenizationKey);
     }

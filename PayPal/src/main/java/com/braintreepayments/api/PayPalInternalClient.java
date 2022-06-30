@@ -44,7 +44,7 @@ class PayPalInternalClient {
                 if (authorization != null) {
                     braintreeClient.getConfiguration(new ConfigurationCallback() {
                         @Override
-                        public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
+                        public void onResult(@Nullable final Configuration configuration, @Nullable Exception configError) {
                             if (configuration == null) {
                                 callback.onResult(null, configError);
                                 return;
@@ -74,7 +74,7 @@ class PayPalInternalClient {
                                                     String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
                                                     String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
                                                     String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
-                                                            ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context);
+                                                            ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
 
                                                     if (pairingId != null) {
                                                         payPalResponse

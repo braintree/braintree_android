@@ -45,8 +45,21 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
         labelCustomization.setHeadingTextColor("#FFA5FF");
 
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        textBoxCustomization.setBorderColor("#000000");
+
+        ThreeDSecureV2ButtonCustomization buttonCustomization = new ThreeDSecureV2ButtonCustomization();
+        buttonCustomization.setBackgroundColor("#FFFFFF");
+
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
+        toolbarCustomization.setTextColor("#F0F0F0");
+        toolbarCustomization.setButtonText("TEST");
+
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
+        v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
+        v2UiCustomization.setButtonCustomization(buttonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
         v1UiCustomization.setRedirectButtonText("return-button-text");
@@ -100,6 +113,17 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
+
+        assertEquals(expected.getV2UiCustomization().getTextBoxCustomization().getBorderColor(),
+                actual.getV2UiCustomization().getTextBoxCustomization().getBorderColor());
+
+        assertEquals(expected.getV2UiCustomization().getButtonCustomization().getBackgroundColor(),
+                actual.getV2UiCustomization().getButtonCustomization().getBackgroundColor());
+
+        assertEquals(expected.getV2UiCustomization().getToolbarCustomization().getTextColor(),
+                actual.getV2UiCustomization().getToolbarCustomization().getTextColor());
+        assertEquals(expected.getV2UiCustomization().getToolbarCustomization().getButtonText(),
+                actual.getV2UiCustomization().getToolbarCustomization().getButtonText());
 
         assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
                 actual.getV1UiCustomization().getRedirectButtonText());

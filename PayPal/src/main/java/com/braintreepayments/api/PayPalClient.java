@@ -378,7 +378,7 @@ public class PayPalClient {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
-            throw new UserCanceledException("User canceled PayPal.");
+            throw new UserCanceledException("User canceled PayPal.", true);
         }
 
         String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
