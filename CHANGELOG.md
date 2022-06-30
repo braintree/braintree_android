@@ -25,7 +25,7 @@ token authorization provided by the `ClientTokenProvider`
   * Adds `PayPalNativeCheckoutVaultRequest` to represent all items needed to begin the native vault flow
   * Adds `PayPalNativeRequest` to represent the base items needed for checkout and vault requests
   * Adds `PayPalNativeCheckoutResultCallback` to listen to the result returned from the checkout response
-  * 
+  
 ## 4.10.1
 
 * DataCollector
