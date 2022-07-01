@@ -162,7 +162,13 @@
         android:id="@+id/payPalNativeCheckoutFragment"
         android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
         android:label="fragment_paypal_native_checkout"
-        tools:layout="@layout/fragment_paypal_native_checkout" />
+        tools:layout="@layout/fragment_paypal_native_checkout">
+        <action
+            android:id="@+id/action_payPalNativeCheckoutFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/SEPADirectDebitFragment"
         android:name="com.braintreepayments.demo.SEPADirectDebitFragment"
