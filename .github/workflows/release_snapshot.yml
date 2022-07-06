@@ -1,8 +1,8 @@
-name: Release
+name: Release Snapshot
 on:
   # update SNAPSHOT build whenever a push or merge occurs on master
   push:
-    braches:
+    branches:
       - 'master'
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
