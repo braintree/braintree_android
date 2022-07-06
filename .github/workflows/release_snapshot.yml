@@ -1,5 +1,6 @@
 name: Release
 on:
+  # update SNAPSHOT build whenever a push or merge occurs on master
   push:
     braches:
       - 'master'
