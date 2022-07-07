@@ -114,8 +114,8 @@ nexusStaging {
     packageGroup = project.hasProperty('nexusPackageGroup') ? project.getProperty('nexusPackageGroup') : 'com.braintreepayments'
     // give nexus sonatype more time to close the staging repository
     delayBetweenRetriesInMillis = 20000
-    username = System.env['SONATYPE_USERNAME']
-    password = System.env['SONATYPE_PASSWORD']
+    username = System.getenv('SONATYPE_USERNAME')
+    password = System.getenv('SONATYPE_PASSWORD')
 }
 
 subprojects {
