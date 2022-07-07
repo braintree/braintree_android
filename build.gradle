@@ -140,8 +140,9 @@ task changeGradleReleaseVersion {
 
 task changeREADMEVersion {
     doLast {
+
         def readmeFile = new File('README.md')
-        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
+        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+'", ":card:" + versionParam + "'")
         readmeFile.write(readmeFileText)
     }
 }
@@ -174,6 +175,11 @@ task incrementSNAPSHOTVersion {
         def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
         def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
         gradleFile.write(gradleFileText)
+
+        // update README snapshot version
+        def readmeFile = new File('README.md')
+        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+-SNAPSHOT'", ":card:" + newVersion + "'")
+        readmeFile.write(readmeFileText)
     }
 }
 
