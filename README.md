@@ -29,7 +29,7 @@ dependencies {
 }
 ```
 
-You will also need to add the Sonatype snapshots repo to your `build.gradle` to import SNAPSHOT builds:
+You will also need to add the Sonatype snapshots repo to your top-level `build.gradle` to import SNAPSHOT builds:
 
 ```groovy
 allprojects {
