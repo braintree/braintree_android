@@ -11,19 +11,29 @@ import com.kount.api.DataCollector;
 class KountDataCollector {
 
     private final BraintreeClient braintreeClient;
-    private final DataCollector kountDataCollector;
 
     KountDataCollector(BraintreeClient braintreeClient) {
-        this(braintreeClient, DataCollector.getInstance());
+        this.braintreeClient = braintreeClient;
+    }
+
+    void startDataCollection(
+            @NonNull Context context,
+            @NonNull final String merchantId,
+            @NonNull final String deviceSessionId,
+            @NonNull final KountDataCollectorCallback callback
+    ) {
+        // we lazily reference Kount to prevent it from being loaded by the JVM unless we really need it
+        startDataCollection(context, merchantId, deviceSessionId, callback, DataCollector.getInstance());
     }
 
     @VisibleForTesting
-    KountDataCollector(BraintreeClient braintreeClient, DataCollector kountDataCollector) {
-        this.braintreeClient = braintreeClient;
-        this.kountDataCollector = kountDataCollector;
-    }
-
-    void startDataCollection(@NonNull Context context, @NonNull final String merchantId, @NonNull final String deviceSessionId, @NonNull final KountDataCollectorCallback callback) {
+    void startDataCollection(
+            @NonNull Context context,
+            @NonNull final String merchantId,
+            @NonNull final String deviceSessionId,
+            @NonNull final KountDataCollectorCallback callback,
+            @NonNull final DataCollector kountDataCollector
+    ) {
         braintreeClient.sendAnalyticsEvent("data-collector.kount.started");
 
         try {
@@ -41,7 +51,6 @@ class KountDataCollector {
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
 
-                    // configure kount
                     kountDataCollector.setContext(applicationContext);
                     kountDataCollector.setMerchantID(Integer.parseInt(merchantId));
                     kountDataCollector.setLocationCollectorConfig(com.kount.api.DataCollector.LocationConfig.COLLECT);
