@@ -21,6 +21,26 @@ dependencies {
 }
 ```
 
+To preview the latest work in progress builds, add the following SNAPSHOT dependency in your `build.gradle`:
+
+```groovy
+dependencies {
+  implementation 'com.braintreepayments.api:card:4.12.1-SNAPSHOT'
+}
+```
+
+You will also need to add the Sonatype snapshots repo to your top-level `build.gradle` to import SNAPSHOT builds:
+
+```groovy
+allprojects {
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
+}
+```
+
 ## Documentation
 
 Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v3) for instructions on basic setup and usage.

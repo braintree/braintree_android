@@ -25,7 +25,7 @@ public class KountDataCollectorUnitTest {
     private Context context;
     private Context applicationContext;
 
-    DataCollector kountDataCollector;
+    private DataCollector kountDataCollector;
 
     @Before
     public void beforeEach() {
@@ -48,10 +48,10 @@ public class KountDataCollectorUnitTest {
     public void startDataCollection_fetchesConfigurationWithApplicationContext() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         verify(braintreeClient).getConfiguration(any(ConfigurationCallback.class));
     }
@@ -62,10 +62,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configurationError(configurationError)
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         verify(callback).onResult(null, configurationError);
     }
@@ -75,10 +75,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         verify(kountDataCollector).setContext(applicationContext);
         verify(kountDataCollector).setMerchantID(123);
@@ -91,10 +91,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         verify(kountDataCollector).collectForSession(eq("device-session-id"), any(DataCollector.CompletionHandler.class));
     }
@@ -104,13 +104,13 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         ArgumentCaptor<DataCollector.CompletionHandler> captor =
-            ArgumentCaptor.forClass(DataCollector.CompletionHandler.class);
+                ArgumentCaptor.forClass(DataCollector.CompletionHandler.class);
         verify(kountDataCollector).collectForSession(anyString(), captor.capture());
 
         DataCollector.CompletionHandler completionHandler = captor.getValue();
@@ -124,10 +124,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         ArgumentCaptor<DataCollector.CompletionHandler> captor =
                 ArgumentCaptor.forClass(DataCollector.CompletionHandler.class);
@@ -144,10 +144,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         ArgumentCaptor<DataCollector.CompletionHandler> captor =
                 ArgumentCaptor.forClass(DataCollector.CompletionHandler.class);
@@ -164,10 +164,10 @@ public class KountDataCollectorUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT))
                 .build();
-        KountDataCollector sut = new KountDataCollector(braintreeClient, kountDataCollector);
+        KountDataCollector sut = new KountDataCollector(braintreeClient);
 
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
-        sut.startDataCollection(context, "123", "device-session-id", callback);
+        sut.startDataCollection(context, "123", "device-session-id", callback, kountDataCollector);
 
         ArgumentCaptor<DataCollector.CompletionHandler> captor =
                 ArgumentCaptor.forClass(DataCollector.CompletionHandler.class);

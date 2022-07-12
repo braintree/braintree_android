@@ -70,6 +70,7 @@ signing {
 nexusPublishing {
     // give nexus sonatype more time to initialize the staging repository
     clientTimeout = Duration.ofMinutes(3)
+    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
     repositories {
         sonatype()
     }

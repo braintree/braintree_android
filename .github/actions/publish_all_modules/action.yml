@@ -45,11 +45,3 @@ runs:
         SIGNING_KEY_ID: ${{ inputs.signing_key_id }}
         SIGNING_KEY_PASSWORD: ${{ inputs.signing_key_pwd }}
         SIGNING_KEY_FILE: ${{ inputs.signing_key_file }}
-    - run: ./gradlew --stacktrace closeAndReleaseRepository
-      shell: bash
-      env:
-        SONATYPE_USERNAME: ${{ inputs.sonatype_usr }}
-        SONATYPE_PASSWORD: ${{ inputs.sonatype_pwd }}
-        SIGNING_KEY_ID: ${{ inputs.signing_key_id }}
-        SIGNING_KEY_PASSWORD: ${{ inputs.signing_key_pwd }}
-        SIGNING_KEY_FILE: ${{ inputs.signing_key_file }}
