@@ -2425,8 +2425,8 @@ object Fixtures {
              "description": "SEPA Debit",
              "consumed": false,
              "details": {
-                "ibanLastChars": "1234", 
-                "customerId": "a-customer-id", 
+                "last4": "1234", 
+                "merchantOrPartnerCustomerId": "a-customer-id", 
                 "mandateType": "ONE_OFF"
               }
          }
@@ -2440,8 +2440,8 @@ object Fixtures {
                       "sepaDebitAccount": {
                           "paypalV2OrderId":"1JH42426EL748934W",
                           "approvalUrl":"https://api.test19.stage.paypal.com/directdebit/mandate/authorize?cart_id=1JH42426EL748934W\u0026auth_code=C21_A.AAdcUj4loKRxLtfw336KxbGY7dA7UsLJQTpZU3cE2h49eKkhN1OjFcLxxxzOGVzRiwOzGLlS_cS2BU4ZLKjMnR6lZSG2iQ",
-                          "ibanLastChars":"6610",
-                          "customerId":"a-customer-id",
+                          "last4":"6610",
+                          "merchantOrPartnerCustomerId":"a-customer-id",
                           "bankReferenceToken":"QkEtWDZDQkpCUU5TWENDVw",
                           "mandateType":"RECURRENT"
                     }
