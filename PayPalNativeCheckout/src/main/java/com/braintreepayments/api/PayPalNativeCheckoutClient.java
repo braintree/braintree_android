@@ -119,8 +119,7 @@ public class PayPalNativeCheckoutClient {
                     new CheckoutConfig(
                         activity.getApplication(),
                         configuration.getPayPalClientId(),
-                        environment,
-                        payPalRequest.getReturnUrl()
+                        environment
                     )
                 );
 
@@ -153,7 +152,7 @@ public class PayPalNativeCheckoutClient {
                         }
                     });
                 },
-                null,
+                payPalRequest.getOnShippingChange(),
                 () -> listener.onPayPalFailure(new Exception("User has canceled")),
                 errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
         );

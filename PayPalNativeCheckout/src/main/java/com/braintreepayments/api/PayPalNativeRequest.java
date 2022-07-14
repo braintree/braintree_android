@@ -5,12 +5,11 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
+
+import com.paypal.checkout.shipping.OnShippingChange;
 
 import org.json.JSONException;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,6 +51,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
+    private OnShippingChange onShippingChange;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -179,6 +179,14 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this.returnUrl = returnUrl;
     }
 
+    /**
+     * Optional: The OnShippingChange callback that handles shipping charge changes
+     *
+     * @param onShippingChange how to handle the shipping change callback
+     */
+    public void setOnShippingChange(OnShippingChange onShippingChange) {
+        this.onShippingChange = onShippingChange;
+    }
 
     public String getReturnUrl() {
         return returnUrl;
@@ -211,6 +219,11 @@ public abstract class PayPalNativeRequest implements Parcelable {
     @Nullable
     public String getRiskCorrelationId() {
         return riskCorrelationId;
+    }
+
+    @Nullable
+    public OnShippingChange getOnShippingChange() {
+        return onShippingChange;
     }
 
     @NonNull
