@@ -152,7 +152,7 @@ public class PayPalNativeCheckoutClient {
                         }
                     });
                 },
-                payPalRequest.getOnShippingChange(),
+                null,
                 () -> listener.onPayPalFailure(new Exception("User has canceled")),
                 errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
         );
