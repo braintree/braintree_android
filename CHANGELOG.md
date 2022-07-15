@@ -4,6 +4,10 @@
 
 * DataCollector
   * Reference Kount library only when needed to prevent JVM from loading it when it isn't being used by a merchant.
+* SEPADirectDebit
+  * Add support for SEPA Direct Debit for approved merchants through the Braintree SDK
+  * SEPA Direct Debit is only available to select merchants, please contact your Customer Support Manager or Sales to start processing SEPA bank payments
+  * Merchants should use the `BTSepaDirectDebitClient.tokenize` method while passing in the activity and `BTSEPADirectDebitRequest` 
 
 ## 4.12.0
 

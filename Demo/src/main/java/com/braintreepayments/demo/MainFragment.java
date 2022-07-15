@@ -23,28 +23,20 @@ public class MainFragment extends BaseFragment {
 
     private PaymentMethodNonce nonce;
 
-    private Button googlePayButton;
-    private Button cardsButton;
-    private Button payPalButton;
-    private Button venmoButton;
-    private Button visaCheckoutButton;
-    private Button localPaymentsButton;
-    private Button preferredPaymentMethodsButton;
-    private Button samsungButton;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        googlePayButton = view.findViewById(R.id.google_pay);
-        cardsButton = view.findViewById(R.id.card);
-        payPalButton = view.findViewById(R.id.paypal);
-        venmoButton = view.findViewById(R.id.venmo);
-        visaCheckoutButton = view.findViewById(R.id.visa_checkout);
-        localPaymentsButton = view.findViewById(R.id.local_payment);
-        preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods);
-        samsungButton = view.findViewById(R.id.samsung_pay);
+        Button googlePayButton = view.findViewById(R.id.google_pay);
+        Button cardsButton = view.findViewById(R.id.card);
+        Button payPalButton = view.findViewById(R.id.paypal);
+        Button venmoButton = view.findViewById(R.id.venmo);
+        Button visaCheckoutButton = view.findViewById(R.id.visa_checkout);
+        Button localPaymentsButton = view.findViewById(R.id.local_payment);
+        Button preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods);
+        Button samsungButton = view.findViewById(R.id.samsung_pay);
+        Button sepaDirectDebitButton = view.findViewById(R.id.sepa_debit);
 
         cardsButton.setOnClickListener(this::launchCards);
         payPalButton.setOnClickListener(this::launchPayPal);
@@ -54,6 +46,7 @@ public class MainFragment extends BaseFragment {
         venmoButton.setOnClickListener(this::launchVenmo);
         preferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
         samsungButton.setOnClickListener(this::launchSamsungPay);
+        sepaDirectDebitButton.setOnClickListener(this::launchSEPADirectDebit);
 
         return view;
     }
@@ -127,6 +120,11 @@ public class MainFragment extends BaseFragment {
     public void launchSamsungPay(View v) {
         NavDirections action =
                 MainFragmentDirections.actionMainFragmentToSamsungPayFragment();
+        Navigation.findNavController(v).navigate(action);
+    }
+
+    public void launchSEPADirectDebit(View v) {
+        NavDirections action = MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment();
         Navigation.findNavController(v).navigate(action);
     }
 }
