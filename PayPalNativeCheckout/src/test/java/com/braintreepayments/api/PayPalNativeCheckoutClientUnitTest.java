@@ -107,8 +107,7 @@ public class PayPalNativeCheckoutClientUnitTest {
             new CheckoutConfig(
                 activity.getApplication(),
                 payPalEnabledConfig.getPayPalClientId(),
-                Environment.SANDBOX,
-                payPalCheckoutRequest.getReturnUrl()
+                Environment.SANDBOX
             )
         );
         OnApprove onApprove = approval -> { };
