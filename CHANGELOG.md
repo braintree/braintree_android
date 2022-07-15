@@ -1,10 +1,12 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * Adds `invalidateClientToken` method to `BraintreeClient`, which invalidates the cached client
   token authorization provided by the `ClientTokenProvider`
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
 * Trim tokenization key and client token before parsing
+
 * PayPalNativeCheckout
   * Adding in [PayPalNativeCheckout] module to use the native checkout for PayPal
   * Adds `PayPalNativeCheckoutClient` that handles launching the native checkout session, the session
