@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
         google()
         maven {
@@ -13,7 +12,7 @@ buildscript {
             "androidxTest"   : "1.4.0",
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",
-            "room"           : "2.4.0",
+            "room"           : "2.2.6",
             // Version 19.0.0 of play-services-wallet has been released but should not be used per Google documentation
             "playServices"   : "18.1.3"
     ]
@@ -33,7 +32,7 @@ buildscript {
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.1.1",
-            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.6-2",
+            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.6-1",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
@@ -86,27 +85,23 @@ plugins {
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
-ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''
-ext["signing.password"] = System.getenv('SIGNING_KEY_PASSWORD') ?: ''
-ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
-
 allprojects {
     repositories {
         flatDir {
             dirs "${rootDir}/libs"
         }
+        mavenLocal()
         google()
-        jcenter()
         mavenCentral()
     }
 }
 
-version '4.12.1-SNAPSHOT'
+version '4.10.2-SNAPSHOT'
 ext {
     compileSdkVersion = 31
     minSdkVersion = 21
     targetSdkVersion = 31
-    versionCode = 147
+    versionCode = 145
     versionName = version
 }
 
@@ -114,8 +109,8 @@ nexusStaging {
     packageGroup = project.hasProperty('nexusPackageGroup') ? project.getProperty('nexusPackageGroup') : 'com.braintreepayments'
     // give nexus sonatype more time to close the staging repository
     delayBetweenRetriesInMillis = 20000
-    username = System.getenv('SONATYPE_USERNAME')
-    password = System.getenv('SONATYPE_PASSWORD')
+    username = System.env['SONATYPE_USERNAME']
+    password = System.env['SONATYPE_PASSWORD']
 }
 
 subprojects {
@@ -127,69 +122,5 @@ subprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
-    }
-}
-
-task changeGradleReleaseVersion {
-    doLast {
-        def gradleFile = new File('build.gradle')
-        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + versionParam + "'")
-        gradleFile.write(gradleFileText)
-    }
-}
-
-task changeREADMEVersion {
-    doLast {
-
-        def readmeFile = new File('README.md')
-        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+'", ":card:" + versionParam + "'")
-        readmeFile.write(readmeFileText)
-    }
-}
-
-task changeMigrationGuideVersion {
-    doLast {
-        def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
-        def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
-        migrationGuideFile.write(migrationGuideFileText)
-
-        def newMigrationGuideFile = new File('v4.9.0+_MIGRATION_GUIDE.md')
-        def newMigrationGuideFileText = newMigrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
-        newMigrationGuideFile.write(newMigrationGuideFileText)
-    }
-}
-
-task updateCHANGELOGVersion {
-    doLast {
-        def changelogFile = new File('CHANGELOG.md')
-        def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam)
-        changelogFile.write(changelogFileText)
-    }
-}
-
-task incrementSNAPSHOTVersion {
-    doLast {
-        def gradleFile = new File('build.gradle')
-        def (major, minor, patch) = versionParam.tokenize('.')
-        def patchInteger = patch.toInteger()
-        def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
-        def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
-        gradleFile.write(gradleFileText)
-
-        // update README snapshot version
-        def readmeFile = new File('README.md')
-        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+-SNAPSHOT'", ":card:" + newVersion + "'")
-        readmeFile.write(readmeFileText)
-    }
-}
-
-task incrementVersionCode {
-    doLast {
-        def gradleFile = new File('build.gradle')
-        def versionText = gradleFile.text.find("versionCode = \\d+")
-        def params = versionText.split("=")
-        def newVersionCode = params[1].trim().toInteger() + 1
-        def gradleFileText = gradleFile.text.replaceFirst("versionCode = \\d+", "versionCode = " + newVersionCode)
-        gradleFile.write(gradleFileText)
     }
 }
