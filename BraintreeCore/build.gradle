@@ -40,6 +40,11 @@ android {
         textReport true
         textOutput 'stdout'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_7
+        targetCompatibility JavaVersion.VERSION_7
+    }
 }
 
 

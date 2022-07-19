@@ -28,6 +28,11 @@ android {
         returnDefaultValues true
         includeAndroidResources true
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_7
+        targetCompatibility JavaVersion.VERSION_7
+    }
 }
 
 dependencies {
