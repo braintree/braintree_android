@@ -7,8 +7,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
@@ -143,7 +147,7 @@ public class PayPalNativeCheckoutClient {
     ) {
         PayPalCheckout.registerCallbacks(
                 approval -> {
-                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse);
+                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse, approval.getData());
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
                             listener.onPayPalSuccess(payPalAccountNonce);
@@ -159,18 +163,38 @@ public class PayPalNativeCheckoutClient {
     }
 
     private PayPalNativeCheckoutAccount setupAccount(
-        final Configuration configuration,
-        final PayPalNativeRequest payPalRequest,
-        final PayPalNativeCheckoutResponse payPalResponse
+            final Configuration configuration,
+            final PayPalNativeRequest payPalRequest,
+            final PayPalNativeCheckoutResponse payPalResponse,
+            final ApprovalData approvalData
     ) {
         PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
         String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
         payPalAccount.setClientMetadataId(configuration.getPayPalClientId());
-        payPalAccount.setIntent(payPalResponse.getIntent());
         payPalAccount.setSource("paypal-browser");
         payPalAccount.setPaymentType(paymentType);
+
+        try {
+            JSONObject client = new JSONObject();
+            client.put("platform", "android");
+            client.put("product_name", "PayPal");
+            client.put("paypal_sdk_version", "version");
+            payPalAccount.setClient(client);
+
+            JSONObject urlResponseData = new JSONObject();
+            JSONObject response = new JSONObject();
+
+            if (approvalData.getCart() != null && approvalData.getCart().getReturnUrl() != null) {
+                response.put("webURL", approvalData.getCart().getReturnUrl().getHref());
+            }
+            urlResponseData.put("response", response);
+            urlResponseData.put("response_type", "web");
+            payPalAccount.setUrlResponseData(response);
+        } catch (JSONException jsonException) {
+            listener.onPayPalFailure(jsonException);
+        }
 
         if (merchantAccountId != null) {
             payPalAccount.setMerchantAccountId(merchantAccountId);

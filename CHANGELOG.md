@@ -8,6 +8,7 @@
 * Trim tokenization key and client token before parsing
 
 * PayPalNativeCheckout
+  * Requirement - Needs to be built on Java 11
   * Adding in [PayPalNativeCheckout] module to use the native checkout for PayPal
   * Adds `PayPalNativeCheckoutClient` that handles launching the native checkout session, the session
     start parameters are similar to that of `PaypalClient` with the main difference being it doesn't

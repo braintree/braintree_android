@@ -21,7 +21,6 @@ public class PayPalAccountUnitTest {
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
-        sut.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
         sut.setClientMetadataId("correlation_id");
         sut.setSource("paypal-sdk");
         sut.setMerchantAccountId("alt_merchant_account_id");
