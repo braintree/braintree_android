@@ -105,7 +105,14 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <Button
+            android:id="@+id/paypal_native_checkout"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/paypal_native_checkout"
+            android:textSize="12sp" />
         <Button
             android:id="@+id/sepa_debit"
             style="?android:attr/buttonStyle"
@@ -114,16 +121,6 @@
             android:layout_weight="1"
             android:text="@string/sepa_direct_debit_button"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/future_feature"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text=""
-            android:textSize="12sp"
-            tools:ignore="SpeakableTextPresentCheck" />
 
     </TableRow>
 </TableLayout>

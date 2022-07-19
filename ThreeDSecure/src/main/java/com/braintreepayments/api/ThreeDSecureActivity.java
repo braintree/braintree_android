@@ -43,7 +43,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
-        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, getIntent().getExtras()
+        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
                 .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 
