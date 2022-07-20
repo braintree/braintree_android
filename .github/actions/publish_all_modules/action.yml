@@ -39,7 +39,7 @@ runs:
           :Venmo:publishToSonatype \
           :SamsungPay:publishToSonatype \
           :SEPADirectDebit:publishToSonatype \
-          :PayPalNativeCheckout:publishToSonatype \
+          :PayPalNativeCheckout:publishToSonatype
       shell: bash
       env:
         SONATYPE_USERNAME: ${{ inputs.sonatype_usr }}
