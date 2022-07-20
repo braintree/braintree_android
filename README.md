@@ -67,7 +67,7 @@ Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
 
 ## Feedback
 
-The Braintree Android SDK is in active development, we welcome your feedback!
+The Braintree Android SDK is in active development. We welcome your feedback!
 
 Here are a few ways to get in touch:
 
