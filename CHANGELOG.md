@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.13.0
 
 * DataCollector
   * Reference Kount library only when needed to prevent JVM from loading it when it isn't being used by a merchant.
