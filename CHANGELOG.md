@@ -2,12 +2,13 @@
 
 ## unreleased
 
-* Adds `invalidateClientToken` method to `BraintreeClient`, which invalidates the cached client
-  token authorization provided by the `ClientTokenProvider`
-* Add `isExplicitCancelation` parameter to `UserCanceledException`
-* Trim tokenization key and client token before parsing
-
-* PayPalNativeCheckout
+* DataCollector
+  * Reference Kount library only when needed to prevent JVM from loading it when it isn't being used by a merchant.
+* SEPADirectDebit
+  * Add support for SEPA Direct Debit for approved merchants through the Braintree SDK
+  * SEPA Direct Debit is only available to select merchants, please contact your Customer Support Manager or Sales to start processing SEPA bank payments
+  * Merchants should use the `BTSepaDirectDebitClient.tokenize` method while passing in the activity and `BTSEPADirectDebitRequest`
+* PayPalNativeCheckout (BETA)
   * Requirement - Needs to be built on Java 11
   * Adding in [PayPalNativeCheckout] module to use the native checkout for PayPal
   * Adds `PayPalNativeCheckoutClient` that handles launching the native checkout session, the session
@@ -28,13 +29,6 @@
   * Adds `PayPalNativeCheckoutVaultRequest` to represent all items needed to begin the native vault flow
   * Adds `PayPalNativeRequest` to represent the base items needed for checkout and vault requests
   * Adds `PayPalNativeCheckoutResultCallback` to listen to the result returned from the checkout response
-
-* DataCollector
-  * Reference Kount library only when needed to prevent JVM from loading it when it isn't being used by a merchant.
-* SEPADirectDebit
-  * Add support for SEPA Direct Debit for approved merchants through the Braintree SDK
-  * SEPA Direct Debit is only available to select merchants, please contact your Customer Support Manager or Sales to start processing SEPA bank payments
-  * Merchants should use the `BTSepaDirectDebitClient.tokenize` method while passing in the activity and `BTSEPADirectDebitRequest` 
 
 ## 4.12.0
 

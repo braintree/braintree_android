@@ -37,7 +37,9 @@ runs:
           :ThreeDSecure:publishToSonatype \
           :UnionPay:publishToSonatype \
           :Venmo:publishToSonatype \
-          :SamsungPay:publishToSonatype
+          :SamsungPay:publishToSonatype \
+          :SEPADirectDebit:publishToSonatype \
+          :PayPalNativeCheckout:publishToSonatype \
       shell: bash
       env:
         SONATYPE_USERNAME: ${{ inputs.sonatype_usr }}

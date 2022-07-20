@@ -173,6 +173,30 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: VisaCheckout
+  unit_test_sepa_direct_debit:
+    name: SEPA Direct Debit Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: SEPADirectDebit
+  unit_test_paypal_native_checkout_debit:
+    name: PayPal Native Checkout Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: PayPalNativeCheckout
 
   # Wait until all module unit tests are finished before continuing release process
   unit_test_finished:
@@ -188,7 +212,9 @@ jobs:
       unit_test_three_d_secure,
       unit_test_union_pay,
       unit_test_venmo,
-      unit_test_visa_checkout
+      unit_test_visa_checkout,
+      unit_test_sepa_direct_debit,
+      unit_test_paypal_native_checkout_debit
     ]
     name: All Unit Tests Finished
     runs-on: ubuntu-latest
