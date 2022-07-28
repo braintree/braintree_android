@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* DataCollector
+  * Add `collectPayPalDeviceData` method to `DataCollector`
 * PayPalDataCollector
   * Create new module to allow for device data collection without Kount.
 
