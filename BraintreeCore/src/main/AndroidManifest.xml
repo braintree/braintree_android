@@ -9,4 +9,22 @@
         <package android:name="com.venmo" />
         <package android:name="com.paypal.android.p2pmobile" />
     </queries>
+
+    <application>
+
+        <activity
+            android:name=".BraintreeDeepLinkActivity"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:scheme="${applicationId}.braintree.defaultdeeplinkhandler" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+
+    </application>
 </manifest>

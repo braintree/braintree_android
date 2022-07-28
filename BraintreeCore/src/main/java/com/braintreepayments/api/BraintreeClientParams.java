@@ -18,6 +18,7 @@ class BraintreeClientParams {
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
     private UUIDHelper uuidHelper;
+    private String defaultReturnURLScheme;
 
     AuthorizationLoader getAuthorizationLoader() {
         return authorizationLoader;
@@ -124,6 +125,15 @@ class BraintreeClientParams {
 
     BraintreeClientParams returnUrlScheme(String returnUrlScheme) {
         this.returnUrlScheme = returnUrlScheme;
+        return this;
+    }
+
+    public String getDefaultReturnURLScheme() {
+        return defaultReturnURLScheme;
+    }
+
+    public BraintreeClientParams defaultReturnURLScheme(String defaultReturnURLScheme) {
+        this.defaultReturnURLScheme = defaultReturnURLScheme;
         return this;
     }
 }

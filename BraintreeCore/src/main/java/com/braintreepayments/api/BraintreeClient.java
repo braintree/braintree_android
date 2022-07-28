@@ -28,6 +28,9 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
     private final String returnUrlScheme;
+    private final String defaultReturnUrlScheme;
+
+    private boolean useDefaultDeepLinkHandler;
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
         String returnUrlScheme = context
@@ -35,11 +38,17 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+
+        String defaultReturnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.defaultdeeplinkhandler";
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, defaultReturnUrlScheme);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, null);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String sessionId, @IntegrationType.Integration String integrationType) {
@@ -48,10 +57,17 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType);
+
+        String defaultReturnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.defaultdeeplinkhandler";
+
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, defaultReturnUrlScheme);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType, String defaultReturnURLScheme) {
         AuthorizationLoader authorizationLoader =
                 new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
@@ -63,6 +79,7 @@ public class BraintreeClient {
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
+                .defaultReturnURLScheme(defaultReturnURLScheme)
                 .graphQLClient(new BraintreeGraphQLClient())
                 .analyticsClient(new AnalyticsClient(context))
                 .browserSwitchClient(new BrowserSwitchClient())
@@ -147,6 +164,7 @@ public class BraintreeClient {
         this.sessionId = sessionId;
         this.integrationType = params.getIntegrationType();
         this.returnUrlScheme = params.getReturnUrlScheme();
+        this.defaultReturnUrlScheme = params.getDefaultReturnURLScheme();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -281,6 +299,9 @@ public class BraintreeClient {
     }
 
     String getReturnUrlScheme() {
+        if (useDefaultDeepLinkHandler) {
+            return defaultReturnUrlScheme;
+        }
         return returnUrlScheme;
     }
 
@@ -330,5 +351,9 @@ public class BraintreeClient {
      */
     public void invalidateClientToken() {
         authorizationLoader.invalidateClientToken();
+    }
+
+    public void useDefaultDeepLinkHandler(boolean useDefaultDeepLinkHandler) {
+        this.useDefaultDeepLinkHandler = useDefaultDeepLinkHandler;
     }
 }
