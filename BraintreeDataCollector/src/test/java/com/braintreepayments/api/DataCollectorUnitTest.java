@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,7 @@ public class DataCollectorUnitTest {
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<KountDataCollectorCallback> kountCaptor =
-            ArgumentCaptor.forClass(KountDataCollectorCallback.class);
+                ArgumentCaptor.forClass(KountDataCollectorCallback.class);
         verify(kountDataCollector).startDataCollection(any(Context.class), eq("600000"), eq("sample-formatted-uuid"), kountCaptor.capture());
 
         KountDataCollectorCallback kountCallback = kountCaptor.getValue();
@@ -114,5 +115,66 @@ public class DataCollectorUnitTest {
         String deviceData = deviceDataCaptor.getValue();
         JSONObject json = new JSONObject(deviceData);
         assertEquals("sample_correlation_id", json.getString("correlation_id"));
+    }
+
+    @Test
+    public void collectPayPalDeviceData_setsApplicationGUIDAndRiskCorrelationIdWhenRequestingAClientMetadataId() {
+        when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("application-install-guid");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(kountDisabledConfiguration)
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
+
+        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
+
+        ArgumentCaptor<PayPalDataCollectorRequest> captor =
+                ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
+        verify(payPalDataCollector).getClientMetadataId(same(context), captor.capture(), same(kountDisabledConfiguration));
+
+        PayPalDataCollectorRequest request = captor.getValue();
+        assertEquals(request.getApplicationGuid(), "application-install-guid");
+        assertEquals(request.getClientMetadataId(), "risk-correlation-id");
+    }
+
+    @Test
+    public void collectPayPalDeviceData_forwardsClientMetadataIdFromDataCollector() {
+        when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("application-install-guid");
+        when(payPalDataCollector.getClientMetadataId(
+                any(Context.class),
+                any(PayPalDataCollectorRequest.class),
+                any(Configuration.class)
+        )).thenReturn("paypal-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(kountDisabledConfiguration)
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
+
+        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
+
+        verify(callback).onResult("paypal-client-metadata-id", null);
+    }
+
+    @Test
+    public void collectPayPalDeviceData_forwardsConfigurationFetchErrors() {
+        Exception configError = new Exception("configuration error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
+
+        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
+
+        verify(callback).onResult(null, configError);
     }
 }
