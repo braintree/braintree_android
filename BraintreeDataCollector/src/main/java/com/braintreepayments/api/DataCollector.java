@@ -121,6 +121,9 @@ public class DataCollector {
     /**
      * Collects device information for fraud identification purposes from PayPal only.
      *
+     * This returns a raw client metadata ID, which is not the correct format for device data when
+     * creating a transaction. Instead, it is recommended to use {@link DataCollector#collectDeviceData(Context, DataCollectorCallback)}.
+     *
      * @param context           Android Context
      * @param riskCorrelationId Correlation id to associate with data collection
      * @param callback          {@link DataCollectorCallback}
