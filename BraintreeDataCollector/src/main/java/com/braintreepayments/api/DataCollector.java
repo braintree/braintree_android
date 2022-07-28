@@ -106,7 +106,7 @@ public class DataCollector {
     /**
      * Collect device information for fraud identification purposes from PayPal only.
      *
-     * @param context Android Context
+     * @param context       Android Context
      * @param configuration the merchant configuration
      * @return The client metadata id associated with the collected data.
      */
@@ -116,5 +116,33 @@ public class DataCollector {
         } catch (NoClassDefFoundError ignored) {
         }
         return "";
+    }
+
+    /**
+     * Collects device information for fraud identification purposes from PayPal only.
+     *
+     * @param context           Android Context
+     * @param riskCorrelationId Correlation id to associate with data collection
+     * @param callback          {@link DataCollectorCallback}
+     */
+    public void collectPayPalDeviceData(@NonNull final Context context, @NonNull final String riskCorrelationId, @NonNull final CollectPayPalDeviceDataCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception configurationError) {
+                if (configuration != null) {
+                    String applicationGUID = payPalDataCollector.getPayPalInstallationGUID(context);
+                    PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                            .setApplicationGuid(applicationGUID)
+                            .setClientMetadataId(riskCorrelationId);
+
+                    String clientMetaDataId =
+                        payPalDataCollector.getClientMetadataId(context, request, configuration);
+                    callback.onResult(clientMetaDataId, null);
+
+                } else {
+                    callback.onResult(null, configurationError);
+                }
+            }
+        });
     }
 }
