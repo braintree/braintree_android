@@ -1,5 +1,13 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 
 import com.braintreepayments.api.TestConfigurationBuilder.TestKountConfigurationBuilder;
@@ -11,14 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class DataCollectorUnitTest {
@@ -58,7 +58,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         verify(callback).onResult(null, configError);
@@ -75,7 +75,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<KountDataCollectorCallback> kountCaptor =
@@ -105,7 +105,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
