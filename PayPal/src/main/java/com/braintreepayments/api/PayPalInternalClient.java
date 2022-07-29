@@ -24,7 +24,7 @@ class PayPalInternalClient {
     private final ApiClient apiClient;
 
     PayPalInternalClient(BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(), new ApiClient(braintreeClient));
+        this(braintreeClient, new PayPalDataCollector(braintreeClient), new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting

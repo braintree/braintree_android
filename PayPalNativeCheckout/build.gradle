@@ -35,7 +35,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
-    implementation project(':BraintreeDataCollector')
+    implementation project(':PayPalDataCollector')
 
     implementation('com.paypal.checkout:android-sdk:0.7.2') {
         exclude group: 'com.paypal.android.sdk', module: 'data-collector'

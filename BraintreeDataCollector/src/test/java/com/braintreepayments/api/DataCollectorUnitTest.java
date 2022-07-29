@@ -58,7 +58,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         verify(callback).onResult(null, configError);
@@ -75,7 +75,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<KountDataCollectorCallback> kountCaptor =
@@ -105,7 +105,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);

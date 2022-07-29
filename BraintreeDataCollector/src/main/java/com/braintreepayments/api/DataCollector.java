@@ -25,7 +25,7 @@ public class DataCollector {
     private final UUIDHelper uuidHelper;
 
     public DataCollector(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient), new UUIDHelper());
+        this(braintreeClient, new PayPalDataCollector(braintreeClient), new KountDataCollector(braintreeClient), new UUIDHelper());
     }
 
     @VisibleForTesting

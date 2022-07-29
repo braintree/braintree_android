@@ -6,10 +6,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link DataCollector#collectDeviceData(Context, PayPalDataCollectorCallback)} and
- * {@link DataCollector#collectDeviceData(Context, String, PayPalDataCollectorCallback)} and
+ * {@link PayPalDataCollector#collectDeviceData(Context, PayPalDataCollectorCallback)}
  */
-public interface DataCollectorCallback {
+public interface PayPalDataCollectorCallback {
 
     /**
      * @param deviceData the device information collected for fraud detection

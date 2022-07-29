@@ -1,10 +1,16 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.InvalidInputException;
@@ -13,17 +19,21 @@ import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
 import lib.android.paypal.com.magnessdk.MagnesSource;
 
-class PayPalDataCollector {
+public class PayPalDataCollector {
+
+    private static final String CORRELATION_ID_KEY = "correlation_id";
 
     private final MagnesSDK magnesSDK;
     private final UUIDHelper uuidHelper;
+    private final BraintreeClient braintreeClient;
 
-    PayPalDataCollector() {
-        this(MagnesSDK.getInstance(), new UUIDHelper());
+    PayPalDataCollector(@NonNull BraintreeClient braintreeClient) {
+        this(braintreeClient, MagnesSDK.getInstance(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    PayPalDataCollector(MagnesSDK magnesSDK, UUIDHelper uuidHelper) {
+    PayPalDataCollector(BraintreeClient braintreeClient, MagnesSDK magnesSDK, UUIDHelper uuidHelper) {
+        this.braintreeClient = braintreeClient;
         this.magnesSDK = magnesSDK;
         this.uuidHelper = uuidHelper;
     }
@@ -95,5 +105,37 @@ class PayPalDataCollector {
             return Environment.SANDBOX;
         }
         return Environment.LIVE;
+    }
+
+    /**
+     * Collects device data based on your merchant configuration.
+     * <p>
+     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
+     * call it at the beginning of customer checkout.
+     * <p>
+     * Use the return value on your server, e.g. with `Transaction.sale`.
+     *  @param context    Android Context
+     * @param callback   {@link PayPalDataCollectorCallback}
+     */
+    public void collectDeviceData(@NonNull final Context context, @NonNull final PayPalDataCollectorCallback callback) {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration != null) {
+                    final JSONObject deviceData = new JSONObject();
+                    try {
+                        String clientMetadataId = getClientMetadataId(context, configuration);
+                        if (!TextUtils.isEmpty(clientMetadataId)) {
+                            deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+                        }
+                    } catch (JSONException ignored) {
+                    }
+                    callback.onResult(deviceData.toString(), null);
+
+                } else {
+                    callback.onResult(null, error);
+                }
+            }
+        });
     }
 }

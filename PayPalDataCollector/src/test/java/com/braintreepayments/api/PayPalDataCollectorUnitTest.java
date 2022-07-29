@@ -1,7 +1,15 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
 
+import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,18 +26,6 @@ import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
 import lib.android.paypal.com.magnessdk.MagnesSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(RobolectricTestRunner.class)
 public class PayPalDataCollectorUnitTest {
 
@@ -39,9 +35,10 @@ public class PayPalDataCollectorUnitTest {
 
     private MagnesSDK magnesSDK;
     private UUIDHelper uuidHelper;
+    private BraintreeClient braintreeClient;
 
     @Before
-    public void beforeEach() {
+    public void beforeEach() throws JSONException {
         magnesSDK = mock(MagnesSDK.class);
         uuidHelper = mock(UUIDHelper.class);
         context = mock(Context.class);
@@ -51,12 +48,17 @@ public class PayPalDataCollectorUnitTest {
 
         // this uuid has no actual meaning; magnes requires a valid guid for tests
         sampleInstallationGUID = "0665203b-16e4-4ce2-be98-d7d73ec32e8a";
+
+        braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
+                .build();
     }
 
     @Test
     public void getPayPalInstallationGUID_returnsInstallationIdentifier() {
+
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
 
         assertEquals(sampleInstallationGUID, sut.getPayPalInstallationGUID(context));
     }
@@ -64,7 +66,7 @@ public class PayPalDataCollectorUnitTest {
     @Test
     public void getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
 
         String result = sut.getClientMetadataId(null, configuration);
         assertEquals("", result);
@@ -75,20 +77,20 @@ public class PayPalDataCollectorUnitTest {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
         when(configuration.getEnvironment()).thenReturn("production");
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), (String) ArgumentMatchers.isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         sut.getClientMetadataId(context, configuration);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
 
         MagnesSettings magnesSettings = captor.getValue();
-        assertEquals(MagnesSource.BRAINTREE.getVersion(), magnesSettings.getMagnesSource());
+        Assert.assertEquals(MagnesSource.BRAINTREE.getVersion(), magnesSettings.getMagnesSource());
         assertFalse(magnesSettings.isDisableBeacon());
-        assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
-        assertEquals(sampleInstallationGUID, magnesSettings.getAppGuid());
+        Assert.assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
+        Assert.assertEquals(sampleInstallationGUID, magnesSettings.getAppGuid());
     }
 
     @Test
@@ -103,20 +105,20 @@ public class PayPalDataCollectorUnitTest {
                 .setAdditionalData(additionalData)
                 .setDisableBeacon(false);
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), eq("client-metadata-id"), same(additionalData)))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), ArgumentMatchers.eq("client-metadata-id"), ArgumentMatchers.same(additionalData)))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         sut.getClientMetadataId(context, payPalDataCollectorRequest, configuration);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
 
         MagnesSettings magnesSettings = captor.getValue();
-        assertEquals(MagnesSource.BRAINTREE.getVersion(), magnesSettings.getMagnesSource());
+        Assert.assertEquals(MagnesSource.BRAINTREE.getVersion(), magnesSettings.getMagnesSource());
         assertFalse(magnesSettings.isDisableBeacon());
-        assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
-        assertEquals(applicationGUID, magnesSettings.getAppGuid());
+        Assert.assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
+        Assert.assertEquals(applicationGUID, magnesSettings.getAppGuid());
     }
 
     @Test
@@ -126,10 +128,10 @@ public class PayPalDataCollectorUnitTest {
         MagnesResult magnesResult = mock(MagnesResult.class);
         when(magnesResult.getPaypalClientMetaDataId()).thenReturn("paypal-clientmetadata-id");
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), (String) ArgumentMatchers.isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenReturn(magnesResult);
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         String result = sut.getClientMetadataId(context, configuration);
 
         assertEquals("paypal-clientmetadata-id", result);
@@ -139,10 +141,10 @@ public class PayPalDataCollectorUnitTest {
     public void getClientMetadataId_returnsEmptyStringWhenMagnesInputInvalid() throws InvalidInputException {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), (String) isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), (String) ArgumentMatchers.isNull(), ArgumentMatchers.<HashMap<String, String>>isNull()))
                 .thenThrow(new InvalidInputException("invalid input"));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         String result = sut.getClientMetadataId(context, configuration);
 
         assertEquals("", result);
@@ -160,17 +162,17 @@ public class PayPalDataCollectorUnitTest {
                 .setAdditionalData(additionalData)
                 .setDisableBeacon(false);
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), eq("client-metadata-id"), same(additionalData)))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), ArgumentMatchers.eq("client-metadata-id"), ArgumentMatchers.same(additionalData)))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         sut.getClientMetadataId(context, payPalDataCollectorRequest, configuration);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
 
         MagnesSettings magnesSettings = captor.getValue();
-        assertEquals(Environment.SANDBOX, magnesSettings.getEnvironment());
+        Assert.assertEquals(Environment.SANDBOX, magnesSettings.getEnvironment());
     }
 
     @Test
@@ -185,16 +187,16 @@ public class PayPalDataCollectorUnitTest {
                 .setAdditionalData(additionalData)
                 .setDisableBeacon(false);
 
-        when(magnesSDK.collectAndSubmit(any(Context.class), eq("client-metadata-id"), same(additionalData)))
+        when(magnesSDK.collectAndSubmit(ArgumentMatchers.any(Context.class), ArgumentMatchers.eq("client-metadata-id"), ArgumentMatchers.same(additionalData)))
                 .thenReturn(mock(MagnesResult.class));
 
-        PayPalDataCollector sut = new PayPalDataCollector(magnesSDK, uuidHelper);
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
         sut.getClientMetadataId(context, payPalDataCollectorRequest, configuration);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
 
         MagnesSettings magnesSettings = captor.getValue();
-        assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
+        Assert.assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
     }
 }
