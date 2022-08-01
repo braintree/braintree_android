@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -12,29 +11,22 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import lib.android.paypal.com.magnessdk.Environment;
-import lib.android.paypal.com.magnessdk.InvalidInputException;
-import lib.android.paypal.com.magnessdk.MagnesResult;
-import lib.android.paypal.com.magnessdk.MagnesSDK;
-import lib.android.paypal.com.magnessdk.MagnesSettings;
-import lib.android.paypal.com.magnessdk.MagnesSource;
-
 public class PayPalDataCollector {
 
     private static final String CORRELATION_ID_KEY = "correlation_id";
 
-    private final MagnesSDK magnesSDK;
+    private final MagnesInternalClient magnesInternalClient;
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
     PayPalDataCollector(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, MagnesSDK.getInstance(), new UUIDHelper());
+        this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    PayPalDataCollector(BraintreeClient braintreeClient, MagnesSDK magnesSDK, UUIDHelper uuidHelper) {
+    PayPalDataCollector(BraintreeClient braintreeClient, MagnesInternalClient magnesInternalClient, UUIDHelper uuidHelper) {
         this.braintreeClient = braintreeClient;
-        this.magnesSDK = magnesSDK;
+        this.magnesInternalClient = magnesInternalClient;
         this.uuidHelper = uuidHelper;
     }
 
@@ -77,34 +69,7 @@ public class PayPalDataCollector {
      */
     @MainThread
     String getClientMetadataId(Context context, PayPalDataCollectorRequest request, Configuration configuration) {
-        if (context == null || context.getApplicationContext() == null) {
-            return "";
-        }
-
-        try {
-            MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context.getApplicationContext())
-                    .setMagnesSource(MagnesSource.BRAINTREE)
-                    .disableBeacon(request.isDisableBeacon())
-                    .setMagnesEnvironment(getMagnesEnvironment(configuration.getEnvironment()))
-                    .setAppGuid(request.getApplicationGuid());
-
-            magnesSDK.setUp(magnesSettingsBuilder.build());
-
-            MagnesResult result = magnesSDK.collectAndSubmit(context.getApplicationContext(), request.getClientMetadataId(), request.getAdditionalData());
-
-            return result.getPaypalClientMetaDataId();
-        } catch (InvalidInputException e) {
-            // Either clientMetadataId or appGuid exceeds their character limit
-            Log.e("Exception", "Error fetching client metadata ID. Contact Braintree Support for assistance.", e);
-            return "";
-        }
-    }
-
-    private Environment getMagnesEnvironment(String environment) {
-        if ("sandbox".equals(environment)) {
-            return Environment.SANDBOX;
-        }
-        return Environment.LIVE;
+        return magnesInternalClient.getClientMetadataId(context, configuration, request);
     }
 
     /**
