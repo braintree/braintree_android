@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -214,4 +216,26 @@ public class PayPalDataCollectorUnitTest {
 
         verify(callback).onResult(null, configError);
     }
+
+//    @Test
+//    public void collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
+//        when(payPalDataCollector.getClientMetadataId(context, kountDisabledConfiguration)).thenReturn("sample_correlation_id");
+//
+//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+//                .configuration(kountDisabledConfiguration)
+//                .build();
+//
+//        DataCollector sut = new DataCollector(
+//                braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
+//
+//        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+//        sut.collectDeviceData(context, callback);
+//
+//        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+//        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+//
+//        String deviceData = deviceDataCaptor.getValue();
+//        JSONObject json = new JSONObject(deviceData);
+//        junit.framework.Assert.assertEquals("sample_correlation_id", json.getString("correlation_id"));
+//    }
 }
