@@ -199,4 +199,19 @@ public class PayPalDataCollectorUnitTest {
         MagnesSettings magnesSettings = captor.getValue();
         Assert.assertEquals(Environment.LIVE, magnesSettings.getEnvironment());
     }
+
+    @Test
+    public void collectDeviceData_forwardsConfigurationFetchErrors() {
+        Exception configError = new Exception("configuration error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesSDK, uuidHelper);
+
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        verify(callback).onResult(null, configError);
+    }
 }
