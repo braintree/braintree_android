@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.InvalidInputException;
+import lib.android.paypal.com.magnessdk.MagnesResult;
 import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
 import lib.android.paypal.com.magnessdk.MagnesSource;
@@ -42,13 +43,15 @@ class MagnesInternalClient {
                     .disableBeacon(request.isDisableBeacon())
                     .setMagnesEnvironment(magnesEnvironment)
                     .setAppGuid(request.getApplicationGuid());
+
+            magnesSDK.setUp(magnesSettingsBuilder.build());
+
+            MagnesResult result = magnesSDK.collectAndSubmit(context.getApplicationContext(), request.getClientMetadataId(), request.getAdditionalData());
+            return result.getPaypalClientMetaDataId();
         } catch (InvalidInputException e) {
             // Either clientMetadataId or appGuid exceeds their character limit
             Log.e("Exception", "Error fetching client metadata ID. Contact Braintree Support for assistance.", e);
             return "";
         }
-
-        magnesSDK.setUp(magnesSettingsBuilder.build());
-        return null;
     }
 }
