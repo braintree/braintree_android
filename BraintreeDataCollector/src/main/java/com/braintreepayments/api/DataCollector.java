@@ -112,7 +112,7 @@ public class DataCollector {
      */
     private String getPayPalClientMetadataId(Context context, Configuration configuration) {
         try {
-            return payPalDataCollector.getClientMetadataId(context, configuration);
+            return payPalDataCollector.getClientMetadataId(context, configuration, null);
         } catch (NoClassDefFoundError ignored) {
         }
         return "";

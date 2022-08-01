@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +40,6 @@ public class PayPalDataCollectorUnitTest {
         context = ApplicationProvider.getApplicationContext();
 
         configuration = mock(Configuration.class);
-        when(configuration.getEnvironment()).thenReturn("sandbox");
 
         // this uuid has no actual meaning; magnes requires a valid guid for tests
         sampleInstallationGUID = "0665203b-16e4-4ce2-be98-d7d73ec32e8a";
@@ -60,12 +61,11 @@ public class PayPalDataCollectorUnitTest {
     @Test
     public void getClientMetadataId_configuresMagnesWithDefaultRequest() {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        when(configuration.getEnvironment()).thenReturn("production");
 
         when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample-client-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
-        sut.getClientMetadataId(context, configuration);
+        sut.getClientMetadataId(context, configuration, null);
 
         ArgumentCaptor<PayPalDataCollectorRequest> captor = ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
         verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
@@ -81,7 +81,7 @@ public class PayPalDataCollectorUnitTest {
         when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
-        String result = sut.getClientMetadataId(context, configuration);
+        String result = sut.getClientMetadataId(context, configuration, null);
 
         assertEquals("paypal-clientmetadata-id", result);
     }
@@ -89,7 +89,6 @@ public class PayPalDataCollectorUnitTest {
     @Test
     public void getClientMetadataId_configuresMagnesWithCustomRequestAndForwardsClientMetadataIdFromMagnesResult() {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        when(configuration.getEnvironment()).thenReturn("production");
 
         PayPalDataCollectorRequest customRequest = new PayPalDataCollectorRequest();
         when(magnesInternalClient.getClientMetadataId(context, configuration, customRequest)).thenReturn("sample-client-id");
@@ -115,25 +114,66 @@ public class PayPalDataCollectorUnitTest {
         verify(callback).onResult(null, configError);
     }
 
-//    @Test
-//    public void collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
-//        when(payPalDataCollector.getClientMetadataId(context, kountDisabledConfiguration)).thenReturn("sample_correlation_id");
-//
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//                .configuration(kountDisabledConfiguration)
-//                .build();
-//
-//        DataCollector sut = new DataCollector(
-//                braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
-//
-//        DataCollectorCallback callback = mock(DataCollectorCallback.class);
-//        sut.collectDeviceData(context, callback);
-//
-//        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
-//        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
-//
-//        String deviceData = deviceDataCaptor.getValue();
-//        JSONObject json = new JSONObject(deviceData);
-//        junit.framework.Assert.assertEquals("sample_correlation_id", json.getString("correlation_id"));
-//    }
+    @Test
+    public void collectDeviceData_configuresMagnesWithDefaultRequest() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .build();
+
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
+
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<PayPalDataCollectorRequest> captor = ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
+        verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
+
+        PayPalDataCollectorRequest request = captor.getValue();
+        assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+    }
+
+    @Test
+    public void collectDeviceData_configuresMagnesWithClientId() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .build();
+
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
+
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        sut.collectDeviceData(context, "custom-client-metadata-id", callback);
+
+        ArgumentCaptor<PayPalDataCollectorRequest> captor = ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
+        verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
+
+        PayPalDataCollectorRequest request = captor.getValue();
+        assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+    }
+
+    @Test
+    public void collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .build();
+
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
+
+        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        String deviceData = deviceDataCaptor.getValue();
+        JSONObject json = new JSONObject(deviceData);
+        assertEquals("sample_correlation_id", json.getString("correlation_id"));
+    }
 }

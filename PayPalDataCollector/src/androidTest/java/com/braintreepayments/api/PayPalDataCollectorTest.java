@@ -18,7 +18,7 @@ public class PayPalDataCollectorTest {
     public void getClientMetadataId_returnsClientMetadataId() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         PayPalDataCollector sut = new PayPalDataCollector();
-        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration);
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, );
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }

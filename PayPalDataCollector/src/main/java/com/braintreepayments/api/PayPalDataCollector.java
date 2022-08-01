@@ -42,12 +42,13 @@ public class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context Android Context
-     * @param configuration the merchant configurationn
+     * @param context          Android Context
+     * @param configuration    the merchant configurationn
+     * @param clientMetadataId
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration) {
+    String getClientMetadataId(Context context, Configuration configuration, String clientMetadataId) {
         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
@@ -62,8 +63,8 @@ public class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context Android Context.
-     * @param request configures what data to collect.
+     * @param context       Android Context.
+     * @param request       configures what data to collect.
      * @param configuration the merchant configuration
      * @return clientMetadataId Your server will send this to PayPal
      */
@@ -79,19 +80,36 @@ public class PayPalDataCollector {
      * call it at the beginning of customer checkout.
      * <p>
      * Use the return value on your server, e.g. with `Transaction.sale`.
-     *  @param context    Android Context
-     * @param callback   {@link PayPalDataCollectorCallback}
+     *
+     * @param context  Android Context
+     * @param callback {@link PayPalDataCollectorCallback}
      */
     public void collectDeviceData(@NonNull final Context context, @NonNull final PayPalDataCollectorCallback callback) {
+        collectDeviceData(context, null, callback);
+    }
+
+    /**
+     * Collects device data based on your merchant configuration.
+     * <p>
+     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
+     * call it at the beginning of customer checkout.
+     * <p>
+     * Use the return value on your server, e.g. with `Transaction.sale`.
+     *
+     * @param context          Android Context
+     * @param clientMetadataId Optional client metadata id
+     * @param callback         {@link PayPalDataCollectorCallback}
+     */
+    public void collectDeviceData(@NonNull final Context context, @Nullable final String clientMetadataId, @NonNull final PayPalDataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        String clientMetadataId = getClientMetadataId(context, configuration);
-                        if (!TextUtils.isEmpty(clientMetadataId)) {
-                            deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+                        String correlationId = getClientMetadataId(context, configuration, clientMetadataId);
+                        if (!TextUtils.isEmpty(correlationId)) {
+                            deviceData.put(CORRELATION_ID_KEY, correlationId);
                         }
                     } catch (JSONException ignored) {
                     }

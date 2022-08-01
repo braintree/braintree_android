@@ -57,7 +57,7 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, new PayPalDataCollectorCallback() {
+        sut.collectDeviceData(activity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -89,7 +89,7 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, "600001", new PayPalDataCollectorCallback() {
+        sut.collectDeviceData(activity, "600001", new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -118,7 +118,7 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, new PayPalDataCollectorCallback() {
+        sut.collectDeviceData(activity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {

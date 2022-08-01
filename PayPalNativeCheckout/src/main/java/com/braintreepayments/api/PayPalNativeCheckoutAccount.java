@@ -64,7 +64,7 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
      * @param clientMetadataId Application clientMetadataId created by
-     *                         {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context, Configuration)}.
+     *                         {@link PayPalDataCollector#getClientMetadataId(Context, Configuration, String)}.
      */
     void setClientMetadataId(String clientMetadataId) {
         this.clientMetadataId = clientMetadataId;

@@ -27,7 +27,6 @@ public class CardClientUnitTest {
     private Card card;
     private CardTokenizeCallback cardTokenizeCallback;
 
-    private DataCollector dataCollector;
     private ApiClient apiClient;
 
     private Configuration graphQLEnabledConfig;
@@ -39,7 +38,6 @@ public class CardClientUnitTest {
         card = new Card();
         cardTokenizeCallback = mock(CardTokenizeCallback.class);
 
-        dataCollector = mock(DataCollector.class);
         apiClient = mock(ApiClient.class);
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL);

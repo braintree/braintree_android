@@ -266,7 +266,7 @@ public class LocalPaymentClient {
                     @Override
                     public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                         if (configuration != null) {
-                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
+                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration, null), new LocalPaymentBrowserSwitchResultCallback() {
                                 @Override
                                 public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
                                     if (localPaymentNonce != null) {
