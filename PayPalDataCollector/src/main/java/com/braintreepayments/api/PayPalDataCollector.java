@@ -11,6 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * PayPalDataCollector is used to collect PayPal specific device information to aid in fraud detection and prevention.
+ */
 public class PayPalDataCollector {
 
     private static final String CORRELATION_ID_KEY = "correlation_id";
