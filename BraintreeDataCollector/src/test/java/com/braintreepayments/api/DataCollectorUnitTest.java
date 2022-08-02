@@ -66,7 +66,7 @@ public class DataCollectorUnitTest {
 
     @Test
     public void collectDeviceData_withKountEnabled_getsDeviceDataJSONWithDeviceSessionId() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, kountEnabledConfiguration, null)).thenReturn("sample_correlation_id");
+        when(payPalDataCollector.getClientMetadataId(context, kountEnabledConfiguration)).thenReturn("sample_correlation_id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(kountEnabledConfiguration)
@@ -96,7 +96,7 @@ public class DataCollectorUnitTest {
 
     @Test
     public void collectDeviceData_withKountDisabled_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, kountDisabledConfiguration, null)).thenReturn("sample_correlation_id");
+        when(payPalDataCollector.getClientMetadataId(context, kountDisabledConfiguration)).thenReturn("sample_correlation_id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(kountDisabledConfiguration)

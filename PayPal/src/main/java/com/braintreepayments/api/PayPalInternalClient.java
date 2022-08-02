@@ -74,7 +74,7 @@ class PayPalInternalClient {
                                                     String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
                                                     String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
                                                     String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
-                                                            ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration, null);
+                                                            ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
 
                                                     if (pairingId != null) {
                                                         payPalResponse

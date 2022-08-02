@@ -322,7 +322,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration, null)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -346,7 +346,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any(), (String) isNull())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -394,7 +394,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any(), (String) isNull())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -425,7 +425,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any(), (String) isNull())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))

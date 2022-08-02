@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -142,7 +141,7 @@ public class LocalPaymentClientUnitTest {
                 .integration("sample-integration-type")
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(activity);
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, null)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
@@ -471,7 +470,7 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeError(postError)
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, null)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -499,7 +498,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, null)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -526,7 +525,7 @@ public class LocalPaymentClientUnitTest {
                 .integration("custom")
                 .sessionId("session-id")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), (String) isNull())).thenReturn("client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig))).thenReturn("client-metadata-id");
 
         LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
@@ -562,7 +561,7 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeSuccess(LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)))
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), (String) isNull())).thenReturn("client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig))).thenReturn("client-metadata-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -591,7 +590,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, null)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);

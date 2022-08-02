@@ -43,12 +43,10 @@ public class PayPalDataCollector {
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context          Android Context
-     * @param configuration    the merchant configurationn
-     * @param clientMetadataId
-     * @return clientMetadataId Your server will send this to PayPal
+     * @param configuration    the merchant configuration
      */
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration, String clientMetadataId) {
+    String getClientMetadataId(Context context, Configuration configuration) {
         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
@@ -66,7 +64,6 @@ public class PayPalDataCollector {
      * @param context       Android Context.
      * @param request       configures what data to collect.
      * @param configuration the merchant configuration
-     * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
     String getClientMetadataId(Context context, PayPalDataCollectorRequest request, Configuration configuration) {
@@ -107,7 +104,14 @@ public class PayPalDataCollector {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        String correlationId = getClientMetadataId(context, configuration, clientMetadataId);
+                        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                                .setApplicationGuid(getPayPalInstallationGUID(context));
+                        if (clientMetadataId != null) {
+                            request.setClientMetadataId(clientMetadataId);
+                        }
+
+                        String correlationId =
+                            magnesInternalClient.getClientMetadataId(context, configuration, request);
                         if (!TextUtils.isEmpty(correlationId)) {
                             deviceData.put(CORRELATION_ID_KEY, correlationId);
                         }

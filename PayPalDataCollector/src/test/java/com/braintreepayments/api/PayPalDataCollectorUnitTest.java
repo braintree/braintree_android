@@ -62,10 +62,10 @@ public class PayPalDataCollectorUnitTest {
     public void getClientMetadataId_configuresMagnesWithDefaultRequest() {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
-        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample-client-id");
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
-        sut.getClientMetadataId(context, configuration, null);
+        sut.getClientMetadataId(context, configuration);
 
         ArgumentCaptor<PayPalDataCollectorRequest> captor = ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
         verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
@@ -75,28 +75,28 @@ public class PayPalDataCollectorUnitTest {
     }
 
     @Test
+    public void getClientMetadataId_configuresMagnesWithCustomRequestAndForwardsClientMetadataIdFromMagnesResult() {
+        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+
+        PayPalDataCollectorRequest customRequest = new PayPalDataCollectorRequest();
+        when(magnesInternalClient.getClientMetadataId(context, configuration, customRequest)).thenReturn("paypal-clientmetadata-id");
+
+        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
+        sut.getClientMetadataId(context, customRequest, configuration);
+
+        verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), same(customRequest));
+    }
+
+    @Test
     public void getClientMetadataId_forwardsClientMetadataIdFromMagnesResult() {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
-        String result = sut.getClientMetadataId(context, configuration, null);
+        String result = sut.getClientMetadataId(context, configuration);
 
         assertEquals("paypal-clientmetadata-id", result);
-    }
-
-    @Test
-    public void getClientMetadataId_configuresMagnesWithCustomRequestAndForwardsClientMetadataIdFromMagnesResult() {
-        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-
-        PayPalDataCollectorRequest customRequest = new PayPalDataCollectorRequest();
-        when(magnesInternalClient.getClientMetadataId(context, configuration, customRequest)).thenReturn("sample-client-id");
-
-        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
-        String result = sut.getClientMetadataId(context, customRequest, configuration);
-
-        assertEquals("sample-client-id", result);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class PayPalDataCollectorUnitTest {
                 .build();
 
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
 
@@ -142,7 +142,7 @@ public class PayPalDataCollectorUnitTest {
                 .build();
 
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
-        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
 
@@ -154,6 +154,7 @@ public class PayPalDataCollectorUnitTest {
 
         PayPalDataCollectorRequest request = captor.getValue();
         assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+        assertEquals("custom-client-metadata-id", request.getClientMetadataId());
     }
 
     @Test
@@ -162,7 +163,7 @@ public class PayPalDataCollectorUnitTest {
                 .configuration(configuration)
                 .build();
 
-        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("sample_correlation_id");
+        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorRequest.class))).thenReturn("paypal-clientmetadata-id");
 
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
 
@@ -174,6 +175,6 @@ public class PayPalDataCollectorUnitTest {
 
         String deviceData = deviceDataCaptor.getValue();
         JSONObject json = new JSONObject(deviceData);
-        assertEquals("sample_correlation_id", json.getString("correlation_id"));
+        assertEquals("paypal-clientmetadata-id", json.getString("correlation_id"));
     }
 }
