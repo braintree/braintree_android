@@ -1,24 +1,37 @@
 plugins {
     id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
 }
 
 android {
-    compileSdk 32
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
-        minSdk 21
-        targetSdk 32
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        consumerProguardFiles 'proguard.pro'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                jvmArgs '-noverify'
+            }
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -48,3 +61,84 @@ dependencies {
     androidTestImplementation deps.appCompat
     androidTestImplementation project(':TestUtils')
 }
+
+// region signing and publishing
+
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
+    repositories {
+        sonatype()
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                artifact sourcesJar
+                artifact javadocsJar
+
+                groupId = 'com.braintreepayments.api'
+                artifactId = 'paypal-data-collector'
+                version = rootProject.versionName
+
+                pom {
+                    name = 'paypal-data-collector'
+                    packaging = 'aar'
+                    description = 'PayPal fraud tools for Braintree integrations on Android.'
+                    url = 'https://github.com/braintree/braintree_android'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// endregion
