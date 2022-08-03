@@ -46,7 +46,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_withListener() throws InterruptedException, InvalidArgumentException {
+    public void collectDeviceData_withListener() throws InterruptedException {
         Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder().kountMerchantId("500000"))
                 .buildConfiguration();
@@ -77,7 +77,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_withListener_usesDirectMerchantId() throws InterruptedException, InvalidArgumentException {
+    public void collectDeviceData_withListener_usesDirectMerchantId() throws InterruptedException {
         Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
                         .kountMerchantId("600000"))
@@ -109,7 +109,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException, InvalidArgumentException {
+    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
@@ -138,7 +138,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectPayPalDeviceData_collectsData() throws InterruptedException, InvalidArgumentException {
+    public void collectPayPalDeviceData_collectsData() throws InterruptedException {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 

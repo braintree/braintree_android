@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 @RunWith(RobolectricTestRunner.class)
 public class DataCollectorUnitTest {
@@ -128,7 +129,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
 
         ArgumentCaptor<PayPalDataCollectorRequest> captor =
@@ -141,7 +142,7 @@ public class DataCollectorUnitTest {
     }
 
     @Test
-    public void collectPayPalDeviceData_forwardsClientMetadataIdFromDataCollector() {
+    public void collectPayPalDeviceData_forwardsClientMetadataIdFromDataCollector() throws JSONException {
         when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("application-install-guid");
         when(payPalDataCollector.getClientMetadataId(
                 any(Context.class),
@@ -156,10 +157,14 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
 
-        verify(callback).onResult("paypal-client-metadata-id", null);
+        String expectedDeviceData = new JSONObject()
+                .put("correlation_id", "paypal-client-metadata-id")
+                .toString();
+
+        verify(callback).onResult(expectedDeviceData, null);
     }
 
     @Test
@@ -172,7 +177,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector, uuidHelper);
 
-        CollectPayPalDeviceDataCallback callback = mock(CollectPayPalDeviceDataCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectPayPalDeviceData(context, "risk-correlation-id", callback);
 
         verify(callback).onResult(null, configError);
