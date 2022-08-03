@@ -121,14 +121,11 @@ public class DataCollector {
     /**
      * Collects device information for fraud identification purposes from PayPal only.
      *
-     * This returns a raw client metadata ID, which is not the correct format for device data when
-     * creating a transaction. Instead, it is recommended to use {@link DataCollector#collectDeviceData(Context, DataCollectorCallback)}.
-     *
      * @param context           Android Context
      * @param riskCorrelationId Correlation id to associate with data collection
      * @param callback          {@link DataCollectorCallback}
      */
-    public void collectPayPalDeviceData(@NonNull final Context context, @NonNull final String riskCorrelationId, @NonNull final CollectPayPalDeviceDataCallback callback) {
+    public void collectPayPalDeviceData(@NonNull final Context context, @NonNull final String riskCorrelationId, @NonNull final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception configurationError) {
@@ -138,10 +135,16 @@ public class DataCollector {
                             .setApplicationGuid(applicationGUID)
                             .setClientMetadataId(riskCorrelationId);
 
-                    String clientMetaDataId =
+                    String clientMetadataId =
                         payPalDataCollector.getClientMetadataId(context, request, configuration);
-                    callback.onResult(clientMetaDataId, null);
-
+                    JSONObject deviceData = new JSONObject();
+                    try {
+                        if (!TextUtils.isEmpty(clientMetadataId)) {
+                            deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+                        }
+                    } catch (JSONException ignored) {
+                    }
+                    callback.onResult(deviceData.toString(), null);
                 } else {
                     callback.onResult(null, configurationError);
                 }

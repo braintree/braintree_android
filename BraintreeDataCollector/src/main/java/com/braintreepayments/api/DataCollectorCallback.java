@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
  * Callback for receiving result of
  * {@link DataCollector#collectDeviceData(Context, DataCollectorCallback)} and
  * {@link DataCollector#collectDeviceData(Context, String, DataCollectorCallback)} and
+ * {@link DataCollector#collectPayPalDeviceData(Context, String, DataCollectorCallback)}.
  */
 public interface DataCollectorCallback {
 

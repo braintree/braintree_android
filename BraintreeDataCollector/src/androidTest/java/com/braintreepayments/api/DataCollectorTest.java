@@ -136,4 +136,34 @@ public class DataCollectorTest {
 
         countDownLatch.await();
     }
+
+    @Test(timeout = 10000)
+    public void collectPayPalDeviceData_collectsData() throws InterruptedException, InvalidArgumentException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
+
+        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
+
+        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
+        DataCollector sut = new DataCollector(braintreeClient);
+
+        // NOTE: this id is an arbitrary, random guid for testing purposes
+        String sampleCorrelationId = "a897224d7c9a443c873c26902da9abd8";
+
+        sut.collectPayPalDeviceData(activity, sampleCorrelationId, new DataCollectorCallback() {
+            @Override
+            public void onResult(@Nullable String deviceData, @Nullable Exception error) {
+                try {
+                    assertNotNull(deviceData);
+                    JSONObject json = new JSONObject(deviceData);
+                    assertNotNull(json.getString("correlation_id"));
+                    countDownLatch.countDown();
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
+            }
+        });
+
+        countDownLatch.await();
+    }
 }
