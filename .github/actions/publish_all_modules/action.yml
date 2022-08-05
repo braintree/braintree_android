@@ -28,6 +28,7 @@ runs:
         ./gradlew clean \
           :AmericanExpress:publishToSonatype \
           :BraintreeCore:publishToSonatype \
+          :PayPalDataCollector:publishToSonatype \
           :BraintreeDataCollector:publishToSonatype \
           :Card:publishToSonatype \
           :GooglePay:publishToSonatype \

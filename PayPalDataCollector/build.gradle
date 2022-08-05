@@ -6,6 +6,7 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -13,7 +14,13 @@ android {
         versionCode rootProject.versionCode
         versionName rootProject.versionName
 
+        consumerProguardFiles 'proguard.pro'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
     }
 
     testOptions {
@@ -26,29 +33,33 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
+    implementation files('libs/android-magnessdk-5.3.0.jar')
+
+    implementation deps.annotation
     api project(':BraintreeCore')
 
-    implementation deps.appCompat
-    implementation project(':PayPalDataCollector')
-
-    implementation('com.paypal.checkout:android-sdk:0.7.2') {
-        exclude group: 'com.paypal.android.sdk', module: 'data-collector'
-    }
-
     testImplementation deps.robolectric
+    testImplementation deps.mockitoCore
+    testImplementation deps.androidxTestCore
+    testImplementation deps.jsonAssert
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
-    testImplementation deps.jsonAssert
-    testImplementation deps.mockitoCore
+
     testImplementation project(':TestUtils')
+
+    androidTestImplementation deps.androidxTestRules
+    androidTestImplementation deps.androidxTestRunner
+    androidTestImplementation deps.junitTest
+    androidTestImplementation deps.appCompat
+    androidTestImplementation project(':TestUtils')
 }
 
 // region signing and publishing
@@ -95,13 +106,13 @@ afterEvaluate {
                 artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
-                artifactId = 'paypal-native-checkout'
+                artifactId = 'paypal-data-collector'
                 version = rootProject.versionName
 
                 pom {
-                    name = 'paypal-native-checkout'
+                    name = 'paypal-data-collector'
                     packaging = 'aar'
-                    description = 'PayPal Native Checkout dependencies for Braintree Android.'
+                    description = 'PayPal fraud tools for Braintree integrations on Android.'
                     url = 'https://github.com/braintree/braintree_android'
 
                     scm {

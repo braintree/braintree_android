@@ -34,7 +34,6 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
-    implementation project(':BraintreeDataCollector')
 
     implementation deps.annotation
 

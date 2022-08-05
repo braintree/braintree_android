@@ -35,7 +35,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
-    implementation project(':BraintreeDataCollector')
+    implementation project(':PayPalDataCollector')
 
     testImplementation deps.robolectric
     testImplementation deps.powermockJunit
