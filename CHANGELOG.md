@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeSEPADirectDebit
+  * Update nonce to pull in ibanLastFour as expected
+
 ## 4.13.0
 
 * DataCollector
