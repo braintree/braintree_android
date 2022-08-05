@@ -4,6 +4,8 @@
 
 * PayPalDataCollector
   * Create new module to allow for device data collection without Kount.
+* BraintreeSEPADirectDebit
+  * Update nonce to pull in ibanLastFour as expected
 
 ## 4.13.0
 

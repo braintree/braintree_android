@@ -2446,7 +2446,7 @@ object Fixtures {
              "description": "SEPA Debit",
              "consumed": false,
              "details": {
-                "last4": "1234", 
+                "ibanLastChars": "1234", 
                 "merchantOrPartnerCustomerId": "a-customer-id", 
                 "mandateType": "ONE_OFF"
               }
