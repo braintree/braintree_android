@@ -89,7 +89,7 @@ public class PayPalDataCollector {
     }
 
     /**
-     * Collects device data based on your merchant configuration.
+     * Collects device data for PayPal APIs.
      * <p>
      * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
      * call it at the beginning of customer checkout.
