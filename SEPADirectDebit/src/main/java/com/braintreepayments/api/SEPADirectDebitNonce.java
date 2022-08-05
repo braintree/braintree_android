@@ -16,7 +16,7 @@ public class SEPADirectDebitNonce extends PaymentMethodNonce {
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String DETAILS_KEY = "details";
-    private static final String IBAN_LAST_FOUR_KEY = "last4";
+    private static final String IBAN_LAST_FOUR_KEY = "ibanLastChars";
     private static final String CUSTOMER_ID_KEY = "merchantOrPartnerCustomerId";
     private static final String MANDATE_TYPE_KEY = "mandateType";
 
