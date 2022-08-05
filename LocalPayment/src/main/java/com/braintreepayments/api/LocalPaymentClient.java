@@ -36,7 +36,7 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+        this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -46,7 +46,7 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -59,7 +59,7 @@ public class LocalPaymentClient {
      */
     @Deprecated
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalDataCollector(), new LocalPaymentApi(braintreeClient));
+        this(null, null, braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
