@@ -22,7 +22,7 @@ public class PayPalDataCollector {
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
-    PayPalDataCollector(@NonNull BraintreeClient braintreeClient) {
+    public PayPalDataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 
