@@ -49,12 +49,12 @@ public class CreateTransactionFragment extends Fragment {
         }
 
         CreateTransactionFragmentArgs args = CreateTransactionFragmentArgs.fromBundle(getArguments());
-        sendNonceToServer(args.getPaymentMethodNonce());
+        sendNonceToServer(args.getPaymentMethodNonce(), args.getTransactionAmount());
 
         return view;
     }
 
-    private void sendNonceToServer(PaymentMethodNonce nonce) {
+    private void sendNonceToServer(PaymentMethodNonce nonce, String amount) {
         Callback<Transaction> callback = new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
@@ -87,17 +87,17 @@ public class CreateTransactionFragment extends Fragment {
         TransactionRequest transactionRequest;
         if (Settings.isThreeDSecureEnabled(activity)) {
             String threeDSecureMerchantId = Settings.getThreeDSecureMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(nonceString, threeDSecureMerchantId);
+            transactionRequest = new TransactionRequest(amount, nonceString, threeDSecureMerchantId);
 
             if (Settings.isThreeDSecureRequired(activity)) {
                 transactionRequest.setThreeDSecureRequired(true);
             }
         } else if (isUnionPayCardNonce(nonce)) {
             String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(nonceString, unionPayMerchantAccountId);
+            transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
             String merchantAccountId = Settings.getMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(nonceString, merchantAccountId);
+            transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
         }
 
         DemoApplication.getApiClient(activity).createTransaction(transactionRequest, callback);

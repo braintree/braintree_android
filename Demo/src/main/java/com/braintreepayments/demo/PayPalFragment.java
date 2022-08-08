@@ -23,9 +23,13 @@ import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
+import java.util.Random;
+
 public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private String deviceData;
+    private String amount;
+
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
     private DataCollector dataCollector;
@@ -43,6 +47,8 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         braintreeClient = getBraintreeClient();
         payPalClient = new PayPalClient(this, braintreeClient);
         payPalClient.setListener(this);
+
+        amount = RandomDollarAmount.getNext();
         return view;
     }
 
@@ -69,14 +75,14 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
                     if (isBillingAgreement) {
                         payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
                     } else {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
                     }
                 });
             } else {
                 if (isBillingAgreement) {
                     payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
                 } else {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
                 }
             }
         });
@@ -88,6 +94,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
                 PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+            action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);

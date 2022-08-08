@@ -26,6 +26,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
+        launchApp();
         onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
 
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())

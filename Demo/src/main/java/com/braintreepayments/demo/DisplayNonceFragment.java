@@ -19,6 +19,7 @@ import com.braintreepayments.api.PaymentMethodNonce;
  */
 public class DisplayNonceFragment extends Fragment {
 
+    private String amount;
     private PaymentMethodNonce nonce;
 
     private TextView nonceString;
@@ -45,11 +46,12 @@ public class DisplayNonceFragment extends Fragment {
         createTransactionButton.setOnClickListener(this::createTransaction);
 
         DisplayNonceFragmentArgs args = DisplayNonceFragmentArgs.fromBundle(getArguments());
-        displayNonce(args.getPaymentMethodNonce(), args.getDeviceData());
+        displayNonce(args.getPaymentMethodNonce(), args.getDeviceData(), args.getTransactionAmount());
         return view;
     }
 
-    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
+    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData, String amount) {
+        this.amount = amount;
         nonce = paymentMethodNonce;
         nonceString.setText(getString(R.string.nonce_placeholder, nonce.getString()));
 
@@ -62,7 +64,9 @@ public class DisplayNonceFragment extends Fragment {
     public void createTransaction(View v) {
         createTransactionButton.setEnabled(false);
 
-        NavDirections action = DisplayNonceFragmentDirections.actionDisplayNonceFragmentToCreateTransactionFragment(nonce);
+        DisplayNonceFragmentDirections.ActionDisplayNonceFragmentToCreateTransactionFragment action =
+            DisplayNonceFragmentDirections.actionDisplayNonceFragmentToCreateTransactionFragment(nonce);
+        action.setTransactionAmount(amount);
         NavHostFragment.findNavController(this).navigate(action);
     }
 }

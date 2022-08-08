@@ -63,6 +63,10 @@
             android:name="paymentMethodNonce"
             app:argType="com.braintreepayments.api.PaymentMethodNonce" />
         <argument
+            android:name="transactionAmount"
+            android:defaultValue="1.00"
+            app:argType="string" />
+        <argument
             android:name="deviceData"
             android:defaultValue="@null"
             app:argType="string"
@@ -81,6 +85,10 @@
         <argument
             android:name="paymentMethodNonce"
             app:argType="com.braintreepayments.api.PaymentMethodNonce" />
+        <argument
+            android:name="transactionAmount"
+            android:defaultValue="1.00"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
