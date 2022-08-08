@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -33,6 +34,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
 
+    private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +45,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
 
-        // perform reset on preference change
-        Settings.getPreferences(this)
-                .registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> performReset());
+        registerSharedPreferencesListener();
     }
 
     @Override
@@ -156,5 +157,15 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             performReset();
         }
         return true;
+    }
+
+    private void registerSharedPreferencesListener() {
+        sharedPreferenceChangeListener = (sharedPreferences, s) -> {
+            // reset api client
+            DemoApplication.resetApiClient();
+            performReset();
+        };
+        Settings.getPreferences(this)
+                .registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 }

@@ -7,7 +7,7 @@
 
     <string-array name="environments">
         <item name="sandbox">@string/sandbox</item>
-        <item name="sandbox-india">@string/sandbox_india</item>
+        <item name="mock_pay_pal">@string/mock_pay_pal</item>
         <item name="production">@string/production</item>
     </string-array>
 
