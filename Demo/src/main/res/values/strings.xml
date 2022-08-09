@@ -42,7 +42,7 @@
     <string name="none">None</string>
     <string name="options">Options</string>
     <string name="sandbox">Sandbox</string>
-    <string name="sandbox_india">Sandbox India</string>
+    <string name="mock_pay_pal">Mock PayPal</string>
     <string name="production">Production</string>
     <string name="authorization">Authorization</string>
     <string name="authorization_type">Authorization Type</string>

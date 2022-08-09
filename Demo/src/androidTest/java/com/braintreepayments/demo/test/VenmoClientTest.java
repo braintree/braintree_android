@@ -27,6 +27,7 @@ public class VenmoClientTest extends TestHelper {
     @Ignore("Disable until physical device test automation implemented")
     @Test(timeout = 120000)
     public void tokenizesVenmo() {
+        launchApp();
         assumeTrue("The Venmo app is not installed.", isAppInstalled(VENMO_PACKAGE_NAME));
 
         onDevice(withText("Venmo")).waitForEnabled().perform(click());

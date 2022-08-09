@@ -35,6 +35,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
+        launchApp();
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)

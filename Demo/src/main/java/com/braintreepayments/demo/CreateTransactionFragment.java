@@ -49,12 +49,12 @@ public class CreateTransactionFragment extends Fragment {
         }
 
         CreateTransactionFragmentArgs args = CreateTransactionFragmentArgs.fromBundle(getArguments());
-        sendNonceToServer(args.getPaymentMethodNonce());
+        sendNonceToServer(args.getPaymentMethodNonce(), args.getTransactionAmount());
 
         return view;
     }
 
-    private void sendNonceToServer(PaymentMethodNonce nonce) {
+    private void sendNonceToServer(PaymentMethodNonce nonce, String amount) {
         Callback<Transaction> callback = new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
@@ -81,20 +81,26 @@ public class CreateTransactionFragment extends Fragment {
             }
         };
 
+        String nonceString = nonce.getString();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (Settings.isThreeDSecureEnabled(activity) && Settings.isThreeDSecureRequired(activity)) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
-                    Settings.getThreeDSecureMerchantAccountId(activity), true, callback);
-        } else if (Settings.isThreeDSecureEnabled(activity)) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
-                    Settings.getThreeDSecureMerchantAccountId(activity), callback);
-        } else if (nonce instanceof CardNonce && ((CardNonce) nonce).getCardType().equals("UnionPay")) {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(),
-                    Settings.getUnionPayMerchantAccountId(activity), callback);
+
+        TransactionRequest transactionRequest;
+        if (Settings.isThreeDSecureEnabled(activity)) {
+            String threeDSecureMerchantId = Settings.getThreeDSecureMerchantAccountId(activity);
+            transactionRequest = new TransactionRequest(amount, nonceString, threeDSecureMerchantId);
+
+            if (Settings.isThreeDSecureRequired(activity)) {
+                transactionRequest.setThreeDSecureRequired(true);
+            }
+        } else if (isUnionPayCardNonce(nonce)) {
+            String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
+            transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
-            DemoApplication.getApiClient(activity).createTransaction(nonce.getString(), Settings.getMerchantAccountId(activity),
-                    callback);
+            String merchantAccountId = Settings.getMerchantAccountId(activity);
+            transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
         }
+
+        DemoApplication.getApiClient(activity).createTransaction(transactionRequest, callback);
     }
 
     private void setStatus(int message) {
@@ -122,5 +128,9 @@ public class CreateTransactionFragment extends Fragment {
         }
 
         return false;
+    }
+
+    private boolean isUnionPayCardNonce(PaymentMethodNonce nonce) {
+        return (nonce instanceof CardNonce) && ((CardNonce) nonce).getCardType().equals("UnionPay");
     }
 }

@@ -12,19 +12,20 @@ public class Settings {
     private static final String ENVIRONMENT = "environment";
 
     static final String SANDBOX_ENV_NAME = "Sandbox";
-    static final String SANDBOX_INDIA_ENV_NAME = "Sandbox India";
+    static final String MOCKED_PAY_PAL_ENV_NAME = "Mock PayPal";
     static final String PRODUCTION_ENV_NAME = "Production";
 
-    private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
-    private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
+    private static final String MERCHANT_SERVER_URL = "https://sdk-sample-merchant-server.herokuapp.com";
 
-    private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
+    private static final String SANDBOX_BASE_SERVER_URL = MERCHANT_SERVER_URL + "/braintree/sandbox";
+    private static final String PRODUCTION_BASE_SERVER_URL = MERCHANT_SERVER_URL + "/braintree/production";
+    private static final String MOCKED_PAY_PAL_SANDBOX_SERVER_URL = MERCHANT_SERVER_URL + "/braintree/mock_pay_pal";
+
     private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
-
-    private static final String SANDBOX_INDIA_BASE_SERVER_URL = "https://braintree-india-2fa-merchant.herokuapp.com/";
+    private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
+    private static final String MOCKED_PAY_PAL_SANDBOX_TOKENIZATION_KEY = "sandbox_q7v35n9n_555d2htrfsnnmfb3";
 
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
-    static final String PAYPAL_2FA_TOKENIZATION_KEY = "sandbox_bn8fp75g_f38w7q9kcr3zcspd";
 
     private static SharedPreferences sharedPreferences;
 
@@ -57,8 +58,8 @@ public class Settings {
         String environment = getEnvironment(context);
         if (SANDBOX_ENV_NAME.equals(environment)) {
             return SANDBOX_BASE_SERVER_URL;
-        } else if (SANDBOX_INDIA_ENV_NAME.equals(environment)) {
-            return SANDBOX_INDIA_BASE_SERVER_URL;
+        } else if (MOCKED_PAY_PAL_ENV_NAME.equals(environment)) {
+            return MOCKED_PAY_PAL_SANDBOX_SERVER_URL;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_BASE_SERVER_URL;
         } else {
@@ -107,8 +108,8 @@ public class Settings {
 
         if (SANDBOX_ENV_NAME.equals(environment)) {
             return SANDBOX_TOKENIZATION_KEY;
-        } else if (SANDBOX_INDIA_ENV_NAME.equals(environment)) {
-            return PAYPAL_2FA_TOKENIZATION_KEY;
+        } else if (MOCKED_PAY_PAL_ENV_NAME.equals(environment)) {
+            return MOCKED_PAY_PAL_SANDBOX_TOKENIZATION_KEY;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_TOKENIZATION_KEY;
         } else {
