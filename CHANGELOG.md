@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.14.0
 
 * PayPalDataCollector
   * Create new module to allow for device data collection without Kount.
