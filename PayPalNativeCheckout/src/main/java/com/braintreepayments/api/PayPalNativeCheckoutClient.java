@@ -25,12 +25,11 @@ public class PayPalNativeCheckoutClient {
     private PayPalNativeCheckoutListener listener;
 
     /**
-     * @deprecated see {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
-     *
-     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
-     *
      * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
+     * @deprecated see {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
+     * <p>
+     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
      */
     @Deprecated
     public PayPalNativeCheckoutClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
@@ -64,15 +63,14 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
+     * @param activity      Android FragmentActivity
+     * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      * @deprecated see {@link PayPalNativeCheckoutClient#launchNativeCheckout(FragmentActivity, PayPalNativeRequest)}
-     *
+     * <p>
      * Tokenize a PayPal account for vault or checkout.
      * <p>
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param activity      Android FragmentActivity
-     * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
@@ -99,6 +97,10 @@ public class PayPalNativeCheckoutClient {
             sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest);
         } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
             sendVaultRequest(activity, (PayPalNativeCheckoutVaultRequest) payPalRequest);
+        } else if (listener != null) {
+            String message = "Unsupported request type. Please use either a "
+                    + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
+            listener.onPayPalFailure(new BraintreeException(message));
         }
     }
 
@@ -110,9 +112,9 @@ public class PayPalNativeCheckoutClient {
 
         braintreeClient.getConfiguration((configuration, error) -> {
             sendPayPalRequest(
-                activity,
-                payPalCheckoutRequest,
-                configuration
+                    activity,
+                    payPalCheckoutRequest,
+                    configuration
             );
         });
     }
@@ -125,17 +127,17 @@ public class PayPalNativeCheckoutClient {
 
         braintreeClient.getConfiguration((configuration, error) -> {
             sendPayPalRequest(
-                activity,
-                payPalVaultRequest,
-                configuration
+                    activity,
+                    payPalVaultRequest,
+                    configuration
             );
         });
     }
 
     private void sendPayPalRequest(
-        final FragmentActivity activity,
-        final PayPalNativeRequest payPalRequest,
-        final Configuration configuration
+            final FragmentActivity activity,
+            final PayPalNativeRequest payPalRequest,
+            final Configuration configuration
     ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
@@ -151,11 +153,11 @@ public class PayPalNativeCheckoutClient {
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
-                    new CheckoutConfig(
-                        activity.getApplication(),
-                        configuration.getPayPalClientId(),
-                        environment
-                    )
+                        new CheckoutConfig(
+                                activity.getApplication(),
+                                configuration.getPayPalClientId(),
+                                environment
+                        )
                 );
 
                 registerCallbacks(configuration, payPalRequest, payPalResponse);
@@ -172,9 +174,9 @@ public class PayPalNativeCheckoutClient {
     }
 
     private void registerCallbacks(
-        final Configuration configuration,
-        final PayPalNativeRequest payPalRequest,
-        final PayPalNativeCheckoutResponse payPalResponse
+            final Configuration configuration,
+            final PayPalNativeRequest payPalRequest,
+            final PayPalNativeCheckoutResponse payPalResponse
     ) {
         PayPalCheckout.registerCallbacks(
                 approval -> {
