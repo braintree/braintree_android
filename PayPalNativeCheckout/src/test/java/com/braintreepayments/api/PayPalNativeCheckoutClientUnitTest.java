@@ -71,7 +71,7 @@ public class PayPalNativeCheckoutClientUnitTest {
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
@@ -127,7 +127,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         PowerMockito.verifyStatic(PayPalCheckout.class);
         PayPalCheckout.registerCallbacks(onApproveCaptor.capture(), onShippingChangeCaptor.capture(), onCancelCaptor.capture(), onErrorCaptor.capture());
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
@@ -155,7 +155,7 @@ public class PayPalNativeCheckoutClientUnitTest {
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
@@ -168,7 +168,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00");
         request.setShouldOfferPayLater(true);
         sut.tokenizePayPalAccount(activity, request);
@@ -186,7 +186,7 @@ public class PayPalNativeCheckoutClientUnitTest {
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class));
@@ -202,7 +202,7 @@ public class PayPalNativeCheckoutClientUnitTest {
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), any(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class));
@@ -216,7 +216,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setShouldOfferCredit(true);
 
-        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.credit.offered");
