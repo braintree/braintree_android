@@ -1,11 +1,13 @@
 package com.braintreepayments.api;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,25 +17,24 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.fail;
 
+import android.content.Context;
+
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ApiClientTest {
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
-
-    private AppCompatActivity activity;
+    private Context context;
 
     @Before
     public void setUp() {
-        activity = activityTestRule.getActivity();
+        context = ApplicationProvider.getApplicationContext();
     }
 
     @Test(timeout = 10000)
+    @Ignore
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
         ApiClient apiClient = new ApiClient(braintreeClient);
 

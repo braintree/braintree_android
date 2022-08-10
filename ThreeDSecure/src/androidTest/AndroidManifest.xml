@@ -5,7 +5,7 @@
 
     <application android:usesCleartextTraffic="true">
         <!--suppress AndroidDomInspection -->
-        <activity android:name=".TestActivity"
+        <activity android:name="com.braintreepayments.api.TestActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

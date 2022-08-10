@@ -16,17 +16,12 @@ import static junit.framework.Assert.assertNotNull;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class LocalPaymentClientTest {
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
-
     private CountDownLatch countDownLatch;
     private BraintreeClient braintreeClient;
 
     @Before
     public void setUp() throws InvalidArgumentException {
         countDownLatch = new CountDownLatch(1);
-
         braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), "sandbox_f252zhq7_hh4cpc39zq4rgjcg");
     }
 

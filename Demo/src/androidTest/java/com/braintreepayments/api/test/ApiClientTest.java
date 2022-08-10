@@ -1,5 +1,10 @@
 package com.braintreepayments.api.test;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 import com.braintreepayments.demo.ClientTokenRequest;
 import com.braintreepayments.demo.Settings;
 import com.braintreepayments.demo.TransactionRequest;
@@ -18,11 +23,6 @@ import retrofit.RestAdapter;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 public class ApiClientTest {
 

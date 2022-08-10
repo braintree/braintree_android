@@ -1,9 +1,11 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.TestConfigurationBuilder.TestKountConfigurationBuilder;
@@ -27,22 +29,19 @@ import static junit.framework.Assert.fail;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class DataCollectorTest {
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
+    private Context context;
 
-    private AppCompatActivity activity;
     private CountDownLatch countDownLatch;
 
     @Before
     public void beforeEach() {
-        activity = activityTestRule.getActivity();
+        context = ApplicationProvider.getApplicationContext();
         countDownLatch = new CountDownLatch(1);
     }
 
     @After
     public void afterEach() {
-        SharedPreferencesHelper.clearConfigurationCacheOverride(activity);
+        SharedPreferencesHelper.clearConfigurationCacheOverride(context);
     }
 
     @Test(timeout = 10000)
@@ -52,12 +51,12 @@ public class DataCollectorTest {
                 .buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
-        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, new DataCollectorCallback() {
+        sut.collectDeviceData(context, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -84,12 +83,12 @@ public class DataCollectorTest {
                 .buildConfiguration();
 
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, "600001", new DataCollectorCallback() {
+        sut.collectDeviceData(context, "600001", new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
@@ -113,12 +112,12 @@ public class DataCollectorTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
-        SharedPreferencesHelper.overrideConfigurationCache(activity, authorization, configuration);
+        SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration);
 
-        BraintreeClient braintreeClient = new BraintreeClient(activity, Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(activity, new DataCollectorCallback() {
+        sut.collectDeviceData(context, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
