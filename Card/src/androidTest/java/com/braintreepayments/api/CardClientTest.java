@@ -39,10 +39,6 @@ public class CardClientTest {
         this.requestProtocol = requestProtocol;
     }
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
-
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithACustomer() throws Exception {
         String authorization = new TestClientTokenBuilder().withCustomerId().build();

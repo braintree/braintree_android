@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -22,21 +23,17 @@ import java.util.UUID;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class AnalyticsClientTest {
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> activityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
-
-    private TestActivity activity;
+    private Context context;
 
     @Before
     public void setUp() {
-        activity = activityTestRule.getActivity();
+        context = ApplicationProvider.getApplicationContext();
 
         androidx.work.Configuration workManagerConfig = new androidx.work.Configuration.Builder()
                 .setMinimumLoggingLevel(Log.DEBUG)
                 .setExecutor(new SynchronousExecutor())
                 .build();
-        WorkManagerTestInitHelper.initializeTestWorkManager(activity, workManagerConfig);
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, workManagerConfig);
     }
 
     @Test(timeout = 10000)
@@ -44,14 +41,13 @@ public class AnalyticsClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SANDBOX_ANALYTICS);
 
-        Context context = activity.getApplicationContext();
-        AnalyticsClient sut = new AnalyticsClient(activity);
+        AnalyticsClient sut = new AnalyticsClient(context);
         UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
 
-        TestDriver testDriver = WorkManagerTestInitHelper.getTestDriver(activity);
+        TestDriver testDriver = WorkManagerTestInitHelper.getTestDriver(context);
         testDriver.setInitialDelayMet(workSpecId);
 
         WorkInfo workInfoAfterDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
@@ -63,14 +59,13 @@ public class AnalyticsClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PROD_ANALYTICS);
 
-        Context context = activity.getApplicationContext();
-        AnalyticsClient sut = new AnalyticsClient(activity);
+        AnalyticsClient sut = new AnalyticsClient(context);
         UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
 
-        TestDriver testDriver = WorkManagerTestInitHelper.getTestDriver(activity);
+        TestDriver testDriver = WorkManagerTestInitHelper.getTestDriver(context);
         testDriver.setInitialDelayMet(workSpecId);
 
         WorkInfo workInfoAfterDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
