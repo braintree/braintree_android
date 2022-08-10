@@ -30,7 +30,7 @@ public class ApiClientTest {
     }
 
     @Test(timeout = 10000)
-    @Ignore
+    @Ignore("It isn't clear what this test does or how it works, but we removed a lot of the PayPal OTC logic when refactoring for v4.")
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
 
