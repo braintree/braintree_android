@@ -45,8 +45,8 @@ public class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context          Android Context
-     * @param configuration    the merchant configuration
+     * @param context       Android Context
+     * @param configuration the merchant configuration
      */
     @MainThread
     String getClientMetadataId(Context context, Configuration configuration) {
@@ -96,11 +96,11 @@ public class PayPalDataCollector {
      * <p>
      * Use the return value on your server, e.g. with `Transaction.sale`.
      *
-     * @param context          Android Context
-     * @param clientMetadataId Optional client metadata id
-     * @param callback         {@link PayPalDataCollectorCallback}
+     * @param context           Android Context
+     * @param riskCorrelationId Optional client metadata id
+     * @param callback          {@link PayPalDataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull final Context context, @Nullable final String clientMetadataId, @NonNull final PayPalDataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull final Context context, @Nullable final String riskCorrelationId, @NonNull final PayPalDataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -109,12 +109,12 @@ public class PayPalDataCollector {
                     try {
                         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                                 .setApplicationGuid(getPayPalInstallationGUID(context));
-                        if (clientMetadataId != null) {
-                            request.setClientMetadataId(clientMetadataId);
+                        if (riskCorrelationId != null) {
+                            request.setClientMetadataId(riskCorrelationId);
                         }
 
                         String correlationId =
-                            magnesInternalClient.getClientMetadataId(context, configuration, request);
+                                magnesInternalClient.getClientMetadataId(context, configuration, request);
                         if (!TextUtils.isEmpty(correlationId)) {
                             deviceData.put(CORRELATION_ID_KEY, correlationId);
                         }
