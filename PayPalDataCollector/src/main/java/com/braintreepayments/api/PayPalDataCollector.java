@@ -46,7 +46,7 @@ public class PayPalDataCollector {
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context       Android Context
-     * @param configuration the merchant configuration
+     * @param configuration The merchant configuration
      */
     @MainThread
     String getClientMetadataId(Context context, Configuration configuration) {
