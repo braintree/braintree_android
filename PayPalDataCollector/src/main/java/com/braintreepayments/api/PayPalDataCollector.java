@@ -110,7 +110,7 @@ public class PayPalDataCollector {
                         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                                 .setApplicationGuid(getPayPalInstallationGUID(context));
                         if (riskCorrelationId != null) {
-                            request.setClientMetadataId(riskCorrelationId);
+                            request.setRiskCorrelationId(riskCorrelationId);
                         }
 
                         String correlationId =
