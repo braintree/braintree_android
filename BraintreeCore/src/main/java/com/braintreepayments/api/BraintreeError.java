@@ -28,7 +28,8 @@ public class BraintreeError implements Parcelable {
     private String message;
     private List<BraintreeError> fieldErrors;
 
-    private int code;
+    // default value
+    private int code = UNKNOWN_CODE;
 
     static List<BraintreeError> fromJsonArray(JSONArray json) {
         if (json == null) {
@@ -93,13 +94,10 @@ public class BraintreeError implements Parcelable {
             error.field = field;
             error.message = errorJSON.getString(Keys.MESSAGE);
 
-            int code = UNKNOWN_CODE;
             JSONObject extensions = errorJSON.optJSONObject(Keys.EXTENSIONS);
             if (extensions != null) {
-                code = extensions.optInt(Keys.LEGACY_CODE, UNKNOWN_CODE);
+                error.code = extensions.optInt(Keys.LEGACY_CODE, UNKNOWN_CODE);
             }
-            error.code = code;
-
             error.fieldErrors = new ArrayList<>();
 
             errors.add(error);

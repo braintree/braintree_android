@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Add BraintreeError `code` read-only property.
+
 ## 4.14.0
 
 * PayPalDataCollector
