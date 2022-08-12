@@ -109,6 +109,18 @@ public class ErrorsWithResponseUnitTest {
     }
 
     @Test
+    public void REST_tokenizeCardDuplicate() {
+        ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, Fixtures.ERRORS_CREDIT_CARD_DUPLICATE);
+        assertEquals(81724, errorWithResponse.errorFor("creditCard").errorFor("number").getCode());
+    }
+
+    @Test
+    public void GraphQL_tokenizeCardDuplicate() {
+        ErrorWithResponse errorWithResponse = ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_DUPLICATE_ERROR);
+        assertEquals(81724, errorWithResponse.errorFor("creditCard").errorFor("number").getCode());
+    }
+
+    @Test
     public void parcelsCorrectly() throws JSONException {
         ErrorWithResponse error = ErrorWithResponse.fromJson(Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE);
 

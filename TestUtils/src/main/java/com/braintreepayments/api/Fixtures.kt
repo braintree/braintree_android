@@ -338,7 +338,8 @@ object Fixtures {
     """
 
     // language=JSON
-    const val THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE = """
+    const val THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE =
+        """
         {
           "lookup": {
             "acsUrl": "https://acs-url/",
@@ -408,9 +409,12 @@ object Fixtures {
     // endregion
 
     // region Auth Tokens
-    const val BASE64_CLIENT_TOKEN = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
-    const val BASE64_CLIENT_TOKEN2 = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMiIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
-    const val BASE64_CLIENT_TOKEN_WITH_SPACES = " eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0= "
+    const val BASE64_CLIENT_TOKEN =
+        "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
+    const val BASE64_CLIENT_TOKEN2 =
+        "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMiIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
+    const val BASE64_CLIENT_TOKEN_WITH_SPACES =
+        " eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0= "
 
     const val TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
     const val TOKENIZATION_KEY_WITH_SPACES = " sandbox_tmxhyf7d_dcpspy2brwdjr3qn "
@@ -1155,6 +1159,27 @@ object Fixtures {
     """
 
     // language=JSON
+    const val ERRORS_CREDIT_CARD_DUPLICATE = """
+        {
+            "error": {
+                "message": "Credit card is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "creditCard",
+                    "fieldErrors": [
+                        {
+                            "field": "number",
+                            "message": "Duplicate card exists in the vault.",
+                            "code": "81724"
+                        }
+                    ]
+                }
+            ]
+        }
+    """
+
+    // language=JSON
     const val ERRORS_COMPLEX_ERROR_RESPONSE = """
         {
             "error": {
@@ -1260,6 +1285,42 @@ object Fixtures {
           "extensions": {
             "requestId": "de1f7c67-4861-455f-89bb-1d208915f270"
           }
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_GRAPHQL_CREDIT_CARD_DUPLICATE_ERROR = """
+        {
+            "errors": [
+                {
+                    "message": "Duplicate card exists in the vault",
+                    "locations": [
+                        {
+                            "line": 2,
+                            "column": 3
+                        }
+                    ],
+                    "path": [
+                        "tokenizeCreditCard"
+                    ],
+                    "extensions": {
+                        "errorClass": "VALIDATION",
+                        "errorType": "user_error",
+                        "inputPath": [
+                            "input",
+                            "creditCard",
+                            "number"
+                        ],
+                        "legacyCode": "81724"
+                    }
+                }
+            ],
+            "data": {
+                "tokenizeCreditCard": "null"
+            },
+            "extensions": {
+                "requestId": "3521c97e-a420-47f4-a8ef-a8cefb0fa635"
+            }
         }
     """
 
