@@ -338,8 +338,7 @@ object Fixtures {
     """
 
     // language=JSON
-    const val THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE =
-        """
+    const val THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE = """
         {
           "lookup": {
             "acsUrl": "https://acs-url/",
@@ -409,12 +408,9 @@ object Fixtures {
     // endregion
 
     // region Auth Tokens
-    const val BASE64_CLIENT_TOKEN =
-        "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
-    const val BASE64_CLIENT_TOKEN2 =
-        "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMiIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
-    const val BASE64_CLIENT_TOKEN_WITH_SPACES =
-        " eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0= "
+    const val BASE64_CLIENT_TOKEN = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
+    const val BASE64_CLIENT_TOKEN2 = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMiIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
+    const val BASE64_CLIENT_TOKEN_WITH_SPACES = " eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0= "
 
     const val TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
     const val TOKENIZATION_KEY_WITH_SPACES = " sandbox_tmxhyf7d_dcpspy2brwdjr3qn "
