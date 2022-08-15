@@ -74,10 +74,10 @@ public class PayPalNativeCheckoutClient {
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
-        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
-            sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest);
-        } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
-            sendVaultRequest(activity, (PayPalNativeCheckoutVaultRequest) payPalRequest);
+        boolean isCheckoutRequest = payPalRequest instanceof PayPalNativeCheckoutRequest;
+        boolean isVaultRequest = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
+        if (isCheckoutRequest || isVaultRequest) {
+            launchNativeCheckout(activity, payPalRequest);
         } else {
             throw new Exception("Unsupported request type");
         }
