@@ -1,9 +1,24 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.app.Application;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
+
+import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.approve.OnApprove;
+import com.paypal.checkout.cancel.OnCancel;
+import com.paypal.checkout.config.CheckoutConfig;
+import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.error.OnError;
+import com.paypal.checkout.shipping.OnShippingChange;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -14,28 +29,11 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import com.paypal.checkout.PayPalCheckout;
-import com.paypal.checkout.approve.OnApprove;
-import com.paypal.checkout.cancel.OnCancel;
-import com.paypal.checkout.config.CheckoutConfig;
-import com.paypal.checkout.config.Environment;
-import com.paypal.checkout.error.OnError;
-import com.paypal.checkout.shipping.OnShippingChange;
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( { PayPalCheckout.class })
 public class PayPalNativeCheckoutClientUnitTest {
 
     private FragmentActivity activity;
-    private Lifecycle lifecycle;
     private PayPalNativeCheckoutListener listener;
 
     private Configuration payPalEnabledConfig;
@@ -44,13 +42,35 @@ public class PayPalNativeCheckoutClientUnitTest {
     @Before
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
-        lifecycle = mock(Lifecycle.class);
         listener = mock(PayPalNativeCheckoutListener.class);
 
         when(activity.getApplication()).thenReturn(mock(Application.class));
 
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_NATIVE);
         payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
+    }
+
+    @Test
+    public void tokenizePayPalAccount_throwsWhenPayPalRequestIsBaseClass() {
+        PayPalNativeRequest baseRequest = new PayPalNativeRequest() {
+            @Override
+            String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+                return null;
+            }
+        };
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
+
+        Exception capturedException = null;
+        try {
+            sut.tokenizePayPalAccount(activity, baseRequest);
+        } catch (Exception e) {
+            capturedException = e;
+        }
+        assertNotNull(capturedException);
+        assertEquals("Unsupported request type", capturedException.getMessage());
     }
 
     @Test
@@ -220,5 +240,30 @@ public class PayPalNativeCheckoutClientUnitTest {
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.credit.offered");
+    }
+
+    @Test
+    public void launchNativeCheckout_notifiesErrorWhenPayPalRequestIsBaseClass() {
+        PayPalNativeRequest baseRequest = new PayPalNativeRequest() {
+            @Override
+            String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+                return null;
+            }
+        };
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
+
+        sut.launchNativeCheckout(activity, baseRequest);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onPayPalFailure(captor.capture());
+
+        Exception capturedException = captor.getValue();
+        String expectedMessage = "Unsupported request type. Please use either a "
+                + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
+        assertEquals(expectedMessage, capturedException.getMessage());
     }
 }
