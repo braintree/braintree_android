@@ -74,6 +74,9 @@ public class PayPalNativeCheckoutClient {
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
+        // NEXT_MAJOR_VERSION: remove tokenizePayPalAccount method and refactor tests to center
+        // around launchNativeCheckout in the future. Keeping the tests as they are for now allows
+        // us to maintain test coverage across both the tokenizePayPalAccount and launchNativeCheckout methods
         boolean isCheckoutRequest = payPalRequest instanceof PayPalNativeCheckoutRequest;
         boolean isVaultRequest = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
         if (isCheckoutRequest || isVaultRequest) {
