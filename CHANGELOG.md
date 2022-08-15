@@ -4,6 +4,11 @@
 
 * BraintreeCore
   * Add BraintreeError `code` read-only property.
+* PayPalNativeCheckoutClient
+  * Add new `PayPalNativeCheckoutClient` that requires only a `BraintreeClient` instance.
+  * Add new `PayPalNativeCheckoutClient#launchNativeCheckout` method that launches native checkout without throwing.
+  * Deprecate `PayPalNativeCheckoutClient` constructor that requires both `Fragment` and `BraintreeClient` instances.
+  * Deprecate `PayPalNativeCheckoutClient#tokenizePayPalAccount` method that throws an exception.
 
 ## 4.14.0
 
