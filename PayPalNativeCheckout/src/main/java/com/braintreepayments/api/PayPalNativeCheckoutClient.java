@@ -82,7 +82,9 @@ public class PayPalNativeCheckoutClient {
         if (isCheckoutRequest || isVaultRequest) {
             launchNativeCheckout(activity, payPalRequest);
         } else {
-            throw new Exception("Unsupported request type");
+            String message = "Unsupported request type. Please use either a "
+                    + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
+            throw new Exception(message);
         }
     }
 
@@ -114,11 +116,7 @@ public class PayPalNativeCheckoutClient {
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
-            sendPayPalRequest(
-                    activity,
-                    payPalCheckoutRequest,
-                    configuration
-            );
+            sendPayPalRequest(activity, payPalCheckoutRequest, configuration);
         });
     }
 
@@ -129,11 +127,7 @@ public class PayPalNativeCheckoutClient {
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
-            sendPayPalRequest(
-                    activity,
-                    payPalVaultRequest,
-                    configuration
-            );
+            sendPayPalRequest(activity, payPalVaultRequest, configuration);
         });
     }
 

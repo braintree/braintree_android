@@ -70,7 +70,9 @@ public class PayPalNativeCheckoutClientUnitTest {
             capturedException = e;
         }
         assertNotNull(capturedException);
-        assertEquals("Unsupported request type", capturedException.getMessage());
+        String expectedMessage = "Unsupported request type. Please use either a "
+                + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
+        assertEquals(expectedMessage, capturedException.getMessage());
     }
 
     @Test
