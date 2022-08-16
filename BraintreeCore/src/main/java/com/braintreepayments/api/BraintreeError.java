@@ -20,10 +20,16 @@ public class BraintreeError implements Parcelable {
     private static final String FIELD_KEY = "field";
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
+    private static final String CODE_KEY = "code";
+
+    private static final int UNKNOWN_CODE = -1;
 
     private String field;
     private String message;
     private List<BraintreeError> fieldErrors;
+
+    // default value
+    private int code = UNKNOWN_CODE;
 
     static List<BraintreeError> fromJsonArray(JSONArray json) {
         if (json == null) {
@@ -74,6 +80,7 @@ public class BraintreeError implements Parcelable {
         BraintreeError error = new BraintreeError();
         error.field = Json.optString(json, FIELD_KEY, null);
         error.message = Json.optString(json, MESSAGE_KEY, null);
+        error.code = json.optInt(CODE_KEY, UNKNOWN_CODE);
         error.fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
 
         return error;
@@ -86,6 +93,11 @@ public class BraintreeError implements Parcelable {
             BraintreeError error = new BraintreeError();
             error.field = field;
             error.message = errorJSON.getString(Keys.MESSAGE);
+
+            JSONObject extensions = errorJSON.optJSONObject(Keys.EXTENSIONS);
+            if (extensions != null) {
+                error.code = extensions.optInt(Keys.LEGACY_CODE, UNKNOWN_CODE);
+            }
             error.fieldErrors = new ArrayList<>();
 
             errors.add(error);
@@ -125,6 +137,13 @@ public class BraintreeError implements Parcelable {
      */
     public String getField() {
         return field;
+    }
+
+    /**
+     * @return Error code if one exists; defaults to {@link #UNKNOWN_CODE} otherwise
+     */
+    public int getCode() {
+        return code;
     }
 
     /**

@@ -1155,6 +1155,27 @@ object Fixtures {
     """
 
     // language=JSON
+    const val ERRORS_CREDIT_CARD_DUPLICATE = """
+        {
+            "error": {
+                "message": "Credit card is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "creditCard",
+                    "fieldErrors": [
+                        {
+                            "field": "number",
+                            "message": "Duplicate card exists in the vault.",
+                            "code": "81724"
+                        }
+                    ]
+                }
+            ]
+        }
+    """
+
+    // language=JSON
     const val ERRORS_COMPLEX_ERROR_RESPONSE = """
         {
             "error": {
@@ -1260,6 +1281,42 @@ object Fixtures {
           "extensions": {
             "requestId": "de1f7c67-4861-455f-89bb-1d208915f270"
           }
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_GRAPHQL_CREDIT_CARD_DUPLICATE_ERROR = """
+        {
+            "errors": [
+                {
+                    "message": "Duplicate card exists in the vault",
+                    "locations": [
+                        {
+                            "line": 2,
+                            "column": 3
+                        }
+                    ],
+                    "path": [
+                        "tokenizeCreditCard"
+                    ],
+                    "extensions": {
+                        "errorClass": "VALIDATION",
+                        "errorType": "user_error",
+                        "inputPath": [
+                            "input",
+                            "creditCard",
+                            "number"
+                        ],
+                        "legacyCode": "81724"
+                    }
+                }
+            ],
+            "data": {
+                "tokenizeCreditCard": "null"
+            },
+            "extensions": {
+                "requestId": "3521c97e-a420-47f4-a8ef-a8cefb0fa635"
+            }
         }
     """
 
