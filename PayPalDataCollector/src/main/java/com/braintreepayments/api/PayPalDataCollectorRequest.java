@@ -34,10 +34,10 @@ class PayPalDataCollectorRequest {
     }
 
     /**
-     * @param clientMetadataId The desired pairing ID, trimmed to 32 characters.
+     * @param riskCorrelationId The desired pairing ID, trimmed to 32 characters.
      */
-    PayPalDataCollectorRequest setClientMetadataId(@NonNull String clientMetadataId) {
-        this.clientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));
+    PayPalDataCollectorRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
+        this.clientMetadataId = riskCorrelationId.substring(0, Math.min(riskCorrelationId.length(), 32));
 
         return this;
     }

@@ -61,7 +61,7 @@ public class MagnesInternalClientUnitTest {
         additionalData = new HashMap<>();
 
         payPalDataCollectorRequest = new PayPalDataCollectorRequest()
-                .setClientMetadataId("sample-client-metadata-id")
+                .setRiskCorrelationId("sample-client-metadata-id")
                 .setDisableBeacon(true)
                 .setAdditionalData(additionalData)
                 .setApplicationGuid(validApplicationGUID);
