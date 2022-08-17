@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.15.0
 
 * BraintreeCore
   * Add BraintreeError `code` read-only property.
