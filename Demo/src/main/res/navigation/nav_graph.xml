@@ -182,7 +182,7 @@
         <action
             android:id="@+id/action_payPalNativeCheckoutFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
-            app:popUpTo="@id/mainFragment"
+            app:popUpTo="@id/featuresFragment"
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
@@ -192,7 +192,7 @@
         <action
             android:id="@+id/action_sepaDirectDebitFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
-            app:popUpTo="@id/mainFragment"
+            app:popUpTo="@id/featuresFragment"
             app:popUpToInclusive="false" />
     </fragment>
 
