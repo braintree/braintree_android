@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.factories.BraintreeClientFactory.createBraintreeClient;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
@@ -19,9 +22,10 @@ import com.braintreepayments.api.SEPADirectDebitRequest;
 
 import java.util.UUID;
 
-public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectDebitListener {
+public class SEPADirectDebitFragment extends Fragment implements SEPADirectDebitListener {
 
     private SEPADirectDebitClient sepaDirectDebitClient;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,7 +34,7 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
         Button button = view.findViewById(R.id.sepa_direct_debit_button);
         button.setOnClickListener(this::launchSEPADirectDebit);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
+        BraintreeClient braintreeClient = createBraintreeClient(requireContext());
         sepaDirectDebitClient = new SEPADirectDebitClient(this, braintreeClient);
         sepaDirectDebitClient.setListener(this);
 
@@ -63,7 +67,6 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
 
     @Override
     public void onSEPADirectDebitSuccess(@NonNull SEPADirectDebitNonce sepaDirectDebitNonce) {
-        super.onPaymentMethodNonceCreated(sepaDirectDebitNonce);
 
         SEPADirectDebitFragmentDirections.ActionSepaDirectDebitFragmentToDisplayNonceFragment action =
                 SEPADirectDebitFragmentDirections.actionSepaDirectDebitFragmentToDisplayNonceFragment(sepaDirectDebitNonce);
@@ -72,6 +75,6 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
 
     @Override
     public void onSEPADirectDebitFailure(@NonNull Exception error) {
-        handleError(error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }

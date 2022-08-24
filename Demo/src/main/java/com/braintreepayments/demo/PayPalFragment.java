@@ -22,6 +22,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
+import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends Fragment implements PayPalListener {
 
@@ -89,8 +90,6 @@ public class PayPalFragment extends Fragment implements PayPalListener {
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
         if (paymentMethodNonce != null) {
-            super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
                 PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);

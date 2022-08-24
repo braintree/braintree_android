@@ -2,11 +2,15 @@ package com.braintreepayments.demo;
 
 import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.createPayPalVaultRequest;
+import static com.braintreepayments.demo.factories.BraintreeClientFactory.createBraintreeClient;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavHost;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
@@ -22,7 +26,7 @@ import com.braintreepayments.api.PayPalNativeCheckoutListener;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalNativeCheckoutListener {
+public class PayPalNativeCheckoutFragment extends Fragment implements PayPalNativeCheckoutListener {
 
     private final String TAG = PayPalNativeCheckoutFragment.class.getName();
     private String deviceData;
@@ -32,6 +36,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
 
     public Button launchPayPalNativeCheckoutButton;
     public Button launchPayPalNativeVaultCheckoutButton;
+    private AlertPresenter alertPresenter = new AlertPresenter();
 
     public PayPalNativeCheckoutFragment() {
     }
@@ -49,6 +54,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         launchPayPalNativeVaultCheckoutButton = view.findViewById(R.id.paypal_native_checkout_vault_launch);
         launchPayPalNativeVaultCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(true));
         braintreeClient = getBraintreeClient();
+        braintreeClient = createBraintreeClient(requireContext());
         payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
         payPalClient.setListener(this);
         return view;
@@ -93,7 +99,6 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
         if (paymentMethodNonce != null) {
-            super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalNativeCheckoutFragmentDirections.ActionPayPalNativeCheckoutFragmentToDisplayNonceFragment action =
                 PayPalNativeCheckoutFragmentDirections.actionPayPalNativeCheckoutFragmentToDisplayNonceFragment(paymentMethodNonce);
@@ -110,6 +115,6 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
 
     @Override
     public void onPayPalFailure(@NonNull Exception error) {
-        handleError(error);
+        alertPresenter.showErrorDialog(this, error);
     }
 }
