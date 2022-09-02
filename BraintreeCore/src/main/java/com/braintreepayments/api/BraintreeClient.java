@@ -291,11 +291,11 @@ public class BraintreeClient {
     }
 
     BrowserSwitchResult getBrowserSwitchResult(@NonNull FragmentActivity activity) {
-        return browserSwitchClient.getResultFromCache(activity);
+        return browserSwitchClient.getResult(activity);
     }
 
     public BrowserSwitchResult deliverBrowserSwitchResult(@NonNull FragmentActivity activity) {
-        return browserSwitchClient.deliverResultFromCache(activity);
+        return browserSwitchClient.deliverResult(activity);
     }
 
     String getReturnUrlScheme() {
