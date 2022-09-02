@@ -353,6 +353,10 @@ public class BraintreeClient {
         authorizationLoader.invalidateClientToken();
     }
 
+    boolean useDefaultDeepLinkHandler() {
+        return useDefaultDeepLinkHandler;
+    }
+
     public void useDefaultDeepLinkHandler(boolean useDefaultDeepLinkHandler) {
         this.useDefaultDeepLinkHandler = useDefaultDeepLinkHandler;
     }
