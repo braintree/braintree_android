@@ -298,6 +298,14 @@ public class BraintreeClient {
         return browserSwitchClient.deliverResult(activity);
     }
 
+    BrowserSwitchResult getBrowserSwitchResultFromCache(@NonNull Context context) {
+        return browserSwitchClient.getResultFromCache(context);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(@NonNull Context context) {
+        return browserSwitchClient.deliverResultFromCache(context);
+    }
+
     String getReturnUrlScheme() {
         if (useDefaultDeepLinkHandler) {
             return defaultReturnUrlScheme;

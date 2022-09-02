@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
+
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -264,6 +266,7 @@ public class PayPalClient {
                 .requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(payPalResponse.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
+                .launchAsNewTask(braintreeClient.useDefaultDeepLinkHandler())
                 .metadata(metadata);
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
@@ -273,7 +276,17 @@ public class PayPalClient {
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == PAYPAL) {
+            this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        }
+
+        BrowserSwitchResult pendingResultFromCache =
+            braintreeClient.getBrowserSwitchResultFromCache(activity);
+        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == PAYPAL) {
+            this.pendingBrowserSwitchResult =
+                braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+        }
 
         if (pendingBrowserSwitchResult != null && listener != null) {
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);

@@ -44,6 +44,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
         braintreeClient = getBraintreeClient();
         braintreeClient.useDefaultDeepLinkHandler(true);
+
         payPalClient = new PayPalClient(this, braintreeClient);
         payPalClient.setListener(this);
 
