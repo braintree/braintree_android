@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 4.16.0
+
+* PayPalNativeCheckoutClient
+  * Adding in Native checkout support for one time password
+
 ## 4.15.0
 
 * BraintreeCore
