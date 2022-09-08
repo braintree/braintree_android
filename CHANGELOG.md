@@ -5,6 +5,9 @@
 * PayPalNativeCheckoutClient
   * Bumping native-checkout version to 0.8.1 
   * Adding in Native checkout support for one time password
+* BraintreeCore
+  * Add `BraintreeClient#useDefaultDeepLinkHandler()` boolean flag to opt in to using the SDKs default deep link handler
+  * Create `BraintreeDeepLinkActivity` to capture deep link results when default deep link behavior is enabled
 
 ## 4.15.0
 
