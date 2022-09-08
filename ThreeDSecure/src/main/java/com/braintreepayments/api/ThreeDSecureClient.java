@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 
 /**
@@ -533,7 +534,17 @@ public class ThreeDSecureClient {
     // region Internal Handle App/Browser Switch Results
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
+            this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        }
+
+        BrowserSwitchResult pendingResultFromCache =
+                braintreeClient.getBrowserSwitchResultFromCache(activity);
+        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == THREE_D_SECURE) {
+            this.pendingBrowserSwitchResult =
+                    braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+        }
 
         if (pendingBrowserSwitchResult != null && listener != null) {
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);

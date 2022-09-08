@@ -80,11 +80,7 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            BrowserSwitchResult pendingResult =
-                                threeDSecureClient.getBrowserSwitchResult(finalActivity);
-                            if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
-                                threeDSecureClient.onBrowserSwitchResult(finalActivity);
-                            }
+                            threeDSecureClient.onBrowserSwitchResult(finalActivity);
                         }
                     });
                 }
