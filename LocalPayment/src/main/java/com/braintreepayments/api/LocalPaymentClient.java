@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
+
 import android.content.Context;
 import android.net.Uri;
 
@@ -183,6 +185,7 @@ public class LocalPaymentClient {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
+                .launchAsNewTask(braintreeClient.useDefaultDeepLinkHandler())
                 .url(Uri.parse(localPaymentResult.getApprovalUrl()));
 
         String paymentType = localPaymentResult.getRequest().getPaymentType();
@@ -196,7 +199,17 @@ public class LocalPaymentClient {
     }
 
     void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (pendingResult != null && pendingResult.getRequestCode() == LOCAL_PAYMENT) {
+            this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
+        }
+
+        BrowserSwitchResult pendingResultFromCache =
+                braintreeClient.getBrowserSwitchResultFromCache(activity);
+        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == LOCAL_PAYMENT) {
+            this.pendingBrowserSwitchResult =
+                    braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+        }
 
         if (pendingBrowserSwitchResult != null && listener != null) {
             deliverBrowserSwitchResultToListener(activity, pendingBrowserSwitchResult);

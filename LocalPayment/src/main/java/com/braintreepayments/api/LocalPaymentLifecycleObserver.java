@@ -56,10 +56,7 @@ class LocalPaymentLifecycleObserver implements LifecycleEventObserver {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        BrowserSwitchResult pendingResult = localPaymentClient.getBrowserSwitchResult(finalActivity);
-                        if (pendingResult != null && pendingResult.getRequestCode() == LOCAL_PAYMENT) {
-                            localPaymentClient.onBrowserSwitchResult(finalActivity);
-                        }
+                        localPaymentClient.onBrowserSwitchResult(finalActivity);
                     }
                 });
             }
