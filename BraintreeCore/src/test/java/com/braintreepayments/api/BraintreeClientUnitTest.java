@@ -486,6 +486,16 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
+    public void getReturnUrlScheme_whenDefaultDeepLinkHandlerEnabled_returnsDefaultDeepLinkHandlerScheme() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String authorization = Fixtures.BASE64_CLIENT_TOKEN;
+        BraintreeClient sut = new BraintreeClient(context, authorization);
+        sut.useDefaultDeepLinkHandler(true);
+
+        assertEquals("com.braintreepayments.api.test.braintree.defaultdeeplinkhandler", sut.getReturnUrlScheme());
+    }
+
+    @Test
     public void getSessionId_withAuthString_returnsSessionIdDefinedInConstructor() {
         Context context = ApplicationProvider.getApplicationContext();
         String authorization = Fixtures.BASE64_CLIENT_TOKEN;
