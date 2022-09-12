@@ -533,24 +533,6 @@ public class ThreeDSecureClient {
 
     // region Internal Handle App/Browser Switch Results
 
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
-        if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
-            this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-        }
-
-        BrowserSwitchResult pendingResultFromCache =
-                braintreeClient.getBrowserSwitchResultFromCache(activity);
-        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == THREE_D_SECURE) {
-            this.pendingBrowserSwitchResult =
-                    braintreeClient.deliverBrowserSwitchResultFromCache(activity);
-        }
-
-        if (pendingBrowserSwitchResult != null && listener != null) {
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
     void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
         this.pendingBrowserSwitchResult = browserSwitchResult;
         if (listener != null) {

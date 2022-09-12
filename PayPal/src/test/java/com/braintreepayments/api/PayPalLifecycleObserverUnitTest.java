@@ -67,6 +67,7 @@ public class PayPalLifecycleObserverUnitTest {
 
         PayPalClient payPalClient = mock(PayPalClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 
