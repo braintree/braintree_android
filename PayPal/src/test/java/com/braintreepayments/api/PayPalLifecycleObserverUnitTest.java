@@ -59,6 +59,44 @@ public class PayPalLifecycleObserverUnitTest {
     }
 
     @Test
+    public void onResume_whenLifeCycleObserverIsFragment_payPalClientDeliversResultFromCacheWithFragmentActivity() {
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+        when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        PayPalClient payPalClient = mock(PayPalClient.class);
+        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_payPalClientDeliversResultFromCacheWithSameActivity() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        PayPalClient payPalClient = mock(PayPalClient.class);
+        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
     public void onResume_whenPendingBrowserSwitchResultExists_andRequestCodeNotPayPal_doesNothing() {
         FragmentActivity activity = mock(FragmentActivity.class);
 

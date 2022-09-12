@@ -309,7 +309,7 @@ public class PayPalClient {
     }
 
     BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+        return braintreeClient.getBrowserSwitchResultFromCache(activity);
     }
 
     BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {

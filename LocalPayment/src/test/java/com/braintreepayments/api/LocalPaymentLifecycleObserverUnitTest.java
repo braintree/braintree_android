@@ -59,6 +59,44 @@ public class LocalPaymentLifecycleObserverUnitTest {
     }
 
     @Test
+    public void onResume_whenLifeCycleObserverIsFragment_payPalClientDeliversResultFromCacheWithFragmentActivity() {
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+        when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
+
+        LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
+        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
+
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_payPalClientDeliversResultFromCacheWithSameActivity() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
+
+        LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
+        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+    }
+
+    @Test
     public void onResume_whenPendingBrowserSwitchResultExists_andRequestCodeNotPayPal_doesNothing() {
         FragmentActivity activity = mock(FragmentActivity.class);
 

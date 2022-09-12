@@ -622,7 +622,7 @@ public class ThreeDSecureClient {
     }
 
     BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+        return braintreeClient.getBrowserSwitchResultFromCache(activity);
     }
 
     BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
