@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,10 +19,6 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
-import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security

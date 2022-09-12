@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
-
 import android.os.Handler;
 import android.os.Looper;
 
