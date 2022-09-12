@@ -181,6 +181,24 @@ public class ThreeDSecureLifecycleObserverUnitTest {
     }
 
     @Test
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotThreeDSecure_doesNothing() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = new FragmentActivity();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
+    }
+
+    @Test
     public void launch_launchesActivityWithThreeDSecureResult() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);

@@ -113,4 +113,21 @@ public class PayPalLifecycleObserverUnitTest {
 
         verify(payPalClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
+
+    @Test
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotPayPal_doesNothing() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
+
+        PayPalClient payPalClient = mock(PayPalClient.class);
+        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(payPalClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
+    }
 }
