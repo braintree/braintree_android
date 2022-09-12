@@ -551,6 +551,15 @@ public class ThreeDSecureClient {
         }
     }
 
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
+            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
+            // from the client to allow more flexibility to merchants who rely heavily on view model.
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
     private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
         onBrowserSwitchResult(browserSwitchResult, new ThreeDSecureResultCallback() {
             @Override
@@ -620,8 +629,22 @@ public class ThreeDSecureClient {
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
     }
 
+    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
+    // logic into another component that also gives merchants more flexibility when using view models
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
     }
 
     // endregion

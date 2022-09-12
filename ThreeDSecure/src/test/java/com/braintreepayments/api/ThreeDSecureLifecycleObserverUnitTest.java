@@ -92,12 +92,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -110,12 +111,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -128,12 +130,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
 
     }
 
