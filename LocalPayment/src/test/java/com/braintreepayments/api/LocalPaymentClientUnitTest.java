@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static com.ibm.icu.impl.Assert.fail;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.mockito.Matchers.any;
@@ -354,6 +355,7 @@ public class LocalPaymentClientUnitTest {
         BrowserSwitchOptions browserSwitchOptions = optionsCaptor.getValue();
         assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT, browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"), browserSwitchOptions.getUrl());
+        assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
         JSONObject metadata = browserSwitchOptions.getMetadata();
         JSONObject expectedMetadata = new JSONObject()
@@ -361,6 +363,24 @@ public class LocalPaymentClientUnitTest {
                 .put("payment-type", "ideal");
 
         JSONAssert.assertEquals(expectedMetadata, metadata, true);
+    }
+
+    @Test
+    public void approvePayment_withDefaultDeepLinkHandlerEnabled_startsBrowserSwitchAsNewTaskWithProperRequestCode() throws JSONException, BrowserSwitchException {
+        when(braintreeClient.useDefaultDeepLinkHandler()).thenReturn(true);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        String approvalUrl = "https://sample.com/approval?token=sample-token";
+        LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
+
+        sut.approveLocalPayment(activity, transaction);
+
+        ArgumentCaptor<BrowserSwitchOptions> optionsCaptor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
+        verify(braintreeClient).startBrowserSwitch(same(activity), optionsCaptor.capture());
+
+        BrowserSwitchOptions browserSwitchOptions = optionsCaptor.getValue();
+        assertTrue(browserSwitchOptions.isLaunchAsNewTask());
     }
 
     @Test
@@ -642,11 +662,39 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void getBrowserSwitchResult_getsBrowserSwitchResultFromBraintreeClient() {
-        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
-        sut.getBrowserSwitchResult(activity);
+    public void getBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
-        verify(braintreeClient).getBrowserSwitchResult(activity);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity));
+    }
+
+    @Test
+    public void deliverBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        assertSame(browserSwitchResult, sut.deliverBrowserSwitchResult(activity));
+    }
+
+    @Test
+    public void getBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        assertSame(browserSwitchResult, sut.getBrowserSwitchResultFromCache(activity));
+    }
+
+    @Test
+    public void deliverBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        assertSame(browserSwitchResult, sut.deliverBrowserSwitchResultFromCache(activity));
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
