@@ -31,12 +31,13 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
         when(localPaymentClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient).onBrowserSwitchResult(same(activity));
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
     @Test
@@ -48,12 +49,13 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
         when(localPaymentClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient).onBrowserSwitchResult(same(activity));
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
     @Test
@@ -70,6 +72,6 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+        verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class), any(BrowserSwitchResult.class));
     }
 }

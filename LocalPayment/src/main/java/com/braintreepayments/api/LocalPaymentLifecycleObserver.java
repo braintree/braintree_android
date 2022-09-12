@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -54,7 +56,23 @@ class LocalPaymentLifecycleObserver implements LifecycleEventObserver {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        localPaymentClient.onBrowserSwitchResult(finalActivity);
+                        BrowserSwitchResult resultToDeliver = null;
+
+                        BrowserSwitchResult pendingResult = localPaymentClient.getBrowserSwitchResult(finalActivity);
+                        if (pendingResult != null && pendingResult.getRequestCode() == LOCAL_PAYMENT) {
+                            resultToDeliver = localPaymentClient.deliverBrowserSwitchResult(finalActivity);
+                        }
+
+                        BrowserSwitchResult pendingResultFromCache =
+                                localPaymentClient.getBrowserSwitchResultFromCache(finalActivity);
+                        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == LOCAL_PAYMENT) {
+                            resultToDeliver =
+                                    localPaymentClient.deliverBrowserSwitchResultFromCache(finalActivity);
+                        }
+
+                        if (resultToDeliver != null) {
+                            localPaymentClient.onBrowserSwitchResult(finalActivity, resultToDeliver);
+                        }
                     }
                 });
             }
