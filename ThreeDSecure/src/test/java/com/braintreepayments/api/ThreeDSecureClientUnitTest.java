@@ -670,4 +670,60 @@ public class ThreeDSecureClientUnitTest {
 
         assertNull(sut.pendingBrowserSwitchResult);
     }
+
+    @Test
+    public void getBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        BrowserSwitchResult result = sut.getBrowserSwitchResult(activity);
+        assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void deliverBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        BrowserSwitchResult result = sut.deliverBrowserSwitchResult(activity);
+        assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void getBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        BrowserSwitchResult result = sut.getBrowserSwitchResultFromCache(activity);
+        assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void deliverBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(braintreeClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
+
+        BrowserSwitchResult result = sut.deliverBrowserSwitchResultFromCache(activity);
+        assertSame(browserSwitchResult, result);
+    }
 }
