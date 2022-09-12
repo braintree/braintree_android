@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static androidx.lifecycle.Lifecycle.Event.ON_RESUME;
+
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 
 import android.os.Handler;
@@ -56,7 +57,23 @@ class PayPalLifecycleObserver implements LifecycleEventObserver {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        payPalClient.onBrowserSwitchResult(finalActivity);
+                        BrowserSwitchResult resultToDeliver = null;
+
+                        BrowserSwitchResult pendingResult = payPalClient.getBrowserSwitchResult(finalActivity);
+                        if (pendingResult != null && pendingResult.getRequestCode() == PAYPAL) {
+                            resultToDeliver = payPalClient.deliverBrowserSwitchResult(finalActivity);
+                        }
+
+                        BrowserSwitchResult pendingResultFromCache =
+                                payPalClient.getBrowserSwitchResultFromCache(finalActivity);
+                        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == PAYPAL) {
+                            resultToDeliver =
+                                    payPalClient.deliverBrowserSwitchResultFromCache(finalActivity);
+                        }
+
+                        if (resultToDeliver != null) {
+                            payPalClient.onBrowserSwitchResult(resultToDeliver);
+                        }
                     }
                 });
             }

@@ -31,12 +31,13 @@ public class PayPalLifecycleObserverUnitTest {
 
         PayPalClient payPalClient = mock(PayPalClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(payPalClient).onBrowserSwitchResult(same(activity));
+        verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -48,12 +49,13 @@ public class PayPalLifecycleObserverUnitTest {
 
         PayPalClient payPalClient = mock(PayPalClient.class);
         when(payPalClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(payPalClient).onBrowserSwitchResult(same(activity));
+        verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -70,6 +72,6 @@ public class PayPalLifecycleObserverUnitTest {
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(payPalClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+        verify(payPalClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
 }

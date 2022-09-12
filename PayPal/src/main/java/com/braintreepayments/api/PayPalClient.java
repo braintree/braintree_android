@@ -275,20 +275,9 @@ public class PayPalClient {
         return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        BrowserSwitchResult pendingResult = braintreeClient.getBrowserSwitchResult(activity);
-        if (pendingResult != null && pendingResult.getRequestCode() == PAYPAL) {
-            this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-        }
-
-        BrowserSwitchResult pendingResultFromCache =
-            braintreeClient.getBrowserSwitchResultFromCache(activity);
-        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == PAYPAL) {
-            this.pendingBrowserSwitchResult =
-                braintreeClient.deliverBrowserSwitchResultFromCache(activity);
-        }
-
-        if (pendingBrowserSwitchResult != null && listener != null) {
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
@@ -309,6 +298,18 @@ public class PayPalClient {
 
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
     }
 
     /**
