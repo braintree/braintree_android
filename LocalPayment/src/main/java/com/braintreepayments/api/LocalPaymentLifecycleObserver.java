@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
-
 import android.os.Handler;
 import android.os.Looper;
 
