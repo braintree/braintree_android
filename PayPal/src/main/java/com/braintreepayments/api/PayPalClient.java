@@ -278,6 +278,8 @@ public class PayPalClient {
     void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
         this.pendingBrowserSwitchResult = browserSwitchResult;
         if (listener != null) {
+            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
+            // from the client to allow more flexibility to merchants who rely heavily on view model.
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
@@ -296,6 +298,8 @@ public class PayPalClient {
         this.pendingBrowserSwitchResult = null;
     }
 
+    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
+    // logic into another component that also gives merchants more flexibility when using view models
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
     }
