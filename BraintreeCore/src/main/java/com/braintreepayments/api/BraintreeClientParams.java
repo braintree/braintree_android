@@ -128,11 +128,11 @@ class BraintreeClientParams {
         return this;
     }
 
-    public String getDefaultReturnURLScheme() {
+    String getDefaultReturnURLScheme() {
         return defaultReturnURLScheme;
     }
 
-    public BraintreeClientParams defaultReturnURLScheme(String defaultReturnURLScheme) {
+    BraintreeClientParams defaultReturnURLScheme(String defaultReturnURLScheme) {
         this.defaultReturnURLScheme = defaultReturnURLScheme;
         return this;
     }
