@@ -3,6 +3,7 @@
 ## unreleased
 
 * PayPalNativeCheckoutClient
+  * Bumping native-checkout version to 0.8.1 
   * Adding in Native checkout support for one time password
 
 ## 4.15.0

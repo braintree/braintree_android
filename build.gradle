@@ -13,7 +13,7 @@ buildscript {
             "androidxTest"   : "1.4.0",
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",
-            "room"           : "2.2.6",
+            "room"           : "2.4.1",
             // Version 19.0.0 of play-services-wallet has been released but should not be used per Google documentation
             "playServices"   : "18.1.3"
     ]
