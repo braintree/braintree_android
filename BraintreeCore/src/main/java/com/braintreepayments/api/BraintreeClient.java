@@ -365,6 +365,15 @@ public class BraintreeClient {
         return useDefaultDeepLinkHandler;
     }
 
+    /**
+     * Set this property to true to enable default deep link handling for browser switched flows.
+     * For web flows, this means launching the browser in a task separate from the calling activity.
+     *
+     * NOTE: When default deep linking is enabled, all custom url schemes set in {@link BraintreeClient}
+     * constructors will be ignored.
+     *
+     * @param useDefaultDeepLinkHandler set to true to enable the default deep link handler. This value is false by default.
+     */
     public void useDefaultDeepLinkHandler(boolean useDefaultDeepLinkHandler) {
         this.useDefaultDeepLinkHandler = useDefaultDeepLinkHandler;
     }
