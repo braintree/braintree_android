@@ -37,7 +37,7 @@ dependencies {
     implementation deps.appCompat
     implementation project(':PayPalDataCollector')
 
-    implementation('com.paypal.checkout:android-sdk:0.7.2') {
+    implementation('com.paypal.checkout:android-sdk:0.8.1') {
         exclude group: 'com.paypal.android.sdk', module: 'data-collector'
     }
 
