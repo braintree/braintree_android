@@ -256,7 +256,7 @@ public class PayPalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .useDefaultDeepLinkHandler(true)
+                .launchesBrowserSwitchAsNewTask(true)
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);

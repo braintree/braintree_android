@@ -30,7 +30,7 @@ public class BraintreeClient {
     private final String returnUrlScheme;
     private final String defaultReturnUrlScheme;
 
-    private boolean useDefaultDeepLinkHandler;
+    private boolean launchesBrowserSwitchAsNewTask;
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
         String returnUrlScheme = context
@@ -307,7 +307,7 @@ public class BraintreeClient {
     }
 
     String getReturnUrlScheme() {
-        if (useDefaultDeepLinkHandler) {
+        if (launchesBrowserSwitchAsNewTask) {
             return defaultReturnUrlScheme;
         }
         return returnUrlScheme;
@@ -361,8 +361,8 @@ public class BraintreeClient {
         authorizationLoader.invalidateClientToken();
     }
 
-    boolean useDefaultDeepLinkHandler() {
-        return useDefaultDeepLinkHandler;
+    boolean launchesBrowserSwitchAsNewTask() {
+        return launchesBrowserSwitchAsNewTask;
     }
 
     /**
@@ -372,9 +372,9 @@ public class BraintreeClient {
      * NOTE: When default deep linking is enabled, all custom url schemes set in {@link BraintreeClient}
      * constructors will be ignored.
      *
-     * @param useDefaultDeepLinkHandler set to true to enable the default deep link handler. This value is false by default.
+     * @param launchesBrowserSwitchAsNewTask set to true to enable the default deep link handler. This value is false by default.
      */
-    public void useDefaultDeepLinkHandler(boolean useDefaultDeepLinkHandler) {
-        this.useDefaultDeepLinkHandler = useDefaultDeepLinkHandler;
+    public void launchesBrowserSwitchAsNewTask(boolean launchesBrowserSwitchAsNewTask) {
+        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
     }
 }

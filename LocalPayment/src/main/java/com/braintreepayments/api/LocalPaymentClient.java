@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
-
 import android.content.Context;
 import android.net.Uri;
 
@@ -185,7 +183,7 @@ public class LocalPaymentClient {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-                .launchAsNewTask(braintreeClient.useDefaultDeepLinkHandler())
+                .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .url(Uri.parse(localPaymentResult.getApprovalUrl()));
 
         String paymentType = localPaymentResult.getRequest().getPaymentType();

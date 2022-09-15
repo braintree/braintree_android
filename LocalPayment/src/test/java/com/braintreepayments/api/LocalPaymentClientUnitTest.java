@@ -367,7 +367,7 @@ public class LocalPaymentClientUnitTest {
 
     @Test
     public void approvePayment_withDefaultDeepLinkHandlerEnabled_startsBrowserSwitchAsNewTaskWithProperRequestCode() throws JSONException, BrowserSwitchException {
-        when(braintreeClient.useDefaultDeepLinkHandler()).thenReturn(true);
+        when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(true);
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();

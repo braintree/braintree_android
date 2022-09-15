@@ -490,7 +490,7 @@ public class BraintreeClientUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         String authorization = Fixtures.BASE64_CLIENT_TOKEN;
         BraintreeClient sut = new BraintreeClient(context, authorization);
-        sut.useDefaultDeepLinkHandler(true);
+        sut.launchesBrowserSwitchAsNewTask(true);
 
         assertEquals("com.braintreepayments.api.test.braintree.defaultdeeplinkhandler", sut.getReturnUrlScheme());
     }

@@ -407,7 +407,7 @@ public class ThreeDSecureClient {
             BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                     .requestCode(THREE_D_SECURE)
                     .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-                    .launchAsNewTask(braintreeClient.useDefaultDeepLinkHandler())
+                    .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                     .url(Uri.parse(browserSwitchUrl));
             try {
                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);

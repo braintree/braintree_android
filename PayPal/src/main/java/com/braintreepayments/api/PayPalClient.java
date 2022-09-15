@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
-
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -266,7 +264,7 @@ public class PayPalClient {
                 .requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(payPalResponse.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-                .launchAsNewTask(braintreeClient.useDefaultDeepLinkHandler())
+                .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }

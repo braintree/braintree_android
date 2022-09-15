@@ -153,7 +153,7 @@ public class ThreeDSecureV1UnitTest {
                 .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
                 .configuration(threeDSecureEnabledConfig)
-                .useDefaultDeepLinkHandler(true)
+                .launchesBrowserSwitchAsNewTask(true)
                 .returnUrlScheme(urlScheme)
                 .build();
 

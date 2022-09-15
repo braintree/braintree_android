@@ -41,7 +41,7 @@ public class MockBraintreeClientBuilder {
     private boolean canPerformBrowserSwitch = true;
 
     private ActivityInfo activityInfo;
-    private boolean useDefaultDeepLinkHandler;
+    private boolean launchesBrowserSwitchAsNewTask;
 
     public MockBraintreeClientBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -127,8 +127,8 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder useDefaultDeepLinkHandler(boolean useDefaultDeepLinkHandler) {
-        this.useDefaultDeepLinkHandler = useDefaultDeepLinkHandler;
+    public MockBraintreeClientBuilder launchesBrowserSwitchAsNewTask(boolean launchesBrowserSwitchAsNewTask) {
+        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
         return this;
     }
 
@@ -160,7 +160,7 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.canPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
         when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
         when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
-        when(braintreeClient.useDefaultDeepLinkHandler()).thenReturn(useDefaultDeepLinkHandler);
+        when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(launchesBrowserSwitchAsNewTask);
 
         doAnswer(new Answer<Void>() {
             @Override
