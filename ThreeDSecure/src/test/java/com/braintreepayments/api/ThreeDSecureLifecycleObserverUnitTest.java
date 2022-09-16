@@ -92,12 +92,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -110,12 +111,54 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient).onBrowserSwitchResult(same(activity));
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsFragment_threeDSecureClientDeliversResultFromCacheWithFragmentActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = new FragmentActivity();
+        when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_threeDSecureClientDeliversResultFromCacheWithSameActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = new FragmentActivity();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
@@ -128,13 +171,31 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
+    }
 
+    @Test
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotThreeDSecure_doesNothing() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = new FragmentActivity();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
+        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(threeDSecureClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
 
     @Test

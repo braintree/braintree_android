@@ -16,6 +16,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -139,6 +141,36 @@ public class ThreeDSecureV1UnitTest {
         BrowserSwitchOptions browserSwitchOptions = captor.getValue();
         assertEquals(THREE_D_SECURE, browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://browser.switch.url.com"), browserSwitchOptions.getUrl());
+        assertFalse(browserSwitchOptions.isLaunchAsNewTask());
+    }
+
+    @Test
+    public void continuePerformVerification_whenV1FlowAndDefaultDeepLinkHandlerEnabled_launchesBrowserSwitchAsNewTask() throws BrowserSwitchException {
+        String urlScheme = "sample-scheme";
+        String assetsUrl = "https://www.some-assets.com";
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
+                .configuration(threeDSecureEnabledConfig)
+                .launchesBrowserSwitchAsNewTask(true)
+                .returnUrlScheme(urlScheme)
+                .build();
+
+        when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, threeDSecureRequest, threeDSecureResult.getLookup()))
+                .thenReturn("https://browser.switch.url.com");
+
+        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
+        sut.setListener(listener);
+        sut.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
+
+        ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
+        verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
+
+        BrowserSwitchOptions browserSwitchOptions = captor.getValue();
+        assertTrue(browserSwitchOptions.isLaunchAsNewTask());
     }
 
     @Test

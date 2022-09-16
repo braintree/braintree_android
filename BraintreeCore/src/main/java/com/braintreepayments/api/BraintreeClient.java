@@ -28,6 +28,9 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
     private final String returnUrlScheme;
+    private final String braintreeDeepLinkReturnUrlScheme;
+
+    private boolean launchesBrowserSwitchAsNewTask;
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
         String returnUrlScheme = context
@@ -35,11 +38,17 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+
+        String braintreeReturnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.deeplinkhandler";
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, braintreeReturnUrlScheme);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, null);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String sessionId, @IntegrationType.Integration String integrationType) {
@@ -48,10 +57,17 @@ public class BraintreeClient {
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType);
+
+        String braintreeReturnUrlScheme = context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.deeplinkhandler";
+
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, braintreeReturnUrlScheme);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType) {
+    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType, String braintreeReturnURLScheme) {
         AuthorizationLoader authorizationLoader =
                 new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
@@ -63,6 +79,7 @@ public class BraintreeClient {
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
+                .braintreeDeepLinkReturnUrlScheme(braintreeReturnURLScheme)
                 .graphQLClient(new BraintreeGraphQLClient())
                 .analyticsClient(new AnalyticsClient(context))
                 .browserSwitchClient(new BrowserSwitchClient())
@@ -147,6 +164,7 @@ public class BraintreeClient {
         this.sessionId = sessionId;
         this.integrationType = params.getIntegrationType();
         this.returnUrlScheme = params.getReturnUrlScheme();
+        this.braintreeDeepLinkReturnUrlScheme = params.getBraintreeDeepLinkReturnUrlScheme();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -280,7 +298,18 @@ public class BraintreeClient {
         return browserSwitchClient.deliverResult(activity);
     }
 
+    BrowserSwitchResult getBrowserSwitchResultFromCache(@NonNull Context context) {
+        return browserSwitchClient.getResultFromCache(context);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(@NonNull Context context) {
+        return browserSwitchClient.deliverResultFromCache(context);
+    }
+
     String getReturnUrlScheme() {
+        if (launchesBrowserSwitchAsNewTask) {
+            return braintreeDeepLinkReturnUrlScheme;
+        }
         return returnUrlScheme;
     }
 
@@ -330,5 +359,24 @@ public class BraintreeClient {
      */
     public void invalidateClientToken() {
         authorizationLoader.invalidateClientToken();
+    }
+
+    boolean launchesBrowserSwitchAsNewTask() {
+        return launchesBrowserSwitchAsNewTask;
+    }
+
+    /**
+     * Set this property to true to allow the SDK to handle deep links on behalf of the host
+     * application for browser switched flows.
+     *
+     * For web payment flows, this means launching the browser in a task separate from the calling activity.
+     *
+     * NOTE: When this property is set to true, all custom url schemes set in {@link BraintreeClient}
+     * constructors will be ignored.
+     *
+     * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links. This value is false by default.
+     */
+    public void launchesBrowserSwitchAsNewTask(boolean launchesBrowserSwitchAsNewTask) {
+        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
     }
 }

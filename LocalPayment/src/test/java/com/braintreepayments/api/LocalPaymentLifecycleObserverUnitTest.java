@@ -31,12 +31,13 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
         when(localPaymentClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient).onBrowserSwitchResult(same(activity));
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
     @Test
@@ -48,12 +49,51 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
         when(localPaymentClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient).onBrowserSwitchResult(same(activity));
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsFragment_payPalClientDeliversResultFromCacheWithFragmentActivity() {
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+        when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
+
+        LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
+        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
+
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_payPalClientDeliversResultFromCacheWithSameActivity() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
+
+        LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
+        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
     @Test
@@ -70,6 +110,23 @@ public class LocalPaymentLifecycleObserverUnitTest {
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class));
+        verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class), any(BrowserSwitchResult.class));
+    }
+
+    @Test
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotLocalPayment_doesNothing() {
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
+
+        LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
+        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+
+        LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
+
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class), any(BrowserSwitchResult.class));
     }
 }

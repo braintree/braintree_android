@@ -264,6 +264,7 @@ public class PayPalClient {
                 .requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(payPalResponse.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
+                .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
@@ -272,10 +273,11 @@ public class PayPalClient {
         return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-
-        if (pendingBrowserSwitchResult != null && listener != null) {
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
+            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
+            // from the client to allow more flexibility to merchants who rely heavily on view model.
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
@@ -294,8 +296,22 @@ public class PayPalClient {
         this.pendingBrowserSwitchResult = null;
     }
 
+    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
+    // logic into another component that also gives merchants more flexibility when using view models
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromCache(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
     }
 
     /**

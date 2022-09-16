@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,9 +19,6 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
@@ -407,6 +407,7 @@ public class ThreeDSecureClient {
             BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                     .requestCode(THREE_D_SECURE)
                     .returnUrlScheme(braintreeClient.getReturnUrlScheme())
+                    .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                     .url(Uri.parse(browserSwitchUrl));
             try {
                 braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
@@ -532,10 +533,11 @@ public class ThreeDSecureClient {
 
     // region Internal Handle App/Browser Switch Results
 
-    void onBrowserSwitchResult(FragmentActivity activity) {
-        this.pendingBrowserSwitchResult = braintreeClient.deliverBrowserSwitchResult(activity);
-
-        if (pendingBrowserSwitchResult != null && listener != null) {
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
+            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
+            // from the client to allow more flexibility to merchants who rely heavily on view model.
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
@@ -609,8 +611,22 @@ public class ThreeDSecureClient {
         braintreeClient.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
     }
 
+    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
+    // logic into another component that also gives merchants more flexibility when using view models
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromCache(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
     }
 
     // endregion
