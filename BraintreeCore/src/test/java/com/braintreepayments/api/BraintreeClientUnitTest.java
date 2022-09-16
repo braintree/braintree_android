@@ -492,7 +492,7 @@ public class BraintreeClientUnitTest {
         BraintreeClient sut = new BraintreeClient(context, authorization);
         sut.launchesBrowserSwitchAsNewTask(true);
 
-        assertEquals("com.braintreepayments.api.test.braintree.defaultdeeplinkhandler", sut.getReturnUrlScheme());
+        assertEquals("com.braintreepayments.api.test.braintree.deeplinkhandler", sut.getReturnUrlScheme());
     }
 
     @Test

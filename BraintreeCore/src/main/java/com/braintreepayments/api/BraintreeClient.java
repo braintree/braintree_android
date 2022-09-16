@@ -43,7 +43,7 @@ public class BraintreeClient {
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree.defaultdeeplinkhandler";
+                .replace("_", "") + ".braintree.deeplinkhandler";
         return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, defaultReturnUrlScheme);
     }
 
@@ -62,7 +62,7 @@ public class BraintreeClient {
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree.defaultdeeplinkhandler";
+                .replace("_", "") + ".braintree.deeplinkhandler";
 
         return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, defaultReturnUrlScheme);
     }
