@@ -114,7 +114,7 @@ public class LocalPaymentLifecycleObserverUnitTest {
     }
 
     @Test
-    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotPayPal_doesNothing() {
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotLocalPayment_doesNothing() {
         FragmentActivity activity = mock(FragmentActivity.class);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
