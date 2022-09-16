@@ -242,7 +242,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void tokenizePayPalAccount_whenDefaultDeepLinkHandlerEnabled_startsBrowserAsSingleTask() throws JSONException, BrowserSwitchException {
+    public void tokenizePayPalAccount_whenLaunchesBrowserSwitchAsNewTaskEnabled_startsBrowserAsSingleTask() throws JSONException, BrowserSwitchException {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
