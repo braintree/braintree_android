@@ -28,7 +28,7 @@ public class BraintreeClient {
     private final String sessionId;
     private final String integrationType;
     private final String returnUrlScheme;
-    private final String defaultReturnUrlScheme;
+    private final String braintreeDeepLinkReturnUrlScheme;
 
     private boolean launchesBrowserSwitchAsNewTask;
 
@@ -39,12 +39,12 @@ public class BraintreeClient {
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
 
-        String defaultReturnUrlScheme = context
+        String braintreeReturnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree.deeplinkhandler";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, defaultReturnUrlScheme);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, braintreeReturnUrlScheme);
     }
 
     private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
@@ -58,16 +58,16 @@ public class BraintreeClient {
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
 
-        String defaultReturnUrlScheme = context
+        String braintreeReturnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
                 .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree.deeplinkhandler";
 
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, defaultReturnUrlScheme);
+        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, braintreeReturnUrlScheme);
     }
 
-    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType, String defaultReturnURLScheme) {
+    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType, String braintreeReturnURLScheme) {
         AuthorizationLoader authorizationLoader =
                 new AuthorizationLoader(initialAuthString, clientTokenProvider);
 
@@ -79,7 +79,7 @@ public class BraintreeClient {
                 .sessionId(sessionId)
                 .httpClient(httpClient)
                 .returnUrlScheme(returnUrlScheme)
-                .defaultReturnURLScheme(defaultReturnURLScheme)
+                .braintreeDeepLinkReturnUrlScheme(braintreeReturnURLScheme)
                 .graphQLClient(new BraintreeGraphQLClient())
                 .analyticsClient(new AnalyticsClient(context))
                 .browserSwitchClient(new BrowserSwitchClient())
@@ -164,7 +164,7 @@ public class BraintreeClient {
         this.sessionId = sessionId;
         this.integrationType = params.getIntegrationType();
         this.returnUrlScheme = params.getReturnUrlScheme();
-        this.defaultReturnUrlScheme = params.getDefaultReturnURLScheme();
+        this.braintreeDeepLinkReturnUrlScheme = params.getBraintreeDeepLinkReturnUrlScheme();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -308,7 +308,7 @@ public class BraintreeClient {
 
     String getReturnUrlScheme() {
         if (launchesBrowserSwitchAsNewTask) {
-            return defaultReturnUrlScheme;
+            return braintreeDeepLinkReturnUrlScheme;
         }
         return returnUrlScheme;
     }
@@ -366,13 +366,15 @@ public class BraintreeClient {
     }
 
     /**
-     * Set this property to true to enable default deep link handling for browser switched flows.
-     * For web flows, this means launching the browser in a task separate from the calling activity.
+     * Set this property to true to allow the SDK to handle deep links on behalf of the host
+     * application for browser switched flows.
      *
-     * NOTE: When default deep linking is enabled, all custom url schemes set in {@link BraintreeClient}
+     * For web payment flows, this means launching the browser in a task separate from the calling activity.
+     *
+     * NOTE: When this property is set to true, all custom url schemes set in {@link BraintreeClient}
      * constructors will be ignored.
      *
-     * @param launchesBrowserSwitchAsNewTask set to true to enable the default deep link handler. This value is false by default.
+     * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links. This value is false by default.
      */
     public void launchesBrowserSwitchAsNewTask(boolean launchesBrowserSwitchAsNewTask) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;

@@ -18,7 +18,7 @@ class BraintreeClientParams {
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
     private UUIDHelper uuidHelper;
-    private String defaultReturnURLScheme;
+    private String braintreeDeepLinkReturnUrlScheme;
 
     AuthorizationLoader getAuthorizationLoader() {
         return authorizationLoader;
@@ -128,12 +128,14 @@ class BraintreeClientParams {
         return this;
     }
 
-    String getDefaultReturnURLScheme() {
-        return defaultReturnURLScheme;
+    String getBraintreeDeepLinkReturnUrlScheme() {
+        return braintreeDeepLinkReturnUrlScheme;
     }
 
-    BraintreeClientParams defaultReturnURLScheme(String defaultReturnURLScheme) {
-        this.defaultReturnURLScheme = defaultReturnURLScheme;
+    // NEXT_MAJOR_VERSION: Formalize capitalization of URL, HTTP etc. via style guide and enforce
+    // capitalization e.g. braintreeDeepLinkReturnURLScheme
+    BraintreeClientParams braintreeDeepLinkReturnUrlScheme(String braintreeDeepLinkReturnUrlScheme) {
+        this.braintreeDeepLinkReturnUrlScheme = braintreeDeepLinkReturnUrlScheme;
         return this;
     }
 }

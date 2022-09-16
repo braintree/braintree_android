@@ -6,12 +6,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * This Activity is used by the SDK Activity to enable default deep link handling and should not
- * be used directly.
+ * This Activity is used by the SDK Activity to handle deep links on behalf of the merchant
+ * It should not be used directly.
  */
 public class BraintreeDeepLinkActivity extends AppCompatActivity {
 
-    BrowserSwitchClient browserSwitchClient = new BrowserSwitchClient();
+    private final BrowserSwitchClient browserSwitchClient = new BrowserSwitchClient();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
