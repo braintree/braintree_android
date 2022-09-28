@@ -74,6 +74,7 @@ public class PayPalNativeCheckoutClient {
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
+        braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         // NEXT_MAJOR_VERSION: remove tokenizePayPalAccount method and refactor tests to center
         // around launchNativeCheckout in the future. Keeping the tests as they are for now allows
         // us to maintain test coverage across both the tokenizePayPalAccount and launchNativeCheckout methods
@@ -82,6 +83,7 @@ public class PayPalNativeCheckoutClient {
         if (isCheckoutRequest || isVaultRequest) {
             launchNativeCheckout(activity, payPalRequest);
         } else {
+            braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.invalid-request.failed");
             String message = "Unsupported request type. Please use either a "
                     + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
             throw new Exception(message);
@@ -98,11 +100,15 @@ public class PayPalNativeCheckoutClient {
      * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
     public void launchNativeCheckout(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
+        braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest);
+            braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.succeeded");
         } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
             sendVaultRequest(activity, (PayPalNativeCheckoutVaultRequest) payPalRequest);
+            braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.succeeded");
         } else if (listener != null) {
+            braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.invalid-request.failed");
             String message = "Unsupported request type. Please use either a "
                     + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.";
             listener.onPayPalFailure(new BraintreeException(message));
@@ -138,8 +144,8 @@ public class PayPalNativeCheckoutClient {
     ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
-                String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                braintreeClient.sendAnalyticsEvent(String.format("%s.app-switch.started", analyticsPrefix));
+                String analyticsPrefix = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
+                braintreeClient.sendAnalyticsEvent(String.format("paypal-native.%s.started", analyticsPrefix));
 
                 Environment environment;
                 if ("sandbox".equals(configuration.getEnvironment())) {
@@ -162,8 +168,10 @@ public class PayPalNativeCheckoutClient {
                 PayPalCheckout.startCheckout(createOrderActions -> {
                     if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
                         createOrderActions.set(payPalResponse.getPairingId());
+                        braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.succeeded");
                     } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
                         createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
+                        braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.succeeded");
                     }
                 });
             }
@@ -177,18 +185,27 @@ public class PayPalNativeCheckoutClient {
     ) {
         PayPalCheckout.registerCallbacks(
                 approval -> {
+                    braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.started");
                     PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse, approval.getData());
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
+                            braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.succeeded");
                             listener.onPayPalSuccess(payPalAccountNonce);
                         } else {
+                            braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.failed");
                             listener.onPayPalFailure(new Exception("PaypalAccountNonce is null"));
                         }
                     });
                 },
                 null,
-                () -> listener.onPayPalFailure(new Exception("User has canceled")),
-                errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
+                () -> {
+                    braintreeClient.sendAnalyticsEvent("paypal-native.canceled");
+                    listener.onPayPalFailure(new Exception("User has canceled"));
+                },
+                errorInfo -> {
+                    braintreeClient.sendAnalyticsEvent("paypal-native.on-error.failed");
+                    listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()));
+                }
         );
     }
 
@@ -231,9 +248,5 @@ public class PayPalNativeCheckoutClient {
         }
 
         return payPalAccount;
-    }
-
-    private static String getAnalyticsEventPrefix(PayPalNativeRequest request) {
-        return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal-native.billing-agreement" : "paypal-native.single-payment";
     }
 }
