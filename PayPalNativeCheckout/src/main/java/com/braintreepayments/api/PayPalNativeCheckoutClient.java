@@ -144,8 +144,8 @@ public class PayPalNativeCheckoutClient {
     ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
-                String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                braintreeClient.sendAnalyticsEvent(String.format("%s.started", analyticsPrefix));
+                String analyticsPrefix = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
+                braintreeClient.sendAnalyticsEvent(String.format("paypal-native.%s.started", analyticsPrefix));
 
                 Environment environment;
                 if ("sandbox".equals(configuration.getEnvironment())) {
@@ -248,9 +248,5 @@ public class PayPalNativeCheckoutClient {
         }
 
         return payPalAccount;
-    }
-
-    private static String getAnalyticsEventPrefix(PayPalNativeRequest request) {
-        return request instanceof PayPalNativeCheckoutVaultRequest ? "paypal-native.billing-agreement" : "paypal-native.single-payment";
     }
 }
