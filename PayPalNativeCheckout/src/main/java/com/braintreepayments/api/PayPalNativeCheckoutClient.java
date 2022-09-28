@@ -74,13 +74,12 @@ public class PayPalNativeCheckoutClient {
      */
     @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
+        braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         // NEXT_MAJOR_VERSION: remove tokenizePayPalAccount method and refactor tests to center
         // around launchNativeCheckout in the future. Keeping the tests as they are for now allows
         // us to maintain test coverage across both the tokenizePayPalAccount and launchNativeCheckout methods
         boolean isCheckoutRequest = payPalRequest instanceof PayPalNativeCheckoutRequest;
         boolean isVaultRequest = payPalRequest instanceof PayPalNativeCheckoutVaultRequest;
-
-        braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         if (isCheckoutRequest || isVaultRequest) {
             launchNativeCheckout(activity, payPalRequest);
         } else {
@@ -102,7 +101,6 @@ public class PayPalNativeCheckoutClient {
      */
     public void launchNativeCheckout(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
         braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
-
         if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest);
             braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.succeeded");
