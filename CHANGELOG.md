@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPalNativeCheckout (BETA)
+  * Remove exit survey when canceling Native Checkout flow
+
 ## 4.16.0
 
 * PayPalNativeCheckoutClient
