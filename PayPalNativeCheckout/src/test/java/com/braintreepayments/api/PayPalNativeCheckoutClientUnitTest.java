@@ -127,6 +127,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         ArgumentCaptor<OnError> onErrorCaptor = ArgumentCaptor.forClass(OnError.class);
 
         PowerMockito.mockStatic(PayPalCheckout.class);
+
         PayPalCheckout.setConfig(
             new CheckoutConfig(
                 activity.getApplication(),

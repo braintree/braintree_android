@@ -9,6 +9,8 @@ import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.pyplcheckout.common.instrumentation.PEnums;
+import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -161,6 +163,20 @@ public class PayPalNativeCheckoutClient {
                                 configuration.getPayPalClientId(),
                                 environment
                         )
+                );
+
+                PLog.transition(
+                    PEnums.TransitionName.BRAINTREE_ROUTING,
+                    PEnums.Outcome.THIRD_PARTY,
+                    PEnums.EventCode.E233,
+                    Statename.BRAINTREE,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "BrainTree"
                 );
 
                 registerCallbacks(configuration, payPalRequest, payPalResponse);
