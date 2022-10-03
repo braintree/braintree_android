@@ -4,7 +4,7 @@
 
 * PayPalNativeCheckout
   * Bumping native-checkout version to 0.8.1
-  * Bugfix to support logging out when client id's switch
+  * Bugfix to support logging out of session when client ID changes
   * Bugfix for auth-sdk obfuscation
 
 ## 4.16.0
