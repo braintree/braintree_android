@@ -169,7 +169,7 @@ public class PayPalNativeCheckoutClient {
                     PEnums.TransitionName.BRAINTREE_ROUTING,
                     PEnums.Outcome.THIRD_PARTY,
                     PEnums.EventCode.E233,
-                    Statename.BRAINTREE,
+                    PEnums.StateName.BRAINTREE,
                     null,
                     null,
                     null,

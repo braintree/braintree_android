@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* PayPalNativeCheckout
+  * Bumping native-checkout version to 0.8.1
+  * Bugfix to support logging out when client id's switch
+  * Bugfix for auth-sdk obfuscation
+
 ## 4.16.0
 
 * PayPalNativeCheckoutClient
