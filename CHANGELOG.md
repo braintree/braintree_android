@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* PayPalNativeCheckout
+* PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.2
   * Bugfix to support logging out of session when client ID changes
 
