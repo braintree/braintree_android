@@ -165,6 +165,8 @@ public class PayPalNativeCheckoutClient {
                         )
                 );
 
+                String infoMessage = "BrainTree";
+
                 PLog.transition(
                     PEnums.TransitionName.BRAINTREE_ROUTING,
                     PEnums.Outcome.THIRD_PARTY,
@@ -176,7 +178,7 @@ public class PayPalNativeCheckoutClient {
                     null,
                     null,
                     null,
-                    "BrainTree"
+                    infoMessage
                 );
 
                 registerCallbacks(configuration, payPalRequest, payPalResponse);

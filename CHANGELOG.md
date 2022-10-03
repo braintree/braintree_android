@@ -4,7 +4,7 @@
 
 * PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.2
-  * Bugfix to support logging out of session when client ID changes
+  * Fixes an issue where merchants with multiple client IDs would fallback to web on subsequent checkout sessions
 
 ## 4.16.0
 
