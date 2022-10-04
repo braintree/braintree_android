@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +20,8 @@ import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.error.OnError;
 import com.paypal.checkout.shipping.OnShippingChange;
+import com.paypal.pyplcheckout.common.instrumentation.PEnums;
+import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -30,7 +33,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( { PayPalCheckout.class })
+@PrepareForTest( { PayPalCheckout.class, PLog.class })
 public class PayPalNativeCheckoutClientUnitTest {
 
     private FragmentActivity activity;
@@ -92,7 +95,21 @@ public class PayPalNativeCheckoutClientUnitTest {
                 .canPerformBrowserSwitch(true)
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
-
+        PowerMockito.mockStatic(PLog.class);
+        PLog.transition(
+            PEnums.TransitionName.BRAINTREE_ROUTING,
+            PEnums.Outcome.THIRD_PARTY,
+            PEnums.EventCode.E233,
+            PEnums.StateName.BRAINTREE,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "BrainTree"
+        );
+        PowerMockito.verifyStatic(PLog.class);
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
         sut.launchNativeCheckout(activity, payPalVaultRequest);
@@ -127,6 +144,7 @@ public class PayPalNativeCheckoutClientUnitTest {
         ArgumentCaptor<OnError> onErrorCaptor = ArgumentCaptor.forClass(OnError.class);
 
         PowerMockito.mockStatic(PayPalCheckout.class);
+
         PayPalCheckout.setConfig(
             new CheckoutConfig(
                 activity.getApplication(),
@@ -150,6 +168,22 @@ public class PayPalNativeCheckoutClientUnitTest {
 
         PowerMockito.verifyStatic(PayPalCheckout.class);
         PayPalCheckout.registerCallbacks(onApproveCaptor.capture(), onShippingChangeCaptor.capture(), onCancelCaptor.capture(), onErrorCaptor.capture());
+
+        PowerMockito.mockStatic(PLog.class);
+        PLog.transition(
+                PEnums.TransitionName.BRAINTREE_ROUTING,
+                PEnums.Outcome.THIRD_PARTY,
+                PEnums.EventCode.E233,
+                PEnums.StateName.BRAINTREE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "BrainTree"
+        );
+        PowerMockito.verifyStatic(PLog.class);
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
@@ -183,6 +217,22 @@ public class PayPalNativeCheckoutClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
+
+        PowerMockito.mockStatic(PLog.class);
+        PLog.transition(
+                PEnums.TransitionName.BRAINTREE_ROUTING,
+                PEnums.Outcome.THIRD_PARTY,
+                PEnums.EventCode.E233,
+                PEnums.StateName.BRAINTREE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "BrainTree"
+        );
+        PowerMockito.verifyStatic(PLog.class);
 
         PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
         sut.setListener(listener);
