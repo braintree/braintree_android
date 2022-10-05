@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.17.0
 
 * PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.2
