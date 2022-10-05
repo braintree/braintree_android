@@ -9,6 +9,9 @@ import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.config.SettingsConfig;
+import com.paypal.checkout.config.UIConfig;
+
 import com.paypal.pyplcheckout.common.instrumentation.PEnums;
 import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
@@ -161,7 +164,14 @@ public class PayPalNativeCheckoutClient {
                         new CheckoutConfig(
                                 activity.getApplication(),
                                 configuration.getPayPalClientId(),
-                                environment
+                                environment,
+                                null,
+                                null,
+                                null,
+                                new SettingsConfig(),
+                                new UIConfig(
+                                        false
+                                )
                         )
                 );
 
