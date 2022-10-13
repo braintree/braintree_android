@@ -22,6 +22,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
+import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends Fragment implements PayPalListener {
@@ -66,24 +67,23 @@ public class PayPalFragment extends Fragment implements PayPalListener {
         FragmentActivity activity = requireActivity();
         dataCollector = new DataCollector(braintreeClient);
 
+        PayPalRequest payPalRequest;
+        if (isBillingAgreement) {
+            payPalRequest = createPayPalVaultRequest(activity);
+        } else {
+            payPalRequest = createPayPalCheckoutRequest(activity, amount);
+        }
+
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (Settings.shouldCollectDeviceData(requireActivity())) {
                 dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
                     if (deviceDataResult != null) {
                         deviceData = deviceDataResult;
                     }
-                    if (isBillingAgreement) {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
-                    } else {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
-                    }
+                    payPalClient.tokenizePayPalAccount(activity, payPalRequest);
                 });
             } else {
-                if (isBillingAgreement) {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
-                } else {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
-                }
+                payPalClient.tokenizePayPalAccount(activity, payPalRequest);
             }
         });
     }
