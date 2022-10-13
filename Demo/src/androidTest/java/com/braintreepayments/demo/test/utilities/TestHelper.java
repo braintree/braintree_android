@@ -9,6 +9,10 @@ import android.widget.Spinner;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 
 import com.braintreepayments.DeviceAutomator;
 import com.braintreepayments.api.ExpirationDateHelper;
@@ -24,6 +28,9 @@ import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class TestHelper {
 
@@ -64,9 +71,21 @@ public class TestHelper {
 
     private static void ensureEnvironmentIs(String environment) {
         onDevice(withText("Config")).perform(click());
+
         onDevice(withClass(Spinner.class)).perform(click());
-        onDevice(withText(environment)).perform(click());
-        onDevice(withText(environment)).check(text(equalTo(environment)));
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        // Ref: https://stackoverflow.com/a/42265283
+        // Ref: https://discuss.appium.io/t/how-to-find-android-elements-that-have-the-same-resource-id-but-different-indexs-and-names/25294/6
+        // TODO: Refactor UI to get rid of spinners so we won't need complex UiAutomator logic like this
+        List<UiObject2> spinnerOptions = uiDevice.findObjects(By.res(Pattern.compile(".*:id/textView")));
+        for (UiObject2 option : spinnerOptions) {
+            if (environment.equals(option.getText())) {
+                option.click();
+                break;
+            }
+        }
+
         onDevice(withText("Demo")).perform(click());
     }
 
