@@ -1,7 +1,18 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.DemoFeature.CREDIT_OR_DEBIT_CARDS;
+import static com.braintreepayments.demo.DemoFeature.GOOGLE_PAY;
+import static com.braintreepayments.demo.DemoFeature.LOCAL_PAYMENT;
+import static com.braintreepayments.demo.DemoFeature.PAYPAL;
+import static com.braintreepayments.demo.DemoFeature.PREFERRED_PAYMENT_METHODS;
+import static com.braintreepayments.demo.DemoFeature.SAMSUNG_PAY;
+import static com.braintreepayments.demo.DemoFeature.VENMO;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -11,9 +22,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.util.Arrays;
+import java.util.List;
 
 public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemClickListener {
 
@@ -36,7 +46,19 @@ public class FeaturesFragment extends Fragment implements FeaturesAdapter.ItemCl
             new DividerItemDecoration(context, layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        recyclerView.setAdapter(new FeaturesAdapter(this));
+        List<DemoFeature> demoFeatures = Arrays.asList(
+                CREDIT_OR_DEBIT_CARDS,
+                PAYPAL,
+                VENMO,
+                GOOGLE_PAY,
+                SAMSUNG_PAY,
+                // TODO: re-enable visa checkout once it works without Jetifier
+                // VISA_CHECKOUT,
+                LOCAL_PAYMENT,
+                PREFERRED_PAYMENT_METHODS
+        );
+
+        recyclerView.setAdapter(new FeaturesAdapter(demoFeatures, this));
         return view;
     }
 

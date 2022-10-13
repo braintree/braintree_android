@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class FeaturesAdapter extends RecyclerView.Adapter<FeatureViewHolder> {
 
     // Ref: https://youtu.be/KhLVD6iiZQs
@@ -14,9 +16,11 @@ public class FeaturesAdapter extends RecyclerView.Adapter<FeatureViewHolder> {
         void onFeatureSelected(DemoFeature feature);
     }
 
+    private final List<DemoFeature> features;
     private final ItemClickListener itemClickListener;
 
-    public FeaturesAdapter(ItemClickListener itemClickListener) {
+    public FeaturesAdapter(List<DemoFeature> features, ItemClickListener itemClickListener) {
+        this.features = features;
         this.itemClickListener = itemClickListener;
     }
 
@@ -30,15 +34,15 @@ public class FeaturesAdapter extends RecyclerView.Adapter<FeatureViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FeatureViewHolder holder, int position) {
-        holder.bind(DemoFeature.from(position));
+        holder.bind(features.get(position));
         holder.itemView.setOnClickListener(view -> {
             int pos = holder.getAdapterPosition();
-            itemClickListener.onFeatureSelected(DemoFeature.from(pos));
+            itemClickListener.onFeatureSelected(features.get(pos));
         });
     }
 
     @Override
     public int getItemCount() {
-        return DemoFeature.values().length;
+        return features.size();
     }
 }
