@@ -74,18 +74,16 @@ public class PayPalFragment extends Fragment implements PayPalListener {
             payPalRequest = createPayPalCheckoutRequest(activity, amount);
         }
 
-        braintreeClient.getConfiguration((configuration, configError) -> {
-            if (Settings.shouldCollectDeviceData(requireActivity())) {
-                dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
-                    if (deviceDataResult != null) {
-                        deviceData = deviceDataResult;
-                    }
-                    payPalClient.tokenizePayPalAccount(activity, payPalRequest);
-                });
-            } else {
+        if (Settings.shouldCollectDeviceData(activity)) {
+            dataCollector.collectDeviceData(activity, (deviceDataResult, error) -> {
+                if (deviceDataResult != null) {
+                    deviceData = deviceDataResult;
+                }
                 payPalClient.tokenizePayPalAccount(activity, payPalRequest);
-            }
-        });
+            });
+        } else {
+            payPalClient.tokenizePayPalAccount(activity, payPalRequest);
+        }
     }
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {

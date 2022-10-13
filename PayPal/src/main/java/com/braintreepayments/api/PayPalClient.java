@@ -115,6 +115,7 @@ public class PayPalClient {
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      */
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalRequest payPalRequest) {
+        // NEXT_MAJOR_VERSION: Find a way to tokenize PayPal accounts without needing an activity reference
         tokenizePayPalAccount(activity, payPalRequest, new PayPalFlowStartedCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
