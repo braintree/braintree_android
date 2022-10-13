@@ -63,9 +63,11 @@ public class TestHelper {
     }
 
     private static void ensureEnvironmentIs(String environment) {
+        onDevice(withText("Config")).perform(click());
         onDevice(withClass(Spinner.class)).perform(click());
         onDevice(withText(environment)).perform(click());
         onDevice(withText(environment)).check(text(equalTo(environment)));
+        onDevice(withText("Demo")).perform(click());
     }
 
     private static void enableStoragePermission() {
