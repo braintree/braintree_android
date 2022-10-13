@@ -78,8 +78,11 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
     }
 
     public void launchGooglePay(View v) {
-        FragmentActivity activity = requireActivity();
+        GooglePayRequest googlePayRequest = createGooglePayRequestFromSettings(requireActivity());
+        googlePayClient.requestPayment(requireActivity(), googlePayRequest);
+    }
 
+    private GooglePayRequest createGooglePayRequestFromSettings(FragmentActivity activity) {
         GooglePayRequest googlePayRequest = new GooglePayRequest();
         googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
                 .setCurrencyCode(Settings.getGooglePayCurrency(activity))
@@ -95,8 +98,7 @@ public class GooglePayFragment extends Fragment implements GooglePayListener {
         googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
-
-        googlePayClient.requestPayment(activity, googlePayRequest);
+        return googlePayRequest;
     }
 
     @Override
