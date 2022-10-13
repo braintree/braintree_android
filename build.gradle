@@ -5,7 +5,6 @@ buildscript {
         maven {
             url = "https://plugins.gradle.org/m2/"
         }
-        jcenter()
     }
 
     // We are restricted to room version 2.2.6 since we still offer Java 7 support. Upgrading to
