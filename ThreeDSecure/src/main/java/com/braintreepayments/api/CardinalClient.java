@@ -53,7 +53,6 @@ class CardinalClient {
         CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
         cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
         cardinalConfigurationParameters.setRequestTimeout(8000);
-        cardinalConfigurationParameters.setEnableQuickAuth(false);
         cardinalConfigurationParameters.setEnableDFSync(true);
         if (request.getV2UiCustomization() != null) {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
