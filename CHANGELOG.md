@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Android 13 Support
+  * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 33
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-2`
+
 ## 4.17.0
 
 * PayPalNativeCheckout (BETA)
