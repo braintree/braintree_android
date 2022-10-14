@@ -1,5 +1,15 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
 import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
@@ -16,17 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Cardinal.class})
@@ -67,7 +66,6 @@ public class CardinalClientUnitTest {
         CardinalConfigurationParameters parameters = captor.getValue();
         assertEquals(CardinalEnvironment.STAGING, parameters.getEnvironment());
         assertEquals(8000, parameters.getRequestTimeout());
-        assertFalse(parameters.isEnableQuickAuth());
         assertTrue(parameters.isEnableDFSync());
     }
 

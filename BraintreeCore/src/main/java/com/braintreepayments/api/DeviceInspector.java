@@ -15,8 +15,6 @@ import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.browserswitch.BuildConfig;
-
 import java.io.File;
 
 class DeviceInspector {
