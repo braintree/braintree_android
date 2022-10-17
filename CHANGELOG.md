@@ -2,6 +2,8 @@
 
 ## 4.17.0
 
+* BraintreeCore
+  * Bump `browser-switch` version to `2.3.1`
 * PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.2
   * Fixes an issue where merchants with multiple client IDs would fallback to web on subsequent checkout sessions
