@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Bump `browser-switch` version to `2.3.1`
+
 ## 4.17.0
 
 * PayPalNativeCheckout (BETA)
