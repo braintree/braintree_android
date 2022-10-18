@@ -34,7 +34,7 @@ buildscript {
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.3.1",
-            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.6-2",
+            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
@@ -74,7 +74,7 @@ buildscript {
     ]
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
@@ -104,10 +104,10 @@ allprojects {
 
 version '4.17.1-SNAPSHOT'
 ext {
-    compileSdkVersion = 31
+    compileSdkVersion = 33
     minSdkVersion = 21
-    targetSdkVersion = 31
     versionCode = 152
+    targetSdkVersion = 33
     versionName = version
 }
 

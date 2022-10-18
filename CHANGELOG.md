@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* Android 13 Support
+  * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 33
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-2`
 * BraintreeCore
   * Bump `browser-switch` version to `2.3.1`
 

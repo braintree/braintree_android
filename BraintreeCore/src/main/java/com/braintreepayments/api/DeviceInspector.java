@@ -15,9 +15,7 @@ import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 
 class DeviceInspector {
 
