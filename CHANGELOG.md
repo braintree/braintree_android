@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.18.0
 
 * Android 13 Support
   * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 33
