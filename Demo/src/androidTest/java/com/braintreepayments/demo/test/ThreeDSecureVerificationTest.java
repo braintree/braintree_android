@@ -1,22 +1,11 @@
 package com.braintreepayments.demo.test;
 
-import androidx.preference.PreferenceManager;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-
-import com.braintreepayments.demo.test.utilities.TestHelper;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.braintreepayments.AutomatorAction.click;
 import static com.braintreepayments.AutomatorAction.setText;
 import static com.braintreepayments.AutomatorAssertion.text;
 import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withContentDescription;
 import static com.braintreepayments.UiObjectMatcher.withText;
-import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE;
@@ -29,7 +18,19 @@ import static com.braintreepayments.api.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
 
+import androidx.preference.PreferenceManager;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+
+import com.braintreepayments.demo.test.utilities.TestHelper;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 @RunWith(AndroidJUnit4ClassRunner.class)
+@Ignore("TODO: determine if 3DS v1 tests are still needed")
 public class ThreeDSecureVerificationTest extends TestHelper {
 
     @Before
