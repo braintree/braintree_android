@@ -4,6 +4,8 @@
 
 * GooglePay
   * Bump `play-services-wallet` version to `19.1.0`
+* SharedUtils
+  * Add explicit key alias for encrypted shared prefs (potential fix for #604)
 
 ## 4.18.0
 
