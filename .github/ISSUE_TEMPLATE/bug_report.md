@@ -5,7 +5,7 @@ about: Create a report to help us improve
 
 **Integration Details (please complete the following information):**
 
-* SDK/Library version: <!--] Example: 4.18.0 -->
+* SDK/Library version: <!-- Example: 4.18.0 -->
 * Environment: <!-- Is this issue in Sandbox or Production? -->
 * Android Version and Device: <!-- Example: Motorola Droid Razr Maxx with Android 4.4.2, Samsung S7 with Android 6.0 -->
 * Braintree dependencies:
