@@ -121,7 +121,7 @@ nexusPublishing {
     }
     transitionCheckOptions {
         // give nexus sonatype more time to close the staging repository
-//        delayBetween = Duration.ofSeconds(20)
+        delayBetween.set(Duration.ofSeconds(20))
     }
 }
 

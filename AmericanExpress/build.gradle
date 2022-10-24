@@ -62,14 +62,12 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-//nexusPublishing {
-//    // give nexus sonatype more time to initialize the staging repository
-//    clientTimeout = Duration.ofMinutes(3)
-//    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-//    repositories {
-//        sonatype()
-//    }
-//}
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
 
 publishing {
     publications {
@@ -114,13 +112,6 @@ publishing {
             }
         }
     }
-}
-
-signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
-    sign publishing.publications
 }
 
 // endregion
