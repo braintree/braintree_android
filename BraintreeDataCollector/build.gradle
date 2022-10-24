@@ -81,9 +81,7 @@ task sourcesJar(type: Jar) {
 }
 
 signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
+    required { !version.endsWith("SNAPSHOT") }
     sign publishing.publications
 }
 
