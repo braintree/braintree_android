@@ -1,17 +1,16 @@
 plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
+    id 'maven-publish'
     id 'signing'
 }
 
 android {
+    namespace = 'com.braintreepayments.api.localpayment'
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -76,55 +75,55 @@ signing {
     sign publishing.publications
 }
 
-nexusPublishing {
-    // give nexus sonatype more time to initialize the staging repository
-    clientTimeout = Duration.ofMinutes(3)
-    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-    repositories {
-        sonatype()
-    }
-}
+//nexusPublishing {
+//    // give nexus sonatype more time to initialize the staging repository
+//    clientTimeout = Duration.ofMinutes(3)
+//    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
+//    repositories {
+//        sonatype()
+//    }
+//}
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.braintreepayments.api'
+            artifactId = 'local-payment'
+            version = rootProject.versionName
 
-                artifact sourcesJar
-                artifact javadocsJar
+            artifact sourcesJar
+            artifact javadocsJar
 
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'local-payment'
-                version = rootProject.versionName
+            pom {
+                name = 'local-payment'
+                packaging = 'aar'
+                description = 'Local Payment dependencies for Braintree Android.'
+                url = 'https://github.com/braintree/braintree_android'
 
-                pom {
-                    name = 'local-payment'
-                    packaging = 'aar'
-                    description = 'Local Payment dependencies for Braintree Android.'
-                    url = 'https://github.com/braintree/braintree_android'
+                scm {
+                    url = 'scm:git@github.com:braintree/braintree_android.git'
+                    connection = 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                }
 
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
+                developers {
+                    developer {
+                        id = 'devs'
+                        name = 'Braintree Payments'
                     }
                 }
+
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'http://opensource.org/licenses/MIT'
+                        distribution = 'repo'
+                    }
+                }
+            }
+
+            afterEvaluate {
+                from components.release
             }
         }
     }

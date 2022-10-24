@@ -1,17 +1,16 @@
 plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
+    id 'maven-publish'
     id 'signing'
 }
 
 android {
+    namespace = 'com.braintreepayments.api.visacheckout'
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
 
         consumerProguardFiles 'proguard.pro'
     }
@@ -79,55 +78,54 @@ signing {
     sign publishing.publications
 }
 
-nexusPublishing {
-    // give nexus sonatype more time to initialize the staging repository
-    clientTimeout = Duration.ofMinutes(3)
-    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-    repositories {
-        sonatype()
-    }
-}
+//nexusPublishing {
+//    // give nexus sonatype more time to initialize the staging repository
+//    clientTimeout = Duration.ofMinutes(3)
+//    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
+//    repositories {
+//        sonatype()
+//    }
+//}
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.braintreepayments.api'
+            artifactId = 'visa-checkout'
+            version = rootProject.versionName
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
+            artifact sourcesJar
+            artifact javadocsJar
 
-                artifact sourcesJar
-                artifact javadocsJar
+            pom {
+                name = 'visa-checkout'
+                packaging = 'aar'
+                description = 'Visa Checkout Module for Braintree\'s Android SDK.'
+                url = 'https://github.com/braintree/braintree_android'
 
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'visa-checkout'
-                version = rootProject.versionName
+                scm {
+                    url = 'scm:git@github.com:braintree/braintree_android.git'
+                    connection = 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                }
 
-                pom {
-                    name = 'visa-checkout'
-                    packaging = 'aar'
-                    description = 'Visa Checkout Module for Braintree\'s Android SDK.'
-                    url = 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
+                developers {
+                    developer {
+                        id = 'devs'
+                        name = 'Braintree Payments'
                     }
                 }
+
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'http://opensource.org/licenses/MIT'
+                        distribution = 'repo'
+                    }
+                }
+            }
+
+            afterEvaluate {
+                from components.release
             }
         }
     }

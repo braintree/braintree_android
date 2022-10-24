@@ -1,17 +1,16 @@
- plugins {
+plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
+    id 'maven-publish'
     id 'signing'
 }
 
 android {
+    namespace = 'com.braintreepayments.api.threedsecure'
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
 
         consumerProguardFiles 'proguard.pro'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -58,82 +57,82 @@ dependencies {
 
 // region signing and publishing
 
- task javadocs(type: Javadoc) {
-     source = android.sourceSets.main.java.srcDirs
-     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-     failOnError false
- }
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
 
- task javadocsJar(type: Jar, dependsOn: javadocs) {
-     archiveClassifier.set('javadoc')
-     from javadocs.destinationDir
- }
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
 
- task sourcesJar(type: Jar) {
-     archiveClassifier.set('sources')
-     from android.sourceSets.main.java.srcDirs
- }
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
 
- signing {
-     required {
-         !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-     }
-     sign publishing.publications
- }
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
 
- nexusPublishing {
-     // give nexus sonatype more time to initialize the staging repository
-     clientTimeout = Duration.ofMinutes(3)
-     useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-     repositories {
-         sonatype()
-     }
- }
+// nexusPublishing {
+//     // give nexus sonatype more time to initialize the staging repository
+//     clientTimeout = Duration.ofMinutes(3)
+//     useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
+//     repositories {
+//         sonatype()
+//     }
+// }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.braintreepayments.api'
+            artifactId = 'three-d-secure'
+            version = rootProject.versionName
 
-                artifact sourcesJar
-                artifact javadocsJar
+            artifact sourcesJar
+            artifact javadocsJar
 
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'three-d-secure'
-                version = rootProject.versionName
+            pom {
+                name = 'three-d-secure'
+                packaging = 'aar'
+                description = '3DS dependencies for Braintree Android.'
+                url = 'https://github.com/braintree/braintree_android'
 
-                pom {
-                    name = 'three-d-secure'
-                    packaging = 'aar'
-                    description = '3DS dependencies for Braintree Android.'
-                    url = 'https://github.com/braintree/braintree_android'
+                scm {
+                    url = 'scm:git@github.com:braintree/braintree_android.git'
+                    connection = 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                }
 
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
+                developers {
+                    developer {
+                        id = 'devs'
+                        name = 'Braintree Payments'
                     }
                 }
+
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'http://opensource.org/licenses/MIT'
+                        distribution = 'repo'
+                    }
+                }
+            }
+
+            afterEvaluate {
+                from components.release
             }
         }
     }
 }
 
- // endregion
+// endregion
 

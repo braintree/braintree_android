@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace = 'com.braintreepayments.api.testutils'
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

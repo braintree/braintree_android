@@ -1,9 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.braintreepayments.api">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk"/>
+    <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk" />
 
     <queries>
         <package android:name="com.venmo" />
@@ -13,9 +14,9 @@
     <application>
 
         <activity
-            android:name=".BraintreeDeepLinkActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:name="com.braintreepayments.api.BraintreeDeepLinkActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

@@ -1,11 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.braintreepayments.api">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application android:usesCleartextTraffic="true">
         <!--suppress AndroidDomInspection -->
-        <activity android:name="com.braintreepayments.api.TestActivity"
+        <activity
+            android:name="com.braintreepayments.api.TestActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
