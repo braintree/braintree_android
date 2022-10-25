@@ -9,6 +9,7 @@ import androidx.security.crypto.MasterKey;
 class BraintreeSharedPreferences {
 
     private static volatile BraintreeSharedPreferences INSTANCE;
+    private static final String BRAINTREE_KEY_ALIAS = "com.braintreepayments.api.masterkey";
     private static final String BRAINTREE_SHARED_PREFS_FILENAME = "BraintreeApi";
 
     static BraintreeSharedPreferences getInstance() {
@@ -27,7 +28,7 @@ class BraintreeSharedPreferences {
 
     static SharedPreferences getSharedPreferences(Context context) {
         try {
-            MasterKey masterKey = new MasterKey.Builder(context)
+            MasterKey masterKey = new MasterKey.Builder(context, BRAINTREE_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();
 
