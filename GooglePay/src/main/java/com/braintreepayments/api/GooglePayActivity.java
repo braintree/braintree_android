@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.wallet.AutoResolveHelper;
@@ -10,8 +11,6 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-
-import org.jetbrains.annotations.NotNull;
 
 public class GooglePayActivity extends AppCompatActivity {
 
@@ -39,7 +38,7 @@ public class GooglePayActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(@NotNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_RECREATING, true);
     }
