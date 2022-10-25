@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class GooglePayCapabilitiesUnitTest2 {
+class GooglePayCapabilitiesUnitTest {
 
     private val configWithGooglePayEnabled: Configuration = TestConfigurationBuilder()
             .googlePay(TestGooglePayConfigurationBuilder()
