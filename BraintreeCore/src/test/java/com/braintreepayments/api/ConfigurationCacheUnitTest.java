@@ -33,7 +33,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException {
+    public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException, UnexpectedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
@@ -42,7 +42,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void getCacheConfiguration_returnsConfigurationFromSharedPrefs() throws JSONException {
+    public void getCacheConfiguration_returnsConfigurationFromSharedPrefs() throws JSONException, UnexpectedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey(context, "cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(0L);
@@ -55,7 +55,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void getCacheConfiguration_returnsNullIfCacheEntryExpires() throws JSONException {
+    public void getCacheConfiguration_returnsNullIfCacheEntryExpires() throws JSONException, UnexpectedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey(context, "cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));

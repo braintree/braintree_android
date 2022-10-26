@@ -25,7 +25,7 @@ public class UUIDHelperUnitTest {
     }
 
     @Test
-    public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() {
+    public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() throws UnexpectedException {
         when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(null);
 
         UUIDHelper sut = new UUIDHelper();
@@ -36,7 +36,7 @@ public class UUIDHelperUnitTest {
     }
 
     @Test
-    public void getInstallationGUID_returnsExistingGUIDWhenOneExist() {
+    public void getInstallationGUID_returnsExistingGUIDWhenOneExist() throws UnexpectedException {
         String uuid = UUID.randomUUID().toString();
         when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(uuid);
 
