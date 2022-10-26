@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.19.0
 
 * GooglePay
   * Bump `play-services-wallet` version to `19.1.0`
