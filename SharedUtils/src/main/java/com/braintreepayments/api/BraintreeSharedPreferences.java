@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
+// TODO: consider removing Security exception ignore statements once crypto library
+// bugs are fixed by Google
 class BraintreeSharedPreferences {
 
     private static volatile BraintreeSharedPreferences INSTANCE;
@@ -24,7 +26,8 @@ class BraintreeSharedPreferences {
         return INSTANCE;
     }
 
-    private BraintreeSharedPreferences() {}
+    private BraintreeSharedPreferences() {
+    }
 
     static SharedPreferences getSharedPreferences(Context context) {
         try {
@@ -46,28 +49,41 @@ class BraintreeSharedPreferences {
         }
     }
 
-    String getString(Context context, String key, String fallback)  {
+    String getString(Context context, String key, String fallback) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            return sharedPreferences.getString(key, fallback);
+            try {
+                return sharedPreferences.getString(key, fallback);
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+                return fallback;
+            }
         }
         return fallback;
     }
 
-    void putString(Context context, String key, String value){
+    void putString(Context context, String key, String value) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            sharedPreferences
-                    .edit()
-                    .putString(key, value)
-                    .apply();
+            try {
+                sharedPreferences
+                        .edit()
+                        .putString(key, value)
+                        .apply();
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+            }
         }
     }
 
     boolean getBoolean(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            return sharedPreferences.getBoolean(key, false);
+            try {
+                return sharedPreferences.getBoolean(key, false);
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+            }
         }
         return false;
     }
@@ -75,17 +91,26 @@ class BraintreeSharedPreferences {
     void putBoolean(Context context, String key, boolean value) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            sharedPreferences
-                    .edit()
-                    .putBoolean(key, value)
-                    .apply();
+            try {
+                sharedPreferences
+                        .edit()
+                        .putBoolean(key, value)
+                        .apply();
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+            }
         }
     }
 
     boolean containsKey(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            return sharedPreferences.contains(key);
+            try {
+                return sharedPreferences.contains(key);
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+                return false;
+            }
         }
         return false;
     }
@@ -93,7 +118,12 @@ class BraintreeSharedPreferences {
     long getLong(Context context, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            return sharedPreferences.getLong(key, 0);
+            try {
+                return sharedPreferences.getLong(key, 0);
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+                return 0;
+            }
         }
         return 0;
     }
@@ -101,22 +131,29 @@ class BraintreeSharedPreferences {
     void putStringAndLong(Context context, String stringKey, String stringValue, String longKey, long longValue) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            sharedPreferences
-                    .edit()
-                    .putString(stringKey, stringValue)
-                    .putLong(longKey, longValue)
-                    .apply();
-
+            try {
+                sharedPreferences
+                        .edit()
+                        .putString(stringKey, stringValue)
+                        .putLong(longKey, longValue)
+                        .apply();
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+            }
         }
     }
 
     void clearSharedPreferences(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
-            sharedPreferences
-                    .edit()
-                    .clear()
-                    .apply();
+            try {
+                sharedPreferences
+                        .edit()
+                        .clear()
+                        .apply();
+            } catch (SecurityException ignored) {
+                // defensively guard against issues with shared preferences library
+            }
         }
     }
 }
