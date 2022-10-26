@@ -25,7 +25,10 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
-        BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        try {
+            BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        } catch (UnexpectedException ignored) {
+        }
 
         keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
@@ -39,7 +42,10 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         super.afterActivityFinished();
 
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
-        BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        try {
+            BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        } catch (UnexpectedException ignored) {
+        }
 
         keyguardLock.reenableKeyguard();
     }

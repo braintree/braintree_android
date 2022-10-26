@@ -32,7 +32,7 @@ class BraintreeSharedPreferences {
     private BraintreeSharedPreferences() {
     }
 
-    private static SharedPreferences getSharedPreferences(Context context) throws UnexpectedException {
+    static SharedPreferences getSharedPreferences(Context context) throws UnexpectedException {
         try {
             MasterKey masterKey = new MasterKey.Builder(context, BRAINTREE_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)

@@ -15,29 +15,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeSharedPreferencesTest {
 
     private Context context;
 
     @Before
-    public void beforeEach() throws GeneralSecurityException, IOException {
+    public void beforeEach() throws UnexpectedException {
         context = ApplicationProvider.getApplicationContext();
         getSharedPreferences(context).edit().clear().apply();
     }
 
     @Test
-    public void getSharedPreferences_returnsEncryptedSharedPreferences() {
+    public void getSharedPreferences_returnsEncryptedSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(ApplicationProvider.getApplicationContext());
         assertTrue(sharedPreferences instanceof EncryptedSharedPreferences);
     }
 
     @Test
-    public void getString_returnsStringFromSharedPreferences() {
+    public void getString_returnsStringFromSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
@@ -46,7 +43,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void getString_withFilename_returnsStringFromSharedPreferences() {
+    public void getString_withFilename_returnsStringFromSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putString("testKey", "testValue").apply();
@@ -55,7 +52,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void putString_savesStringInSharedPreferences() {
+    public void putString_savesStringInSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putString(context, "testKey2", "testValue2");
@@ -65,7 +62,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void putString_withFilename_savesStringInSharedPreferences() {
+    public void putString_withFilename_savesStringInSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putString(context, "testKey2", "testValue2");
@@ -75,7 +72,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void getBoolean_returnsBooleanFromSharedPreferences() {
+    public void getBoolean_returnsBooleanFromSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putBoolean("testKeyBoolean", true).apply();
@@ -84,7 +81,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void putBoolean_savesBooleanToSharedPreferences() {
+    public void putBoolean_savesBooleanToSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putBoolean(context, "testKeyBoolean2", true);
@@ -94,7 +91,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void containsKey_returnsIfKeyExistsInSharedPreferences() {
+    public void containsKey_returnsIfKeyExistsInSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         SharedPreferences sharedPreferences = getSharedPreferences(context);
@@ -104,7 +101,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void getLong_returnsLongFromSharedPreferences() {
+    public void getLong_returnsLongFromSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         sharedPreferences.edit().putLong("testKeyLong", 1L).apply();
@@ -113,7 +110,7 @@ public class BraintreeSharedPreferencesTest {
     }
 
     @Test
-    public void putStringAndLong_savesToSharedPreferences() {
+    public void putStringAndLong_savesToSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
 
         sut.putStringAndLong(context, "testKeyString", "testValueString", "testKeyLong", 2L);
