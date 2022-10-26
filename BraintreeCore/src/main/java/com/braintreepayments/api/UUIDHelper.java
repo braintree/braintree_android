@@ -21,11 +21,20 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY, null);
+        String uuid = null;
+        try {
+            uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY, null);
+        } catch (UnexpectedException ignored) {
+            // protect against shared prefs failure: default to creating a new UUID in this scenario
+        }
 
         if (uuid == null) {
             uuid = getFormattedUUID();
-            braintreeSharedPreferences.putString(context, BRAINTREE_UUID_KEY, uuid);
+            try {
+                braintreeSharedPreferences.putString(context, BRAINTREE_UUID_KEY, uuid);
+            } catch (UnexpectedException ignored) {
+                // protect against shared prefs failure: no-op when we're unable to persist the UUID
+            }
         }
 
         return uuid;
@@ -41,13 +50,21 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String existingGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID, null);
-        if (existingGUID != null) {
-            return existingGUID;
-        } else {
-            String newGuid = UUID.randomUUID().toString();
-            braintreeSharedPreferences.putString(context, INSTALL_GUID, newGuid);
-            return newGuid;
+        String installationGUID = null;
+        try {
+            installationGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID, null);
+        } catch (UnexpectedException ignored) {
+            // protect against shared prefs failure: default to creating a new GUID in this scenario
         }
+
+        if (installationGUID == null) {
+            installationGUID = UUID.randomUUID().toString();
+            try {
+                braintreeSharedPreferences.putString(context, INSTALL_GUID, installationGUID);
+            } catch (UnexpectedException ignored) {
+                // protect against shared prefs failure: no-op when we're unable to persist the GUID
+            }
+        }
+        return installationGUID;
     }
 }

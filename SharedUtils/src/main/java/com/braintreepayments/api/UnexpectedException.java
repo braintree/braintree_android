@@ -9,4 +9,8 @@ public class UnexpectedException extends Exception {
     UnexpectedException(String message) {
         super(message);
     }
+
+    UnexpectedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

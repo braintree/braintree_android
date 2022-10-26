@@ -10,6 +10,9 @@ import androidx.security.crypto.MasterKey;
 // bugs are fixed by Google
 class BraintreeSharedPreferences {
 
+    private static final String SHARED_PREFS_ERROR_MESSAGE =
+            "Unable to obtain a reference to encrypted shared preferences.";
+
     private static volatile BraintreeSharedPreferences INSTANCE;
     private static final String BRAINTREE_KEY_ALIAS = "com.braintreepayments.api.masterkey";
     private static final String BRAINTREE_SHARED_PREFS_FILENAME = "BraintreeApi";
@@ -29,7 +32,7 @@ class BraintreeSharedPreferences {
     private BraintreeSharedPreferences() {
     }
 
-    static SharedPreferences getSharedPreferences(Context context) {
+    private static SharedPreferences getSharedPreferences(Context context) throws UnexpectedException {
         try {
             MasterKey masterKey = new MasterKey.Builder(context, BRAINTREE_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -42,27 +45,24 @@ class BraintreeSharedPreferences {
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
-        } catch (Exception ignored) {
-            // In the rare case that we are unable to obtain a reference to encrypted shared
-            // preferences, all preference update and retrieval logic will no-op
-            return null;
+        } catch (Exception e) {
+            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    String getString(Context context, String key, String fallback) {
+    String getString(Context context, String key, String fallback) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
                 return sharedPreferences.getString(key, fallback);
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
-                return fallback;
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
         return fallback;
     }
 
-    void putString(Context context, String key, String value) {
+    void putString(Context context, String key, String value) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
@@ -70,25 +70,25 @@ class BraintreeSharedPreferences {
                         .edit()
                         .putString(key, value)
                         .apply();
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
     }
 
-    boolean getBoolean(Context context, String key) {
+    boolean getBoolean(Context context, String key) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
                 return sharedPreferences.getBoolean(key, false);
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
         return false;
     }
 
-    void putBoolean(Context context, String key, boolean value) {
+    void putBoolean(Context context, String key, boolean value) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
@@ -96,39 +96,37 @@ class BraintreeSharedPreferences {
                         .edit()
                         .putBoolean(key, value)
                         .apply();
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
     }
 
-    boolean containsKey(Context context, String key) {
+    boolean containsKey(Context context, String key) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
                 return sharedPreferences.contains(key);
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
-                return false;
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
         return false;
     }
 
-    long getLong(Context context, String key) {
+    long getLong(Context context, String key) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
                 return sharedPreferences.getLong(key, 0);
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
-                return 0;
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
         return 0;
     }
 
-    void putStringAndLong(Context context, String stringKey, String stringValue, String longKey, long longValue) {
+    void putStringAndLong(Context context, String stringKey, String stringValue, String longKey, long longValue) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
@@ -137,13 +135,13 @@ class BraintreeSharedPreferences {
                         .putString(stringKey, stringValue)
                         .putLong(longKey, longValue)
                         .apply();
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
     }
 
-    void clearSharedPreferences(Context context) {
+    void clearSharedPreferences(Context context) throws UnexpectedException {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         if (sharedPreferences != null) {
             try {
@@ -151,8 +149,8 @@ class BraintreeSharedPreferences {
                         .edit()
                         .clear()
                         .apply();
-            } catch (SecurityException ignored) {
-                // defensively guard against issues with shared preferences library
+            } catch (SecurityException e) {
+                throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
             }
         }
     }
