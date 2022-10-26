@@ -14,7 +14,7 @@ buildscript {
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",
             // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
-            "room"           : "2.4.0",
+            "room"           : "2.2.6",
             // Version 19.0.0 of play-services-wallet has been released but should not be used per Google documentation
             "playServices"   : "19.1.0"
     ]
