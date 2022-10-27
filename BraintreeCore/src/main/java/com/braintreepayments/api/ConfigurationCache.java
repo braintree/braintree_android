@@ -25,14 +25,9 @@ class ConfigurationCache {
     }
 
     String getConfiguration(Context context, String cacheKey) {
-        return getConfiguration(context, cacheKey, System.currentTimeMillis());
-    }
-
-    @VisibleForTesting
-    String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
         BraintreeSharedPreferences sharedPreferences =
-            BraintreeSharedPreferences.getInstance(context);
-        return getConfiguration(sharedPreferences, cacheKey, currentTimeMillis);
+                BraintreeSharedPreferences.getInstance(context);
+        return getConfiguration(sharedPreferences, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
