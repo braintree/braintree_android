@@ -24,9 +24,10 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     @SuppressWarnings("MissingPermission")
     @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {
-        getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
+        Context context = ApplicationProvider.getApplicationContext();
+        getSharedPreferences(context).edit().clear().commit();
         try {
-            BraintreeSharedPreferences.getInstance().clearSharedPreferences();
+            BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
         } catch (UnexpectedException ignored) {
         }
 
@@ -41,9 +42,10 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     protected void afterActivityFinished() {
         super.afterActivityFinished();
 
-        getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
+        Context context = ApplicationProvider.getApplicationContext();
+        getSharedPreferences(context).edit().clear().commit();
         try {
-            BraintreeSharedPreferences.getInstance().clearSharedPreferences();
+            BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
         } catch (UnexpectedException ignored) {
         }
 
