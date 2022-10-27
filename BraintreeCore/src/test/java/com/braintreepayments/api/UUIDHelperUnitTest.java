@@ -33,7 +33,7 @@ public class UUIDHelperUnitTest {
 
         UUIDHelper sut = new UUIDHelper();
 
-        String uuid = sut.getInstallationGUID(context, braintreeSharedPreferences);
+        String uuid = sut.getInstallationGUID(braintreeSharedPreferences);
         assertNotNull(uuid);
         verify(braintreeSharedPreferences).putString("InstallationGUID", uuid);
     }
@@ -51,7 +51,7 @@ public class UUIDHelperUnitTest {
 
         UUIDHelper sut = new UUIDHelper();
 
-        String uuid = sut.getInstallationGUID(context, braintreeSharedPreferences);
+        String uuid = sut.getInstallationGUID(braintreeSharedPreferences);
         assertNotNull(uuid);
     }
 
@@ -62,6 +62,6 @@ public class UUIDHelperUnitTest {
 
         UUIDHelper sut = new UUIDHelper();
 
-        assertEquals(uuid, sut.getInstallationGUID(context, braintreeSharedPreferences));
+        assertEquals(uuid, sut.getInstallationGUID(braintreeSharedPreferences));
     }
 }

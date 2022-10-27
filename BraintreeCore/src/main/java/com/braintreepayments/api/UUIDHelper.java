@@ -16,11 +16,11 @@ class UUIDHelper {
      * @return A persistent UUID for this application install.
      */
     String getPersistentUUID(Context context) {
-        return getPersistentUUID(context, BraintreeSharedPreferences.getInstance());
+        return getPersistentUUID(BraintreeSharedPreferences.getInstance(context));
     }
 
     @VisibleForTesting
-    String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
+    String getPersistentUUID(BraintreeSharedPreferences braintreeSharedPreferences) {
         String uuid = null;
         try {
             uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
@@ -45,11 +45,11 @@ class UUIDHelper {
     }
 
     String getInstallationGUID(Context context) {
-        return getInstallationGUID(context, BraintreeSharedPreferences.getInstance());
+        return getInstallationGUID(BraintreeSharedPreferences.getInstance(context));
     }
 
     @VisibleForTesting
-    String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
+    String getInstallationGUID(BraintreeSharedPreferences braintreeSharedPreferences) {
         String installationGUID = null;
         try {
             installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
