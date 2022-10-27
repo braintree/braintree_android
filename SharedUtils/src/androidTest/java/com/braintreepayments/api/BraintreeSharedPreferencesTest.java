@@ -50,7 +50,6 @@ public class BraintreeSharedPreferencesTest {
         );
 
         failingSharedPreferences = mock(SharedPreferences.class);
-
         when(failingSharedPreferences.getString(anyString(), anyString()))
                 .thenThrow(new SecurityException("get string error"));
         when(failingSharedPreferences.getBoolean(anyString(), anyBoolean()))

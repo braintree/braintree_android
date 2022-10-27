@@ -11,23 +11,17 @@ class ConfigurationCache {
     private static final long TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5);
 
     private static volatile ConfigurationCache INSTANCE;
-    private final BraintreeSharedPreferences braintreeSharedPreferences;
 
     static ConfigurationCache getInstance() {
         if (INSTANCE == null) {
             synchronized (ConfigurationCache.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new ConfigurationCache(BraintreeSharedPreferences.getInstance());
+                    INSTANCE = new ConfigurationCache();
                 }
             }
         }
         return INSTANCE;
-    }
-
-    @VisibleForTesting
-    ConfigurationCache(BraintreeSharedPreferences braintreeSharedPreferences) {
-        this.braintreeSharedPreferences = braintreeSharedPreferences;
     }
 
     String getConfiguration(Context context, String cacheKey) {
@@ -36,12 +30,19 @@ class ConfigurationCache {
 
     @VisibleForTesting
     String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
+        BraintreeSharedPreferences sharedPreferences =
+            BraintreeSharedPreferences.getInstance(context);
+        return getConfiguration(sharedPreferences, cacheKey, currentTimeMillis);
+    }
+
+    @VisibleForTesting
+    String getConfiguration(BraintreeSharedPreferences sharedPreferences, String cacheKey, long currentTimeMillis) {
         String timestampKey = cacheKey + "_timestamp";
         try {
-            if (braintreeSharedPreferences.containsKey(timestampKey)) {
-                long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(timestampKey));
+            if (sharedPreferences.containsKey(timestampKey)) {
+                long timeInCache = (currentTimeMillis - sharedPreferences.getLong(timestampKey));
                 if (timeInCache < TIME_TO_LIVE) {
-                    return braintreeSharedPreferences.getString(cacheKey, "");
+                    return sharedPreferences.getString(cacheKey, "");
                 }
             }
         } catch (UnexpectedException ignored) {
@@ -52,14 +53,16 @@ class ConfigurationCache {
     }
 
     void saveConfiguration(Context context, Configuration configuration, String cacheKey) {
-        saveConfiguration(context, configuration, cacheKey, System.currentTimeMillis());
+        BraintreeSharedPreferences sharedPreferences =
+            BraintreeSharedPreferences.getInstance(context);
+        saveConfiguration(sharedPreferences, configuration, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
+    void saveConfiguration(BraintreeSharedPreferences sharedPreferences, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            braintreeSharedPreferences.putStringAndLong(cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
+            sharedPreferences.putStringAndLong(cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
         } catch (UnexpectedException ignored) {
             // protect against shared prefs failure: no-op when we're unable to store config in cache
         }

@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -40,7 +39,7 @@ public class ConfigurationCacheUnitTest {
     public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException, UnexpectedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
-        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
+        ConfigurationCache sut = new ConfigurationCache();
 
         UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
         doThrow(unexpectedException)
@@ -48,7 +47,7 @@ public class ConfigurationCacheUnitTest {
                 .putStringAndLong(anyString(), anyString(), anyString(), anyLong());
 
         try {
-            sut.saveConfiguration(context, configuration, "cacheKey", 123);
+            sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 123);
         } catch (Exception e) {
             fail("This method should not throw.");
         }
@@ -61,8 +60,8 @@ public class ConfigurationCacheUnitTest {
         when(braintreeSharedPreferences.getLong("cacheKey_timestamp")).thenReturn(0L);
         when(braintreeSharedPreferences.getString("cacheKey", "")).thenReturn(configuration.toJson());
 
-        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
-        sut.saveConfiguration(context, configuration, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 0);
 
         assertEquals(configuration.toJson(), sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
     }
@@ -74,8 +73,8 @@ public class ConfigurationCacheUnitTest {
         when(braintreeSharedPreferences.getLong("cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));
         when(braintreeSharedPreferences.getString("cacheKey","")).thenReturn(configuration.toJson());
 
-        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
-        sut.saveConfiguration(context, configuration, "cacheKey", 0);
+        ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 0);
 
         assertNull(sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(20)));
     }
@@ -87,7 +86,7 @@ public class ConfigurationCacheUnitTest {
         when(braintreeSharedPreferences.getLong(anyString())).thenThrow(unexpectedException);
         when(braintreeSharedPreferences.getString(anyString(),anyString())).thenThrow(unexpectedException);
 
-        ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
+        ConfigurationCache sut = new ConfigurationCache();
         assertNull(sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
     }
 }
