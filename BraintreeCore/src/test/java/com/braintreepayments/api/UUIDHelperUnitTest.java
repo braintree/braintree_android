@@ -2,6 +2,9 @@ package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +36,23 @@ public class UUIDHelperUnitTest {
         String uuid = sut.getInstallationGUID(context, braintreeSharedPreferences);
         assertNotNull(uuid);
         verify(braintreeSharedPreferences).putString(context, "InstallationGUID", uuid);
+    }
+
+    @Test
+    public void getInstallationGUID_whenSharedPrefsFails_returnsNewGUID() throws UnexpectedException {
+        UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
+        when(
+                braintreeSharedPreferences.getString(any(Context.class), anyString(), anyString())
+        ).thenThrow(unexpectedException);
+
+        doThrow(unexpectedException)
+                .when(braintreeSharedPreferences)
+                .putString(any(Context.class), anyString(), anyString());
+
+        UUIDHelper sut = new UUIDHelper();
+
+        String uuid = sut.getInstallationGUID(context, braintreeSharedPreferences);
+        assertNotNull(uuid);
     }
 
     @Test
