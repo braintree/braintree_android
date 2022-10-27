@@ -54,6 +54,12 @@ public class BraintreeSharedPreferencesTest {
         assertEquals("fallbackValue", sut.getString("stringKey", "fallbackValue"));
     }
 
+    @Test(expected = UnexpectedException.class)
+    public void getString_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.getString("stringKey", "fallbackValue");
+    }
+
     @Test
     public void putString_storesStringInSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
@@ -62,10 +68,22 @@ public class BraintreeSharedPreferencesTest {
         assertEquals("stringValue", sut.getString("stringKey", ""));
     }
 
+    @Test(expected = UnexpectedException.class)
+    public void putString_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.putString("stringKey", "stringValue");
+    }
+
     @Test
     public void getBoolean_returnsFalseByDefault() throws UnexpectedException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
         assertFalse(sut.getBoolean("booleanKey"));
+    }
+
+    @Test(expected = UnexpectedException.class)
+    public void getBoolean_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.getBoolean("booleanKey");
     }
 
     @Test
@@ -74,6 +92,12 @@ public class BraintreeSharedPreferencesTest {
         sut.putBoolean("booleanKey", true);
 
         assertTrue(sut.getBoolean("booleanKey"));
+    }
+
+    @Test(expected = UnexpectedException.class)
+    public void putBoolean_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.putBoolean("booleanKey", true);
     }
 
     @Test
@@ -90,6 +114,12 @@ public class BraintreeSharedPreferencesTest {
         assertFalse(sut.containsKey("booleanKey"));
     }
 
+    @Test(expected = UnexpectedException.class)
+    public void containsKey_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.containsKey("booleanKey");
+    }
+
     @Test
     public void putStringAndLong_storesStringInSharedPreferences() throws UnexpectedException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
@@ -99,10 +129,22 @@ public class BraintreeSharedPreferencesTest {
         assertEquals(123L, sut.getLong("longKey"));
     }
 
+    @Test(expected = UnexpectedException.class)
+    public void putStringAndLong_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.putStringAndLong("stringKey", "stringValue", "longKey", 123L);
+    }
+
     @Test
     public void getLong_returnsZeroByDefault() throws UnexpectedException {
         BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
         assertEquals(0L, sut.getLong("longKey"));
+    }
+
+    @Test(expected = UnexpectedException.class)
+    public void getLong_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.getLong("longKey");
     }
 
     @Test
@@ -118,5 +160,11 @@ public class BraintreeSharedPreferencesTest {
         assertFalse(sut.containsKey("booleanKey"));
         assertFalse(sut.containsKey("stringKey2"));
         assertFalse(sut.containsKey("longKey"));
+    }
+
+    @Test(expected = UnexpectedException.class)
+    public void clearSharedPreferences_whenSharedPreferencesNotAccessible_throwsError() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(new UnexpectedException("message"));
+        sut.clearSharedPreferences();
     }
 }
