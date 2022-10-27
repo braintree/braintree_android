@@ -2,8 +2,12 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -37,8 +41,17 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
-        sut.saveConfiguration(context, configuration, "cacheKey", 123);
-        verify(braintreeSharedPreferences).putStringAndLong(context, "cacheKey", configuration.toJson(), "cacheKey_timestamp", 123L);
+
+        UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
+        doThrow(unexpectedException)
+                .when(braintreeSharedPreferences)
+                .putStringAndLong(any(Context.class), anyString(), anyString(), anyString(), anyLong());
+
+        try {
+            sut.saveConfiguration(context, configuration, "cacheKey", 123);
+        } catch (Exception e) {
+            fail("This method should not throw.");
+        }
     }
 
     @Test
@@ -68,11 +81,11 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void getConfiguration_whenEncryptedSharedPrefsFails_returnsNull() throws JSONException, UnexpectedException {
+    public void getConfiguration_whenEncryptedSharedPrefsFails_returnsNull() throws UnexpectedException {
         UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
-        when(braintreeSharedPreferences.containsKey(context, "cacheKey_timestamp")).thenThrow(unexpectedException);
-        when(braintreeSharedPreferences.getLong(context, "cacheKey_timestamp")).thenThrow(unexpectedException);
-        when(braintreeSharedPreferences.getString(context, "cacheKey","")).thenThrow(unexpectedException);
+        when(braintreeSharedPreferences.containsKey(any(Context.class), anyString())).thenThrow(unexpectedException);
+        when(braintreeSharedPreferences.getLong(any(Context.class), anyString())).thenThrow(unexpectedException);
+        when(braintreeSharedPreferences.getString(any(Context.class), anyString(),anyString())).thenThrow(unexpectedException);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
         assertNull(sut.getConfiguration(context, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
