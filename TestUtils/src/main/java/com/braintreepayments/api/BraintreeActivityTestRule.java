@@ -26,7 +26,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     private void init() {
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
         try {
-            BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+            BraintreeSharedPreferences.getInstance().clearSharedPreferences();
         } catch (UnexpectedException ignored) {
         }
 
@@ -43,7 +43,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
 
         getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
         try {
-            BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+            BraintreeSharedPreferences.getInstance().clearSharedPreferences();
         } catch (UnexpectedException ignored) {
         }
 

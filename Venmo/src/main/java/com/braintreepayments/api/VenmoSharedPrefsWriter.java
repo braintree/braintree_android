@@ -20,10 +20,10 @@ class VenmoSharedPrefsWriter {
     }
 
     void persistVenmoVaultOption(Context context, boolean shouldVault) throws UnexpectedException {
-        braintreeSharedPreferences.putBoolean(context, VAULT_VENMO_KEY, shouldVault);
+        braintreeSharedPreferences.putBoolean(VAULT_VENMO_KEY, shouldVault);
     }
 
     boolean getVenmoVaultOption(Context context) throws UnexpectedException {
-        return braintreeSharedPreferences.getBoolean(context, VAULT_VENMO_KEY);
+        return braintreeSharedPreferences.getBoolean(VAULT_VENMO_KEY);
     }
 }

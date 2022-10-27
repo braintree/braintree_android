@@ -29,25 +29,25 @@ public class UUIDHelperUnitTest {
 
     @Test
     public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() throws UnexpectedException {
-        when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(null);
+        when(braintreeSharedPreferences.getString("InstallationGUID", null)).thenReturn(null);
 
         UUIDHelper sut = new UUIDHelper();
 
         String uuid = sut.getInstallationGUID(context, braintreeSharedPreferences);
         assertNotNull(uuid);
-        verify(braintreeSharedPreferences).putString(context, "InstallationGUID", uuid);
+        verify(braintreeSharedPreferences).putString("InstallationGUID", uuid);
     }
 
     @Test
     public void getInstallationGUID_whenSharedPrefsFails_returnsNewGUID() throws UnexpectedException {
         UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
         when(
-                braintreeSharedPreferences.getString(any(Context.class), anyString(), anyString())
+                braintreeSharedPreferences.getString(anyString(), anyString())
         ).thenThrow(unexpectedException);
 
         doThrow(unexpectedException)
                 .when(braintreeSharedPreferences)
-                .putString(any(Context.class), anyString(), anyString());
+                .putString(anyString(), anyString());
 
         UUIDHelper sut = new UUIDHelper();
 
@@ -58,7 +58,7 @@ public class UUIDHelperUnitTest {
     @Test
     public void getInstallationGUID_returnsExistingGUIDWhenOneExist() throws UnexpectedException {
         String uuid = UUID.randomUUID().toString();
-        when(braintreeSharedPreferences.getString(context, "InstallationGUID", null)).thenReturn(uuid);
+        when(braintreeSharedPreferences.getString("InstallationGUID", null)).thenReturn(uuid);
 
         UUIDHelper sut = new UUIDHelper();
 

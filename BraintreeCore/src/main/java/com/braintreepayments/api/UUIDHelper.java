@@ -23,7 +23,7 @@ class UUIDHelper {
     String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         String uuid = null;
         try {
-            uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY, null);
+            uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
         } catch (UnexpectedException ignored) {
             // protect against shared prefs failure: default to creating a new UUID in this scenario
         }
@@ -31,7 +31,7 @@ class UUIDHelper {
         if (uuid == null) {
             uuid = getFormattedUUID();
             try {
-                braintreeSharedPreferences.putString(context, BRAINTREE_UUID_KEY, uuid);
+                braintreeSharedPreferences.putString(BRAINTREE_UUID_KEY, uuid);
             } catch (UnexpectedException ignored) {
                 // protect against shared prefs failure: no-op when we're unable to persist the UUID
             }
@@ -52,7 +52,7 @@ class UUIDHelper {
     String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
         String installationGUID = null;
         try {
-            installationGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID, null);
+            installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
         } catch (UnexpectedException ignored) {
             // protect against shared prefs failure: default to creating a new GUID in this scenario
         }
@@ -60,7 +60,7 @@ class UUIDHelper {
         if (installationGUID == null) {
             installationGUID = UUID.randomUUID().toString();
             try {
-                braintreeSharedPreferences.putString(context, INSTALL_GUID, installationGUID);
+                braintreeSharedPreferences.putString(INSTALL_GUID, installationGUID);
             } catch (UnexpectedException ignored) {
                 // protect against shared prefs failure: no-op when we're unable to persist the GUID
             }

@@ -1,122 +1,122 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeSharedPreferences.getSharedPreferences;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeSharedPreferencesTest {
 
     private Context context;
+    private SharedPreferences sharedPreferences;
 
     @Before
-    public void beforeEach() throws UnexpectedException {
+    public void beforeEach() throws GeneralSecurityException, IOException {
         context = ApplicationProvider.getApplicationContext();
-        getSharedPreferences(context).edit().clear().apply();
+
+        MasterKey masterKey = new MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build();
+
+        sharedPreferences = EncryptedSharedPreferences.create(
+                context,
+                "testfilename",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+    }
+
+    @After
+    public void afterEach() {
+        sharedPreferences.edit().clear().apply();
     }
 
     @Test
-    public void getSharedPreferences_returnsEncryptedSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences(ApplicationProvider.getApplicationContext());
-        assertTrue(sharedPreferences instanceof EncryptedSharedPreferences);
+    public void getString_returnsFallbackStringByDefault() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        assertEquals("fallbackValue", sut.getString("stringKey", "fallbackValue"));
     }
 
     @Test
-    public void getString_returnsStringFromSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().putString("testKey", "testValue").apply();
+    public void putString_storesStringInSharedPreferences() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        sut.putString("stringKey", "stringValue");
 
-        assertEquals("testValue", sut.getString(context, "testKey", ""));
+        assertEquals("stringValue", sut.getString("stringKey", ""));
     }
 
     @Test
-    public void getString_withFilename_returnsStringFromSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().putString("testKey", "testValue").apply();
-
-        assertEquals("testValue", sut.getString(context, "testKey", ""));
+    public void getBoolean_returnsFalseByDefault() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        assertFalse(sut.getBoolean("booleanKey"));
     }
 
     @Test
-    public void putString_savesStringInSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+    public void putBoolean_storesBooleanInSharedPreferences() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        sut.putBoolean("booleanKey", true);
 
-        sut.putString(context, "testKey2", "testValue2");
-
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        assertEquals("testValue2", sharedPreferences.getString("testKey2", null));
+        assertTrue(sut.getBoolean("booleanKey"));
     }
 
     @Test
-    public void putString_withFilename_savesStringInSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+    public void containsKey_whenKeyExists_returnsTrue() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        sut.putBoolean("booleanKey", true);
 
-        sut.putString(context, "testKey2", "testValue2");
-
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        assertEquals("testValue2", sharedPreferences.getString("testKey2", null));
+        assertTrue(sut.containsKey("booleanKey"));
     }
 
     @Test
-    public void getBoolean_returnsBooleanFromSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("testKeyBoolean", true).apply();
-
-        assertTrue(sut.getBoolean(context, "testKeyBoolean"));
+    public void containsKey_whenKeyDoesNotExist_returnsTrue() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        assertFalse(sut.containsKey("booleanKey"));
     }
 
     @Test
-    public void putBoolean_savesBooleanToSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
+    public void putStringAndLong_storesStringInSharedPreferences() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        sut.putStringAndLong("stringKey", "stringValue", "longKey", 123L);
 
-        sut.putBoolean(context, "testKeyBoolean2", true);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        assertTrue(sharedPreferences.getBoolean("testKeyBoolean2", false));
+        assertEquals("stringValue", sut.getString("stringKey", null));
+        assertEquals(123L, sut.getLong("longKey"));
     }
 
     @Test
-    public void containsKey_returnsIfKeyExistsInSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("testContainsKey", true).apply();
-
-        assertTrue(sut.containsKey(context, "testContainsKey"));
+    public void getLong_returnsZeroByDefault() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
+        assertEquals(0L, sut.getLong("longKey"));
     }
 
     @Test
-    public void getLong_returnsLongFromSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        sharedPreferences.edit().putLong("testKeyLong", 1L).apply();
+    public void clearSharedPreferences_clearsSharedPreferences() throws UnexpectedException {
+        BraintreeSharedPreferences sut = new BraintreeSharedPreferences(sharedPreferences);
 
-        assertEquals(1L, sut.getLong(context, "testKeyLong"));
-    }
+        sut.putString("stringKey", "stringValue");
+        sut.putBoolean("booleanKey", true);
+        sut.putStringAndLong("stringKey2", "stringValue2", "longKey", 123L);
+        sut.clearSharedPreferences();
 
-    @Test
-    public void putStringAndLong_savesToSharedPreferences() throws UnexpectedException {
-        BraintreeSharedPreferences sut = BraintreeSharedPreferences.getInstance();
-
-        sut.putStringAndLong(context, "testKeyString", "testValueString", "testKeyLong", 2L);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
-        assertEquals("testValueString", sharedPreferences.getString("testKeyString", null));
-        assertEquals(2L, sharedPreferences.getLong("testKeyLong", 0));
+        assertFalse(sut.containsKey("stringKey"));
+        assertFalse(sut.containsKey("booleanKey"));
+        assertFalse(sut.containsKey("stringKey2"));
+        assertFalse(sut.containsKey("longKey"));
     }
 }

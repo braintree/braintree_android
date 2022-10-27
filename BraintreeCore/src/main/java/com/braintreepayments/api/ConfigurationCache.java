@@ -38,10 +38,10 @@ class ConfigurationCache {
     String getConfiguration(Context context, String cacheKey, long currentTimeMillis) {
         String timestampKey = cacheKey + "_timestamp";
         try {
-            if (braintreeSharedPreferences.containsKey(context, timestampKey)) {
-                long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(context, timestampKey));
+            if (braintreeSharedPreferences.containsKey(timestampKey)) {
+                long timeInCache = (currentTimeMillis - braintreeSharedPreferences.getLong(timestampKey));
                 if (timeInCache < TIME_TO_LIVE) {
-                    return braintreeSharedPreferences.getString(context, cacheKey, "");
+                    return braintreeSharedPreferences.getString(cacheKey, "");
                 }
             }
         } catch (UnexpectedException ignored) {
@@ -59,7 +59,7 @@ class ConfigurationCache {
     void saveConfiguration(Context context, Configuration configuration, String cacheKey, long currentTimeMillis) {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
-            braintreeSharedPreferences.putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
+            braintreeSharedPreferences.putStringAndLong(cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
         } catch (UnexpectedException ignored) {
             // protect against shared prefs failure: no-op when we're unable to store config in cache
         }
