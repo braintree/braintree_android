@@ -89,12 +89,12 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
+    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() throws JSONException {
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
                 .authorization(authorization)
                 .build();
 
-        Configuration configuration = mock(Configuration.class);
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .build();
@@ -106,6 +106,52 @@ public class BraintreeClientUnitTest {
         sut.getConfiguration(callback);
 
         verify(callback).onResult(configuration, null);
+    }
+
+    @Test
+    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_sendsAnalyticsEventForCacheLoadErrors() throws JSONException {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
+
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        UnexpectedException loadFromCacheError = new UnexpectedException("cache load error");
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
+                .configuration(configuration)
+                .loadFromCacheError(loadFromCacheError)
+                .build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
+
+        String expectedEventName = "configuration.cache.load.failed";
+        verify(analyticsClient).sendEvent(configuration, expectedEventName, "session-id", "custom", authorization);
+    }
+
+    @Test
+    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_sendsAnalyticsEventForCacheSaveErrors() throws JSONException {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
+
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+        UnexpectedException saveToCacheError = new UnexpectedException("cache save error");
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
+                .configuration(configuration)
+                .saveToCacheError(saveToCacheError)
+                .build();
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
+
+        String expectedEventName = "configuration.cache.save.failed";
+        verify(analyticsClient).sendEvent(configuration, expectedEventName, "session-id", "custom", authorization);
     }
 
     @Test

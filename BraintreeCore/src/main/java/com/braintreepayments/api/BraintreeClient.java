@@ -178,18 +178,19 @@ public class BraintreeClient {
     public void getConfiguration(@NonNull final ConfigurationCallback callback) {
         getAuthorization(new AuthorizationCallback() {
             @Override
-            public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception error) {
+            public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception error) {
                 if (authorization != null) {
                     configurationLoader.loadConfiguration(applicationContext, authorization, new ConfigurationLoaderCallback() {
                         @Override
                         public void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error) {
                             if (result != null) {
+                                Configuration configuration = result.getConfiguration();
                                 callback.onResult(result.getConfiguration(), null);
                                 if (result.getLoadFromCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.load.failed");
+                                    sendAnalyticsEvent("configuration.cache.load.failed", configuration, authorization);
                                 }
                                 if (result.getSaveToCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.save.failed");
+                                    sendAnalyticsEvent("configuration.cache.save.failed", configuration, authorization);
                                 }
                             } else {
                                 callback.onResult(null, error);
@@ -215,14 +216,18 @@ public class BraintreeClient {
                     getConfiguration(new ConfigurationCallback() {
                         @Override
                         public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                            if (isAnalyticsEnabled(configuration)) {
-                                analyticsClient.sendEvent(configuration, eventName, sessionId, getIntegrationType(), authorization);
-                            }
+                            sendAnalyticsEvent(eventName, configuration, authorization);
                         }
                     });
                 }
             }
         });
+    }
+
+    private void sendAnalyticsEvent(String eventName, Configuration configuration, Authorization authorization) {
+        if (isAnalyticsEnabled(configuration)) {
+            analyticsClient.sendEvent(configuration, eventName, sessionId, getIntegrationType(), authorization);
+        }
     }
 
     void sendGET(final String url, final HttpResponseCallback responseCallback) {
