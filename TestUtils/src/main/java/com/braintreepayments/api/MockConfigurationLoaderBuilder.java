@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -52,7 +50,7 @@ public class MockConfigurationLoaderBuilder {
                 }
                 return null;
             }
-        }).when(configurationLoader).loadConfiguration(any(Context.class), any(Authorization.class), any(ConfigurationLoaderCallback.class));
+        }).when(configurationLoader).loadConfiguration(any(Authorization.class), any(ConfigurationLoaderCallback.class));
 
         return configurationLoader;
     }

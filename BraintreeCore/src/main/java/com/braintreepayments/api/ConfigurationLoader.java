@@ -23,7 +23,7 @@ class ConfigurationLoader {
         this.configurationCache = configurationCache;
     }
 
-    void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationLoaderCallback callback) {
+    void loadConfiguration(final Authorization authorization, final ConfigurationLoaderCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -40,7 +40,7 @@ class ConfigurationLoader {
         Configuration cachedConfig = null;
         UnexpectedException loadFromCacheException = null;
         try {
-            cachedConfig = getCachedConfiguration(context, authorization, configUrl);
+            cachedConfig = getCachedConfiguration(authorization, configUrl);
         } catch (UnexpectedException e) {
             loadFromCacheException = e;
         }
@@ -61,7 +61,7 @@ class ConfigurationLoader {
 
                             UnexpectedException saveToCacheException = null;
                             try {
-                                saveConfigurationToCache(context, configuration, authorization, configUrl);
+                                saveConfigurationToCache(configuration, authorization, configUrl);
                             } catch (UnexpectedException e) {
                                 saveToCacheException = e;
                             }
@@ -84,12 +84,12 @@ class ConfigurationLoader {
         }
     }
 
-    private void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) throws UnexpectedException {
+    private void saveConfigurationToCache(Configuration configuration, Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
         configurationCache.saveConfiguration(configuration, cacheKey);
     }
 
-    private Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) throws UnexpectedException {
+    private Configuration getCachedConfiguration(Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
         String cachedConfigResponse = configurationCache.getConfiguration(cacheKey);
         try {

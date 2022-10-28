@@ -180,7 +180,7 @@ public class BraintreeClient {
             @Override
             public void onAuthorizationResult(@Nullable final Authorization authorization, @Nullable Exception error) {
                 if (authorization != null) {
-                    configurationLoader.loadConfiguration(applicationContext, authorization, new ConfigurationLoaderCallback() {
+                    configurationLoader.loadConfiguration(authorization, new ConfigurationLoaderCallback() {
                         @Override
                         public void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error) {
                             if (result != null) {
