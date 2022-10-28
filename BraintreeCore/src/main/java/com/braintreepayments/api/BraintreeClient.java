@@ -185,7 +185,7 @@ public class BraintreeClient {
                         public void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error) {
                             if (result != null) {
                                 Configuration configuration = result.getConfiguration();
-                                callback.onResult(result.getConfiguration(), null);
+                                callback.onResult(configuration, null);
                                 if (result.getLoadFromCacheError() != null) {
                                     sendAnalyticsEvent("configuration.cache.load.failed", configuration, authorization);
                                 }
