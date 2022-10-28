@@ -263,6 +263,7 @@ public class VenmoClient {
                                                 listener.onVenmoSuccess(nonce);
                                             }
                                         } catch (UnexpectedException unexpectedError) {
+                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
                                             listener.onVenmoFailure(unexpectedError);
                                         }
                                     } else {
@@ -294,6 +295,7 @@ public class VenmoClient {
                                 }
 
                             } catch (UnexpectedException unexpectedError) {
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
                                 listener.onVenmoFailure(unexpectedError);
                             }
                         }

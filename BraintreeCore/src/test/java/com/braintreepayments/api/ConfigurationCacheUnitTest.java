@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -40,6 +41,16 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
         ConfigurationCache sut = new ConfigurationCache();
+        sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 123L);
+
+        verify(braintreeSharedPreferences).putStringAndLong("cacheKey", configuration.toJson(), "cacheKey_timestamp", 123L);
+    }
+
+    @Test
+    public void saveConfiguration_whenSharedPreferencesFails_forwardsException() throws JSONException, UnexpectedException {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
+
+        ConfigurationCache sut = new ConfigurationCache();
 
         UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
         doThrow(unexpectedException)
@@ -63,7 +74,7 @@ public class ConfigurationCacheUnitTest {
         ConfigurationCache sut = new ConfigurationCache();
         sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 0);
 
-        assertEquals(configuration.toJson(), sut.getConfiguration(braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
+        assertEquals(configuration.toJson(), sut.getConfiguration(braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(5) - 1));
     }
 
     @Test
@@ -71,7 +82,7 @@ public class ConfigurationCacheUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey("cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong("cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));
-        when(braintreeSharedPreferences.getString("cacheKey","")).thenReturn(configuration.toJson());
+        when(braintreeSharedPreferences.getString("cacheKey", "")).thenReturn(configuration.toJson());
 
         ConfigurationCache sut = new ConfigurationCache();
         sut.saveConfiguration(braintreeSharedPreferences, configuration, "cacheKey", 0);
@@ -79,14 +90,14 @@ public class ConfigurationCacheUnitTest {
         assertNull(sut.getConfiguration(braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(20)));
     }
 
-    @Test
-    public void getConfiguration_whenEncryptedSharedPrefsFails_returnsNull() throws UnexpectedException {
+    @Test(expected = UnexpectedException.class)
+    public void getConfiguration_whenSharedPreferencesFails_forwardsException() throws UnexpectedException {
         UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
         when(braintreeSharedPreferences.containsKey(anyString())).thenThrow(unexpectedException);
         when(braintreeSharedPreferences.getLong(anyString())).thenThrow(unexpectedException);
-        when(braintreeSharedPreferences.getString(anyString(),anyString())).thenThrow(unexpectedException);
+        when(braintreeSharedPreferences.getString(anyString(), anyString())).thenThrow(unexpectedException);
 
         ConfigurationCache sut = new ConfigurationCache();
-        assertNull(sut.getConfiguration(braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(5)-1));
+        assertNull(sut.getConfiguration(braintreeSharedPreferences, "cacheKey", TimeUnit.MINUTES.toMillis(5) - 1));
     }
 }

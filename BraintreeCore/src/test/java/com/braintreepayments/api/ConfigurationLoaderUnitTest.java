@@ -30,7 +30,7 @@ public class ConfigurationLoaderUnitTest {
     private ConfigurationCache configurationCache;
 
     private BraintreeHttpClient braintreeHttpClient;
-    private ConfigurationCallback callback;
+    private ConfigurationLoaderCallback callback;
 
     private Context context;
     private Authorization authorization;
@@ -43,7 +43,7 @@ public class ConfigurationLoaderUnitTest {
         context = mock(Context.class);
 
         braintreeHttpClient = mock(BraintreeHttpClient.class);
-        callback = mock(ConfigurationCallback.class);
+        callback = mock(ConfigurationLoaderCallback.class);
     }
 
     @Test
@@ -61,11 +61,11 @@ public class ConfigurationLoaderUnitTest {
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
 
-        verify(callback).onResult(any(Configuration.class), (Exception) isNull());
+        verify(callback).onResult(any(ConfigurationLoaderResult.class), (Exception) isNull());
     }
 
     @Test
-    public void loadConfiguration_savesFetchedConfigurationToCache() {
+    public void loadConfiguration_savesFetchedConfigurationToCache() throws UnexpectedException {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
@@ -97,7 +97,7 @@ public class ConfigurationLoaderUnitTest {
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult("not json", null);
 
-        verify(callback).onResult((Configuration) isNull(), any(JSONException.class));
+        verify(callback).onResult((ConfigurationLoaderResult) isNull(), any(JSONException.class));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(null, httpError);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((Configuration) isNull(), errorCaptor.capture());
+        verify(callback).onResult((ConfigurationLoaderResult) isNull(), errorCaptor.capture());
 
         ConfigurationException error = (ConfigurationException) errorCaptor.getValue();
         assertEquals("Request for configuration has failed: http error",
@@ -130,14 +130,14 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(context, authorization, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(callback).onResult((Configuration) isNull(), captor.capture());
+        verify(callback).onResult((ConfigurationLoaderResult) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
     }
 
     @Test
-    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
+    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws UnexpectedException {
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
         Context context = mock(Context.class);
 
@@ -149,6 +149,6 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(context, authorization, callback);
 
         verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), same(authorization), anyInt(), any(HttpResponseCallback.class));
-        verify(callback).onResult(any(Configuration.class), (Exception) isNull());
+        verify(callback).onResult(any(ConfigurationLoaderResult.class), (Exception) isNull());
     }
 }

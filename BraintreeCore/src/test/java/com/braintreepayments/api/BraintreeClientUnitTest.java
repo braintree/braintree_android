@@ -89,17 +89,23 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getConfiguration_onAuthorizationLoaderSuccess_forwardsInvocationToConfigurationLoader() {
+    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
                 .authorization(authorization)
                 .build();
+
+        Configuration configuration = mock(Configuration.class);
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
+                .configuration(configuration)
+                .build();
+
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
         ConfigurationCallback callback = mock(ConfigurationCallback.class);
         sut.getConfiguration(callback);
 
-        verify(configurationLoader).loadConfiguration(applicationContext, authorization, callback);
+        verify(callback).onResult(configuration, null);
     }
 
     @Test
@@ -115,6 +121,24 @@ public class BraintreeClientUnitTest {
         sut.getConfiguration(callback);
 
         verify(callback).onResult(null, authFetchError);
+    }
+
+    @Test
+    public void getConfiguration_forwardsConfigurationLoaderError() {
+        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
+                .authorization(authorization)
+                .build();
+        Exception configFetchError = new Exception("config fetch error");
+        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
+                .configurationError(configFetchError)
+                .build();
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        ConfigurationCallback callback = mock(ConfigurationCallback.class);
+        sut.getConfiguration(callback);
+
+        verify(callback).onResult(null, configFetchError);
     }
 
     @Test

@@ -23,7 +23,7 @@ class ConfigurationLoader {
         this.configurationCache = configurationCache;
     }
 
-    void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationCallback callback) {
+    void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationLoaderCallback callback) {
         if (authorization instanceof InvalidAuthorization) {
             String message = ((InvalidAuthorization) authorization).getErrorMessage();
             callback.onResult(null, new BraintreeException(message));
@@ -36,11 +36,21 @@ class ConfigurationLoader {
                 .build()
                 .toString();
 
-        Configuration cachedConfig = getCachedConfiguration(context, authorization, configUrl);
+
+        Configuration cachedConfig = null;
+        UnexpectedException loadFromCacheException = null;
+        try {
+            cachedConfig = getCachedConfiguration(context, authorization, configUrl);
+        } catch (UnexpectedException e) {
+            loadFromCacheException = e;
+        }
+
         if (cachedConfig != null) {
-            callback.onResult(cachedConfig, null);
+            ConfigurationLoaderResult resultFromCache = new ConfigurationLoaderResult(cachedConfig);
+            callback.onResult(resultFromCache, null);
         } else {
 
+            final UnexpectedException finalLoadFromCacheException = loadFromCacheException;
             httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
 
                 @Override
@@ -48,8 +58,17 @@ class ConfigurationLoader {
                     if (responseBody != null) {
                         try {
                             Configuration configuration = Configuration.fromJson(responseBody);
-                            saveConfigurationToCache(context, configuration, authorization, configUrl);
-                            callback.onResult(configuration, null);
+
+                            UnexpectedException saveToCacheException = null;
+                            try {
+                                saveConfigurationToCache(context, configuration, authorization, configUrl);
+                            } catch (UnexpectedException e) {
+                                saveToCacheException = e;
+                            }
+
+                            ConfigurationLoaderResult resultFromNetwork =
+                                new ConfigurationLoaderResult(configuration, finalLoadFromCacheException, saveToCacheException);
+                            callback.onResult(resultFromNetwork, null);
                         } catch (JSONException jsonException) {
                             callback.onResult(null, jsonException);
                         }
@@ -65,12 +84,12 @@ class ConfigurationLoader {
         }
     }
 
-    private void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) {
+    private void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
         configurationCache.saveConfiguration(context, configuration, cacheKey);
     }
 
-    private Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) {
+    private Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
         String cachedConfigResponse = configurationCache.getConfiguration(context, cacheKey);
         try {
