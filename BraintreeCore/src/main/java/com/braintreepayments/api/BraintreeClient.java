@@ -85,7 +85,7 @@ public class BraintreeClient {
                 .browserSwitchClient(new BrowserSwitchClient())
                 .manifestValidator(new ManifestValidator())
                 .UUIDHelper(new UUIDHelper())
-                .configurationLoader(new ConfigurationLoader(httpClient));
+                .configurationLoader(new ConfigurationLoader(context, httpClient));
     }
 
     /**

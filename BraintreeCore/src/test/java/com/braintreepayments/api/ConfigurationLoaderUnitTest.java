@@ -81,7 +81,7 @@ public class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
 
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
-        verify(configurationCache).saveConfiguration(same(context), any(Configuration.class), eq(cacheKey));
+        verify(configurationCache).saveConfiguration(any(Configuration.class), eq(cacheKey));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ConfigurationLoaderUnitTest {
 
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
-        when(configurationCache.getConfiguration(context, cacheKey)).thenReturn(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
+        when(configurationCache.getConfiguration(cacheKey)).thenReturn(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
 
         ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
         sut.loadConfiguration(context, authorization, callback);

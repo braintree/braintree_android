@@ -13,8 +13,8 @@ class ConfigurationLoader {
     private final BraintreeHttpClient httpClient;
     private final ConfigurationCache configurationCache;
 
-    ConfigurationLoader(BraintreeHttpClient httpClient) {
-        this(httpClient, ConfigurationCache.getInstance());
+    ConfigurationLoader(Context context, BraintreeHttpClient httpClient) {
+        this(httpClient, ConfigurationCache.getInstance(context));
     }
 
     @VisibleForTesting
@@ -86,12 +86,12 @@ class ConfigurationLoader {
 
     private void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
-        configurationCache.saveConfiguration(context, configuration, cacheKey);
+        configurationCache.saveConfiguration(configuration, cacheKey);
     }
 
     private Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) throws UnexpectedException {
         String cacheKey = createCacheKey(authorization, configUrl);
-        String cachedConfigResponse = configurationCache.getConfiguration(context, cacheKey);
+        String cachedConfigResponse = configurationCache.getConfiguration(cacheKey);
         try {
             return Configuration.fromJson(cachedConfigResponse);
         } catch (JSONException e) {

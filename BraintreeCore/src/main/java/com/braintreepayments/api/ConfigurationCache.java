@@ -12,26 +12,31 @@ class ConfigurationCache {
 
     private static volatile ConfigurationCache INSTANCE;
 
-    static ConfigurationCache getInstance() {
+    private final BraintreeSharedPreferences sharedPreferences;
+
+    static ConfigurationCache getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (ConfigurationCache.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new ConfigurationCache();
+                    INSTANCE = new ConfigurationCache(BraintreeSharedPreferences.getInstance(context));
                 }
             }
         }
         return INSTANCE;
     }
 
-    String getConfiguration(Context context, String cacheKey) throws UnexpectedException {
-        BraintreeSharedPreferences sharedPreferences =
-                BraintreeSharedPreferences.getInstance(context);
-        return getConfiguration(sharedPreferences, cacheKey, System.currentTimeMillis());
+    @VisibleForTesting
+    ConfigurationCache(BraintreeSharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
+    }
+
+    String getConfiguration(String cacheKey) throws UnexpectedException {
+        return getConfiguration(cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    String getConfiguration(BraintreeSharedPreferences sharedPreferences, String cacheKey, long currentTimeMillis) throws UnexpectedException {
+    String getConfiguration(String cacheKey, long currentTimeMillis) throws UnexpectedException {
         String timestampKey = cacheKey + "_timestamp";
         if (sharedPreferences.containsKey(timestampKey)) {
             long timeInCache = (currentTimeMillis - sharedPreferences.getLong(timestampKey));
@@ -42,14 +47,12 @@ class ConfigurationCache {
         return null;
     }
 
-    void saveConfiguration(Context context, Configuration configuration, String cacheKey) throws UnexpectedException {
-        BraintreeSharedPreferences sharedPreferences =
-            BraintreeSharedPreferences.getInstance(context);
-        saveConfiguration(sharedPreferences, configuration, cacheKey, System.currentTimeMillis());
+    void saveConfiguration(Configuration configuration, String cacheKey) throws UnexpectedException {
+        saveConfiguration(configuration, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    void saveConfiguration(BraintreeSharedPreferences sharedPreferences, Configuration configuration, String cacheKey, long currentTimeMillis) throws UnexpectedException {
+    void saveConfiguration(Configuration configuration, String cacheKey, long currentTimeMillis) throws UnexpectedException {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         sharedPreferences.putStringAndLong(cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
     }
