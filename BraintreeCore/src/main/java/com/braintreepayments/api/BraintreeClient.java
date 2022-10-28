@@ -186,10 +186,10 @@ public class BraintreeClient {
                             if (result != null) {
                                 callback.onResult(result.getConfiguration(), null);
                                 if (result.getLoadFromCacheError() != null) {
-                                    sendAnalyticsEvent("config cache loading failed");
+                                    sendAnalyticsEvent("configuration.cache.load.failed");
                                 }
                                 if (result.getSaveToCacheError() != null) {
-                                    sendAnalyticsEvent("config cache saving failed");
+                                    sendAnalyticsEvent("configuration.cache.save.failed");
                                 }
                             } else {
                                 callback.onResult(null, error);
