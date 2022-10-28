@@ -1,12 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SharedUtils
+  * Allow `BraintreeSharedPreferences` to gracefully degrade when `EncryptedSharedPreferences` fails (fix for #619)
+
 ## 4.19.0
 
 * GooglePay
   * Bump `play-services-wallet` version to `19.1.0`
 * SharedUtils
   * Add explicit key alias for encrypted shared prefs (potential fix for #604)
-  * Allow `BraintreeSharedPreferences` to gracefully degrade when `EncryptedSharedPreferences` fails (fix for #619)
 
 ## 4.18.0
 
