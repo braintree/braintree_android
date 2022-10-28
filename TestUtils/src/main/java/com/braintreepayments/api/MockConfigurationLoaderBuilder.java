@@ -40,7 +40,7 @@ public class MockConfigurationLoaderBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                ConfigurationLoaderCallback callback = (ConfigurationLoaderCallback) invocation.getArguments()[2];
+                ConfigurationLoaderCallback callback = (ConfigurationLoaderCallback) invocation.getArguments()[1];
                 if (configuration != null) {
                     ConfigurationLoaderResult result =
                         new ConfigurationLoaderResult(configuration, loadFromCacheError, saveToCacheError);
