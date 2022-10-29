@@ -1,19 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.util.Base64;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.robolectric.RobolectricTestRunner;
-import org.skyscreamer.jsonassert.JSONAssert;
-
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -28,6 +14,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Base64;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
+
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
 public class ConfigurationLoaderUnitTest {
@@ -37,15 +35,12 @@ public class ConfigurationLoaderUnitTest {
     private BraintreeHttpClient braintreeHttpClient;
     private ConfigurationLoaderCallback callback;
 
-    private Context context;
     private Authorization authorization;
 
     @Before
     public void beforeEach() {
         configurationCache = mock(ConfigurationCache.class);
-
         authorization = mock(Authorization.class);
-        context = mock(Context.class);
 
         braintreeHttpClient = mock(BraintreeHttpClient.class);
         callback = mock(ConfigurationLoaderCallback.class);
@@ -70,7 +65,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_savesFetchedConfigurationToCache() throws UnexpectedException {
+    public void loadConfiguration_savesFetchedConfigurationToCache() throws BraintreeSharedPreferencesException {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
@@ -142,9 +137,8 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws UnexpectedException {
+    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws BraintreeSharedPreferencesException {
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
-        Context context = mock(Context.class);
 
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
@@ -158,7 +152,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_forwardsConfigurationCacheErrors() throws UnexpectedException, JSONException {
+    public void loadConfiguration_forwardsConfigurationCacheErrors() throws BraintreeSharedPreferencesException, JSONException {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 

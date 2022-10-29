@@ -28,7 +28,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         getSharedPreferences(context).edit().clear().commit();
         try {
             BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
         }
 
         keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
@@ -46,7 +46,7 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         getSharedPreferences(context).edit().clear().commit();
         try {
             BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
         }
 
         keyguardLock.reenableKeyguard();

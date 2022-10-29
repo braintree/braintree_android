@@ -190,8 +190,8 @@ public class VenmoClient {
                                     if (authorization != null) {
                                         try {
                                             startVenmoActivityForResult(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId);
-                                        } catch (UnexpectedException unexpectedError) {
-                                            callback.onResult(unexpectedError);
+                                        } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                            callback.onResult(sharedPrefsError);
                                         }
                                     } else {
                                         callback.onResult(authError);
@@ -215,7 +215,7 @@ public class VenmoClient {
             Authorization authorization,
             final String venmoProfileId,
             @Nullable final String paymentContextId
-    ) throws UnexpectedException {
+    ) throws BraintreeSharedPreferencesException {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
@@ -262,9 +262,9 @@ public class VenmoClient {
                                                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
                                                 listener.onVenmoSuccess(nonce);
                                             }
-                                        } catch (UnexpectedException unexpectedError) {
+                                        } catch (BraintreeSharedPreferencesException sharedPrefsError) {
                                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
-                                            listener.onVenmoFailure(unexpectedError);
+                                            listener.onVenmoFailure(sharedPrefsError);
                                         }
                                     } else {
                                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
@@ -294,9 +294,9 @@ public class VenmoClient {
                                     listener.onVenmoSuccess(venmoAccountNonce);
                                 }
 
-                            } catch (UnexpectedException unexpectedError) {
+                            } catch (BraintreeSharedPreferencesException sharedPrefsError) {
                                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
-                                listener.onVenmoFailure(unexpectedError);
+                                listener.onVenmoFailure(sharedPrefsError);
                             }
                         }
                     } else if (authError != null) {
@@ -344,8 +344,8 @@ public class VenmoClient {
                                                 callback.onResult(nonce, null);
                                             }
 
-                                        } catch (UnexpectedException unexpectedError) {
-                                            callback.onResult(null, unexpectedError);
+                                        } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                            callback.onResult(null, sharedPrefsError);
                                         }
                                     } else {
                                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
@@ -365,8 +365,8 @@ public class VenmoClient {
                                     VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
                                     callback.onResult(venmoAccountNonce, null);
                                 }
-                            } catch (UnexpectedException unexpectedError) {
-                                callback.onResult(null, unexpectedError);
+                            } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                callback.onResult(null, sharedPrefsError);
                             }
                         }
                     } else if (authError != null) {

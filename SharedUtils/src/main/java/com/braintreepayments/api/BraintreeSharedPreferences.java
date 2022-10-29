@@ -19,7 +19,7 @@ class BraintreeSharedPreferences {
     private static final String BRAINTREE_SHARED_PREFS_FILENAME = "BraintreeApi";
 
     private final SharedPreferences sharedPreferences;
-    private final UnexpectedException createException;
+    private final BraintreeSharedPreferencesException createException;
 
     static BraintreeSharedPreferences getInstance(Context context) {
         if (INSTANCE == null) {
@@ -28,7 +28,7 @@ class BraintreeSharedPreferences {
                 if (INSTANCE == null) {
                     try {
                         INSTANCE = new BraintreeSharedPreferences(createSharedPreferencesInstance(context));
-                    } catch (UnexpectedException e) {
+                    } catch (BraintreeSharedPreferencesException e) {
                         INSTANCE = new BraintreeSharedPreferences(e);
                     }
                 }
@@ -37,7 +37,7 @@ class BraintreeSharedPreferences {
         return INSTANCE;
     }
 
-    private static SharedPreferences createSharedPreferencesInstance(Context context) throws UnexpectedException {
+    private static SharedPreferences createSharedPreferencesInstance(Context context) throws BraintreeSharedPreferencesException {
         try {
             MasterKey masterKey = new MasterKey.Builder(context, BRAINTREE_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -51,7 +51,7 @@ class BraintreeSharedPreferences {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
         } catch (Exception e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
@@ -60,76 +60,76 @@ class BraintreeSharedPreferences {
         this.createException = null;
     }
 
-    BraintreeSharedPreferences(UnexpectedException createException) {
+    BraintreeSharedPreferences(BraintreeSharedPreferencesException createException) {
         this.sharedPreferences = null;
         this.createException = createException;
     }
 
     @NonNull
-    private SharedPreferences getSharedPreferences() throws UnexpectedException {
+    private SharedPreferences getSharedPreferences() throws BraintreeSharedPreferencesException {
         if (createException != null) {
             throw createException;
         } else if (sharedPreferences == null) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE);
         }
         return sharedPreferences;
     }
 
-    String getString(String key, String fallback) throws UnexpectedException {
+    String getString(String key, String fallback) throws BraintreeSharedPreferencesException {
         try {
             return getSharedPreferences().getString(key, fallback);
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    void putString(String key, String value) throws UnexpectedException {
+    void putString(String key, String value) throws BraintreeSharedPreferencesException {
         try {
             getSharedPreferences()
                     .edit()
                     .putString(key, value)
                     .apply();
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    boolean getBoolean(String key) throws UnexpectedException {
+    boolean getBoolean(String key) throws BraintreeSharedPreferencesException {
         try {
             return getSharedPreferences().getBoolean(key, false);
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    void putBoolean(String key, boolean value) throws UnexpectedException {
+    void putBoolean(String key, boolean value) throws BraintreeSharedPreferencesException {
         try {
             getSharedPreferences()
                     .edit()
                     .putBoolean(key, value)
                     .apply();
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    boolean containsKey(String key) throws UnexpectedException {
+    boolean containsKey(String key) throws BraintreeSharedPreferencesException {
         try {
             return getSharedPreferences().contains(key);
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException(SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    long getLong(String key) throws UnexpectedException {
+    long getLong(String key) throws BraintreeSharedPreferencesException {
         try {
             return getSharedPreferences().getLong(key, 0);
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException (SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    void putStringAndLong(String stringKey, String stringValue, String longKey, long longValue) throws UnexpectedException {
+    void putStringAndLong(String stringKey, String stringValue, String longKey, long longValue) throws BraintreeSharedPreferencesException {
         try {
             getSharedPreferences()
                     .edit()
@@ -137,18 +137,18 @@ class BraintreeSharedPreferences {
                     .putLong(longKey, longValue)
                     .apply();
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException (SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 
-    void clearSharedPreferences() throws UnexpectedException {
+    void clearSharedPreferences() throws BraintreeSharedPreferencesException {
         try {
             getSharedPreferences()
                     .edit()
                     .clear()
                     .apply();
         } catch (SecurityException e) {
-            throw new UnexpectedException(SHARED_PREFS_ERROR_MESSAGE, e);
+            throw new BraintreeSharedPreferencesException (SHARED_PREFS_ERROR_MESSAGE, e);
         }
     }
 }

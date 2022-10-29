@@ -24,7 +24,7 @@ class UUIDHelper {
         String uuid = null;
         try {
             uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
             // protect against shared prefs failure: default to creating a new UUID in this scenario
         }
 
@@ -32,7 +32,7 @@ class UUIDHelper {
             uuid = getFormattedUUID();
             try {
                 braintreeSharedPreferences.putString(BRAINTREE_UUID_KEY, uuid);
-            } catch (UnexpectedException ignored) {
+            } catch (BraintreeSharedPreferencesException ignored) {
                 // protect against shared prefs failure: no-op when we're unable to persist the UUID
             }
         }
@@ -53,7 +53,7 @@ class UUIDHelper {
         String installationGUID = null;
         try {
             installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
             // protect against shared prefs failure: default to creating a new GUID in this scenario
         }
 
@@ -61,7 +61,7 @@ class UUIDHelper {
             installationGUID = UUID.randomUUID().toString();
             try {
                 braintreeSharedPreferences.putString(INSTALL_GUID, installationGUID);
-            } catch (UnexpectedException ignored) {
+            } catch (BraintreeSharedPreferencesException ignored) {
                 // protect against shared prefs failure: no-op when we're unable to persist the GUID
             }
         }

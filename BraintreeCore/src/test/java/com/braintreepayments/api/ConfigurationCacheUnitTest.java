@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -37,7 +36,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException, UnexpectedException {
+    public void saveConfiguration_savesConfigurationInSharedPrefs() throws JSONException, BraintreeSharedPreferencesException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
@@ -46,13 +45,14 @@ public class ConfigurationCacheUnitTest {
         verify(braintreeSharedPreferences).putStringAndLong("cacheKey", configuration.toJson(), "cacheKey_timestamp", 123L);
     }
 
-    @Test(expected = UnexpectedException.class)
-    public void saveConfiguration_whenSharedPreferencesFails_forwardsException() throws JSONException, UnexpectedException {
+    @Test(expected = BraintreeSharedPreferencesException.class)
+    public void saveConfiguration_whenSharedPreferencesFails_forwardsException() throws JSONException, BraintreeSharedPreferencesException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
 
-        UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
+        BraintreeSharedPreferencesException unexpectedException
+            = new BraintreeSharedPreferencesException("unexpected exception");
         doThrow(unexpectedException)
                 .when(braintreeSharedPreferences)
                 .putStringAndLong(anyString(), anyString(), anyString(), anyLong());
@@ -61,7 +61,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void getConfiguration_returnsConfigurationFromSharedPrefs() throws JSONException, UnexpectedException {
+    public void getConfiguration_returnsConfigurationFromSharedPrefs() throws JSONException, BraintreeSharedPreferencesException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey("cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong("cacheKey_timestamp")).thenReturn(0L);
@@ -74,7 +74,7 @@ public class ConfigurationCacheUnitTest {
     }
 
     @Test
-    public void getConfiguration_whenCacheEntryExpires_returnsNull() throws JSONException, UnexpectedException {
+    public void getConfiguration_whenCacheEntryExpires_returnsNull() throws JSONException, BraintreeSharedPreferencesException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         when(braintreeSharedPreferences.containsKey("cacheKey_timestamp")).thenReturn(true);
         when(braintreeSharedPreferences.getLong("cacheKey_timestamp")).thenReturn(TimeUnit.MINUTES.toMillis(5));
@@ -86,9 +86,10 @@ public class ConfigurationCacheUnitTest {
         assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(20)));
     }
 
-    @Test(expected = UnexpectedException.class)
-    public void getConfiguration_whenSharedPreferencesFails_forwardsException() throws UnexpectedException {
-        UnexpectedException unexpectedException = new UnexpectedException("unexpected exception");
+    @Test(expected = BraintreeSharedPreferencesException.class)
+    public void getConfiguration_whenSharedPreferencesFails_forwardsException() throws BraintreeSharedPreferencesException {
+        BraintreeSharedPreferencesException unexpectedException =
+            new BraintreeSharedPreferencesException("unexpected exception");
         when(braintreeSharedPreferences.containsKey(anyString())).thenThrow(unexpectedException);
         when(braintreeSharedPreferences.getLong(anyString())).thenThrow(unexpectedException);
         when(braintreeSharedPreferences.getString(anyString(), anyString())).thenThrow(unexpectedException);

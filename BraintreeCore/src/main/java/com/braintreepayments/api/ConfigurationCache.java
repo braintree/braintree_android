@@ -31,12 +31,12 @@ class ConfigurationCache {
         this.sharedPreferences = sharedPreferences;
     }
 
-    String getConfiguration(String cacheKey) throws UnexpectedException {
+    String getConfiguration(String cacheKey) throws BraintreeSharedPreferencesException {
         return getConfiguration(cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    String getConfiguration(String cacheKey, long currentTimeMillis) throws UnexpectedException {
+    String getConfiguration(String cacheKey, long currentTimeMillis) throws BraintreeSharedPreferencesException {
         String timestampKey = cacheKey + "_timestamp";
         if (sharedPreferences.containsKey(timestampKey)) {
             long timeInCache = (currentTimeMillis - sharedPreferences.getLong(timestampKey));
@@ -47,12 +47,12 @@ class ConfigurationCache {
         return null;
     }
 
-    void saveConfiguration(Configuration configuration, String cacheKey) throws UnexpectedException {
+    void saveConfiguration(Configuration configuration, String cacheKey) throws BraintreeSharedPreferencesException {
         saveConfiguration(configuration, cacheKey, System.currentTimeMillis());
     }
 
     @VisibleForTesting
-    void saveConfiguration(Configuration configuration, String cacheKey, long currentTimeMillis) throws UnexpectedException {
+    void saveConfiguration(Configuration configuration, String cacheKey, long currentTimeMillis) throws BraintreeSharedPreferencesException {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         sharedPreferences.putStringAndLong(cacheKey, configuration.toJson(), timestampKey, currentTimeMillis);
     }

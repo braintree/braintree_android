@@ -38,10 +38,10 @@ class ConfigurationLoader {
 
 
         Configuration cachedConfig = null;
-        UnexpectedException loadFromCacheException = null;
+        BraintreeSharedPreferencesException loadFromCacheException = null;
         try {
             cachedConfig = getCachedConfiguration(authorization, configUrl);
-        } catch (UnexpectedException e) {
+        } catch (BraintreeSharedPreferencesException e) {
             loadFromCacheException = e;
         }
 
@@ -50,7 +50,7 @@ class ConfigurationLoader {
             callback.onResult(resultFromCache, null);
         } else {
 
-            final UnexpectedException finalLoadFromCacheException = loadFromCacheException;
+            final BraintreeSharedPreferencesException finalLoadFromCacheException = loadFromCacheException;
             httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
 
                 @Override
@@ -59,10 +59,10 @@ class ConfigurationLoader {
                         try {
                             Configuration configuration = Configuration.fromJson(responseBody);
 
-                            UnexpectedException saveToCacheException = null;
+                            BraintreeSharedPreferencesException saveToCacheException = null;
                             try {
                                 saveConfigurationToCache(configuration, authorization, configUrl);
-                            } catch (UnexpectedException e) {
+                            } catch (BraintreeSharedPreferencesException e) {
                                 saveToCacheException = e;
                             }
 
@@ -84,12 +84,12 @@ class ConfigurationLoader {
         }
     }
 
-    private void saveConfigurationToCache(Configuration configuration, Authorization authorization, String configUrl) throws UnexpectedException {
+    private void saveConfigurationToCache(Configuration configuration, Authorization authorization, String configUrl) throws BraintreeSharedPreferencesException {
         String cacheKey = createCacheKey(authorization, configUrl);
         configurationCache.saveConfiguration(configuration, cacheKey);
     }
 
-    private Configuration getCachedConfiguration(Authorization authorization, String configUrl) throws UnexpectedException {
+    private Configuration getCachedConfiguration(Authorization authorization, String configUrl) throws BraintreeSharedPreferencesException {
         String cacheKey = createCacheKey(authorization, configUrl);
         String cachedConfigResponse = configurationCache.getConfiguration(cacheKey);
         try {

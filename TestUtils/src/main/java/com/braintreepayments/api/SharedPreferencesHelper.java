@@ -26,14 +26,14 @@ public class SharedPreferencesHelper {
         String timestampKey = String.format("%s_timestamp", cacheKey);
         try {
             BraintreeSharedPreferences.getInstance(context).putStringAndLong(cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
         }
     }
 
     public static void clearConfigurationCacheOverride(Context context) {
         try {
             BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
-        } catch (UnexpectedException ignored) {
+        } catch (BraintreeSharedPreferencesException ignored) {
         }
     }
 }
