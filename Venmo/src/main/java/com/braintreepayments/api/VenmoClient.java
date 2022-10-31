@@ -346,6 +346,7 @@ public class VenmoClient {
                                             }
 
                                         } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
                                             callback.onResult(null, sharedPrefsError);
                                         }
                                     } else {
@@ -367,6 +368,7 @@ public class VenmoClient {
                                     callback.onResult(venmoAccountNonce, null);
                                 }
                             } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
                                 callback.onResult(null, sharedPrefsError);
                             }
                         }
