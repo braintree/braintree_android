@@ -93,11 +93,8 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
-        flatDir {
-            dirs "${rootDir}/libs"
-        }
-        google()
         mavenCentral()
+        google()
     }
 }
 
@@ -126,6 +123,9 @@ subprojects {
                 username 'braintree_team_sdk'
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
+        }
+        flatDir {
+            dirs "${rootDir}/libs"
         }
         jcenter()
     }
