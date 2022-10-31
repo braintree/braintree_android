@@ -2,7 +2,6 @@ import java.time.Duration
 
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
         google()
         maven {
