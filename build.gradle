@@ -98,7 +98,6 @@ allprojects {
         }
         google()
         mavenCentral()
-        jcenter()
     }
 }
 
@@ -128,6 +127,7 @@ subprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
+        jcenter()
     }
 }
 
