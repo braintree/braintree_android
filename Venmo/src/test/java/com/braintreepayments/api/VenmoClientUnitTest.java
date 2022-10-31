@@ -440,30 +440,11 @@ public class VenmoClientUnitTest {
         request.setShouldVault(false);
 
         VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
         sut.tokenizeVenmoAccount(activity, request);
 
-        InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
-
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        inOrder.verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
-
-        inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
-
-        Intent intent = captor.getValue();
-        assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"), intent.getComponent());
-        assertEquals("sample-venmo-merchant", intent.getStringExtra(EXTRA_MERCHANT_ID));
-        assertEquals("access-token", intent.getStringExtra(EXTRA_ACCESS_TOKEN));
-        assertEquals("environment", intent.getStringExtra(EXTRA_ENVIRONMENT));
-        assertEquals("venmo-payment-context-id", intent.getStringExtra(EXTRA_RESOURCE_ID));
-
-        JSONObject expectedBraintreeData = new JSONObject()
-                .put("_meta", new JSONObject()
-                        .put("platform", "android")
-                        .put("sessionId", "session-id")
-                        .put("integration", "custom")
-                        .put("version", BuildConfig.VERSION_NAME)
-                );
-        JSONAssert.assertEquals(expectedBraintreeData, new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)), JSONCompareMode.STRICT);
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
     }
 
     @Test

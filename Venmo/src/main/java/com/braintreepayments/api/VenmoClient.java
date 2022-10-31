@@ -191,6 +191,7 @@ public class VenmoClient {
                                         try {
                                             startVenmoActivityForResult(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId);
                                         } catch (BraintreeSharedPreferencesException sharedPrefsError) {
+                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.shared-prefs.failure");
                                             callback.onResult(sharedPrefsError);
                                         }
                                     } else {
