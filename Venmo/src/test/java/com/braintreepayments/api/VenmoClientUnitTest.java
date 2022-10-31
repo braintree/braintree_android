@@ -1409,4 +1409,60 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
+
+    @Test
+    public void onVenmoResult_withSharedPrefsFail_forwardsErrorToActivityResultListener_andSendsAnalytics() throws BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorizationSuccess(clientToken)
+                .build();
+        VenmoApi venmoApi = new MockVenmoApiBuilder().build();
+
+        when(braintreeClient.getApplicationContext()).thenReturn(activity);
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+            new BraintreeSharedPreferencesException("get vault option error");
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenThrow(sharedPrefsError);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+
+        VenmoResult venmoResult = new VenmoResult(null, "sample-nonce", "venmo-username", null);
+        sut.onVenmoResult(venmoResult);
+
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
+    }
+
+    @Test
+    public void onVenmoResult_withPaymentContext_withSharedPrefsFail_forwardsErrorToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorizationSuccess(clientToken)
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+        when(braintreeClient.getApplicationContext()).thenReturn(activity);
+
+        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createNonceFromPaymentContextSuccess(venmoAccountNonce)
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+                new BraintreeSharedPreferencesException("get vault option error");
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenThrow(sharedPrefsError);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+
+        VenmoResult venmoResult = new VenmoResult("payment-context-id", "sample-nonce", "venmo-username", null);
+        sut.onVenmoResult(venmoResult);
+
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
+    }
 }
