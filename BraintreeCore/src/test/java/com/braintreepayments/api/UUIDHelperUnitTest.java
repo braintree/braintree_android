@@ -40,14 +40,14 @@ public class UUIDHelperUnitTest {
 
     @Test
     public void getInstallationGUID_whenSharedPrefsFails_returnsNewGUID() throws BraintreeSharedPreferencesException {
-        BraintreeSharedPreferencesException unexpectedException =
+        BraintreeSharedPreferencesException sharedPrefsException =
                 new BraintreeSharedPreferencesException("unexpected exception");
 
         when(
                 braintreeSharedPreferences.getString(anyString(), anyString())
-        ).thenThrow(unexpectedException);
+        ).thenThrow(sharedPrefsException);
 
-        doThrow(unexpectedException)
+        doThrow(sharedPrefsException)
                 .when(braintreeSharedPreferences)
                 .putString(anyString(), anyString());
 

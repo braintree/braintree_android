@@ -51,9 +51,9 @@ public class ConfigurationCacheUnitTest {
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
 
-        BraintreeSharedPreferencesException unexpectedException
-            = new BraintreeSharedPreferencesException("unexpected exception");
-        doThrow(unexpectedException)
+        BraintreeSharedPreferencesException sharedPrefsException =
+            new BraintreeSharedPreferencesException("unexpected exception");
+        doThrow(sharedPrefsException)
                 .when(braintreeSharedPreferences)
                 .putStringAndLong(anyString(), anyString(), anyString(), anyLong());
 
@@ -88,11 +88,11 @@ public class ConfigurationCacheUnitTest {
 
     @Test(expected = BraintreeSharedPreferencesException.class)
     public void getConfiguration_whenSharedPreferencesFails_forwardsException() throws BraintreeSharedPreferencesException {
-        BraintreeSharedPreferencesException unexpectedException =
+        BraintreeSharedPreferencesException sharedPrefsException =
             new BraintreeSharedPreferencesException("unexpected exception");
-        when(braintreeSharedPreferences.containsKey(anyString())).thenThrow(unexpectedException);
-        when(braintreeSharedPreferences.getLong(anyString())).thenThrow(unexpectedException);
-        when(braintreeSharedPreferences.getString(anyString(), anyString())).thenThrow(unexpectedException);
+        when(braintreeSharedPreferences.containsKey(anyString())).thenThrow(sharedPrefsException);
+        when(braintreeSharedPreferences.getLong(anyString())).thenThrow(sharedPrefsException);
+        when(braintreeSharedPreferences.getString(anyString(), anyString())).thenThrow(sharedPrefsException);
 
         ConfigurationCache sut = new ConfigurationCache(braintreeSharedPreferences);
         assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(5) - 1));

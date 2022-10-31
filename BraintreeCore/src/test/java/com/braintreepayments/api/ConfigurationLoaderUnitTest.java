@@ -156,11 +156,13 @@ public class ConfigurationLoaderUnitTest {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
-        UnexpectedException cacheLoadError = new UnexpectedException("cache load error");
+        BraintreeSharedPreferencesException cacheLoadError =
+            new BraintreeSharedPreferencesException("cache load error");
         when(configurationCache.getConfiguration(anyString()))
                 .thenThrow(cacheLoadError);
 
-        UnexpectedException cacheSaveError = new UnexpectedException("cache save error");
+        BraintreeSharedPreferencesException cacheSaveError =
+            new BraintreeSharedPreferencesException("cache save error");
         doThrow(cacheSaveError)
                 .when(configurationCache).saveConfiguration(any(Configuration.class), anyString());
 

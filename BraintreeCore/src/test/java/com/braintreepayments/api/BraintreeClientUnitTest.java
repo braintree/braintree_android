@@ -115,7 +115,8 @@ public class BraintreeClientUnitTest {
                 .build();
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        UnexpectedException loadFromCacheError = new UnexpectedException("cache load error");
+        BraintreeSharedPreferencesException loadFromCacheError =
+            new BraintreeSharedPreferencesException("cache load error");
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .loadFromCacheError(loadFromCacheError)
@@ -138,7 +139,8 @@ public class BraintreeClientUnitTest {
                 .build();
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        UnexpectedException saveToCacheError = new UnexpectedException("cache save error");
+        BraintreeSharedPreferencesException saveToCacheError =
+            new BraintreeSharedPreferencesException("cache save error");
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .saveToCacheError(saveToCacheError)

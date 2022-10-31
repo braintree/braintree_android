@@ -3,8 +3,8 @@
 ## unreleased
 
 * SharedUtils
-  * Add new `BraintreeSharedPreferencesException` to notify when an error occurs while interacting with shared preferences
   * Allow `BraintreeSharedPreferences` to gracefully degrade when `EncryptedSharedPreferences` fails (fix for #619)
+  * Add new `BraintreeSharedPreferencesException` to notify when an error occurs while interacting with shared preferences
 
 ## 4.19.0
 
