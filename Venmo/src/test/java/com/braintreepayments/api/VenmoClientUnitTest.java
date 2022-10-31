@@ -13,12 +13,14 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertSame;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.endsWith;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -26,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -412,6 +415,58 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_whenSharedPrefsFails_forwardsExceptionViaCallbackAndSendsAnalyticsEvent() throws JSONException, BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+                new BraintreeSharedPreferencesException("persist vault option error");
+        doThrow(sharedPrefsError)
+                .when(sharedPrefsWriter)
+                .persistVenmoVaultOption(any(Context.class), anyBoolean());
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+
+        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        inOrder.verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+
+        inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+
+        Intent intent = captor.getValue();
+        assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"), intent.getComponent());
+        assertEquals("sample-venmo-merchant", intent.getStringExtra(EXTRA_MERCHANT_ID));
+        assertEquals("access-token", intent.getStringExtra(EXTRA_ACCESS_TOKEN));
+        assertEquals("environment", intent.getStringExtra(EXTRA_ENVIRONMENT));
+        assertEquals("venmo-payment-context-id", intent.getStringExtra(EXTRA_RESOURCE_ID));
+
+        JSONObject expectedBraintreeData = new JSONObject()
+                .put("_meta", new JSONObject()
+                        .put("platform", "android")
+                        .put("sessionId", "session-id")
+                        .put("integration", "custom")
+                        .put("version", BuildConfig.VERSION_NAME)
+                );
+        JSONAssert.assertEquals(expectedBraintreeData, new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)), JSONCompareMode.STRICT);
+    }
+
+    @Test
     public void getLaunchIntent_doesNotContainAuthFingerprintWhenUsingTokenziationKey() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -704,7 +759,7 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),  any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -785,7 +840,7 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce") , any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -806,7 +861,8 @@ public class VenmoClientUnitTest {
 
         VenmoAccountNonce result = captor.getValue();
         assertEquals("123456-12345-12345-a-adfa", result.getString());
-        assertEquals("username", result.getUsername());    }
+        assertEquals("username", result.getUsername());
+    }
 
     @Test
     public void onActivityResult_sendsAnalyticsEventOnSuccess() {
@@ -1114,7 +1170,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "payment-context-id", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),  any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -1196,7 +1252,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "some-nonce", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce") , any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -1422,7 +1478,7 @@ public class VenmoClientUnitTest {
         when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
 
         BraintreeSharedPreferencesException sharedPrefsError =
-            new BraintreeSharedPreferencesException("get vault option error");
+                new BraintreeSharedPreferencesException("get vault option error");
         when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenThrow(sharedPrefsError);
 
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
