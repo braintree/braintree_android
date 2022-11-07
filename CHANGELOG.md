@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.20.0
 
 * SharedUtils
   * Allow `BraintreeSharedPreferences` to gracefully degrade when `EncryptedSharedPreferences` fails (fix for #619)
