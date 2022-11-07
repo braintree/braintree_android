@@ -8,22 +8,21 @@ class VenmoSharedPrefsWriter {
 
     private static final String VAULT_VENMO_KEY = "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY";
 
-    private final BraintreeSharedPreferences braintreeSharedPreferences;
-
-    VenmoSharedPrefsWriter() {
-        this(BraintreeSharedPreferences.getInstance());
+    void persistVenmoVaultOption(Context context, boolean shouldVault) throws BraintreeSharedPreferencesException {
+        persistVenmoVaultOption(BraintreeSharedPreferences.getInstance(context), shouldVault);
     }
 
     @VisibleForTesting
-    VenmoSharedPrefsWriter(BraintreeSharedPreferences braintreeSharedPreferences) {
-        this.braintreeSharedPreferences = braintreeSharedPreferences;
+    void persistVenmoVaultOption(BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) throws BraintreeSharedPreferencesException {
+        braintreeSharedPreferences.putBoolean(VAULT_VENMO_KEY, shouldVault);
     }
 
-    void persistVenmoVaultOption(Context context, boolean shouldVault) {
-        braintreeSharedPreferences.putBoolean(context, VAULT_VENMO_KEY, shouldVault);
+    boolean getVenmoVaultOption(Context context) throws BraintreeSharedPreferencesException {
+        return getVenmoVaultOption(BraintreeSharedPreferences.getInstance(context));
     }
 
-    boolean getVenmoVaultOption(Context context) {
-        return braintreeSharedPreferences.getBoolean(context, VAULT_VENMO_KEY);
+    @VisibleForTesting
+    boolean getVenmoVaultOption(BraintreeSharedPreferences braintreeSharedPreferences) throws BraintreeSharedPreferencesException {
+        return braintreeSharedPreferences.getBoolean(VAULT_VENMO_KEY);
     }
 }

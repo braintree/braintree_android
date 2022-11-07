@@ -24,10 +24,16 @@ public class SharedPreferencesHelper {
 
         String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
-        BraintreeSharedPreferences.getInstance().putStringAndLong(context, cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
+        try {
+            BraintreeSharedPreferences.getInstance(context).putStringAndLong(cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
+        } catch (BraintreeSharedPreferencesException ignored) {
+        }
     }
 
     public static void clearConfigurationCacheOverride(Context context) {
-        BraintreeSharedPreferences.getInstance().clearSharedPreferences(context);
+        try {
+            BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
+        } catch (BraintreeSharedPreferencesException ignored) {
+        }
     }
 }

@@ -13,12 +13,14 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertSame;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.endsWith;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -26,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -157,7 +160,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_withObserver_launchesObserverWithVenmoIntentData_andSendsAnalytics() throws JSONException {
+    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_withObserver_launchesObserverWithVenmoIntentData_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -412,6 +415,39 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_whenSharedPrefsFails_forwardsExceptionViaCallbackAndSendsAnalyticsEvent() throws JSONException, BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+                new BraintreeSharedPreferencesException("persist vault option error");
+        doThrow(sharedPrefsError)
+                .when(sharedPrefsWriter)
+                .persistVenmoVaultOption(any(Context.class), anyBoolean());
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+
+        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
+    }
+
+    @Test
     public void getLaunchIntent_doesNotContainAuthFingerprintWhenUsingTokenziationKey() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -489,7 +525,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
+    public void tokenizeVenmoAccount_whenShouldVaultIsTrue_persistsVenmoVaultTrue() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
@@ -512,7 +548,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_withObserver_whenShouldVaultIsTrue_persistsVaultVenmoOption() {
+    public void tokenizeVenmoAccount_withObserver_whenShouldVaultIsTrue_persistsVaultVenmoOption() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
@@ -538,7 +574,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_whenShouldVaultIsFalse_persistsVenmoVaultFalse() {
+    public void tokenizeVenmoAccount_whenShouldVaultIsFalse_persistsVenmoVaultFalse() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
@@ -561,7 +597,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_withObserver_whenShouldVaultIsFalse_persistsVenmoVaultFalse() {
+    public void tokenizeVenmoAccount_withObserver_whenShouldVaultIsFalse_persistsVenmoVaultFalse() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
@@ -587,7 +623,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_withTokenizationKey_persistsVenmoVaultFalse() {
+    public void tokenizeVenmoAccount_withTokenizationKey_persistsVenmoVaultFalse() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -611,7 +647,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenizeVenmoAccount_withObserver_withTokenizationKey_persistsVenmoVaultFalse() {
+    public void tokenizeVenmoAccount_withObserver_withTokenizationKey_persistsVenmoVaultFalse() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -704,7 +740,7 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),  any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -758,7 +794,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withPaymentContext_performsVaultRequestIfRequestPersisted() {
+    public void onActivityResult_withPaymentContext_performsVaultRequestIfRequestPersisted() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -785,7 +821,7 @@ public class VenmoClientUnitTest {
         intent.putExtra("com.braintreepayments.api.EXTRA_RESOURCE_ID", "payment-context-id");
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce") , any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -806,7 +842,8 @@ public class VenmoClientUnitTest {
 
         VenmoAccountNonce result = captor.getValue();
         assertEquals("123456-12345-12345-a-adfa", result.getString());
-        assertEquals("username", result.getUsername());    }
+        assertEquals("username", result.getUsername());
+    }
 
     @Test
     public void onActivityResult_sendsAnalyticsEventOnSuccess() {
@@ -841,7 +878,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_performsVaultRequestIfRequestPersisted() {
+    public void onActivityResult_performsVaultRequestIfRequestPersisted() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -870,7 +907,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_doesNotPerformRequestIfTokenizationKeyUsed() {
+    public void onActivityResult_doesNotPerformRequestIfTokenizationKeyUsed() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("another-session-id")
                 .authorizationSuccess(tokenizationKey)
@@ -886,7 +923,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() {
+    public void onActivityResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -910,7 +947,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws JSONException {
+    public void onActivityResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -938,7 +975,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws JSONException {
+    public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -963,7 +1000,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withFailedVaultCall_forwardsErrorToActivityResultListener() {
+    public void onActivityResult_withFailedVaultCall_forwardsErrorToActivityResultListener() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -988,7 +1025,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() throws JSONException {
+    public void onActivityResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1017,7 +1054,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_withFailedVaultCall_sendsAnalyticsEvent() {
+    public void onActivityResult_withFailedVaultCall_sendsAnalyticsEvent() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1114,7 +1151,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "payment-context-id", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),  any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -1168,7 +1205,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_withPaymentContext_performsVaultRequestIfRequestPersisted() {
+    public void onVenmoResult_withPaymentContext_performsVaultRequestIfRequestPersisted() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -1196,7 +1233,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "some-nonce", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce") , any(VenmoOnActivityResultCallback.class));
+        verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce"), any(VenmoOnActivityResultCallback.class));
     }
 
     @Test
@@ -1250,7 +1287,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_performsVaultRequestIfRequestPersisted() throws JSONException {
+    public void onVenmoResult_performsVaultRequestIfRequestPersisted() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
@@ -1279,7 +1316,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_doesNotPerformRequestIfTokenizationKeyUsed() {
+    public void onVenmoResult_doesNotPerformRequestIfTokenizationKeyUsed() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("another-session-id")
                 .authorizationSuccess(tokenizationKey)
@@ -1298,7 +1335,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener_andSendsAnalytics() {
+    public void onVenmoResult_withSuccessfulVaultCall_forwardsResultToActivityResultListener_andSendsAnalytics() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1325,7 +1362,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws JSONException {
+    public void onVenmoResult_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1354,7 +1391,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_withFailedVaultCall_forwardsErrorToActivityResultListener_andSendsAnalytics() {
+    public void onVenmoResult_withFailedVaultCall_forwardsErrorToActivityResultListener_andSendsAnalytics() throws BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1381,7 +1418,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void onVenmoResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() throws JSONException {
+    public void onVenmoResult_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("session-id")
                 .authorizationSuccess(clientToken)
@@ -1408,5 +1445,61 @@ public class VenmoClientUnitTest {
 
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
+    }
+
+    @Test
+    public void onVenmoResult_withSharedPrefsFail_forwardsErrorToActivityResultListener_andSendsAnalytics() throws BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorizationSuccess(clientToken)
+                .build();
+        VenmoApi venmoApi = new MockVenmoApiBuilder().build();
+
+        when(braintreeClient.getApplicationContext()).thenReturn(activity);
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+                new BraintreeSharedPreferencesException("get vault option error");
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenThrow(sharedPrefsError);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+
+        VenmoResult venmoResult = new VenmoResult(null, "sample-nonce", "venmo-username", null);
+        sut.onVenmoResult(venmoResult);
+
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
+    }
+
+    @Test
+    public void onVenmoResult_withPaymentContext_withSharedPrefsFail_forwardsErrorToCallback_andSendsAnalytics() throws JSONException, BraintreeSharedPreferencesException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .authorizationSuccess(clientToken)
+                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+                .build();
+        when(braintreeClient.getApplicationContext()).thenReturn(activity);
+
+        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createNonceFromPaymentContextSuccess(venmoAccountNonce)
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        BraintreeSharedPreferencesException sharedPrefsError =
+                new BraintreeSharedPreferencesException("get vault option error");
+        when(sharedPrefsWriter.getVenmoVaultOption(activity)).thenThrow(sharedPrefsError);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+
+        VenmoResult venmoResult = new VenmoResult("payment-context-id", "sample-nonce", "venmo-username", null);
+        sut.onVenmoResult(venmoResult);
+
+        verify(listener).onVenmoFailure(sharedPrefsError);
+        verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.shared-prefs.failure"));
     }
 }

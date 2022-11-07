@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -13,6 +11,8 @@ public class MockConfigurationLoaderBuilder {
 
     private Configuration configuration;
     private Exception configurationError;
+    private Exception loadFromCacheError;
+    private Exception saveToCacheError;
 
     public MockConfigurationLoaderBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -24,21 +24,33 @@ public class MockConfigurationLoaderBuilder {
         return this;
     }
 
+    public MockConfigurationLoaderBuilder loadFromCacheError(Exception loadFromCacheError) {
+        this.loadFromCacheError = loadFromCacheError;
+        return this;
+    }
+
+    public MockConfigurationLoaderBuilder saveToCacheError(Exception saveToCacheError) {
+        this.saveToCacheError = saveToCacheError;
+        return this;
+    }
+
     public ConfigurationLoader build() {
         ConfigurationLoader configurationLoader = mock(ConfigurationLoader.class);
 
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                ConfigurationCallback callback = (ConfigurationCallback) invocation.getArguments()[2];
+                ConfigurationLoaderCallback callback = (ConfigurationLoaderCallback) invocation.getArguments()[1];
                 if (configuration != null) {
-                    callback.onResult(configuration, null);
+                    ConfigurationLoaderResult result =
+                        new ConfigurationLoaderResult(configuration, loadFromCacheError, saveToCacheError);
+                    callback.onResult(result, null);
                 } else if (configurationError != null) {
                     callback.onResult(null, configurationError);
                 }
                 return null;
             }
-        }).when(configurationLoader).loadConfiguration(any(Context.class), any(Authorization.class), any(ConfigurationCallback.class));
+        }).when(configurationLoader).loadConfiguration(any(Authorization.class), any(ConfigurationLoaderCallback.class));
 
         return configurationLoader;
     }

@@ -1,11 +1,11 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
         google()
         maven {
             url = "https://plugins.gradle.org/m2/"
         }
+        jcenter()
     }
 
     ext.versions = [
@@ -93,12 +93,8 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
-        flatDir {
-            dirs "${rootDir}/libs"
-        }
-        google()
-        jcenter()
         mavenCentral()
+        google()
     }
 }
 
@@ -128,6 +124,10 @@ subprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
+        flatDir {
+            dirs "${rootDir}/libs"
+        }
+        jcenter()
     }
 }
 

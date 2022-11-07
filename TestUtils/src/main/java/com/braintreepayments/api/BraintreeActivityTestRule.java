@@ -24,8 +24,12 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     @SuppressWarnings("MissingPermission")
     @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {
-        getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
-        BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        Context context = ApplicationProvider.getApplicationContext();
+        getSharedPreferences(context).edit().clear().commit();
+        try {
+            BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
+        } catch (BraintreeSharedPreferencesException ignored) {
+        }
 
         keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
@@ -38,8 +42,12 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
     protected void afterActivityFinished() {
         super.afterActivityFinished();
 
-        getSharedPreferences(ApplicationProvider.getApplicationContext()).edit().clear().commit();
-        BraintreeSharedPreferences.getInstance().clearSharedPreferences(ApplicationProvider.getApplicationContext());
+        Context context = ApplicationProvider.getApplicationContext();
+        getSharedPreferences(context).edit().clear().commit();
+        try {
+            BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
+        } catch (BraintreeSharedPreferencesException ignored) {
+        }
 
         keyguardLock.reenableKeyguard();
     }

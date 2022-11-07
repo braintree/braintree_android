@@ -16,16 +16,25 @@ class UUIDHelper {
      * @return A persistent UUID for this application install.
      */
     String getPersistentUUID(Context context) {
-        return getPersistentUUID(context, BraintreeSharedPreferences.getInstance());
+        return getPersistentUUID(BraintreeSharedPreferences.getInstance(context));
     }
 
     @VisibleForTesting
-    String getPersistentUUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String uuid = braintreeSharedPreferences.getString(context, BRAINTREE_UUID_KEY, null);
+    String getPersistentUUID(BraintreeSharedPreferences braintreeSharedPreferences) {
+        String uuid = null;
+        try {
+            uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
+        } catch (BraintreeSharedPreferencesException ignored) {
+            // protect against shared prefs failure: default to creating a new UUID in this scenario
+        }
 
         if (uuid == null) {
             uuid = getFormattedUUID();
-            braintreeSharedPreferences.putString(context, BRAINTREE_UUID_KEY, uuid);
+            try {
+                braintreeSharedPreferences.putString(BRAINTREE_UUID_KEY, uuid);
+            } catch (BraintreeSharedPreferencesException ignored) {
+                // protect against shared prefs failure: no-op when we're unable to persist the UUID
+            }
         }
 
         return uuid;
@@ -36,18 +45,26 @@ class UUIDHelper {
     }
 
     String getInstallationGUID(Context context) {
-        return getInstallationGUID(context, BraintreeSharedPreferences.getInstance());
+        return getInstallationGUID(BraintreeSharedPreferences.getInstance(context));
     }
 
     @VisibleForTesting
-    String getInstallationGUID(Context context, BraintreeSharedPreferences braintreeSharedPreferences) {
-        String existingGUID = braintreeSharedPreferences.getString(context, INSTALL_GUID, null);
-        if (existingGUID != null) {
-            return existingGUID;
-        } else {
-            String newGuid = UUID.randomUUID().toString();
-            braintreeSharedPreferences.putString(context, INSTALL_GUID, newGuid);
-            return newGuid;
+    String getInstallationGUID(BraintreeSharedPreferences braintreeSharedPreferences) {
+        String installationGUID = null;
+        try {
+            installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
+        } catch (BraintreeSharedPreferencesException ignored) {
+            // protect against shared prefs failure: default to creating a new GUID in this scenario
         }
+
+        if (installationGUID == null) {
+            installationGUID = UUID.randomUUID().toString();
+            try {
+                braintreeSharedPreferences.putString(INSTALL_GUID, installationGUID);
+            } catch (BraintreeSharedPreferencesException ignored) {
+                // protect against shared prefs failure: no-op when we're unable to persist the GUID
+            }
+        }
+        return installationGUID;
     }
 }
