@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+
+## unreleased
+* PayPalNativeCheckout (BETA)
+  * Adding in risk correlation id from the checkout sdk if it is not provided in the initial request
+  
 ## 4.20.0
 
 * SharedUtils
