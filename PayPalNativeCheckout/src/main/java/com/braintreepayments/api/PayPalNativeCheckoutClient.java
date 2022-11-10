@@ -245,11 +245,13 @@ public class PayPalNativeCheckoutClient {
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
         String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
-        String riskId;
+        String riskId = null;
         if (payPalRequest.getRiskCorrelationId() != null) {
             riskId = payPalRequest.getRiskCorrelationId();
         } else {
-            riskId = approvalData.getCorrelationIds().getRiskCorrelationId().getId;
+            if (approvalData.getCorrelationIds() != null) {
+                riskId = approvalData.getCorrelationIds().getRiskCorrelationId().getId();
+            }
         }
         payPalAccount.setClientMetadataId(riskId);
         payPalAccount.setSource("paypal-browser");
