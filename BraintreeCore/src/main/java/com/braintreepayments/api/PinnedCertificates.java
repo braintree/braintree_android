@@ -3,16 +3,13 @@ package com.braintreepayments.api;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.SSLException;
 
-class BraintreeGraphQLCertificate {
+class PinnedCertificates {
 
     static InputStream getCertInputStream() throws SSLException {
-        try {
-            return new ByteArrayInputStream(GraphQLConstants.CERTIFICATE.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new SSLException(e.getMessage());
-        }
+        return new ByteArrayInputStream(GraphQLConstants.CERTIFICATE.getBytes(StandardCharsets.UTF_8));
     }
 }
