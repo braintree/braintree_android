@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.SSLException;
 
-class PinnedCertificates {
+class TLSCertificatePinning {
 
     private static final String CERTIFICATES =
         "-----BEGIN CERTIFICATE-----\n" +

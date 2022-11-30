@@ -34,7 +34,7 @@ class BraintreeHttpClient {
 
     private static SSLSocketFactory getSocketFactory() {
         try {
-            return new TLSSocketFactory(PinnedCertificates.getCertInputStream());
+            return new TLSSocketFactory(TLSCertificatePinning.getCertInputStream());
         } catch (SSLException e) {
             return null;
         }
