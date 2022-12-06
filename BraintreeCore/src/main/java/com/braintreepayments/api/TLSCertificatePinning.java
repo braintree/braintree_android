@@ -10,38 +10,6 @@ class TLSCertificatePinning {
 
     private static final String CERTIFICATES =
         "-----BEGIN CERTIFICATE-----\n" +
-        "MIIFezCCBGOgAwIBAgIQCDUbS1vOwdqlZvpIYct7NTANBgkqhkiG9w0BAQsFADBw\n" +
-        "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n" +
-        "d3cuZGlnaWNlcnQuY29tMS8wLQYDVQQDEyZEaWdpQ2VydCBTSEEyIEhpZ2ggQXNz\n" +
-        "dXJhbmNlIFNlcnZlciBDQTAeFw0xNjEwMDYwMDAwMDBaFw0xODEwMTExMjAwMDBa\n" +
-        "MIGOMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMI\n" +
-        "U2FuIEpvc2UxFTATBgNVBAoTDFBheVBhbCwgSW5jLjEeMBwGA1UECxMVQnJhaW50\n" +
-        "cmVlIERldmVsb3BtZW50MSAwHgYDVQQDDBcqLmRldi5icmFpbnRyZWUtYXBpLmNv\n" +
-        "bTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANVcV5YEonx6IorBXy7D\n" +
-        "otbZ9avNyHRaCcEj810Q80be7usfmDenGbQYUJmH2XD354K/PR8ZwZz0BHZ3FwuW\n" +
-        "hG0ZPOvns8XjV3oFr6dgk6emZpohnhJeys2L1ouWiXsYzhZGEMkeeEFkLp6oSaS5\n" +
-        "3mka7d9i+rED2M8uKyjMoSFvwu7u8Pht9T7kXJiPH89X83dLQIPFaGdwqBQAnDpL\n" +
-        "wt1s5eLTq6bsVf0cQ/GzG7tQMkqXxmTgzPIFdFwSuUYPGNF4A3Emgggc2XrYwPDR\n" +
-        "4nObx00fINL7SS/92adLXu3gRqrygBK1w7OwyGsiLw7prmVPhM5vRV22ciWnfMFB\n" +
-        "MbUCAwEAAaOCAfAwggHsMB8GA1UdIwQYMBaAFFFo/5CvAgd1PMzZZWRiohK4WXI7\n" +
-        "MB0GA1UdDgQWBBRfOORkCeTaMCOHcPJMjqgDK1S5rDAiBgNVHREEGzAZghcqLmRl\n" +
-        "di5icmFpbnRyZWUtYXBpLmNvbTAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYI\n" +
-        "KwYBBQUHAwEGCCsGAQUFBwMCMHUGA1UdHwRuMGwwNKAyoDCGLmh0dHA6Ly9jcmwz\n" +
-        "LmRpZ2ljZXJ0LmNvbS9zaGEyLWhhLXNlcnZlci1nNS5jcmwwNKAyoDCGLmh0dHA6\n" +
-        "Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWhhLXNlcnZlci1nNS5jcmwwTAYDVR0g\n" +
-        "BEUwQzA3BglghkgBhv1sAQEwKjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGln\n" +
-        "aWNlcnQuY29tL0NQUzAIBgZngQwBAgIwgYMGCCsGAQUFBwEBBHcwdTAkBggrBgEF\n" +
-        "BQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tME0GCCsGAQUFBzAChkFodHRw\n" +
-        "Oi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRTSEEySGlnaEFzc3VyYW5j\n" +
-        "ZVNlcnZlckNBLmNydDAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQBi\n" +
-        "i/MYTZPKx5tbUHlMb+cw4qW/Q5SkR1t7zzS6NRT4TqureFFjyP7m4yvF+FQ5y1L4\n" +
-        "DTAc+4tAt2TyWA9ZWW9mxxCJ0v9Cw8CO6FNjs0cTdM1H6tOSdwB1B5WFmxg9vAeG\n" +
-        "+F9a7fDt9PXsM7efuESlKrcFcsjJ6o4CcjZmPA7rfVTWzs5NhPjFYQ6s58jyKcIr\n" +
-        "okdokuhTdg81BiBbH8Sy31A1kzwWamBN/GdepsD5PUmMtz9ioJ6Bsi/K46AyVv7F\n" +
-        "FG9hgsjvGWyi4TZvEV/KCa00N64j929kusb9b6phAUsZkW5YgDgcfqRiIYI3M5Vz\n" +
-        "exIyRhyqX/1t/PkOluih\n" +
-        "-----END CERTIFICATE-----\n" +
-        "-----BEGIN CERTIFICATE-----\n" +
         "MIIEtjCCA56gAwIBAgIQDHmpRLCMEZUgkmFf4msdgzANBgkqhkiG9w0BAQsFADBs\n" +
         "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n" +
         "d3cuZGlnaWNlcnQuY29tMSswKQYDVQQDEyJEaWdpQ2VydCBIaWdoIEFzc3VyYW5j\n" +
@@ -119,28 +87,6 @@ class TLSCertificatePinning {
         "Yzi9RKR/5CYrCsSXaQ3pjOLAEFe4yHYSkVXySGnYvCoCWw9E1CAx2/S6cCZdkGCe\n" +
         "vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep\n" +
         "+OkuE6N36B9K\n" +
-        "-----END CERTIFICATE-----\n" +
-        "-----BEGIN CERTIFICATE-----\n" +
-        "MIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\n" +
-        "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n" +
-        "d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\n" +
-        "MjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\n" +
-        "MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\n" +
-        "b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n" +
-        "9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n" +
-        "2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n" +
-        "1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\n" +
-        "q2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\n" +
-        "tCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\n" +
-        "vIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\n" +
-        "BgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n" +
-        "5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n" +
-        "1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\n" +
-        "NeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\n" +
-        "Fdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n" +
-        "8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\n" +
-        "pLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\n" +
-        "MrY=\n" +
         "-----END CERTIFICATE-----\n";
 
     static InputStream getCertInputStream() throws SSLException {
