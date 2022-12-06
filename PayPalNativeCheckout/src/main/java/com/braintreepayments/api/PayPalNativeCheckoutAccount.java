@@ -117,7 +117,23 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
         this.intent = intent;
     }
 
+    /**
+     * Grabs the client meta data id
+     *
+     * @return clientMetadataId
+     */
+    public String getClientMetadataId() {
+        return clientMetadataId;
+    }
 
+    /**
+     * Grabs the mechant id associated with the account
+     *
+     * @return merchant id
+     */
+    public String getMerchantAccountId() {
+        return merchantAccountId;
+    }
     @Override
     String getApiPath() {
         return "paypal_accounts";

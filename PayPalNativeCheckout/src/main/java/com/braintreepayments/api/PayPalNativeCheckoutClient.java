@@ -237,7 +237,8 @@ public class PayPalNativeCheckoutClient {
         );
     }
 
-    private PayPalNativeCheckoutAccount setupAccount(
+    @VisibleForTesting
+    PayPalNativeCheckoutAccount setupAccount(
         final PayPalNativeRequest payPalRequest,
         final ApprovalData approvalData
     ) {

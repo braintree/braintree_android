@@ -10,10 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Application;
+import android.os.Parcelable;
 
 import androidx.fragment.app.FragmentActivity;
 
 import com.paypal.checkout.PayPalCheckout;
+import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.approve.OnApprove;
 import com.paypal.checkout.cancel.OnCancel;
 import com.paypal.checkout.config.CheckoutConfig;
@@ -198,6 +200,35 @@ public class PayPalNativeCheckoutClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.tokenize.succeeded");
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.single-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.single-payment.started");
+    }
+
+    @Test
+    public void paypalAccount_isSetupCorrectly() throws JSONException {
+        String riskCorrelationId = "riskId";
+        String sampleMerchantId = "sample-merchant-account-id";
+        PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
+        payPalCheckoutRequest.setIntent("authorize");
+        payPalCheckoutRequest.setMerchantAccountId(sampleMerchantId);
+        payPalCheckoutRequest.setReturnUrl("returnUrl://paypalpay");
+        payPalCheckoutRequest.setRiskCorrelationId(riskCorrelationId);
+
+        PayPalNativeCheckoutResponse payPalResponse = new PayPalNativeCheckoutResponse(payPalCheckoutRequest)
+                .clientMetadataId("sample-client-metadata-id");
+        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .sendRequestSuccess(payPalResponse)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
+
+        ApprovalData approvalData = new ApprovalData(null, null, null, null, null, null, null, null, null);
+        PayPalNativeCheckoutAccount account = sut.setupAccount(payPalCheckoutRequest, approvalData);
+
+        assertEquals(account.getClientMetadataId(), riskCorrelationId);
+        assertEquals(account.getMerchantAccountId(), sampleMerchantId);
     }
 
     @Test
