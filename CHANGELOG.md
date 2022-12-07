@@ -1,7 +1,7 @@
 # Braintree Android SDK Release Notes
 
 
-## unreleased
+## 4.21.0
 * PayPalNativeCheckout (BETA)
   * Pass the risk correlation ID from the Native Checkout SDK if it is not provided in the initial PayPal request
   
