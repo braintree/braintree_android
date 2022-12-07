@@ -214,7 +214,7 @@ public class PayPalNativeCheckoutClient {
         PayPalCheckout.registerCallbacks(
                 approval -> {
                     braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.started");
-                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(configuration, payPalRequest, payPalResponse, approval.getData());
+                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(payPalRequest, approval.getData());
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
                             braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.succeeded");
@@ -237,19 +237,29 @@ public class PayPalNativeCheckoutClient {
         );
     }
 
-    private PayPalNativeCheckoutAccount setupAccount(
-            final Configuration configuration,
-            final PayPalNativeRequest payPalRequest,
-            final PayPalNativeCheckoutResponse payPalResponse,
-            final ApprovalData approvalData
+    @VisibleForTesting
+    PayPalNativeCheckoutAccount setupAccount(
+        final PayPalNativeRequest payPalRequest,
+        final ApprovalData approvalData
     ) {
         PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
         String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
-        payPalAccount.setClientMetadataId(configuration.getPayPalClientId());
+        String riskId = null;
+        if (payPalRequest.getRiskCorrelationId() != null) {
+            riskId = payPalRequest.getRiskCorrelationId();
+        } else {
+            if (approvalData.getCorrelationIds() != null) {
+                riskId = approvalData.getCorrelationIds().getRiskCorrelationId().getId();
+            }
+        }
+        payPalAccount.setClientMetadataId(riskId);
         payPalAccount.setSource("paypal-browser");
         payPalAccount.setPaymentType(paymentType);
+        if (approvalData.getCart() != null) {
+            payPalAccount.setIntent(approvalData.getCart().getIntent());
+        }
 
         try {
             JSONObject client = new JSONObject();

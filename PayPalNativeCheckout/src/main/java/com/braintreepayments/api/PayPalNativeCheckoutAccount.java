@@ -23,6 +23,7 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     private JSONObject client;
     private String merchantAccountId;
     private String paymentType;
+    private String intent;
 
     PayPalNativeCheckoutAccount() {
         super();
@@ -34,6 +35,7 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
 
         JSONObject paymentMethodNonceJson = new JSONObject();
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
+        paymentMethodNonceJson.put(INTENT_KEY, intent);
         paymentMethodNonceJson.put(CLIENT_KEY, client);
 
         if ("single-payment".equalsIgnoreCase(paymentType)) {
@@ -106,6 +108,32 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
         this.paymentType = paymentType;
     }
 
+    /**
+     * Used by PayPal wrappers to construct a request to create a PayPal account.
+     *
+     * @param intent The intent provided by the checkout session
+     */
+    void setIntent(String intent) {
+        this.intent = intent;
+    }
+
+    /**
+     * Grabs the client meta data id
+     *
+     * @return clientMetadataId
+     */
+    public String getClientMetadataId() {
+        return clientMetadataId;
+    }
+
+    /**
+     * Grabs the mechant id associated with the account
+     *
+     * @return merchant id
+     */
+    public String getMerchantAccountId() {
+        return merchantAccountId;
+    }
     @Override
     String getApiPath() {
         return "paypal_accounts";
