@@ -3,7 +3,7 @@
 
 ## unreleased
 * PayPalNativeCheckout (BETA)
-  * Adding in risk correlation id from the checkout sdk if it is not provided in the initial request
+  * Pass the risk correlation ID from the Native Checkout SDK if it is not provided in the initial PayPal request
   
 ## 4.20.0
 
