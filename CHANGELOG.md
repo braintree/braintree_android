@@ -1,7 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Update exception documentation links to point to valid PayPal Braintree documentation URL
+* ThreeDSecure
+  * Update exception documentation links to point to valid PayPal Braintree documentation URL
 
 ## 4.21.0
+
 * PayPalNativeCheckout (BETA)
   * Pass the risk correlation ID from the Native Checkout SDK if it is not provided in the initial PayPal request
   
