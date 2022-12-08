@@ -244,7 +244,7 @@ public class ThreeDSecureClientUnitTest {
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
-                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                 "for the correct configuration", captor.getValue().getMessage());
     }
 
