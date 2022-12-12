@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -31,6 +32,24 @@ public class BraintreeHttpClientTest {
             public void onResult(String responseBody, Exception httpError) {
                 // Make sure exception is due to authorization not SSL handshake
                 assertTrue(httpError instanceof AuthorizationException);
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void getRequestSslCertificateSuccessfulInQA() throws InterruptedException {
+        Authorization authorization = Authorization.fromString("development_testing_integration_merchant_id");
+        BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
+
+        braintreeHttpClient.get("https://gateway.qa.braintreepayments.com/", null, authorization, new HttpResponseCallback() {
+
+            @Override
+            public void onResult(String responseBody, Exception httpError) {
+                // Make sure http request to qa works to verify certificate pinning strategy
+                assertNull(httpError);
                 countDownLatch.countDown();
             }
         });
