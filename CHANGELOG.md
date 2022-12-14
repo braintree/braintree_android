@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.21.1
 
 * PayPal
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
