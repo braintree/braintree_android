@@ -20,7 +20,7 @@ class BraintreeGraphQLClient {
 
     private static SSLSocketFactory getSocketFactory() {
         try {
-            return new TLSSocketFactory(BraintreeGraphQLCertificate.getCertInputStream());
+            return new TLSSocketFactory(TLSCertificatePinning.getCertInputStream());
         } catch (SSLException e) {
             return null;
         }
