@@ -4,7 +4,7 @@
 ## unreleased
 
 * PayPalNativeCheckout (BETA)
-  * Updating the native version to bump the cardinal version to `2.2.7-2` for native checkout
+  * Bump native-checkout version to `0.8.7`
 
 ## 4.21.1
 
