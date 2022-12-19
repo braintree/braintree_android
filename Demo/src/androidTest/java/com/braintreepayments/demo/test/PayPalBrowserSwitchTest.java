@@ -31,6 +31,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     public void setup() {
         super.setup();
         assumePayPalAppInstalled(false);
+        useTokenizationKey();
         onDevice(withText("PayPal")).waitForEnabled().perform(click());
     }
 
@@ -41,9 +42,6 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @Test(timeout = 60000)
@@ -53,8 +51,5 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 }
