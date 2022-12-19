@@ -133,9 +133,4 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
 
         return String.format("%02d", subtractionResult);
     }
-
-    private long concatenate(long lhs, long rhs) {
-        int numDigitsInRHS = (int) Math.log10(rhs) + 1;
-        return (long) (lhs * Math.pow(10, numDigitsInRHS)) + rhs;
-    }
 }
