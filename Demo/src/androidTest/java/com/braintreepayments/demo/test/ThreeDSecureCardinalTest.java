@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
+import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
     @Test(timeout = 40000)
     public void threeDSecure_authenticates() {
         onDevice(withText("Card Number")).perform(setText("4000000000001091"));
-        fillInExpiration("01", "2022");
+        fillInExpiration("01", ExpirationDateHelper.validExpirationYear());
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
