@@ -27,6 +27,7 @@ public class DropInTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
+        useTokenizationKey();
         onDevice(withText("Drop-In")).waitForEnabled().perform(click());
     }
 
@@ -56,8 +57,5 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 }
