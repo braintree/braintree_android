@@ -19,11 +19,7 @@ import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitRequest;
 import com.braintreepayments.api.SEPADirectDebitTestHelper;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectDebitListener {
 
