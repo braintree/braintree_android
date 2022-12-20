@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Provides helper functions to test the SEPA Direct Debit flow in sandbox.
  */
 public class SEPADirectDebitTestHelper {
+
     /**
      * Generates a valid 27-digit IBAN (International Bank Account Number) for testing SEPA Direct Debit flows.
      * @return a valid IBAN
