@@ -29,6 +29,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeHttpClientTest {
@@ -280,6 +281,28 @@ public class BraintreeHttpClientTest {
             public void failure(Exception exception) {
                 assertTrue(exception instanceof AuthorizationException);
                 mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void getRequestSslCertificateSuccessfulInQA() throws InterruptedException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
+        httpClient.setBaseUrl("https://gateway.qa.braintreepayments.com");
+
+        httpClient.get("/", new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                assertNotNull(responseBody);
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fail("Request failed");
             }
         });
 
