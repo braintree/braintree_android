@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+# unreleased
+
+* BraintreeCore
+  * Bump `browser-switch` version to `2.3.2`
 
 ## 4.22.0
 
