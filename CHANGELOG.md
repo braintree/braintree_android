@@ -1472,7 +1472,7 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
-## unreleased
+## 4.23.0
 * Breaking Changes
   * Bump `minSdkVersion` to 21.
 
