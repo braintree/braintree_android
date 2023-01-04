@@ -8,6 +8,8 @@
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
 * Braintree Core
   * Update pinned certificates used by `BraintreeGraphQLClient` and `BraintreeHttpClient`
+* BraintreeSEPADirectDebit
+    * Add BTSEPADirectDebitTestHelper.generateValidSandboxIBAN() method to generate valid IBANs for testing in Sandbox
 
 ## 4.21.0
 
