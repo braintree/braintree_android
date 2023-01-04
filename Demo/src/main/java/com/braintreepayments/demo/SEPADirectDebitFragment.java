@@ -16,7 +16,6 @@ import com.braintreepayments.api.SEPADirectDebitListener;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitRequest;
-import com.braintreepayments.api.SEPADirectDebitTestHelper;
 
 import java.util.UUID;
 
