@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import androidx.fragment.app.FragmentActivity;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureActivityUnitTest {
@@ -63,7 +66,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.onCreateInternal(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(), any(), any());
+        verify(cardinalClient, never()).continueLookup(any(FragmentActivity.class), any(ThreeDSecureResult.class), any(CardinalValidateReceiver.class));
         verify(sut).finish();
         verify(sut).setResult(RESULT_CANCELED);
     }
