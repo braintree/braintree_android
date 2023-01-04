@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT;
 import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
 import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -86,6 +87,21 @@ public class ThreeDSecureActivityResultContractUnitTest {
         assertNotNull(cardinalResult);
 
         UserCanceledException error = (UserCanceledException) cardinalResult.getError();
-        assertNotNull("User canceled 3DS.", error.getMessage());
+        assertEquals("User canceled 3DS.", error.getMessage());
+    }
+
+    @Test
+    public void parseResult_whenResultIsCANCELEDAndHasErrorMessage_returnsCardinalResultWithError() {
+        sut = new ThreeDSecureActivityResultContract();
+
+        Intent intent = new Intent();
+        intent.putExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE, "sample error message");
+
+        CardinalResult cardinalResult =
+            sut.parseResult(ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL, intent);
+        assertNotNull(cardinalResult);
+
+        BraintreeException error = (BraintreeException) cardinalResult.getError();
+        assertEquals("sample error message", error.getMessage());
     }
 }

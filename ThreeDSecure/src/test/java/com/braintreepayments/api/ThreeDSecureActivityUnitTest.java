@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.braintreepayments.api.ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,7 +70,7 @@ public class ThreeDSecureActivityUnitTest {
         verify(sut).finish();
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(sut).setResult(eq(RESULT_CANCELED), captor.capture());
+        verify(sut).setResult(eq(RESULT_COULD_NOT_START_CARDINAL), captor.capture());
 
         Intent intentForResult = captor.getValue();
         assertEquals("Unable to launch 3DS authentication.",

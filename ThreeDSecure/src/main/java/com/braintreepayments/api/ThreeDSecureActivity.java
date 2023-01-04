@@ -21,6 +21,8 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
 
+    static final int RESULT_COULD_NOT_START_CARDINAL = RESULT_FIRST_USER;
+
     private final CardinalClient cardinalClient = new CardinalClient();
 
     @Override
@@ -42,8 +44,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         } else {
             Intent result = new Intent();
             result.putExtra(EXTRA_ERROR_MESSAGE, "Unable to launch 3DS authentication.");
-
-            setResult(RESULT_CANCELED, result);
+            setResult(RESULT_COULD_NOT_START_CARDINAL, result);
             finish();
         }
     }
