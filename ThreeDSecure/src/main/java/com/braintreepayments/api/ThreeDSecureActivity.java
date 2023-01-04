@@ -36,7 +36,9 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         }
 
         ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
-        cardinalClient.continueLookup(this, threeDSecureResult, this);
+        if (threeDSecureResult != null) {
+            cardinalClient.continueLookup(this, threeDSecureResult, this);
+        }
     }
 
     @Override

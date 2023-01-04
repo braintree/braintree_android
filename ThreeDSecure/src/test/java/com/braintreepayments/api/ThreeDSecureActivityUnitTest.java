@@ -15,9 +15,11 @@ import org.robolectric.RobolectricTestRunner;
 import static android.app.Activity.RESULT_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class ThreeDSecureActivityUnitTest {
 
     @Test
-    public void onCreate_invokesCardinalWithLookupData() throws JSONException {
+    public void onCreate_withExtras_invokesCardinalWithLookupData() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
             ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
@@ -49,6 +51,18 @@ public class ThreeDSecureActivityUnitTest {
         ThreeDSecureLookup actualLookup = actualResult.getLookup();
         assertEquals("sample-transaction-id", actualLookup.getTransactionId());
         assertEquals("sample-pareq", actualLookup.getPareq());
+    }
+
+    @Test
+    public void onCreate_withoutExtras_doesNothing() {
+        Intent intent = new Intent();
+        ThreeDSecureActivity sut = new ThreeDSecureActivity();
+        sut.setIntent(intent);
+
+        CardinalClient cardinalClient = mock(CardinalClient.class);
+        sut.onCreateInternal(cardinalClient);
+
+        verify(cardinalClient, never()).continueLookup(any(), any(), any());
     }
 
     @Test
