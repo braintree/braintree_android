@@ -68,7 +68,13 @@ public class ThreeDSecureActivityUnitTest {
 
         verify(cardinalClient, never()).continueLookup(any(FragmentActivity.class), any(ThreeDSecureResult.class), any(CardinalValidateReceiver.class));
         verify(sut).finish();
-        verify(sut).setResult(RESULT_CANCELED);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(sut).setResult(eq(RESULT_CANCELED), captor.capture());
+
+        Intent intentForResult = captor.getValue();
+        assertEquals("Unable to launch 3DS authentication.",
+            intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE));
     }
 
     @Test
