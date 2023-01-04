@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,15 +55,17 @@ public class ThreeDSecureActivityUnitTest {
     }
 
     @Test
-    public void onCreate_withoutExtras_doesNothing() {
+    public void onCreate_withoutExtras_finishesWithError() {
         Intent intent = new Intent();
-        ThreeDSecureActivity sut = new ThreeDSecureActivity();
+        ThreeDSecureActivity sut = spy(new ThreeDSecureActivity());
         sut.setIntent(intent);
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.onCreateInternal(cardinalClient);
 
         verify(cardinalClient, never()).continueLookup(any(), any(), any());
+        verify(sut).finish();
+        verify(sut).setResult(RESULT_CANCELED);
     }
 
     @Test
