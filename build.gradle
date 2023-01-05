@@ -8,14 +8,24 @@ buildscript {
         jcenter()
     }
 
+    // We are restricted to version 2.2.6 since we still offer Java 7 support. Upgrading to newer
+    // versions of room that require Java 8 will introduce a breaking change to our SDK
+    def java7SafeRoomVersion = "2.2.6"
+
+    // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
+    def m1MacSafeRoomVersion = "2.4.0"
+
+    // The 'CI' build variable will equal 'true' when build script is executed via GitHub Actions
+    // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+    def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
+
     ext.versions = [
             "kotlin"         : "1.5.32",
             "androidxTest"   : "1.4.0",
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",
-            // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
-            "room"           : "2.2.6",
-            // Version 19.0.0 of play-services-wallet has been released but should not be used per Google documentation
+            // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
+            "room"           : roomVersion,
             "playServices"   : "19.1.0"
     ]
 
