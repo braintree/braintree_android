@@ -8,8 +8,8 @@ buildscript {
         jcenter()
     }
 
-    // We are restricted to version 2.2.6 since we still offer Java 7 support. Upgrading to newer
-    // versions of room that require Java 8 will introduce a breaking change to our SDK
+    // We are restricted to room version 2.2.6 since we still offer Java 7 support. Upgrading to
+    // newer versions of room that require Java 8 will introduce a breaking change to our SDK
     def java7SafeRoomVersion = "2.2.6"
 
     // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
