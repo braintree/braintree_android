@@ -16,9 +16,12 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
  */
 public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
 
+    static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
     static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
     static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
+
+    static final int RESULT_COULD_NOT_START_CARDINAL = RESULT_FIRST_USER;
 
     private final CardinalClient cardinalClient = new CardinalClient();
 
@@ -36,7 +39,14 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         }
 
         ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
-        cardinalClient.continueLookup(this, threeDSecureResult, this);
+        if (threeDSecureResult != null) {
+            cardinalClient.continueLookup(this, threeDSecureResult, this);
+        } else {
+            Intent result = new Intent();
+            result.putExtra(EXTRA_ERROR_MESSAGE, "Unable to launch 3DS authentication.");
+            setResult(RESULT_COULD_NOT_START_CARDINAL, result);
+            finish();
+        }
     }
 
     @Override
