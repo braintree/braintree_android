@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import androidx.annotation.RestrictTo
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -107,7 +106,7 @@ class Configuration internal constructor(configurationString: String?) {
 
     init {
         if (configurationString == null) {
-            throw JSONException("Configuration cannot be null");
+            throw JSONException("Configuration cannot be null")
         }
 
         this.configurationString = configurationString
@@ -116,9 +115,9 @@ class Configuration internal constructor(configurationString: String?) {
         clientApiUrl = json.getString(CLIENT_API_URL_KEY)
 
         // parse json challenges
-        json.optJSONArray(CHALLENGES_KEY)?.let { items ->
-            for (i in 0 until items.length()) {
-                challenges.add(items.optString(i, ""))
+        json.optJSONArray(CHALLENGES_KEY)?.let { challengesArray ->
+            for (i in 0 until challengesArray.length()) {
+                challenges.add(challengesArray.optString(i, ""))
             }
         }
 
@@ -126,11 +125,8 @@ class Configuration internal constructor(configurationString: String?) {
         merchantId = json.getString(MERCHANT_ID_KEY)
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY))
-        braintreeApiConfiguration = BraintreeApiConfiguration.fromJson(
-            json.optJSONObject(
-                BRAINTREE_API_KEY
-            )
-        )
+        braintreeApiConfiguration =
+            BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY))
         cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY))
         isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
         payPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY))
@@ -139,17 +135,11 @@ class Configuration internal constructor(configurationString: String?) {
         venmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY))
         kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
         unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
-        visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-            json.optJSONObject(
-                VISA_CHECKOUT_KEY
-            )
-        )
+        visaCheckoutConfiguration =
+            VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY))
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
-        samsungPayConfiguration = SamsungPayConfiguration.fromJson(
-            json.optJSONObject(
-                SAMSUNG_PAY_KEY
-            )
-        )
+        samsungPayConfiguration =
+            SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
     }
 
@@ -342,9 +332,7 @@ class Configuration internal constructor(configurationString: String?) {
      * @return `true` if GraphQL is enabled and the feature is enabled, `false` otherwise.
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun isGraphQLFeatureEnabled(feature: String?): Boolean {
-        return graphQLConfiguration.isFeatureEnabled(feature)
-    }
+    fun isGraphQLFeatureEnabled(feature: String) = graphQLConfiguration.isFeatureEnabled(feature)
 
     /**
      * @return the GraphQL url.
@@ -373,7 +361,7 @@ class Configuration internal constructor(configurationString: String?) {
      * @return a list of card brands supported by Samsung Pay.
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPaySupportedCardBrands = ArrayList(samsungPayConfiguration.supportedCardBrands)
+    val samsungPaySupportedCardBrands = samsungPayConfiguration.supportedCardBrands.toList()
 
     /**
      * @return the authorization to use with Samsung Pay.
