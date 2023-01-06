@@ -409,11 +409,14 @@ class Configuration internal constructor(configurationString: String?) {
     val isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
 
     /**
-     * @return a [<] of card types supported by the merchant.
+     * @return a list of card types supported by the merchant.
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val supportedCardTypes = cardConfiguration.supportedCardTypes
 
+    /**
+     * @return Configuration as a json [String].
+     */
     fun toJson(): String {
         return configurationString
     }
