@@ -7,7 +7,8 @@ import org.json.JSONObject
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  */
-class Configuration internal constructor(configurationString: String?) {
+// NEXT MAJOR VERSION: remove 'open' modifiers, Java classes/methods are open by default
+open class Configuration internal constructor(configurationString: String?) {
 
     companion object {
         private const val ASSETS_URL_KEY = "assetsUrl"
@@ -65,44 +66,44 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return The assets URL of the current environment.
      */
-    val assetsUrl: String
+    open val assetsUrl: String
 
     /**
      * @return The url of the Braintree client API for the current environment.
      */
-    val clientApiUrl: String
+    open val clientApiUrl: String
 
     /**
      * @return The current environment.
      */
-    val environment: String
+    open val environment: String
 
     /**
      * @return the current Braintree merchant id.
      */
-    val merchantId: String
+    open val merchantId: String
 
     /**
      * @return `true` if PayPal is enabled and supported in the current environment,
      * `false` otherwise.
      */
-    val isPayPalEnabled: Boolean
+    open val isPayPalEnabled: Boolean
 
     /**
      * @return `true` if 3D Secure is enabled and supported for the current merchant account,
      * `false` otherwise.
      */
-    val isThreeDSecureEnabled: Boolean
+    open val isThreeDSecureEnabled: Boolean
 
     /**
      * @return the current Braintree merchant account id.
      */
-    val merchantAccountId: String?
+    open val merchantAccountId: String?
 
     /**
      * @return the JWT for Cardinal
      */
-    val cardinalAuthenticationJwt: String?
+    open val cardinalAuthenticationJwt: String?
 
     init {
         if (configurationString == null) {
@@ -146,12 +147,12 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if cvv is required for card transactions, `false` otherwise.
      */
-    val isCvvChallengePresent = challenges.contains("cvv")
+    open val isCvvChallengePresent = challenges.contains("cvv")
 
     /**
      * @return `true` if postal code is required for card transactions, `false` otherwise.
      */
-    val isPostalCodeChallengePresent = challenges.contains("postal_code")
+    open val isPostalCodeChallengePresent = challenges.contains("postal_code")
 
     /**
      * @return `true` if fraud device data collection should occur; `false` otherwise.
@@ -162,7 +163,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if Venmo is enabled for the merchant account; `false` otherwise.
      */
-    val isVenmoEnabled = venmoConfiguration.isAccessTokenValid
+    open val isVenmoEnabled = venmoConfiguration.isAccessTokenValid
 
     /**
      * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
@@ -191,7 +192,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if Local Payment is enabled for the merchant account; `false` otherwise.
      */
-    val isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
+    open val isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
 
     /**
      * @return `true` if Kount is enabled for the merchant account; `false` otherwise.
@@ -208,7 +209,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if UnionPay is enabled for the merchant account; `false` otherwise.
      */
-    val isUnionPayEnabled = unionPayConfiguration.isEnabled
+    open val isUnionPayEnabled = unionPayConfiguration.isEnabled
 
     /**
      * @return the PayPal app display name.
@@ -225,17 +226,17 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return the PayPal app privacy url.
      */
-    val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
+    open val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
 
     /**
      * @return the PayPal app user agreement url.
      */
-    val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
+    open val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
 
     /**
      * @return the url for custom PayPal environments.
      */
-    val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
+    open val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
 
     /**
      * @return the current environment for PayPal.
@@ -258,7 +259,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
      */
-    val isGooglePayEnabled = googlePayConfiguration.isEnabled
+    open val isGooglePayEnabled = googlePayConfiguration.isEnabled
 
     /**
      * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
@@ -305,7 +306,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
      */
-    val isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
+    open val isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
 
     /**
      * @return the Visa Checkout supported networks enabled for the merchant account.
@@ -343,7 +344,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return `true` if Samsung Pay is enabled; `false` otherwise.
      */
-    val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
+    open val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
 
     /**
      * @return the merchant display name for Samsung Pay.
@@ -402,7 +403,7 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return Configuration as a json [String].
      */
-    fun toJson(): String {
+    open fun toJson(): String {
         return configurationString
     }
 }
