@@ -8,6 +8,7 @@ import org.json.JSONObject
  * Contains the remote configuration for the Braintree Android SDK.
  */
 // NEXT MAJOR VERSION: remove 'open' modifiers, Java classes/methods are open by default
+// Ref: https://kotlin-quick-reference.com/102c-R-open-final-classes.html
 open class Configuration internal constructor(configurationString: String?) {
 
     companion object {
