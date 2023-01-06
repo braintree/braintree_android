@@ -8,7 +8,7 @@ import org.json.JSONObject
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  */
-class Configuration internal constructor(configurationString: String) {
+class Configuration internal constructor(configurationString: String?) {
 
     companion object {
         private const val ASSETS_URL_KEY = "assetsUrl"
@@ -41,7 +41,7 @@ class Configuration internal constructor(configurationString: String) {
         @JvmStatic
         @Throws(JSONException::class)
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        fun fromJson(configurationString: String): Configuration {
+        fun fromJson(configurationString: String?): Configuration {
             return Configuration(configurationString)
         }
     }
@@ -102,6 +102,10 @@ class Configuration internal constructor(configurationString: String) {
     val merchantAccountId: String?
 
     init {
+        if (configurationString == null) {
+            throw JSONException("Configuration cannot be null");
+        }
+
         this.configurationString = configurationString
         val json = JSONObject(configurationString)
         assetsUrl = Json.optString(json, ASSETS_URL_KEY, "")

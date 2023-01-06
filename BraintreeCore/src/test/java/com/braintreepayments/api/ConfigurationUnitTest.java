@@ -20,6 +20,11 @@ import java.util.List;
 public class ConfigurationUnitTest {
 
     @Test(expected = JSONException.class)
+    public void fromJson_throwsForNull() throws JSONException {
+        Configuration.fromJson(null);
+    }
+
+    @Test(expected = JSONException.class)
     public void fromJson_throwsForEmptyString() throws JSONException {
         Configuration.fromJson("");
     }
