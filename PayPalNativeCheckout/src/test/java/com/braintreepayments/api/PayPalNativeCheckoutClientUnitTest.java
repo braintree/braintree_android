@@ -25,16 +25,23 @@ import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { PayPalCheckout.class, PLog.class })
+@RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
+@PrepareForTest({PayPalCheckout.class, PLog.class})
 public class PayPalNativeCheckoutClientUnitTest {
+
+    @Rule
+    public PowerMockRule powerMockRule = new PowerMockRule();
 
     private FragmentActivity activity;
     private PayPalNativeCheckoutListener listener;
