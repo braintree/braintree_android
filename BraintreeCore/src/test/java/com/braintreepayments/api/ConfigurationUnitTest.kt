@@ -48,7 +48,7 @@ class ConfigurationUnitTest {
     @Test
     fun fromJson_parsesCardinalAuthenticationJwt() {
         val sut = fromJson(Fixtures.CONFIGURATION_WITH_CARDINAL_AUTHENTICATION_JWT)
-        assertEquals("cardinal_authentication_jwt", sut.getCardinalAuthenticationJwt())
+        assertEquals("cardinal_authentication_jwt", sut.cardinalAuthenticationJwt)
     }
 
     @Test
