@@ -38,8 +38,9 @@ class Configuration internal constructor(configurationString: String) {
          * @param configurationString The json configuration string from Braintree.
          * @return [Configuration] instance.
          */
-        @Throws(JSONException::class)
         @JvmStatic
+        @Throws(JSONException::class)
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(configurationString: String): Configuration {
             return Configuration(configurationString)
         }
@@ -105,7 +106,14 @@ class Configuration internal constructor(configurationString: String) {
         val json = JSONObject(configurationString)
         assetsUrl = Json.optString(json, ASSETS_URL_KEY, "")
         clientApiUrl = json.getString(CLIENT_API_URL_KEY)
-        parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY))
+
+        // parse json challenges
+        json.optJSONArray(CHALLENGES_KEY)?.let { items ->
+            for (i in 0 until items.length()) {
+                challenges.add(items.optString(i, ""))
+            }
+        }
+
         environment = json.getString(ENVIRONMENT_KEY)
         merchantId = json.getString(MERCHANT_ID_KEY)
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
@@ -137,10 +145,6 @@ class Configuration internal constructor(configurationString: String) {
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
     }
 
-    fun toJson(): String {
-        return configurationString
-    }
-
     /**
      * @return `true` if cvv is required for card transactions, `false` otherwise.
      */
@@ -154,6 +158,7 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return `true` if fraud device data collection should occur; `false` otherwise.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
 
     /**
@@ -183,7 +188,7 @@ class Configuration internal constructor(configurationString: String) {
      * @return `true` if GraphQL is enabled for the merchant account; `false` otherwise.
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val isGraphQLEnabled = graphQLConfiguration.isEnabled // Local Payments are enabled when PayPal is enabled
+    val isGraphQLEnabled = graphQLConfiguration.isEnabled
 
     /**
      * @return `true` if Local Payment is enabled for the merchant account; `false` otherwise.
@@ -193,11 +198,13 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return `true` if Kount is enabled for the merchant account; `false` otherwise.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isKountEnabled = kountConfiguration.isEnabled
 
     /**
      * @return the Kount merchant id set in the Gateway.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val kountMerchantId = kountConfiguration.kountMerchantId
 
     /**
@@ -208,11 +215,13 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the PayPal app display name.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalDisplayName = payPalConfiguration.displayName
 
     /**
      * @return the PayPal app client id.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalClientId = payPalConfiguration.clientId
 
     /**
@@ -233,16 +242,19 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the current environment for PayPal.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalEnvironment = payPalConfiguration.environment
 
     /**
      * @return `true` if PayPal touch is currently disabled, `false` otherwise.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isPayPalTouchDisabled = payPalConfiguration.isTouchDisabled
 
     /**
      * @return the PayPal currency code.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
 
     /**
@@ -253,36 +265,43 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayAuthorizationFingerprint = googlePayConfiguration.googleAuthorizationFingerprint
 
     /**
      * @return the current Google Pay environment.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayEnvironment = googlePayConfiguration.environment
 
     /**
      * @return the Google Pay display name to show to the user.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayDisplayName = googlePayConfiguration.displayName
 
     /**
      * @return a list of supported card networks for Google Pay.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePaySupportedNetworks = googlePayConfiguration.supportedNetworks
 
     /**
      * @return the PayPal Client ID used by Google Pay.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayPayPalClientId = googlePayConfiguration.paypalClientId
 
     /**
      * @return [String] url of the Braintree analytics service.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val analyticsUrl = analyticsConfiguration.url
 
     /**
      * @return `true` if analytics are enabled, `false` otherwise.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isAnalyticsEnabled = analyticsConfiguration.isEnabled
 
     /**
@@ -293,16 +312,19 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the Visa Checkout supported networks enabled for the merchant account.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands
 
     /**
      * @return the Visa Checkout API key configured in the Braintree Control Panel.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutApiKey = visaCheckoutConfiguration.apiKey
 
     /**
      * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutExternalClientId = visaCheckoutConfiguration.externalClientId
 
     /**
@@ -311,6 +333,7 @@ class Configuration internal constructor(configurationString: String) {
      * @param feature The feature to check.
      * @return `true` if GraphQL is enabled and the feature is enabled, `false` otherwise.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun isGraphQLFeatureEnabled(feature: String?): Boolean {
         return graphQLConfiguration.isFeatureEnabled(feature)
     }
@@ -318,6 +341,7 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the GraphQL url.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val graphQLUrl = graphQLConfiguration.url
 
     /**
@@ -328,35 +352,32 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return the merchant display name for Samsung Pay.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayMerchantDisplayName = samsungPayConfiguration.merchantDisplayName
 
     /**
      * @return the Samsung Pay service id associated with the merchant.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayServiceId = samsungPayConfiguration.serviceId
 
     /**
      * @return a list of card brands supported by Samsung Pay.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPaySupportedCardBrands = ArrayList(samsungPayConfiguration.supportedCardBrands)
 
     /**
      * @return the authorization to use with Samsung Pay.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayAuthorization = samsungPayConfiguration.samsungAuthorization
 
     /**
      * @return the Braintree environment Samsung Pay should interact with.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayEnvironment = samsungPayConfiguration.environment
-
-    private fun parseJsonChallenges(jsonArray: JSONArray?) {
-        if (jsonArray != null) {
-            for (i in 0 until jsonArray.length()) {
-                challenges.add(jsonArray.optString(i, ""))
-            }
-        }
-    }
 
     /**
      * @return the JWT for Cardinal
@@ -368,21 +389,28 @@ class Configuration internal constructor(configurationString: String) {
     /**
      * @return The Access Token for Braintree API.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val braintreeApiAccessToken = braintreeApiConfiguration.accessToken
 
     /**
      * @return the base url for accessing Braintree API.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val braintreeApiUrl = braintreeApiConfiguration.url
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
 
     /**
      * @return a [<] of card types supported by the merchant.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val supportedCardTypes = cardConfiguration.supportedCardTypes
 
+    fun toJson(): String {
+        return configurationString
+    }
 }
