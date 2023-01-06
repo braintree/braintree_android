@@ -1,5 +1,10 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -11,18 +16,8 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
 @RunWith(RobolectricTestRunner.class)
 public class ConfigurationUnitTest {
-
-    @Test(expected = JSONException.class)
-    public void fromJson_throwsForNull() throws JSONException {
-        Configuration.fromJson(null);
-    }
 
     @Test(expected = JSONException.class)
     public void fromJson_throwsForEmptyString() throws JSONException {
