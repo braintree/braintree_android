@@ -62,7 +62,6 @@ class Configuration internal constructor(configurationString: String?) {
     private val visaCheckoutConfiguration: VisaCheckoutConfiguration
     private val graphQLConfiguration: GraphQLConfiguration
     private val samsungPayConfiguration: SamsungPayConfiguration
-    private val cardinalAuthenticationJwt: String?
 
     /**
      * @return The assets URL of the current environment.
@@ -100,6 +99,11 @@ class Configuration internal constructor(configurationString: String?) {
      * @return the current Braintree merchant account id.
      */
     val merchantAccountId: String?
+
+    /**
+     * @return the JWT for Cardinal
+     */
+    val cardinalAuthenticationJwt: String?
 
     init {
         if (configurationString == null) {
@@ -231,17 +235,17 @@ class Configuration internal constructor(configurationString: String?) {
     /**
      * @return the PayPal app privacy url.
      */
-    val payPalPrivacyUrl = payPalConfiguration.privacyUrl
+    val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
 
     /**
      * @return the PayPal app user agreement url.
      */
-    val payPalUserAgreementUrl = payPalConfiguration.userAgreementUrl
+    val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
 
     /**
      * @return the url for custom PayPal environments.
      */
-    val payPalDirectBaseUrl = payPalConfiguration.directBaseUrl
+    val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
 
     /**
      * @return the current environment for PayPal.
@@ -382,13 +386,6 @@ class Configuration internal constructor(configurationString: String?) {
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayEnvironment = samsungPayConfiguration.environment
-
-    /**
-     * @return the JWT for Cardinal
-     */
-    fun getCardinalAuthenticationJwt(): String? {
-        return cardinalAuthenticationJwt
-    }
 
     /**
      * @return The Access Token for Braintree API.
