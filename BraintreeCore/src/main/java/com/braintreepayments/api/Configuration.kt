@@ -132,7 +132,7 @@ open class Configuration internal constructor(configurationString: String?) {
         cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY))
         isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
-        googlePayConfiguration = GooglePayConfiguration.fromJson(json.optJSONObject(GOOGLE_PAY_KEY))
+        googlePayConfiguration = GooglePayConfiguration(json.optJSONObject(GOOGLE_PAY_KEY))
         isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
         venmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY))
         kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
