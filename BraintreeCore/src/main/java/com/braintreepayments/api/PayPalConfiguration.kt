@@ -5,8 +5,37 @@ import org.json.JSONObject
 
 /**
  * Contains the remote PayPal configuration for the Braintree SDK.
+ * @property directBaseUrl the url for custom PayPal environments.
+ * @property displayName the PayPal app display name.
+ * @property clientId the PayPal app client id.
+ * @property privacyUrl the PayPal app privacy url.
+ * @property userAgreementUrl the PayPal app user agreement url.
+ * @property environment the current environment for PayPal.
+ * @property isTouchDisabled `true` if PayPal touch is currently disabled, `false` otherwise.
+ * @property currencyIsoCode the PayPal currency code.
  */
-internal class PayPalConfiguration(json: JSONObject?) {
+internal class PayPalConfiguration constructor(
+    val directBaseUrl: String?,
+    val displayName: String?,
+    val clientId: String?,
+    val privacyUrl: String?,
+    val userAgreementUrl: String?,
+    val environment: String?,
+    val isTouchDisabled: Boolean,
+    val currencyIsoCode: String?
+) {
+
+
+    constructor(jsonObject: JSONObject?) : this(
+        parseBaseUrl(Json.optString(jsonObject, DIRECT_BASE_URL_KEY, null)),
+        Json.optString(jsonObject, DISPLAY_NAME_KEY, null),
+        Json.optString(jsonObject, CLIENT_ID_KEY, null),
+        Json.optString(jsonObject, PRIVACY_URL_KEY, null),
+        Json.optString(jsonObject, USER_AGREEMENT_URL_KEY, null),
+        Json.optString(jsonObject, ENVIRONMENT_KEY, null),
+        jsonObject?.optBoolean(TOUCH_DISABLED_KEY, true) ?: false,
+        Json.optString(jsonObject, CURRENCY_ISO_CODE_KEY, null)
+    )
 
     companion object {
         private const val DISPLAY_NAME_KEY = "displayName"
@@ -17,59 +46,9 @@ internal class PayPalConfiguration(json: JSONObject?) {
         private const val ENVIRONMENT_KEY = "environment"
         private const val TOUCH_DISABLED_KEY = "touchDisabled"
         private const val CURRENCY_ISO_CODE_KEY = "currencyIsoCode"
-    }
 
-    /**
-     * @return the url for custom PayPal environments.
-     */
-    val directBaseUrl: String?
-        get() = if (TextUtils.isEmpty(field)) null else "$field/v1/"
-
-    /**
-     * @return the PayPal app display name.
-     */
-    val displayName: String?
-
-    /**
-     * @return the PayPal app client id.
-     */
-    val clientId: String?
-
-    /**
-     * @return the PayPal app privacy url.
-     */
-    var privacyUrl: String?
-
-    /**
-     * @return the PayPal app user agreement url.
-     */
-    var userAgreementUrl: String?
-
-    /**
-     * @return the current environment for PayPal.
-     */
-    var environment: String?
-
-    /**
-     * @return `true` if PayPal touch is currently disabled, `false` otherwise.
-     */
-    var isTouchDisabled = false
-
-    /**
-     * @return the PayPal currency code.
-     */
-    var currencyIsoCode: String?
-
-    init {
-        val jsonObject = json ?: JSONObject()
-        displayName = Json.optString(jsonObject, DISPLAY_NAME_KEY, null)
-        clientId = Json.optString(jsonObject, CLIENT_ID_KEY, null)
-        privacyUrl = Json.optString(jsonObject, PRIVACY_URL_KEY, null)
-        userAgreementUrl =
-            Json.optString(jsonObject, USER_AGREEMENT_URL_KEY, null)
-        directBaseUrl = Json.optString(jsonObject, DIRECT_BASE_URL_KEY, null)
-        environment = Json.optString(jsonObject, ENVIRONMENT_KEY, null)
-        isTouchDisabled = jsonObject.optBoolean(TOUCH_DISABLED_KEY, true)
-        currencyIsoCode = Json.optString(jsonObject, CURRENCY_ISO_CODE_KEY, null)
+        private fun parseBaseUrl(url: String?): String? {
+            return if (TextUtils.isEmpty(url)) null else "$url/v1/"
+        }
     }
 }
