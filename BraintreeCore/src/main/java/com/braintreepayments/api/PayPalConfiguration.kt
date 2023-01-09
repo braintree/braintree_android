@@ -58,7 +58,7 @@ internal class PayPalConfiguration(json: JSONObject?) {
     /**
      * @return the PayPal currency code.
      */
-    var currencyIsoCode: String
+    var currencyIsoCode: String?
 
     init {
         val jsonObject = json ?: JSONObject()
