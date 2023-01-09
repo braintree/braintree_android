@@ -25,7 +25,6 @@ internal class PayPalConfiguration constructor(
     val currencyIsoCode: String?
 ) {
 
-
     constructor(jsonObject: JSONObject?) : this(
         parseBaseUrl(Json.optString(jsonObject, DIRECT_BASE_URL_KEY, null)),
         Json.optString(jsonObject, DISPLAY_NAME_KEY, null),
