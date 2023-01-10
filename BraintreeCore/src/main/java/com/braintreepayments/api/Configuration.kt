@@ -136,7 +136,7 @@ open class Configuration internal constructor(configurationString: String?) {
         isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
         kountConfiguration = KountConfiguration(json.optJSONObject(KOUNT_KEY))
-        unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
+        unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
         visaCheckoutConfiguration =
             VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
