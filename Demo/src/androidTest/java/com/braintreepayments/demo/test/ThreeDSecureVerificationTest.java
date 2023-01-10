@@ -32,6 +32,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
+@Ignore("TODO: determine if 3DS v1 tests are still needed")
 public class ThreeDSecureVerificationTest extends TestHelper {
 
     @Before

@@ -72,7 +72,8 @@ public class TestHelper {
 
     protected static void useTokenizationKey() {
         onDevice(withText("Settings")).perform(click());
-        onDevice(withText("Use Tokenization Key")).perform(click());
+        onDevice(withText("Authorization Type")).perform(click());
+        onDevice(withText("Tokenization Key")).perform(click());
         onDevice().pressBack();
     }
 

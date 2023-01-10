@@ -149,7 +149,6 @@ public class ThreeDSecureV2UnitTest {
 
                 CardinalConfigurationParameters actualParams = captor.getValue();
                 assertEquals(actualParams.getRequestTimeout(), 8000);
-                assertFalse(actualParams.isEnableQuickAuth());
                 assertTrue(actualParams.isEnableDFSync());
                 assertEquals(actualParams.getUICustomization().getTextBoxCustomization().getBorderWidth(), 12);
             }
@@ -229,7 +228,6 @@ public class ThreeDSecureV2UnitTest {
 
         CardinalConfigurationParameters actualParams = captor.getValue();
         assertEquals(actualParams.getRequestTimeout(), 8000);
-        assertFalse(actualParams.isEnableQuickAuth());
         assertTrue(actualParams.isEnableDFSync());
         assertEquals(actualParams.getUICustomization().getTextBoxCustomization().getBorderWidth(), 12);
     }

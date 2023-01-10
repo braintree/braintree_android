@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to `2.2.7-2`
+* Update pinned certificates used by `BraintreeGraphQLHttpClient` and `BraintreeHttpClient`
+
 ## 3.19.0
 
 * Add `requestBillingAgreement` to `PayPalRequest`

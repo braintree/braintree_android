@@ -9,7 +9,7 @@ import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.a.a.c;
+import com.cardinalcommerce.cardinalmobilesdk.cm.models.CardinalError;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
@@ -77,11 +77,8 @@ class BraintreePowerMockHelper {
                 public Object answer(InvocationOnMock invocation) {
                     CardinalValidateReceiver callback = invocation.getArgumentAt(3, CardinalValidateReceiver.class);
 
-                    ValidateResponse validateResponse = new ValidateResponse(
-                            false,
-                            actionCode,
-                            new c(0, "")
-                    );
+                    ValidateResponse validateResponse =
+                        new ValidateResponse(actionCode, new CardinalError(0, ""));
 
                     callback.onValidated(null, validateResponse, "jwt");
                     return null;

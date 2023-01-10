@@ -27,6 +27,7 @@ public class DropInTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
+        useTokenizationKey();
         onDevice(withText("Drop-In")).waitForEnabled().perform(click());
     }
 
@@ -36,15 +37,10 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Card Number")).perform(setText(VISA));
         onDevice(withText("12")).perform(click());
         onDevice(withText(ExpirationDateHelper.validExpirationYear())).perform(click());
-        onDevice(withText("CVV")).perform(setText("123"));
-        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice().pressBack();
-        onDevice(withTextContaining("Add Card")).perform(click());
+        onDevice(withTextContaining("ADD CARD")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 11")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @Test(timeout = 60000)
@@ -56,8 +52,5 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 }

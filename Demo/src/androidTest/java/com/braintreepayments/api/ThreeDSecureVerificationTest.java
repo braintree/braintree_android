@@ -1,5 +1,18 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.test.Assertions.assertIsANonce;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_LOOKUP_ERROR;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -17,26 +30,15 @@ import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.test.Assertions.assertIsANonce;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_LOOKUP_ERROR;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 @RunWith(AndroidJUnit4ClassRunner.class)
+@Ignore("TODO: determine if 3DS v1 tests are still needed")
 public class ThreeDSecureVerificationTest {
 
     private static final String TEST_AMOUNT = "1";

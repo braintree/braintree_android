@@ -121,7 +121,7 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
 
         assertNotNull(fragment);
-        assertEquals("BraintreeFragment.2bdfa273-fd2a-3ed9-b0fe-71583ec1ce78", fragment.getTag());
+        assertEquals("BraintreeFragment.2389478c-3bfa-35f8-bdc5-5c3fea3697fa", fragment.getTag());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mFragmentActivity, TOKENIZATION_KEY);
 
         assertNotNull(fragment);
-        assertEquals("BraintreeFragment.2bdfa273-fd2a-3ed9-b0fe-71583ec1ce78", fragment.getTag());
+        assertEquals("BraintreeFragment.2389478c-3bfa-35f8-bdc5-5c3fea3697fa", fragment.getTag());
     }
 
     @Test

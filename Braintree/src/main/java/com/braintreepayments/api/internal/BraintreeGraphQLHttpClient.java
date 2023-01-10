@@ -26,7 +26,7 @@ public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
         super(baseUrl, bearer, apiVersion);
 
         try {
-            setSSLSocketFactory(new TLSSocketFactory(BraintreeGraphQLCertificate.getCertInputStream()));
+            setSSLSocketFactory(new TLSSocketFactory(TLSCertificatePinning.getCertInputStream()));
         } catch (SSLException e) {
             setSSLSocketFactory(null);
         }

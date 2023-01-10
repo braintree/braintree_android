@@ -36,7 +36,7 @@ public class BraintreeHttpClient extends HttpClient {
         setUserAgent(getUserAgent());
 
         try {
-            setSSLSocketFactory(new TLSSocketFactory(BraintreeGatewayCertificate.getCertInputStream()));
+            setSSLSocketFactory(new TLSSocketFactory(TLSCertificatePinning.getCertInputStream()));
         } catch (SSLException e) {
             setSSLSocketFactory(null);
         }
