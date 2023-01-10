@@ -11,8 +11,8 @@ import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class VisaCheckoutConfigurationUnitTest {
+
     @Test
-    @Throws(JSONException::class)
     fun fromJson_parsesFullInput() {
         val input = JSONObject()
             .put("apikey", "sample-api-key")

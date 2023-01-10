@@ -12,7 +12,7 @@ import java.util.ArrayList
  * @property externalClientId The Visa Checkout API Key associated with this merchant's Visa Checkout configuration.
  * @property acceptedCardBrands The accepted card brands for Visa Checkout.
  */
-internal class VisaCheckoutConfiguration(
+internal data class VisaCheckoutConfiguration(
     val apiKey: String?,
     val externalClientId: String?,
     val acceptedCardBrands: List<String>?
@@ -24,7 +24,7 @@ internal class VisaCheckoutConfiguration(
         Json.optString(json, API_KEY, ""),
         Json.optString(json, EXTERNAL_CLIENT_ID, ""),
         supportedCardTypesToAcceptedCardBrands(
-            CardConfiguration.fromJson(json).supportedCardTypes
+            CardConfiguration(json).supportedCardTypes
         )
     )
 
