@@ -32,7 +32,7 @@ internal class PayPalConfiguration constructor(
         Json.optString(jsonObject, PRIVACY_URL_KEY, null),
         Json.optString(jsonObject, USER_AGREEMENT_URL_KEY, null),
         Json.optString(jsonObject, ENVIRONMENT_KEY, null),
-        jsonObject?.optBoolean(TOUCH_DISABLED_KEY, true) ?: false,
+        jsonObject?.optBoolean(TOUCH_DISABLED_KEY, true) ?: true,
         Json.optString(jsonObject, CURRENCY_ISO_CODE_KEY, null)
     )
 
