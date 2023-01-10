@@ -1,8 +1,6 @@
 package com.braintreepayments.api
 
 import android.text.TextUtils
-import com.braintreepayments.api.VenmoConfiguration
-import com.braintreepayments.api.Json
 import org.json.JSONObject
 
 /**
