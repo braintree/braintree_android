@@ -136,11 +136,9 @@ open class Configuration internal constructor(configurationString: String?) {
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
         kountConfiguration = KountConfiguration(json.optJSONObject(KOUNT_KEY))
         unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
-        visaCheckoutConfiguration =
-            VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
+        visaCheckoutConfiguration = VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
         graphQLConfiguration = GraphQLConfiguration(json.optJSONObject(GRAPHQL_KEY))
-        samsungPayConfiguration =
-            SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
+        samsungPayConfiguration = SamsungPayConfiguration(json.optJSONObject(SAMSUNG_PAY_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
     }
 
