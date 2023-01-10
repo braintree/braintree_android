@@ -138,7 +138,7 @@ open class Configuration internal constructor(configurationString: String?) {
         kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
         unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
         visaCheckoutConfiguration =
-            VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY))
+            VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
         samsungPayConfiguration =
             SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
