@@ -127,8 +127,7 @@ open class Configuration internal constructor(configurationString: String?) {
         merchantId = json.getString(MERCHANT_ID_KEY)
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY))
-        braintreeApiConfiguration =
-            BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY))
+        braintreeApiConfiguration = BraintreeApiConfiguration(json.optJSONObject(BRAINTREE_API_KEY))
         cardConfiguration = CardConfiguration(json.optJSONObject(CARD_KEY))
         isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
