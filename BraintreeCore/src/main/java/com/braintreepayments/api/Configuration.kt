@@ -139,7 +139,7 @@ open class Configuration internal constructor(configurationString: String?) {
         unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
         visaCheckoutConfiguration =
             VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
-        graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
+        graphQLConfiguration = GraphQLConfiguration(json.optJSONObject(GRAPHQL_KEY))
         samsungPayConfiguration =
             SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
