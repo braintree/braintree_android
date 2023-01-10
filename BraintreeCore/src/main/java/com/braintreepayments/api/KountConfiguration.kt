@@ -10,10 +10,11 @@ import org.json.JSONObject
  */
 internal data class KountConfiguration private constructor(
     val kountMerchantId: String? = null,
-    val isEnabled: Boolean = !TextUtils.isEmpty(kountMerchantId)
 ) {
 
     constructor(json: JSONObject?) : this(Json.optString(json, KOUNT_MERCHANT_ID_KEY, ""))
+
+    val isEnabled: Boolean = !TextUtils.isEmpty(kountMerchantId)
 
     companion object {
         private const val KOUNT_MERCHANT_ID_KEY = "kountMerchantId"

@@ -18,7 +18,7 @@ internal data class VisaCheckoutConfiguration(
     val acceptedCardBrands: List<String>?
 ) {
 
-    var isEnabled: Boolean = apiKey != ""
+    val isEnabled: Boolean = apiKey != ""
 
     constructor(json: JSONObject?) : this(
         Json.optString(json, API_KEY, ""),
