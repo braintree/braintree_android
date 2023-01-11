@@ -94,6 +94,7 @@ open class Configuration internal constructor(configurationString: String?) {
         }
     }
 
+    // region Public Properties
     open val assetsUrl: String
     open val cardinalAuthenticationJwt: String?
     open val clientApiUrl: String
@@ -113,7 +114,9 @@ open class Configuration internal constructor(configurationString: String?) {
     open val payPalDirectBaseUrl: String?
     open val payPalPrivacyUrl: String?
     open val payPalUserAgreementUrl: String?
+    // endregion
 
+    // region Internal Properties
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val analyticsUrl: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiAccessToken: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiUrl: String
@@ -160,6 +163,7 @@ open class Configuration internal constructor(configurationString: String?) {
     private val unionPayConfiguration: UnionPayConfiguration
     private val venmoConfiguration: VenmoConfiguration
     private val visaCheckoutConfiguration: VisaCheckoutConfiguration
+    // endregion
 
     init {
         if (configurationString == null) {
@@ -246,6 +250,16 @@ open class Configuration internal constructor(configurationString: String?) {
         visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands
     }
 
+    // region Public Methods
+    /**
+     * @return Configuration as a json [String].
+     */
+    open fun toJson(): String {
+        return configurationString
+    }
+    // endregion
+
+    // region Internal Methods
     /**
      * Check if a specific feature is enabled in the GraphQL API.
      *
@@ -254,11 +268,5 @@ open class Configuration internal constructor(configurationString: String?) {
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun isGraphQLFeatureEnabled(feature: String) = graphQLConfiguration.isFeatureEnabled(feature)
-
-    /**
-     * @return Configuration as a json [String].
-     */
-    open fun toJson(): String {
-        return configurationString
-    }
+    // endregion
 }
