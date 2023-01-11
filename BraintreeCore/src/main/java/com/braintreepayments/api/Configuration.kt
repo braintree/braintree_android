@@ -10,57 +10,57 @@ import org.json.JSONObject
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  *
+ * @property analyticsUrl [String] url of the Braintree analytics service.
  * @property assetsUrl The assets URL of the current environment.
+ * @property braintreeApiAccessToken The Access Token for Braintree API.
+ * @property braintreeApiUrl the base url for accessing Braintree API.
+ * @property cardinalAuthenticationJwt the JWT for Cardinal
  * @property clientApiUrl The url of the Braintree client API for the current environment.
  * @property environment The current environment.
- * @property merchantId the current Braintree merchant id.
- * @property isPayPalEnabled `true` if PayPal is enabled and supported in the current environment, `false` otherwise.
- * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current merchant account, * `false` otherwise.
- * @property merchantAccountId the current Braintree merchant account id.
- * @property cardinalAuthenticationJwt the JWT for Cardinal
+ * @property googlePayAuthorizationFingerprint the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
+ * @property googlePayDisplayName the Google Pay display name to show to the user.
+ * @property googlePayEnvironment the current Google Pay environment.
+ * @property googlePayPayPalClientId the PayPal Client ID used by Google Pay.
+ * @property googlePaySupportedNetworks a list of supported card networks for Google Pay.
+ * @property graphQLUrl the GraphQL url.
+ * @property isAnalyticsEnabled `true` if analytics are enabled, `false` otherwise.
+ * @property isBraintreeApiEnabled a boolean indicating whether Braintree API is enabled for this merchant.
  * @property isCvvChallengePresent `true` if cvv is required for card transactions, `false` otherwise.
- * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions, `false` otherwise.
  * @property isFraudDataCollectionEnabled `true` if fraud device data collection should occur; `false` otherwise.
- * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
- * @property venmoAccessToken the Access Token used by the Venmo app to tokenize on behalf of the merchant.
- * @property venmoMerchantId the Venmo merchant id used by the Venmo app to authorize payment.
- * @property venmoEnvironment the Venmo environment used to handle this payment.
+ * @property isGooglePayEnabled `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
  * @property isGraphQLEnabled  `true` if GraphQL is enabled for the merchant account; `false` otherwise.
- * @property isLocalPaymentEnabled `true` if Local Payment is enabled for the merchant account; `false` otherwise.
  * @property isKountEnabled `true` if Kount is enabled for the merchant account; `false` otherwise.
- * @property kountMerchantId the Kount merchant id set in the Gateway.
+ * @property isLocalPaymentEnabled `true` if Local Payment is enabled for the merchant account; `false` otherwise.
+ * @property isPayPalEnabled `true` if PayPal is enabled and supported in the current environment, `false` otherwise.
+ * @property isPayPalTouchDisabled `true` if PayPal touch is currently disabled, `false` otherwise.
+ * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions, `false` otherwise.
+ * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
+ * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current merchant account, * `false` otherwise.
  * @property isUnionPayEnabled `true` if UnionPay is enabled for the merchant account; `false` otherwise.
- * @property payPalDisplayName the PayPal app display name.
+ * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
+ * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
+ * @property kountMerchantId the Kount merchant id set in the Gateway.
+ * @property merchantAccountId the current Braintree merchant account id.
+ * @property merchantId the current Braintree merchant id.
  * @property payPalClientId the PayPal app client id.
+ * @property payPalCurrencyIsoCode the PayPal currency code.
+ * @property payPalDirectBaseUrl the url for custom PayPal environments.
+ * @property payPalDisplayName the PayPal app display name.
+ * @property payPalEnvironment the current environment for PayPal.
  * @property payPalPrivacyUrl the PayPal app privacy url.
  * @property payPalUserAgreementUrl the PayPal app user agreement url.
- * @property payPalDirectBaseUrl the url for custom PayPal environments.
- * @property payPalEnvironment the current environment for PayPal.
- * @property isPayPalTouchDisabled `true` if PayPal touch is currently disabled, `false` otherwise.
- * @property payPalCurrencyIsoCode the PayPal currency code.
- * @property isGooglePayEnabled `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
- * @property googlePayAuthorizationFingerprint the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
- * @property googlePayEnvironment the current Google Pay environment.
- * @property googlePayDisplayName the Google Pay display name to show to the user.
- * @property googlePaySupportedNetworks a list of supported card networks for Google Pay.
- * @property googlePayPayPalClientId the PayPal Client ID used by Google Pay.
- * @property analyticsUrl [String] url of the Braintree analytics service.
- * @property isAnalyticsEnabled `true` if analytics are enabled, `false` otherwise.
- * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
- * @property visaCheckoutSupportedNetworks the Visa Checkout supported networks enabled for the merchant account.
- * @property visaCheckoutApiKey the Visa Checkout API key configured in the Braintree Control Panel.
- * @property visaCheckoutExternalClientId the Visa Checkout External Client ID configured in the Braintree Control Panel.
- * @property graphQLUrl the GraphQL url.
- * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
+ * @property samsungPayAuthorization the authorization to use with Samsung Pay.
+ * @property samsungPayEnvironment the Braintree environment Samsung Pay should interact with.
  * @property samsungPayMerchantDisplayName the merchant display name for Samsung Pay.
  * @property samsungPayServiceId the Samsung Pay service id associated with the merchant.
  * @property samsungPaySupportedCardBrands a list of card brands supported by Samsung Pay.
- * @property samsungPayAuthorization the authorization to use with Samsung Pay.
- * @property samsungPayEnvironment the Braintree environment Samsung Pay should interact with.
- * @property braintreeApiAccessToken The Access Token for Braintree API.
- * @property braintreeApiUrl the base url for accessing Braintree API.
- * @property isBraintreeApiEnabled a boolean indicating whether Braintree API is enabled for this merchant.
  * @property supportedCardTypes a list of card types supported by the merchant.
+ * @property venmoAccessToken the Access Token used by the Venmo app to tokenize on behalf of the merchant.
+ * @property venmoEnvironment the Venmo environment used to handle this payment.
+ * @property venmoMerchantId the Venmo merchant id used by the Venmo app to authorize payment.
+ * @property visaCheckoutApiKey the Visa Checkout API key configured in the Braintree Control Panel.
+ * @property visaCheckoutExternalClientId the Visa Checkout External Client ID configured in the Braintree Control Panel.
+ * @property visaCheckoutSupportedNetworks the Visa Checkout supported networks enabled for the merchant account.
  */
 open class Configuration internal constructor(configurationString: String?) {
 
