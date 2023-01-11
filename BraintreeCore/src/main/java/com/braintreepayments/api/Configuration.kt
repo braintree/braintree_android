@@ -114,12 +114,12 @@ open class Configuration internal constructor(configurationString: String?) {
     open val payPalPrivacyUrl: String?
     open val payPalUserAgreementUrl: String?
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val analyticsUrl: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val analyticsUrl: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiAccessToken: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiUrl: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayAuthorizationFingerprint: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayAuthorizationFingerprint: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayDisplayName: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayEnvironment: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayEnvironment: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayPayPalClientId: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePaySupportedNetworks: List<String>
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val graphQLUrl: String
@@ -130,10 +130,10 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isKountEnabled: Boolean
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isPayPalTouchDisabled: Boolean
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val kountMerchantId: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalClientId: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalCurrencyIsoCode: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalDisplayName: String
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalEnvironment: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalClientId: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalCurrencyIsoCode: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalDisplayName: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalEnvironment: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayAuthorization: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayEnvironment: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayMerchantDisplayName: String
