@@ -174,7 +174,7 @@ open class Configuration internal constructor(configurationString: String?) {
         // parse json challenges
         challenges = mutableSetOf()
         json.optJSONArray(CHALLENGES_KEY)?.let { challengesArray ->
-            for (i in 0 until challengesArray.length()) {
+            for (i in challengesArray.indices) {
                 challenges.add(challengesArray.optString(i, ""))
             }
         }
