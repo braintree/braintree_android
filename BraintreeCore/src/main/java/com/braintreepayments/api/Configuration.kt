@@ -4,11 +4,64 @@ import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 
-/**
- * Contains the remote configuration for the Braintree Android SDK.
- */
 // NEXT MAJOR VERSION: remove 'open' modifiers, Java classes/methods are open by default
 // Ref: https://kotlin-quick-reference.com/102c-R-open-final-classes.html
+
+/**
+ * Contains the remote configuration for the Braintree Android SDK.
+ *
+ * @property assetsUrl The assets URL of the current environment.
+ * @property clientApiUrl The url of the Braintree client API for the current environment.
+ * @property environment The current environment.
+ * @property merchantId the current Braintree merchant id.
+ * @property isPayPalEnabled `true` if PayPal is enabled and supported in the current environment, `false` otherwise.
+ * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current merchant account, * `false` otherwise.
+ * @property merchantAccountId the current Braintree merchant account id.
+ * @property cardinalAuthenticationJwt the JWT for Cardinal
+ * @property isCvvChallengePresent `true` if cvv is required for card transactions, `false` otherwise.
+ * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions, `false` otherwise.
+ * @property isFraudDataCollectionEnabled `true` if fraud device data collection should occur; `false` otherwise.
+ * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
+ * @property venmoAccessToken the Access Token used by the Venmo app to tokenize on behalf of the merchant.
+ * @property venmoMerchantId the Venmo merchant id used by the Venmo app to authorize payment.
+ * @property venmoEnvironment the Venmo environment used to handle this payment.
+ * @property isGraphQLEnabled  `true` if GraphQL is enabled for the merchant account; `false` otherwise.
+ * @property isLocalPaymentEnabled `true` if Local Payment is enabled for the merchant account; `false` otherwise.
+ * @property isKountEnabled `true` if Kount is enabled for the merchant account; `false` otherwise.
+ * @property kountMerchantId the Kount merchant id set in the Gateway.
+ * @property isUnionPayEnabled `true` if UnionPay is enabled for the merchant account; `false` otherwise.
+ * @property payPalDisplayName the PayPal app display name.
+ * @property payPalClientId the PayPal app client id.
+ * @property payPalPrivacyUrl the PayPal app privacy url.
+ * @property payPalUserAgreementUrl the PayPal app user agreement url.
+ * @property payPalDirectBaseUrl the url for custom PayPal environments.
+ * @property payPalEnvironment the current environment for PayPal.
+ * @property isPayPalTouchDisabled `true` if PayPal touch is currently disabled, `false` otherwise.
+ * @property payPalCurrencyIsoCode the PayPal currency code.
+ * @property isGooglePayEnabled `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
+ * @property googlePayAuthorizationFingerprint the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
+ * @property googlePayEnvironment the current Google Pay environment.
+ * @property googlePayDisplayName the Google Pay display name to show to the user.
+ * @property googlePaySupportedNetworks a list of supported card networks for Google Pay.
+ * @property googlePayPayPalClientId the PayPal Client ID used by Google Pay.
+ * @property analyticsUrl [String] url of the Braintree analytics service.
+ * @property isAnalyticsEnabled `true` if analytics are enabled, `false` otherwise.
+ * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
+ * @property visaCheckoutSupportedNetworks the Visa Checkout supported networks enabled for the merchant account.
+ * @property visaCheckoutApiKey the Visa Checkout API key configured in the Braintree Control Panel.
+ * @property visaCheckoutExternalClientId the Visa Checkout External Client ID configured in the Braintree Control Panel.
+ * @property graphQLUrl the GraphQL url.
+ * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
+ * @property samsungPayMerchantDisplayName the merchant display name for Samsung Pay.
+ * @property samsungPayServiceId the Samsung Pay service id associated with the merchant.
+ * @property samsungPaySupportedCardBrands a list of card brands supported by Samsung Pay.
+ * @property samsungPayAuthorization the authorization to use with Samsung Pay.
+ * @property samsungPayEnvironment the Braintree environment Samsung Pay should interact with.
+ * @property braintreeApiAccessToken The Access Token for Braintree API.
+ * @property braintreeApiUrl the base url for accessing Braintree API.
+ * @property isBraintreeApiEnabled a boolean indicating whether Braintree API is enabled for this merchant.
+ * @property supportedCardTypes a list of card types supported by the merchant.
+ */
 open class Configuration internal constructor(configurationString: String?) {
 
     companion object {
@@ -33,12 +86,6 @@ open class Configuration internal constructor(configurationString: String?) {
         private const val SAMSUNG_PAY_KEY = "samsungPay"
         private const val CARDINAL_AUTHENTICATION_JWT = "cardinalAuthenticationJWT"
 
-        /**
-         * Creates a new [Configuration] instance from a json string.
-         *
-         * @param configurationString The json configuration string from Braintree.
-         * @return [Configuration] instance.
-         */
         @JvmStatic
         @Throws(JSONException::class)
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -64,46 +111,13 @@ open class Configuration internal constructor(configurationString: String?) {
     private val graphQLConfiguration: GraphQLConfiguration
     private val samsungPayConfiguration: SamsungPayConfiguration
 
-    /**
-     * @return The assets URL of the current environment.
-     */
     open val assetsUrl: String
-
-    /**
-     * @return The url of the Braintree client API for the current environment.
-     */
     open val clientApiUrl: String
-
-    /**
-     * @return The current environment.
-     */
     open val environment: String
-
-    /**
-     * @return the current Braintree merchant id.
-     */
     open val merchantId: String
-
-    /**
-     * @return `true` if PayPal is enabled and supported in the current environment,
-     * `false` otherwise.
-     */
     open val isPayPalEnabled: Boolean
-
-    /**
-     * @return `true` if 3D Secure is enabled and supported for the current merchant account,
-     * `false` otherwise.
-     */
     open val isThreeDSecureEnabled: Boolean
-
-    /**
-     * @return the current Braintree merchant account id.
-     */
     open val merchantAccountId: String?
-
-    /**
-     * @return the JWT for Cardinal
-     */
     open val cardinalAuthenticationJwt: String?
 
     init {
@@ -145,187 +159,122 @@ open class Configuration internal constructor(configurationString: String?) {
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
     }
 
-    /**
-     * @return `true` if cvv is required for card transactions, `false` otherwise.
-     */
     open val isCvvChallengePresent = challenges.contains("cvv")
-
-    /**
-     * @return `true` if postal code is required for card transactions, `false` otherwise.
-     */
     open val isPostalCodeChallengePresent = challenges.contains("postal_code")
 
-    /**
-     * @return `true` if fraud device data collection should occur; `false` otherwise.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
 
-    /**
-     * @return `true` if Venmo is enabled for the merchant account; `false` otherwise.
-     */
     open val isVenmoEnabled = venmoConfiguration.isAccessTokenValid
 
-    /**
-     * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val venmoAccessToken = venmoConfiguration.accessToken
 
-    /**
-     * @return the Venmo merchant id used by the Venmo app to authorize payment.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val venmoMerchantId = venmoConfiguration.merchantId
 
-    /**
-     * @return the Venmo environment used to handle this payment.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val venmoEnvironment = venmoConfiguration.environment
 
-    /**
-     * @return `true` if GraphQL is enabled for the merchant account; `false` otherwise.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isGraphQLEnabled = graphQLConfiguration.isEnabled
 
-    /**
-     * @return `true` if Local Payment is enabled for the merchant account; `false` otherwise.
-     */
     open val isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
 
-    /**
-     * @return `true` if Kount is enabled for the merchant account; `false` otherwise.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isKountEnabled = kountConfiguration.isEnabled
 
-    /**
-     * @return the Kount merchant id set in the Gateway.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val kountMerchantId = kountConfiguration.kountMerchantId
 
-    /**
-     * @return `true` if UnionPay is enabled for the merchant account; `false` otherwise.
-     */
     open val isUnionPayEnabled = unionPayConfiguration.isEnabled
 
-    /**
-     * @return the PayPal app display name.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalDisplayName = payPalConfiguration.displayName
 
-    /**
-     * @return the PayPal app client id.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalClientId = payPalConfiguration.clientId
 
-    /**
-     * @return the PayPal app privacy url.
-     */
     open val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
 
-    /**
-     * @return the PayPal app user agreement url.
-     */
     open val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
 
-    /**
-     * @return the url for custom PayPal environments.
-     */
     open val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
 
-    /**
-     * @return the current environment for PayPal.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalEnvironment = payPalConfiguration.environment
 
-    /**
-     * @return `true` if PayPal touch is currently disabled, `false` otherwise.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isPayPalTouchDisabled = payPalConfiguration.isTouchDisabled
 
-    /**
-     * @return the PayPal currency code.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
 
-    /**
-     * @return `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
-     */
     open val isGooglePayEnabled = googlePayConfiguration.isEnabled
 
-    /**
-     * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayAuthorizationFingerprint = googlePayConfiguration.googleAuthorizationFingerprint
 
-    /**
-     * @return the current Google Pay environment.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayEnvironment = googlePayConfiguration.environment
 
-    /**
-     * @return the Google Pay display name to show to the user.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayDisplayName = googlePayConfiguration.displayName
 
-    /**
-     * @return a list of supported card networks for Google Pay.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePaySupportedNetworks = googlePayConfiguration.supportedNetworks
 
-    /**
-     * @return the PayPal Client ID used by Google Pay.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayPayPalClientId = googlePayConfiguration.paypalClientId
 
-    /**
-     * @return [String] url of the Braintree analytics service.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val analyticsUrl = analyticsConfiguration.url
 
-    /**
-     * @return `true` if analytics are enabled, `false` otherwise.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isAnalyticsEnabled = analyticsConfiguration.isEnabled
 
-    /**
-     * @return `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
-     */
     open val isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
 
-    /**
-     * @return the Visa Checkout supported networks enabled for the merchant account.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands
 
-    /**
-     * @return the Visa Checkout API key configured in the Braintree Control Panel.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutApiKey = visaCheckoutConfiguration.apiKey
 
-    /**
-     * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
-     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutExternalClientId = visaCheckoutConfiguration.externalClientId
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val graphQLUrl = graphQLConfiguration.url
+
+    open val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val samsungPayMerchantDisplayName = samsungPayConfiguration.merchantDisplayName
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val samsungPayServiceId = samsungPayConfiguration.serviceId
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val samsungPaySupportedCardBrands = samsungPayConfiguration.supportedCardBrands.toList()
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val samsungPayAuthorization = samsungPayConfiguration.samsungAuthorization
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val samsungPayEnvironment = samsungPayConfiguration.environment
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val braintreeApiAccessToken = braintreeApiConfiguration.accessToken
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val braintreeApiUrl = braintreeApiConfiguration.url
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val supportedCardTypes = cardConfiguration.supportedCardTypes
 
     /**
      * Check if a specific feature is enabled in the GraphQL API.
@@ -335,71 +284,6 @@ open class Configuration internal constructor(configurationString: String?) {
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun isGraphQLFeatureEnabled(feature: String) = graphQLConfiguration.isFeatureEnabled(feature)
-
-    /**
-     * @return the GraphQL url.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val graphQLUrl = graphQLConfiguration.url
-
-    /**
-     * @return `true` if Samsung Pay is enabled; `false` otherwise.
-     */
-    open val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
-
-    /**
-     * @return the merchant display name for Samsung Pay.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPayMerchantDisplayName = samsungPayConfiguration.merchantDisplayName
-
-    /**
-     * @return the Samsung Pay service id associated with the merchant.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPayServiceId = samsungPayConfiguration.serviceId
-
-    /**
-     * @return a list of card brands supported by Samsung Pay.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPaySupportedCardBrands = samsungPayConfiguration.supportedCardBrands.toList()
-
-    /**
-     * @return the authorization to use with Samsung Pay.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPayAuthorization = samsungPayConfiguration.samsungAuthorization
-
-    /**
-     * @return the Braintree environment Samsung Pay should interact with.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val samsungPayEnvironment = samsungPayConfiguration.environment
-
-    /**
-     * @return The Access Token for Braintree API.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val braintreeApiAccessToken = braintreeApiConfiguration.accessToken
-
-    /**
-     * @return the base url for accessing Braintree API.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val braintreeApiUrl = braintreeApiConfiguration.url
-
-    /**
-     * @return a boolean indicating whether Braintree API is enabled for this merchant.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
-
-    /**
-     * @return a list of card types supported by the merchant.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val supportedCardTypes = cardConfiguration.supportedCardTypes
 
     /**
      * @return Configuration as a json [String].
