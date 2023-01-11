@@ -94,31 +94,28 @@ open class Configuration internal constructor(configurationString: String?) {
         }
     }
 
-    private val configurationString: String
-    private val challenges: MutableSet<String> = HashSet()
-
-    private val braintreeApiConfiguration: BraintreeApiConfiguration
-    private val analyticsConfiguration: AnalyticsConfiguration
-    private val cardConfiguration: CardConfiguration
-
-    private val payPalConfiguration: PayPalConfiguration
-    private val googlePayConfiguration: GooglePayConfiguration
-
-    private val venmoConfiguration: VenmoConfiguration
-    private val kountConfiguration: KountConfiguration
-    private val unionPayConfiguration: UnionPayConfiguration
-    private val visaCheckoutConfiguration: VisaCheckoutConfiguration
-    private val graphQLConfiguration: GraphQLConfiguration
-    private val samsungPayConfiguration: SamsungPayConfiguration
-
     open val assetsUrl: String
+    open val cardinalAuthenticationJwt: String?
     open val clientApiUrl: String
     open val environment: String
-    open val merchantId: String
     open val isPayPalEnabled: Boolean
     open val isThreeDSecureEnabled: Boolean
     open val merchantAccountId: String?
-    open val cardinalAuthenticationJwt: String?
+    open val merchantId: String
+
+    private val analyticsConfiguration: AnalyticsConfiguration
+    private val braintreeApiConfiguration: BraintreeApiConfiguration
+    private val cardConfiguration: CardConfiguration
+    private val challenges: MutableSet<String> = HashSet()
+    private val configurationString: String
+    private val googlePayConfiguration: GooglePayConfiguration
+    private val graphQLConfiguration: GraphQLConfiguration
+    private val kountConfiguration: KountConfiguration
+    private val payPalConfiguration: PayPalConfiguration
+    private val samsungPayConfiguration: SamsungPayConfiguration
+    private val unionPayConfiguration: UnionPayConfiguration
+    private val venmoConfiguration: VenmoConfiguration
+    private val visaCheckoutConfiguration: VisaCheckoutConfiguration
 
     init {
         if (configurationString == null) {
@@ -161,11 +158,18 @@ open class Configuration internal constructor(configurationString: String?) {
 
     open val isCvvChallengePresent = challenges.contains("cvv")
     open val isPostalCodeChallengePresent = challenges.contains("postal_code")
+    open val isVenmoEnabled = venmoConfiguration.isAccessTokenValid
+    open val isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
+    open val isUnionPayEnabled = unionPayConfiguration.isEnabled
+    open val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
+    open val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
+    open val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
+    open val isGooglePayEnabled = googlePayConfiguration.isEnabled
+    open val isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
+    open val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
-
-    open val isVenmoEnabled = venmoConfiguration.isAccessTokenValid
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val venmoAccessToken = venmoConfiguration.accessToken
@@ -179,27 +183,17 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isGraphQLEnabled = graphQLConfiguration.isEnabled
 
-    open val isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
-
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isKountEnabled = kountConfiguration.isEnabled
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val kountMerchantId = kountConfiguration.kountMerchantId
 
-    open val isUnionPayEnabled = unionPayConfiguration.isEnabled
-
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalDisplayName = payPalConfiguration.displayName
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalClientId = payPalConfiguration.clientId
-
-    open val payPalPrivacyUrl: String? = payPalConfiguration.privacyUrl
-
-    open val payPalUserAgreementUrl: String? = payPalConfiguration.userAgreementUrl
-
-    open val payPalDirectBaseUrl: String? = payPalConfiguration.directBaseUrl
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalEnvironment = payPalConfiguration.environment
@@ -209,8 +203,6 @@ open class Configuration internal constructor(configurationString: String?) {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
-
-    open val isGooglePayEnabled = googlePayConfiguration.isEnabled
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val googlePayAuthorizationFingerprint = googlePayConfiguration.googleAuthorizationFingerprint
@@ -233,8 +225,6 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isAnalyticsEnabled = analyticsConfiguration.isEnabled
 
-    open val isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
-
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands
 
@@ -246,8 +236,6 @@ open class Configuration internal constructor(configurationString: String?) {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val graphQLUrl = graphQLConfiguration.url
-
-    open val isSamsungPayEnabled = samsungPayConfiguration.isEnabled
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val samsungPayMerchantDisplayName = samsungPayConfiguration.merchantDisplayName
