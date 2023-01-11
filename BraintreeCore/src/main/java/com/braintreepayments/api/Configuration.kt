@@ -150,7 +150,7 @@ open class Configuration internal constructor(configurationString: String?) {
     private val analyticsConfiguration: AnalyticsConfiguration
     private val braintreeApiConfiguration: BraintreeApiConfiguration
     private val cardConfiguration: CardConfiguration
-    private val challenges: MutableSet<String> = HashSet()
+    private val challenges: MutableSet<String>
     private val configurationString: String
     private val googlePayConfiguration: GooglePayConfiguration
     private val graphQLConfiguration: GraphQLConfiguration
@@ -172,6 +172,7 @@ open class Configuration internal constructor(configurationString: String?) {
         clientApiUrl = json.getString(CLIENT_API_URL_KEY)
 
         // parse json challenges
+        challenges = mutableSetOf()
         json.optJSONArray(CHALLENGES_KEY)?.let { challengesArray ->
             for (i in 0 until challengesArray.length()) {
                 challenges.add(challengesArray.optString(i, ""))
