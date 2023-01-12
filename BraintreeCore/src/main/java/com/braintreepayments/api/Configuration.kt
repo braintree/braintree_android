@@ -187,23 +187,23 @@ open class Configuration internal constructor(configurationString: String?) {
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY))
         braintreeApiConfiguration =
             BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY))
-        cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY))
+        cardConfiguration = CardConfiguration(json.optJSONObject(CARD_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
         environment = json.getString(ENVIRONMENT_KEY)
         googlePayConfiguration = GooglePayConfiguration(json.optJSONObject(GOOGLE_PAY_KEY))
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
         isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
         isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
-        kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
+        kountConfiguration = KountConfiguration(json.optJSONObject(KOUNT_KEY))
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
         samsungPayConfiguration =
             SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
-        unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
+        unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
         visaCheckoutConfiguration =
-            VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY))
+            VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
 
         isCvvChallengePresent = challenges.contains("cvv")
         isGooglePayEnabled = googlePayConfiguration.isEnabled
