@@ -10,9 +10,9 @@ import org.json.JSONObject
  * @property merchantId The merchant Id associated with this merchant's Venmo integration.
  */
 internal class VenmoConfiguration constructor(
-    val accessToken: String?,
-    val environment: String?,
-    val merchantId: String?
+    val accessToken: String,
+    val environment: String,
+    val merchantId: String
 ) {
 
     constructor(json: JSONObject?) : this(

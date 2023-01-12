@@ -17,9 +17,9 @@ internal data class GooglePayConfiguration constructor(
     val isEnabled: Boolean,
     val googleAuthorizationFingerprint: String?,
     val environment: String?,
-    val displayName: String?,
-    val supportedNetworks: List<String>?,
-    val paypalClientId: String?
+    val displayName: String,
+    val supportedNetworks: List<String>,
+    val paypalClientId: String
 ) {
 
     constructor(json: JSONObject?) : this(
