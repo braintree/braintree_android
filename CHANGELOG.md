@@ -449,6 +449,11 @@
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
 
+## 3.20.0
+
+* Bump Cardinal version to `2.2.7-2`
+* Update pinned certificates used by `BraintreeGraphQLHttpClient` and `BraintreeHttpClient`
+
 ## 3.19.0
 
 * Add `requestBillingAgreement` to `PayPalRequest`
