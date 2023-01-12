@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.23.1
 
 * ThreeDSecure
   * Defensively guard against `ThreeDSecureActivity` launch without extras (fixes #641)
