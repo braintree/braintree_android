@@ -9,7 +9,7 @@ import org.json.JSONObject
  * @property isEnabled `true` if Kount is enabled, `false` otherwise.
  */
 internal data class KountConfiguration private constructor(
-    val kountMerchantId: String? = null,
+    val kountMerchantId: String,
 ) {
 
     constructor(json: JSONObject?) : this(Json.optString(json, KOUNT_MERCHANT_ID_KEY, ""))
