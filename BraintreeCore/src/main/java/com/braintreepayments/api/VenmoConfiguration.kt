@@ -1,8 +1,6 @@
 package com.braintreepayments.api
 
 import android.text.TextUtils
-import com.braintreepayments.api.VenmoConfiguration
-import com.braintreepayments.api.Json
 import org.json.JSONObject
 
 /**
@@ -12,9 +10,9 @@ import org.json.JSONObject
  * @property merchantId The merchant Id associated with this merchant's Venmo integration.
  */
 internal class VenmoConfiguration constructor(
-    val accessToken: String?,
-    val environment: String?,
-    val merchantId: String?
+    val accessToken: String,
+    val environment: String,
+    val merchantId: String
 ) {
 
     constructor(json: JSONObject?) : this(
