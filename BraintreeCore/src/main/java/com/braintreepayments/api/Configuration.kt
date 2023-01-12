@@ -183,26 +183,26 @@ open class Configuration internal constructor(configurationString: String?) {
             }
         }
 
-        environment = json.getString(ENVIRONMENT_KEY)
-        merchantId = json.getString(MERCHANT_ID_KEY)
-        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         analyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY))
         braintreeApiConfiguration =
             BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY))
         cardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY))
-        isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
-        payPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY))
+        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
+        environment = json.getString(ENVIRONMENT_KEY)
         googlePayConfiguration = GooglePayConfiguration.fromJson(json.optJSONObject(GOOGLE_PAY_KEY))
-        isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
-        venmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY))
-        kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
-        unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
-        visaCheckoutConfiguration =
-            VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY))
         graphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY))
+        isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
+        isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
+        kountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY))
+        merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
+        merchantId = json.getString(MERCHANT_ID_KEY)
+        payPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY))
         samsungPayConfiguration =
             SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY))
-        cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
+        unionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY))
+        venmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY))
+        visaCheckoutConfiguration =
+            VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY))
 
         isCvvChallengePresent = challenges.contains("cvv")
         isGooglePayEnabled = googlePayConfiguration.isEnabled
