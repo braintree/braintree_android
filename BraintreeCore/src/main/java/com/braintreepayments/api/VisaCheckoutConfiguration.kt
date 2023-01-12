@@ -13,9 +13,9 @@ import java.util.ArrayList
  * @property acceptedCardBrands The accepted card brands for Visa Checkout.
  */
 internal data class VisaCheckoutConfiguration(
-    val apiKey: String?,
-    val externalClientId: String?,
-    val acceptedCardBrands: List<String>?
+    val apiKey: String,
+    val externalClientId: String,
+    val acceptedCardBrands: List<String>
 ) {
 
     val isEnabled: Boolean = apiKey != ""
