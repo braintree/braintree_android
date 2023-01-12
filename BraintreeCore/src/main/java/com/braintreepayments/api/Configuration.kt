@@ -166,6 +166,7 @@ open class Configuration internal constructor(configurationString: String?) {
     // endregion
 
     init {
+        // TODO: make configuration non-null once ConfigurationLoader is migrated to Kotlin
         if (configurationString == null) {
             throw JSONException("Configuration cannot be null")
         }
