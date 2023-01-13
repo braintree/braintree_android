@@ -10,7 +10,6 @@ import org.json.JSONObject
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  *
- * @property analyticsUrl [String] url of the Braintree analytics service.
  * @property assetsUrl The assets URL of the current environment.
  * @property braintreeApiAccessToken The Access Token for Braintree API.
  * @property braintreeApiUrl the base url for accessing Braintree API.
@@ -117,6 +116,11 @@ open class Configuration internal constructor(configurationString: String?) {
     // endregion
 
     // region Internal Properties
+
+    /**
+     * @return [String] url of the Braintree analytics service.
+     * @suppress
+     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val analyticsUrl: String?
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiAccessToken: String
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiUrl: String
