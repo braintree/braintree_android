@@ -143,6 +143,10 @@ subprojects {
     }
 }
 
+dokkaHtmlMultiModule.configure {
+    outputDirectory.set(project.file("docs"))
+}
+
 task changeGradleReleaseVersion {
     doLast {
         def gradleFile = new File('build.gradle')
