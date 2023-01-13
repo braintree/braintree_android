@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'kotlin-android'
+    id 'org.jetbrains.dokka'
     id 'signing'
 }
 
@@ -84,6 +85,14 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
+}
+
+dokkaHtml.configure {
+    dokkaSourceSets {
+        named('main') {
+            noAndroidSdkLink.set(false)
+        }
+    }
 }
 
 android.buildTypes.each { type ->

@@ -3,6 +3,7 @@ plugins {
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
     id 'kotlin-android'
+    id 'org.jetbrains.dokka'
 }
 
 android {
@@ -53,6 +54,14 @@ dependencies {
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
+}
+
+dokkaHtml.configure {
+    dokkaSourceSets {
+        named('main') {
+            noAndroidSdkLink.set(false)
+        }
+    }
 }
 
 // region signing and publishing

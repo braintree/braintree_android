@@ -185,8 +185,7 @@ open class Configuration internal constructor(configurationString: String?) {
         }
 
         analyticsConfiguration = AnalyticsConfiguration(json.optJSONObject(ANALYTICS_KEY))
-        braintreeApiConfiguration =
-            BraintreeApiConfiguration(json.optJSONObject(BRAINTREE_API_KEY))
+        braintreeApiConfiguration = BraintreeApiConfiguration(json.optJSONObject(BRAINTREE_API_KEY))
         cardConfiguration = CardConfiguration(json.optJSONObject(CARD_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
         environment = json.getString(ENVIRONMENT_KEY)
@@ -198,12 +197,10 @@ open class Configuration internal constructor(configurationString: String?) {
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
-        samsungPayConfiguration =
-            SamsungPayConfiguration(json.optJSONObject(SAMSUNG_PAY_KEY))
+        samsungPayConfiguration = SamsungPayConfiguration(json.optJSONObject(SAMSUNG_PAY_KEY))
         unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
-        visaCheckoutConfiguration =
-            VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
+        visaCheckoutConfiguration = VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
 
         isCvvChallengePresent = challenges.contains("cvv")
         isGooglePayEnabled = googlePayConfiguration.isEnabled
