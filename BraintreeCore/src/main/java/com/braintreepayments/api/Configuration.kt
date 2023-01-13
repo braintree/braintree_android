@@ -267,6 +267,7 @@ open class Configuration internal constructor(configurationString: String?) {
      *
      * @param feature The feature to check.
      * @return `true` if GraphQL is enabled and the feature is enabled, `false` otherwise.
+     * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun isGraphQLFeatureEnabled(feature: String) = graphQLConfiguration.isFeatureEnabled(feature)
