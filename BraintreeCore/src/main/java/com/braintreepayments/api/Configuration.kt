@@ -32,7 +32,10 @@ import org.json.JSONObject
  */
 open class Configuration internal constructor(configurationString: String?) {
 
-    internal companion object {
+    /**
+     * @suppress
+     */
+    companion object {
         private const val ANALYTICS_KEY = "analytics"
         private const val ASSETS_URL_KEY = "assetsUrl"
         private const val BRAINTREE_API_KEY = "braintreeApi"
