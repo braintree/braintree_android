@@ -144,6 +144,7 @@ subprojects {
 }
 
 dokkaHtmlMultiModule.configure {
+    // redirect dokka output to GitHub pages root directory
     outputDirectory.set(project.file("docs"))
 }
 
