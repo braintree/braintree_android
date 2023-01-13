@@ -56,14 +56,6 @@ dependencies {
     androidTestImplementation deps.junitTest
 }
 
-dokkaHtml.configure {
-    dokkaSourceSets {
-        named('main') {
-            noAndroidSdkLink.set(false)
-        }
-    }
-}
-
 // region signing and publishing
 
 task javadocs(type: Javadoc) {

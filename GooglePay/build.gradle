@@ -3,6 +3,7 @@ plugins {
     id 'de.marcphilipp.nexus-publish'
     id 'kotlin-android'
     id 'signing'
+    id 'org.jetbrains.dokka'
 }
 
 android {

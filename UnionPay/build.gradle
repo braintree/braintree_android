@@ -3,6 +3,7 @@ plugins {
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
     id 'kotlin-android'
+    id 'org.jetbrains.dokka'
 }
 android {
     compileSdkVersion rootProject.compileSdkVersion

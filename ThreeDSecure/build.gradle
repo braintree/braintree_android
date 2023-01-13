@@ -2,6 +2,7 @@
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'org.jetbrains.dokka'
 }
 
 android {

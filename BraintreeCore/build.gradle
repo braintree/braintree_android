@@ -2,8 +2,8 @@ plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'kotlin-android'
-    id 'org.jetbrains.dokka'
     id 'signing'
+    id 'org.jetbrains.dokka'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
@@ -85,14 +85,6 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
-}
-
-dokkaHtml.configure {
-    dokkaSourceSets {
-        named('main') {
-            noAndroidSdkLink.set(false)
-        }
-    }
 }
 
 android.buildTypes.each { type ->
