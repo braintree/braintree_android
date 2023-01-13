@@ -1,9 +1,9 @@
 plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
     id 'kotlin-android'
-    id 'signing'
     id 'org.jetbrains.dokka'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';

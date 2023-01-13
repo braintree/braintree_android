@@ -1,9 +1,9 @@
 plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
-    id 'signing'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
 }
 
 android {
