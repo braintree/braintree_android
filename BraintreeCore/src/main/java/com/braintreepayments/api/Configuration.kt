@@ -29,6 +29,7 @@ import org.json.JSONObject
  * @property payPalDirectBaseUrl the url for custom PayPal environments.
  * @property payPalPrivacyUrl the PayPal app privacy url.
  * @property payPalUserAgreementUrl the PayPal app user agreement url.
+ * @property supportedCardTypes a list of card types supported by the merchant.
  */
 open class Configuration internal constructor(configurationString: String?) {
 
@@ -59,8 +60,8 @@ open class Configuration internal constructor(configurationString: String?) {
 
         @JvmStatic
         @Throws(JSONException::class)
-        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(configurationString: String?): Configuration {
+            // NEXT MAJOR VERSION: remove JSON static factory method from public facing API
             return Configuration(configurationString)
         }
     }
@@ -85,6 +86,7 @@ open class Configuration internal constructor(configurationString: String?) {
     open val payPalDirectBaseUrl: String?
     open val payPalPrivacyUrl: String?
     open val payPalUserAgreementUrl: String?
+    open val supportedCardTypes: List<String>
     // endregion
 
     // region Internal Properties
@@ -238,12 +240,6 @@ open class Configuration internal constructor(configurationString: String?) {
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPaySupportedCardBrands: List<String>
-
-    /**
-     * @return a list of card types supported by the merchant.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val supportedCardTypes: List<String>
 
     /**
      * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
