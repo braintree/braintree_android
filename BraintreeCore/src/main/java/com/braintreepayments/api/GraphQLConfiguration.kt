@@ -10,10 +10,7 @@ import java.util.HashSet
  * @property url the GraphQL url
  * @property isEnabled `true` if GraphQL is enabled, `false` otherwise.
  */
-internal data class GraphQLConfiguration(
-    val url: String = "",
-    private val features: Set<String> = HashSet<String>()
-) {
+internal data class GraphQLConfiguration(val url: String, private val features: Set<String>) {
 
     constructor(json: JSONObject?) : this(
         Json.optString(json, GraphQLConstants.Keys.URL, ""),

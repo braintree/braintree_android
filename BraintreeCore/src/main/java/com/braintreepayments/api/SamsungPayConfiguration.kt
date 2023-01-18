@@ -14,11 +14,11 @@ import kotlin.collections.ArrayList
  * @property samsungAuthorization the authorization to use with Samsung Pay.
  */
 internal data class SamsungPayConfiguration(
-    val environment: String = "",
-    val serviceId: String = "",
-    val merchantDisplayName: String = "",
-    val supportedCardBrands: List<String> = ArrayList() ,
-    val samsungAuthorization: String = ""
+    val environment: String,
+    val serviceId: String,
+    val merchantDisplayName: String,
+    val supportedCardBrands: List<String>,
+    val samsungAuthorization: String
 ) {
 
     constructor(json: JSONObject?): this(
@@ -33,7 +33,6 @@ internal data class SamsungPayConfiguration(
      */
     val isEnabled: Boolean = !TextUtils.isEmpty(samsungAuthorization)
 
-
     companion object {
         private const val DISPLAY_NAME_KEY = "displayName"
         private const val SERVICE_ID_KEY = "serviceId"
@@ -42,7 +41,7 @@ internal data class SamsungPayConfiguration(
         private const val ENVIRONMENT = "environment"
 
         private fun parseSupportedCardBrands(jsonArray: JSONArray?): List<String> {
-            val result = ArrayList<String>()
+            val result = mutableListOf<String>()
             jsonArray?.also { array ->
                 for (i in 0 until array.length()) {
                     result.add(array.getString(i))

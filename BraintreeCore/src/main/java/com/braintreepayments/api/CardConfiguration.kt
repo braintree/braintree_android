@@ -10,8 +10,8 @@ import kotlin.collections.ArrayList
  * @property isFraudDataCollectionEnabled if fraud data collection should occur.
  */
 internal data class CardConfiguration(
-    val supportedCardTypes: List<String> = ArrayList(),
-    val isFraudDataCollectionEnabled: Boolean = false
+    val supportedCardTypes: List<String>,
+    val isFraudDataCollectionEnabled: Boolean
 ) {
 
     constructor(json: JSONObject?) : this(
@@ -24,7 +24,7 @@ internal data class CardConfiguration(
         private const val COLLECT_DEVICE_DATA_KEY = "collectDeviceData"
 
         private fun parseSupportedCardTypes(jsonArray: JSONArray?): List<String> {
-            val result = ArrayList<String>()
+            val result = mutableListOf<String>()
             jsonArray?.also { array ->
                 for (i in 0 until array.length()) {
                     result.add(array.optString(i, ""))

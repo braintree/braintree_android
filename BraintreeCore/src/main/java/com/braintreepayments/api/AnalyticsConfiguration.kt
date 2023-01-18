@@ -7,11 +7,9 @@ import org.json.JSONObject
  * Contains configuration for Braintree analytics calls
  * @property url url of the Braintree analytics service.
  */
-internal data class AnalyticsConfiguration(
-    val url: String = ""
-) {
+internal data class AnalyticsConfiguration(val url: String) {
 
-    constructor(json: JSONObject?): this(
+    constructor(json: JSONObject?) : this(
         Json.optString(json, URL_KEY, "")
     )
 
