@@ -19,6 +19,7 @@ internal data class GraphQLConfiguration(
         Json.optString(json, GraphQLConstants.Keys.URL, ""),
         parseJsonFeatures(json?.optJSONArray(GraphQLConstants.Keys.FEATURES))
     )
+
     /**
      * @return `true` if GraphQL is enabled, `false` otherwise.
      */
