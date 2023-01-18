@@ -1,8 +1,9 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
-    id 'kotlin-android'
 }
 
 android {
@@ -57,17 +58,6 @@ dependencies {
 
 // region signing and publishing
 
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    failOnError false
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
-
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
@@ -96,7 +86,6 @@ afterEvaluate {
                 from components.release
 
                 artifact sourcesJar
-                artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'card'
