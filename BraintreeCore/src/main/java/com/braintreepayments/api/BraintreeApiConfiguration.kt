@@ -8,10 +8,7 @@ import org.json.JSONObject
  * @property accessToken The Access Token for Braintree API.
  * @property url the base url for accessing Braintree API.
  */
-internal data class BraintreeApiConfiguration(
-    val accessToken: String = "",
-    val url: String = ""
-) {
+internal data class BraintreeApiConfiguration(val accessToken: String, val url: String) {
 
     constructor(json: JSONObject?) : this(
         Json.optString(json, ACCESS_TOKEN_KEY, ""),
