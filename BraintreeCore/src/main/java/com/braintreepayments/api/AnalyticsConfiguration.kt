@@ -14,6 +14,7 @@ internal data class AnalyticsConfiguration(
     constructor(json: JSONObject?): this(
         Json.optString(json, URL_KEY, "")
     )
+
     /**
      * @return `true` if analytics are enabled, `false` otherwise.
      */
