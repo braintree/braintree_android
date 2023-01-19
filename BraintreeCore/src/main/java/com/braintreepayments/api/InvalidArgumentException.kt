@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import androidx.annotation.RestrictTo
 
+// NEXT MAJOR VERSION: remove open modifier
 /**
  * Error thrown when arguments provided to a method are invalid.
  */
