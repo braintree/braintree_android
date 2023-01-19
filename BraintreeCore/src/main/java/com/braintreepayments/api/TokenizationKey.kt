@@ -21,16 +21,16 @@ internal class TokenizationKey(tokenizationKey: String) : Authorization(tokeniza
 
     companion object {
         const val MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$"
-        private const val DEVELOPMENT = "development"
-        private const val SANDBOX = "sandbox"
-        private const val PRODUCTION = "production"
+        private const val DEVELOPMENT_URL = BuildConfig.DEVELOPMENT_URL
+        private const val SANDBOX_URL = "https://api.sandbox.braintreegateway.com/"
+        private const val PRODUCTION_URL = "https://api.braintreegateway.com/"
         private const val CONFIG_V1 = "v1/configuration"
 
         @Throws(InvalidArgumentException::class)
         private fun getUrl(environment: String) = when (environment) {
-            DEVELOPMENT -> BuildConfig.DEVELOPMENT_URL
-            SANDBOX -> "https://api.sandbox.braintreegateway.com/"
-            PRODUCTION -> "https://api.braintreegateway.com/"
+            "development" -> DEVELOPMENT_URL
+            "sandbox" -> SANDBOX_URL
+            "production" -> PRODUCTION_URL
             else -> throw InvalidArgumentException("Tokenization Key contained invalid environment")
         }
     }
