@@ -6,6 +6,8 @@ import org.json.JSONObject
 import java.lang.NullPointerException
 import kotlin.jvm.Throws
 
+// NEXT MAJOR VERSION: remove authorizationFingerprint. Keep bearer
+
 /**
  * A class containing the configuration url and authorization for the current Braintree environment.
  * @param clientTokenString A client token from the Braintree Gateway
@@ -18,19 +20,19 @@ internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
     clientTokenString: String
 ) : Authorization(clientTokenString) {
 
+    override val configUrl: String
+    override val bearer: String
 
-    private val _configUrl: String?
-
-    val authorizationFingerprint: String?
-
+    val authorizationFingerprint: String
     val customerId: String?
 
     init {
         try {
             val clientTokenStringDecoded = String(Base64.decode(clientTokenString, Base64.DEFAULT))
             val jsonObject = JSONObject(clientTokenStringDecoded)
-            _configUrl = jsonObject.getString(CONFIG_URL_KEY)
+            configUrl = jsonObject.getString(CONFIG_URL_KEY)
             authorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY)
+            bearer = authorizationFingerprint
             customerId = parseCustomerId(authorizationFingerprint)
         } catch (e: NullPointerException) {
             throw InvalidArgumentException("Client token was invalid")
@@ -61,12 +63,4 @@ internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
             return result
         }
     }
-
-
-    //region Authorization overrides
-    override val configUrl: String = _configUrl!!
-
-    override val bearer: String = authorizationFingerprint!!
-    //endregion
-
 }

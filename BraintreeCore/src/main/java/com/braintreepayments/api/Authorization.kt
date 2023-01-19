@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.text.TextUtils
 
+
 /**
  * Generic base class for Braintree authorization
  * @property configUrl The url to fetch configuration for the current Braintree environment.
@@ -10,9 +11,7 @@ import android.text.TextUtils
  */
 internal abstract class Authorization(private val rawValue: String) {
 
-
     abstract val configUrl: String?
-
     abstract val bearer: String?
 
     /**

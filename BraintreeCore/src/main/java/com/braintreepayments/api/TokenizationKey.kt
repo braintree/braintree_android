@@ -3,6 +3,9 @@ package com.braintreepayments.api
 
 internal class TokenizationKey(tokenizationKey: String) : Authorization(tokenizationKey) {
 
+    override val configUrl: String
+    override val bearer: String = toString()
+
     val environment: String
     val merchantId: String
     val url: String
@@ -13,18 +16,13 @@ internal class TokenizationKey(tokenizationKey: String) : Authorization(tokeniza
         merchantId = tokenizationKeyParts[2]
         url = BraintreeEnvironment.getUrl(environment) + "merchants/" +
                 merchantId + "/client_api/"
+        configUrl = url + CONFIG_V1
     }
 
     companion object {
         const val MATCHER = "^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$"
         private const val CONFIG_V1 = "v1/configuration"
     }
-
-    //region Authorization overrides
-    override val configUrl: String = url + CONFIG_V1
-
-    override val bearer: String = toString()
-    //endregion
 
     private enum class BraintreeEnvironment(
         private val mEnvironment: String,
