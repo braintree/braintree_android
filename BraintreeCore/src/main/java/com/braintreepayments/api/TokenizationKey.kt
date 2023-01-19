@@ -49,5 +49,4 @@ internal class TokenizationKey(tokenizationKey: String) : Authorization(tokeniza
             }
         }
     }
-
 }
