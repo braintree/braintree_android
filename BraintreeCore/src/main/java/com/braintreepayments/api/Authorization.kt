@@ -4,17 +4,15 @@ import android.text.TextUtils
 
 /**
  * Generic base class for Braintree authorization
+ * @property configUrl The url to fetch configuration for the current Braintree environment.
+ * @property bearer The authorization bearer string for authorizing requests.
+ * @property rawValue The original Client token or Tokenization Key string, which can be used for serialization
  */
 internal abstract class Authorization(private val rawValue: String) {
 
-    /**
-     * @return The url to fetch configuration for the current Braintree environment.
-     */
+
     abstract val configUrl: String?
 
-    /**
-     * @return The authorization bearer string for authorizing requests.
-     */
     abstract val bearer: String?
 
     /**
