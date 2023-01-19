@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
  * Used to determine which payment methods are given preference in your UI,
  * not whether they are presented entirely.
  * This class is currently in beta and may change in future releases.
+ * @hide
  */
 public class PreferredPaymentMethodsClient {
 

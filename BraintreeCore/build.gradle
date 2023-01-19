@@ -85,6 +85,8 @@ dependencies {
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
+
+    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
 }
 
 android.buildTypes.each { type ->

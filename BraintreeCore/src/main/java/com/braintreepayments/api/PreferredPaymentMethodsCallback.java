@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 /**
  * Callback for receiving result of {@link PreferredPaymentMethodsClient#fetchPreferredPaymentMethods(Context, PreferredPaymentMethodsCallback)}.
  * This interface is currently in beta and may change in future releases.
+ * @hide
  */
 public interface PreferredPaymentMethodsCallback {
 
