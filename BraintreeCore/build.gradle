@@ -86,6 +86,7 @@ dependencies {
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
 
+    // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
     dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
 }
 
