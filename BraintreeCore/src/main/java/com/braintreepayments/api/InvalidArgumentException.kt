@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import androidx.annotation.RestrictTo
-import java.lang.Exception
 
 /**
  * Error thrown when arguments provided to a method are invalid.
@@ -13,5 +12,6 @@ open class InvalidArgumentException : Exception {
      * @param message the error message
      * @suppress
      */
+    @Suppress("ConvertSecondaryConstructorToPrimary")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(message: String?) : super(message)
 }
