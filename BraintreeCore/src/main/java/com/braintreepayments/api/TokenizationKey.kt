@@ -20,13 +20,11 @@ internal class TokenizationKey(tokenizationKey: String) : Authorization(tokeniza
         private const val CONFIG_V1 = "v1/configuration"
     }
 
-    public override fun getConfigUrl(): String {
-        return url + CONFIG_V1
-    }
+    //region Authorization overrides
+    override val configUrl: String = url + CONFIG_V1
 
-    public override fun getBearer(): String {
-        return toString()
-    }
+    override val bearer: String = toString()
+    //endregion
 
     private enum class BraintreeEnvironment(
         private val mEnvironment: String,

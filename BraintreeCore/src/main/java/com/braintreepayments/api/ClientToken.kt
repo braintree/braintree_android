@@ -13,10 +13,10 @@ import kotlin.jvm.Throws
  * @throws InvalidArgumentException when client token is invalid
  */
 internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
-    clientTokenString: String?
+    clientTokenString: String
 ) : Authorization(clientTokenString) {
 
-    private var configUrl: String? = null
+    private var _configUrl: String? = null
 
     /**
      * @return The authorizationFingerprint for the current session
@@ -47,7 +47,7 @@ internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
         try {
             val clientTokenStringDecoded = String(Base64.decode(clientTokenString, Base64.DEFAULT))
             val jsonObject = JSONObject(clientTokenStringDecoded)
-            configUrl = jsonObject.getString(CONFIG_URL_KEY)
+            _configUrl = jsonObject.getString(CONFIG_URL_KEY)
             authorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY)
         } catch (e: NullPointerException) {
             throw InvalidArgumentException("Client token was invalid")
@@ -63,11 +63,11 @@ internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint"
     }
 
-    public override fun getConfigUrl(): String {
-        return configUrl!!
-    }
 
-    public override fun getBearer(): String {
-        return authorizationFingerprint!!
-    }
+    //region Authorization overrides
+    override val configUrl: String = _configUrl!!
+
+    override val bearer: String = authorizationFingerprint!!
+    //endregion
+
 }
