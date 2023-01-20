@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 /**
  * Contains information about which payment methods are preferred on the device.
- * This class is currently in beta and may change in future releases.
+ * This class is currently in beta and may be removed in future releases.
  * @hide
  */
 public class PreferredPaymentMethodsResult {
