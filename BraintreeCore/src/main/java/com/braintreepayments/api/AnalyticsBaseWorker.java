@@ -13,6 +13,7 @@ import androidx.work.WorkerParameters;
  * Class for background analytics tasks.
  * This class is used internally by the SDK and should not be used directly.
  * It is not subject to semantic versioning and may change at any time.
+ * @hide
  */
 // NEXT_MAJOR_VERSION: remove this class, it may no longer be needed
 public abstract class AnalyticsBaseWorker extends Worker {

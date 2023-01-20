@@ -10,7 +10,8 @@ import androidx.annotation.VisibleForTesting;
  * Fetches information about which payment methods are preferred on the device.
  * Used to determine which payment methods are given preference in your UI,
  * not whether they are presented entirely.
- * This class is currently in beta and may change in future releases.
+ * This class is currently in beta and may be removed in future releases.
+ * @hide
  */
 public class PreferredPaymentMethodsClient {
 
