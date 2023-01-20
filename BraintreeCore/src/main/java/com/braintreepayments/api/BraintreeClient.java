@@ -112,8 +112,9 @@ public class BraintreeClient {
         );
     }
 
-    // NEXT MAJOR VERSION: Externalize BraintreeOptions allow additional allow parameters to grow
-    // over time without having to make new constructors
+    // NEXT MAJOR VERSION: Make BraintreeClient(BraintreeOptions) the primary constructor to
+    // allow additional allow parameters to grow over time without having to support multiple
+    // different constructors
     BraintreeClient(@NonNull BraintreeOptions options) {
         this(BraintreeClientParams.from(options));
     }
