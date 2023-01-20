@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import java.util.Locale;
+
 class BraintreeClientParams {
 
     private AuthorizationLoader authorizationLoader;
@@ -18,7 +20,55 @@ class BraintreeClientParams {
     private BrowserSwitchClient browserSwitchClient;
     private ManifestValidator manifestValidator;
     private UUIDHelper uuidHelper;
-    private String braintreeDeepLinkReturnUrlScheme;
+
+    private static String createDefaultReturnUrlScheme(Context context) {
+        return context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
+    }
+
+    private static String createBraintreeReturnUrlScheme(Context context) {
+        return context
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.deeplinkhandler";
+    }
+
+    static BraintreeClientParams from(BraintreeOptions options) {
+
+        Context context = options.getContext();
+        AuthorizationLoader authorizationLoader =
+            new AuthorizationLoader(options.getAuthorization(), options.getClientTokenProvider());
+
+        String sessionId = options.getSessionId();
+        if (sessionId == null) {
+            UUIDHelper uuidHelper = new UUIDHelper();
+            sessionId = uuidHelper.getFormattedUUID();
+        }
+
+        String returnUrlScheme = options.getReturnUrlScheme();
+        if (returnUrlScheme == null) {
+            returnUrlScheme = createDefaultReturnUrlScheme(context);
+        }
+
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
+        return new BraintreeClientParams()
+                .authorizationLoader(authorizationLoader)
+                .context(context)
+                .setIntegrationType(options.getIntegrationType())
+                .sessionId(sessionId)
+                .httpClient(httpClient)
+                .returnUrlScheme(returnUrlScheme)
+                .graphQLClient(new BraintreeGraphQLClient())
+                .analyticsClient(new AnalyticsClient(context))
+                .browserSwitchClient(new BrowserSwitchClient())
+                .manifestValidator(new ManifestValidator())
+                .UUIDHelper(new UUIDHelper())
+                .configurationLoader(new ConfigurationLoader(context, httpClient));
+    }
 
     AuthorizationLoader getAuthorizationLoader() {
         return authorizationLoader;
@@ -125,17 +175,6 @@ class BraintreeClientParams {
 
     BraintreeClientParams returnUrlScheme(String returnUrlScheme) {
         this.returnUrlScheme = returnUrlScheme;
-        return this;
-    }
-
-    String getBraintreeDeepLinkReturnUrlScheme() {
-        return braintreeDeepLinkReturnUrlScheme;
-    }
-
-    // NEXT_MAJOR_VERSION: Formalize capitalization of URL, HTTP etc. via style guide and enforce
-    // capitalization e.g. braintreeDeepLinkReturnURLScheme
-    BraintreeClientParams braintreeDeepLinkReturnUrlScheme(String braintreeDeepLinkReturnUrlScheme) {
-        this.braintreeDeepLinkReturnUrlScheme = braintreeDeepLinkReturnUrlScheme;
         return this;
     }
 }

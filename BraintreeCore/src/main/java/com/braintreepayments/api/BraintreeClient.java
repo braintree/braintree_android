@@ -32,62 +32,6 @@ public class BraintreeClient {
 
     private boolean launchesBrowserSwitchAsNewTask;
 
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider) {
-        String returnUrlScheme = context
-                .getApplicationContext()
-                .getPackageName()
-                .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree";
-
-        String braintreeReturnUrlScheme = context
-                .getApplicationContext()
-                .getPackageName()
-                .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree.deeplinkhandler";
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, braintreeReturnUrlScheme);
-    }
-
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String returnUrlScheme) {
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, null);
-    }
-
-    private static BraintreeClientParams createDefaultParams(Context context, String authString, ClientTokenProvider clientTokenProvider, String sessionId, @IntegrationType.Integration String integrationType) {
-        String returnUrlScheme = context
-                .getApplicationContext()
-                .getPackageName()
-                .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree";
-
-        String braintreeReturnUrlScheme = context
-                .getApplicationContext()
-                .getPackageName()
-                .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree.deeplinkhandler";
-
-        return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, braintreeReturnUrlScheme);
-    }
-
-    private static BraintreeClientParams createDefaultParams(Context context, String initialAuthString, ClientTokenProvider clientTokenProvider, String returnUrlScheme, String sessionId, @IntegrationType.Integration String integrationType, String braintreeReturnURLScheme) {
-        AuthorizationLoader authorizationLoader =
-                new AuthorizationLoader(initialAuthString, clientTokenProvider);
-
-        BraintreeHttpClient httpClient = new BraintreeHttpClient();
-        return new BraintreeClientParams()
-                .authorizationLoader(authorizationLoader)
-                .context(context)
-                .setIntegrationType(integrationType)
-                .sessionId(sessionId)
-                .httpClient(httpClient)
-                .returnUrlScheme(returnUrlScheme)
-                .braintreeDeepLinkReturnUrlScheme(braintreeReturnURLScheme)
-                .graphQLClient(new BraintreeGraphQLClient())
-                .analyticsClient(new AnalyticsClient(context))
-                .browserSwitchClient(new BrowserSwitchClient())
-                .manifestValidator(new ManifestValidator())
-                .UUIDHelper(new UUIDHelper())
-                .configurationLoader(new ConfigurationLoader(context, httpClient));
-    }
-
     /**
      * Create a new instance of {@link BraintreeClient} using a tokenization key or client token.
      *
@@ -95,7 +39,10 @@ public class BraintreeClient {
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a {@link BraintreeException} will be returned via callback.
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization) {
-        this(createDefaultParams(context, authorization, null));
+        this(
+                new BraintreeOptions(context, IntegrationType.CUSTOM)
+                        .authorization(authorization)
+        );
     }
 
     /**
@@ -105,7 +52,10 @@ public class BraintreeClient {
      * @param clientTokenProvider An implementation of {@link ClientTokenProvider} that {@link BraintreeClient} will use to fetch a client token on demand.
      */
     public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider) {
-        this(createDefaultParams(context, null, clientTokenProvider));
+        this(
+                new BraintreeOptions(context, IntegrationType.CUSTOM)
+                        .clientTokenProvider(clientTokenProvider)
+        );
     }
 
     /**
@@ -120,7 +70,11 @@ public class BraintreeClient {
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     public BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String returnUrlScheme) {
-        this(createDefaultParams(context, authorization, null, returnUrlScheme));
+        this(
+                new BraintreeOptions(context, IntegrationType.CUSTOM)
+                        .authorization(authorization)
+                        .returnUrlScheme(returnUrlScheme)
+        );
     }
 
     /**
@@ -135,39 +89,60 @@ public class BraintreeClient {
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
     public BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String returnUrlScheme) {
-        this(createDefaultParams(context, null, clientTokenProvider, returnUrlScheme));
+        this(
+                new BraintreeOptions(context, IntegrationType.CUSTOM)
+                        .clientTokenProvider(clientTokenProvider)
+                        .returnUrlScheme(returnUrlScheme)
+        );
     }
 
     BraintreeClient(@NonNull Context context, @NonNull ClientTokenProvider clientTokenProvider, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
-        this(createDefaultParams(context, null, clientTokenProvider, sessionId, integrationType));
+        this(
+                new BraintreeOptions(context, integrationType)
+                        .clientTokenProvider(clientTokenProvider)
+                        .sessionId(sessionId)
+        );
     }
 
     BraintreeClient(@NonNull Context context, @NonNull String authorization, @NonNull String sessionId, @NonNull @IntegrationType.Integration String integrationType) {
-        this(createDefaultParams(context, authorization, null, sessionId, integrationType));
+        this(
+                new BraintreeOptions(context, integrationType)
+                        .authorization(authorization)
+                        .sessionId(sessionId)
+        );
+    }
+
+    // NEXT MAJOR VERSION: Externalize BraintreeOptions allow additional allow parameters to grow
+    // over time without having to make new constructors
+    BraintreeClient(@NonNull BraintreeOptions options) {
+        this(BraintreeClientParams.from(options));
     }
 
     @VisibleForTesting
     BraintreeClient(BraintreeClientParams params) {
-        this.analyticsClient = params.getAnalyticsClient();
-        this.applicationContext = params.getContext().getApplicationContext();
-        this.authorizationLoader = params.getAuthorizationLoader();
-        this.browserSwitchClient = params.getBrowserSwitchClient();
-        this.configurationLoader = params.getConfigurationLoader();
-        this.graphQLClient = params.getGraphQLClient();
-        this.httpClient = params.getHttpClient();
-        this.manifestValidator = params.getManifestValidator();
+        analyticsClient = params.getAnalyticsClient();
+        applicationContext = params.getContext().getApplicationContext();
+        authorizationLoader = params.getAuthorizationLoader();
+        browserSwitchClient = params.getBrowserSwitchClient();
+        configurationLoader = params.getConfigurationLoader();
+        graphQLClient = params.getGraphQLClient();
+        httpClient = params.getHttpClient();
+        manifestValidator = params.getManifestValidator();
 
-        String sessionId = params.getSessionId();
-        if (sessionId == null) {
-            sessionId = params.getUUIDHelper().getFormattedUUID();
-        }
-        this.sessionId = sessionId;
-        this.integrationType = params.getIntegrationType();
-        this.returnUrlScheme = params.getReturnUrlScheme();
-        this.braintreeDeepLinkReturnUrlScheme = params.getBraintreeDeepLinkReturnUrlScheme();
+        sessionId = params.getSessionId();
+        integrationType = params.getIntegrationType();
+        returnUrlScheme = params.getReturnUrlScheme();
 
-        this.crashReporter = new CrashReporter(this);
-        this.crashReporter.start();
+        // NEXT_MAJOR_VERSION: Formalize capitalization of URL, HTTP etc. via style guide and enforce
+        // capitalization e.g. braintreeDeepLinkReturnURLScheme
+        braintreeDeepLinkReturnUrlScheme = applicationContext
+                .getApplicationContext()
+                .getPackageName()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree.deeplinkhandler";
+
+        crashReporter = new CrashReporter(this);
+        crashReporter.start();
     }
 
     /**
@@ -376,7 +351,7 @@ public class BraintreeClient {
     /**
      * For clients using a {@link ClientTokenProvider}, call this method to invalidate the existing,
      * cached client token. A new client token will be fetched by the SDK when it is needed.
-     *
+     * <p>
      * For clients not using a {@link ClientTokenProvider}, this method does nothing.
      */
     public void invalidateClientToken() {
@@ -390,9 +365,9 @@ public class BraintreeClient {
     /**
      * Set this property to true to allow the SDK to handle deep links on behalf of the host
      * application for browser switched flows.
-     *
+     * <p>
      * For web payment flows, this means launching the browser in a task separate from the calling activity.
-     *
+     * <p>
      * NOTE: When this property is set to true, all custom url schemes set in {@link BraintreeClient}
      * constructors will be ignored.
      *
