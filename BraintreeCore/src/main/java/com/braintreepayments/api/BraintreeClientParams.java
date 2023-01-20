@@ -29,14 +29,6 @@ class BraintreeClientParams {
                 .replace("_", "") + ".braintree";
     }
 
-    private static String createBraintreeReturnUrlScheme(Context context) {
-        return context
-                .getApplicationContext()
-                .getPackageName()
-                .toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree.deeplinkhandler";
-    }
-
     static BraintreeClientParams from(BraintreeOptions options) {
 
         Context context = options.getContext();
