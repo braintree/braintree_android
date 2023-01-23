@@ -36,13 +36,11 @@ public class BraintreeClient {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
-                .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
 
         String braintreeReturnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
-                .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree.deeplinkhandler";
         return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, null, IntegrationType.CUSTOM, braintreeReturnUrlScheme);
     }
@@ -55,13 +53,11 @@ public class BraintreeClient {
         String returnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
-                .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
 
         String braintreeReturnUrlScheme = context
                 .getApplicationContext()
                 .getPackageName()
-                .toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree.deeplinkhandler";
 
         return createDefaultParams(context, authString, clientTokenProvider, returnUrlScheme, sessionId, integrationType, braintreeReturnUrlScheme);
