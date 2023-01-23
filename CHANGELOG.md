@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
+
 ## 4.23.1
 
 * ThreeDSecure
