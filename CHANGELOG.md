@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Allow uppercase characters in default return url scheme
+
 ## 4.23.1
 
 * ThreeDSecure
