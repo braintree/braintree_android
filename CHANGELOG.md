@@ -2,7 +2,8 @@
 
 ## unreleased
 
-* Allow uppercase characters in default return url scheme
+* BraintreeCore
+  * Allow uppercase characters in default return url scheme
 
 ## 4.23.1
 
@@ -25,7 +26,7 @@
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
 * ThreeDSecure
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
-* Braintree Core
+* BraintreeCore
   * Update pinned certificates used by `BraintreeGraphQLClient` and `BraintreeHttpClient`
 
 ## 4.21.0
