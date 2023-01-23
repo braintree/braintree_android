@@ -440,6 +440,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setBillingAddress(billingAddress);
         threeDSecureRequest.setNonce(cardNonce.getString());
         threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+        threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
         threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
