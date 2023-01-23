@@ -9,6 +9,8 @@
   * Fix an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
   * Breaking changes
     *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
+* ThreeDSecure
+  * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
 
 ## 4.24.0
 
