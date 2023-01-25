@@ -15,7 +15,8 @@ open class AnalyticsEvent internal constructor(
     open val name: String,
     open val timestamp: Long
 ) {
+    @JvmField
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "_id")
-    open val id = 0
+    var id = 0
 }
