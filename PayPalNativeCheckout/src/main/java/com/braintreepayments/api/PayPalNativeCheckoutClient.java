@@ -161,18 +161,19 @@ public class PayPalNativeCheckoutClient {
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
-                        new CheckoutConfig(
-                                activity.getApplication(),
-                                configuration.getPayPalClientId(),
-                                environment,
-                                null,
-                                null,
-                                null,
-                                new SettingsConfig(),
-                                new UIConfig(
-                                        false
-                                )
-                        )
+                    new CheckoutConfig(
+                        activity.getApplication(),
+                        configuration.getPayPalClientId(),
+                        environment,
+                        null,
+                        null,
+                        null,
+                        new SettingsConfig(),
+                        new UIConfig(
+                                false
+                        ),
+                        payPalRequest.getReturnUrl()
+                    )
                 );
 
                 String infoMessage = "BrainTree";

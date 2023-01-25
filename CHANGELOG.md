@@ -5,6 +5,11 @@
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
 
+* PayPalNativeCheckout (BETA)
+  * Bump native-checkout version to `0.8.8`
+  * Adding in a requirement for `returnUrl` inside of `PayPalNativeRequest` this url is needed to redirect after authentication
+  * Fixes an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
+  
 ## 4.23.1
 
 * ThreeDSecure

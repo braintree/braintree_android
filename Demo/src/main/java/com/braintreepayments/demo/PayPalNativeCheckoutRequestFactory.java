@@ -19,17 +19,6 @@ public class PayPalNativeCheckoutRequestFactory {
             request.setShouldOfferCredit(true);
         }
 
-        if (Settings.usePayPalAddressOverride(context)) {
-            PostalAddress postalAddress = new PostalAddress();
-            postalAddress.setRecipientName("Brian Tree");
-            postalAddress.setStreetAddress("123 Fake Street");
-            postalAddress.setExtendedAddress("Floor A");
-            postalAddress.setLocality("San Francisco");
-            postalAddress.setRegion("CA");
-            postalAddress.setCountryCodeAlpha2("US");
-
-            request.setShippingAddressOverride(postalAddress);
-        }
         request.setReturnUrl("com.braintreepayments.demo://paypalpay");
         return request;
     }
@@ -53,10 +42,13 @@ public class PayPalNativeCheckoutRequestFactory {
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
+            request.setShippingAddressEditable(true);
+            request.setShippingAddressRequired(true);
             PostalAddress shippingAddress = new PostalAddress();
             shippingAddress.setRecipientName("Brian Tree");
             shippingAddress.setStreetAddress("123 Fake Street");
             shippingAddress.setExtendedAddress("Floor A");
+            shippingAddress.setPostalCode("94103");
             shippingAddress.setLocality("San Francisco");
             shippingAddress.setRegion("CA");
             shippingAddress.setCountryCodeAlpha2("US");
