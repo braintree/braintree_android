@@ -4,6 +4,7 @@ plugins {
     id 'org.jetbrains.dokka'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-kapt'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
@@ -57,7 +58,7 @@ dependencies {
     implementation deps.kotlinStdLib
 
     implementation deps.roomRuntime
-    annotationProcessor deps.roomCompiler
+    kapt deps.roomCompiler
 
     api deps.browserSwitch
     api project(':SharedUtils')
