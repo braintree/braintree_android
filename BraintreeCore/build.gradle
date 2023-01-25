@@ -58,6 +58,8 @@ dependencies {
     implementation deps.kotlinStdLib
 
     implementation deps.roomRuntime
+
+    // Ref: https://stackoverflow.com/a/51067251
     kapt deps.roomCompiler
 
     api deps.browserSwitch
