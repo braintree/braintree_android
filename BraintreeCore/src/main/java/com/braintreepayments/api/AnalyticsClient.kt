@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.work.*
 import com.braintreepayments.api.AnalyticsDatabase.Companion.getInstance
-import com.braintreepayments.api.Configuration.Companion.fromJson
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -52,18 +51,17 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     private fun scheduleAnalyticsWrite(
-        eventName: String,
-        timestamp: Long,
-        authorization: Authorization
+        eventName: String, timestamp: Long, authorization: Authorization
     ) {
         val inputData = workDataOf(
             WORK_INPUT_KEY_AUTHORIZATION to authorization.toString(),
             WORK_INPUT_KEY_EVENT_NAME to eventName,
             WORK_INPUT_KEY_TIMESTAMP to timestamp
         )
-        val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
-            .setInputData(inputData)
-            .build()
+        val analyticsWorkRequest =
+            OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
+                .setInputData(inputData)
+                .build()
         workManager.enqueueUniqueWork(
             WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest
         )
@@ -205,27 +203,18 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
 
-        private fun getAuthorizationFromData(inputData: Data?): Authorization? {
-            if (inputData != null) {
-                val authString = inputData.getString(WORK_INPUT_KEY_AUTHORIZATION)
-                if (authString != null) {
-                    return Authorization.fromString(authString)
-                }
+        private fun getAuthorizationFromData(inputData: Data?): Authorization? =
+            inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {
+                Authorization.fromString(it)
             }
-            return null
-        }
 
-        private fun getConfigurationFromData(inputData: Data?): Configuration? {
-            if (inputData != null) {
-                val configJson = inputData.getString(WORK_INPUT_KEY_CONFIGURATION)
-                if (configJson != null) {
-                    try {
-                        return fromJson(configJson)
-                    } catch (e: JSONException) { /* ignored */
-                    }
+        private fun getConfigurationFromData(inputData: Data?): Configuration? =
+            inputData?.getString(WORK_INPUT_KEY_CONFIGURATION)?.let {
+                try {
+                    Configuration.fromJson(it)
+                } catch (ignored: JSONException) {
+                    null
                 }
             }
-            return null
-        }
     }
 }
