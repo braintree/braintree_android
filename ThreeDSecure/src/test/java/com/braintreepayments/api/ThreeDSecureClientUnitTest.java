@@ -119,6 +119,7 @@ public class ThreeDSecureClientUnitTest {
         request.setNonce("a-nonce");
         request.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         request.setAmount("amount");
+        request.setRequestedExemptionType(ThreeDSecureRequest.SECURE_CORPORATE);
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");
@@ -135,6 +136,7 @@ public class ThreeDSecureClientUnitTest {
         assertEquals("amount", body.getString("amount"));
         assertEquals("df-reference-id", body.getString("df_reference_id"));
         assertEquals("billing-given-name", body.getJSONObject("additional_info").getString("billing_given_name"));
+        assertEquals("secure_corporate", body.getString("requested_exemption_type"));
     }
 
     @Test

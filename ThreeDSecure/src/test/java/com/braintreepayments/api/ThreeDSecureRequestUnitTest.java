@@ -77,6 +77,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.setChallengeRequested(true);
         expected.setDataOnlyRequested(true);
         expected.setExemptionRequested(true);
+        expected.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
         expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
         expected.setV1UiCustomization(v1UiCustomization);
@@ -109,6 +110,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
         assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
+        assertEquals(expected.getRequestedExemptionType(), actual.getRequestedExemptionType());
         assertEquals(expected.isCardAddChallengeRequested(), actual.isCardAddChallengeRequested());
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),

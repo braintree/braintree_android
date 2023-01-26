@@ -28,6 +28,14 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String CREDIT = "credit";
     public static final String DEBIT = "debit";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({LOW_VALUE, SECURE_CORPORATE, TRUSTED_BENEFICIARY, TRANSACTION_RISK_ANALYSIS})
+    @interface ThreeDSecureRequestedExemptionType {}
+    public static final String LOW_VALUE = "low_value";
+    public static final String SECURE_CORPORATE = "secure_corporate";
+    public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
+    public static final String TRANSACTION_RISK_ANALYSIS = "transaction_risk_analysis";
+
     private String nonce;
     private String amount;
     private String mobilePhoneNumber;
@@ -40,6 +48,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean challengeRequested = false;
     private boolean dataOnlyRequested = false;
     private boolean exemptionRequested = false;
+    private @ThreeDSecureRequestedExemptionType String requestedExemptionType;
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
@@ -161,6 +170,17 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     public void setExemptionRequested(boolean exemptionRequested) {
         this.exemptionRequested = exemptionRequested;
+    }
+
+    /**
+     * Optional. 3D Secure requested exemption type. If an exemption is requested and the
+     * exemption's conditions are satisfied, then it will be applied.
+     * Possible values defined at {@link ThreeDSecureRequestedExemptionType}.
+     *
+     * @param requestedExemptionType {@link ThreeDSecureRequestedExemptionType} The account type selected by the cardholder.
+     */
+    public void setRequestedExemptionType(@Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
+        this.requestedExemptionType = requestedExemptionType;
     }
 
     /**
@@ -289,6 +309,14 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * @return The requested exemption type
+     */
+    @Nullable
+    public @ThreeDSecureRequestedExemptionType String getRequestedExemptionType() {
+        return requestedExemptionType;
+    }
+
+    /**
      * @return If the authentication challenge will be requested from the issuer to confirm adding
      * new card to the merchant's vault or null if the value has not been set.
      */
@@ -333,6 +361,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
         dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(exemptionRequested ? (byte) 1 : 0);
+        dest.writeString(requestedExemptionType);
         dest.writeSerializable(cardAddChallengeRequested);
         dest.writeParcelable(v2UiCustomization, flags);
         dest.writeParcelable(v1UiCustomization, flags);
@@ -351,6 +380,7 @@ public class ThreeDSecureRequest implements Parcelable {
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
+        requestedExemptionType = in.readString();
         cardAddChallengeRequested = (Boolean) in.readSerializable();
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
@@ -414,6 +444,7 @@ public class ThreeDSecureRequest implements Parcelable {
             base.put("challenge_requested", challengeRequested);
             base.put("data_only_requested", dataOnlyRequested);
             base.put("exemption_requested", exemptionRequested);
+            base.put("requested_exemption_type", requestedExemptionType);
         } catch (JSONException ignored) {
         }
 

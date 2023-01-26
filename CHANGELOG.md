@@ -4,6 +4,8 @@
 
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
+* ThreeDSecure
+  * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
 
 ## 4.23.1
 
