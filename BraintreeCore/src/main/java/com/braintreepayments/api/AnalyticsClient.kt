@@ -169,7 +169,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     ): JSONObject {
         val requestObject = JSONObject()
         if (authorization is ClientToken) {
-            requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer())
+            requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
         } else {
             requestObject.put(TOKENIZATION_KEY, authorization!!.bearer)
         }
