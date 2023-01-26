@@ -192,7 +192,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * This is required in order for your app to redirect after authentication to the correct
+     * Required: This is required in order for your app to redirect after authentication to the correct
      * application
      *
      * @param returnUrl the client application redirect link
