@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
+def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -84,6 +84,7 @@ dependencies {
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
+    testImplementation deps.mockk
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
