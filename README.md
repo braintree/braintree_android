@@ -25,7 +25,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.23.2-SNAPSHOT'
+  implementation 'com.braintreepayments.api:card:4.24.1-SNAPSHOT'
 }
 ```
 
