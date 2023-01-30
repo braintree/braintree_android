@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.24.0
 
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
