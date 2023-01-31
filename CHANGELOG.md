@@ -4,6 +4,11 @@
 
 * SharedUtils
   * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
+* PayPalNativeCheckout (BETA)
+  * Bump native-checkout version to `0.8.8`
+  * Fix an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
+  * Breaking changes
+    *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
 
 ## 4.24.0
 
@@ -11,12 +16,6 @@
   * Allow uppercase characters in default return url scheme
 * ThreeDSecure
   * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
-
-* PayPalNativeCheckout (BETA)
-  * Bump native-checkout version to `0.8.8`
-  * Breaking change
-    *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
-  * Fixes an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
   
 ## 4.23.1
 
