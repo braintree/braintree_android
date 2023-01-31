@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SharedUtils
+  * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
+
 ## 4.24.0
 
 * BraintreeCore
