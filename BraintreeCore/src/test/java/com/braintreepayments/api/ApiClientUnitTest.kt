@@ -39,7 +39,7 @@ class ApiClientUnitTest {
             .build()
 
         val bodySlot = slot<String>()
-        every { braintreeClient.sendPOST(any(), capture(bodySlot), any()) }
+        every { braintreeClient.sendPOST(any(), capture(bodySlot), any()) } returns Unit
 
         val sut = ApiClient(braintreeClient)
         val card = spyk(Card())
@@ -63,7 +63,7 @@ class ApiClientUnitTest {
             .build()
 
         val graphQLBodySlot = slot<String>()
-        every { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot), any()) }
+        every { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot), any()) } returns Unit
 
         val sut = ApiClient(braintreeClient)
         val card = Card()
