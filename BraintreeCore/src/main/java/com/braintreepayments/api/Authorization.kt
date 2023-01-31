@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.text.TextUtils
+import androidx.annotation.RestrictTo
 
 
 /**
@@ -8,8 +9,10 @@ import android.text.TextUtils
  * @property configUrl The url to fetch configuration for the current Braintree environment.
  * @property bearer The authorization bearer string for authorizing requests.
  * @property rawValue The original Client token or Tokenization Key string, which can be used for serialization
+ * @suppress
  */
-internal abstract class Authorization(private val rawValue: String) {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+abstract class Authorization(private val rawValue: String) {
 
     abstract val configUrl: String?
     abstract val bearer: String?
