@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unrelease
+## unreleased
 
 * SharedUtils
   * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
