@@ -12,6 +12,12 @@
 * ThreeDSecure
   * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
 
+* PayPalNativeCheckout (BETA)
+  * Bump native-checkout version to `0.8.8`
+  * Breaking change
+    *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
+  * Fixes an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
+  
 ## 4.23.1
 
 * ThreeDSecure

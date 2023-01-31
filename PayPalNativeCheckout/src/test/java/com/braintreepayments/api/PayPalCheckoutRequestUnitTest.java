@@ -33,7 +33,6 @@ public class PayPalCheckoutRequestUnitTest {
 
     @Test
     public void setsValuesCorrectly() {
-        PostalAddress postalAddress = new PostalAddress();
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00");
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
@@ -43,10 +42,20 @@ public class PayPalCheckoutRequestUnitTest {
         request.setShouldRequestBillingAgreement(true);
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
-        request.setShippingAddressOverride(postalAddress);
         request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
+
+        PostalAddress shippingAddress = new PostalAddress();
+        shippingAddress.setRecipientName("Brian Tree");
+        shippingAddress.setStreetAddress("123 Fake Street");
+        shippingAddress.setExtendedAddress("Floor A");
+        shippingAddress.setPostalCode("94103");
+        shippingAddress.setLocality("San Francisco");
+        shippingAddress.setRegion("CA");
+        shippingAddress.setCountryCodeAlpha2("US");
+
+        request.setShippingAddressOverride(shippingAddress);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -57,7 +66,13 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalNativeCheckoutPaymentIntent.SALE, request.getIntent());
         assertEquals(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
-        assertEquals("123-correlation", request.getRiskCorrelationId());
+        assertEquals("Brian Tree", request.getShippingAddressOverride().getRecipientName());
+        assertEquals("123 Fake Street", request.getShippingAddressOverride().getStreetAddress());
+        assertEquals("Floor A", request.getShippingAddressOverride().getExtendedAddress());
+        assertEquals("94103", request.getShippingAddressOverride().getPostalCode());
+        assertEquals("San Francisco", request.getShippingAddressOverride().getLocality());
+        assertEquals("CA", request.getShippingAddressOverride().getRegion());
+        assertEquals("US", request.getShippingAddressOverride().getCountryCodeAlpha2());
         assertTrue(request.getShouldOfferPayLater());
     }
 

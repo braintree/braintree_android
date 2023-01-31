@@ -31,6 +31,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
     private DataCollector dataCollector;
 
     public Button launchPayPalNativeCheckoutButton;
+    public Button launchPayPalNativeVaultCheckoutButton;
 
     public PayPalNativeCheckoutFragment() {
     }
@@ -45,6 +46,8 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
 
         launchPayPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout_launch);
         launchPayPalNativeCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(false));
+        launchPayPalNativeVaultCheckoutButton = view.findViewById(R.id.paypal_native_checkout_vault_launch);
+        launchPayPalNativeVaultCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(true));
         braintreeClient = getBraintreeClient();
         payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
         payPalClient.setListener(this);
@@ -64,14 +67,22 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
                         deviceData = deviceDataResult;
                     }
                     try {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                        if (isBillingAgreement) {
+                            payPalClient.launchNativeCheckout(activity, createPayPalVaultRequest(activity));
+                        } else {
+                            payPalClient.launchNativeCheckout(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                        }
                     } catch (Exception e) {
                         Log.i(TAG, "Unsupported type");
                     }
                 });
             } else {
                 try {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                    if (isBillingAgreement) {
+                        payPalClient.launchNativeCheckout(activity, createPayPalVaultRequest(activity));
+                    } else {
+                        payPalClient.launchNativeCheckout(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                    }
                 } catch (Exception e) {
                     Log.i(TAG, "Unsupported type");
                 }

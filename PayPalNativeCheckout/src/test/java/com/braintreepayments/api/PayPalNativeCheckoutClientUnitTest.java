@@ -18,6 +18,8 @@ import com.paypal.checkout.approve.OnApprove;
 import com.paypal.checkout.cancel.OnCancel;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.config.SettingsConfig;
+import com.paypal.checkout.config.UIConfig;
 import com.paypal.checkout.error.OnError;
 import com.paypal.checkout.shipping.OnShippingChange;
 import com.paypal.pyplcheckout.common.instrumentation.PEnums;
@@ -156,7 +158,15 @@ public class PayPalNativeCheckoutClientUnitTest {
             new CheckoutConfig(
                 activity.getApplication(),
                 payPalEnabledConfig.getPayPalClientId(),
-                Environment.SANDBOX
+                Environment.SANDBOX,
+                null,
+                null,
+                null,
+                new SettingsConfig(),
+                new UIConfig(
+                    false
+                ),
+                "empty"
             )
         );
         OnApprove onApprove = approval -> { };
