@@ -12,22 +12,20 @@ class ApiClient constructor(private val braintreeClient: BraintreeClient) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started")
-        braintreeClient.sendGraphQLPOST(tokenizePayload.toString(), object : HttpResponseCallback {
-            override fun onResult(responseBody: String?, httpError: Exception?) {
-                if (responseBody != null) {
-                    try {
-                        callback.onResult(JSONObject(responseBody), null)
-                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success")
-                    } catch (exception: JSONException) {
-                        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
-                        callback.onResult(null, exception)
-                    }
-                } else {
+        braintreeClient.sendGraphQLPOST(tokenizePayload.toString()) { responseBody, httpError ->
+            if (responseBody != null) {
+                try {
+                    callback.onResult(JSONObject(responseBody), null)
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success")
+                } catch (exception: JSONException) {
                     braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
-                    callback.onResult(null, httpError)
+                    callback.onResult(null, exception)
                 }
+            } else {
+                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
+                callback.onResult(null, httpError)
             }
-        })
+        }
     }
 
     fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) {
@@ -36,19 +34,17 @@ class ApiClient constructor(private val braintreeClient: BraintreeClient) {
 
         try {
             val body = paymentMethod.buildJSON().toString()
-            braintreeClient.sendPOST(url, body, object : HttpResponseCallback {
-                override fun onResult(responseBody: String?, httpError: Exception?) {
-                    if (responseBody != null) {
-                        try {
-                            callback.onResult(JSONObject(responseBody), null)
-                        } catch (exception: JSONException) {
-                            callback.onResult(null, exception)
-                        }
-                    } else {
-                        callback.onResult(null, httpError)
+            braintreeClient.sendPOST(url, body) { responseBody, httpError ->
+                if (responseBody != null) {
+                    try {
+                        callback.onResult(JSONObject(responseBody), null)
+                    } catch (exception: JSONException) {
+                        callback.onResult(null, exception)
                     }
+                } else {
+                    callback.onResult(null, httpError)
                 }
-            })
+            }
         } catch (exception: JSONException) {
             callback.onResult(null, exception)
         }
