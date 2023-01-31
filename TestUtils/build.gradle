@@ -40,11 +40,13 @@ dependencies {
     compileOnly deps.powermockMockito
     compileOnly deps.powermockClassloading
     compileOnly deps.jsonAssert
+    compileOnly deps.mockk
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
+
 }
 repositories {
     mavenCentral()
