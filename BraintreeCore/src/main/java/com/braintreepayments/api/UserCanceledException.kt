@@ -14,7 +14,7 @@ import androidx.annotation.RestrictTo
  * could mean the user returned to the app through multi-tasking without completing the flow,
  * the user closed the browser tab, or the user pressed the back button.
  */
-open class UserCanceledException @JvmOverloads @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) internal constructor(
+open class UserCanceledException @JvmOverloads @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     message: String?,
     val isExplicitCancelation: Boolean = false
 ) : BraintreeException(message)

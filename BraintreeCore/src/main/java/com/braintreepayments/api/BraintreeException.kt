@@ -1,12 +1,19 @@
 package com.braintreepayments.api
 
+import androidx.annotation.RestrictTo
 import java.io.IOException
 
 /**
  * Parent class for exceptions encountered when using the SDK.
  */
 open class BraintreeException : IOException {
-    internal constructor() : super()
-    internal constructor(message: String?) : super(message)
-    internal constructor(message: String?, cause: Throwable?) : super(message, cause)
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor() : super()
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(message: String?) : super(message)
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
