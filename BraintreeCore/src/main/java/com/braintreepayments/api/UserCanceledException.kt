@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import androidx.annotation.RestrictTo
+
 /**
  * Error class thrown when a user cancels a payment flow
  *
@@ -12,7 +14,7 @@ package com.braintreepayments.api
  * could mean the user returned to the app through multi-tasking without completing the flow,
  * the user closed the browser tab, or the user pressed the back button.
  */
-open class UserCanceledException internal constructor(
+open class UserCanceledException @JvmOverloads @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) internal constructor(
     message: String?,
     val isExplicitCancelation: Boolean = false
 ) : BraintreeException(message)
