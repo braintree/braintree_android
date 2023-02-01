@@ -4,9 +4,10 @@ plugins {
     id 'org.jetbrains.dokka'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-kapt'
 }
 
-def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
+def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -51,13 +52,15 @@ android {
 
 dependencies {
     implementation deps.appCompat
-    implementation deps.work
+    implementation deps.workKtx
 
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
 
     implementation deps.roomRuntime
-    annotationProcessor deps.roomCompiler
+
+    // Ref: https://stackoverflow.com/a/51067251
+    kapt deps.roomCompiler
 
     api deps.browserSwitch
     api project(':SharedUtils')
@@ -81,6 +84,7 @@ dependencies {
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
+    testImplementation deps.mockk
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')

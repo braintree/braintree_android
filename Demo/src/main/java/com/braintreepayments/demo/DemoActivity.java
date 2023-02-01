@@ -48,16 +48,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         registerSharedPreferencesListener();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 1);
-        }
-    }
-
     public BraintreeClient getBraintreeClient() {
         // lazily instantiate braintree client in case the demo has been reset
         if (braintreeClient == null) {

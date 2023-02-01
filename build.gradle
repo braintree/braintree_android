@@ -52,7 +52,7 @@ buildscript {
             "securityCrypto"             : "androidx.security:security-crypto:1.1.0-alpha04",
 
             // NEXT_MAJOR_VERSION: upgrade to 2.7.1 (or latest) when Java 7 support is explicitly dropped
-            "work"                       : "androidx.work:work-runtime:2.7.0-alpha05",
+            "workKtx"                    : "androidx.work:work-runtime-ktx:2.7.0-alpha05",
             "workTesting"                : "androidx.work:work-testing:2.5.0",
 
             "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
