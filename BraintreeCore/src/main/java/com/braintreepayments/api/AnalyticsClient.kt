@@ -118,11 +118,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             if (events.isNotEmpty()) {
                 val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
                 val analyticsRequest = serializeEvents(authorization, events, metadata)
-                val analyticsUrl = configuration!!.analyticsUrl
-                httpClient.post(
-                    analyticsUrl, analyticsRequest.toString(), configuration, authorization
-                )
-                analyticsEventDao.deleteEvents(events)
+                configuration?.analyticsUrl?.let { analyticsUrl ->
+                    httpClient.post(
+                        analyticsUrl, analyticsRequest.toString(), configuration, authorization
+                    )
+                    analyticsEventDao.deleteEvents(events)
+                }
             }
             ListenableWorker.Result.success()
         } catch (e: Exception) {
@@ -168,11 +169,14 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         authorization: Authorization?, events: List<AnalyticsEvent>, metadata: DeviceMetadata
     ): JSONObject {
         val requestObject = JSONObject()
-        if (authorization is ClientToken) {
-            requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
-        } else {
-            requestObject.put(TOKENIZATION_KEY, authorization!!.bearer)
+        authorization?.let {
+            if (it is ClientToken) {
+                requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
+            } else {
+                requestObject.put(TOKENIZATION_KEY, it.bearer)
+            }
         }
+
         requestObject.put(META_KEY, metadata.toJSON())
         val eventObjects = JSONArray()
         var eventObject: JSONObject
