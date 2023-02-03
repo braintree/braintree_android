@@ -9,7 +9,7 @@
   * Fix an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
   * Breaking changes
     *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
-  * Setting the `PayPalNativeCheckoutAccountNonce` intent as the one provided in the `PayPalNativeCheckoutRequest`
+  * Fixes bug in `PayPalNativeCheckoutAccountNonce` where the `intent` was not being set correctly from the `PayPalNativeCheckoutRequest`
 * ThreeDSecure
   * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
 
