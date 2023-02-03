@@ -258,8 +258,8 @@ public class PayPalNativeCheckoutClient {
         payPalAccount.setClientMetadataId(riskId);
         payPalAccount.setSource("paypal-browser");
         payPalAccount.setPaymentType(paymentType);
-        if (approvalData.getCart() != null) {
-            payPalAccount.setIntent(approvalData.getCart().getIntent());
+        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
+            payPalAccount.setIntent(((PayPalNativeCheckoutRequest) payPalRequest).getIntent());
         }
 
         try {
