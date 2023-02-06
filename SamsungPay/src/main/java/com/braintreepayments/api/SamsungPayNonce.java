@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 /**
  * {@link PaymentMethodNonce} representing a Samsung Pay card.
+ *
  * @see PaymentMethodNonce
  */
 public class SamsungPayNonce extends PaymentMethodNonce {
@@ -22,9 +23,14 @@ public class SamsungPayNonce extends PaymentMethodNonce {
         JSONObject data = new JSONObject(inputJson.getString("data"));
         JSONObject braintreeData = new JSONObject(data.getString("data"));
 
-        JSONObject paymentMethod = braintreeData
-                .getJSONObject("tokenizeSamsungPayCard")
-                .getJSONObject("paymentMethod");
+        JSONObject tokenizeSamsungPayResponse =
+            braintreeData.getJSONObject("tokenizeSamsungPayCard");
+
+        JSONObject paymentMethod = tokenizeSamsungPayResponse.optJSONObject("paymentMethod");
+        if (paymentMethod == null) {
+            // fallback to single use token key; throws when fallback not present
+            paymentMethod = tokenizeSamsungPayResponse.getJSONObject("singleUseToken");
+        }
 
         String nonce = paymentMethod.getString("id");
 

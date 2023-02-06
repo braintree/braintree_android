@@ -12,6 +12,8 @@
   * Fixes bug in `PayPalNativeCheckoutAccountNonce` where the `intent` was not being set correctly from the `PayPalNativeCheckoutRequest`
 * ThreeDSecure
   * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
+* SamsungPay
+  * Support legacy `singleUseToken` property when parsing Samsung Pay response (fixes #668)
 
 ## 4.24.0
 
