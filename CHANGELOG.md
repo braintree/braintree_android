@@ -7,9 +7,9 @@
 * PayPalNativeCheckout (BETA)
   * Bump native-checkout version to `0.8.8`
   * Fix an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
-  * Breaking changes
-    *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
   * Fixes bug in `PayPalNativeCheckoutAccountNonce` where the `intent` was not being set correctly from the `PayPalNativeCheckoutRequest`
+  * Breaking changes
+    * `PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
 * ThreeDSecure
   * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
 * SamsungPay
