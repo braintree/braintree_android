@@ -145,7 +145,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         timestamp: Long,
         authorization: Authorization?
     ) {
-        if (lastKnownAnalyticsUrl == null || authorization == null) {
+        if (authorization == null) {
             return
         }
         val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
@@ -153,13 +153,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
-            httpClient.post(
-                lastKnownAnalyticsUrl,
-                analyticsRequest.toString(),
-                null,
-                authorization,
-                HttpNoResponse()
-            )
+            lastKnownAnalyticsUrl?.let { analyticsUrl ->
+                httpClient.post(
+                    analyticsUrl,
+                    analyticsRequest.toString(),
+                    null,
+                    authorization,
+                    HttpNoResponse()
+                )
+            }
         } catch (e: JSONException) { /* ignored */
         }
     }

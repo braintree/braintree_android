@@ -4,7 +4,6 @@ import android.net.Uri
 import com.braintreepayments.api.HttpClient.RetryStrategy
 import org.json.JSONException
 import org.json.JSONObject
-import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
@@ -24,7 +23,7 @@ internal class BraintreeHttpClient(
     operator fun get(
         path: String,
         configuration: Configuration?,
-        authorization: Authorization,
+        authorization: Authorization?,
         callback: HttpResponseCallback
     ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
 
@@ -40,7 +39,7 @@ internal class BraintreeHttpClient(
     operator fun get(
         path: String,
         configuration: Configuration?,
-        authorization: Authorization,
+        authorization: Authorization?,
         @RetryStrategy retryStrategy: Int,
         callback: HttpResponseCallback
     ) {
@@ -88,7 +87,7 @@ internal class BraintreeHttpClient(
         path: String,
         data: String,
         configuration: Configuration?,
-        authorization: Authorization,
+        authorization: Authorization?,
         callback: HttpResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
@@ -139,7 +138,7 @@ internal class BraintreeHttpClient(
      */
     @Throws(Exception::class)
     fun post(
-        path: String, data: String, configuration: Configuration?, authorization: Authorization
+        path: String, data: String, configuration: Configuration?, authorization: Authorization?
     ): String {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
@@ -176,11 +175,7 @@ internal class BraintreeHttpClient(
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = try {
-                TLSSocketFactory(TLSCertificatePinning.getCertInputStream())
-            } catch (e: SSLException) {
-                null
-            }
+            val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
             return HttpClient(socketFactory, BraintreeHttpResponseParser())
         }
     }
