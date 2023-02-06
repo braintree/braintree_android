@@ -41,7 +41,7 @@ buildscript {
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
-            "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
+            "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlin}",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.3.2",
             "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2",
