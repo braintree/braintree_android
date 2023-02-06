@@ -26,10 +26,10 @@ public class SamsungPayNonce extends PaymentMethodNonce {
         JSONObject tokenizeSamsungPayResponse =
             braintreeData.getJSONObject("tokenizeSamsungPayCard");
 
-        JSONObject paymentMethod = tokenizeSamsungPayResponse.optJSONObject("singleUseToken");
+        JSONObject paymentMethod = tokenizeSamsungPayResponse.optJSONObject("paymentMethod");
         if (paymentMethod == null) {
-            // fallback to payment method key
-            paymentMethod = tokenizeSamsungPayResponse.getJSONObject("paymentMethod");
+            // fallback to single use token key; throws when fallback not present
+            paymentMethod = tokenizeSamsungPayResponse.getJSONObject("singleUseToken");
         }
 
         String nonce = paymentMethod.getString("id");
