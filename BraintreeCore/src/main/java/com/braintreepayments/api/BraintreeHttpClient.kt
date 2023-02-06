@@ -175,7 +175,7 @@ internal class BraintreeHttpClient(
         private const val USER_AGENT_HEADER = "User-Agent"
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
-        fun createDefaultHttpClient(): HttpClient {
+        private fun createDefaultHttpClient(): HttpClient {
             val socketFactory = try {
                 TLSSocketFactory(TLSCertificatePinning.getCertInputStream())
             } catch (e: SSLException) {
