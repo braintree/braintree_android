@@ -11,6 +11,8 @@
     *`PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
 * ThreeDSecure
   * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
+* SamsungPay
+  * Support legacy `singleUseToken` property when parsing Samsung Pay response (fixes #668)
 
 ## 4.24.0
 
