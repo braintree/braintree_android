@@ -8,55 +8,47 @@ import org.json.JSONObject
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ApiClient constructor(private val braintreeClient: BraintreeClient) {
+class ApiClient(private val braintreeClient: BraintreeClient) {
 
-    fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) {
-        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started")
-        braintreeClient.sendGraphQLPOST(tokenizePayload.toString()) { responseBody, httpError ->
-            parseResponseToJSON(
-                responseBody,
-                httpError,
-                callback,
-                isGraphQL = true
-            )
-        }
-    }
-
-    fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) {
-        val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-        paymentMethod.setSessionId(braintreeClient.sessionId)
-
-        try {
-            val body = paymentMethod.buildJSON().toString()
-            braintreeClient.sendPOST(url, body) { responseBody, httpError ->
-                parseResponseToJSON(responseBody, httpError, callback)
+    fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
+        braintreeClient.run {
+            sendAnalyticsEvent("card.graphql.tokenization.started")
+            sendGraphQLPOST(tokenizePayload.toString()) { responseBody, httpError ->
+                parseResponseToJSON(responseBody)?.let { json ->
+                    sendAnalyticsEvent("card.graphql.tokenization.success")
+                    callback.onResult(json, null)
+                } ?: httpError?.let { error ->
+                    sendAnalyticsEvent("card.graphql.tokenization.failure")
+                    callback.onResult(null, error)
+                }
             }
-        } catch (exception: JSONException) {
-            callback.onResult(null, exception)
         }
-    }
 
-    private fun parseResponseToJSON(
-        responseBody: String?,
-        exception: Exception?,
-        callback: TokenizeCallback,
-        isGraphQL: Boolean = false) {
-        responseBody?.also {
+    fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
+        braintreeClient.run {
+            val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
+            paymentMethod.setSessionId(braintreeClient.sessionId)
+
+            sendAnalyticsEvent("card.rest.tokenization.started")
+            sendPOST(url, paymentMethod.buildJSON().toString()) { responseBody, httpError ->
+                parseResponseToJSON(responseBody)?.let { json ->
+                    sendAnalyticsEvent("card.rest.tokenization.success")
+                    callback.onResult(json, null)
+                } ?: httpError?.let { error ->
+                    sendAnalyticsEvent("card.rest.tokenization.failure")
+                    callback.onResult(null, error)
+                }
+            }
+        }
+
+    private fun parseResponseToJSON(responseBody: String?): JSONObject? =
+        responseBody?.let {
             try {
-                callback.onResult(JSONObject(it), null)
-                if (isGraphQL)
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success")
-            } catch (exception: JSONException) {
-                if (isGraphQL)
-                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
-                callback.onResult(null, exception)
+                JSONObject(it)
+            } catch (e: JSONException) {
+                null
             }
-        } ?: run {
-            if (isGraphQL)
-                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
-            callback.onResult(null, exception)
         }
-    }
 
     companion object {
         const val PAYMENT_METHOD_ENDPOINT = "payment_methods"
