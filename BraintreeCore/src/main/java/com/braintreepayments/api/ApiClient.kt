@@ -13,11 +13,11 @@ class ApiClient constructor(private val braintreeClient: BraintreeClient) {
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started")
         braintreeClient.sendGraphQLPOST(tokenizePayload.toString()) { responseBody, httpError ->
-            parseResponse(
+            parseResponseToJSON(
                 responseBody,
                 httpError,
                 callback,
-                analyticsEventName = "card.graphql.tokenization"
+                isGraphQL = true
             )
         }
     }
@@ -29,44 +29,33 @@ class ApiClient constructor(private val braintreeClient: BraintreeClient) {
         try {
             val body = paymentMethod.buildJSON().toString()
             braintreeClient.sendPOST(url, body) { responseBody, httpError ->
-                parseResponse(responseBody, httpError, callback)
+                parseResponseToJSON(responseBody, httpError, callback)
             }
         } catch (exception: JSONException) {
-            returnError(callback, exception)
+            callback.onResult(null, exception)
         }
     }
 
-    private fun parseResponse(
+    private fun parseResponseToJSON(
         responseBody: String?,
         exception: Exception?,
         callback: TokenizeCallback,
-        analyticsEventName: String? = null) {
+        isGraphQL: Boolean = false) {
         responseBody?.also {
             try {
-                returnSuccess(callback, JSONObject(it))
-                analyticsEventName?.also { event ->
-                    braintreeClient.sendAnalyticsEvent("$event.success")
-                }
+                callback.onResult(JSONObject(it), null)
+                if (isGraphQL)
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success")
             } catch (exception: JSONException) {
-                analyticsEventName?.also { event ->
-                    braintreeClient.sendAnalyticsEvent("$event.failure")
-                }
-                returnError(callback, exception)
+                if (isGraphQL)
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
+                callback.onResult(null, exception)
             }
         } ?: run {
-            analyticsEventName?.also { event ->
-                braintreeClient.sendAnalyticsEvent("$event.failure")
-            }
-            returnError(callback, exception)
+            if (isGraphQL)
+                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure")
+            callback.onResult(null, exception)
         }
-    }
-
-    private fun returnSuccess(callback: TokenizeCallback, jsonObject: JSONObject?) {
-        callback.onResult(jsonObject, null)
-    }
-
-    private fun returnError(callback: TokenizeCallback, exception: Exception?) {
-        callback.onResult(null, exception)
     }
 
     companion object {
