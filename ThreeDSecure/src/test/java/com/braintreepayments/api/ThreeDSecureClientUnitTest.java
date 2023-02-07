@@ -96,7 +96,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
@@ -113,7 +113,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setNonce("a-nonce");
@@ -148,7 +148,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setNonce("a-nonce");
@@ -189,7 +189,7 @@ public class ThreeDSecureClientUnitTest {
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
@@ -214,7 +214,7 @@ public class ThreeDSecureClientUnitTest {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         sut.setListener(listener);
@@ -236,7 +236,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         sut.setListener(listener);
@@ -257,7 +257,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
-        when(braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE)).thenReturn(false);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);

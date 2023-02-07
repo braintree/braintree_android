@@ -84,7 +84,7 @@ public class ThreeDSecureV1UnitTest {
                 .returnUrlScheme("sample-url-scheme://")
                 .build();
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
@@ -104,7 +104,7 @@ public class ThreeDSecureV1UnitTest {
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
         when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
@@ -129,7 +129,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, threeDSecureRequest, threeDSecureResult.getLookup()))
                 .thenReturn("https://browser.switch.url.com");
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
@@ -160,7 +160,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, threeDSecureRequest, threeDSecureResult.getLookup()))
                 .thenReturn("https://browser.switch.url.com");
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
@@ -191,7 +191,7 @@ public class ThreeDSecureV1UnitTest {
         when(browserSwitchHelper.getUrl(urlScheme, assetsUrl, threeDSecureRequest, threeDSecureResult.getLookup()))
                 .thenReturn("https://browser.switch.url.com");
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
@@ -212,7 +212,7 @@ public class ThreeDSecureV1UnitTest {
                 .returnUrlScheme(urlScheme)
                 .build();
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), isNull(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");
@@ -241,7 +241,7 @@ public class ThreeDSecureV1UnitTest {
                 .returnUrlScheme(urlScheme)
                 .build();
 
-        when(braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
+        when(braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE)).thenReturn(true);
 
         when(browserSwitchHelper.getUrl(eq(urlScheme), eq(assetsUrl), eq(threeDSecureRequest), any(ThreeDSecureLookup.class)))
                 .thenReturn("https://browser.switch.url.com");

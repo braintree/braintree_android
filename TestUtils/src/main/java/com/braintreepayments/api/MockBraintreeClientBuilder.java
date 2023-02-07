@@ -157,7 +157,7 @@ public class MockBraintreeClientBuilder {
         }
 
         when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
-        when(braintreeClient.canPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
+        when(braintreeClient.assertCanPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
         when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
         when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(launchesBrowserSwitchAsNewTask);
