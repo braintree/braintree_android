@@ -480,7 +480,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void canPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
+    public void assertCanPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
@@ -496,7 +496,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void canPerformBrowserSwitch_onSuccess_returnsTrue() throws BrowserSwitchException {
+    public void assertCanPerformBrowserSwitch_onSuccess_doesNotThrow() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
         doNothing().when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
@@ -511,7 +511,7 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void canPerformBrowserSwitch_onError_returnsFalse() throws BrowserSwitchException {
+    public void assertCanPerformBrowserSwitch_onError_throws() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
         BrowserSwitchException browserSwitchException = new BrowserSwitchException("error");
         doThrow(browserSwitchException)
