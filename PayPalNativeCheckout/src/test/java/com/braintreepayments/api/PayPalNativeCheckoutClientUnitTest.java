@@ -101,7 +101,6 @@ public class PayPalNativeCheckoutClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(true)
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
         PowerMockito.mockStatic(PLog.class);
