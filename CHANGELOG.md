@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SamsungPay
+  * Support legacy `sourceCardLast4` property when parsing Samsung Pay response
+
 ## 4.25.1
 
 * SharedUtils
