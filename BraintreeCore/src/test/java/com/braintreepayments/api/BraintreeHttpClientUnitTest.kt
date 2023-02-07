@@ -8,9 +8,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import java.net.MalformedURLException
 import java.net.URISyntaxException
@@ -69,30 +66,22 @@ class BraintreeHttpClientUnitTest {
     @Throws(MalformedURLException::class, URISyntaxException::class)
     fun get_withTokenizationKey_forwardsHttpRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val httpRequestSlot = slot<HttpRequest>()
+        val callback = mockk<HttpResponseCallback>()
+        every {
+            httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
+        } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
-        sut["sample/path", configuration, tokenizationKey, callback]
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(
-            captor.capture(),
-            ArgumentMatchers.eq(HttpClient.NO_RETRY),
-            ArgumentMatchers.same(callback)
-        )
-        val httpRequest = captor.value
+        sut.get("sample/path", configuration, tokenizationKey, callback)
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
-        assertEquals(
-            "braintree/android/" + BuildConfig.VERSION_NAME,
-            headers["User-Agent"]
-        )
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
         assertEquals("GET", httpRequest.method)
     }
@@ -102,55 +91,44 @@ class BraintreeHttpClientUnitTest {
     fun get_withClientToken_forwardsHttpRequestToHttpClient() {
         val clientToken =
             Authorization.fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN))
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val httpRequestSlot = slot<HttpRequest>()
+        val callback = mockk<HttpResponseCallback>()
+        every {
+            httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
+        } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
-        sut["sample/path", configuration, clientToken, callback]
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(
-            captor.capture(),
-            ArgumentMatchers.eq(HttpClient.NO_RETRY),
-            ArgumentMatchers.same(callback)
-        )
-        val httpRequest = captor.value
+        sut.get("sample/path", configuration, clientToken, callback)
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         val expectedUrlString = String.format(
             "https://example.com/sample/path?authorizationFingerprint=%s",
             clientToken.bearer
         )
         assertEquals(URL(expectedUrlString), httpRequest.url)
-        assertEquals(
-            "braintree/android/" + BuildConfig.VERSION_NAME,
-            headers["User-Agent"]
-        )
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertNull(headers["Client-Key"])
         assertEquals("GET", httpRequest.method)
     }
 
     @Test
     fun get_withInvalidToken_forwardsExceptionToCallback() {
-        val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
+        val authorization: Authorization =
+            InvalidAuthorization("invalid", "token invalid")
+        val configuration = mockk<Configuration>()
+
+        val exceptionSlot = slot<BraintreeException>()
+        val callback = mockk<HttpResponseCallback>()
+        every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
-        sut["sample/path", configuration, authorization, callback]
-        val captor = ArgumentCaptor.forClass(
-            BraintreeException::class.java
-        )
-        Mockito.verify(callback)
-            .onResult(ArgumentMatchers.isNull<Any>() as String, captor.capture())
-        val exception = captor.value
+        sut.get("sample/path", configuration, authorization, callback)
+
+        val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
     }
 
@@ -158,25 +136,18 @@ class BraintreeHttpClientUnitTest {
     @Throws(Exception::class)
     fun postSync_withTokenizationKey_forwardsHttpRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
+
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        Mockito.`when`(
-            httpClient.sendRequest(
-                ArgumentMatchers.any(
-                    HttpRequest::class.java
-                )
-            )
-        ).thenReturn("sample result")
         val result = sut.post("sample/path", "{}", configuration, tokenizationKey)
         assertEquals("sample result", result)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture())
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
         assertEquals(
@@ -195,41 +166,26 @@ class BraintreeHttpClientUnitTest {
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        Mockito.`when`(
-            httpClient.sendRequest(
-                ArgumentMatchers.any(
-                    HttpRequest::class.java
-                )
-            )
-        ).thenReturn("sample result")
         val result = sut.post("sample/path", "{}", configuration, clientToken)
         assertEquals("sample result", result)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture())
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
-        assertEquals(
-            "braintree/android/" + BuildConfig.VERSION_NAME,
-            headers["User-Agent"]
-        )
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
+
         assertNull(headers["Client-Key"])
         assertEquals("POST", httpRequest.method)
-        val expectedData = String.format(
-            "{\"authorizationFingerprint\":\"%s\"}",
-            clientToken.authorizationFingerprint
-        )
-        assertEquals(
-            expectedData,
-            String(httpRequest.data, StandardCharsets.UTF_8)
-        )
+        val expectedData =
+            """{"authorizationFingerprint":"${clientToken.authorizationFingerprint}"}"""
+        assertEquals(expectedData, String(httpRequest.data, StandardCharsets.UTF_8))
     }
 
     @Test
@@ -237,6 +193,7 @@ class BraintreeHttpClientUnitTest {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
+
         val sut = BraintreeHttpClient(httpClient)
         try {
             sut.post("sample/path", "{}", null, clientToken)
@@ -255,23 +212,24 @@ class BraintreeHttpClientUnitTest {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns ""
+
         val sut = BraintreeHttpClient(httpClient)
         sut.post("https://example.com/sample/path", "{}", null, clientToken)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture())
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
     }
 
     @Test
     fun postSync_withInvalidToken_throwsBraintreeException() {
-        val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
+        val authorization: Authorization =
+            InvalidAuthorization("invalid", "token invalid")
+        val configuration = mockk<Configuration>()
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
         try {
             sut.post("https://example.com/sample/path", "{}", configuration, authorization)
         } catch (e: Exception) {
@@ -284,26 +242,20 @@ class BraintreeHttpClientUnitTest {
     @Throws(MalformedURLException::class, URISyntaxException::class)
     fun postAsync_withTokenizationKey_forwardsHttpRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val callback = mockk<HttpResponseCallback>()
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
         sut.post("sample/path", "{}", configuration, tokenizationKey, callback)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.same(callback))
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
-        assertEquals(
-            "braintree/android/" + BuildConfig.VERSION_NAME,
-            headers["User-Agent"]
-        )
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
         assertEquals("POST", httpRequest.method)
         assertEquals("{}", String(httpRequest.data, StandardCharsets.UTF_8))
@@ -316,36 +268,25 @@ class BraintreeHttpClientUnitTest {
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
+        val callback = mockk<HttpResponseCallback>()
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
         sut.post("sample/path", "{}", configuration, clientToken, callback)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.same(callback))
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
-        assertEquals(
-            "braintree/android/" + BuildConfig.VERSION_NAME,
-            headers["User-Agent"]
-        )
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertNull(headers["Client-Key"])
         assertEquals("POST", httpRequest.method)
-        val expectedData = String.format(
-            "{\"authorizationFingerprint\":\"%s\"}",
-            clientToken.authorizationFingerprint
-        )
-        assertEquals(
-            expectedData,
-            String(httpRequest.data, StandardCharsets.UTF_8)
-        )
+        val expectedData =
+            """{"authorizationFingerprint":"${clientToken.authorizationFingerprint}"}"""
+        assertEquals(expectedData, String(httpRequest.data, StandardCharsets.UTF_8))
     }
 
     @Test
@@ -354,18 +295,14 @@ class BraintreeHttpClientUnitTest {
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
+        val exceptionSlot = slot<BraintreeException>()
+        val callback = mockk<HttpResponseCallback>()
+        every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
         sut.post("sample/path", "{}", null, clientToken, callback)
-        val captor = ArgumentCaptor.forClass(
-            Exception::class.java
-        )
-        Mockito.verify(callback)
-            .onResult(ArgumentMatchers.isNull<Any>() as String, captor.capture())
-        val exception = captor.value
-        assertTrue(exception is BraintreeException)
+
+        val exception = exceptionSlot.captured
         assertEquals(
             "Braintree HTTP GET request without configuration cannot have a relative path.",
             exception.message
@@ -378,39 +315,34 @@ class BraintreeHttpClientUnitTest {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
+
+        val httpRequestSlot = slot<HttpRequest>()
+        val callback = mockk<HttpResponseCallback>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
         sut.post("https://example.com/sample/path", "{}", null, clientToken, callback)
-        val captor = ArgumentCaptor.forClass(
-            HttpRequest::class.java
-        )
-        Mockito.verify(httpClient).sendRequest(captor.capture(), ArgumentMatchers.same(callback))
-        val httpRequest = captor.value
+
+        val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
     }
 
     @Test
     fun postAsync_withPathAndDataAndCallback_whenClientTokenAuthAndInvalidJSONPayload_postsCallbackError() {
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        Mockito.`when`(configuration.clientApiUrl).thenReturn("https://example.com")
+        val configuration = mockk<Configuration>()
+        every { configuration.clientApiUrl } returns "https://example.com"
+
         val clientToken =
             Authorization.fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN))
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
+
+        val exceptionSlot = slot<JSONException>()
+        val callback = mockk<HttpResponseCallback>()
+        every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
         sut.post("sample/path", "not json", configuration, clientToken, callback)
-        val captor = ArgumentCaptor.forClass(
-            Exception::class.java
-        )
-        Mockito.verify(callback)
-            .onResult(ArgumentMatchers.isNull<Any>() as String, captor.capture())
-        val exception = captor.value
-        assertTrue(exception is JSONException)
+
+        val exception = exceptionSlot.captured
         assertEquals(
             "Value not of type java.lang.String cannot be converted to JSONObject",
             exception.message
@@ -419,21 +351,18 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     fun postAsync_withInvalidToken_forwardsExceptionToCallback() {
-        val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
+        val configuration = mockk<Configuration>()
+        val authorization: Authorization =
+            InvalidAuthorization("invalid", "token invalid")
+
+        val exceptionSlot = slot<BraintreeException>()
+        val callback = mockk<HttpResponseCallback>()
+        every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
+
         val sut = BraintreeHttpClient(httpClient)
-        val configuration = Mockito.mock(
-            Configuration::class.java
-        )
-        val callback = Mockito.mock(
-            HttpResponseCallback::class.java
-        )
         sut.post("sample/path", "{}", configuration, authorization, callback)
-        val captor = ArgumentCaptor.forClass(
-            BraintreeException::class.java
-        )
-        Mockito.verify(callback)
-            .onResult(ArgumentMatchers.isNull<Any>() as String, captor.capture())
-        val exception = captor.value
+
+        val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
     }
 }
