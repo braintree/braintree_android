@@ -11,6 +11,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +37,7 @@ public class MockBraintreeClientBuilder {
     private String returnUrlScheme;
 
     private BrowserSwitchResult browserSwitchResult;
-
-    private boolean urlSchemeInAndroidManifest = true;
-    private boolean canPerformBrowserSwitch = true;
+    private BrowserSwitchException browserSwitchAssertionError;
 
     private ActivityInfo activityInfo;
     private boolean launchesBrowserSwitchAsNewTask;
@@ -117,13 +116,8 @@ public class MockBraintreeClientBuilder {
          return this;
     }
 
-    public MockBraintreeClientBuilder urlSchemeDeclaredInManifest(boolean urlSchemeInAndroidManifest) {
-        this.urlSchemeInAndroidManifest = urlSchemeInAndroidManifest;
-        return this;
-    }
-
-    public MockBraintreeClientBuilder canPerformBrowserSwitch(boolean canPerformBrowserSwitch) {
-        this.canPerformBrowserSwitch = canPerformBrowserSwitch;
+    public MockBraintreeClientBuilder browserSwitchAssertionError(BrowserSwitchException browserSwitchAssertionError) {
+        this.browserSwitchAssertionError = browserSwitchAssertionError;
         return this;
     }
 
@@ -156,8 +150,13 @@ public class MockBraintreeClientBuilder {
             when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
         }
 
-        when(braintreeClient.isUrlSchemeDeclaredInAndroidManifest(anyString(), any(Class.class))).thenReturn(urlSchemeInAndroidManifest);
-        when(braintreeClient.assertCanPerformBrowserSwitch(any(FragmentActivity.class), anyInt())).thenReturn(canPerformBrowserSwitch);
+        if (browserSwitchAssertionError != null) {
+            try {
+                doThrow(browserSwitchAssertionError)
+                        .when(braintreeClient).assertCanPerformBrowserSwitch(any(FragmentActivity.class), anyInt());
+            } catch (BrowserSwitchException ignored) {}
+        }
+
         when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
         when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(launchesBrowserSwitchAsNewTask);

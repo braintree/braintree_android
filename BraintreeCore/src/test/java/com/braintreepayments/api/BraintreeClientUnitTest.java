@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -116,7 +117,7 @@ public class BraintreeClientUnitTest {
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         BraintreeSharedPreferencesException loadFromCacheError =
-            new BraintreeSharedPreferencesException("cache load error");
+                new BraintreeSharedPreferencesException("cache load error");
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .loadFromCacheError(loadFromCacheError)
@@ -140,7 +141,7 @@ public class BraintreeClientUnitTest {
 
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
         BraintreeSharedPreferencesException saveToCacheError =
-            new BraintreeSharedPreferencesException("cache save error");
+                new BraintreeSharedPreferencesException("cache save error");
         ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
                 .configuration(configuration)
                 .saveToCacheError(saveToCacheError)
@@ -502,19 +503,29 @@ public class BraintreeClientUnitTest {
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
-        assertTrue(sut.assertCanPerformBrowserSwitch(activity, 123));
+        try {
+            sut.assertCanPerformBrowserSwitch(activity, 123);
+        } catch (BrowserSwitchException e) {
+            fail("shouldn't get here");
+        }
     }
 
     @Test
     public void canPerformBrowserSwitch_onError_returnsFalse() throws BrowserSwitchException {
         FragmentActivity activity = mock(FragmentActivity.class);
-        doThrow(new BrowserSwitchException("error")).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
+        BrowserSwitchException browserSwitchException = new BrowserSwitchException("error");
+        doThrow(browserSwitchException)
+                .when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), any(BrowserSwitchOptions.class));
 
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);
 
-        sut.assertCanPerformBrowserSwitch(activity, 123);
-        assertFalse(sut.assertCanPerformBrowserSwitch(activity, 123));
+        try {
+            sut.assertCanPerformBrowserSwitch(activity, 123);
+            fail("shouldn't get here");
+        } catch (BrowserSwitchException e) {
+            assertSame(browserSwitchException, e);
+        }
     }
 
     @Test
@@ -583,7 +594,7 @@ public class BraintreeClientUnitTest {
         ClientTokenProvider clientTokenProvider = mock(ClientTokenProvider.class);
         String sessionId = "custom-session-id";
         BraintreeClient sut =
-            new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
+                new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
 
         assertEquals("custom-session-id", sut.getSessionId());
     }
@@ -613,7 +624,7 @@ public class BraintreeClientUnitTest {
         ClientTokenProvider clientTokenProvider = mock(ClientTokenProvider.class);
         String sessionId = "custom-session-id";
         BraintreeClient sut =
-            new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
+                new BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN);
 
         assertEquals("dropin", sut.getIntegrationType());
     }
