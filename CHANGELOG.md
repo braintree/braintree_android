@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SharedUtils
+  * Revert androidx `security-crypto` dependency to `1.1.0-alpha03` (`1.1.0-alpha04` requires a compile target of 33)
+
 ## 4.25.0
 
 * SharedUtils
