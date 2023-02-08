@@ -3,27 +3,21 @@ package com.braintreepayments.api
 import android.content.Context
 import com.braintreepayments.api.Configuration.Companion.fromJson
 import org.robolectric.RobolectricTestRunner
-import androidx.test.core.app.ApplicationProvider
 import io.mockk.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
-import java.security.GeneralSecurityException
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationCacheUnitTest {
 
     private var braintreeSharedPreferences: BraintreeSharedPreferences = mockk(relaxed = true)
-    var context: Context? = null
 
     @Before
-    @Throws(GeneralSecurityException::class, IOException::class)
     fun beforeEach() {
-        context = ApplicationProvider.getApplicationContext()
         mockkStatic(BraintreeSharedPreferences::class)
         every { BraintreeSharedPreferences.getInstance(any()) } returns braintreeSharedPreferences
     }

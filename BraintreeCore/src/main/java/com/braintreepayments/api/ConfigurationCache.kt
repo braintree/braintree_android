@@ -13,7 +13,7 @@ internal class ConfigurationCache @VisibleForTesting internal constructor(
     }
 
     fun getConfiguration(cacheKey: String, currentTimeMillis: Long): String? {
-        val timestampKey = cacheKey + "_timestamp"
+        val timestampKey = "${cacheKey}_timestamp"
         if (sharedPreferences.containsKey(timestampKey)) {
             val timeInCache = currentTimeMillis - sharedPreferences.getLong(timestampKey)
             if (timeInCache < TIME_TO_LIVE) {
@@ -32,7 +32,7 @@ internal class ConfigurationCache @VisibleForTesting internal constructor(
         cacheKey: String?,
         currentTimeMillis: Long
     ) {
-        val timestampKey = String.format("%s_timestamp", cacheKey)
+        val timestampKey = "${cacheKey}_timestamp"
         sharedPreferences.putStringAndLong(
             cacheKey,
             configuration.toJson(),
