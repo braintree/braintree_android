@@ -1,14 +1,12 @@
 package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,14 +15,12 @@ import static org.mockito.Mockito.when;
 import android.util.Base64;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.RobolectricTestRunner;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
@@ -65,7 +61,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_savesFetchedConfigurationToCache() throws BraintreeSharedPreferencesException {
+    public void loadConfiguration_savesFetchedConfigurationToCache() {
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
         when(authorization.getBearer()).thenReturn("bearer");
 
@@ -137,7 +133,7 @@ public class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws BraintreeSharedPreferencesException {
+    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
         String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
 
         when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
@@ -149,46 +145,5 @@ public class ConfigurationLoaderUnitTest {
 
         verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), same(authorization), anyInt(), any(HttpResponseCallback.class));
         verify(callback).onResult(any(ConfigurationLoaderResult.class), (Exception) isNull());
-    }
-
-    @Test
-    public void loadConfiguration_forwardsConfigurationCacheErrors() throws BraintreeSharedPreferencesException, JSONException {
-        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
-        when(authorization.getBearer()).thenReturn("bearer");
-
-        BraintreeSharedPreferencesException cacheLoadError =
-            new BraintreeSharedPreferencesException("cache load error");
-        when(configurationCache.getConfiguration(anyString()))
-                .thenThrow(cacheLoadError);
-
-        BraintreeSharedPreferencesException cacheSaveError =
-            new BraintreeSharedPreferencesException("cache save error");
-        doThrow(cacheSaveError)
-                .when(configurationCache).saveConfiguration(any(Configuration.class), anyString());
-
-        ConfigurationLoader sut = new ConfigurationLoader(braintreeHttpClient, configurationCache);
-        sut.loadConfiguration(authorization, callback);
-
-        String expectedConfigUrl = "https://example.com/config?configVersion=3";
-        ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
-
-        verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), same(authorization), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
-
-        HttpResponseCallback httpResponseCallback = captor.getValue();
-        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
-
-        ArgumentCaptor<ConfigurationLoaderResult> resultCaptor =
-                ArgumentCaptor.forClass(ConfigurationLoaderResult.class);
-
-        verify(callback).onResult(resultCaptor.capture(), (Exception) isNull());
-
-        ConfigurationLoaderResult result = resultCaptor.getValue();
-
-        JSONObject expectedConfig = new JSONObject(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN);
-        JSONObject actualConfig = new JSONObject(result.getConfiguration().toJson());
-        JSONAssert.assertEquals(expectedConfig, actualConfig, true);
-
-        assertSame(cacheLoadError, result.getLoadFromCacheError());
-        assertSame(cacheSaveError, result.getSaveToCacheError());
     }
 }
