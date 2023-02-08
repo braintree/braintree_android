@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.25.2
 
 * BraintreeCore
   * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
