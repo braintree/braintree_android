@@ -14,7 +14,7 @@ class ConfigurationLoader {
     private final ConfigurationCache configurationCache;
 
     ConfigurationLoader(Context context, BraintreeHttpClient httpClient) {
-        this(httpClient, ConfigurationCache.getInstance(context));
+        this(httpClient, ConfigurationCache.Companion.getInstance(context));
     }
 
     @VisibleForTesting
