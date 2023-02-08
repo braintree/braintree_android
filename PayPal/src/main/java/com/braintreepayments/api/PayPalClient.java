@@ -30,7 +30,7 @@ public class PayPalClient {
     /**
      * Create a new instance of {@link PayPalClient} from within an Activity using a {@link BraintreeClient}.
      *
-     * @param activity a {@link FragmentActivity}
+     * @param activity        a {@link FragmentActivity}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public PayPalClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
@@ -40,7 +40,7 @@ public class PayPalClient {
     /**
      * Create a new instance of {@link PayPalClient} from within a Fragment using a {@link BraintreeClient}.
      *
-     * @param fragment a {@link Fragment
+     * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
      */
     public PayPalClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
@@ -49,7 +49,7 @@ public class PayPalClient {
 
     /**
      * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
-     *
+     * <p>
      * Deprecated. Use {@link PayPalClient(Fragment, BraintreeClient)} or
      * {@link PayPalClient(FragmentActivity, BraintreeClient)}.
      *
@@ -88,8 +88,8 @@ public class PayPalClient {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
-    private boolean browserSwitchNotPossible(FragmentActivity activity) {
-        return !braintreeClient.canPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
+    private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {
+        braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
     }
 
     private static Exception createPayPalError() {
@@ -98,16 +98,16 @@ public class PayPalClient {
                 "for more information.");
     }
 
-    private static Exception createBrowserSwitchError() {
+    private static Exception createBrowserSwitchError(BrowserSwitchException exception) {
         return new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
                 "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                "for the correct configuration");
+                "for the correct configuration: " + exception.getMessage());
     }
 
     /**
      * Tokenize a PayPal account for vault or checkout.
-     * 
+     * <p>
      * This method must be invoked on a {@link PayPalClient(Fragment, BraintreeClient)} or
      * {@link PayPalClient(FragmentActivity, BraintreeClient)} in order to receive results.
      *
@@ -127,7 +127,7 @@ public class PayPalClient {
 
     /**
      * Tokenize a PayPal account for vault or checkout.
-     * 
+     * <p>
      * Deprecated. Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)}
      *
      * @param activity      Android FragmentActivity
@@ -182,9 +182,12 @@ public class PayPalClient {
                     return;
                 }
 
-                if (browserSwitchNotPossible(activity)) {
+                try {
+                    assertCanPerformBrowserSwitch(activity);
+                } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                    Exception manifestInvalidError = createBrowserSwitchError();
+                    Exception manifestInvalidError =
+                        createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
@@ -209,13 +212,15 @@ public class PayPalClient {
                     return;
                 }
 
-                if (browserSwitchNotPossible(activity)) {
+                try {
+                    assertCanPerformBrowserSwitch(activity);
+                } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                    Exception manifestInvalidError = createBrowserSwitchError();
+                    Exception manifestInvalidError =
+                        createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
-
                 sendPayPalRequest(activity, payPalVaultRequest, callback);
             }
         });

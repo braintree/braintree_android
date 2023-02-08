@@ -187,7 +187,7 @@ public class PayPalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(false)
+                .browserSwitchAssertionError(new BrowserSwitchException("browser switch error"))
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
@@ -200,7 +200,7 @@ public class PayPalClientUnitTest {
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
                 "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                "for the correct configuration", errorCaptor.getValue().getMessage());
+                "for the correct configuration: browser switch error", errorCaptor.getValue().getMessage());
     }
 
     @Test
@@ -284,7 +284,6 @@ public class PayPalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(true)
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
@@ -359,7 +358,7 @@ public class PayPalClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(false)
+                .browserSwitchAssertionError(new BrowserSwitchException("browser switch error"))
                 .build();
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
@@ -372,7 +371,7 @@ public class PayPalClientUnitTest {
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                 "defines the same browser switch url as this app. See " +
                 "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                "for the correct configuration", errorCaptor.getValue().getMessage());
+                "for the correct configuration: browser switch error", errorCaptor.getValue().getMessage());
     }
 
 
