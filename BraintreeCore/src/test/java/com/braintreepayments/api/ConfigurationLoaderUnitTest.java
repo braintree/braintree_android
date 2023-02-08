@@ -57,7 +57,7 @@ public class ConfigurationLoaderUnitTest {
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null);
 
-        verify(callback).onResult(any(ConfigurationLoaderResult.class), (Exception) isNull());
+        verify(callback).onResult(any(Configuration.class), (Exception) isNull());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ConfigurationLoaderUnitTest {
         HttpResponseCallback httpResponseCallback = captor.getValue();
         httpResponseCallback.onResult("not json", null);
 
-        verify(callback).onResult((ConfigurationLoaderResult) isNull(), any(JSONException.class));
+        verify(callback).onResult((Configuration) isNull(), any(JSONException.class));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(null, httpError);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ConfigurationLoaderResult) isNull(), errorCaptor.capture());
+        verify(callback).onResult((Configuration) isNull(), errorCaptor.capture());
 
         ConfigurationException error = (ConfigurationException) errorCaptor.getValue();
         assertEquals("Request for configuration has failed: http error",
@@ -126,7 +126,7 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(callback).onResult((ConfigurationLoaderResult) isNull(), captor.capture());
+        verify(callback).onResult((Configuration) isNull(), captor.capture());
 
         BraintreeException exception = captor.getValue();
         assertEquals("token invalid", exception.getMessage());
@@ -144,6 +144,6 @@ public class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback);
 
         verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), same(authorization), anyInt(), any(HttpResponseCallback.class));
-        verify(callback).onResult(any(ConfigurationLoaderResult.class), (Exception) isNull());
+        verify(callback).onResult(any(Configuration.class), (Exception) isNull());
     }
 }

@@ -11,8 +11,6 @@ public class MockConfigurationLoaderBuilder {
 
     private Configuration configuration;
     private Exception configurationError;
-    private Exception loadFromCacheError;
-    private Exception saveToCacheError;
 
     public MockConfigurationLoaderBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -24,16 +22,6 @@ public class MockConfigurationLoaderBuilder {
         return this;
     }
 
-    public MockConfigurationLoaderBuilder loadFromCacheError(Exception loadFromCacheError) {
-        this.loadFromCacheError = loadFromCacheError;
-        return this;
-    }
-
-    public MockConfigurationLoaderBuilder saveToCacheError(Exception saveToCacheError) {
-        this.saveToCacheError = saveToCacheError;
-        return this;
-    }
-
     public ConfigurationLoader build() {
         ConfigurationLoader configurationLoader = mock(ConfigurationLoader.class);
 
@@ -42,9 +30,7 @@ public class MockConfigurationLoaderBuilder {
             public Void answer(InvocationOnMock invocation) {
                 ConfigurationLoaderCallback callback = (ConfigurationLoaderCallback) invocation.getArguments()[1];
                 if (configuration != null) {
-                    ConfigurationLoaderResult result =
-                        new ConfigurationLoaderResult(configuration, loadFromCacheError, saveToCacheError);
-                    callback.onResult(result, null);
+                    callback.onResult(configuration, null);
                 } else if (configurationError != null) {
                     callback.onResult(null, configurationError);
                 }
