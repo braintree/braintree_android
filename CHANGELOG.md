@@ -2,13 +2,13 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
 * SamsungPay
   * Support legacy `sourceCardLast4` property when parsing Samsung Pay response
 
 ## 4.25.1
 
-* BraintreeCore
-  * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
 * SharedUtils
   * Revert androidx `security-crypto` dependency to `1.1.0-alpha03` (`1.1.0-alpha04` requires a compile target of 33)
 
