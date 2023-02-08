@@ -1,7 +1,12 @@
 package com.braintreepayments.api
 
+import androidx.annotation.RestrictTo
 
-internal class TokenizationKey(tokenizationKey: String) : Authorization(tokenizationKey) {
+/**
+ * @suppress
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class TokenizationKey(tokenizationKey: String) : Authorization(tokenizationKey) {
 
     override val configUrl: String
     override val bearer: String = toString()
