@@ -1,6 +1,5 @@
 package com.braintreepayments.api
 
-import android.content.Context
 import com.braintreepayments.api.Configuration.Companion.fromJson
 import org.robolectric.RobolectricTestRunner
 import io.mockk.*
