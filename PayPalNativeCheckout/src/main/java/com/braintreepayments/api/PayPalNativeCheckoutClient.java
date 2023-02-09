@@ -204,7 +204,7 @@ public class PayPalNativeCheckoutClient {
                     }
                 });
             } else {
-                throw new Exception(error);
+                listener.onPayPalFailure(new Exception(error));
             }
         });
     }

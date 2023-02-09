@@ -21,7 +21,7 @@ class PayPalNativeCheckoutInternalClient {
     private final String successUrl;
 
     interface PayPalNativeCheckoutInternalClientCallback {
-        void onResult(@Nullable PayPalNativeCheckoutResponse payPalResponse, @Nullable Exception error) throws Exception;
+        void onResult(@Nullable PayPalNativeCheckoutResponse payPalResponse, @Nullable Exception error);
     }
 
     PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient) {
