@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.sharedutils.R;
-
 class BraintreeSharedPreferences {
 
+    private static final String PREFERENCES_FILE_KEY =
+        "com.braintreepayments.api.SHARED_PREFERENCES";
     private static volatile BraintreeSharedPreferences INSTANCE;
 
     static BraintreeSharedPreferences getInstance(Context context) {
@@ -16,7 +16,8 @@ class BraintreeSharedPreferences {
             synchronized (BraintreeSharedPreferences.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new BraintreeSharedPreferences(context);
+                    INSTANCE =
+                        new BraintreeSharedPreferences(createSharedPreferencesInstance(context));
                 }
             }
         }
@@ -24,15 +25,10 @@ class BraintreeSharedPreferences {
     }
 
     private static SharedPreferences createSharedPreferencesInstance(Context context) {
-        String preferenceFileKey = context.getString(R.string.preference_file_key);
-        return context.getSharedPreferences(preferenceFileKey, Context.MODE_PRIVATE);
+        return context.getSharedPreferences(PREFERENCES_FILE_KEY, Context.MODE_PRIVATE);
     }
 
     private final SharedPreferences sharedPreferences;
-
-    BraintreeSharedPreferences(Context context) {
-        this(createSharedPreferencesInstance(context));
-    }
 
     @VisibleForTesting
     BraintreeSharedPreferences(SharedPreferences sharedPreferences) {
