@@ -37,7 +37,6 @@ android {
 
 dependencies {
     implementation deps.annotation
-    implementation deps.securityCrypto
     implementation deps.kotlinStdLib
 
     testImplementation deps.junit

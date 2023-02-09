@@ -110,54 +110,6 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
-    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_sendsAnalyticsEventForCacheLoadErrors() throws JSONException {
-        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
-                .authorization(authorization)
-                .build();
-
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        BraintreeSharedPreferencesException loadFromCacheError =
-                new BraintreeSharedPreferencesException("cache load error");
-        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configuration(configuration)
-                .loadFromCacheError(loadFromCacheError)
-                .build();
-
-        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
-        BraintreeClient sut = new BraintreeClient(params);
-
-        ConfigurationCallback callback = mock(ConfigurationCallback.class);
-        sut.getConfiguration(callback);
-
-        String expectedEventName = "configuration.cache.load.failed";
-        verify(analyticsClient).sendEvent(configuration, expectedEventName, "session-id", "custom", authorization);
-    }
-
-    @Test
-    public void getConfiguration_onAuthorizationAndConfigurationLoadSuccess_sendsAnalyticsEventForCacheSaveErrors() throws JSONException {
-        AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
-                .authorization(authorization)
-                .build();
-
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-        BraintreeSharedPreferencesException saveToCacheError =
-                new BraintreeSharedPreferencesException("cache save error");
-        ConfigurationLoader configurationLoader = new MockConfigurationLoaderBuilder()
-                .configuration(configuration)
-                .saveToCacheError(saveToCacheError)
-                .build();
-
-        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
-        BraintreeClient sut = new BraintreeClient(params);
-
-        ConfigurationCallback callback = mock(ConfigurationCallback.class);
-        sut.getConfiguration(callback);
-
-        String expectedEventName = "configuration.cache.save.failed";
-        verify(analyticsClient).sendEvent(configuration, expectedEventName, "session-id", "custom", authorization);
-    }
-
-    @Test
     public void getConfiguration_forwardsAuthorizationLoaderError() {
         Exception authFetchError = new Exception("auth fetch error");
         AuthorizationLoader authorizationLoader = new MockAuthorizationLoaderBuilder()
