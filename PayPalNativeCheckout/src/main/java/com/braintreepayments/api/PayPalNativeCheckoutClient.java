@@ -203,6 +203,8 @@ public class PayPalNativeCheckoutClient {
                         braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.succeeded");
                     }
                 });
+            } else {
+                throw new Exception(error);
             }
         });
     }
