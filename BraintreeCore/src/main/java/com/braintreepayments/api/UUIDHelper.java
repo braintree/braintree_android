@@ -21,22 +21,12 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getPersistentUUID(BraintreeSharedPreferences braintreeSharedPreferences) {
-        String uuid = null;
-        try {
-            uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
-        } catch (BraintreeSharedPreferencesException ignored) {
-            // protect against shared prefs failure: default to creating a new UUID in this scenario
-        }
+        String uuid = braintreeSharedPreferences.getString(BRAINTREE_UUID_KEY, null);
 
         if (uuid == null) {
             uuid = getFormattedUUID();
-            try {
-                braintreeSharedPreferences.putString(BRAINTREE_UUID_KEY, uuid);
-            } catch (BraintreeSharedPreferencesException ignored) {
-                // protect against shared prefs failure: no-op when we're unable to persist the UUID
-            }
+            braintreeSharedPreferences.putString(BRAINTREE_UUID_KEY, uuid);
         }
-
         return uuid;
     }
 
@@ -50,20 +40,11 @@ class UUIDHelper {
 
     @VisibleForTesting
     String getInstallationGUID(BraintreeSharedPreferences braintreeSharedPreferences) {
-        String installationGUID = null;
-        try {
-            installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
-        } catch (BraintreeSharedPreferencesException ignored) {
-            // protect against shared prefs failure: default to creating a new GUID in this scenario
-        }
+        String installationGUID = braintreeSharedPreferences.getString(INSTALL_GUID, null);
 
         if (installationGUID == null) {
             installationGUID = UUID.randomUUID().toString();
-            try {
-                braintreeSharedPreferences.putString(INSTALL_GUID, installationGUID);
-            } catch (BraintreeSharedPreferencesException ignored) {
-                // protect against shared prefs failure: no-op when we're unable to persist the GUID
-            }
+            braintreeSharedPreferences.putString(INSTALL_GUID, installationGUID);
         }
         return installationGUID;
     }

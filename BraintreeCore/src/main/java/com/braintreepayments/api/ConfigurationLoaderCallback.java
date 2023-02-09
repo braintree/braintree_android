@@ -4,5 +4,5 @@ import androidx.annotation.Nullable;
 
 interface ConfigurationLoaderCallback {
 
-    void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error);
+    void onResult(@Nullable Configuration result, @Nullable Exception error);
 }
