@@ -5,7 +5,6 @@ import org.robolectric.RobolectricTestRunner
 import io.mockk.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
@@ -15,16 +14,10 @@ class ConfigurationCacheUnitTest {
 
     private var braintreeSharedPreferences: BraintreeSharedPreferences = mockk(relaxed = true)
 
-    @Before
-    fun beforeEach() {
-        mockkStatic(BraintreeSharedPreferences::class)
-        every { BraintreeSharedPreferences.getInstance(any()) } returns braintreeSharedPreferences
-    }
-
     @Test
     fun saveConfiguration_savesConfigurationInSharedPrefs() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        val sut = ConfigurationCache(braintreeSharedPreferences!!)
+        val sut = ConfigurationCache(braintreeSharedPreferences)
         sut.saveConfiguration(configuration, "cacheKey", 123L)
         verify {
             braintreeSharedPreferences.putStringAndLong(
