@@ -88,10 +88,10 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                             }
 
                             BrowserSwitchResult pendingResultFromCache =
-                                    threeDSecureClient.getBrowserSwitchResultFromCache(finalActivity);
+                                    threeDSecureClient.getBrowserSwitchResultFromNewTask(finalActivity);
                             if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == THREE_D_SECURE) {
                                 resultToDeliver =
-                                        threeDSecureClient.deliverBrowserSwitchResultFromCache(finalActivity);
+                                        threeDSecureClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
                             }
 
                             if (resultToDeliver != null) {

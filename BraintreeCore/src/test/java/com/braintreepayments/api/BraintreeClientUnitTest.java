@@ -432,6 +432,17 @@ public class BraintreeClientUnitTest {
     }
 
     @Test
+    public void deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBrowserSwitchClient() {
+        Context context = mock(Context.class);
+
+        BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
+        BraintreeClient sut = new BraintreeClient(params);
+
+        sut.deliverBrowserSwitchResultFromNewTask(context);
+        verify(browserSwitchClient).deliverResultFromCache(context);
+    }
+
+    @Test
     public void assertCanPerformBrowserSwitch_assertsBrowserSwitchIsPossible() throws BrowserSwitchException {
         BraintreeClientParams params = createDefaultParams(configurationLoader, authorizationLoader);
         BraintreeClient sut = new BraintreeClient(params);

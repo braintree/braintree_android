@@ -778,25 +778,25 @@ public class PayPalClientUnitTest {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
 
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        when(braintreeClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(braintreeClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
 
-        BrowserSwitchResult result = sut.getBrowserSwitchResultFromCache(activity);
+        BrowserSwitchResult result = sut.getBrowserSwitchResultFromNewTask(activity);
         assertSame(browserSwitchResult, result);
     }
 
     @Test
-    public void deliverBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+    public void deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBraintreeClient() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
 
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        when(braintreeClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(braintreeClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
 
-        BrowserSwitchResult result = sut.deliverBrowserSwitchResultFromCache(activity);
+        BrowserSwitchResult result = sut.deliverBrowserSwitchResultFromNewTask(activity);
         assertSame(browserSwitchResult, result);
     }
 }
