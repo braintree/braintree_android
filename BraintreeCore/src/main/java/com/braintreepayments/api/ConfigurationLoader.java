@@ -37,20 +37,11 @@ class ConfigurationLoader {
                 .toString();
 
 
-        Configuration cachedConfig = null;
-        BraintreeSharedPreferencesException loadFromCacheException = null;
-        try {
-            cachedConfig = getCachedConfiguration(authorization, configUrl);
-        } catch (BraintreeSharedPreferencesException e) {
-            loadFromCacheException = e;
-        }
-
+        Configuration cachedConfig = getCachedConfiguration(authorization, configUrl);
         if (cachedConfig != null) {
-            ConfigurationLoaderResult resultFromCache = new ConfigurationLoaderResult(cachedConfig);
-            callback.onResult(resultFromCache, null);
+            callback.onResult(cachedConfig, null);
         } else {
 
-            final BraintreeSharedPreferencesException finalLoadFromCacheException = loadFromCacheException;
             httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
 
                 @Override
@@ -58,17 +49,8 @@ class ConfigurationLoader {
                     if (responseBody != null) {
                         try {
                             Configuration configuration = Configuration.fromJson(responseBody);
-
-                            BraintreeSharedPreferencesException saveToCacheException = null;
-                            try {
-                                saveConfigurationToCache(configuration, authorization, configUrl);
-                            } catch (BraintreeSharedPreferencesException e) {
-                                saveToCacheException = e;
-                            }
-
-                            ConfigurationLoaderResult resultFromNetwork =
-                                new ConfigurationLoaderResult(configuration, finalLoadFromCacheException, saveToCacheException);
-                            callback.onResult(resultFromNetwork, null);
+                            saveConfigurationToCache(configuration, authorization, configUrl);
+                            callback.onResult(configuration, null);
                         } catch (JSONException jsonException) {
                             callback.onResult(null, jsonException);
                         }
@@ -84,12 +66,12 @@ class ConfigurationLoader {
         }
     }
 
-    private void saveConfigurationToCache(Configuration configuration, Authorization authorization, String configUrl) throws BraintreeSharedPreferencesException {
+    private void saveConfigurationToCache(Configuration configuration, Authorization authorization, String configUrl) {
         String cacheKey = createCacheKey(authorization, configUrl);
         configurationCache.saveConfiguration(configuration, cacheKey);
     }
 
-    private Configuration getCachedConfiguration(Authorization authorization, String configUrl) throws BraintreeSharedPreferencesException {
+     private Configuration getCachedConfiguration(Authorization authorization, String configUrl) {
         String cacheKey = createCacheKey(authorization, configUrl);
         String cachedConfigResponse = configurationCache.getConfiguration(cacheKey);
         try {

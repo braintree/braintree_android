@@ -176,18 +176,9 @@ public class BraintreeClient {
                 if (authorization != null) {
                     configurationLoader.loadConfiguration(authorization, new ConfigurationLoaderCallback() {
                         @Override
-                        public void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error) {
-                            if (result != null) {
-                                Configuration configuration = result.getConfiguration();
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                            if (configuration != null) {
                                 callback.onResult(configuration, null);
-
-                                if (result.getLoadFromCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.load.failed", configuration, authorization);
-                                }
-                                if (result.getSaveToCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.save.failed", configuration, authorization);
-                                }
-
                             } else {
                                 callback.onResult(null, error);
                             }

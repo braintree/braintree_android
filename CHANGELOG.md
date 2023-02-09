@@ -4,6 +4,10 @@
 * PayPalNativeCheckout (BETA)
   * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient`
 
+* SharedUtils
+  * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
+  * Deprecate `BraintreeSharedPreferencesException`
+
 ## 4.25.2
 
 * BraintreeCore
