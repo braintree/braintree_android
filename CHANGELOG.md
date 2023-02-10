@@ -2,7 +2,8 @@
 
 ## unreleased
 * PayPalNativeCheckout (BETA)
-  * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient`
+
+  * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient` when no PayPal response was received from the API
 
 * SharedUtils
   * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
