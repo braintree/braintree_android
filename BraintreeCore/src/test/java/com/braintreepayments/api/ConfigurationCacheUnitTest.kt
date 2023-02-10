@@ -29,17 +29,6 @@ class ConfigurationCacheUnitTest {
         }
     }
 
-    @Test(expected = BraintreeSharedPreferencesException::class)
-    fun saveConfiguration_whenSharedPreferencesFails_forwardsException() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        val sut = ConfigurationCache(braintreeSharedPreferences)
-        val sharedPrefsException = BraintreeSharedPreferencesException("unexpected exception")
-        every {
-            braintreeSharedPreferences.putStringAndLong(any(), any(), any(), any())
-        } throws sharedPrefsException
-        sut.saveConfiguration(configuration, "cacheKey", 123)
-    }
-
     @Test
     fun getConfiguration_returnsConfigurationFromSharedPrefs() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
@@ -67,16 +56,5 @@ class ConfigurationCacheUnitTest {
         sut.saveConfiguration(configuration, "cacheKey", 0)
 
         assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(20)))
-    }
-
-    @Test(expected = BraintreeSharedPreferencesException::class)
-    fun getConfiguration_whenSharedPreferencesFails_forwardsException() {
-        val sharedPrefsException = BraintreeSharedPreferencesException("unexpected exception")
-        every { braintreeSharedPreferences.containsKey(any()) } throws sharedPrefsException
-        every { braintreeSharedPreferences.getLong(any()) } throws sharedPrefsException
-        every { braintreeSharedPreferences.getString(any(), any()) } throws sharedPrefsException
-
-        val sut = ConfigurationCache(braintreeSharedPreferences)
-        assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(5) - 1))
     }
 }

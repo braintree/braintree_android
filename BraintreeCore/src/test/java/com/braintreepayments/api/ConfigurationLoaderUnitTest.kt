@@ -4,12 +4,9 @@ import android.util.Base64
 import io.mockk.*
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONException
-import org.json.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.skyscreamer.jsonassert.JSONAssert
 import java.lang.Exception
 
 @RunWith(RobolectricTestRunner::class)
@@ -42,7 +39,7 @@ class ConfigurationLoaderUnitTest {
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null)
 
-        verify { callback.onResult(ofType(ConfigurationLoaderResult::class), null) }
+        verify { callback.onResult(ofType(Configuration::class), null) }
     }
 
     @Test
@@ -169,48 +166,6 @@ class ConfigurationLoaderUnitTest {
                     ofType(HttpResponseCallback::class)
             ]
         }
-        verify { callback.onResult(ofType(ConfigurationLoaderResult::class), null) }
-    }
-
-    @Test
-    fun loadConfiguration_forwardsConfigurationCacheErrors() {
-        every { authorization.configUrl } returns "https://example.com/config"
-        every { authorization.bearer } returns "bearer"
-
-        val cacheLoadError = BraintreeSharedPreferencesException("cache load error")
-        every { configurationCache.getConfiguration(ofType(String::class)) } throws cacheLoadError
-
-        val cacheSaveError = BraintreeSharedPreferencesException("cache save error")
-        every { configurationCache.saveConfiguration(ofType(Configuration::class), ofType(String::class)) } throws cacheSaveError
-
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
-
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpResponseCallback>()
-        verify {
-            braintreeHttpClient[
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
-            ]
-        }
-
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null)
-
-        val resultSlot = slot<ConfigurationLoaderResult>()
-        verify {
-            callback.onResult(capture(resultSlot), null)
-        }
-
-        val result = resultSlot.captured
-        val expectedConfig = JSONObject(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
-        val actualConfig = JSONObject(result.configuration.toJson())
-        JSONAssert.assertEquals(expectedConfig, actualConfig, true)
-        assertSame(cacheLoadError, result.loadFromCacheError)
-        assertSame(cacheSaveError, result.saveToCacheError)
+        verify { callback.onResult(ofType(Configuration::class), null) }
     }
 }

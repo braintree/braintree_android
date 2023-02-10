@@ -25,34 +25,17 @@ internal class ConfigurationLoader internal constructor(
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
-        var cachedConfig: Configuration? = null
-        var loadFromCacheException: BraintreeSharedPreferencesException? = null
-        try {
-            cachedConfig = getCachedConfiguration(authorization, configUrl)
-        } catch (e: BraintreeSharedPreferencesException) {
-            loadFromCacheException = e
-        }
+        val cachedConfig = getCachedConfiguration(authorization, configUrl)
+
         cachedConfig?.let {
-            val resultFromCache = ConfigurationLoaderResult(cachedConfig)
-            callback.onResult(resultFromCache, null)
+            callback.onResult(cachedConfig, null)
         } ?: run {
-            val finalLoadFromCacheException = loadFromCacheException
             httpClient[configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES, HttpResponseCallback { responseBody, httpError ->
                 responseBody?.let {
                     try {
                         val configuration = fromJson(it)
-                        var saveToCacheException: BraintreeSharedPreferencesException? = null
-                        try {
-                            saveConfigurationToCache(configuration, authorization, configUrl)
-                        } catch (e: BraintreeSharedPreferencesException) {
-                            saveToCacheException = e
-                        }
-                        val resultFromNetwork = ConfigurationLoaderResult(
-                            configuration,
-                            finalLoadFromCacheException,
-                            saveToCacheException
-                        )
-                        callback.onResult(resultFromNetwork, null)
+                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        callback.onResult(configuration, null)
                     } catch (jsonException: JSONException) {
                         callback.onResult(null, jsonException)
                     }
