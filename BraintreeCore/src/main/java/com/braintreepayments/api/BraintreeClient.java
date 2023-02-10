@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
-import java.util.Locale;
-
 /**
  * Core Braintree class that handles network requests.
  */
@@ -178,18 +176,9 @@ public class BraintreeClient {
                 if (authorization != null) {
                     configurationLoader.loadConfiguration(authorization, new ConfigurationLoaderCallback() {
                         @Override
-                        public void onResult(@Nullable ConfigurationLoaderResult result, @Nullable Exception error) {
-                            if (result != null) {
-                                Configuration configuration = result.getConfiguration();
+                        public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                            if (configuration != null) {
                                 callback.onResult(configuration, null);
-
-                                if (result.getLoadFromCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.load.failed", configuration, authorization);
-                                }
-                                if (result.getSaveToCacheError() != null) {
-                                    sendAnalyticsEvent("configuration.cache.save.failed", configuration, authorization);
-                                }
-
                             } else {
                                 callback.onResult(null, error);
                             }
@@ -331,7 +320,7 @@ public class BraintreeClient {
         return returnUrlScheme;
     }
 
-    boolean canPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) {
+    void assertCanPerformBrowserSwitch(FragmentActivity activity, @BraintreeRequestCodes int requestCode) throws BrowserSwitchException {
         // url used to see if the application is able to open an https url e.g. web browser
         Uri url = Uri.parse("https://braintreepayments.com");
         String returnUrlScheme = getReturnUrlScheme();
@@ -339,13 +328,7 @@ public class BraintreeClient {
                 .url(url)
                 .returnUrlScheme(returnUrlScheme)
                 .requestCode(requestCode);
-        boolean result = true;
-        try {
-            browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
-        } catch (BrowserSwitchException e) {
-            result = false;
-        }
-        return result;
+        browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions);
     }
 
     <T> boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class<T> klass) {

@@ -2,6 +2,14 @@
 
 ## unreleased
 
+* SharedUtils
+  * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
+  * Deprecate `BraintreeSharedPreferencesException`
+
+## 4.25.2
+
+* BraintreeCore
+  * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
 * SamsungPay
   * Support legacy `sourceCardLast4` property when parsing Samsung Pay response
 

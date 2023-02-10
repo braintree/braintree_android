@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.util.Base64
+import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.NullPointerException
@@ -15,8 +16,10 @@ import kotlin.jvm.Throws
  * @property customerId The customer ID in the authorizationFingerprint if it is present
  * @constructor Create a new [ClientToken] instance from a client token
  * @throws InvalidArgumentException when client token is invalid
+ * @suppress
  */
-internal class ClientToken @Throws(InvalidArgumentException::class) constructor(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class ClientToken @Throws(InvalidArgumentException::class) constructor(
     clientTokenString: String
 ) : Authorization(clientTokenString) {
 
