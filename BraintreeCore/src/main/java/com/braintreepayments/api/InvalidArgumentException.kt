@@ -13,6 +13,7 @@ open class InvalidArgumentException : Exception {
      * @param message the error message
      * @suppress
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Suppress("ConvertSecondaryConstructorToPrimary")
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(message: String?) : super(message)
+    constructor(message: String?) : super(message)
 }
