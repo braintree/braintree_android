@@ -30,7 +30,7 @@ internal class ConfigurationLoader internal constructor(
         cachedConfig?.let {
             callback.onResult(cachedConfig, null)
         } ?: run {
-            httpClient[configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES, HttpResponseCallback { responseBody, httpError ->
+            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES) { responseBody, httpError ->
                 responseBody?.let {
                     try {
                         val configuration = fromJson(it)
@@ -39,13 +39,13 @@ internal class ConfigurationLoader internal constructor(
                     } catch (jsonException: JSONException) {
                         callback.onResult(null, jsonException)
                     }
-                } ?: run {
+                } ?: httpError?.let { error ->
                     val errorMessageFormat = "Request for configuration has failed: %s"
-                    val errorMessage = String.format(errorMessageFormat, httpError!!.message)
-                    val configurationException = ConfigurationException(errorMessage, httpError)
+                    val errorMessage = String.format(errorMessageFormat, error.message)
+                    val configurationException = ConfigurationException(errorMessage, error)
                     callback.onResult(null, configurationException)
                 }
-            }]
+            }
         }
     }
 
