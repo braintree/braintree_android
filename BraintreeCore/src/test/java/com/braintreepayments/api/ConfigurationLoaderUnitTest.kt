@@ -27,13 +27,13 @@ class ConfigurationLoaderUnitTest {
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<HttpResponseCallback>()
         verify {
-            braintreeHttpClient[
+            braintreeHttpClient.get(
                     expectedConfigUrl,
                     null,
                     authorization,
                     HttpClient.RETRY_MAX_3_TIMES,
                     capture(callbackSlot)
-            ]
+            )
         }
 
         val httpResponseCallback = callbackSlot.captured
@@ -53,13 +53,13 @@ class ConfigurationLoaderUnitTest {
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<HttpResponseCallback>()
         verify {
-            braintreeHttpClient[
+            braintreeHttpClient.get(
                     expectedConfigUrl,
                     null,
                     authorization,
                     HttpClient.RETRY_MAX_3_TIMES,
                     capture(callbackSlot)
-            ]
+            )
         }
 
         val httpResponseCallback = callbackSlot.captured
@@ -82,13 +82,13 @@ class ConfigurationLoaderUnitTest {
 
         val callbackSlot = slot<HttpResponseCallback>()
         verify {
-            braintreeHttpClient[
+            braintreeHttpClient.get(
                     ofType(String::class),
                     null,
                     authorization,
                     HttpClient.RETRY_MAX_3_TIMES,
                     capture(callbackSlot)
-            ]
+            )
         }
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult("not json", null)
@@ -106,13 +106,13 @@ class ConfigurationLoaderUnitTest {
         val callbackSlot = slot<HttpResponseCallback>()
 
         verify {
-            braintreeHttpClient[
+            braintreeHttpClient.get(
                     ofType(String::class),
                     null,
                     authorization,
                     HttpClient.RETRY_MAX_3_TIMES,
                     capture(callbackSlot)
-            ]
+            )
         }
 
         val httpResponseCallback = callbackSlot.captured
@@ -158,13 +158,13 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback)
 
         verify(exactly = 0) {
-            braintreeHttpClient[
+            braintreeHttpClient.get(
                     ofType(String::class),
                     null,
                     authorization,
                     ofType(Int::class),
                     ofType(HttpResponseCallback::class)
-            ]
+            )
         }
         verify { callback.onResult(ofType(Configuration::class), null) }
     }
