@@ -3,7 +3,6 @@ package com.braintreepayments.api
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
-import com.braintreepayments.api.Configuration.Companion.fromJson
 import org.json.JSONException
 
 internal class ConfigurationLoader internal constructor(
@@ -33,7 +32,7 @@ internal class ConfigurationLoader internal constructor(
             httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES) { responseBody, httpError ->
                 responseBody?.let {
                     try {
-                        val configuration = fromJson(it)
+                        val configuration = Configuration.fromJson(it)
                         saveConfigurationToCache(configuration, authorization, configUrl)
                         callback.onResult(configuration, null)
                     } catch (jsonException: JSONException) {
@@ -62,7 +61,7 @@ internal class ConfigurationLoader internal constructor(
         val cacheKey = createCacheKey(authorization, configUrl)
         val cachedConfigResponse = configurationCache.getConfiguration(cacheKey)
         return try {
-            fromJson(cachedConfigResponse)
+            Configuration.fromJson(cachedConfigResponse)
         } catch (e: JSONException) {
             null
         }
