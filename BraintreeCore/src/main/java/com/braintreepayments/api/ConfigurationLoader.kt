@@ -69,9 +69,7 @@ internal class ConfigurationLoader internal constructor(
 
     companion object {
         private fun createCacheKey(authorization: Authorization, configUrl: String): String {
-            return Base64.encodeToString(
-                String.format("%s%s", configUrl, authorization.bearer).toByteArray(), 0
-            )
+            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
         }
     }
 }
