@@ -1,6 +1,5 @@
 package com.braintreepayments.api
 
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.content.Intent
@@ -28,21 +27,11 @@ internal class DeviceInspector @VisibleForTesting constructor(
         File("/system/app/Superuser.apk")
     )
 
-    fun getDeviceMetadata(
-        context: Context,
-        sessionId: String?,
-        integration: String?
-    ): DeviceMetadata {
-        val buildTags = Build.TAGS
-        return getDeviceMetadata(context, sessionId, integration, buildTags)
-    }
-
     @VisibleForTesting
     fun getDeviceMetadata(
         context: Context,
         sessionId: String?,
         integration: String?,
-        buildTags: String?
     ): DeviceMetadata {
         return DeviceMetadata.Builder()
             .platform("Android")
@@ -92,62 +81,41 @@ internal class DeviceInspector @VisibleForTesting constructor(
                 Build.FINGERPRINT.contains("generic")
 
     private fun getAppName(context: Context): String {
-        val applicationInfo: ApplicationInfo?
-        val packageName = context.packageName
-        val packageManager = context.packageManager
-        applicationInfo = try {
-            packageManager.getApplicationInfo(packageName, 0)
+        return getApplicationInfo(context)?.let {
+            context.packageManager.getApplicationLabel(it) as String
+        } ?: "ApplicationNameUnknown"
+    }
+
+    private fun getApplicationInfo(context: Context) =
+        try {
+            context.packageManager.getApplicationInfo(context.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
-        var appName: String? = null
-        if (applicationInfo != null) {
-            appName = packageManager.getApplicationLabel(applicationInfo) as String
-        }
-        return appName ?: "ApplicationNameUnknown"
-    }
 
-    private fun getNetworkType(context: Context?): String {
-        var networkType: String? = null
-        if (context != null) {
+    private fun getNetworkType(context: Context?): String =
+        context?.let {
             val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = connectivityManager.activeNetworkInfo
-            if (networkInfo != null) {
-                networkType = networkInfo.typeName
-            }
-        }
-        if (networkType == null) {
-            networkType = "none"
-        }
-        return networkType
-    }
+                it.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            connectivityManager.activeNetworkInfo?.typeName
+        }?: "none"
 
-    private fun getAppVersion(context: Context?): String {
-        var result = "VersionUnknown"
-        if (context != null) {
+    private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
+
+    private fun getPackageInfo(context: Context?) =
+        context?.let {
             try {
-                val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                if (packageInfo != null) {
-                    result = packageInfo.versionName
-                }
-            } catch (ignored: PackageManager.NameNotFoundException) { /* do nothing */
-            }
+                val packageInfo = it.packageManager.getPackageInfo(it.packageName, 0)
+                packageInfo?.versionName
+            } catch (ignored: PackageManager.NameNotFoundException) { null }
         }
-        return result
-    }
 
-    private fun getUserOrientation(context: Context?): String {
-        var orientation = Configuration.ORIENTATION_UNDEFINED
-        if (context != null) {
-            orientation = context.resources.configuration.orientation
-        }
-        return when (orientation) {
+    private fun getUserOrientation(context: Context?): String =
+        when (context?.resources?.configuration?.orientation ?: Configuration.ORIENTATION_UNDEFINED) {
             Configuration.ORIENTATION_PORTRAIT -> "Portrait"
             Configuration.ORIENTATION_LANDSCAPE -> "Landscape"
             else -> "Unknown"
         }
-    }
 
     /**
      * Gets the current Drop-in version or null.
