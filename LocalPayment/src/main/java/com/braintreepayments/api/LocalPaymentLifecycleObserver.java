@@ -64,10 +64,10 @@ class LocalPaymentLifecycleObserver implements LifecycleEventObserver {
                         }
 
                         BrowserSwitchResult pendingResultFromCache =
-                                localPaymentClient.getBrowserSwitchResultFromCache(finalActivity);
+                                localPaymentClient.getBrowserSwitchResultFromNewTask(finalActivity);
                         if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == LOCAL_PAYMENT) {
                             resultToDeliver =
-                                    localPaymentClient.deliverBrowserSwitchResultFromCache(finalActivity);
+                                    localPaymentClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
                         }
 
                         if (resultToDeliver != null) {
