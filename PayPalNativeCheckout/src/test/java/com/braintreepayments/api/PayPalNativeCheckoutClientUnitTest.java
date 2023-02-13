@@ -129,6 +129,27 @@ public class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
+    public void requestNativeCheckout_returnsErrorFromFailedResponse() {
+        PayPalNativeCheckoutVaultRequest payPalVaultRequest = new PayPalNativeCheckoutVaultRequest();
+        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalVaultRequest.setReturnUrl("returnUrl://paypalpay");
+
+        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .sendRequestError(new Exception())
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
+        sut.launchNativeCheckout(activity, payPalVaultRequest);
+
+        verify(listener).onPayPalFailure(any());
+    }
+
+    @Test
     public void requestOneTimePayment_launchNativeCheckout_sendsAnalyticsEvents() {
         PayPalNativeCheckoutRequest payPalCheckoutRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");

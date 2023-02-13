@@ -68,8 +68,8 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(payPalClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 
@@ -86,8 +86,8 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(payPalClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 
@@ -122,7 +122,7 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
 

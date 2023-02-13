@@ -301,15 +301,30 @@ public class BraintreeClient {
         return browserSwitchClient.getResult(activity);
     }
 
+    /**
+     * Deliver a browser switch result from an Activity's pending deep link intent url.
+     * If {@link BraintreeClient#launchesBrowserSwitchAsNewTask(boolean)} is set to true,
+     * use {@link BraintreeClient#deliverBrowserSwitchResultFromNewTask(Context)} instead.
+     *
+     * @param activity
+     * @return {@link BrowserSwitchResult}
+     */
     public BrowserSwitchResult deliverBrowserSwitchResult(@NonNull FragmentActivity activity) {
         return browserSwitchClient.deliverResult(activity);
     }
 
-    BrowserSwitchResult getBrowserSwitchResultFromCache(@NonNull Context context) {
+    BrowserSwitchResult getBrowserSwitchResultFromNewTask(@NonNull Context context) {
         return browserSwitchClient.getResultFromCache(context);
     }
 
-    BrowserSwitchResult deliverBrowserSwitchResultFromCache(@NonNull Context context) {
+    /**
+     * Deliver pending browser switch result received by {@link BraintreeDeepLinkActivity} when
+     * {@link BraintreeClient#launchesBrowserSwitchAsNewTask(boolean)} is set to true.
+     *
+     * @param context
+     * @return {@link BrowserSwitchResult}
+     */
+    public BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(@NonNull Context context) {
         return browserSwitchClient.deliverResultFromCache(context);
     }
 

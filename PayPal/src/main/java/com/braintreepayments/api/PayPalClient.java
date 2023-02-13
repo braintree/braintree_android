@@ -307,12 +307,12 @@ public class PayPalClient {
         return braintreeClient.deliverBrowserSwitchResult(activity);
     }
 
-    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromCache(activity);
+    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
     }
 
-    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
     }
 
     /**

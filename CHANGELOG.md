@@ -1,7 +1,12 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* PayPalNativeCheckout (BETA)
 
+  * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient` when no PayPal response was received from the API
+
+* BraintreeCore
+  * Add `BraintreeClient#deliverBrowserSwitchResultFromNewTask()` method to allow browser switch results to be captured manually when `BraintreeClient#launchesBrowserSwitchAsNewTask()` is set to true.
 * SharedUtils
   * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
   * Deprecate `BraintreeSharedPreferencesException`

@@ -132,8 +132,8 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
@@ -151,8 +151,8 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
@@ -189,7 +189,7 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
