@@ -1,0 +1,179 @@
+package com.braintreepayments.api
+
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.content.Intent
+import android.content.ComponentName
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.VisibleForTesting
+import java.io.File
+
+internal class DeviceInspector @VisibleForTesting constructor(
+    private val appHelper: AppHelper,
+    private val classHelper: ClassHelper,
+    private val uuidHelper: UUIDHelper,
+    private val signatureVerifier: SignatureVerifier,
+    private val runtime: Runtime,
+    private val superUserApkFile: File
+) {
+    constructor() : this(
+        AppHelper(),
+        ClassHelper(),
+        UUIDHelper(),
+        SignatureVerifier(),
+        Runtime.getRuntime(),
+        File("/system/app/Superuser.apk")
+    )
+
+    fun getDeviceMetadata(
+        context: Context,
+        sessionId: String?,
+        integration: String?
+    ): DeviceMetadata {
+        val buildTags = Build.TAGS
+        return getDeviceMetadata(context, sessionId, integration, buildTags)
+    }
+
+    @VisibleForTesting
+    fun getDeviceMetadata(
+        context: Context,
+        sessionId: String?,
+        integration: String?,
+        buildTags: String?
+    ): DeviceMetadata {
+        return DeviceMetadata.Builder()
+            .platform("Android")
+            .platformVersion(Build.VERSION.SDK_INT.toString())
+            .sdkVersion(BuildConfig.VERSION_NAME)
+            .merchantAppId(context.packageName)
+            .merchantAppName(getAppName(context))
+            .deviceManufacturer(Build.MANUFACTURER)
+            .deviceModel(Build.MODEL)
+            .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
+            .isSimulator(isDeviceEmulator)
+            .sessionId(sessionId)
+            .integration(integration)
+            .networkType(getNetworkType(context))
+            .userOrientation(getUserOrientation(context))
+            .appVersion(getAppVersion(context))
+            .dropInVersion(dropInVersion)
+            .isPayPalInstalled(isPayPalInstalled(context))
+            .isVenmoInstalled(isVenmoInstalled(context))
+            .build()
+    }
+
+    /**
+     * @param context A context to access the installed packages.
+     * @return boolean depending on if the Venmo app is installed, and has a valid signature.
+     */
+    fun isVenmoAppSwitchAvailable(context: Context?): Boolean {
+        val isVenmoIntentAvailable = appHelper.isIntentAvailable(context, venmoIntent)
+        val isVenmoSignatureValid = signatureVerifier.isSignatureValid(
+            context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE
+        )
+        return isVenmoIntentAvailable && isVenmoSignatureValid
+    }
+
+    fun isPayPalInstalled(context: Context?): Boolean {
+        return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
+    }
+
+    fun isVenmoInstalled(context: Context?): Boolean {
+        return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
+    }
+
+    private val isDeviceEmulator: Boolean
+        get() = "google_sdk".equals(Build.PRODUCT, ignoreCase = true) ||
+                "sdk".equals(Build.PRODUCT, ignoreCase = true) ||
+                "Genymotion".equals(Build.MANUFACTURER, ignoreCase = true) ||
+                Build.FINGERPRINT.contains("generic")
+
+    private fun getAppName(context: Context): String {
+        val applicationInfo: ApplicationInfo?
+        val packageName = context.packageName
+        val packageManager = context.packageManager
+        applicationInfo = try {
+            packageManager.getApplicationInfo(packageName, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
+        }
+        var appName: String? = null
+        if (applicationInfo != null) {
+            appName = packageManager.getApplicationLabel(applicationInfo) as String
+        }
+        return appName ?: "ApplicationNameUnknown"
+    }
+
+    private fun getNetworkType(context: Context?): String {
+        var networkType: String? = null
+        if (context != null) {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connectivityManager.activeNetworkInfo
+            if (networkInfo != null) {
+                networkType = networkInfo.typeName
+            }
+        }
+        if (networkType == null) {
+            networkType = "none"
+        }
+        return networkType
+    }
+
+    private fun getAppVersion(context: Context?): String {
+        var result = "VersionUnknown"
+        if (context != null) {
+            try {
+                val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                if (packageInfo != null) {
+                    result = packageInfo.versionName
+                }
+            } catch (ignored: PackageManager.NameNotFoundException) { /* do nothing */
+            }
+        }
+        return result
+    }
+
+    private fun getUserOrientation(context: Context?): String {
+        var orientation = Configuration.ORIENTATION_UNDEFINED
+        if (context != null) {
+            orientation = context.resources.configuration.orientation
+        }
+        return when (orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> "Portrait"
+            Configuration.ORIENTATION_LANDSCAPE -> "Landscape"
+            else -> "Unknown"
+        }
+    }
+
+    /**
+     * Gets the current Drop-in version or null.
+     *
+     * @return string representation of the current Drop-in version, or null if
+     * Drop-in is unavailable
+     */
+    private val dropInVersion: String
+        get() = classHelper.getFieldValue(
+            "com.braintreepayments.api.dropin.BuildConfig",
+            "VERSION_NAME"
+        )
+
+    companion object {
+        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
+        private const val VENMO_APP_PACKAGE = "com.venmo"
+        private const val VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity"
+
+        @VisibleForTesting
+        const val VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n"
+        private val venmoIntent: Intent
+            get() = Intent().setComponent(
+                ComponentName(
+                    VENMO_APP_PACKAGE,
+                    "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
+                )
+            )
+    }
+}
