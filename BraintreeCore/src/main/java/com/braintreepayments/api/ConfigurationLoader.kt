@@ -58,10 +58,7 @@ internal class ConfigurationLoader internal constructor(
         configurationCache.saveConfiguration(configuration, cacheKey)
     }
 
-    private fun getCachedConfiguration(
-        authorization: Authorization,
-        configUrl: String
-    ): Configuration? {
+    private fun getCachedConfiguration(authorization: Authorization, configUrl: String): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
         val cachedConfigResponse = configurationCache.getConfiguration(cacheKey)
         return try {
