@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import java.util.concurrent.TimeUnit
 
-internal class ConfigurationCache @VisibleForTesting internal constructor(
+internal class ConfigurationCache @VisibleForTesting constructor(
         private val sharedPreferences: BraintreeSharedPreferences
     ) {
 
