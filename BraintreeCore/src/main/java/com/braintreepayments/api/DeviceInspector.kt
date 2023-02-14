@@ -29,7 +29,7 @@ internal class DeviceInspector @VisibleForTesting constructor(
 
     @VisibleForTesting
     fun getDeviceMetadata(
-        context: Context,
+        context: Context?,
         sessionId: String?,
         integration: String?,
     ): DeviceMetadata {
@@ -37,7 +37,7 @@ internal class DeviceInspector @VisibleForTesting constructor(
             .platform("Android")
             .platformVersion(Build.VERSION.SDK_INT.toString())
             .sdkVersion(BuildConfig.VERSION_NAME)
-            .merchantAppId(context.packageName)
+            .merchantAppId(context?.packageName)
             .merchantAppName(getAppName(context))
             .deviceManufacturer(Build.MANUFACTURER)
             .deviceModel(Build.MODEL)
@@ -80,11 +80,12 @@ internal class DeviceInspector @VisibleForTesting constructor(
                 "Genymotion".equals(Build.MANUFACTURER, ignoreCase = true) ||
                 Build.FINGERPRINT.contains("generic")
 
-    private fun getAppName(context: Context): String {
-        return getApplicationInfo(context)?.let {
-            context.packageManager.getApplicationLabel(it) as String
+    private fun getAppName(context: Context?): String =
+        context?.let {
+            getApplicationInfo(it)?.let { appInfo ->
+                context.packageManager.getApplicationLabel(appInfo) as String
+            }
         } ?: "ApplicationNameUnknown"
-    }
 
     private fun getApplicationInfo(context: Context) =
         try {
