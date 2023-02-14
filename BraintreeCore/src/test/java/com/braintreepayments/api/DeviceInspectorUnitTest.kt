@@ -30,7 +30,6 @@ class DeviceInspectorUnitTest {
     private var connectivityManager: ConnectivityManager = mockk(relaxed = true)
     private var packageManager: PackageManager = mockk(relaxed = true)
     private var appHelper: AppHelper = mockk(relaxed = true)
-    private var classHelper: ClassHelper = mockk(relaxed = true)
     private var uuidHelper: UUIDHelper = mockk(relaxed = true)
     private var signatureVerifier: SignatureVerifier = mockk(relaxed = true)
     private var runtime: Runtime = mockk(relaxed = true)
@@ -50,7 +49,6 @@ class DeviceInspectorUnitTest {
 
         sut = DeviceInspector(
             appHelper,
-            classHelper,
             uuidHelper,
             signatureVerifier,
             runtime,
@@ -157,23 +155,23 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildProductIsGoogleSdk_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "google_sdk")
         val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
-        Assert.assertTrue(metadata.toJSON().getBoolean("isSimulator"))
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_whenBuildProductIsSdk_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "sdk")
-        val metadata = sut!!.getDeviceMetadata(context, "session-id", "integration-type")
-        Assert.assertTrue(metadata.toJSON().getBoolean("isSimulator"))
+        val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "Genymotion")
-        val metadata = sut!!.getDeviceMetadata(context, "session-id", "integration-type")
-        Assert.assertTrue(metadata.toJSON().getBoolean("isSimulator"))
+        val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"))
     }
 
     @Test
@@ -181,7 +179,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "generic")
         val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
-        Assert.assertTrue(metadata.toJSON().getBoolean("isSimulator"))
+        assertTrue(metadata.toJSON().getBoolean("isSimulator"))
     }
 
     @Test

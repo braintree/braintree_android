@@ -12,7 +12,6 @@ import java.io.File
 
 internal class DeviceInspector @VisibleForTesting constructor(
     private val appHelper: AppHelper,
-    private val classHelper: ClassHelper,
     private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
     private val runtime: Runtime,
@@ -20,7 +19,6 @@ internal class DeviceInspector @VisibleForTesting constructor(
 ) {
     constructor() : this(
         AppHelper(),
-        ClassHelper(),
         UUIDHelper(),
         SignatureVerifier(),
         Runtime.getRuntime(),
@@ -33,25 +31,25 @@ internal class DeviceInspector @VisibleForTesting constructor(
         sessionId: String?,
         integration: String?,
     ): DeviceMetadata {
-        return DeviceMetadata.Builder()
-            .platform("Android")
-            .platformVersion(Build.VERSION.SDK_INT.toString())
-            .sdkVersion(BuildConfig.VERSION_NAME)
-            .merchantAppId(context?.packageName)
-            .merchantAppName(getAppName(context))
-            .deviceManufacturer(Build.MANUFACTURER)
-            .deviceModel(Build.MODEL)
-            .devicePersistentUUID(uuidHelper.getPersistentUUID(context))
-            .isSimulator(isDeviceEmulator)
-            .sessionId(sessionId)
-            .integration(integration)
-            .networkType(getNetworkType(context))
-            .userOrientation(getUserOrientation(context))
-            .appVersion(getAppVersion(context))
-            .dropInVersion(dropInVersion)
-            .isPayPalInstalled(isPayPalInstalled(context))
-            .isVenmoInstalled(isVenmoInstalled(context))
-            .build()
+        return DeviceMetadata(
+            platform = "Android",
+            platformVersion = Build.VERSION.SDK_INT.toString(),
+            sdkVersion = BuildConfig.VERSION_NAME,
+            merchantAppId = context?.packageName,
+            merchantAppName = getAppName(context),
+            deviceManufacturer = Build.MANUFACTURER,
+            deviceModel = Build.MODEL,
+            devicePersistentUUID = uuidHelper.getPersistentUUID(context),
+            isSimulator = isDeviceEmulator,
+            sessionId = sessionId,
+            integration = integration,
+            networkType = getNetworkType(context),
+            userOrientation = getUserOrientation(context),
+            appVersion = getAppVersion(context),
+            dropInVersion = dropInVersion,
+            isPayPalInstalled = isPayPalInstalled(context),
+            isVenmoInstalled = isVenmoInstalled(context)
+        )
     }
 
     /**
@@ -141,8 +139,8 @@ internal class DeviceInspector @VisibleForTesting constructor(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
+
         internal fun getDropInVersion(): String? {
-            //var value: FIELD_TYPE? = null
             try {
                 val clazz = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
                 val versionNameField = clazz.getField("VERSION_NAME")
@@ -152,7 +150,6 @@ internal class DeviceInspector @VisibleForTesting constructor(
             } catch (ignored: NoSuchFieldException) {
             } catch (ignored: IllegalAccessException) {
             }
-
             return null
         }
     }
