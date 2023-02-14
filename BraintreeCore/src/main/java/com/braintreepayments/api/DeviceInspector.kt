@@ -1,11 +1,11 @@
 package com.braintreepayments.api
 
-import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.content.Intent
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 import java.io.File
@@ -83,7 +83,7 @@ internal class DeviceInspector @VisibleForTesting constructor(
     private fun getAppName(context: Context?): String =
         context?.let {
             getApplicationInfo(it)?.let { appInfo ->
-                context.packageManager.getApplicationLabel(appInfo) as String
+                context.packageManager.getApplicationLabel(appInfo).toString()
             }
         } ?: "ApplicationNameUnknown"
 
@@ -124,11 +124,8 @@ internal class DeviceInspector @VisibleForTesting constructor(
      * @return string representation of the current Drop-in version, or null if
      * Drop-in is unavailable
      */
-    private val dropInVersion: String
-        get() = classHelper.getFieldValue(
-            "com.braintreepayments.api.dropin.BuildConfig",
-            "VERSION_NAME"
-        )
+    private val dropInVersion
+        get() = getDropInVersion()
 
     companion object {
         private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
@@ -144,5 +141,19 @@ internal class DeviceInspector @VisibleForTesting constructor(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
+        internal fun getDropInVersion(): String? {
+            //var value: FIELD_TYPE? = null
+            try {
+                val clazz = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
+                val versionNameField = clazz.getField("VERSION_NAME")
+                versionNameField.isAccessible = true
+                return versionNameField[String::class] as String?
+            } catch (ignored: ClassNotFoundException) {
+            } catch (ignored: NoSuchFieldException) {
+            } catch (ignored: IllegalAccessException) {
+            }
+
+            return null
+        }
     }
 }
