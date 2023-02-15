@@ -1,9 +1,11 @@
 package com.braintreepayments.api
 
+import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 
-internal class MetadataBuilder {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class MetadataBuilder {
 
     private val json = JSONObject()
 
