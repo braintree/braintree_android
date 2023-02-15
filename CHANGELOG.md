@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.26.0
 * PayPalNativeCheckout (BETA)
 
   * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient` when no PayPal response was received from the API
