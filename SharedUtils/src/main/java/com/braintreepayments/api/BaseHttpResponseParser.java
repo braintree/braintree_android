@@ -25,7 +25,6 @@ class BaseHttpResponseParser implements HttpResponseParser {
     private static final int HTTP_UPGRADE_REQUIRED = 426;
     private static final int HTTP_TOO_MANY_REQUESTS = 429;
 
-
     /**
      * @param responseCode the response code returned when the http request was made.
      * @param connection the connection through which the http request was made.
