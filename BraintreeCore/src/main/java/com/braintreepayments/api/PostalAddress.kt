@@ -3,7 +3,6 @@ package com.braintreepayments.api
 import android.os.Parcelable
 import android.text.TextUtils
 import android.os.Parcel
-import com.braintreepayments.api.PostalAddress
 
 // NEXT_MAYOR_VERSION: transform to data class and check for @Parcelize annotation
 /**
@@ -51,16 +50,16 @@ open class PostalAddress : Parcelable {
         dest.writeString(sortingCode)
     }
 
-    private constructor(`in`: Parcel) {
-        streetAddress = `in`.readString()
-        extendedAddress = `in`.readString()
-        locality = `in`.readString()
-        region = `in`.readString()
-        postalCode = `in`.readString()
-        countryCodeAlpha2 = `in`.readString()
-        recipientName = `in`.readString()
-        phoneNumber = `in`.readString()
-        sortingCode = `in`.readString()
+    private constructor(parcel: Parcel) {
+        streetAddress = parcel.readString()
+        extendedAddress = parcel.readString()
+        locality = parcel.readString()
+        region = parcel.readString()
+        postalCode = parcel.readString()
+        countryCodeAlpha2 = parcel.readString()
+        recipientName = parcel.readString()
+        phoneNumber = parcel.readString()
+        sortingCode = parcel.readString()
     }
 
     companion object {
