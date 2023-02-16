@@ -13,14 +13,15 @@ import org.junit.runner.RunWith
 class PostalAddressUnitTest {
     @Test
     fun constructsCorrectly() {
-        val postalAddress = PostalAddress()
-        postalAddress.streetAddress = "123 Fake St."
-        postalAddress.extendedAddress = "Apt. 3"
-        postalAddress.locality = "Oakland"
-        postalAddress.region = "CA"
-        postalAddress.postalCode = "94602"
-        postalAddress.countryCodeAlpha2 = "US"
-        postalAddress.recipientName = "John Fakerson"
+        val postalAddress = PostalAddress().apply {
+            streetAddress = "123 Fake St."
+            extendedAddress = "Apt. 3"
+            locality = "Oakland"
+            region = "CA"
+            postalCode = "94602"
+            countryCodeAlpha2 = "US"
+            recipientName = "John Fakerson"
+        }
         assertEquals("123 Fake St.", postalAddress.streetAddress)
         assertEquals("Apt. 3", postalAddress.extendedAddress)
         assertEquals("Oakland", postalAddress.locality)
@@ -92,13 +93,14 @@ class PostalAddressUnitTest {
 
     @Test
     fun isEmpty_returnsTrueIfCountryCodeIsNotSet() {
-        val postalAddress = PostalAddress()
-        postalAddress.streetAddress = "123 Fake St."
-        postalAddress.extendedAddress = "Apt. 3"
-        postalAddress.locality = "Oakland"
-        postalAddress.region = "CA"
-        postalAddress.postalCode = "94602"
-        postalAddress.recipientName = "John Fakerson"
+        val postalAddress = PostalAddress().apply {
+            streetAddress = "123 Fake St."
+            extendedAddress = "Apt. 3"
+            locality = "Oakland"
+            region = "CA"
+            postalCode = "94602"
+            recipientName = "John Fakerson"
+        }
         assertTrue(postalAddress.isEmpty)
     }
 
