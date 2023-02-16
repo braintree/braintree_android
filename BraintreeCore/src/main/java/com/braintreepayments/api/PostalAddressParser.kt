@@ -30,68 +30,60 @@ object PostalAddressParser {
     const val COUNTRY_CODE_UNDERSCORE_KEY = "country_code"
     const val POSTAL_CODE_UNDERSCORE_KEY = "postal_code"
     const val RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name"
+
     @JvmStatic
-    fun fromJson(accountAddress: JSONObject?): PostalAddress {
+    fun fromJson(accountAddress: JSONObject?): PostalAddress =
         // If we don't have an account address, return an empty PostalAddress.
-        if (accountAddress == null) {
-            return PostalAddress()
-        }
-        var streetAddress = Json.optString(accountAddress, STREET_ADDRESS_KEY, null)
-        var extendedAddress = Json.optString(accountAddress, EXTENDED_ADDRESS_KEY, null)
-        var countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_ALPHA_2_KEY, null)
+        accountAddress?.let {
+            var streetAddress = Json.optString(accountAddress, STREET_ADDRESS_KEY, null)
+            var extendedAddress = Json.optString(accountAddress, EXTENDED_ADDRESS_KEY, null)
+            var countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_ALPHA_2_KEY, null)
 
-        //Check alternate keys
-        if (streetAddress == null) {
-            streetAddress = Json.optString(accountAddress, LINE_1_KEY, null)
-        }
-        if (extendedAddress == null) {
-            extendedAddress = Json.optString(accountAddress, LINE_2_KEY, null)
-        }
-        if (countryCodeAlpha2 == null) {
-            countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_KEY, null)
+            //Check alternate keys
+            streetAddress = streetAddress ?: Json.optString(accountAddress, LINE_1_KEY, null)
+            extendedAddress = extendedAddress ?: Json.optString(accountAddress, LINE_2_KEY, null)
+            countryCodeAlpha2 = countryCodeAlpha2 ?: Json.optString(accountAddress, COUNTRY_CODE_KEY, null)
+
+            // If this is a UserAddress-like JSON, parse it as such
+            if (streetAddress == null && Json.optString(
+                    accountAddress,
+                    USER_ADDRESS_NAME_KEY,
+                    null
+                ) != null
+            ) {
+                return@let fromUserAddressJson(accountAddress)
+            }
+
+            PostalAddress().apply {
+                recipientName = Json.optString(accountAddress, RECIPIENT_NAME_KEY, null)
+                this.streetAddress = streetAddress
+                this.extendedAddress = extendedAddress
+                locality = Json.optString(accountAddress, LOCALITY_KEY, null)
+                region = Json.optString(accountAddress, REGION_KEY, null)
+                postalCode = Json.optString(accountAddress, POSTAL_CODE_KEY, null)
+                this.countryCodeAlpha2 = countryCodeAlpha2
+            }
+
+        } ?: PostalAddress()
+
+    fun fromUserAddressJson(json: JSONObject): PostalAddress =
+        PostalAddress().apply {
+            recipientName = Json.optString(json, USER_ADDRESS_NAME_KEY, "")
+            phoneNumber = Json.optString(json, USER_ADDRESS_PHONE_NUMBER_KEY, "")
+            streetAddress = Json.optString(json, USER_ADDRESS_ADDRESS_1_KEY, "")
+            extendedAddress = formatExtendedUserAddress(json)
+            locality = Json.optString(json, USER_ADDRESS_LOCALITY_KEY, "")
+            region = Json.optString(json, USER_ADDRESS_ADMINISTRATIVE_AREA_KEY, "")
+            countryCodeAlpha2 = Json.optString(json, USER_ADDRESS_COUNTRY_CODE_KEY, "")
+            postalCode = Json.optString(json, USER_ADDRESS_POSTAL_CODE_KEY, "")
+            sortingCode = Json.optString(json, USER_ADDRESS_SORTING_CODE_KEY, "")
         }
 
-        // If this is a UserAddress-like JSON, parse it as such
-        if (streetAddress == null && Json.optString(
-                accountAddress,
-                USER_ADDRESS_NAME_KEY,
-                null
-            ) != null
-        ) {
-            return fromUserAddressJson(accountAddress)
-        }
-        val result = PostalAddress()
-        result.recipientName = Json.optString(accountAddress, RECIPIENT_NAME_KEY, null)
-        result.streetAddress = streetAddress
-        result.extendedAddress = extendedAddress
-        result.locality = Json.optString(accountAddress, LOCALITY_KEY, null)
-        result.region = Json.optString(accountAddress, REGION_KEY, null)
-        result.postalCode = Json.optString(accountAddress, POSTAL_CODE_KEY, null)
-        result.countryCodeAlpha2 = countryCodeAlpha2
-        return result
-    }
-
-    fun fromUserAddressJson(json: JSONObject): PostalAddress {
-        val address = PostalAddress()
-        address.recipientName = Json.optString(json, USER_ADDRESS_NAME_KEY, "")
-        address.phoneNumber = Json.optString(json, USER_ADDRESS_PHONE_NUMBER_KEY, "")
-        address.streetAddress = Json.optString(json, USER_ADDRESS_ADDRESS_1_KEY, "")
-        address.extendedAddress = formatExtendedUserAddress(json)
-        address.locality = Json.optString(json, USER_ADDRESS_LOCALITY_KEY, "")
-        address.region = Json.optString(json, USER_ADDRESS_ADMINISTRATIVE_AREA_KEY, "")
-        address.countryCodeAlpha2 = Json.optString(json, USER_ADDRESS_COUNTRY_CODE_KEY, "")
-        address.postalCode = Json.optString(json, USER_ADDRESS_POSTAL_CODE_KEY, "")
-        address.sortingCode = Json.optString(json, USER_ADDRESS_SORTING_CODE_KEY, "")
-        return address
-    }
-
-    private fun formatExtendedUserAddress(address: JSONObject): String {
-        val extendedAddress = """
+    private fun formatExtendedUserAddress(address: JSONObject): String =
+        """
             ${Json.optString(address, USER_ADDRESS_ADDRESS_2_KEY, "")}
             ${Json.optString(address, USER_ADDRESS_ADDRESS_3_KEY, "")}
             ${Json.optString(address, USER_ADDRESS_ADDRESS_4_KEY, "")}
             ${Json.optString(address, USER_ADDRESS_ADDRESS_5_KEY, "")}
-            """.trimIndent()
-        return extendedAddress.trim { it <= ' ' }
-    }
+        """.trimIndent().trim { it <= ' ' }
 }
