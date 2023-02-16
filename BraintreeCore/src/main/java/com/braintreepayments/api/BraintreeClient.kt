@@ -43,6 +43,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
+    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams2(options))
+
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token.
      *
@@ -50,7 +52,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a [BraintreeException] will be returned via callback.
      */
     constructor(context: Context, authorization: String) :
-            this(BraintreeClientParams2(context, initialAuthString = authorization))
+            this(BraintreeOptions(context, initialAuthString = authorization))
 
     /**
      * Create a new instance of [BraintreeClient] using a [ClientTokenProvider].
@@ -59,7 +61,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient] will use to fetch a client token on demand.
      */
     constructor(context: Context, clientTokenProvider: ClientTokenProvider) :
-            this(BraintreeClientParams2(context, clientTokenProvider = clientTokenProvider))
+            this(BraintreeOptions(context, clientTokenProvider = clientTokenProvider))
 
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token and a custom url scheme.
@@ -74,7 +76,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
-        BraintreeClientParams2(
+        BraintreeOptions(
             context,
             initialAuthString = authorization,
             returnUrlScheme = returnUrlScheme
@@ -98,7 +100,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         clientTokenProvider: ClientTokenProvider,
         returnUrlScheme: String
     ) : this(
-        BraintreeClientParams2(
+        BraintreeOptions(
             context,
             clientTokenProvider = clientTokenProvider,
             returnUrlScheme = returnUrlScheme
@@ -111,7 +113,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         sessionId: String,
         @Integration integrationType: String
     ) : this(
-        BraintreeClientParams2(
+        BraintreeOptions(
             context,
             clientTokenProvider = clientTokenProvider,
             sessionId = sessionId,
@@ -125,7 +127,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         sessionId: String,
         @Integration integrationType: String
     ) : this(
-        BraintreeClientParams2(
+        BraintreeOptions(
             context,
             initialAuthString = authorization,
             sessionId = sessionId,
@@ -198,12 +200,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
-    fun sendGET(url: String?, responseCallback: HttpResponseCallback) {
+    fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
-                        httpClient[url, configuration, authorization, responseCallback]
+                        httpClient.get(url, configuration, authorization, responseCallback)
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -214,7 +216,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
-    fun sendPOST(url: String?, data: String?, responseCallback: HttpResponseCallback) {
+    fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->

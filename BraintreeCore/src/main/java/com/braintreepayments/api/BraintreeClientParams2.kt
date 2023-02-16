@@ -1,14 +1,14 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.IntegrationType.Integration
 
-internal data class BraintreeClientParams2(
+internal data class BraintreeClientParams2 @VisibleForTesting constructor(
     val context: Context,
-    val sessionId: String = createUniqueSessionId(),
-    val initialAuthString: String? = null,
-    val clientTokenProvider: ClientTokenProvider? = null,
-    val returnUrlScheme: String = createDefaultReturnUrlScheme(context),
+    val sessionId: String,
+    val authorizationLoader: AuthorizationLoader,
+    val returnUrlScheme: String,
     val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
     val analyticsClient: AnalyticsClient = AnalyticsClient(context),
@@ -18,19 +18,23 @@ internal data class BraintreeClientParams2(
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
     @Integration val integrationType: String = IntegrationType.CUSTOM,
 ) {
-    val applicationContext: Context = context.applicationContext
-    val authorizationLoader = AuthorizationLoader(initialAuthString, clientTokenProvider)
 
+    constructor(options: BraintreeOptions) : this(
+        context = options.context,
+        authorizationLoader = options.run {
+            AuthorizationLoader(initialAuthString, clientTokenProvider)
+        },
+        sessionId = options.sessionId,
+        returnUrlScheme = options.returnUrlScheme
+    )
+
+    val applicationContext: Context = context.applicationContext
     val braintreeReturnUrlScheme =
         "${getAppPackageNameWithoutUnderscores(context)}.braintree.deeplinkhandler"
 
     companion object {
-        private fun createUniqueSessionId() = UUIDHelper().formattedUUID
 
         private fun getAppPackageNameWithoutUnderscores(context: Context) =
             context.applicationContext.packageName.replace("_", "")
-
-        private fun createDefaultReturnUrlScheme(context: Context) =
-            "${getAppPackageNameWithoutUnderscores(context)}.braintree"
     }
 }

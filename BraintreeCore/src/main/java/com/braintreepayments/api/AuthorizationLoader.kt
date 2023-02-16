@@ -1,8 +1,10 @@
 package com.braintreepayments.api
 
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 
-internal class AuthorizationLoader(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class AuthorizationLoader(
     initialAuthString: String?,
     private val clientTokenProvider: ClientTokenProvider?
 ) {
