@@ -57,8 +57,7 @@ class BraintreeClientUnitTest {
 
     @Test
     fun constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
-        val uuidRegex =
-            """[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}""".toRegex()
+        val uuidRegex = """[a-fA-F0-9]{32}""".toRegex()
 
         val sut = BraintreeClient(BraintreeOptions(context = context))
         assertTrue(uuidRegex.matches(sut.sessionId))
@@ -78,7 +77,7 @@ class BraintreeClientUnitTest {
 
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
-        val callback = mockk<ConfigurationCallback>()
+        val callback = mockk<ConfigurationCallback>(relaxed = true)
         sut.getConfiguration(callback)
 
         verify { callback.onResult(configuration, null) }

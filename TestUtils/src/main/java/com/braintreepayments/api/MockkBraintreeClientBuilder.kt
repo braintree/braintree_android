@@ -5,7 +5,7 @@ import io.mockk.mockk
 
 class MockkBraintreeClientBuilder {
 
-    private var sessionId: String? = null
+    private var sessionId: String = "session-id-from-mockk-braintree-client-builder"
 
     private var sendGraphQLPostSuccess: String? = null
     private var sendGraphQLPOSTError: ErrorWithResponse? = null

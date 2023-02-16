@@ -16,7 +16,7 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
     val manifestValidator: ManifestValidator = ManifestValidator(),
     val uuidHelper: UUIDHelper = UUIDHelper(),
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
-    @Integration val integrationType: String = IntegrationType.CUSTOM,
+    @Integration val integrationType: String,
 ) {
 
     constructor(options: BraintreeOptions) : this(
@@ -25,7 +25,8 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
             AuthorizationLoader(initialAuthString, clientTokenProvider)
         },
         sessionId = options.sessionId,
-        returnUrlScheme = options.returnUrlScheme
+        returnUrlScheme = options.returnUrlScheme,
+        integrationType = options.integrationType
     )
 
     val applicationContext: Context = context.applicationContext
