@@ -633,8 +633,8 @@ class BraintreeClientUnitTest {
     private fun createDefaultParams(
         configurationLoader: ConfigurationLoader,
         authorizationLoader: AuthorizationLoader
-    ): BraintreeClientParams2 =
-        BraintreeClientParams2(
+    ): BraintreeClientParams =
+        BraintreeClientParams(
             context = context,
             sessionId = "session-id",
             authorizationLoader = authorizationLoader,

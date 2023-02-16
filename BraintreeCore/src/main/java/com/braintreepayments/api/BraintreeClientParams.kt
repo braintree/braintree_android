@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.IntegrationType.Integration
 
-internal data class BraintreeClientParams2 @VisibleForTesting constructor(
+internal data class BraintreeClientParams @VisibleForTesting constructor(
     val context: Context,
     val sessionId: String,
     val authorizationLoader: AuthorizationLoader,

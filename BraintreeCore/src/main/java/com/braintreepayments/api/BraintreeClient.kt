@@ -28,7 +28,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
-    internal constructor(params: BraintreeClientParams2) : this(
+    internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
         sessionId = params.sessionId,
@@ -43,7 +43,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
-    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams2(options))
+    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token.
