@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.IntegrationType.Integration
@@ -11,9 +12,25 @@ import com.braintreepayments.api.IntegrationType.Integration
  * Core Braintree class that handles network requests.
  */
 open class BraintreeClient @VisibleForTesting internal constructor(
+
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val applicationContext: Context,
+
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val integrationType: String,
+
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val sessionId: String,
+
     private val authorizationLoader: AuthorizationLoader,
     private val analyticsClient: AnalyticsClient,
     private val httpClient: BraintreeHttpClient,
@@ -52,7 +69,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a [BraintreeException] will be returned via callback.
      */
     constructor(context: Context, authorization: String) :
-            this(BraintreeOptions(context, initialAuthString = authorization))
+            this(BraintreeOptions(context = context, initialAuthString = authorization))
 
     /**
      * Create a new instance of [BraintreeClient] using a [ClientTokenProvider].
@@ -61,7 +78,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient] will use to fetch a client token on demand.
      */
     constructor(context: Context, clientTokenProvider: ClientTokenProvider) :
-            this(BraintreeOptions(context, clientTokenProvider = clientTokenProvider))
+            this(BraintreeOptions(context = context, clientTokenProvider = clientTokenProvider))
 
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token and a custom url scheme.
@@ -77,7 +94,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
         BraintreeOptions(
-            context,
+            context = context,
             initialAuthString = authorization,
             returnUrlScheme = returnUrlScheme
         )
@@ -101,7 +118,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         returnUrlScheme: String
     ) : this(
         BraintreeOptions(
-            context,
+            context = context,
             clientTokenProvider = clientTokenProvider,
             returnUrlScheme = returnUrlScheme
         )
@@ -114,7 +131,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
-            context,
+            context = context,
             clientTokenProvider = clientTokenProvider,
             sessionId = sessionId,
             integrationType = integrationType,
@@ -128,7 +145,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
-            context,
+            context = context,
             initialAuthString = authorization,
             sessionId = sessionId,
             integrationType = integrationType,
@@ -150,7 +167,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      *
      * @param callback [ConfigurationCallback]
      */
-    fun getConfiguration(callback: ConfigurationCallback) {
+    open fun getConfiguration(callback: ConfigurationCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 configurationLoader.loadConfiguration(authorization) { configuration, configError ->
@@ -166,19 +183,23 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getAuthorization(callback: AuthorizationCallback) {
         authorizationLoader.loadAuthorization(callback)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(eventName: String) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    sendAnalyticsEvent(
-                        eventName,
-                        configuration,
-                        authorization
-                    )
+                    sendAnalyticsEvent(eventName, configuration, authorization)
                 }
             }
         }
@@ -200,6 +221,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
@@ -216,6 +241,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
@@ -232,6 +261,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGraphQLPOST(payload: String?, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
@@ -248,6 +281,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(BrowserSwitchException::class)
     fun startBrowserSwitch(
         activity: FragmentActivity?,
@@ -256,6 +293,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         browserSwitchClient.start(activity!!, browserSwitchOptions!!)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @Throws(BrowserSwitchException::class)
     fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult {
         return browserSwitchClient.getResult(activity)
     }
@@ -272,6 +314,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         return browserSwitchClient.deliverResult(activity)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult {
         return browserSwitchClient.getResultFromCache(context)
     }
@@ -287,12 +333,20 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         return browserSwitchClient.deliverResultFromCache(context)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getReturnUrlScheme(): String {
         return if (launchesBrowserSwitchAsNewTask) {
             braintreeDeepLinkReturnUrlScheme
         } else returnUrlScheme
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(BrowserSwitchException::class)
     fun assertCanPerformBrowserSwitch(
         activity: FragmentActivity?,
@@ -308,6 +362,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun <T> isUrlSchemeDeclaredInAndroidManifest(urlScheme: String?, klass: Class<T>?): Boolean {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
             applicationContext,
@@ -316,10 +374,18 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         )
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun <T> getManifestActivityInfo(klass: Class<T>?): ActivityInfo? {
         return manifestValidator.getActivityInfo(applicationContext, klass)
     }
 
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun reportCrash() {
         val authorization = authorizationLoader.authorizationFromCache
         analyticsClient.reportCrash(applicationContext, sessionId, integrationType, authorization)
@@ -335,6 +401,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         authorizationLoader.invalidateClientToken()
     }
 
+    // NEXT MAJOR VERSION: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {
         return launchesBrowserSwitchAsNewTask
     }
@@ -356,6 +423,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
 
     companion object {
 
+        /**
+         * @suppress
+         */
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun isAnalyticsEnabled(configuration: Configuration?): Boolean {
             return configuration != null && configuration.isAnalyticsEnabled
         }
