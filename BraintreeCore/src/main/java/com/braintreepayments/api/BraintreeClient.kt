@@ -290,17 +290,17 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         activity: FragmentActivity?,
         browserSwitchOptions: BrowserSwitchOptions?
     ) {
-        browserSwitchClient.start(activity!!, browserSwitchOptions!!)
+        if (activity != null && browserSwitchOptions != null) {
+            browserSwitchClient.start(activity, browserSwitchOptions)
+        }
     }
 
     /**
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @Throws(BrowserSwitchException::class)
-    fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult {
-        return browserSwitchClient.getResult(activity)
-    }
+    fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult =
+        browserSwitchClient.getResult(activity)
 
     /**
      * Deliver a browser switch result from an Activity's pending deep link intent url.
@@ -386,8 +386,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun reportCrash() {
-        val authorization = authorizationLoader.authorizationFromCache
+    fun reportCrash() = authorizationLoader.authorizationFromCache?.let { authorization ->
         analyticsClient.reportCrash(applicationContext, sessionId, integrationType, authorization)
     }
 

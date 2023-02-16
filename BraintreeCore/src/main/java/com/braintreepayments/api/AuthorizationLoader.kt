@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class AuthorizationLoader(
@@ -9,7 +8,6 @@ class AuthorizationLoader(
     private val clientTokenProvider: ClientTokenProvider?
 ) {
     // cache initial auth if available
-    @VisibleForTesting
     var authorizationFromCache = initialAuthString?.let { Authorization.fromString(it) }
 
     fun loadAuthorization(callback: AuthorizationCallback) {
