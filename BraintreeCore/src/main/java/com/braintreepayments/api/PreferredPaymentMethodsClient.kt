@@ -39,7 +39,7 @@ open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor
             )
             return
         }
-        braintreeClient.getConfiguration(ConfigurationCallback { configuration, error ->
+        braintreeClient.getConfiguration(ConfigurationCallback { configuration, _ ->
             val isGraphQLDisabled = configuration == null || !configuration.isGraphQLEnabled
             if (isGraphQLDisabled) {
                 braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-disabled")
@@ -52,7 +52,7 @@ open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor
             }
             val query =
                 "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }"
-            braintreeClient.sendGraphQLPOST(query) { responseBody, httpError ->
+            braintreeClient.sendGraphQLPOST(query) { responseBody, _ ->
                 if (responseBody != null) {
                     val result = PreferredPaymentMethodsResult.fromJSON(responseBody, isVenmoAppInstalled)
                     val payPalPreferredEvent =
