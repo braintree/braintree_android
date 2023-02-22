@@ -79,15 +79,13 @@ internal class DeviceInspector @VisibleForTesting constructor(
                 Build.FINGERPRINT.contains("generic")
 
     private fun getAppName(context: Context?): String =
-        context?.let {
-            getApplicationInfo(it)?.let { appInfo ->
-                context.packageManager.getApplicationLabel(appInfo).toString()
-            }
+        getApplicationInfo(context)?.let { appInfo ->
+                context?.packageManager?.getApplicationLabel(appInfo).toString()
         } ?: "ApplicationNameUnknown"
 
-    private fun getApplicationInfo(context: Context) =
+    private fun getApplicationInfo(context: Context?) =
         try {
-            context.packageManager.getApplicationInfo(context.packageName, 0)
+            context?.packageManager?.getApplicationInfo(context.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
