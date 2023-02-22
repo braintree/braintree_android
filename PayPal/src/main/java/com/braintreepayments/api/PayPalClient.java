@@ -118,7 +118,7 @@ public class PayPalClient {
         tokenizePayPalAccount(activity, payPalRequest, new PayPalFlowStartedCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
-                if (error != null) {
+                if (error != null && listener != null) {
                     listener.onPayPalFailure(error);
                 }
             }
@@ -287,9 +287,9 @@ public class PayPalClient {
         onBrowserSwitchResult(browserSwitchResult, new PayPalBrowserSwitchResultCallback() {
             @Override
             public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
-                if (payPalAccountNonce != null) {
+                if (payPalAccountNonce != null && listener != null) {
                     listener.onPayPalSuccess(payPalAccountNonce);
-                } else if (error != null) {
+                } else if (error != null && listener != null) {
                     listener.onPayPalFailure(error);
                 }
             }
