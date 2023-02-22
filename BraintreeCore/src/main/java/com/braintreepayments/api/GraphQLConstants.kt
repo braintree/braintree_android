@@ -2,9 +2,12 @@ package com.braintreepayments.api
 
 import androidx.annotation.RestrictTo
 
+/**
+ * @suppress
+ **/
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object GraphQLConstants {
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
     object Keys {
         const val QUERY = "query"
         const val INPUT = "input"
@@ -20,28 +23,23 @@ object GraphQLConstants {
         const val OPERATION_NAME = "operationName"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     object ErrorTypes {
         const val USER = "user_error"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     object ErrorMessages {
         const val UNKNOWN = "An unknown error occurred."
         const val USER = "Input is invalid."
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     object LegacyErrorCodes {
         const val VALIDATION_NOT_ALLOWED = "50000"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     object Headers {
         const val API_VERSION = "2018-03-06"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     object Features {
         const val TOKENIZE_CREDIT_CARDS = "tokenize_credit_cards"
     }
