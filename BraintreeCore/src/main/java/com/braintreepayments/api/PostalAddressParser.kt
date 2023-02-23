@@ -80,10 +80,8 @@ object PostalAddressParser {
         }
 
     private fun formatExtendedUserAddress(address: JSONObject): String =
-        """
-            ${Json.optString(address, USER_ADDRESS_ADDRESS_2_KEY, "")}
-            ${Json.optString(address, USER_ADDRESS_ADDRESS_3_KEY, "")}
-            ${Json.optString(address, USER_ADDRESS_ADDRESS_4_KEY, "")}
-            ${Json.optString(address, USER_ADDRESS_ADDRESS_5_KEY, "")}
-        """.trimIndent().trim { it <= ' ' }
+        (Json.optString(address, USER_ADDRESS_ADDRESS_2_KEY, "") + "\n" +
+        Json.optString(address, USER_ADDRESS_ADDRESS_3_KEY, "") + "\n" +
+        Json.optString(address, USER_ADDRESS_ADDRESS_4_KEY, "") + "\n" +
+        Json.optString(address, USER_ADDRESS_ADDRESS_5_KEY, "")).trim()
 }
