@@ -45,6 +45,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
+    // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
