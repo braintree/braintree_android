@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import io.mockk.every
 import io.mockk.mockk
 
-class MockkConfigurationLoaderBuilder {
+internal class MockkConfigurationLoaderBuilder {
 
     private var configuration: Configuration? = null
     private var configurationError: Exception? = null
