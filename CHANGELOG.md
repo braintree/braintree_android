@@ -1,6 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix issue that causes a null pointer exception when `PayPalClient` attempts to notify success or failure when the listener is `null`
+
 ## 4.26.0
+
 * PayPalNativeCheckout (BETA)
 
   * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient` when no PayPal response was received from the API
