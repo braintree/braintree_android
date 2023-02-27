@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import io.mockk.every
 import io.mockk.mockk
 
-class MockkAuthorizationLoaderBuilder {
+internal class MockkAuthorizationLoaderBuilder {
 
     private var authorization: Authorization? = null
     private var authorizationError: Exception? = null
