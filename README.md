@@ -4,7 +4,7 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide]([v4_MIGRATION_GUIDE.md](v4.9.0+_MIGRATION_GUIDE.md)) for details.
+:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
 
 Braintree's Android SDK is available for Android SDK >= 21.
 
