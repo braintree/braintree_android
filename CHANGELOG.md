@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.26.1
 
 * BraintreeDataCollector
   * Bump Magnes dependency to version 5.4.0 (fixes #657)
