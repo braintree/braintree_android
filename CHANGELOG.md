@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeDataCollector
+  * Bump Magnes dependency to version 5.4.0 (fixes #657)
 * PayPal
   * Fix issue that causes a null pointer exception when `PayPalClient` attempts to notify success or failure when the listener is `null`
 
