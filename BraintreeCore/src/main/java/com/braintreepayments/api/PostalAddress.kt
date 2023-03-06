@@ -64,9 +64,9 @@ open class PostalAddress : Parcelable {
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<PostalAddress?> =
-            object : Parcelable.Creator<PostalAddress?> {
-                override fun createFromParcel(source: Parcel): PostalAddress? {
+        val CREATOR: Parcelable.Creator<PostalAddress> =
+            object : Parcelable.Creator<PostalAddress> {
+                override fun createFromParcel(source: Parcel): PostalAddress {
                     return PostalAddress(source)
                 }
 
