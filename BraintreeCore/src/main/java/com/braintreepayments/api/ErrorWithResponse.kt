@@ -109,6 +109,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         private const val FIELD_ERRORS_KEY = "fieldErrors"
 
         @Throws(JSONException::class)
+        @JvmStatic
         fun fromJson(json: String?) = ErrorWithResponse().apply {
             _originalResponse = json
             parseJson(json)
