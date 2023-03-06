@@ -7,33 +7,26 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class BraintreeError : Parcelable {
-    /**
-     * @return Field name this object represents.
-     */
-    var field: String? = null
-        private set
+/**
+ * @property field Field name this object represents.
+ * @property message Human readable summary of the error for field. May be `null`.
+ * @property code Error code if one exists; defaults to [.UNKNOWN_CODE] otherwise
+ * @property fieldErrors [BraintreeError] objects for any errors nested under this field.
+ */
+open class BraintreeError : Parcelable {
 
-    /**
-     * @return Human readable summary of the error for field. May be `null`.
-     */
-    var message: String? = null
-        private set
-    internal var fieldErrors: MutableList<BraintreeError>? = null
+    open var field: String? = null
+        internal set
 
-    /**
-     * @return Error code if one exists; defaults to [.UNKNOWN_CODE] otherwise
-     */
+    open var message: String? = null
+        internal set
+
+    open var fieldErrors: MutableList<BraintreeError>? = null
+        internal set
+
     // default value
-    var code = UNKNOWN_CODE
-        private set
-
-    /**
-     * @return [BraintreeError] objects for any errors nested under this field.
-     */
-    fun getFieldErrors(): List<BraintreeError>? {
-        return fieldErrors
-    }
+    open var code = UNKNOWN_CODE
+        internal set
 
     /**
      * Method to extract an error for an individual field, e.g. creditCard, customer, etc.
@@ -41,13 +34,13 @@ class BraintreeError : Parcelable {
      * @param field Name of the field desired, expected to be in camelCase.
      * @return [BraintreeError] for the field searched, or `null` if not found.
      */
-    fun errorFor(field: String): BraintreeError? {
+    open fun errorFor(field: String): BraintreeError? {
         var returnError: BraintreeError?
         if (fieldErrors != null) {
             for (error in fieldErrors!!) {
                 if (error.field == field) {
                     return error
-                } else if (error.getFieldErrors() != null) {
+                } else if (error.fieldErrors != null) {
                     returnError = error.errorFor(field)
                     if (returnError != null) {
                         return returnError
@@ -59,11 +52,10 @@ class BraintreeError : Parcelable {
     }
 
     override fun toString(): String {
-        return "BraintreeError for " + field + ": " + message + " -> " +
-                if (fieldErrors != null) fieldErrors.toString() else ""
+        return "BraintreeError for $field: $message -> ${fieldErrors?.toString() ?: ""}"
     }
 
-    internal constructor() {}
+    internal constructor()
 
     override fun describeContents(): Int {
         return 0
@@ -87,12 +79,10 @@ class BraintreeError : Parcelable {
         private const val FIELD_ERRORS_KEY = "fieldErrors"
         private const val CODE_KEY = "code"
         private const val UNKNOWN_CODE = -1
-        fun fromJsonArray(json: JSONArray?): MutableList<BraintreeError> {
-            var json = json
-            if (json == null) {
-                json = JSONArray()
-            }
-            val errors: MutableList<BraintreeError> = ArrayList()
+
+        fun fromJsonArray(input: JSONArray?): MutableList<BraintreeError> {
+            val json = input ?: JSONArray()
+            val errors = mutableListOf<BraintreeError>()
             for (i in 0 until json.length()) {
                 try {
                     errors.add(fromJson(json.getJSONObject(i)))
@@ -103,7 +93,7 @@ class BraintreeError : Parcelable {
         }
 
         fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
-            val errors: MutableList<BraintreeError> = ArrayList()
+            val errors = mutableListOf<BraintreeError>()
             if (graphQLErrors == null) {
                 return errors
             }
@@ -111,14 +101,15 @@ class BraintreeError : Parcelable {
                 try {
                     val graphQLError = graphQLErrors.getJSONObject(i)
                     val extensions = graphQLError.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
-                    if (extensions == null || ErrorTypes.USER != extensions.optString(
-                            GraphQLConstants.Keys.ERROR_TYPE
-                        )
-                    ) {
+
+                    val errorType = extensions?.optString(GraphQLConstants.Keys.ERROR_TYPE)
+                    if (errorType != ErrorTypes.USER) {
                         continue
                     }
+
                     val inputPath = ArrayList<String>()
                     val inputPathJSON = extensions.getJSONArray(GraphQLConstants.Keys.INPUT_PATH)
+
                     for (j in 1 until inputPathJSON.length()) {
                         inputPath.add(inputPathJSON.getString(j))
                     }
@@ -129,13 +120,11 @@ class BraintreeError : Parcelable {
             return errors
         }
 
-        fun fromJson(json: JSONObject): BraintreeError {
-            val error = BraintreeError()
-            error.field = Json.optString(json, FIELD_KEY, null)
-            error.message = Json.optString(json, MESSAGE_KEY, null)
-            error.code = json.optInt(CODE_KEY, UNKNOWN_CODE)
-            error.fieldErrors = fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
-            return error
+        fun fromJson(json: JSONObject) = BraintreeError().apply {
+            field = Json.optString(json, FIELD_KEY, null)
+            message = Json.optString(json, MESSAGE_KEY, null)
+            code = json.optInt(CODE_KEY, UNKNOWN_CODE)
+            fieldErrors = fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
         }
 
         @Throws(JSONException::class)
@@ -149,35 +138,42 @@ class BraintreeError : Parcelable {
                 val error = BraintreeError()
                 error.field = field
                 error.message = errorJSON.getString(GraphQLConstants.Keys.MESSAGE)
+
                 val extensions = errorJSON.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
                 if (extensions != null) {
                     error.code = extensions.optInt(GraphQLConstants.Keys.LEGACY_CODE, UNKNOWN_CODE)
                 }
                 error.fieldErrors = ArrayList()
-                errors!!.add(error)
+
+                errors?.add(error)
                 return
             }
+
             var nestedError: BraintreeError? = null
             val nestedInputPath = inputPath.subList(1, inputPath.size)
-            for (error in errors!!) {
-                if (error.field == field) {
-                    nestedError = error
+
+            if (errors != null) {
+                for (error in errors) {
+                    if (error.field == field) {
+                        nestedError = error
+                    }
+                }
+
+                if (nestedError == null) {
+                    nestedError = BraintreeError()
+                    nestedError.field = field
+                    nestedError.fieldErrors = ArrayList()
+                    errors.add(nestedError)
                 }
             }
-            if (nestedError == null) {
-                nestedError = BraintreeError()
-                nestedError.field = field
-                nestedError.fieldErrors = ArrayList()
-                errors.add(nestedError)
-            }
-            addGraphQLFieldError(nestedInputPath, errorJSON, nestedError.fieldErrors)
+
+            addGraphQLFieldError(nestedInputPath, errorJSON, nestedError?.fieldErrors)
         }
 
         @JvmField
-        val CREATOR: Parcelable.Creator<BraintreeError> =
-            object : Parcelable.Creator<BraintreeError> {
-                override fun createFromParcel(source: Parcel) = BraintreeError(source)
-                override fun newArray(size: Int) = arrayOfNulls<BraintreeError>(size)
-            }
+        val CREATOR = object : Parcelable.Creator<BraintreeError> {
+            override fun createFromParcel(source: Parcel) = BraintreeError(source)
+            override fun newArray(size: Int) = arrayOfNulls<BraintreeError>(size)
+        }
     }
 }
