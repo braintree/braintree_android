@@ -9,15 +9,15 @@ import android.os.Parcel
  * Java object representing a postal address
  */
 open class PostalAddress : Parcelable {
-    var recipientName: String? = null
-    var phoneNumber: String? = null
-    var streetAddress: String? = null
-    var extendedAddress: String? = null
-    var locality: String? = null
-    var region: String? = null
-    var postalCode: String? = null
-    var sortingCode: String? = null
-    var countryCodeAlpha2: String? = null
+    open var recipientName: String? = null
+    open var phoneNumber: String? = null
+    open var streetAddress: String? = null
+    open var extendedAddress: String? = null
+    open var locality: String? = null
+    open var region: String? = null
+    open var postalCode: String? = null
+    open var sortingCode: String? = null
+    open var countryCodeAlpha2: String? = null
 
     constructor()
 
@@ -26,7 +26,7 @@ open class PostalAddress : Parcelable {
      *
      * @return `true` if the country code is `null` or empty, `false` otherwise.
      */
-    val isEmpty: Boolean
+    open val isEmpty: Boolean
         get() = TextUtils.isEmpty(countryCodeAlpha2)
 
     override fun toString(): String {
