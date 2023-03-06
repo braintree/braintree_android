@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.GraphQLConstants.ErrorMessages
 import org.json.JSONException
 import org.json.JSONObject
@@ -14,36 +13,32 @@ import org.json.JSONObject
  *
  * ErrorWithResponse parses the server's error response and exposes the errors.
  *
+ * @property statusCode HTTP status code from the Braintree gateway.
  * @property message Human readable top level summary of the error.
+ * @property errorResponse The full error response as a [String].
+ * @property fieldErrors All the field errors.
  */
 open class ErrorWithResponse : Exception, Parcelable {
 
-    /**
-     * @return HTTP status code from the Braintree gateway.
-     */
-    var statusCode: Int = 0
-        private set
+    open var statusCode: Int = 0
+        internal set
 
     private var _message: String? = null
-
     override val message: String?
         get() = _message
 
-    /**
-     * @return The full error response as a [String].
-     */
-    var errorResponse: String? = null
-        private set
+    private var _originalResponse: String? = null
+    open val errorResponse: String?
+        get() = _originalResponse
 
-    /**
-     * @return All the field errors.
-     */
-    var fieldErrors: List<BraintreeError>? = null
-        private set
+    open var fieldErrors: List<BraintreeError>? = null
+        internal set
+
+    private constructor()
 
     internal constructor(statusCode: Int, jsonString: String?) {
         this.statusCode = statusCode
-        errorResponse = jsonString
+        _originalResponse = jsonString
         try {
             parseJson(jsonString)
         } catch (e: JSONException) {
@@ -52,13 +47,12 @@ open class ErrorWithResponse : Exception, Parcelable {
         }
     }
 
-    private constructor() {}
-
     @Throws(JSONException::class)
     private fun parseJson(jsonString: String?) {
-        val json = JSONObject(jsonString)
-        _message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY)
-        fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
+        jsonString?.let { JSONObject(it) }?.let { json ->
+            _message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY)
+            fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
+        }
     }
 
 
@@ -69,13 +63,12 @@ open class ErrorWithResponse : Exception, Parcelable {
      * @return [BraintreeError] for the field searched, or `null` if not found.
      */
     fun errorFor(field: String): BraintreeError? {
-        var returnError: BraintreeError?
-        if (fieldErrors != null) {
-            for (error in fieldErrors!!) {
+        fieldErrors?.let { fieldErrors ->
+            for (error in fieldErrors) {
                 if (error.field == field) {
                     return error
                 } else if (error.fieldErrors != null) {
-                    returnError = error.errorFor(field)
+                    val returnError = error.errorFor(field)
                     if (returnError != null) {
                         return returnError
                     }
@@ -89,7 +82,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         return """
             ErrorWithResponse ($statusCode): $message
             ${fieldErrors.toString()}
-            """.trimIndent()
+        """.trimIndent()
     }
 
     override fun describeContents(): Int {
@@ -99,14 +92,14 @@ open class ErrorWithResponse : Exception, Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(statusCode)
         dest.writeString(message)
-        dest.writeString(errorResponse)
+        dest.writeString(_originalResponse)
         dest.writeTypedList(fieldErrors)
     }
 
     protected constructor(`in`: Parcel) {
         statusCode = `in`.readInt()
         _message = `in`.readString()
-        errorResponse = `in`.readString()
+        _originalResponse = `in`.readString()
         fieldErrors = `in`.createTypedArrayList(BraintreeError.CREATOR)
     }
 
@@ -116,29 +109,34 @@ open class ErrorWithResponse : Exception, Parcelable {
         private const val FIELD_ERRORS_KEY = "fieldErrors"
 
         @Throws(JSONException::class)
-        fun fromJson(json: String?): ErrorWithResponse {
-            val errorWithResponse = ErrorWithResponse()
-            errorWithResponse.errorResponse = json
-            errorWithResponse.parseJson(json)
-            return errorWithResponse
+        fun fromJson(json: String?) = ErrorWithResponse().apply {
+            _originalResponse = json
+            parseJson(json)
         }
 
         fun fromGraphQLJson(json: String?): ErrorWithResponse {
-            val errorWithResponse = ErrorWithResponse()
-            errorWithResponse.errorResponse = json
-            errorWithResponse.statusCode = 422
+            val errorWithResponse = ErrorWithResponse().apply {
+                _originalResponse = json
+                statusCode = 422
+            }
+
             try {
-                val errors = JSONObject(json).getJSONArray(GraphQLConstants.Keys.ERRORS)
+                val errors =
+                    json?.let { JSONObject(it) }?.getJSONArray(GraphQLConstants.Keys.ERRORS)
                 errorWithResponse.fieldErrors = BraintreeError.fromGraphQLJsonArray(errors)
-                if (errorWithResponse.fieldErrors?.isEmpty() == true) {
+
+                val fieldErrorsEmpty = errorWithResponse.fieldErrors?.isEmpty() ?: true
+                if (fieldErrorsEmpty) {
                     errorWithResponse._message =
-                        errors.getJSONObject(0).getString(GraphQLConstants.Keys.MESSAGE)
+                        errors?.getJSONObject(0)?.getString(GraphQLConstants.Keys.MESSAGE)
                 } else {
                     errorWithResponse._message = ErrorMessages.USER
                 }
             } catch (e: JSONException) {
-                errorWithResponse._message = "Parsing error response failed"
-                errorWithResponse.fieldErrors = ArrayList()
+                errorWithResponse.apply {
+                    _message = "Parsing error response failed"
+                    fieldErrors = ArrayList()
+                }
             }
             return errorWithResponse
         }
