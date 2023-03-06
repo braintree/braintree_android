@@ -140,8 +140,8 @@ internal class DeviceInspector @VisibleForTesting constructor(
 
         internal fun getDropInVersion(): String? {
             try {
-                val clazz = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
-                val versionNameField = clazz.getField("VERSION_NAME")
+                val dropInBuildConfigClass = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
+                val versionNameField = dropInBuildConfigClass.getField("VERSION_NAME")
                 versionNameField.isAccessible = true
                 return versionNameField[String::class] as String?
             } catch (ignored: ClassNotFoundException) {
