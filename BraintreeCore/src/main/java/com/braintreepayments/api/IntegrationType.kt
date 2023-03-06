@@ -5,6 +5,9 @@ import androidx.annotation.StringDef
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
+/**
+ * @suppress
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object IntegrationType {
     const val CUSTOM = "custom"

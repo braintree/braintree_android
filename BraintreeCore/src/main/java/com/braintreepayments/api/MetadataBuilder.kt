@@ -4,6 +4,9 @@ import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * @suppress
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class MetadataBuilder {
 

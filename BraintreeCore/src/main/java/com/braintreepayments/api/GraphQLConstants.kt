@@ -4,7 +4,7 @@ import androidx.annotation.RestrictTo
 
 /**
  * @suppress
- **/
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object GraphQLConstants {
 
