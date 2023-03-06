@@ -62,7 +62,7 @@ open class PreferredPaymentMethodsResult @RestrictTo(RestrictTo.Scope.LIBRARY_GR
 
         @Throws(JSONException::class)
         private fun getObjectAtKeyPath(obj: JSONObject, keyPath: String): JSONObject {
-            val keys = keyPath.split(".").toTypedArray()
+            val keys = keyPath.split(".")
             var result = obj
             for (key in keys) {
                 result = result.getJSONObject(key)

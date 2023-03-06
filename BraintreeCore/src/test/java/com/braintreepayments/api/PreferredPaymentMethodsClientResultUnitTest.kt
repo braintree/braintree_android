@@ -1,7 +1,5 @@
 package com.braintreepayments.api
 
-import com.braintreepayments.api.PreferredPaymentMethodsResult.Companion.fromJSON
-
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -19,7 +17,7 @@ class PreferredPaymentMethodsClientResultUnitTest {
                   }
             }"""
             //
-        val result = fromJSON(json, false)
+        val result = PreferredPaymentMethodsResult.fromJSON(json, false)
         assertTrue(result.isPayPalPreferred())
     }
 
@@ -35,25 +33,25 @@ class PreferredPaymentMethodsClientResultUnitTest {
                   }
             }"""
             //
-        val result = fromJSON(json, false)
+        val result = PreferredPaymentMethodsResult.fromJSON(json, false)
         assertFalse(result.isPayPalPreferred())
     }
 
     @Test
     fun fromJson_whenVenmoAppIsInstalled_setsVenmoPreferredToTrue() {
-        val result = fromJSON("json", true)
+        val result = PreferredPaymentMethodsResult.fromJSON("json", true)
         assertTrue(result.isVenmoPreferred())
     }
 
     @Test
     fun fromJson_whenVenmoAppIsNotInstalled_setsVenmoPreferredToFalse() {
-        val result = fromJSON("json", false)
+        val result = PreferredPaymentMethodsResult.fromJSON("json", false)
         assertFalse(result.isVenmoPreferred())
     }
 
     @Test
     fun fromJson_whenJsonIsInvalid_setsIsPayPalPreferredToFalse() {
-        val result = fromJSON("invalid-response", false)
+        val result = PreferredPaymentMethodsResult.fromJSON("invalid-response", false)
         assertFalse(result.isPayPalPreferred())
         assertFalse(result.isVenmoPreferred())
     }
