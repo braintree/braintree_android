@@ -80,7 +80,7 @@ open class BraintreeError : Parcelable {
         private const val CODE_KEY = "code"
         private const val UNKNOWN_CODE = -1
 
-        fun fromJsonArray(input: JSONArray?): MutableList<BraintreeError> {
+        internal fun fromJsonArray(input: JSONArray?): MutableList<BraintreeError> {
             val json = input ?: JSONArray()
             val errors = mutableListOf<BraintreeError>()
             for (i in 0 until json.length()) {
@@ -92,7 +92,7 @@ open class BraintreeError : Parcelable {
             return errors
         }
 
-        fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
+        protected fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
             val errors = mutableListOf<BraintreeError>()
             if (graphQLErrors == null) {
                 return errors
@@ -120,7 +120,7 @@ open class BraintreeError : Parcelable {
             return errors
         }
 
-        fun fromJson(json: JSONObject) = BraintreeError().apply {
+        internal fun fromJson(json: JSONObject) = BraintreeError().apply {
             field = Json.optString(json, FIELD_KEY, null)
             message = Json.optString(json, MESSAGE_KEY, null)
             code = json.optInt(CODE_KEY, UNKNOWN_CODE)
