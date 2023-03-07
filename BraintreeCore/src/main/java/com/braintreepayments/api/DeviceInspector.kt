@@ -7,10 +7,15 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.os.Build
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import java.io.File
 
-internal class DeviceInspector @VisibleForTesting constructor(
+/**
+ * @suppress
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DeviceInspector @VisibleForTesting internal constructor(
     private val appHelper: AppHelper,
     private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
@@ -26,7 +31,7 @@ internal class DeviceInspector @VisibleForTesting constructor(
     )
 
     @VisibleForTesting
-    fun getDeviceMetadata(
+    internal fun getDeviceMetadata(
         context: Context?,
         sessionId: String?,
         integration: String?,
