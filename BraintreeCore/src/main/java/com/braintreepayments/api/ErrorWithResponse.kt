@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.GraphQLConstants.ErrorMessages
 import org.json.JSONException
 import org.json.JSONObject
@@ -108,6 +109,10 @@ open class ErrorWithResponse : Exception, Parcelable {
         private const val MESSAGE_KEY = "message"
         private const val FIELD_ERRORS_KEY = "fieldErrors"
 
+        /**
+         * @suppress
+         */
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
         @JvmStatic
         fun fromJson(json: String?) = ErrorWithResponse().apply {
@@ -115,7 +120,7 @@ open class ErrorWithResponse : Exception, Parcelable {
             parseJson(json)
         }
 
-        fun fromGraphQLJson(json: String?): ErrorWithResponse {
+        internal fun fromGraphQLJson(json: String?): ErrorWithResponse {
             val errorWithResponse = ErrorWithResponse().apply {
                 _originalResponse = json
                 statusCode = 422
