@@ -1,13 +1,10 @@
 package com.braintreepayments.api
 
-import androidx.annotation.VisibleForTesting
-
 internal class AuthorizationLoader(
     initialAuthString: String?,
     private val clientTokenProvider: ClientTokenProvider?
 ) {
     // cache initial auth if available
-    @VisibleForTesting
     var authorizationFromCache = initialAuthString?.let { Authorization.fromString(it) }
 
     fun loadAuthorization(callback: AuthorizationCallback) {

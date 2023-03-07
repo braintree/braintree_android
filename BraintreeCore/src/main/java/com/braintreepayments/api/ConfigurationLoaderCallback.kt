@@ -1,5 +1,5 @@
 package com.braintreepayments.api
 
-internal interface ConfigurationLoaderCallback {
+internal fun interface ConfigurationLoaderCallback {
     fun onResult(result: Configuration?, error: Exception?)
 }
