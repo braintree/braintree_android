@@ -92,7 +92,7 @@ open class BraintreeError : Parcelable {
             return errors
         }
 
-        fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
+        internal fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
             val errors = mutableListOf<BraintreeError>()
             if (graphQLErrors == null) {
                 return errors
