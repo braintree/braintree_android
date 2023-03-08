@@ -32,7 +32,7 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildJSON() throws JSONException {
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -45,7 +45,7 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    String getApiPath() {
+    public String getApiPath() {
         return "visa_checkout_cards";
     }
 }

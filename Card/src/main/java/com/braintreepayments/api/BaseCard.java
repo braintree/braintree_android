@@ -342,8 +342,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return null;
     }
 
-    @Override
-    JSONObject buildJSON() throws JSONException {
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -376,7 +375,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     @Override
-    String getApiPath() {
+    public String getApiPath() {
         return "credit_cards";
     }
 

@@ -28,7 +28,7 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildJSON() throws JSONException {
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -106,7 +106,7 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
-    String getApiPath() {
+    public String getApiPath() {
         return "paypal_accounts";
     }
 }
