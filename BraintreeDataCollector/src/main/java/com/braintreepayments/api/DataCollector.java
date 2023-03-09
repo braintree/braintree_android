@@ -59,13 +59,14 @@ public class DataCollector {
      * @param callback   {@link DataCollectorCallback}
      */
     public void collectDeviceData(@NonNull final Context context, @Nullable final String merchantId, @NonNull final DataCollectorCallback callback) {
+        final Context appContext = context.getApplicationContext();
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        String clientMetadataId = getPayPalClientMetadataId(context, configuration);
+                        String clientMetadataId = getPayPalClientMetadataId(appContext, configuration);
                         if (!TextUtils.isEmpty(clientMetadataId)) {
                             deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
                         }
