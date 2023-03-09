@@ -300,7 +300,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult =
+    fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? =
         browserSwitchClient.getResult(activity)
 
     /**
@@ -311,7 +311,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param activity
      * @return [BrowserSwitchResult]
      */
-    fun deliverBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult {
+    fun deliverBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? {
         return browserSwitchClient.deliverResult(activity)
     }
 
@@ -319,7 +319,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult {
+    fun getBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
         return browserSwitchClient.getResultFromCache(context)
     }
 
@@ -330,7 +330,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param context
      * @return [BrowserSwitchResult]
      */
-    fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult {
+    fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
         return browserSwitchClient.deliverResultFromCache(context)
     }
 
