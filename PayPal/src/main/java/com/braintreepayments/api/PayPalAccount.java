@@ -106,6 +106,7 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {
         return "paypal_accounts";
     }
