@@ -376,6 +376,7 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
     }
 
     @Override
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {
         return "credit_cards";
     }
