@@ -2,7 +2,12 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.verify
+import io.mockk.verifyOrder
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -46,7 +51,7 @@ class ApiClientUnitTest {
         sut.tokenizeREST(card, tokenizeCallback)
 
         verifyOrder {
-            card.setSessionId("session-id")
+            card.sessionId = "session-id"
             braintreeClient.sendPOST(any(), any(), any())
         }
 

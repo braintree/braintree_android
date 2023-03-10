@@ -22,7 +22,7 @@ internal data class GooglePayConfiguration constructor(
     val paypalClientId: String
 ) {
 
-    constructor(json: JSONObject?) : this(
+    internal constructor(json: JSONObject?) : this(
         json?.optBoolean(ENABLED_KEY, false) ?: false,
         Json.optString(json, GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null),
         Json.optString(json, ENVIRONMENT_KEY, null),
