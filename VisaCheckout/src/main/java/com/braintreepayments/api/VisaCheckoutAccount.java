@@ -45,6 +45,7 @@ class VisaCheckoutAccount extends PaymentMethod {
     }
 
     @Override
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {
         return "visa_checkout_cards";
     }
