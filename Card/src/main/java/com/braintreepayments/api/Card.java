@@ -128,6 +128,7 @@ public class Card extends BaseCard implements Parcelable {
     }
 
     @Override
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
