@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.RestrictTo;
+
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;

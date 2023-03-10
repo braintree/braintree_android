@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.RestrictTo;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,7 +15,8 @@ class VenmoAccount extends PaymentMethod {
     VenmoAccount() {}
 
     @Override
-    JSONObject buildJSON() throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
         JSONObject paymentMethodNonceJson = new JSONObject();
         paymentMethodNonceJson.put(NONCE_KEY, nonce);
@@ -27,7 +30,8 @@ class VenmoAccount extends PaymentMethod {
     }
 
     @Override
-    String getApiPath() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public String getApiPath() {
         return "venmo_accounts";
     }
 }

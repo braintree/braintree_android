@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.RestrictTo;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +32,8 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     }
 
     @Override
-    JSONObject buildJSON() throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = new JSONObject();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -134,8 +137,10 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
+
     @Override
-    String getApiPath() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public String getApiPath() {
         return "paypal_accounts";
     }
 }

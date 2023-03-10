@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
