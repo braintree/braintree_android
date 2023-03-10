@@ -28,6 +28,7 @@ class PayPalAccount extends PaymentMethod {
     }
 
     @Override
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
