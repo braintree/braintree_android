@@ -29,6 +29,9 @@ class PayPalAccount extends PaymentMethod {
         super();
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
@@ -108,6 +111,9 @@ class PayPalAccount extends PaymentMethod {
         this.paymentType = paymentType;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

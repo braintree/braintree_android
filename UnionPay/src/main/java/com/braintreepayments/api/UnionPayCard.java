@@ -119,6 +119,9 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         return payload;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {

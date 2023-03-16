@@ -31,6 +31,9 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
         super();
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
@@ -138,6 +141,9 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
         return merchantAccountId;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

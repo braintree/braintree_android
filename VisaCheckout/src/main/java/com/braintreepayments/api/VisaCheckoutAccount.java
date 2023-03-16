@@ -33,6 +33,9 @@ class VisaCheckoutAccount extends PaymentMethod {
         encryptedPaymentData = visaPaymentSummary.getEncPaymentData();
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
@@ -47,6 +50,9 @@ class VisaCheckoutAccount extends PaymentMethod {
         return json;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

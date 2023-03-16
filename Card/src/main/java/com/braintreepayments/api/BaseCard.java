@@ -343,6 +343,9 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return null;
     }
 
+    /**
+     * @hide
+     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
@@ -376,6 +379,9 @@ abstract class BaseCard extends PaymentMethod implements Parcelable {
         return json;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

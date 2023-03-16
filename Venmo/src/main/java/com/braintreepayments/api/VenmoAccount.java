@@ -14,6 +14,9 @@ class VenmoAccount extends PaymentMethod {
 
     VenmoAccount() {}
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
@@ -29,6 +32,9 @@ class VenmoAccount extends PaymentMethod {
         this.nonce = nonce;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

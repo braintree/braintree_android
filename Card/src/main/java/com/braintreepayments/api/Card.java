@@ -128,6 +128,9 @@ public class Card extends BaseCard implements Parcelable {
         return shouldValidate;
     }
 
+    /**
+     * @hide
+     */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public JSONObject buildJSON() throws JSONException {
