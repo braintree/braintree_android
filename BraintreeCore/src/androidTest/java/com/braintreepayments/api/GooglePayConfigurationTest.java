@@ -1,5 +1,11 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
@@ -10,12 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class GooglePayConfigurationTest {
@@ -43,7 +43,7 @@ public class GooglePayConfigurationTest {
         JSONObject json = new JSONObject(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
                 .getJSONObject("androidPay");
 
-        GooglePayConfiguration googlePayConfiguration = GooglePayConfiguration.fromJson(json);
+        GooglePayConfiguration googlePayConfiguration = new GooglePayConfiguration(json);
 
         assertTrue(googlePayConfiguration.isEnabled());
         assertEquals("google-auth-fingerprint", googlePayConfiguration.getGoogleAuthorizationFingerprint());
@@ -57,7 +57,7 @@ public class GooglePayConfigurationTest {
 
     @Test(timeout = 1000)
     public void fromJson_returnsNewGooglePayConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
-        GooglePayConfiguration googlePayConfiguration = GooglePayConfiguration.fromJson(null);
+        GooglePayConfiguration googlePayConfiguration = new GooglePayConfiguration(null);
 
         assertFalse(googlePayConfiguration.isEnabled());
         assertNull(googlePayConfiguration.getGoogleAuthorizationFingerprint());
@@ -68,7 +68,7 @@ public class GooglePayConfigurationTest {
 
     @Test(timeout = 1000)
     public void fromJson_returnsNewGooglePayConfigurationWithDefaultValuesWhenNoDataIsPresent() {
-        GooglePayConfiguration googlePayConfiguration = GooglePayConfiguration.fromJson(new JSONObject());
+        GooglePayConfiguration googlePayConfiguration = new GooglePayConfiguration(new JSONObject());
 
         assertFalse(googlePayConfiguration.isEnabled());
         assertNull(googlePayConfiguration.getGoogleAuthorizationFingerprint());
