@@ -26,7 +26,7 @@ open class PaymentMethodNonce : Parcelable {
     open val string: String
     open val isDefault: Boolean
 
-    internal constructor(nonce: String, isDefault: Boolean) {
+    protected constructor(nonce: String, isDefault: Boolean) {
         string = nonce
         this.isDefault = isDefault
     }
