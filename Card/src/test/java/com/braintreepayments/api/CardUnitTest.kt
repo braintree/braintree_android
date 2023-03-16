@@ -2,10 +2,7 @@ package com.braintreepayments.api
 
 import android.os.Parcel
 import com.braintreepayments.api.CardNumber.VISA
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertNull
-import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.*
 import org.json.JSONException
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -93,41 +90,39 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.integration = "test-integration"
-        card.source = "test-source"
-        card.sessionId = "test-session-id"
+        card.setIntegration("test-integration")
+        card.setSource("test-source")
+        card.setSessionId("test-session-id")
 
         val json = card.buildJSON()
-        val jsonCard = json?.getJSONObject(CREDIT_CARD_KEY)
-        val jsonBillingAddress = jsonCard?.getJSONObject(BILLING_ADDRESS_KEY)
-        val jsonMetadata = json?.getJSONObject(MetadataBuilder.META_KEY)
+        val jsonCard = json.getJSONObject(CREDIT_CARD_KEY)
+        val jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY)
+        val jsonMetadata = json.getJSONObject(MetadataBuilder.META_KEY)
 
-        assertEquals(VISA, jsonCard?.getString("number"))
-        assertEquals("01", jsonCard?.getString("expirationMonth"))
-        assertEquals("2015", jsonCard?.getString("expirationYear"))
-        assertEquals("123", jsonCard?.getString("cvv"))
-        assertEquals("Joe Smith", jsonCard?.getString("cardholderName"))
+        assertEquals(VISA, jsonCard.getString("number"))
+        assertEquals("01", jsonCard.getString("expirationMonth"))
+        assertEquals("2015", jsonCard.getString("expirationYear"))
+        assertEquals("123", jsonCard.getString("cvv"))
+        assertEquals("Joe Smith", jsonCard.getString("cardholderName"))
 
-        assertTrue(json?.getBoolean("authenticationInsight") == true)
-        assertEquals("merchant-account-id", json?.getString("merchantAccountId"))
+        assertTrue(json.getBoolean("authenticationInsight"))
+        assertEquals("merchant-account-id", json.getString("merchantAccountId"))
 
-        assertTrue(
-            jsonCard?.getJSONObject(PaymentMethod.OPTIONS_KEY)?.getBoolean("validate") == true
-        )
+        assertTrue(jsonCard.getJSONObject(PaymentMethod.OPTIONS_KEY).getBoolean("validate"))
 
-        assertEquals("Joe", jsonBillingAddress?.getString("firstName"))
-        assertEquals("Smith", jsonBillingAddress?.getString("lastName"))
-        assertEquals("Company", jsonBillingAddress?.getString("company"))
-        assertEquals("1 Main St", jsonBillingAddress?.getString("streetAddress"))
-        assertEquals("Unit 1", jsonBillingAddress?.getString("extendedAddress"))
-        assertEquals("Some Town", jsonBillingAddress?.getString("locality"))
-        assertEquals("12345", jsonBillingAddress?.getString("postalCode"))
-        assertEquals("Some Region", jsonBillingAddress?.getString("region"))
-        assertEquals("USA", jsonBillingAddress?.getString("countryCodeAlpha3"))
+        assertEquals("Joe", jsonBillingAddress.getString("firstName"))
+        assertEquals("Smith", jsonBillingAddress.getString("lastName"))
+        assertEquals("Company", jsonBillingAddress.getString("company"))
+        assertEquals("1 Main St", jsonBillingAddress.getString("streetAddress"))
+        assertEquals("Unit 1", jsonBillingAddress.getString("extendedAddress"))
+        assertEquals("Some Town", jsonBillingAddress.getString("locality"))
+        assertEquals("12345", jsonBillingAddress.getString("postalCode"))
+        assertEquals("Some Region", jsonBillingAddress.getString("region"))
+        assertEquals("USA", jsonBillingAddress.getString("countryCodeAlpha3"))
 
-        assertEquals("test-integration", jsonMetadata?.getString("integration"))
-        assertEquals("test-source", jsonMetadata?.getString("source"))
-        assertEquals("test-session-id", jsonMetadata?.getString("sessionId"))
+        assertEquals("test-integration", jsonMetadata.getString("integration"))
+        assertEquals("test-source", jsonMetadata.getString("source"))
+        assertEquals("test-session-id", jsonMetadata.getString("sessionId"))
     }
 
     @Test
@@ -137,24 +132,22 @@ class CardUnitTest {
         card.postalCode = "60606"
 
         val billingAddress = card.buildJSON()
-            ?.getJSONObject(CREDIT_CARD_KEY)
-            ?.getJSONObject(BILLING_ADDRESS_KEY)
+                .getJSONObject(CREDIT_CARD_KEY)
+                .getJSONObject(BILLING_ADDRESS_KEY)
 
-        billingAddress?.let {
-            assertFalse(billingAddress.has("firstName"))
-            assertFalse(billingAddress.has("lastName"))
-            assertFalse(billingAddress.has("company"))
-            assertFalse(billingAddress.has("streetAddress"))
-            assertFalse(billingAddress.has("extendedAddress"))
-            assertFalse(billingAddress.has("locality"))
-            assertEquals("60606", billingAddress.getString("postalCode"))
-            assertFalse(billingAddress.has("region"))
-            assertFalse(billingAddress.has("countryCode"))
-            assertFalse(billingAddress.has("countryName"))
-            assertFalse(billingAddress.has("countryCodeAlpha2"))
-            assertFalse(billingAddress.has("countryCodeAlpha3"))
-            assertFalse(billingAddress.has("countryCodeNumeric"))
-        }
+        assertFalse(billingAddress.has("firstName"))
+        assertFalse(billingAddress.has("lastName"))
+        assertFalse(billingAddress.has("company"))
+        assertFalse(billingAddress.has("streetAddress"))
+        assertFalse(billingAddress.has("extendedAddress"))
+        assertFalse(billingAddress.has("locality"))
+        assertEquals("60606", billingAddress.getString("postalCode"))
+        assertFalse(billingAddress.has("region"))
+        assertFalse(billingAddress.has("countryCode"))
+        assertFalse(billingAddress.has("countryName"))
+        assertFalse(billingAddress.has("countryCodeAlpha2"))
+        assertFalse(billingAddress.has("countryCodeAlpha3"))
+        assertFalse(billingAddress.has("countryCodeNumeric"))
     }
 
     @Test
@@ -163,13 +156,10 @@ class CardUnitTest {
         val card = Card()
 
         val metadata = card.buildJSON()
-            ?.getJSONObject(MetadataBuilder.META_KEY)
+                .getJSONObject(MetadataBuilder.META_KEY)
 
-        metadata?.let {
-            assertEquals("custom", metadata.getString("integration"))
-            assertEquals("form", metadata.getString("source"))
-        }
-
+        assertEquals("custom", metadata.getString("integration"))
+        assertEquals("form", metadata.getString("source"))
     }
 
     @Test
@@ -178,18 +168,18 @@ class CardUnitTest {
         val card = Card()
         val jsonObject = card.buildJSON()
 
-        assertEquals("form", jsonObject?.getJSONObject("_meta")?.getString("source"))
+        assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun buildJSON_setsCardSource() {
         val card = Card()
-        card.source = "form"
+        card.setSource("form")
 
         val jsonObject = card.buildJSON()
 
-        assertEquals("form", jsonObject?.getJSONObject("_meta")?.getString("source"))
+        assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"))
     }
 
 
@@ -197,20 +187,20 @@ class CardUnitTest {
     @Throws(JSONException::class)
     fun buildJSON_setsIntegrationMethod() {
         val card = Card()
-        card.integration = "test-integration"
+        card.setIntegration("test-integration")
 
-        val metadata = card.buildJSON()?.getJSONObject(MetadataBuilder.META_KEY)
+        val metadata = card.buildJSON().getJSONObject(MetadataBuilder.META_KEY)
 
-        assertEquals("test-integration", metadata?.getString("integration"))
+        assertEquals("test-integration", metadata.getString("integration"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun buildJSON_whenValidateIsNotSet_defaultsToFalse() {
         val card = Card()
-        val json = card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)
+        val json = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
-        assertFalse(json?.getJSONObject("options")?.getBoolean("validate") == true)
+        assertFalse(json.getJSONObject("options").getBoolean("validate"))
     }
 
     @Test
@@ -219,9 +209,9 @@ class CardUnitTest {
         val card = Card()
         card.shouldValidate = true
 
-        val json = card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)
+        val json = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
-        assertTrue(json?.getJSONObject("options")?.getBoolean("validate") == true)
+        assertTrue(json.getJSONObject("options").getBoolean("validate"))
     }
 
     @Test
@@ -230,9 +220,9 @@ class CardUnitTest {
         val card = Card()
         card.shouldValidate = false
 
-        val builtCard = card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)
+        val builtCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
-        assertFalse(builtCard?.getJSONObject("options")?.getBoolean("validate") == true)
+        assertFalse(builtCard.getJSONObject("options").getBoolean("validate"))
     }
 
     @Test
@@ -256,9 +246,9 @@ class CardUnitTest {
         card.region = ""
         card.countryCode = ""
 
-        assertEquals(1, card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)?.length())
-        assertTrue(card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)?.has("options") == true)
-        assertFalse(card.buildJSON()?.has(BILLING_ADDRESS_KEY) == true)
+        assertEquals(1, card.buildJSON().getJSONObject(CREDIT_CARD_KEY).length())
+        assertTrue(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).has("options"))
+        assertFalse(card.buildJSON().has(BILLING_ADDRESS_KEY))
     }
 
     @Test
@@ -270,8 +260,8 @@ class CardUnitTest {
 
         val json = card.buildJSON()
 
-        assertTrue(json?.getBoolean("authenticationInsight") == true)
-        assertEquals("merchant_account_id", json?.getString("merchantAccountId"))
+        assertTrue(json.getBoolean("authenticationInsight"))
+        assertEquals("merchant_account_id", json.getString("merchantAccountId"))
     }
 
     @Test
@@ -282,7 +272,7 @@ class CardUnitTest {
 
         val json = card.buildJSON()
 
-        assertFalse(json?.has("authenticationInsight") == true)
+        assertFalse(json.has("authenticationInsight"))
     }
 
     @Test
@@ -306,18 +296,18 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.integration = "test-integration"
-        card.source = "test-source"
-        card.sessionId = "test-session-id"
+        card.setIntegration("test-integration")
+        card.setSource("test-source")
+        card.setSessionId("test-session-id")
 
         val json = card.buildJSONForGraphQL()
         val jsonCard = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
-            .getJSONObject(GraphQLConstants.Keys.INPUT)
-            .getJSONObject(BaseCard.CREDIT_CARD_KEY)
+                .getJSONObject(GraphQLConstants.Keys.INPUT)
+                .getJSONObject(BaseCard.CREDIT_CARD_KEY)
         val jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY)
         val jsonOptions = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
-            .getJSONObject(GraphQLConstants.Keys.INPUT)
-            .getJSONObject(PaymentMethod.OPTIONS_KEY)
+                .getJSONObject(GraphQLConstants.Keys.INPUT)
+                .getJSONObject(PaymentMethod.OPTIONS_KEY)
         val jsonMetadata = json.getJSONObject("clientSdkMetadata")
 
         assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED, json.getString(GraphQLConstants.Keys.QUERY))
@@ -393,7 +383,7 @@ class CardUnitTest {
     @Throws(Exception::class)
     fun buildJSONForGraphQL_setsCardSource() {
         val card = Card()
-        card.source = "test-source"
+        card.setSource("test-source")
 
         val json = card.buildJSONForGraphQL()
 
@@ -404,7 +394,7 @@ class CardUnitTest {
     @Throws(Exception::class)
     fun buildJSONForGraphQL_setsIntegrationMethod() {
         val card = Card()
-        card.integration = "test-integration"
+        card.setIntegration("test-integration")
 
         val json = card.buildJSONForGraphQL()
 
@@ -543,10 +533,10 @@ class CardUnitTest {
         val card = Card()
         card.expirationDate = "01/15"
 
-        val jsonCard = card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)
+        val jsonCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
-        assertEquals("01", jsonCard?.getString("expirationMonth"))
-        assertEquals("15", jsonCard?.getString("expirationYear"))
+        assertEquals("01", jsonCard.getString("expirationMonth"))
+        assertEquals("15", jsonCard.getString("expirationYear"))
     }
 
     @Test
@@ -555,10 +545,10 @@ class CardUnitTest {
         val card = Card()
         card.expirationDate = "01/2015"
 
-        val jsonCard = card.buildJSON()?.getJSONObject(CREDIT_CARD_KEY)
+        val jsonCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
-        assertEquals("01", jsonCard?.getString("expirationMonth"))
-        assertEquals("2015", jsonCard?.getString("expirationYear"))
+        assertEquals("01", jsonCard.getString("expirationMonth"))
+        assertEquals("2015", jsonCard.getString("expirationYear"))
     }
 
     @Test
@@ -582,9 +572,9 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.integration = "test-integration"
-        card.source = "test-source"
-        card.sessionId = "test-session-id"
+        card.setIntegration("test-integration")
+        card.setSource("test-source")
+        card.setSessionId("test-session-id")
 
         val parcel = Parcel.obtain()
         card.writeToParcel(parcel, 0)
