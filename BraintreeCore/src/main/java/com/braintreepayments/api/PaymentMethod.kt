@@ -63,7 +63,8 @@ abstract class PaymentMethod {
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun setSessionId(sessionId: String) {
+    fun setSessionId(sessionId: String?) {
+        // TODO: require session id in constructor to eliminate the possibility of a null value
         _sessionId = sessionId
     }
 
