@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* DataCollector
+  * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
 * GooglePay
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
 
