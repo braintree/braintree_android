@@ -64,15 +64,15 @@ open class ErrorWithResponse : Exception, Parcelable {
      * @return [BraintreeError] for the field searched, or `null` if not found.
      */
     fun errorFor(field: String): BraintreeError? {
-        fieldErrors?.let { fieldErrors ->
-            for (error in fieldErrors) {
-                if (error.field == field) {
-                    return error
-                } else if (error.fieldErrors != null) {
-                    val returnError = error.errorFor(field)
-                    if (returnError != null) {
-                        return returnError
-                    }
+        if (fieldErrors == null) return null
+
+        for (error in fieldErrors!!) {
+            if (error.field == field) {
+                return error
+            } else if (error.fieldErrors != null) {
+                val returnError = error.errorFor(field)
+                if (returnError != null) {
+                    return returnError
                 }
             }
         }

@@ -35,17 +35,12 @@ open class BraintreeError : Parcelable {
      * @return [BraintreeError] for the field searched, or `null` if not found.
      */
     open fun errorFor(field: String): BraintreeError? {
-        var returnError: BraintreeError?
-        if (fieldErrors != null) {
-            for (error in fieldErrors!!) {
-                if (error.field == field) {
-                    return error
-                } else if (error.fieldErrors != null) {
-                    returnError = error.errorFor(field)
-                    if (returnError != null) {
-                        return returnError
-                    }
-                }
+        if (fieldErrors == null) return null
+        for (error in fieldErrors!!) {
+            if (error.field == field) {
+                return error
+            } else if (error.fieldErrors != null) {
+                error.errorFor(field)?.let { return it }
             }
         }
         return null
