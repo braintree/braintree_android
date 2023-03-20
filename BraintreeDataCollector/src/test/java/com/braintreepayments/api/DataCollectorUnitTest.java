@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.TestConfigurationBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
@@ -40,7 +42,7 @@ public class DataCollectorUnitTest {
                 .buildConfiguration();
         kountDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
 
-        context = mock(Context.class);
+        context = ApplicationProvider.getApplicationContext();
         payPalDataCollector = mock(PayPalDataCollector.class);
         kountDataCollector = mock(KountDataCollector.class);
         uuidHelper = mock(UUIDHelper.class);
