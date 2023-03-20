@@ -211,6 +211,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         dest.writeParcelable(billingAddress, flags);
         dest.writeParcelable(shippingAddress, flags);
         dest.writeParcelable(binData, flags);
+        dest.writeByte(isNetworkTokenized ? (byte) 1 : (byte) 0);
     }
 
     private GooglePayCardNonce(Parcel in) {
@@ -222,6 +223,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         billingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         binData = in.readParcelable(BinData.class.getClassLoader());
+        isNetworkTokenized = in.readByte() > 0;
     }
 
     public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {

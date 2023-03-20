@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+  * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
+
 ## 4.26.1
 
 * BraintreeDataCollector

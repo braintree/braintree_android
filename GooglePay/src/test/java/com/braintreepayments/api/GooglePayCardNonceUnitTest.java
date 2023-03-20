@@ -105,6 +105,7 @@ public class GooglePayCardNonceUnitTest {
         assertEquals("11", parceled.getLastTwo());
         assertEquals("1234", parceled.getLastFour());
         assertEquals("android-user@example.com", parceled.getEmail());
+        assertTrue(parceled.isNetworkTokenized());
         assertPostalAddress(billingPostalAddress, parceled.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, parceled.getShippingAddress());
 
