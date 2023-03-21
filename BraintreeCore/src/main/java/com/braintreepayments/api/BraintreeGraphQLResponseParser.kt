@@ -22,32 +22,31 @@ internal class BraintreeGraphQLResponseParser @VisibleForTesting constructor(
     override fun parse(responseCode: Int, connection: HttpURLConnection): String {
         val response = baseParser.parse(responseCode, connection)
         val errors = JSONObject(response).optJSONArray(GraphQLConstants.Keys.ERRORS)
-        if (errors != null) {
-            for (i in 0 until errors.length()) {
-                val error = errors.getJSONObject(i)
-                val extensions = error.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
-                val message = Json.optString(
-                    error,
-                    GraphQLConstants.Keys.MESSAGE,
-                    "An Unexpected Exception Occurred"
-                )
-                if (extensions == null) {
-                    throw UnexpectedException(message)
-                }
+        if (errors == null) response
 
-                val legacyCode =
-                    Json.optString(extensions, GraphQLConstants.Keys.LEGACY_CODE, "")
-                val errorType =
-                    Json.optString(extensions, GraphQLConstants.Keys.ERROR_TYPE, "")
-
-                if (legacyCode == GraphQLConstants.LegacyErrorCodes.VALIDATION_NOT_ALLOWED) {
-                    throw AuthorizationException(error.getString(GraphQLConstants.Keys.MESSAGE))
-                } else if (errorType != GraphQLConstants.ErrorTypes.USER) {
-                    throw UnexpectedException(message)
-                }
+        for (i in 0 until errors!!.length()) {
+            val error = errors!!.getJSONObject(i)
+            val extensions = error.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
+            val message = Json.optString(
+                error,
+                GraphQLConstants.Keys.MESSAGE,
+                "An Unexpected Exception Occurred"
+            )
+            if (extensions == null) {
+                throw UnexpectedException(message)
             }
-            throw ErrorWithResponse.fromGraphQLJson(response)
+
+            val legacyCode =
+                Json.optString(extensions, GraphQLConstants.Keys.LEGACY_CODE, "")
+            val errorType =
+                Json.optString(extensions, GraphQLConstants.Keys.ERROR_TYPE, "")
+
+            if (legacyCode == GraphQLConstants.LegacyErrorCodes.VALIDATION_NOT_ALLOWED) {
+                throw AuthorizationException(error.getString(GraphQLConstants.Keys.MESSAGE))
+            } else if (errorType != GraphQLConstants.ErrorTypes.USER) {
+                throw UnexpectedException(message)
+            }
         }
-        return response
+        throw ErrorWithResponse.fromGraphQLJson(response)
     }
 }
