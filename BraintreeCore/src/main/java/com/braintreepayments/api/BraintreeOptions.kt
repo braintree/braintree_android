@@ -2,7 +2,7 @@ package com.braintreepayments.api
 
 import android.content.Context
 
-data class BraintreeOptions(
+internal data class BraintreeOptions(
     val context: Context,
     val sessionId: String = createUniqueSessionId(),
     val returnUrlScheme: String = createDefaultReturnUrlScheme(context),
