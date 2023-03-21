@@ -22,7 +22,7 @@ internal class BraintreeGraphQLResponseParser @VisibleForTesting constructor(
     override fun parse(responseCode: Int, connection: HttpURLConnection): String {
         val response = baseParser.parse(responseCode, connection)
         val errors = JSONObject(response).optJSONArray(GraphQLConstants.Keys.ERRORS)
-        if (errors == null) response
+        if (errors == null) return response
 
         for (i in 0 until errors!!.length()) {
             val error = errors!!.getJSONObject(i)
