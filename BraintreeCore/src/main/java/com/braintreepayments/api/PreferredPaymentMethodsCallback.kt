@@ -5,7 +5,7 @@ package com.braintreepayments.api
  * This interface is currently in beta and may be removed in future releases.
  * @hide
  */
-interface PreferredPaymentMethodsCallback {
+fun interface PreferredPaymentMethodsCallback {
     /**
      * @param preferredPaymentMethodsResult [PreferredPaymentMethodsResult]
      */

@@ -9,7 +9,8 @@ import androidx.annotation.VisibleForTesting
  * Used to determine which payment methods are given preference in your UI,
  * not whether they are presented entirely.
  * This class is currently in beta and may be removed in future releases.
- * @hide
+ *
+ * @suppress
  */
 open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient, private val deviceInspector: DeviceInspector
