@@ -7,7 +7,7 @@ import androidx.annotation.RestrictTo
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-fun interface HttpResponseCallback {
+interface HttpResponseCallback {
 
     @MainThread
     fun onResult(responseBody: String?, httpError: Exception?)

@@ -29,22 +29,25 @@ internal class ConfigurationLoader internal constructor(
         cachedConfig?.let {
             callback.onResult(cachedConfig, null)
         } ?: run {
-            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES) { responseBody, httpError ->
-                responseBody?.let {
-                    try {
-                        val configuration = Configuration.fromJson(it)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
-                        callback.onResult(configuration, null)
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException)
+            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES,
+                object : HttpResponseCallback {
+                    override fun onResult(responseBody: String?, httpError: Exception?) {
+                        responseBody?.let {
+                            try {
+                                val configuration = Configuration.fromJson(it)
+                                saveConfigurationToCache(configuration, authorization, configUrl)
+                                callback.onResult(configuration, null)
+                            } catch (jsonException: JSONException) {
+                                callback.onResult(null, jsonException)
+                            }
+                        } ?: httpError?.let { error ->
+                            val errorMessageFormat = "Request for configuration has failed: %s"
+                            val errorMessage = String.format(errorMessageFormat, error.message)
+                            val configurationException = ConfigurationException(errorMessage, error)
+                            callback.onResult(null, configurationException)
+                        }
                     }
-                } ?: httpError?.let { error ->
-                    val errorMessageFormat = "Request for configuration has failed: %s"
-                    val errorMessage = String.format(errorMessageFormat, error.message)
-                    val configurationException = ConfigurationException(errorMessage, error)
-                    callback.onResult(null, configurationException)
-                }
-            }
+                })
         }
     }
 
