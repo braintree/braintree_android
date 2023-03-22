@@ -17,7 +17,6 @@ import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitRequest;
 
-import java.math.BigInteger;
 import java.util.UUID;
 
 public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectDebitListener {
@@ -50,7 +49,7 @@ public class SEPADirectDebitFragment extends BaseFragment implements SEPADirectD
         SEPADirectDebitRequest request = new SEPADirectDebitRequest();
         request.setAccountHolderName("John Doe");
         request.setCustomerId(generateRandomCustomerId());
-        request.setIban("FR7618106000321234566666608");
+        request.setIban(SEPADirectDebitTestHelper.generateSandboxIBAN());
         request.setMandateType(SEPADirectDebitMandateType.RECURRENT);
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("EUR-sepa-direct-debit");

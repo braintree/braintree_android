@@ -294,6 +294,8 @@ jobs:
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
           ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
           ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
+          ./gradlew dokkaHtmlMultiModule
+          git add -A
           git commit -am 'Release ${{ github.event.inputs.version }}'
           git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
 

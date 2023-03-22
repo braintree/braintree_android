@@ -48,7 +48,7 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         }
 
         JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());
+        experienceProfile.put(NO_SHIPPING_KEY, true);
         String displayName = getDisplayName();
         if (TextUtils.isEmpty(displayName)) {
             displayName = configuration.getPayPalDisplayName();
@@ -58,6 +58,7 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         if (getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, getLocaleCode());
         }
+        experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
 
         if (getMerchantAccountId() != null) {
             parameters.put(MERCHANT_ACCOUNT_ID, getMerchantAccountId());
@@ -87,7 +88,7 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         return 0;
     }
 
-    public static final Creator<PayPalNativeCheckoutVaultRequest> CREATOR = new Creator<PayPalNativeCheckoutVaultRequest>() {
+    public static final Creator<PayPalNativeCheckoutVaultRequest> CREATOR = new Creator<>() {
         @Override
         public PayPalNativeCheckoutVaultRequest createFromParcel(Parcel in) {
             return new PayPalNativeCheckoutVaultRequest(in);

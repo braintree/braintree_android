@@ -16,7 +16,7 @@ class Json {
      * @return {@link String}
      */
     static String optString(JSONObject json, String name, String fallback) {
-        if (json.isNull(name)) {
+        if (json == null || json.isNull(name)) {
             return fallback;
         } else {
             return json.optString(name, fallback);

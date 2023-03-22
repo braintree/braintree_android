@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
 }
@@ -36,7 +37,7 @@ android {
 
 dependencies {
     implementation deps.annotation
-    implementation deps.securityCrypto
+    implementation deps.kotlinStdLib
 
     testImplementation deps.junit
     testImplementation deps.androidxTestCore
@@ -55,17 +56,6 @@ dependencies {
 }
 
 // region signing and publishing
-
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    failOnError false
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
 
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -95,7 +85,6 @@ afterEvaluate {
                 from components.release
 
                 artifact sourcesJar
-                artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'shared-utils'

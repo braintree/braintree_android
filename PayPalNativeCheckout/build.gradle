@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
 }
@@ -37,7 +39,7 @@ dependencies {
     implementation deps.appCompat
     implementation project(':PayPalDataCollector')
 
-    implementation('com.paypal.checkout:android-sdk:0.8.7') {
+    implementation('com.paypal.checkout:android-sdk:0.8.8') {
         exclude group: 'com.paypal.android.sdk', module: 'data-collector'
     }
 
@@ -52,17 +54,6 @@ dependencies {
 }
 
 // region signing and publishing
-
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    failOnError false
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
 
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -92,7 +83,6 @@ afterEvaluate {
                 from components.release
 
                 artifact sourcesJar
-                artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'paypal-native-checkout'

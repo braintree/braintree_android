@@ -65,10 +65,10 @@ class PayPalLifecycleObserver implements LifecycleEventObserver {
                         }
 
                         BrowserSwitchResult pendingResultFromCache =
-                                payPalClient.getBrowserSwitchResultFromCache(finalActivity);
+                                payPalClient.getBrowserSwitchResultFromNewTask(finalActivity);
                         if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == PAYPAL) {
                             resultToDeliver =
-                                    payPalClient.deliverBrowserSwitchResultFromCache(finalActivity);
+                                    payPalClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
                         }
 
                         if (resultToDeliver != null) {

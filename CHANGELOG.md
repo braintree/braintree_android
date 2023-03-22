@@ -1,5 +1,65 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* DataCollector
+  * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
+* GooglePay
+  * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
+
+## 4.26.1
+
+* BraintreeDataCollector
+  * Bump Magnes dependency to version 5.4.0 (fixes #657)
+* PayPal
+  * Fix issue that causes a null pointer exception when `PayPalClient` attempts to notify success or failure when the listener is `null`
+
+## 4.26.0
+
+* PayPalNativeCheckout (BETA)
+
+  * Fixes a bug where an error was not thrown inside `PayPalNativeCheckoutClient` when no PayPal response was received from the API
+
+* BraintreeCore
+  * Add `BraintreeClient#deliverBrowserSwitchResultFromNewTask()` method to allow browser switch results to be captured manually when `BraintreeClient#launchesBrowserSwitchAsNewTask()` is set to true.
+* SharedUtils
+  * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
+  * Deprecate `BraintreeSharedPreferencesException`
+
+## 4.25.2
+
+* BraintreeCore
+  * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
+* SamsungPay
+  * Support legacy `sourceCardLast4` property when parsing Samsung Pay response
+
+## 4.25.1
+
+* SharedUtils
+  * Revert androidx `security-crypto` dependency to `1.1.0-alpha03` (`1.1.0-alpha04` requires a compile target of 33)
+
+## 4.25.0
+
+* SharedUtils
+  * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
+* PayPalNativeCheckout (BETA)
+  * Bump native-checkout version to `0.8.8`
+  * Fix an issue where address override was not being honored in `PayPalNativeCheckoutRequest`
+  * Fixes bug in `PayPalNativeCheckoutAccountNonce` where the `intent` was not being set correctly from the `PayPalNativeCheckoutRequest`
+  * Breaking changes
+    * `PayPalNativeRequest` requires a `returnUrl` to redirect correctly after authentication
+* ThreeDSecure
+  * Apply `Theme.AppCompat` to `ThreeDSecureActivity`
+* SamsungPay
+  * Support legacy `singleUseToken` property when parsing Samsung Pay response (fixes #668)
+
+## 4.24.0
+
+* BraintreeCore
+  * Allow uppercase characters in default return url scheme
+* ThreeDSecure
+  * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
+  
 ## 4.23.1
 
 * ThreeDSecure
@@ -21,7 +81,7 @@
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
 * ThreeDSecure
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
-* Braintree Core
+* BraintreeCore
   * Update pinned certificates used by `BraintreeGraphQLClient` and `BraintreeHttpClient`
 
 ## 4.21.0
@@ -448,6 +508,11 @@
   * Make `TokenizationKey` package-private
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
+
+## 3.20.0
+
+* Bump Cardinal version to `2.2.7-2`
+* Update pinned certificates used by `BraintreeGraphQLHttpClient` and `BraintreeHttpClient`
 
 ## 3.19.0
 

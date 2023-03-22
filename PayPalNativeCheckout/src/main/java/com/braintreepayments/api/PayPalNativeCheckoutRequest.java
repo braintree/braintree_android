@@ -212,6 +212,21 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
             experienceProfile.put(LOCALE_CODE_KEY, getLocaleCode());
         }
 
+        if (getShippingAddressOverride() != null) {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !isShippingAddressEditable());
+
+            PostalAddress shippingAddress = getShippingAddressOverride();
+            parameters.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
+            parameters.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            parameters.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
+            parameters.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
+            parameters.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            parameters.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
+            parameters.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+        } else {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
+        }
+
         if (getMerchantAccountId() != null) {
             parameters.put(MERCHANT_ACCOUNT_ID, getMerchantAccountId());
         }

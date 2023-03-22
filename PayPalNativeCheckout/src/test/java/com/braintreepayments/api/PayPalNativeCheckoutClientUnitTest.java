@@ -18,6 +18,8 @@ import com.paypal.checkout.approve.OnApprove;
 import com.paypal.checkout.cancel.OnCancel;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.config.SettingsConfig;
+import com.paypal.checkout.config.UIConfig;
 import com.paypal.checkout.error.OnError;
 import com.paypal.checkout.shipping.OnShippingChange;
 import com.paypal.pyplcheckout.common.instrumentation.PEnums;
@@ -25,16 +27,23 @@ import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest( { PayPalCheckout.class, PLog.class })
+@RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
+@PrepareForTest({PayPalCheckout.class, PLog.class})
 public class PayPalNativeCheckoutClientUnitTest {
+
+    @Rule
+    public PowerMockRule powerMockRule = new PowerMockRule();
 
     private FragmentActivity activity;
     private PayPalNativeCheckoutListener listener;
@@ -92,7 +101,6 @@ public class PayPalNativeCheckoutClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(payPalEnabledConfig)
-                .canPerformBrowserSwitch(true)
                 .build();
         PowerMockito.mockStatic(PayPalCheckout.class);
         PowerMockito.mockStatic(PLog.class);
@@ -118,6 +126,27 @@ public class PayPalNativeCheckoutClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.tokenize.succeeded");
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal-native.billing-agreement.started");
+    }
+
+    @Test
+    public void requestNativeCheckout_returnsErrorFromFailedResponse() {
+        PayPalNativeCheckoutVaultRequest payPalVaultRequest = new PayPalNativeCheckoutVaultRequest();
+        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalVaultRequest.setReturnUrl("returnUrl://paypalpay");
+
+        PayPalNativeCheckoutInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .sendRequestError(new Exception())
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalNativeCheckoutClient sut = new PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
+        sut.launchNativeCheckout(activity, payPalVaultRequest);
+
+        verify(listener).onPayPalFailure(any());
     }
 
     @Test
@@ -149,7 +178,15 @@ public class PayPalNativeCheckoutClientUnitTest {
             new CheckoutConfig(
                 activity.getApplication(),
                 payPalEnabledConfig.getPayPalClientId(),
-                Environment.SANDBOX
+                Environment.SANDBOX,
+                null,
+                null,
+                null,
+                new SettingsConfig(),
+                new UIConfig(
+                    false
+                ),
+                "empty"
             )
         );
         OnApprove onApprove = approval -> { };

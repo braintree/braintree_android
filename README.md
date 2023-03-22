@@ -4,7 +4,7 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4 migration guide](v4_MIGRATION_GUIDE.md) for details.
+:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
 
 Braintree's Android SDK is available for Android SDK >= 21.
 
@@ -17,7 +17,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.23.1'
+  implementation 'com.braintreepayments.api:card:4.26.1'
 }
 ```
 
@@ -25,7 +25,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.23.2-SNAPSHOT'
+  implementation 'com.braintreepayments.api:card:4.26.2-SNAPSHOT'
 }
 ```
 

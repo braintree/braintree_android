@@ -71,8 +71,6 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setDisplayName("sample-display-name");
         payPalRequest.setLocaleCode("US");
-        payPalRequest.setShippingAddressRequired(true);
-        payPalRequest.setShippingAddressEditable(true);
         payPalRequest.setShouldOfferCredit(true);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -90,7 +88,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .put("offer_paypal_credit", true)
                 .put("description", "Billing Agreement Description")
                 .put("experience_profile", new JSONObject()
-                        .put("no_shipping", false)
+                        .put("no_shipping", true)
+                        .put("address_override", false)
                         .put("brand_name", "sample-display-name")
                         .put("locale_code", "US"))
                 .put("merchant_account_id", "sample-merchant-account-id");
@@ -160,6 +159,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
                         .put("brand_name", "sample-display-name")
+                        .put("address_override", false)
                         .put("locale_code", "US"))
                 .put("merchant_account_id", "sample-merchant-account-id");
 

@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 /**
  * {@link PaymentMethodNonce} representing a Samsung Pay card.
+ *
  * @see PaymentMethodNonce
  */
 public class SamsungPayNonce extends PaymentMethodNonce {
@@ -22,15 +24,25 @@ public class SamsungPayNonce extends PaymentMethodNonce {
         JSONObject data = new JSONObject(inputJson.getString("data"));
         JSONObject braintreeData = new JSONObject(data.getString("data"));
 
-        JSONObject paymentMethod = braintreeData
-                .getJSONObject("tokenizeSamsungPayCard")
-                .getJSONObject("paymentMethod");
+        JSONObject tokenizeSamsungPayResponse =
+            braintreeData.getJSONObject("tokenizeSamsungPayCard");
+
+        JSONObject paymentMethod = tokenizeSamsungPayResponse.optJSONObject("paymentMethod");
+        if (paymentMethod == null) {
+            // fallback to single use token key; throws when fallback not present
+            paymentMethod = tokenizeSamsungPayResponse.getJSONObject("singleUseToken");
+        }
 
         String nonce = paymentMethod.getString("id");
 
         JSONObject details = paymentMethod.getJSONObject("details");
         String cardType = details.getString("brand");
-        String last4 = details.getString("last4");
+
+        String last4 = details.optString("last4");
+        if (TextUtils.isEmpty(last4)) {
+            // fallback to source card last 4; throws when fallback not present
+            last4 = details.getString("sourceCardLast4");
+        }
 
         // This is a hack to get around the mismatch between the GraphQL API version used in
         // the Braintree Android SDK and the API version used by Samsung to tokenize. Samsung's

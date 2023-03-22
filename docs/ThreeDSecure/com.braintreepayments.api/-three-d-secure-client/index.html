@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ThreeDSecureClient</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>braintree_android</span>            </a>    </div>
+    <div>4.26.1
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="ThreeDSecure::com.braintreepayments.api/ThreeDSecureClient///PointingToDeclaration//-182276970">
+  <div class="breadcrumbs"><a href="../../index.html">ThreeDSecure</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api</a><span class="delimiter">/</span><span class="current">ThreeDSecureClient</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Client</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ThreeDSecureClient</a></div><p class="paragraph">3D Secure is a protocol that enables cardholders and issuers to add a layer of security to e-commerce transactions via password entry at checkout. </p><p class="paragraph"> One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the merchant to the issuer, which may result in interchange savings. Please read our online <a href="https://developer.paypal.com/braintree/docs/guides/3d-secure/overview">documentation</a> for a full explanation of 3D Secure.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section-body">
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="724176746%2FConstructors%2F-182276970" anchor-label="ThreeDSecureClient" id="724176746%2FConstructors%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-three-d-secure-client.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="724176746%2FConstructors%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-three-d-secure-client.html"><span class="token function">ThreeDSecureClient</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>braintreeClient<span class="token operator">: </span><a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Create a new instance of <a href="index.html">ThreeDSecureClient</a> from within an Activity using a <a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a>.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1585102521%2FConstructors%2F-182276970" anchor-label="ThreeDSecureClient" id="1585102521%2FConstructors%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-three-d-secure-client.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1585102521%2FConstructors%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-three-d-secure-client.html"><span class="token function">ThreeDSecureClient</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>fragment<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/Fragment.html">Fragment</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>braintreeClient<span class="token operator">: </span><a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Create a new instance of <a href="index.html">ThreeDSecureClient</a> from within a Fragment using a <a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a>.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1719274764%2FConstructors%2F-182276970" anchor-label="ThreeDSecureClient" id="-1719274764%2FConstructors%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-three-d-secure-client.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1719274764%2FConstructors%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-three-d-secure-client.html"><span class="token function"><strike>ThreeDSecureClient</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>braintreeClient<span class="token operator">: </span><a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Create a new instance of <a href="index.html">ThreeDSecureClient</a> using a <a href="../../../AmericanExpress/com.braintreepayments.api/-braintree-client/index.html">BraintreeClient</a>.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="2057720454%2FFunctions%2F-182276970" anchor-label="continuePerformVerification" id="2057720454%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="continue-perform-verification.html"><span>continue</span><wbr><span>Perform</span><wbr><span><span>Verification</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2057720454%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="continue-perform-verification.html"><span class="token function">continuePerformVerification</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>result<span class="token operator">: </span><a href="../-three-d-secure-result/index.html">ThreeDSecureResult</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="continue-perform-verification.html"><span class="token function"><strike>continuePerformVerification</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>result<span class="token operator">: </span><a href="../-three-d-secure-result/index.html">ThreeDSecureResult</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Continues the 3DS verification.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1385994476%2FFunctions%2F-182276970" anchor-label="initializeChallengeWithLookupResponse" id="1385994476%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="initialize-challenge-with-lookup-response.html"><span>initialize</span><wbr><span>Challenge</span><wbr><span>With</span><wbr><span>Lookup</span><wbr><span><span>Response</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1385994476%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="initialize-challenge-with-lookup-response.html"><span class="token function">initializeChallengeWithLookupResponse</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>lookupResponse<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="initialize-challenge-with-lookup-response.html"><span class="token function">initializeChallengeWithLookupResponse</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>lookupResponse<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="initialize-challenge-with-lookup-response.html"><span class="token function"><strike>initializeChallengeWithLookupResponse</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>lookupResponse<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="initialize-challenge-with-lookup-response.html"><span class="token function"><strike>initializeChallengeWithLookupResponse</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>lookupResponse<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Initialize a challenge from a server side lookup call.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1009258108%2FFunctions%2F-182276970" anchor-label="onActivityResult" id="1009258108%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="on-activity-result.html"><span>on</span><wbr><span>Activity</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1009258108%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-activity-result.html"><span class="token function"><strike>onActivityResult</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">resultCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>data<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Deprecated.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1718186134%2FFunctions%2F-182276970" anchor-label="onBrowserSwitchResult" id="1718186134%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="on-browser-switch-result.html"><span>on</span><wbr><span>Browser</span><wbr><span>Switch</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1718186134%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-browser-switch-result.html"><span class="token function"><strike>onBrowserSwitchResult</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>browserSwitchResult<span class="token operator">: </span><a href="../../../AmericanExpress/com.braintreepayments.api/-browser-switch-result/index.html">BrowserSwitchResult</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Deprecated.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1247394751%2FFunctions%2F-182276970" anchor-label="performVerification" id="1247394751%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="perform-verification.html"><span>perform</span><wbr><span><span>Verification</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1247394751%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="perform-verification.html"><span class="token function">performVerification</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-result-callback/index.html">ThreeDSecureResultCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Verification is associated with a transaction amount and your merchant account.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-758613414%2FFunctions%2F-182276970" anchor-label="prepareLookup" id="-758613414%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="prepare-lookup.html"><span>prepare</span><wbr><span><span>Lookup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-758613414%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="prepare-lookup.html"><span class="token function">prepareLookup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>request<span class="token operator">: </span><a href="../-three-d-secure-request/index.html">ThreeDSecureRequest</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a>&nbsp;</span>callback<span class="token operator">: </span><a href="../-three-d-secure-prepare-lookup-callback/index.html">ThreeDSecurePrepareLookupCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Creates a stringified JSON object containing the information necessary to perform a lookup</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2103530912%2FFunctions%2F-182276970" anchor-label="setListener" id="2103530912%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="set-listener.html"><span>set</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2103530912%2FFunctions%2F-182276970"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-listener.html"><span class="token function">setListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="../-three-d-secure-listener/index.html">ThreeDSecureListener</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Add a <a href="../-three-d-secure-listener/index.html">ThreeDSecureListener</a> to your client to receive results or errors from the 3DS payment flow.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+

@@ -161,18 +161,19 @@ public class PayPalNativeCheckoutClient {
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
-                        new CheckoutConfig(
-                                activity.getApplication(),
-                                configuration.getPayPalClientId(),
-                                environment,
-                                null,
-                                null,
-                                null,
-                                new SettingsConfig(),
-                                new UIConfig(
-                                        false
-                                )
-                        )
+                    new CheckoutConfig(
+                        activity.getApplication(),
+                        configuration.getPayPalClientId(),
+                        environment,
+                        null,
+                        null,
+                        null,
+                        new SettingsConfig(),
+                        new UIConfig(
+                                false
+                        ),
+                        payPalRequest.getReturnUrl()
+                    )
                 );
 
                 String infoMessage = "BrainTree";
@@ -202,6 +203,8 @@ public class PayPalNativeCheckoutClient {
                         braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.succeeded");
                     }
                 });
+            } else {
+                listener.onPayPalFailure(new Exception(error));
             }
         });
     }
@@ -257,8 +260,8 @@ public class PayPalNativeCheckoutClient {
         payPalAccount.setClientMetadataId(riskId);
         payPalAccount.setSource("paypal-browser");
         payPalAccount.setPaymentType(paymentType);
-        if (approvalData.getCart() != null) {
-            payPalAccount.setIntent(approvalData.getCart().getIntent());
+        if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
+            payPalAccount.setIntent(((PayPalNativeCheckoutRequest) payPalRequest).getIntent());
         }
 
         try {

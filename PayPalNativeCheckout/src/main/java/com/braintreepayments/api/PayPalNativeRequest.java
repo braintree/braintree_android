@@ -19,6 +19,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
     static final String LOCALE_CODE_KEY = "locale_code";
+    static final String ADDRESS_OVERRIDE_KEY = "address_override";
     static final String REQUEST_BILLING_AGREEMENT_KEY = "request_billing_agreement";
     static final String BILLING_AGREEMENT_DETAILS_KEY = "billing_agreement_details";
     static final String DESCRIPTION_KEY = "description";
@@ -76,6 +77,15 @@ public abstract class PayPalNativeRequest implements Parcelable {
      */
     public void setShippingAddressEditable(boolean shippingAddressEditable) {
         this.shippingAddressEditable = shippingAddressEditable;
+    }
+
+    /**
+     * Grabs the shipping address editable field
+     *
+     * @return shippingAddressEditable if the shipping address is editable
+     */
+    public boolean isShippingAddressEditable() {
+        return shippingAddressEditable;
     }
 
     /**
@@ -145,6 +155,15 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
+     * Grabs the override for the shipping address
+     *
+     * @return shippingAddressOverride the shipping address for the order
+     */
+    public PostalAddress getShippingAddressOverride() {
+        return shippingAddressOverride;
+    }
+
+    /**
      * Optional: Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
@@ -172,6 +191,13 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
+    /**
+     * Required: This is required in order for your app to redirect after authentication to the correct
+     * application
+     *
+     * @param returnUrl the client application redirect link
+     * More info: https://developer.paypal.com/limited-release/paypal-mobile-checkout/android/#link-enablethesdk
+     */
     public void setReturnUrl(@NonNull String returnUrl) {
         this.returnUrl = returnUrl;
     }

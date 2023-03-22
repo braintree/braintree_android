@@ -144,13 +144,14 @@ public class ThreeDSecureClient {
                     return;
                 }
 
-                boolean supportsBrowserSwitch = braintreeClient.canPerformBrowserSwitch(activity, THREE_D_SECURE);
-                if (!supportsBrowserSwitch) {
+                try {
+                    braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE);
+                } catch (BrowserSwitchException exception) {
                     braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
                     callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
                             "defines the same browser switch url as this app. See " +
                             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                            "for the correct configuration"));
+                            "for the correct configuration: " + exception.getMessage()));
                     return;
                 }
 
@@ -619,12 +620,12 @@ public class ThreeDSecureClient {
         return braintreeClient.deliverBrowserSwitchResult(activity);
     }
 
-    BrowserSwitchResult getBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromCache(activity);
+    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
     }
 
-    BrowserSwitchResult deliverBrowserSwitchResultFromCache(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromCache(activity);
+    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
     }
 
     // endregion

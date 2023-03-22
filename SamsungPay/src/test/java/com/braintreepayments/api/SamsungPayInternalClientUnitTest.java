@@ -271,7 +271,7 @@ public class SamsungPayInternalClientUnitTest {
     public void startSamsungPay_onSuccess_notifiesListenerOfNonceCreation() {
         CustomSheetPaymentInfo customSheetPaymentInfo = mock(CustomSheetPaymentInfo.class);
         PaymentManager paymentManager = new MockPaymentManagerBuilder()
-                .startInAppPayWithCustomSheetSuccess(customSheetPaymentInfo, Fixtures.SAMSUNG_PAY_RESPONSE)
+                .startInAppPayWithCustomSheetSuccess(customSheetPaymentInfo, Fixtures.SAMSUNG_PAY_RESPONSE_V2)
                 .build();
 
         SamsungPay samsungPay = mock(SamsungPay.class);

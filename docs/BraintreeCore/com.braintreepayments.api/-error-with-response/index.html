@@ -1,0 +1,387 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ErrorWithResponse</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>braintree_android</span>            </a>    </div>
+    <div>4.26.1
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="BraintreeCore::com.braintreepayments.api/ErrorWithResponse///PointingToDeclaration//-162771822">
+  <div class="breadcrumbs"><a href="../../index.html">BraintreeCore</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api</a><span class="delimiter">/</span><span class="current">ErrorWithResponse</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Error</span><wbr><span>With</span><wbr><span><span>Response</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ErrorWithResponse</a> : <a href="https://developer.android.com/reference/kotlin/java/lang/Exception.html">Exception</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">Error container returned when the Braintree server returns a 422 Unprocessible Entity. A 422 occurs when a request is properly formed, but the server was unable to take the requested action due to bad user data. ErrorWithResponse parses the server's error response and exposes the errors.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section-body">
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-1898257014%2FFunctions%2F-162771822" anchor-label="addSuppressed" id="-1898257014%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1898257014%2FFunctions%2F-162771822"><span>add</span><wbr><span><span>Suppressed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1898257014%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1898257014%2FFunctions%2F-162771822"><span class="token function">addSuppressed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">exception<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-2075623767%2FFunctions%2F-162771822" anchor-label="describeContents" id="-2075623767%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="describe-contents.html"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2075623767%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="describe-contents.html"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-124908408%2FFunctions%2F-162771822" anchor-label="errorFor" id="-124908408%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="error-for.html"><span>error</span><wbr><span><span>For</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-124908408%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="error-for.html"><span class="token function">errorFor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">field<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-braintree-error/index.html">BraintreeError</a></div><div class="brief ">Method to extract an error for an individual field, e.g.</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1207709164%2FFunctions%2F-162771822" anchor-label="fillInStackTrace" id="-1207709164%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1207709164%2FFunctions%2F-162771822"><span>fill</span><wbr><span>In</span><wbr><span>Stack</span><wbr><span><span>Trace</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1207709164%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1207709164%2FFunctions%2F-162771822"><span class="token function">fillInStackTrace</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-252564762%2FFunctions%2F-162771822" anchor-label="getCause" id="-252564762%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-252564762%2FFunctions%2F-162771822"><span>get</span><wbr><span><span>Cause</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-252564762%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-252564762%2FFunctions%2F-162771822"><span class="token function">getCause</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1294378309%2FFunctions%2F-162771822" anchor-label="getErrorResponse" id="-1294378309%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="get-error-response.html"><span>get</span><wbr><span>Error</span><wbr><span><span>Response</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1294378309%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-error-response.html"><span class="token function">getErrorResponse</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-2138642817%2FFunctions%2F-162771822" anchor-label="getLocalizedMessage" id="-2138642817%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-2138642817%2FFunctions%2F-162771822"><span>get</span><wbr><span>Localized</span><wbr><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2138642817%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-2138642817%2FFunctions%2F-162771822"><span class="token function">getLocalizedMessage</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1068546184%2FFunctions%2F-162771822" anchor-label="getMessage" id="1068546184%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1068546184%2FFunctions%2F-162771822"><span>get</span><wbr><span><span>Message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1068546184%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1068546184%2FFunctions%2F-162771822"><span class="token function">getMessage</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1238049138%2FFunctions%2F-162771822" anchor-label="getStackTrace" id="-1238049138%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1238049138%2FFunctions%2F-162771822"><span>get</span><wbr><span>Stack</span><wbr><span><span>Trace</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1238049138%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1238049138%2FFunctions%2F-162771822"><span class="token function">getStackTrace</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/StackTraceElement.html">StackTraceElement</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1678506999%2FFunctions%2F-162771822" anchor-label="getSuppressed" id="1678506999%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1678506999%2FFunctions%2F-162771822"><span>get</span><wbr><span><span>Suppressed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1678506999%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1678506999%2FFunctions%2F-162771822"><span class="token function">getSuppressed</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-104903378%2FFunctions%2F-162771822" anchor-label="initCause" id="-104903378%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-104903378%2FFunctions%2F-162771822"><span>init</span><wbr><span><span>Cause</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-104903378%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-104903378%2FFunctions%2F-162771822"><span class="token function">initCause</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cause<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Throwable.html">Throwable</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1357294889%2FFunctions%2F-162771822" anchor-label="printStackTrace" id="-1357294889%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1357294889%2FFunctions%2F-162771822"><span>print</span><wbr><span>Stack</span><wbr><span><span>Trace</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1357294889%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1357294889%2FFunctions%2F-162771822"><span class="token function">printStackTrace</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1146009933%2FFunctions%2F-162771822" anchor-label="setStackTrace" id="-1146009933%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1146009933%2FFunctions%2F-162771822"><span>set</span><wbr><span>Stack</span><wbr><span><span>Trace</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1146009933%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1146009933%2FFunctions%2F-162771822"><span class="token function">setStackTrace</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stackTrace<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/StackTraceElement.html">StackTraceElement</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-495265246%2FFunctions%2F-162771822" anchor-label="toString" id="-495265246%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-495265246%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1723564935%2FFunctions%2F-162771822" anchor-label="writeToParcel" id="-1723564935%2FFunctions%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="write-to-parcel.html"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1723564935%2FFunctions%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="write-to-parcel.html"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dest<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">flags<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="-255210448%2FProperties%2F-162771822" anchor-label="CONTENTS_FILE_DESCRIPTOR" id="-255210448%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-255210448%2FProperties%2F-162771822"><span><span>CONTENTS_FILE_DESCRIPTOR</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-255210448%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="-255210448%2FProperties%2F-162771822" anchor-label="CONTENTS_FILE_DESCRIPTOR" id="-255210448%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="index.html#-255210448%2FProperties%2F-162771822">CONTENTS_FILE_DESCRIPTOR</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="311171008%2FProperties%2F-162771822" anchor-label="CREATOR" id="311171008%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-c-r-e-a-t-o-r.html"><span><span>CREATOR</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="311171008%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="311171008%2FProperties%2F-162771822" anchor-label="CREATOR" id="311171008%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-c-r-e-a-t-o-r.html">CREATOR</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.Creator.html">Parcelable.Creator</a><span class="token operator">&lt;</span><a href="index.html">ErrorWithResponse</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-685718169%2FProperties%2F-162771822" anchor-label="fieldErrors" id="-685718169%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="field-errors.html"><span>field</span><wbr><span><span>Errors</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-685718169%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="-685718169%2FProperties%2F-162771822" anchor-label="fieldErrors" id="-685718169%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="field-errors.html">fieldErrors</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="../-braintree-error/index.html">BraintreeError</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-440990683%2FProperties%2F-162771822" anchor-label="message" id="-440990683%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="message.html"><span><span>message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-440990683%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="-440990683%2FProperties%2F-162771822" anchor-label="message" id="-440990683%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="message.html">message</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-865205281%2FProperties%2F-162771822" anchor-label="PARCELABLE_WRITE_RETURN_VALUE" id="-865205281%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-865205281%2FProperties%2F-162771822"><span><span>PARCELABLE_WRITE_RETURN_VALUE</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-865205281%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="-865205281%2FProperties%2F-162771822" anchor-label="PARCELABLE_WRITE_RETURN_VALUE" id="-865205281%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="index.html#-865205281%2FProperties%2F-162771822">PARCELABLE_WRITE_RETURN_VALUE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-317231441%2FProperties%2F-162771822" anchor-label="statusCode" id="-317231441%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":BraintreeCore:dokkaHtmlPartial/release" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="status-code.html"><span>status</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-317231441%2FProperties%2F-162771822"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":BraintreeCore:dokkaHtmlPartial/release"><a data-name="-317231441%2FProperties%2F-162771822" anchor-label="statusCode" id="-317231441%2FProperties%2F-162771822" data-filterable-set=":BraintreeCore:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="status-code.html">statusCode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+

@@ -1,10 +1,13 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-kapt'
 }
 
-def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
+def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -49,10 +52,15 @@ android {
 
 dependencies {
     implementation deps.appCompat
-    implementation deps.work
+    implementation deps.workKtx
+
+    implementation deps.coreKtx
+    implementation deps.kotlinStdLib
 
     implementation deps.roomRuntime
-    annotationProcessor deps.roomCompiler
+
+    // Ref: https://stackoverflow.com/a/51067251
+    kapt deps.roomCompiler
 
     api deps.browserSwitch
     api project(':SharedUtils')
@@ -76,10 +84,14 @@ dependencies {
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
+    testImplementation deps.mockk
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
+
+    // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
+    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
 }
 
 android.buildTypes.each { type ->
@@ -100,22 +112,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 }
 
 // region signing and publishing
-
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    failOnError false
-
-    // Used to exclude docstrings from public site
-    exclude "com/braintreepayments/api/PreferredPaymentMethods.java"
-    exclude "com/braintreepayments/api/models/PreferredPaymentMethodsResult.java"
-    exclude "com/braintreepayments/api/interfaces/PreferredPaymentMethodsListener.java"
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
 
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -145,7 +141,6 @@ afterEvaluate {
                 from components.release
 
                 artifact sourcesJar
-                artifact javadocsJar
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'braintree-core'

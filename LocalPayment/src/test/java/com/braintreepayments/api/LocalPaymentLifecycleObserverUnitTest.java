@@ -68,8 +68,8 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
-        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
@@ -86,8 +86,8 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(LOCAL_PAYMENT);
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
-        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
-        when(localPaymentClient.deliverBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
@@ -121,7 +121,7 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         LocalPaymentClient localPaymentClient = mock(LocalPaymentClient.class);
-        when(localPaymentClient.getBrowserSwitchResultFromCache(activity)).thenReturn(browserSwitchResult);
+        when(localPaymentClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
 
