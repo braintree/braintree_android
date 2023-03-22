@@ -53,11 +53,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private fun scheduleAnalyticsWrite(
         eventName: String, timestamp: Long, authorization: Authorization
     ) {
-        val inputData = workDataOf(
-            WORK_INPUT_KEY_AUTHORIZATION to authorization.toString(),
-            WORK_INPUT_KEY_EVENT_NAME to eventName,
-            WORK_INPUT_KEY_TIMESTAMP to timestamp
-        )
+        val inputData = Data.Builder()
+            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+            .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
+            .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+            .build()
+
         val analyticsWorkRequest =
             OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
                 .setInputData(inputData)
@@ -87,12 +88,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         sessionId: String?,
         integration: String?
     ): UUID {
-        val inputData = workDataOf(
-            WORK_INPUT_KEY_AUTHORIZATION to authorization.toString(),
-            WORK_INPUT_KEY_CONFIGURATION to configuration.toJson(),
-            WORK_INPUT_KEY_SESSION_ID to sessionId,
-            WORK_INPUT_KEY_INTEGRATION to integration
-        )
+        val inputData = Data.Builder()
+            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+            .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+            .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+            .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+            .build()
+
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
             .setInitialDelay(30, TimeUnit.SECONDS)
             .setInputData(inputData)
