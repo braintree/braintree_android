@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Update paypal-data-collector to 5.4.0
+
 ## 3.20.0
 
 * Bump Cardinal version to `2.2.7-2`
