@@ -13,15 +13,17 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
             sendAnalyticsEvent("card.graphql.tokenization.started")
-            sendGraphQLPOST(tokenizePayload.toString()) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    sendAnalyticsEvent("card.graphql.tokenization.success")
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    sendAnalyticsEvent("card.graphql.tokenization.failure")
-                    callback.onResult(null, error)
+            sendGraphQLPOST(tokenizePayload.toString(), object : HttpResponseCallback {
+                override fun onResult(responseBody: String?, httpError: Exception?) {
+                    parseResponseToJSON(responseBody)?.let { json ->
+                        sendAnalyticsEvent("card.graphql.tokenization.success")
+                        callback.onResult(json, null)
+                    } ?: httpError?.let { error ->
+                        sendAnalyticsEvent("card.graphql.tokenization.failure")
+                        callback.onResult(null, error)
+                    }
                 }
-            }
+            })
         }
 
     fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
@@ -30,15 +32,17 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
             paymentMethod.setSessionId(braintreeClient.sessionId)
 
             sendAnalyticsEvent("card.rest.tokenization.started")
-            sendPOST(url, paymentMethod.buildJSON().toString()) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    sendAnalyticsEvent("card.rest.tokenization.success")
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    sendAnalyticsEvent("card.rest.tokenization.failure")
-                    callback.onResult(null, error)
+            sendPOST(url, paymentMethod.buildJSON().toString(), object : HttpResponseCallback {
+                override fun onResult(responseBody: String?, httpError: Exception?) {
+                    parseResponseToJSON(responseBody)?.let { json ->
+                        sendAnalyticsEvent("card.rest.tokenization.success")
+                        callback.onResult(json, null)
+                    } ?: httpError?.let { error ->
+                        sendAnalyticsEvent("card.rest.tokenization.failure")
+                        callback.onResult(null, error)
+                    }
                 }
-            }
+            })
         }
 
     private fun parseResponseToJSON(responseBody: String?): JSONObject? =

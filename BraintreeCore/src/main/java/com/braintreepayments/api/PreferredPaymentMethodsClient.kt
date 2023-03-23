@@ -52,22 +52,27 @@ open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor
             }
             val query =
                 "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }"
-            braintreeClient.sendGraphQLPOST(query) { responseBody, _ ->
-                if (responseBody != null) {
-                    val result = PreferredPaymentMethodsResult.fromJSON(responseBody, isVenmoAppInstalled)
-                    val payPalPreferredEvent =
-                        "preferred-payment-methods.paypal.api-detected.${result.isPayPalPreferred()}"
-                    braintreeClient.sendAnalyticsEvent(payPalPreferredEvent)
-                    callback.onResult(result)
-                } else {
-                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error")
-                    callback.onResult(
-                        PreferredPaymentMethodsResult()
-                            .isPayPalPreferred(false)
-                            .isVenmoPreferred(isVenmoAppInstalled)
-                    )
+            braintreeClient.sendGraphQLPOST(query, object : HttpResponseCallback {
+                override fun onResult(responseBody: String?, httpError: Exception?) {
+                    if (responseBody != null) {
+                        val result = PreferredPaymentMethodsResult.fromJSON(
+                            responseBody,
+                            isVenmoAppInstalled
+                        )
+                        val payPalPreferredEvent =
+                            "preferred-payment-methods.paypal.api-detected.${result.isPayPalPreferred()}"
+                        braintreeClient.sendAnalyticsEvent(payPalPreferredEvent)
+                        callback.onResult(result)
+                    } else {
+                        braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error")
+                        callback.onResult(
+                            PreferredPaymentMethodsResult()
+                                .isPayPalPreferred(false)
+                                .isVenmoPreferred(isVenmoAppInstalled)
+                        )
+                    }
                 }
-            }
+            })
         })
     }
 }
