@@ -6,10 +6,7 @@
   * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
 * GooglePay
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
-* **Potential Breaking Change**
-  * Update compile options `sourceCompatibility` and `targetCompatibility` to target Java 8 for all modules
-    * We encountered an issue with our Kotlin migration that forces us to target Java 8 before we anticipated
-    * If your project uses Java 8 and above already, no changes are required. If you do target Java 7, please consider upgrading your project to Java 8.
+* *Please note:* This version is dependent on the Java 8 programming language. Please read [Use Java 8 language features](https://developer.android.com/studio/write/java8-support) in the Android developer guide to learn how to use it in your project.
 
 ## 4.26.1
 
