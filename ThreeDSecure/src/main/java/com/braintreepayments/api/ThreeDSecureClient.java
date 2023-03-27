@@ -421,7 +421,6 @@ public class ThreeDSecureClient {
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
         try {
-
             if (observer != null) {
                 observer.launch(result);
             } else {
@@ -436,7 +435,12 @@ public class ThreeDSecureClient {
         } catch (RuntimeException runtimeException) {
             Throwable exceptionCause = runtimeException.getCause();
             if (exceptionCause instanceof TransactionTooLargeException) {
-                callback.onResult(null, (TransactionTooLargeException)exceptionCause);
+                String errorMessage = "The 3D Secure response returned is too large to continue.";
+                BraintreeException threeDSecureResponseTooLargeError =
+                    new BraintreeException(errorMessage, runtimeException);
+                callback.onResult(null, threeDSecureResponseTooLargeError);
+            } else {
+                throw runtimeException;
             }
         }
     }
