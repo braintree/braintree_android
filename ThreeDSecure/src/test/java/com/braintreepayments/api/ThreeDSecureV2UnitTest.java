@@ -460,6 +460,34 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
+    public void continuePerformVerification_withObserverAndRuntimeExceptionThrown_rethrowsException() throws JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("reference-id")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
+        sut.setListener(listener);
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureLifecycleObserver threeDSecureLifecycleObserver = mock(ThreeDSecureLifecycleObserver.class);
+        RuntimeException runtimeException = new RuntimeException("random runtime exception");
+        doThrow(runtimeException).when(threeDSecureLifecycleObserver).launch(threeDSecureResult);
+        sut.observer = threeDSecureLifecycleObserver;
+
+        try {
+            sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+            fail("should not get here");
+        } catch (Exception e) {
+            assertSame(e, runtimeException);
+        }
+    }
+
+    @Test
     public void performVerification_withoutCardinalJWT_postsException() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
