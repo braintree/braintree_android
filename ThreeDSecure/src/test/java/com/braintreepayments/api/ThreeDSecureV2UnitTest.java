@@ -401,7 +401,7 @@ public class ThreeDSecureV2UnitTest {
         assertEquals("The 3D Secure response returned is too large to continue.", braintreeException.getMessage());
     }
 
-    @Test()
+    @Test
     public void continuePerformVerification_whenObserverIsNullAndRuntimeExceptionThrown_rethrowsException() throws JSONException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -427,6 +427,36 @@ public class ThreeDSecureV2UnitTest {
         } catch (Exception e) {
             assertSame(e, runtimeException);
         }
+    }
+    @Test
+    public void continuePerformVerification_withObserverAndTransactionIsTooLarge_callsBackAnException() throws JSONException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("reference-id")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, new ThreeDSecureAPI(braintreeClient));
+        sut.setListener(listener);
+
+        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureLifecycleObserver threeDSecureLifecycleObserver = mock(ThreeDSecureLifecycleObserver.class);
+        TransactionTooLargeException transactionTooLargeException = new TransactionTooLargeException();
+        RuntimeException runtimeException = new RuntimeException(
+                "runtime exception caused by transaction too large", transactionTooLargeException);
+        doThrow(runtimeException).when(threeDSecureLifecycleObserver).launch(threeDSecureResult);
+        sut.observer = threeDSecureLifecycleObserver;
+
+        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        ArgumentCaptor<BraintreeException> captor =
+                ArgumentCaptor.forClass(BraintreeException.class);
+        verify(listener).onThreeDSecureFailure(captor.capture());
+
+        BraintreeException braintreeException = captor.getValue();
+        assertEquals("The 3D Secure response returned is too large to continue.", braintreeException.getMessage());
     }
 
     @Test
