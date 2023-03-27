@@ -6,7 +6,6 @@
   * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
 * GooglePay
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
-* *Please note:* This version is dependent on the Java 8 programming language. Please read [Use Java 8 language features](https://developer.android.com/studio/write/java8-support) in the Android developer guide to learn how to use it in your project.
 
 ## 4.26.1
 
@@ -60,6 +59,7 @@
   * Allow uppercase characters in default return url scheme
 * ThreeDSecure
   * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
+* *Please note:* This version is dependent on the Java 8 programming language. Please read [Use Java 8 language features](https://developer.android.com/studio/write/java8-support) in the Android developer guide to learn how to use it in your project.
   
 ## 4.23.1
 
