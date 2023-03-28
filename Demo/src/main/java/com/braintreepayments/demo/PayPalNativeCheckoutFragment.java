@@ -53,7 +53,6 @@ public class PayPalNativeCheckoutFragment extends Fragment implements PayPalNati
         launchPayPalNativeCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(false));
         launchPayPalNativeVaultCheckoutButton = view.findViewById(R.id.paypal_native_checkout_vault_launch);
         launchPayPalNativeVaultCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(true));
-        braintreeClient = getBraintreeClient();
         braintreeClient = createBraintreeClient(requireContext());
         payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
         payPalClient.setListener(this);
