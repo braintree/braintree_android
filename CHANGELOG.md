@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.20.1
 
 * Update paypal-data-collector to 5.4.0
 
