@@ -6,7 +6,9 @@ Welcome to Braintree's Android SDK. This library will help you accept card and a
 
 :mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
 
-Braintree's Android SDK is available for Android SDK >= 21.
+**The Braintree SDK supports Android API 21 and above.**
+
+> Note: The Braintree SDK requires Java 8 as of version 4.24.0. See the [CHANGELOG](https://github.com/braintree/braintree_android/blob/master/CHANGELOG.md#4240) for more details.
 
 ## Adding It To Your Project
 
@@ -43,7 +45,7 @@ allprojects {
 
 ## Documentation
 
-Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v3) for instructions on basic setup and usage.
+Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v4) for instructions on basic setup and usage.
 
 Next, read the [**full documentation**](https://developer.paypal.com/braintree/docs/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
 
@@ -71,8 +73,8 @@ The Braintree Android SDK is in active development. We welcome your feedback!
 
 Here are a few ways to get in touch:
 
-* [GitHub Issues](https://github.com/braintree/braintree_android/issues) - For generally applicable issues and feedback
-* [Braintree Support](https://articles.braintreepayments.com/) / [support@braintreepayments.com](mailto:support@braintreepayments.com) -
+* [GitHub Issues](https://github.com/braintree/braintree_android/issues/new/choose) - For generally applicable issues and feedback
+* [Braintree Support](https://developer.paypal.com/braintree/articles) / [support@braintreepayments.com](mailto:support@braintreepayments.com) -
 for personal support at any phase of integration
 
 ## License
