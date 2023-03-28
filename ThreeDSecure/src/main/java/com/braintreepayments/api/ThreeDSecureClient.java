@@ -435,7 +435,8 @@ public class ThreeDSecureClient {
         } catch (RuntimeException runtimeException) {
             Throwable exceptionCause = runtimeException.getCause();
             if (exceptionCause instanceof TransactionTooLargeException) {
-                String errorMessage = "The 3D Secure response returned is too large to continue.";
+                String errorMessage = "The 3D Secure response returned is too large to continue. "
+                        + "Please contact Braintree Support for assistance.";
                 BraintreeException threeDSecureResponseTooLargeError =
                     new BraintreeException(errorMessage, runtimeException);
                 callback.onResult(null, threeDSecureResponseTooLargeError);

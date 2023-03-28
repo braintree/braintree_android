@@ -398,7 +398,9 @@ public class ThreeDSecureV2UnitTest {
         verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
 
         BraintreeException braintreeException = captor.getValue();
-        assertEquals("The 3D Secure response returned is too large to continue.", braintreeException.getMessage());
+        String expectedMessage = "The 3D Secure response returned is too large to continue. "
+                + "Please contact Braintree Support for assistance.";
+        assertEquals(expectedMessage, braintreeException.getMessage());
     }
 
     @Test
@@ -456,7 +458,9 @@ public class ThreeDSecureV2UnitTest {
         verify(listener).onThreeDSecureFailure(captor.capture());
 
         BraintreeException braintreeException = captor.getValue();
-        assertEquals("The 3D Secure response returned is too large to continue.", braintreeException.getMessage());
+        String expectedMessage = "The 3D Secure response returned is too large to continue. "
+                + "Please contact Braintree Support for assistance.";
+        assertEquals(expectedMessage, braintreeException.getMessage());
     }
 
     @Test
