@@ -1,6 +1,6 @@
 # Braintree Android SDK
 
-[![Build Status](https://travis-ci.org/braintree/braintree_android.svg?branch=master)](https://travis-ci.org/braintree/braintree_android)
+![GitHub Actions Tests](https://github.com/braintree/braintree_android/workflows/Tests/badge.svg)
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
