@@ -7,7 +7,7 @@
 * GooglePay
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
 * ThreeDSecure
-  * Catch `TransactionTooLargeException' to prevent crash on large data (fixes #642)
+  * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
 
 ## 4.26.1
 
