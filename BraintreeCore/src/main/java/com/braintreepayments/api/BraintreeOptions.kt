@@ -1,13 +1,8 @@
 package com.braintreepayments.api
 
 import android.content.Context
-import androidx.annotation.RestrictTo
 
-/**
- * @suppress
- */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-data class BraintreeOptions(
+internal data class BraintreeOptions(
     val context: Context,
     val sessionId: String? = null,
     val returnUrlScheme: String? = null,
