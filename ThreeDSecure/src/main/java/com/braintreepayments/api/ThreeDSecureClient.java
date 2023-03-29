@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.TransactionTooLargeException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -418,16 +419,30 @@ public class ThreeDSecureClient {
 
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-        if (observer != null) {
-             observer.launch(result);
-        } else {
-            Bundle extras = new Bundle();
-            extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
 
-            Intent intent = new Intent(activity, ThreeDSecureActivity.class);
-            intent.putExtras(extras);
+        try {
+            if (observer != null) {
+                observer.launch(result);
+            } else {
+                Bundle extras = new Bundle();
+                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
 
-            activity.startActivityForResult(intent, THREE_D_SECURE);
+                Intent intent = new Intent(activity, ThreeDSecureActivity.class);
+                intent.putExtras(extras);
+
+                activity.startActivityForResult(intent, THREE_D_SECURE);
+            }
+        } catch (RuntimeException runtimeException) {
+            Throwable exceptionCause = runtimeException.getCause();
+            if (exceptionCause instanceof TransactionTooLargeException) {
+                String errorMessage = "The 3D Secure response returned is too large to continue. "
+                        + "Please contact Braintree Support for assistance.";
+                BraintreeException threeDSecureResponseTooLargeError =
+                    new BraintreeException(errorMessage, runtimeException);
+                callback.onResult(null, threeDSecureResponseTooLargeError);
+            } else {
+                throw runtimeException;
+            }
         }
     }
 

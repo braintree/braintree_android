@@ -6,6 +6,8 @@
   * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
 * GooglePay
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
+* ThreeDSecure
+  * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
 
 ## 4.26.1
 
