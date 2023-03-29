@@ -132,7 +132,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         clientTokenProvider: ClientTokenProvider,
-        sessionId: String,
+        sessionId: String?,
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
@@ -146,7 +146,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: String,
-        sessionId: String,
+        sessionId: String?,
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
