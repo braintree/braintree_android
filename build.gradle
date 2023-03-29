@@ -8,6 +8,8 @@ buildscript {
         jcenter()
     }
 
+    def sdkTargetJavaVersion = JavaVersion.VERSION_1_8
+
     // We are restricted to room version 2.2.6 since we still offer Java 7 support. Upgrading to
     // newer versions of room that require Java 8 will introduce a breaking change to our SDK
     def java7SafeRoomVersion = "2.2.6"
@@ -26,7 +28,9 @@ buildscript {
             "powermockLegacy": "1.7.4",
             // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
             "room"           : roomVersion,
-            "playServices"   : "19.1.0"
+            "playServices"   : "19.1.0",
+            "javaSourceCompatibility": sdkTargetJavaVersion,
+            "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
 
     ext.deps = [
