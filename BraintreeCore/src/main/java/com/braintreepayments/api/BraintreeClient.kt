@@ -128,7 +128,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         clientTokenProvider: ClientTokenProvider,
-        sessionId: String,
+        sessionId: String?,
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
@@ -142,7 +142,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: String,
-        sessionId: String,
+        sessionId: String?,
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
@@ -335,7 +335,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param activity
      * @return [BrowserSwitchResult]
      */
-    fun deliverBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? {
+    open fun deliverBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? {
         return browserSwitchClient.deliverResult(activity)
     }
 
@@ -354,7 +354,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param context
      * @return [BrowserSwitchResult]
      */
-    fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
+    open fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
         return browserSwitchClient.deliverResultFromCache(context)
     }
 
@@ -421,7 +421,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      *
      * For clients not using a [ClientTokenProvider], this method does nothing.
      */
-    fun invalidateClientToken() {
+    open fun invalidateClientToken() {
         authorizationLoader.invalidateClientToken()
     }
 
@@ -441,7 +441,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      *
      * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links. This value is false by default.
      */
-    fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
+    open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 

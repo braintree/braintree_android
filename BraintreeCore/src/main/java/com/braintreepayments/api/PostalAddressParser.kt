@@ -3,6 +3,9 @@ package com.braintreepayments.api
 import androidx.annotation.RestrictTo
 import org.json.JSONObject
 
+/**
+ * @suppress
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object PostalAddressParser {
     const val RECIPIENT_NAME_KEY = "recipientName"

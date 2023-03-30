@@ -24,9 +24,9 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
         authorizationLoader = options.run {
             AuthorizationLoader(initialAuthString, clientTokenProvider)
         },
-        sessionId = options.sessionId,
-        returnUrlScheme = options.returnUrlScheme,
-        integrationType = options.integrationType
+        sessionId = options.sessionId ?: createUniqueSessionId(),
+        returnUrlScheme = options.returnUrlScheme ?: createDefaultReturnUrlScheme(options.context),
+        integrationType = options.integrationType ?: IntegrationType.CUSTOM
     )
 
     val applicationContext: Context = context.applicationContext
@@ -34,8 +34,12 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
         "${getAppPackageNameWithoutUnderscores(context)}.braintree.deeplinkhandler"
 
     companion object {
+        private fun createUniqueSessionId() = UUIDHelper().formattedUUID
 
         private fun getAppPackageNameWithoutUnderscores(context: Context) =
             context.applicationContext.packageName.replace("_", "")
+
+        private fun createDefaultReturnUrlScheme(context: Context) =
+            "${getAppPackageNameWithoutUnderscores(context)}.braintree"
     }
 }

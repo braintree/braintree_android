@@ -8,7 +8,7 @@ import org.json.JSONObject
 /**
  * Contains information about which payment methods are preferred on the device.
  * This class is currently in beta and may be removed in future releases.
- * @hide
+ * @suppress
  */
 open class PreferredPaymentMethodsResult @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor() {
 
