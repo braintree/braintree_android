@@ -226,44 +226,23 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_whenV1AndBrowserSwitchNotSetup_postsException() throws BrowserSwitchException {
+    public void performVerification_whenV1_throwsAnError() {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
                 .build();
 
-        doThrow(new BrowserSwitchException("browser switch error"))
-                .when(braintreeClient).assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE);
-
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        sut.setListener(listener);
         basicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_1);
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
         verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
-        assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
-                "defines the same browser switch url as this app. See " +
-                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                "for the correct configuration: browser switch error", captor.getValue().getMessage());
-    }
 
-    @Test
-    public void performVerification_whenV1AndBrowserSwitchNotSetup_sendsAnalyticEvent() throws BrowserSwitchException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(threeDSecureEnabledConfig)
-                .build();
-        doThrow(new BrowserSwitchException("browser switch error"))
-                .when(braintreeClient).assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.THREE_D_SECURE);
-
-        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, browserSwitchHelper, threeDSecureAPI);
-        basicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_1);
-        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.invalid-manifest");
+        BraintreeException error = captor.getValue();
+        String expectedMessage =
+            "3D Secure v1 is deprecated and no longer supported. See https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 for more information.";
+        assertEquals(expectedMessage, error.getMessage());
     }
 
     @Test
