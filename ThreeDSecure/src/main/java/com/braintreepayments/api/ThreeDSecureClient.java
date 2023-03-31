@@ -146,18 +146,11 @@ public class ThreeDSecureClient {
                 }
 
                 if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
-                    try {
-                        braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE);
-                    } catch (BrowserSwitchException exception) {
-                        braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
-                        callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
-                                "defines the same browser switch url as this app. See " +
-                                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                                "for the correct configuration: " + exception.getMessage()));
-                        return;
-                    }
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
-                    api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
+                    String threeDSecureV1UnsupportedMessage =
+                        "3D Secure v1 is deprecated and no longer supported. See https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 for more information.";
+                    BraintreeException threeDSecureV1UnsupportedError =
+                        new BraintreeException(threeDSecureV1UnsupportedMessage);
+                    callback.onResult(null, threeDSecureV1UnsupportedError);
 
                 } else {
                     // VERSION_2
