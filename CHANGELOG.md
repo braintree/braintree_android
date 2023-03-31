@@ -8,7 +8,7 @@
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
 * ThreeDSecure
   * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
-  * Only check for browser availability when 3DS v1 is used.
+  * Deprecate 3DS v1. Any attempt to use 3DS v1 will now throw an error. See [Migrating to 3D Secure 2](https://developer.paypal.com/braintree/docs/guides/3d-secure/migration) for more information.
 
 ## 4.26.1
 
