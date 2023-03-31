@@ -145,41 +145,42 @@ public class ThreeDSecureClient {
                     return;
                 }
 
-                try {
-                    braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE);
-                } catch (BrowserSwitchException exception) {
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
-                    callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
-                            "defines the same browser switch url as this app. See " +
-                            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                            "for the correct configuration: " + exception.getMessage()));
-                    return;
-                }
-
-                if (configuration.getCardinalAuthenticationJwt() == null && ThreeDSecureRequest.VERSION_2.equals(request.getVersionRequested())) {
-                    callback.onResult(null, new BraintreeException("Merchant is not configured for 3DS 2.0. " +
-                            "Please contact Braintree Support for assistance."));
-                    return;
-                }
-                braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
-
                 if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
-                    api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
-                    return;
-                }
-
-                cardinalClient.initialize(activity, configuration, request, new CardinalInitializeCallback() {
-                    @Override
-                    public void onResult(String consumerSessionId, Exception error) {
-                        if (consumerSessionId != null) {
-                            api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
-                        } else {
-                            api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
-                            braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
-                        }
+                    try {
+                        braintreeClient.assertCanPerformBrowserSwitch(activity, THREE_D_SECURE);
+                    } catch (BrowserSwitchException exception) {
+                        braintreeClient.sendAnalyticsEvent("three-d-secure.invalid-manifest");
+                        callback.onResult(null, new BraintreeException("AndroidManifest.xml is incorrectly configured or another app " +
+                                "defines the same browser switch url as this app. See " +
+                                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                                "for the correct configuration: " + exception.getMessage()));
+                        return;
                     }
-                });
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
+                    api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
+
+                } else {
+                    // VERSION_2
+                    if (configuration.getCardinalAuthenticationJwt() == null) {
+                        callback.onResult(null, new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                                "Please contact Braintree Support for assistance."));
+                        return;
+                    }
+                    braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
+
+                    cardinalClient.initialize(activity, configuration, request, new CardinalInitializeCallback() {
+                        @Override
+                        public void onResult(String consumerSessionId, Exception error) {
+                            if (consumerSessionId != null) {
+                                api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
+                            } else {
+                                api.performLookup(request, cardinalClient.getConsumerSessionId(), callback);
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
+                            }
+                        }
+                    });
+                }
             }
         });
     }
