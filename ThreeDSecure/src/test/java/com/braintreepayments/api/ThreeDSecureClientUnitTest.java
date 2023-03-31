@@ -46,7 +46,6 @@ public class ThreeDSecureClientUnitTest {
     private FragmentActivity activity;
     private ActivityResultRegistry resultRegistry;
     private Lifecycle lifecycle;
-    private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureAPI threeDSecureAPI;
 
     private ThreeDSecureListener listener;
@@ -62,7 +61,6 @@ public class ThreeDSecureClientUnitTest {
         activity = mock(FragmentActivity.class);
         threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
         listener = mock(ThreeDSecureListener.class);
-        browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
         threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
@@ -186,8 +184,6 @@ public class ThreeDSecureClientUnitTest {
                 .configuration(threeDSecureEnabledConfig)
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
                 .build();
-
-        when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setNonce("a-nonce");
