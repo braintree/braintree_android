@@ -8,6 +8,7 @@
   * Fix issue that causes `GooglePayNonce#isNetworkTokenized` to always return `false` after being parceled
 * ThreeDSecure
   * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
+  * Only check for browser availability when 3DS v1 is used.
 
 ## 4.26.1
 
