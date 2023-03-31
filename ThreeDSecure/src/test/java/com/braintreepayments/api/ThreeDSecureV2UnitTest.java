@@ -42,7 +42,6 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureV2UnitTest {
 
     private FragmentActivity activity;
-    private ThreeDSecureV1BrowserSwitchHelper browserSwitchHelper;
     private ThreeDSecureListener listener;
     private Lifecycle lifecycle;
 
@@ -52,7 +51,6 @@ public class ThreeDSecureV2UnitTest {
     @Before
     public void setup() {
         activity = mock(FragmentActivity.class);
-        browserSwitchHelper = mock(ThreeDSecureV1BrowserSwitchHelper.class);
         listener = mock(ThreeDSecureListener.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
@@ -273,7 +271,6 @@ public class ThreeDSecureV2UnitTest {
                 .configuration(threeDSecureEnabledConfig)
                 .returnUrlScheme("sample-return-url://")
                 .build();
-        when(browserSwitchHelper.getUrl(anyString(), anyString(), any(ThreeDSecureRequest.class), any(ThreeDSecureLookup.class))).thenReturn("https://example.com");
 
         ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
