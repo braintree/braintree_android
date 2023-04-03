@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.27.0
 
 * DataCollector
   * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
