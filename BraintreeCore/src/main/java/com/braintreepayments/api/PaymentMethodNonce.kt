@@ -1,8 +1,7 @@
 package com.braintreepayments.api
 
-import android.os.Parcelable
 import android.os.Parcel
-import com.braintreepayments.api.PaymentMethodNonce
+import android.os.Parcelable
 
 /**
  * Base class representing a method of payment for a customer. [PaymentMethodNonce] represents the
