@@ -41,7 +41,7 @@ open class PaymentMethodNonce : Parcelable {
     }
 
     protected constructor(`in`: Parcel) {
-        string = `in`.readString()!!
+        string = `in`.readString() ?: ""
         isDefault = `in`.readByte() > 0
     }
 }
