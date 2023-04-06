@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -118,8 +119,12 @@ public class UnionPayCard extends BaseCard implements Parcelable {
         return payload;
     }
 
+    /**
+     * @hide
+     */
     @Override
-    JSONObject buildJSON() throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = json.getJSONObject(BaseCard.CREDIT_CARD_KEY);

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.braintreepayments.api.GraphQLConstants.Keys;
 
@@ -127,8 +128,12 @@ public class Card extends BaseCard implements Parcelable {
         return shouldValidate;
     }
 
+    /**
+     * @hide
+     */
     @Override
-    JSONObject buildJSON() throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = json.getJSONObject(CREDIT_CARD_KEY);

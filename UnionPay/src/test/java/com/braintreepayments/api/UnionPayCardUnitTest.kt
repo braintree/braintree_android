@@ -89,7 +89,7 @@ class UnionPayCardUnitTest {
         val sut = UnionPayCard()
         sut.smsCode = "mySmsCode"
 
-        val jsonObject = sut.buildJSON()
+        val jsonObject = sut.buildJSON()!!
 
         assertEquals("mySmsCode", jsonObject.getJSONObject("creditCard")
                 .getJSONObject("options")
@@ -103,7 +103,7 @@ class UnionPayCardUnitTest {
         val sut = UnionPayCard()
         sut.enrollmentId = "myEnrollmentId"
 
-        val jsonObject = sut.buildJSON()
+        val jsonObject = sut.buildJSON()!!
 
         assertEquals("myEnrollmentId", jsonObject.getJSONObject("creditCard")
                 .getJSONObject("options")
@@ -133,7 +133,7 @@ class UnionPayCardUnitTest {
         sut.mobilePhoneNumber = ""
         sut.smsCode = ""
 
-        val json = sut.buildJSON()
+        val json = sut.buildJSON()!!
 
         assertEquals("{\"options\":{\"unionPayEnrollment\":{}}}",
                 json.getJSONObject(BaseCard.CREDIT_CARD_KEY).toString())
@@ -181,7 +181,7 @@ class UnionPayCardUnitTest {
         sut.setSessionId("session-id")
         sut.setSource("source")
 
-        val tokenizePayload = sut.buildJSON()
+        val tokenizePayload = sut.buildJSON()!!
         val creditCard = tokenizePayload.getJSONObject("creditCard")
 
         assertEquals("card-number", creditCard.getString("number"))
@@ -201,7 +201,7 @@ class UnionPayCardUnitTest {
     fun build_doesNotIncludeValidate() {
         val unionPayCard = UnionPayCard()
 
-        val unionPayOptions = unionPayCard.buildJSON()
+        val unionPayOptions = unionPayCard.buildJSON()!!
                 .getJSONObject("creditCard")
                 .getJSONObject("options")
 
@@ -219,7 +219,7 @@ class UnionPayCardUnitTest {
         sut.enrollmentId = "enrollmentId"
         sut.smsCode = "smsCode"
 
-        val tokenizePayload = sut.buildJSON()
+        val tokenizePayload = sut.buildJSON()!!
         val creditCardPayload = tokenizePayload.getJSONObject("creditCard")
         val optionsPayload = creditCardPayload.getJSONObject("options")
         val unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment")
@@ -243,7 +243,7 @@ class UnionPayCardUnitTest {
         sut.cvv = "cvv"
         sut.enrollmentId = "enrollmentId"
 
-        val tokenizePayload = sut.buildJSON()
+        val tokenizePayload = sut.buildJSON()!!
         val creditCardPayload = tokenizePayload.getJSONObject("creditCard")
         val optionsPayload = creditCardPayload.getJSONObject("options")
         val unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment")
@@ -264,7 +264,7 @@ class UnionPayCardUnitTest {
         sut.number= "some-card-number"
         sut.cvv = "123"
 
-        val unionPayEnrollmentPayload = sut.buildJSON()
+        val unionPayEnrollmentPayload = sut.buildJSON()!!
 
         assertFalse(unionPayEnrollmentPayload.has("cvv"))
     }
