@@ -3,7 +3,7 @@
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
-    <application android:usesCleartextTraffic="true">
+    <application>
 
         <!--suppress AndroidDomInspection -->
         <activity android:name=".TestActivity" />
