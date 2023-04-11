@@ -22,7 +22,7 @@ buildscript {
     def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
 
     ext.versions = [
-            "kotlin"         : "1.5.32",
+            "kotlin"         : "1.7.20",
             "androidxTest"   : "1.4.0",
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",

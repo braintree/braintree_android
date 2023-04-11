@@ -1,25 +1,24 @@
 package com.braintreepayments.api
 
-import org.robolectric.RobolectricTestRunner
-import android.net.ConnectivityManager
-import android.content.pm.PackageManager
-import org.robolectric.util.ReflectionHelpers
-import android.os.Build.VERSION
-import android.content.pm.ApplicationInfo
-import android.net.NetworkInfo
-import android.content.Intent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
+import android.os.Build.VERSION
 import io.mockk.*
 import org.json.JSONException
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.util.ReflectionHelpers
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)

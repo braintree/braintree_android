@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.collections.ArrayList
 
 /**
  * Contains the remote card configuration for the Braintree SDK.

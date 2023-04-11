@@ -3,8 +3,6 @@ package com.braintreepayments.api
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.BraintreeSharedPreferences
-import com.braintreepayments.api.UUIDHelper
 import java.util.*
 
 /**

@@ -31,7 +31,11 @@ abstract class PaymentMethod {
 
     abstract val apiPath: String?
 
-    internal constructor()
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor()
 
     /**
      * Sets the integration method associated with the tokenization call for analytics use.
