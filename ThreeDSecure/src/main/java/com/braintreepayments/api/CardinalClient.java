@@ -44,7 +44,7 @@ class CardinalClient {
         try {
             Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
         } catch (NullPointerException e) {
-            throw new BraintreeException("Cardinal SDK Error");
+            throw new BraintreeException("Cardinal SDK Error.", e);
         }
     }
 
