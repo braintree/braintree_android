@@ -169,24 +169,19 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param callback [ConfigurationCallback]
      */
     open fun getConfiguration(callback: ConfigurationCallback) {
-        getAuthorization(object : AuthorizationCallback {
-            override fun onAuthorizationResult(authorization: Authorization?, authError: Exception?) {
-                if (authorization != null) {
-                    configurationLoader.loadConfiguration(authorization,
-                        object : ConfigurationLoaderCallback {
-                            override fun onResult(configuration: Configuration?, configError: Exception?) {
-                                if (configuration != null) {
-                                    callback.onResult(configuration, null)
-                                } else {
-                                    callback.onResult(null, configError)
-                                }
-                            }
-                        })
-                } else {
-                    callback.onResult(null, authError)
+        getAuthorization { authorization, authError ->
+            if (authorization != null) {
+                configurationLoader.loadConfiguration(authorization) { configuration, configError ->
+                    if (configuration != null) {
+                        callback.onResult(configuration, null)
+                    } else {
+                        callback.onResult(null, configError)
+                    }
                 }
+            } else {
+                callback.onResult(null, authError)
             }
-        })
+        }
     }
 
     /**
@@ -202,15 +197,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(eventName: String) {
-        getAuthorization(object : AuthorizationCallback {
-            override fun onAuthorizationResult(authorization: Authorization?, error: Exception?) {
-                if (authorization != null) {
-                    getConfiguration { configuration, _ ->
-                        sendAnalyticsEvent(eventName, configuration, authorization)
-                    }
+        getAuthorization { authorization, _ ->
+            if (authorization != null) {
+                getConfiguration { configuration, _ ->
+                    sendAnalyticsEvent(eventName, configuration, authorization)
                 }
             }
-        })
+        }
     }
 
     private fun sendAnalyticsEvent(
@@ -234,21 +227,19 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        getAuthorization(object : AuthorizationCallback {
-            override fun onAuthorizationResult(authorization: Authorization?, authError: Exception?) {
-                if (authorization != null) {
-                    getConfiguration { configuration, configError ->
-                        if (configuration != null) {
-                            httpClient.get(url, configuration, authorization, responseCallback)
-                        } else {
-                            responseCallback.onResult(null, configError)
-                        }
+        getAuthorization { authorization, authError ->
+            if (authorization != null) {
+                getConfiguration { configuration, configError ->
+                    if (configuration != null) {
+                        httpClient.get(url, configuration, authorization, responseCallback)
+                    } else {
+                        responseCallback.onResult(null, configError)
                     }
-                } else {
-                    responseCallback.onResult(null, authError)
                 }
+            } else {
+                responseCallback.onResult(null, authError)
             }
-        })
+        }
     }
 
     /**
@@ -256,27 +247,25 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
-        getAuthorization(object : AuthorizationCallback {
-            override fun onAuthorizationResult(authorization: Authorization?, authError: Exception?) {
-                if (authorization != null) {
-                    getConfiguration { configuration, configError ->
-                        if (configuration != null) {
-                            httpClient.post(
-                                url,
-                                data,
-                                configuration,
-                                authorization,
-                                responseCallback
-                            )
-                        } else {
-                            responseCallback.onResult(null, configError)
-                        }
+        getAuthorization { authorization, authError ->
+            if (authorization != null) {
+                getConfiguration { configuration, configError ->
+                    if (configuration != null) {
+                        httpClient.post(
+                            url,
+                            data,
+                            configuration,
+                            authorization,
+                            responseCallback
+                        )
+                    } else {
+                        responseCallback.onResult(null, configError)
                     }
-                } else {
-                    responseCallback.onResult(null, authError)
                 }
+            } else {
+                responseCallback.onResult(null, authError)
             }
-        })
+        }
     }
 
     /**
@@ -284,26 +273,24 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGraphQLPOST(payload: String?, responseCallback: HttpResponseCallback) {
-        getAuthorization(object : AuthorizationCallback {
-            override fun onAuthorizationResult(authorization: Authorization?, authError: Exception?) {
-                if (authorization != null) {
-                    getConfiguration { configuration, configError ->
-                        if (configuration != null) {
-                            graphQLClient.post(
-                                payload,
-                                configuration,
-                                authorization,
-                                responseCallback
-                            )
-                        } else {
-                            responseCallback.onResult(null, configError)
-                        }
+        getAuthorization { authorization, authError ->
+            if (authorization != null) {
+                getConfiguration { configuration, configError ->
+                    if (configuration != null) {
+                        graphQLClient.post(
+                            payload,
+                            configuration,
+                            authorization,
+                            responseCallback
+                        )
+                    } else {
+                        responseCallback.onResult(null, configError)
                     }
-                } else {
-                    responseCallback.onResult(null, authError)
                 }
+            } else {
+                responseCallback.onResult(null, authError)
             }
-        })
+        }
     }
 
     /**
