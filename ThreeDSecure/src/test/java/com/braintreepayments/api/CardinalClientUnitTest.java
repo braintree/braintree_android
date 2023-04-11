@@ -144,7 +144,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void continueLookup_continuesCardinalLookup() {
+    public void continueLookup_continuesCardinalLookup() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         CardinalClient sut = new CardinalClient();
 
