@@ -5,7 +5,6 @@ buildscript {
         maven {
             url = "https://plugins.gradle.org/m2/"
         }
-        jcenter()
     }
 
     def sdkTargetJavaVersion = JavaVersion.VERSION_1_8
@@ -141,7 +140,6 @@ subprojects {
         flatDir {
             dirs "${rootDir}/libs"
         }
-        jcenter()
     }
 }
 
