@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.27.1
 
 * ThreeDSecure
   * Catch Null Pointer Exception in `ThreeDSecureActivity` to prevent crash (fixes #715)
