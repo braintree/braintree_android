@@ -18,7 +18,7 @@ class CardinalClient {
     CardinalClient () {}
 
     void initialize(Context context, Configuration configuration, final ThreeDSecureRequest request, final CardinalInitializeCallback callback) {
-        configurationCardinal(context, configuration, request);
+        configureCardinal(context, configuration, request);
         Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
             @Override
             public void onSetupCompleted(String sessionId) {
@@ -37,14 +37,18 @@ class CardinalClient {
         });
     }
 
-    void continueLookup(FragmentActivity activity, ThreeDSecureResult threeDSecureResult, CardinalValidateReceiver validateReceiver) {
+    void continueLookup(FragmentActivity activity, ThreeDSecureResult threeDSecureResult, CardinalValidateReceiver validateReceiver) throws BraintreeException {
         ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
         String transactionId = lookup.getTransactionId();
         String paReq = lookup.getPareq();
-        Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
+        try {
+            Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
+        } catch (NullPointerException e) {
+            throw new BraintreeException("Cardinal SDK Error.", e);
+        }
     }
 
-    private void configurationCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) {
+    private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) {
         CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
         if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
             cardinalEnvironment = CardinalEnvironment.PRODUCTION;

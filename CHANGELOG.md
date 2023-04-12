@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Catch Null Pointer Exception in `ThreeDSecureActivity` to prevent crash (fixes #715)
+
 ## 4.27.0
 
 * DataCollector

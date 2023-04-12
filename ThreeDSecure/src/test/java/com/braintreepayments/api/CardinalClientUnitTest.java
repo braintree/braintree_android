@@ -1,15 +1,21 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
@@ -144,7 +150,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void continueLookup_continuesCardinalLookup() {
+    public void continueLookup_continuesCardinalLookup() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         CardinalClient sut = new CardinalClient();
 
@@ -163,5 +169,29 @@ public class CardinalClientUnitTest {
                 activity,
                 cardinalValidateReceiver
         );
+    }
+
+    @Test
+    public void continueLookup_onCardinalNullPointerException_throwsError() {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        NullPointerException nullPointerException = new NullPointerException("fake message");
+        doThrow(nullPointerException)
+                .when(cardinalInstance).cca_continue(anyString(), anyString(), any(Activity.class), any(CardinalValidateReceiver.class));
+        CardinalClient sut = new CardinalClient();
+
+        ThreeDSecureLookup threeDSecureLookup = mock(ThreeDSecureLookup.class);
+        when(threeDSecureLookup.getTransactionId()).thenReturn("sample-transaction-id");
+        when(threeDSecureLookup.getPareq()).thenReturn("sample-payer-authentication-request");
+
+        ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
+        when(threeDSecureResult.getLookup()).thenReturn(threeDSecureLookup);
+
+        try {
+            sut.continueLookup(activity, threeDSecureResult, cardinalValidateReceiver);
+            fail("should not get here");
+        } catch (BraintreeException e) {
+            assertEquals("Cardinal SDK Error.", e.getMessage());
+            assertSame(nullPointerException, e.getCause());
+        }
     }
 }

@@ -40,13 +40,21 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
 
         ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
         if (threeDSecureResult != null) {
-            cardinalClient.continueLookup(this, threeDSecureResult, this);
+            try {
+                cardinalClient.continueLookup(this, threeDSecureResult, this);
+            } catch (BraintreeException e) {
+                finishWithError(e.getMessage());
+            }
         } else {
-            Intent result = new Intent();
-            result.putExtra(EXTRA_ERROR_MESSAGE, "Unable to launch 3DS authentication.");
-            setResult(RESULT_COULD_NOT_START_CARDINAL, result);
-            finish();
+            finishWithError("Unable to launch 3DS authentication.");
         }
+    }
+
+    private void finishWithError(String errorMessage) {
+        Intent result = new Intent();
+        result.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
+        setResult(RESULT_COULD_NOT_START_CARDINAL, result);
+        finish();
     }
 
     @Override

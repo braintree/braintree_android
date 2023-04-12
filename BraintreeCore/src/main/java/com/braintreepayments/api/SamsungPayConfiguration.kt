@@ -3,7 +3,6 @@ package com.braintreepayments.api
 import android.text.TextUtils
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.collections.ArrayList
 
 /**
  * Contains the remote Samsung Pay configuration for the Braintree SDK.

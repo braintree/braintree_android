@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -32,9 +33,9 @@ import androidx.fragment.app.FragmentActivity;
 public class ThreeDSecureActivityUnitTest {
 
     @Test
-    public void onCreate_withExtras_invokesCardinalWithLookupData() throws JSONException {
+    public void onCreate_withExtras_invokesCardinalWithLookupData() throws JSONException, BraintreeException {
         ThreeDSecureResult threeDSecureResult =
-            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
@@ -58,7 +59,37 @@ public class ThreeDSecureActivityUnitTest {
     }
 
     @Test
-    public void onCreate_withoutExtras_finishesWithError() {
+    public void onCreate_withExtrasAndCardinalError_finishesWithError() throws JSONException, BraintreeException {
+        ThreeDSecureResult threeDSecureResult =
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+
+        Bundle extras = new Bundle();
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+
+        Intent intent = new Intent();
+        intent.putExtras(extras);
+
+        ThreeDSecureActivity sut = spy(new ThreeDSecureActivity());
+        sut.setIntent(intent);
+
+        BraintreeException cardinalError = new BraintreeException("fake cardinal error");
+
+        CardinalClient cardinalClient = mock(CardinalClient.class);
+        doThrow(cardinalError).when(cardinalClient).continueLookup(same(sut), any(ThreeDSecureResult.class), same(sut));
+
+        sut.onCreateInternal(cardinalClient);
+        verify(sut).finish();
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(sut).setResult(eq(RESULT_COULD_NOT_START_CARDINAL), captor.capture());
+
+        Intent intentForResult = captor.getValue();
+        assertEquals("fake cardinal error",
+                intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE));
+    }
+
+    @Test
+    public void onCreate_withoutExtras_finishesWithError() throws BraintreeException {
         Intent intent = new Intent();
         ThreeDSecureActivity sut = spy(new ThreeDSecureActivity());
         sut.setIntent(intent);
@@ -74,13 +105,13 @@ public class ThreeDSecureActivityUnitTest {
 
         Intent intentForResult = captor.getValue();
         assertEquals("Unable to launch 3DS authentication.",
-            intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE));
+                intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE));
     }
 
     @Test
     public void onValidated_returnsValidationResults() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
-            ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
@@ -100,7 +131,7 @@ public class ThreeDSecureActivityUnitTest {
         verify(sut).setResult(eq(RESULT_OK), captor.capture());
 
         Intent intentForResult = captor.getValue();
-        ValidateResponse activityResult = (ValidateResponse)(intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
+        ValidateResponse activityResult = (ValidateResponse) (intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
 
         assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT));
         assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
