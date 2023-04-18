@@ -8,7 +8,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doAnswer;
@@ -200,6 +199,27 @@ public class ThreeDSecureV2UnitTest {
         sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig), same(basicRequest), any(CardinalInitializeCallback.class));
+    }
+
+    @Test
+    public void performVerification_whenCardinalClientInitializeFails_forwardsError() throws BraintreeException {
+        BraintreeException initializeRuntimeError = new BraintreeException("initialize error");
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .initializeRuntimeError(initializeRuntimeError)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, new ThreeDSecureAPI(braintreeClient));
+        sut.setListener(listener);
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performVerification(activity, basicRequest, callback);
+
+        verify(callback).onResult(null, initializeRuntimeError);
     }
 
     @Test

@@ -7,12 +7,14 @@ import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MockCardinalClientBuilder {
 
     private Exception error;
+    private BraintreeException initializeRuntimeError;
     private String successReferenceId;
 
     public MockCardinalClientBuilder successReferenceId(String successReferenceId) {
@@ -25,22 +27,34 @@ public class MockCardinalClientBuilder {
         return this;
     }
 
+    public MockCardinalClientBuilder initializeRuntimeError(BraintreeException initializeRuntimeError) {
+        this.initializeRuntimeError = initializeRuntimeError;
+        return this;
+    }
+
     public CardinalClient build() throws BraintreeException {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         when(cardinalClient.getConsumerSessionId()).thenReturn(successReferenceId);
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                CardinalInitializeCallback listener = (CardinalInitializeCallback) invocation.getArguments()[3];
-                if (successReferenceId != null) {
-                    listener.onResult(successReferenceId, null);
-                } else if (error != null) {
-                    listener.onResult(null, error);
+        if (initializeRuntimeError != null) {
+            doThrow(initializeRuntimeError)
+                    .when(cardinalClient)
+                    .initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
+        } else {
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) {
+                    CardinalInitializeCallback listener = (CardinalInitializeCallback) invocation.getArguments()[3];
+                    if (successReferenceId != null) {
+                        listener.onResult(successReferenceId, null);
+                    } else if (error != null) {
+                        listener.onResult(null, error);
+                    }
+                    return null;
                 }
-                return null;
-            }
-        }).when(cardinalClient).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
+            }).when(cardinalClient).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
+
+        }
 
         return cardinalClient;
     }
