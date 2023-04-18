@@ -8,7 +8,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doAnswer;
@@ -78,7 +77,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
+    public void prepareLookup_returnsValidLookupJSONString() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("fake-df")
                 .build();
@@ -110,7 +109,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws JSONException {
+    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("cardinal error"))
                 .build();
@@ -141,7 +140,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_initializesCardinal() {
+    public void prepareLookup_initializesCardinal() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("fake-df")
                 .build();
@@ -160,7 +159,27 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_withoutCardinalJWT_postsException() {
+    public void prepareLookup_whenCardinalClientInitializeFails_forwardsError() throws BraintreeException {
+        BraintreeException initializeRuntimeError = new BraintreeException("initialize error");
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .initializeRuntimeError(initializeRuntimeError)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, new ThreeDSecureAPI(braintreeClient));
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, basicRequest, callback);
+
+        verify(callback).onResult(null, null, initializeRuntimeError);
+    }
+
+    @Test
+    public void prepareLookup_withoutCardinalJWT_postsException() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -185,7 +204,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_initializesCardinal() {
+    public void performVerification_initializesCardinal() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
@@ -203,7 +222,28 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() {
+    public void performVerification_whenCardinalClientInitializeFails_forwardsError() throws BraintreeException {
+        BraintreeException initializeRuntimeError = new BraintreeException("initialize error");
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .initializeRuntimeError(initializeRuntimeError)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, new ThreeDSecureAPI(braintreeClient));
+        sut.setListener(listener);
+
+        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
+        sut.performVerification(activity, basicRequest, callback);
+
+        verify(callback).onResult(null, initializeRuntimeError);
+    }
+
+    @Test
+    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
@@ -221,7 +261,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() {
+    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("cardinal error"))
                 .build();
@@ -239,7 +279,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() throws JSONException {
+    public void continuePerformVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -261,7 +301,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsPresented_sendsAnalyticsEvent() throws JSONException {
+    public void continuePerformVerification_whenChallengeIsPresented_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -282,7 +322,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() throws JSONException {
+    public void continuePerformVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -302,7 +342,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsNotPresented_returnsResult() throws JSONException {
+    public void continuePerformVerification_whenChallengeIsNotPresented_returnsResult() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -322,7 +362,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() throws JSONException {
+    public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -344,7 +384,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenObserverIsNull_startsActivity() throws JSONException {
+    public void continuePerformVerification_whenObserverIsNull_startsActivity() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -363,7 +403,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenObserverIsNullAndTransactionIsTooLarge_callsBackAnException() throws JSONException {
+    public void continuePerformVerification_whenObserverIsNullAndTransactionIsTooLarge_callsBackAnException() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -397,7 +437,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenObserverIsNullAndRuntimeExceptionThrown_rethrowsException() throws JSONException {
+    public void continuePerformVerification_whenObserverIsNullAndRuntimeExceptionThrown_rethrowsException() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -424,7 +464,7 @@ public class ThreeDSecureV2UnitTest {
         }
     }
     @Test
-    public void continuePerformVerification_withObserverAndTransactionIsTooLarge_callsBackAnException() throws JSONException {
+    public void continuePerformVerification_withObserverAndTransactionIsTooLarge_callsBackAnException() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -457,7 +497,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void continuePerformVerification_withObserverAndRuntimeExceptionThrown_rethrowsException() throws JSONException {
+    public void continuePerformVerification_withObserverAndRuntimeExceptionThrown_rethrowsException() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
                 .build();
@@ -485,7 +525,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void performVerification_withoutCardinalJWT_postsException() {
+    public void performVerification_withoutCardinalJWT_postsException() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         Configuration configuration = new TestConfigurationBuilder()
@@ -511,7 +551,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
@@ -544,7 +584,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenResultWithError_sendsAnalytics() {
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenResultWithError_sendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
@@ -576,7 +616,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenAuthenticateJWTReturnsError_sendsAnalytics() {
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_whenAuthenticateJWTReturnsError_sendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         ThreeDSecureAPI threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
@@ -609,7 +649,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationReportsNoAction_sendsAnalyticsEvent() throws JSONException {
+    public void onActivityResult_whenCardinalCardVerificationReportsNoAction_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -631,7 +671,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationReportsFailure_sendsAnalyticsEvent() throws JSONException {
+    public void onActivityResult_whenCardinalCardVerificationReportsFailure_sendsAnalyticsEvent() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -653,7 +693,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEventAndReturnsExceptionToCallback() {
+    public void onActivityResult_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEventAndReturnsExceptionToCallback() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -679,7 +719,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationErrors_sendsAnalyticsEvent() {
+    public void onActivityResult_whenCardinalCardVerificationErrors_sendsAnalyticsEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -697,7 +737,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void onActivityResult_whenCardinalCardVerificationTimeout_sendsAnalyticsEvent() {
+    public void onActivityResult_whenCardinalCardVerificationTimeout_sendsAnalyticsEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();

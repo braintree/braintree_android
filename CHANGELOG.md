@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Guard `ThreeDSecureClient` against potential Cardinal SDK runtime exceptions
+
 ## 4.27.1
 
 * ThreeDSecure

@@ -86,7 +86,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_sendsAnalyticEvent() {
+    public void performVerification_sendsAnalyticEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("sample-session-id")
                 .build();
@@ -102,7 +102,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_sendsParamsInLookupRequest() throws JSONException {
+    public void performVerification_sendsParamsInLookupRequest() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
                 .build();
@@ -136,7 +136,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_performsLookup_WhenCardinalSDKInitFails() throws JSONException {
+    public void performVerification_performsLookup_WhenCardinalSDKInitFails() throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .error(new Exception("error"))
                 .build();
@@ -175,7 +175,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_callsLookupListener() {
+    public void performVerification_callsLookupListener() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("sample-session-id")
                 .build();
@@ -202,7 +202,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_withInvalidRequest_postsException() {
+    public void performVerification_withInvalidRequest_postsException() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -221,7 +221,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void performVerification_whenV1_throwsAnError() {
+    public void performVerification_whenV1_throwsAnError() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(threeDSecureEnabledConfig)
@@ -241,7 +241,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onActivityResult_whenResultNotOk_postsExceptionToCallback() {
+    public void onActivityResult_whenResultNotOk_postsExceptionToCallback() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -261,7 +261,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenSuccessful_postsPayment() {
+    public void onBrowserSwitchResult_whenSuccessful_postsPayment() throws BraintreeException {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
                 .appendQueryParameter("auth_response", Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
@@ -290,7 +290,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenSuccessful_sendAnalyticsEvents() {
+    public void onBrowserSwitchResult_whenSuccessful_sendAnalyticsEvents() throws BraintreeException {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
                 .appendQueryParameter("auth_response", Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
@@ -340,7 +340,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsExceptionToCallback() {
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsExceptionToCallback() throws BraintreeException {
         BrowserSwitchResult browserSwitchResult =
                 new BrowserSwitchResult(BrowserSwitchStatus.CANCELED, null, null);
 
@@ -362,7 +362,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onBrowserSwitchResult_whenListenerNull_setsPendingBrowserSwitchResult_andDoesNotDeliver() {
+    public void onBrowserSwitchResult_whenListenerNull_setsPendingBrowserSwitchResult_andDoesNotDeliver() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
@@ -377,7 +377,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenErrorExists_forwardsErrorToListener_andSendsAnalytics() {
+    public void onCardinalResult_whenErrorExists_forwardsErrorToListener_andSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -393,7 +393,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_onSuccess_sendsAnalyticsEvent() {
+    public void onCardinalResult_onSuccess_sendsAnalyticsEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -411,7 +411,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseTimeout_returnsErrorAndSendsAnalytics() {
+    public void onCardinalResult_whenValidateResponseTimeout_returnsErrorAndSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -435,7 +435,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseCancel_returnsUserCanceledErrorAndSendsAnalytics() {
+    public void onCardinalResult_whenValidateResponseCancel_returnsUserCanceledErrorAndSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -460,7 +460,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResult_returnsResultAndSendsAnalytics() {
+    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResult_returnsResultAndSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -491,7 +491,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics() {
+    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -523,7 +523,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics() {
+    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -554,7 +554,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void constructor_setsLifecycleObserver() {
+    public void constructor_setsLifecycleObserver() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -611,7 +611,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() {
+    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
 
         Uri uri = Uri.parse("http://demo-app.com")
@@ -634,7 +634,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void setListener_whenPendingBrowserSwitchResultDoesNotExist_doesNotInvokeListener() {
+    public void setListener_whenPendingBrowserSwitchResultDoesNotExist_doesNotInvokeListener() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -649,7 +649,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void getBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+    public void getBrowserSwitchResult_forwardsInvocationToBraintreeClient() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
 
@@ -663,7 +663,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void deliverBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+    public void deliverBrowserSwitchResult_forwardsInvocationToBraintreeClient() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
 
@@ -677,7 +677,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void getBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() {
+    public void getBrowserSwitchResultFromCache_forwardsInvocationToBraintreeClient() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
 
@@ -691,7 +691,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBraintreeClient() {
+    public void deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBraintreeClient() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
 
