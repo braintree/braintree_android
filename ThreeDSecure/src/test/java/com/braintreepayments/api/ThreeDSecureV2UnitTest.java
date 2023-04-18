@@ -159,6 +159,26 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
+    public void prepareLookup_whenCardinalClientInitializeFails_forwardsError() throws BraintreeException {
+        BraintreeException initializeRuntimeError = new BraintreeException("initialize error");
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .initializeRuntimeError(initializeRuntimeError)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient, new ThreeDSecureAPI(braintreeClient));
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, basicRequest, callback);
+
+        verify(callback).onResult(null, null, initializeRuntimeError);
+    }
+
+    @Test
     public void prepareLookup_withoutCardinalJWT_postsException() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         Configuration configuration = new TestConfigurationBuilder()
