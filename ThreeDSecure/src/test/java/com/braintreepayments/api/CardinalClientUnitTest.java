@@ -173,7 +173,23 @@ public class CardinalClientUnitTest {
 
     @Test
     public void initialize_onCardinalInitRuntimeException_throwsError() {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
+        CardinalClient sut = new CardinalClient();
 
+        RuntimeException runtimeException = new RuntimeException("fake message");
+        doThrow(runtimeException)
+                .when(cardinalInstance)
+                .init(anyString(), any(CardinalInitService.class));
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        try {
+            sut.initialize(context, configuration, request, cardinalInitializeCallback);
+            fail("should not get here");
+        } catch (BraintreeException e) {
+            assertEquals("Cardinal SDK init Error.", e.getMessage());
+            assertSame(runtimeException, e.getCause());
+        }
     }
 
     @Test
