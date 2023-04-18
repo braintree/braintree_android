@@ -25,7 +25,7 @@ public class MockCardinalClientBuilder {
         return this;
     }
 
-    public CardinalClient build() {
+    public CardinalClient build() throws BraintreeException {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         when(cardinalClient.getConsumerSessionId()).thenReturn(successReferenceId);
 

@@ -59,7 +59,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void initialize_configuresDefaultCardinalConfigurationParameters() {
+    public void initialize_configuresDefaultCardinalConfigurationParameters() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         CardinalClient sut = new CardinalClient();
 
@@ -76,7 +76,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() {
+    public void initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         CardinalClient sut = new CardinalClient();
 
@@ -94,7 +94,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void initialize_whenEnvironmentProduction_configuresCardinalEnvironmentProduction() {
+    public void initialize_whenEnvironmentProduction_configuresCardinalEnvironmentProduction() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getEnvironment()).thenReturn("production");
 
@@ -111,7 +111,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void initialize_returnsConsumerSessionIdToListener() {
+    public void initialize_returnsConsumerSessionIdToListener() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
         CardinalClient sut = new CardinalClient();
@@ -130,7 +130,7 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void initialize_whenConsumerSessionIdIsNull_returnsBraintreeExceptionToListener() {
+    public void initialize_whenConsumerSessionIdIsNull_returnsBraintreeExceptionToListener() throws BraintreeException {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
         when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
         CardinalClient sut = new CardinalClient();
@@ -147,6 +147,33 @@ public class CardinalClientUnitTest {
         ArgumentCaptor<BraintreeException> exceptionCaptor = ArgumentCaptor.forClass(BraintreeException.class);
         verify(cardinalInitializeCallback).onResult(isNull(String.class), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), "consumer session id not available");
+    }
+
+    @Test
+    public void initialize_onCardinalConfigureRuntimeException_throwsError() {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        when(configuration.getCardinalAuthenticationJwt()).thenReturn("token");
+        CardinalClient sut = new CardinalClient();
+
+        RuntimeException runtimeException = new RuntimeException("fake message");
+        doThrow(runtimeException)
+                .when(cardinalInstance)
+                .configure(any(Context.class), any(CardinalConfigurationParameters.class));
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+
+        try {
+            sut.initialize(context, configuration, request, cardinalInitializeCallback);
+            fail("should not get here");
+        } catch (BraintreeException e) {
+            assertEquals("Cardinal SDK configure Error.", e.getMessage());
+            assertSame(runtimeException, e.getCause());
+        }
+    }
+
+    @Test
+    public void initialize_onCardinalInitRuntimeException_throwsError() {
+
     }
 
     @Test
@@ -172,10 +199,10 @@ public class CardinalClientUnitTest {
     }
 
     @Test
-    public void continueLookup_onCardinalNullPointerException_throwsError() {
+    public void continueLookup_onCardinalRuntimeException_throwsError() {
         when(Cardinal.getInstance()).thenReturn(cardinalInstance);
-        NullPointerException nullPointerException = new NullPointerException("fake message");
-        doThrow(nullPointerException)
+        RuntimeException runtimeException = new RuntimeException("fake message");
+        doThrow(runtimeException)
                 .when(cardinalInstance).cca_continue(anyString(), anyString(), any(Activity.class), any(CardinalValidateReceiver.class));
         CardinalClient sut = new CardinalClient();
 
@@ -190,8 +217,8 @@ public class CardinalClientUnitTest {
             sut.continueLookup(activity, threeDSecureResult, cardinalValidateReceiver);
             fail("should not get here");
         } catch (BraintreeException e) {
-            assertEquals("Cardinal SDK Error.", e.getMessage());
-            assertSame(nullPointerException, e.getCause());
+            assertEquals("Cardinal SDK cca_continue Error.", e.getMessage());
+            assertSame(runtimeException, e.getCause());
         }
     }
 }
