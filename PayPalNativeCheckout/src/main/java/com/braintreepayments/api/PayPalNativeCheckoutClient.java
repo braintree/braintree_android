@@ -5,15 +5,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.paypal.checkout.PayPalCheckout;
-import com.paypal.checkout.approve.ApprovalData;
-import com.paypal.checkout.config.CheckoutConfig;
-import com.paypal.checkout.config.Environment;
-import com.paypal.checkout.config.SettingsConfig;
-import com.paypal.checkout.config.UIConfig;
-
-import com.paypal.pyplcheckout.common.instrumentation.PEnums;
-import com.paypal.pyplcheckout.common.instrumentation.PLog;
+import com.paypal.checkout.*;
+import com.paypal.checkout.approve.*;
+import com.paypal.checkout.config.*;
+import com.paypal.pyplcheckout.instrumentation.constants.*;
+import com.paypal.pyplcheckout.instrumentation.di.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
