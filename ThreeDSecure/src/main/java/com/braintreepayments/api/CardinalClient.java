@@ -17,9 +17,10 @@ class CardinalClient {
 
     CardinalClient () {}
 
-    void initialize(Context context, Configuration configuration, final ThreeDSecureRequest request, final CardinalInitializeCallback callback) {
+    void initialize(Context context, Configuration configuration, final ThreeDSecureRequest request, final CardinalInitializeCallback callback) throws BraintreeException {
         configureCardinal(context, configuration, request);
-        Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+
+        CardinalInitService cardinalInitService = new CardinalInitService() {
             @Override
             public void onSetupCompleted(String sessionId) {
                 consumerSessionId = sessionId;
@@ -34,7 +35,13 @@ class CardinalClient {
                     callback.onResult(consumerSessionId, null);
                 }
             }
-        });
+        };
+
+        try {
+            Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), cardinalInitService);
+        } catch (RuntimeException e) {
+            throw new BraintreeException("Cardinal SDK init Error.", e);
+        }
     }
 
     void continueLookup(FragmentActivity activity, ThreeDSecureResult threeDSecureResult, CardinalValidateReceiver validateReceiver) throws BraintreeException {
@@ -43,12 +50,12 @@ class CardinalClient {
         String paReq = lookup.getPareq();
         try {
             Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
-        } catch (NullPointerException e) {
-            throw new BraintreeException("Cardinal SDK Error.", e);
+        } catch (RuntimeException e) {
+            throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
         }
     }
 
-    private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) {
+    private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) throws BraintreeException {
         CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
         if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
             cardinalEnvironment = CardinalEnvironment.PRODUCTION;
@@ -62,7 +69,11 @@ class CardinalClient {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
         }
 
-        Cardinal.getInstance().configure(context, cardinalConfigurationParameters);
+        try {
+            Cardinal.getInstance().configure(context, cardinalConfigurationParameters);
+        } catch (RuntimeException e) {
+            throw new BraintreeException("Cardinal SDK configure Error.", e);
+        }
     }
 
     String getConsumerSessionId() {

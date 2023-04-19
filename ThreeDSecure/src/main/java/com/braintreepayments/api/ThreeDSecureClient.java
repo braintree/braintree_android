@@ -159,7 +159,7 @@ public class ThreeDSecureClient {
                     }
                     braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
-                    cardinalClient.initialize(activity, configuration, request, new CardinalInitializeCallback() {
+                    CardinalInitializeCallback cardinalInitializeCallback = new CardinalInitializeCallback() {
                         @Override
                         public void onResult(String consumerSessionId, Exception error) {
                             if (consumerSessionId != null) {
@@ -170,7 +170,13 @@ public class ThreeDSecureClient {
                                 braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
                             }
                         }
-                    });
+                    };
+
+                    try {
+                        cardinalClient.initialize(activity, configuration, request, cardinalInitializeCallback);
+                    } catch (BraintreeException initializeException) {
+                        callback.onResult(null, initializeException);
+                    }
                 }
             }
         });
@@ -215,7 +221,7 @@ public class ThreeDSecureClient {
                                 return;
                             }
 
-                            cardinalClient.initialize(context, configuration, request, new CardinalInitializeCallback() {
+                            CardinalInitializeCallback cardinalInitializeCallback = new CardinalInitializeCallback() {
                                 @Override
                                 public void onResult(String consumerSessionId, Exception error) {
                                     if (consumerSessionId != null) {
@@ -226,7 +232,13 @@ public class ThreeDSecureClient {
                                     }
                                     callback.onResult(request, lookupJSON.toString(), null);
                                 }
-                            });
+                            };
+
+                            try {
+                                cardinalClient.initialize(context, configuration, request, cardinalInitializeCallback);
+                            } catch (BraintreeException initializeException) {
+                                callback.onResult(null, null, initializeException);
+                            }
                         }
                     });
                 } else {

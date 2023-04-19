@@ -1,9 +1,14 @@
 # Braintree Android SDK Release Notes
 
-
 ## unreleased
+
 * PayPalNativeCheckout
   * Bump native-checkout version to release `0.112.0`
+
+## 4.27.2
+
+* ThreeDSecure
+  * Guard `ThreeDSecureClient` against potential Cardinal SDK runtime exceptions
 
 ## 4.27.1
 
