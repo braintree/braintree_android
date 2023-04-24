@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.GraphQLConstants.ErrorTypes
 import org.json.JSONArray
 import org.json.JSONException
@@ -87,7 +88,12 @@ open class BraintreeError : Parcelable {
             return errors
         }
 
-        internal fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
+        /**
+         * @suppress
+         */
+        @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+        fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
             val errors = mutableListOf<BraintreeError>()
             if (graphQLErrors == null) {
                 return errors
