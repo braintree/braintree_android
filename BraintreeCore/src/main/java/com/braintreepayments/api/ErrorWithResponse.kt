@@ -37,7 +37,11 @@ open class ErrorWithResponse : Exception, Parcelable {
 
     private constructor()
 
-    internal constructor(statusCode: Int, jsonString: String?) {
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(statusCode: Int, jsonString: String?) {
         this.statusCode = statusCode
         _originalResponse = jsonString
         try {
