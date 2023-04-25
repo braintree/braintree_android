@@ -1,19 +1,18 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertNotNull;
+
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-
-import static junit.framework.Assert.assertNotNull;
-
-import android.content.Context;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeClientTest {
