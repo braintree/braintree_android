@@ -24,8 +24,8 @@ internal class BraintreeGraphQLResponseParser @VisibleForTesting constructor(
         val errors = JSONObject(response).optJSONArray(GraphQLConstants.Keys.ERRORS)
         if (errors == null) return response
 
-        for (i in 0 until errors!!.length()) {
-            val error = errors!!.getJSONObject(i)
+        for (i in 0 until errors.length()) {
+            val error = errors.getJSONObject(i)
             val extensions = error.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
             val message = Json.optString(
                 error,
