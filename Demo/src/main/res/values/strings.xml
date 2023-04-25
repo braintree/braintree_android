@@ -123,4 +123,7 @@
     <!-- SamsungPay -->
     <string name="bt_start_samsung_pay">Start SamsungPay</string>
 
+    <!-- LocalPayment -->
+    <string name="bt_local_payment_description">This feature uses a hard-coded sandbox tokenization key that is enabled for this local payment.</string>
+
 </resources>
