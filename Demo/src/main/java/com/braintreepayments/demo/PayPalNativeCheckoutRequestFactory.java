@@ -2,9 +2,8 @@ package com.braintreepayments.demo;
 
 import android.content.Context;
 
-import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
-import com.braintreepayments.api.PayPalNativeRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PostalAddress;
 

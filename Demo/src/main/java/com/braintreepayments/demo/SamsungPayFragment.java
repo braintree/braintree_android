@@ -60,7 +60,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
                 } else {
                     if (error instanceof SamsungPayException) {
                         SamsungPayException samsungPayError = (SamsungPayException) error;
-                        @SamsungPayError int errorCode = samsungPayError.getErrorCode();
+                        int errorCode = samsungPayError.getErrorCode();
                         switch (errorCode) {
                             case SamsungPayError.SAMSUNG_PAY_APP_NEEDS_UPDATE:
                                 dialogMessage = "Need to update Samsung Pay app...";
