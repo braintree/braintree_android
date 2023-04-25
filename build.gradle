@@ -67,9 +67,8 @@ buildscript {
             "robolectric"                : "org.robolectric:robolectric:4.7.3",
             "dexmakerMockito"            : "com.google.dexmaker:dexmaker-mockito:1.2",
             "mockitoCore"                : "org.mockito:mockito-core:3.6.0",
-            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.0",
-            "assertJ"                    : "com.squareup.assertj:assertj-android:1.1.1",
-            "mockk"                      : "io.mockk:mockk:1.12.0",
+            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.1",
+            "mockk"                      : "io.mockk:mockk:1.13.4",
 
             "powermockJunit"             : "org.powermock:powermock-module-junit4:${versions.powermock}",
             "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",

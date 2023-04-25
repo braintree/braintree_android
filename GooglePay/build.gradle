@@ -48,7 +48,6 @@ dependencies {
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
     testImplementation deps.playServicesWallet
-    testImplementation deps.assertJ
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito
