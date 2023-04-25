@@ -4,19 +4,13 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 import java.net.HttpURLConnection
 
 class BraintreeGraphQLResponseParserUnitTest {
 
     private lateinit var urlConnection: HttpURLConnection
     private lateinit var baseParser: BaseHttpResponseParser
-
-    @Rule
-    @JvmField
-    var exceptionRule: ExpectedException = ExpectedException.none()
 
     @Before
     fun beforeEach() {
@@ -38,14 +32,16 @@ class BraintreeGraphQLResponseParserUnitTest {
     @Test
     @Throws(Exception::class)
     fun parse_propagatesExceptionsByDefault() {
-        exceptionRule.expect(Exception::class.java)
-        exceptionRule.expectMessage("error")
-
         val exception = Exception("error")
         every { baseParser.parse(123, urlConnection) } throws exception
 
         val sut = BraintreeGraphQLResponseParser(baseParser)
-        sut.parse(123, urlConnection)
+        try {
+            sut.parse(123, urlConnection)
+            fail("should not get here")
+        } catch (actualException: Exception) {
+            assertSame(exception, actualException)
+        }
     }
 
     @Test

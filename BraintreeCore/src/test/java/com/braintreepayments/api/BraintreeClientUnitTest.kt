@@ -510,7 +510,7 @@ class BraintreeClientUnitTest {
             manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
                 applicationContext,
                 "a-url-scheme",
-                any()
+                FragmentActivity::class.java
             )
         } returns true
 
