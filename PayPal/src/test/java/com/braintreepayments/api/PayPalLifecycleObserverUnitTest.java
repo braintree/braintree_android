@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static android.os.Looper.getMainLooper;
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -34,9 +36,10 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        // Ref: https://robolectric.org/blog/2019/06/04/paused-looper/
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -52,9 +55,9 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -72,9 +75,9 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -90,9 +93,9 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -108,9 +111,9 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
 
@@ -125,9 +128,9 @@ public class PayPalLifecycleObserverUnitTest {
         when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(payPalClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
 }
