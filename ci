@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+command_name="$1"
+
+case $command_name in
+  unit_tests)
+    ./gradlew --continue clean testRelease
+    ;;
+esac
+
