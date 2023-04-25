@@ -1,12 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.pm.ActivityInfo;
-
-import androidx.fragment.app.FragmentActivity;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -14,6 +7,14 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import android.content.pm.ActivityInfo;
+
+import androidx.fragment.app.FragmentActivity;
+
+import org.mockito.ArgumentMatchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MockBraintreeClientBuilder {
 
@@ -157,7 +158,7 @@ public class MockBraintreeClientBuilder {
             } catch (BrowserSwitchException ignored) {}
         }
 
-        when(braintreeClient.getManifestActivityInfo(any(Class.class))).thenReturn(activityInfo);
+        when(braintreeClient.getManifestActivityInfo(ArgumentMatchers.any())).thenReturn(activityInfo);
         when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(launchesBrowserSwitchAsNewTask);
 
