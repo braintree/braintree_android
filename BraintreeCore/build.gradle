@@ -77,10 +77,6 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
     testImplementation deps.junitTest
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
     testImplementation deps.mockk
     testImplementation project(':PayPal')
