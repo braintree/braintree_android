@@ -60,7 +60,7 @@ class AuthorizationLoaderUnitTest {
         every { callback.onAuthorizationResult(capture(authSlot), null) } returns Unit
 
         val clientToken = Fixtures.BASE64_CLIENT_TOKEN
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .clientToken(clientToken)
             .build()
         sut = AuthorizationLoader(null, clientTokenProvider)
@@ -73,7 +73,7 @@ class AuthorizationLoaderUnitTest {
     @Test
     fun loadAuthorization_whenInitialAuthDoesNotExist_cachesClientTokenInMemory() {
         val clientToken = Fixtures.BASE64_CLIENT_TOKEN
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .clientToken(clientToken)
             .build()
         sut = AuthorizationLoader(null, clientTokenProvider)
@@ -89,7 +89,7 @@ class AuthorizationLoaderUnitTest {
     fun loadAuthorization_whenInitialAuthDoesNotExistAndInvalidateClientTokenCalled_returnsNewClientToken() {
         val clientToken1 = Fixtures.BASE64_CLIENT_TOKEN
         val clientToken2 = Fixtures.BASE64_CLIENT_TOKEN2
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .clientToken(clientToken1, clientToken2)
             .build()
 
@@ -116,7 +116,7 @@ class AuthorizationLoaderUnitTest {
     @Test
     fun loadAuthorization_whenInitialAuthDoesNotExistAndInvalidateClientTokenCalled_cachesNewClientTokenInMemory() {
         val clientToken = Fixtures.BASE64_CLIENT_TOKEN
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .clientToken(clientToken)
             .build()
         val callback = mockk<AuthorizationCallback>(relaxed = true)
@@ -133,7 +133,7 @@ class AuthorizationLoaderUnitTest {
     @Test
     fun loadAuthorization_whenInitialAuthDoesNotExist_forwardsClientTokenFetchError() {
         val clientTokenFetchError = Exception("error")
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .error(clientTokenFetchError)
             .build()
         sut = AuthorizationLoader(null, clientTokenProvider)
@@ -169,7 +169,7 @@ class AuthorizationLoaderUnitTest {
     @Test
     fun authorizationFromCache_returnsAuthorizationFromClientTokenProvider() {
         val clientToken = Fixtures.BASE64_CLIENT_TOKEN
-        val clientTokenProvider = MockkAuthorizationProviderBuilder()
+        val clientTokenProvider = MockkClientTokenProviderBuilder()
             .clientToken(clientToken)
             .build()
         val callback = mockk<AuthorizationCallback>(relaxed = true)
