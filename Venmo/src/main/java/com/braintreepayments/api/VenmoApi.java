@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 class VenmoApi {
 
@@ -26,6 +27,32 @@ class VenmoApi {
             input.put("merchantProfileId", venmoProfileId);
             input.put("customerClient", "MOBILE_APP");
             input.put("intent", "CONTINUE");
+            JSONObject paysheetDetails = new JSONObject();
+            paysheetDetails.put("collectCustomerShippingAddress", request.getCollectCustomerShippingAddressAsString());
+            paysheetDetails.put("collectCustomerBillingAddress", request.getCollectCustomerBillingAddressAsString());
+
+            JSONObject transactionDetails = new JSONObject();
+            transactionDetails.put("subTotalAmount", request.getSubTotalAmount());
+            transactionDetails.put("discountAmount", request.getDiscountAmount());
+            transactionDetails.put("taxAmount", request.getTaxAmount());
+            transactionDetails.put("shippingAmount", request.getShippingAmount());
+            transactionDetails.put("totalAmount", request.getTotalAmount());
+
+            if (!request.getLineItems().isEmpty()) {
+                JSONArray lineItems = new JSONArray();
+                for (VenmoLineItem lineItem : request.getLineItems()) {
+                    if (lineItem.getUnitTaxAmount() == null || lineItem.getUnitTaxAmount().equals("")) {
+                        lineItem.setUnitTaxAmount("0");
+                    }
+                    lineItems.put(lineItem.toJson());
+                }
+                transactionDetails.put("lineItems", lineItems);
+            }
+
+            if (transactionDetails.length() > 0) {
+                paysheetDetails.put("transactionDetails", transactionDetails);
+            }
+            input.put("paysheetDetails", paysheetDetails);
 
             input.putOpt("displayName", request.getDisplayName());
 
@@ -57,7 +84,8 @@ class VenmoApi {
     void createNonceFromPaymentContext(String paymentContextId, final VenmoOnActivityResultCallback callback) {
         JSONObject params = new JSONObject();
         try {
-            params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName } } } }");
+            params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName" +
+                    "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }");
             JSONObject variables = new JSONObject();
             variables.put("id", paymentContextId);
             params.put("variables", variables);

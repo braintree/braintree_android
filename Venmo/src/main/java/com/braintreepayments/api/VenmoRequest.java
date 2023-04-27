@@ -4,6 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  A VenmoRequest specifies options that contribute to the Venmo flow
@@ -13,6 +17,14 @@ public class VenmoRequest implements Parcelable {
     private boolean shouldVault;
     private String profileId;
     private String displayName;
+    private boolean collectCustomerShippingAddress;
+    private boolean collectCustomerBillingAddress;
+    private String totalAmount;
+    private String subTotalAmount;
+    private String discountAmount;
+    private String taxAmount;
+    private String shippingAmount;
+    private ArrayList<VenmoLineItem> lineItems;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
@@ -23,6 +35,7 @@ public class VenmoRequest implements Parcelable {
      */
     public VenmoRequest(@VenmoPaymentMethodUsage int paymentMethodUsage) {
         this.paymentMethodUsage = paymentMethodUsage;
+        lineItems = new ArrayList<>();
     }
 
     /**
@@ -93,11 +106,147 @@ public class VenmoRequest implements Parcelable {
         }
     }
 
+    /**
+     * @param flag Optional. Whether or not shipping address should be collected and displayed on Venmo paysheet.
+     */
+    public void setCollectCustomerShippingAddress(boolean flag) {
+        this.collectCustomerShippingAddress = flag;
+    }
+
+    /**
+     * @return The boolean value of the flag that signifies whether customer shipping address will be collected.
+     */
+    public boolean getCollectCustomerShippingAddress() {
+        return collectCustomerShippingAddress;
+    }
+
+    String getCollectCustomerShippingAddressAsString() {
+        return String.valueOf(this.collectCustomerShippingAddress);
+    }
+
+    /**
+     * @param flag Optional. Whether or not billing address should be collected and displayed on Venmo paysheet.
+     */
+    public void setCollectCustomerBillingAddress(boolean flag) {
+        this.collectCustomerBillingAddress = flag;
+    }
+
+    /**
+     * @return The boolean value of the flag that signifies whether customer billing address will be collected.
+     */
+    public boolean getCollectCustomerBillingAddress() {
+        return collectCustomerBillingAddress;
+    }
+
+    String getCollectCustomerBillingAddressAsString() {
+        return String.valueOf(this.collectCustomerBillingAddress);
+    }
+
+    /**
+     * @param subTotalAmount Optional. The subtotal amount of the transaction, excluding taxes, discounts, and shipping.
+     */
+    public void setSubTotalAmount(String subTotalAmount) {
+        this.subTotalAmount = subTotalAmount;
+    }
+
+    /**
+     * @return The subtotal amount of the transaction, excluding taxes, discounts, and shipping.
+     */
+    @Nullable
+    public String getSubTotalAmount() {
+        return subTotalAmount;
+    }
+
+    /**
+     * @param shippingAmount Optional. The shipping amount charged for the transaction.
+     */
+    public void setShippingAmount(String shippingAmount) {
+        this.shippingAmount = shippingAmount;
+    }
+
+    /**
+     * @return he shipping amount charged for the transaction.
+     */
+    @Nullable
+    public String getShippingAmount() {
+        return shippingAmount;
+    }
+
+    /**
+     * @param discountAmount Optional. The total discount amount applied on the transaction.
+     */
+    public void setDiscountAmount(String discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    /**
+     * @return The total discount amount applied on the transaction.
+     */
+    @Nullable
+    public String getDiscountAmount() {
+        return discountAmount;
+    }
+
+    /**
+     * @param taxAmount Optional. The total tax amount applied to the transaction.
+     */
+    public void setTaxAmount(String taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    /**
+     * @return The total tax amount applied to the transaction.
+     */
+    @Nullable
+    public String getTaxAmount() {
+        return taxAmount;
+    }
+
+    /**
+     * @param totalAmount Optional. The grand total amount of the transaction that will be displayed on the paysheet.
+     */
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    /**
+     * @return The grand total amount of the transaction that will be displayed on the paysheet.
+     */
+    @Nullable
+    public String getTotalAmount() {
+        return totalAmount;
+    }
+
+    /**
+     * Optional: The line items for this transaction. Can include up to 249 line items.
+     *
+     * @param lineItems a collection of {@link VenmoLineItem}
+     */
+    public void setLineItems(@NonNull Collection<VenmoLineItem> lineItems) {
+        this.lineItems.clear();
+        this.lineItems.addAll(lineItems);
+    }
+
+    /**
+     * @return The line items for this transaction. Can include up to 249 line items.
+     */
+    public ArrayList<VenmoLineItem> getLineItems() {
+        return lineItems;
+    }
+
     protected VenmoRequest(Parcel in) {
         shouldVault = in.readByte() != 0;
+        collectCustomerBillingAddress = in.readByte() != 0;
+        collectCustomerShippingAddress = in.readByte() != 0;
         profileId = in.readString();
         displayName = in.readString();
         paymentMethodUsage = in.readInt();
+        subTotalAmount = in.readString();
+        discountAmount = in.readString();
+        shippingAmount = in.readString();
+        taxAmount = in.readString();
+        totalAmount = in.readString();
+        lineItems = in.createTypedArrayList(VenmoLineItem.CREATOR);
     }
 
     public static final Creator<VenmoRequest> CREATOR = new Creator<VenmoRequest>() {
@@ -120,8 +269,16 @@ public class VenmoRequest implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeByte((byte) (shouldVault ? 1 : 0));
+        parcel.writeByte((byte) (collectCustomerBillingAddress ? 1 : 0));
+        parcel.writeByte((byte) (collectCustomerShippingAddress ? 1 : 0));
         parcel.writeString(profileId);
         parcel.writeString(displayName);
         parcel.writeInt(paymentMethodUsage);
+        parcel.writeString(subTotalAmount);
+        parcel.writeString(discountAmount);
+        parcel.writeString(taxAmount);
+        parcel.writeString(shippingAmount);
+        parcel.writeString(totalAmount);
+        parcel.writeTypedList(lineItems);
     }
 }
