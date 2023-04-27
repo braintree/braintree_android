@@ -46,6 +46,26 @@ public class VenmoAccountNonceUnitTest {
     }
 
     @Test
+    public void fromJson_withShippingAndBillingAddresses_parsesResponse() throws JSONException {
+        VenmoAccountNonce venmoAccountNonce =
+                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON_WITH_ADDRESSES));
+
+        assertEquals("123 Fake St.", venmoAccountNonce.getBillingAddress().getStreetAddress());
+        assertEquals("Apt. 3", venmoAccountNonce.getBillingAddress().getExtendedAddress());
+        assertEquals("Oakland", venmoAccountNonce.getBillingAddress().getLocality());
+        assertEquals("CA", venmoAccountNonce.getBillingAddress().getRegion());
+        assertEquals("94602", venmoAccountNonce.getBillingAddress().getPostalCode());
+        assertEquals("US", venmoAccountNonce.getBillingAddress().getCountryCodeAlpha2());
+
+        assertEquals("789 Fake St.", venmoAccountNonce.getShippingAddress().getStreetAddress());
+        assertEquals("Apt. 2", venmoAccountNonce.getShippingAddress().getExtendedAddress());
+        assertEquals("Dallas", venmoAccountNonce.getShippingAddress().getLocality());
+        assertEquals("TX", venmoAccountNonce.getShippingAddress().getRegion());
+        assertEquals("75001", venmoAccountNonce.getShippingAddress().getPostalCode());
+        assertEquals("US", venmoAccountNonce.getShippingAddress().getCountryCodeAlpha2());
+    }
+
+    @Test
     public void fromJson_withPaymentMethodIdAndNullPayerInfo_parsesResponse() throws JSONException {
         JSONObject json =
             new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON);

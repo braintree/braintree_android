@@ -33,6 +33,11 @@ object PostalAddressParser {
     const val COUNTRY_CODE_UNDERSCORE_KEY = "country_code"
     const val POSTAL_CODE_UNDERSCORE_KEY = "postal_code"
     const val RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name"
+    const val VENMO_GQL_RECIPIENT_KEY = "fullName"
+    const val VENMO_GQL_ADDRESS1_KEY = "addressLine1"
+    const val VENMO_GQL_ADDRESS2_KEY = "addressLine2"
+    const val VENMO_GQL_LOCALITY_KEY = "adminArea2"
+    const val VENMO_GQL_REGION_KEY = "adminArea1"
 
     @JvmStatic
     fun fromJson(accountAddress: JSONObject?): PostalAddress =
@@ -47,6 +52,8 @@ object PostalAddressParser {
             extendedAddress = extendedAddress ?: Json.optString(accountAddress, LINE_2_KEY, null)
             countryCodeAlpha2 = countryCodeAlpha2 ?: Json.optString(accountAddress, COUNTRY_CODE_KEY, null)
 
+            streetAddress = streetAddress ?: Json.optString(accountAddress, VENMO_GQL_ADDRESS1_KEY, null);
+            extendedAddress = extendedAddress ?: Json.optString(accountAddress, VENMO_GQL_ADDRESS2_KEY, null)
             // If this is a UserAddress-like JSON, parse it as such
             if (streetAddress == null && Json.optString(
                     accountAddress,
@@ -65,6 +72,10 @@ object PostalAddressParser {
                 region = Json.optString(accountAddress, REGION_KEY, null)
                 postalCode = Json.optString(accountAddress, POSTAL_CODE_KEY, null)
                 this.countryCodeAlpha2 = countryCodeAlpha2
+
+                recipientName = recipientName ?: Json.optString(accountAddress, VENMO_GQL_RECIPIENT_KEY, null);
+                locality = locality ?: Json.optString(accountAddress, VENMO_GQL_LOCALITY_KEY, null);
+                region = region ?: Json.optString(accountAddress, VENMO_GQL_REGION_KEY, null);
             }
 
         } ?: PostalAddress()
