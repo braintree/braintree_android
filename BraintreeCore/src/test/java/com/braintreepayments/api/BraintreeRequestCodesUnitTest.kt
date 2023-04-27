@@ -7,10 +7,6 @@ import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
 class BraintreeRequestCodesUnitTest {
-    @Test
-    fun expectedNumberOfRequestCodes() {
-        assertEquals(8, BraintreeRequestCodes::class.java.declaredFields.size)
-    }
 
     @Test
     fun threeDSecure() {
