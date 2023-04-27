@@ -148,7 +148,7 @@ class BraintreeClientUnitTest {
             .build()
 
         val configuration = mockk<Configuration>(relaxed = true)
-        val configurationLoader = MockConfigurationLoaderBuilder()
+        val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
@@ -612,7 +612,7 @@ class BraintreeClientUnitTest {
         every { authorizationLoader.authorizationFromCache } returns authorization
 
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        val configurationLoader = MockConfigurationLoaderBuilder()
+        val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
         val params = createDefaultParams(configurationLoader, authorizationLoader)
