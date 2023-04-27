@@ -143,7 +143,7 @@ class BraintreeClientUnitTest {
 
     @Test
     fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
-        val authorizationLoader = MockAuthorizationLoaderBuilder()
+        val authorizationLoader = MockkAuthorizationLoaderBuilder()
             .authorization(authorization)
             .build()
 
