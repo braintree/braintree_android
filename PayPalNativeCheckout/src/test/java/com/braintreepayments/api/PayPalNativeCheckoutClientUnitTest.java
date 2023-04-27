@@ -22,8 +22,8 @@ import com.paypal.checkout.config.SettingsConfig;
 import com.paypal.checkout.config.UIConfig;
 import com.paypal.checkout.error.OnError;
 import com.paypal.checkout.shipping.OnShippingChange;
-import com.paypal.pyplcheckout.instrumentation.constants.PEnums;
-import com.paypal.pyplcheckout.instrumentation.di.PLog;
+import com.paypal.pyplcheckout.common.instrumentation.PEnums;
+import com.paypal.pyplcheckout.common.instrumentation.PLog;
 
 import org.json.JSONException;
 import org.junit.Before;
