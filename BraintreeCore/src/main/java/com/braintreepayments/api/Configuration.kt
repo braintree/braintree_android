@@ -259,6 +259,12 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoMerchantId: String
 
     /**
+     * @return a boolean indicating whether ECD is enabled for this Venmo merchant.
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoEnrichedCustomerDataEnabled: Boolean
+
+    /**
      * @return the Visa Checkout API key configured in the Braintree Control Panel.
      * @suppress
      */
@@ -368,6 +374,7 @@ open class Configuration internal constructor(configurationString: String?) {
         venmoAccessToken = venmoConfiguration.accessToken
         venmoEnvironment = venmoConfiguration.environment
         venmoMerchantId = venmoConfiguration.merchantId
+        venmoEnrichedCustomerDataEnabled = venmoConfiguration.enrichedCustomerDataEnabled
         visaCheckoutApiKey = visaCheckoutConfiguration.apiKey
         visaCheckoutExternalClientId = visaCheckoutConfiguration.externalClientId
         visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands

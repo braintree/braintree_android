@@ -869,6 +869,21 @@ object Fixtures {
         }
     """
 
+    const val CONFIGURATION_WITH_PAY_WITH_VENMO_ECD_ENABLED = """
+        {
+          "clientApiUrl": "client_api_url",
+          "environment": "test",
+          "merchantId": "integration_merchant_id",
+          "merchantAccountId": "integration_merchant_account_id",
+          "payWithVenmo": {
+            "accessToken": "access-token",
+            "environment": "environment",
+            "merchantId": "merchant-id",
+            "enrichedCustomerDataEnabled": true
+          }
+        }
+    """
+
     // language=JSON
     const val CONFIGURATION_WITH_PAYPAL_TOUCH_DISABLED = """
         {
