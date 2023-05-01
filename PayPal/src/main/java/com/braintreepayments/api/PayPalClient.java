@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -55,7 +56,6 @@ public class PayPalClient {
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
-    @Deprecated
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
     }
@@ -86,6 +86,24 @@ public class PayPalClient {
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
+    }
+
+    /**
+     * Retrieve browser switch result from persistent storage for PayPal flow if one exists.
+     * Browser switch results can only be fetched once.
+     * @param activity Browser switch host activity.
+     * @return {@link BrowserSwitchResult}
+     */
+    @Nullable
+    public BrowserSwitchResult fetchBrowserSwitchResultIfOneExists(@NonNull FragmentActivity activity) {
+        BrowserSwitchResult result = null;
+        BrowserSwitchResult browserSwitchResult = braintreeClient.getBrowserSwitchResult(activity);
+        if (browserSwitchResult != null) {
+            if (browserSwitchResult.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
+                result = braintreeClient.deliverBrowserSwitchResult(activity);
+            }
+        }
+        return result;
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {
@@ -187,7 +205,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                     Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
+                            createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
@@ -217,7 +235,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                     Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
+                            createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
@@ -321,7 +339,6 @@ public class PayPalClient {
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
-    @Deprecated
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
