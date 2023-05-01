@@ -1,12 +1,18 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.api.Fixtures.TOKENIZATION_KEY;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import org.json.JSONException;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,13 +20,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
-
-import static com.braintreepayments.api.CardNumber.VISA;
-import static com.braintreepayments.api.Fixtures.TOKENIZATION_KEY;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class CardClientTest {

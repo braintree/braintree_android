@@ -1,15 +1,13 @@
 package com.braintreepayments.api;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import android.os.Parcel;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import android.os.Parcel;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoRequestUnitTest {

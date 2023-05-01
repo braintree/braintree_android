@@ -20,12 +20,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoLifecycleObserverUnitTest {
+
+    @Mock
+    ActivityResultLauncher<VenmoIntentData> activityResultLauncher;
 
     @Captor
     ArgumentCaptor<ActivityResultCallback<VenmoResult>> venmoResultCaptor;
@@ -71,14 +75,13 @@ public class VenmoLifecycleObserverUnitTest {
     public void launch_launchesActivity() throws JSONException {
         VenmoIntentData venmoIntentData =
                 new VenmoIntentData(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO), "venmoAccount", "venmoUsername", "sessionId", "integrationType");
-        ActivityResultLauncher<VenmoIntentData> resultLauncher = mock(ActivityResultLauncher.class);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         VenmoClient venmoClient = mock(VenmoClient.class);
         VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
-        sut.activityLauncher = resultLauncher;
+        sut.activityLauncher = activityResultLauncher;
 
         sut.launch(venmoIntentData);
-        verify(resultLauncher).launch(venmoIntentData);
+        verify(activityResultLauncher).launch(venmoIntentData);
     }
 }

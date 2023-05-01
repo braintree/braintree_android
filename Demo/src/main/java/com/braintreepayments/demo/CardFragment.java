@@ -1,5 +1,8 @@
 package com.braintreepayments.demo;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,18 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureListener;
@@ -47,9 +48,6 @@ import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 

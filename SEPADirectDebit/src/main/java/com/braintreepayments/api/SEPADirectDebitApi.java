@@ -1,12 +1,7 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocketFactory;
 
 class SEPADirectDebitApi {
 

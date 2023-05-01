@@ -51,7 +51,6 @@ dependencies {
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
-    testImplementation deps.assertJ
 }
 
 /* maven deploy + signing */

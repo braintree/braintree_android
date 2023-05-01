@@ -30,7 +30,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
         File("/system/app/Superuser.apk")
     )
 
-    @VisibleForTesting
     internal fun getDeviceMetadata(
         context: Context?,
         sessionId: String?,

@@ -1,8 +1,8 @@
 package com.braintreepayments.api;
 
-import org.junit.Test;
-
 import static junit.framework.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class PayPalDataCollectorRequestUnitTest {
 

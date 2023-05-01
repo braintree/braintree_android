@@ -22,5 +22,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="This feature uses a hard-coded sandbox tokenization key that is enabled for this local payment." />
+        android:text="@string/bt_local_payment_description" />
 </RelativeLayout>

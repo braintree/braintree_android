@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static android.os.Looper.getMainLooper;
 import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -34,9 +36,10 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        // Ref: https://robolectric.org/blog/2019/06/04/paused-looper/
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
@@ -52,9 +55,9 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
@@ -72,9 +75,9 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
@@ -90,9 +93,9 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
     }
 
@@ -107,9 +110,9 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class), any(BrowserSwitchResult.class));
     }
 
@@ -124,9 +127,9 @@ public class LocalPaymentLifecycleObserverUnitTest {
         when(localPaymentClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentLifecycleObserver sut = new LocalPaymentLifecycleObserver(localPaymentClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(localPaymentClient, never()).onBrowserSwitchResult(any(FragmentActivity.class), any(BrowserSwitchResult.class));
     }
 }

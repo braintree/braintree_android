@@ -1,18 +1,15 @@
 package com.braintreepayments.api;
 
-import android.os.Bundle;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
-import com.samsung.android.sdk.samsungpay.v2.StatusListener;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 
 public class MockSamsungPayInternalClientBuilder {
 

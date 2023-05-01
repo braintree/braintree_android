@@ -21,8 +21,6 @@ import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
-import java.util.Random;
-
 public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private String deviceData;

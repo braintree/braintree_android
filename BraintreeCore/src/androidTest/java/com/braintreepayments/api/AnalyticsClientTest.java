@@ -14,7 +14,6 @@ import androidx.work.testing.TestDriver;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

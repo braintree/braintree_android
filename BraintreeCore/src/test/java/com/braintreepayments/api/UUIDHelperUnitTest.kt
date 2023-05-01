@@ -3,8 +3,8 @@ package com.braintreepayments.api
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 import org.junit.Test
 import java.util.*

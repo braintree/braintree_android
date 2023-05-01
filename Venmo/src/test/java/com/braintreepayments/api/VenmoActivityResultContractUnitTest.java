@@ -8,7 +8,6 @@ import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
 import static com.braintreepayments.api.VenmoClient.EXTRA_RESOURCE_ID;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 

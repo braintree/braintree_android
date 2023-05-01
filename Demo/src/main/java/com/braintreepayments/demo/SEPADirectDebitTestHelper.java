@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -54,6 +55,6 @@ public class SEPADirectDebitTestHelper {
         BigInteger bban = new BigInteger(bbanString);
         BigInteger modResult = bban.mod(BigInteger.valueOf(97));
         BigInteger subtractionResult = BigInteger.valueOf(98).subtract(modResult);
-        return String.format("%02d", subtractionResult);
+        return String.format(Locale.getDefault(), "%02d", subtractionResult);
     }
 }

@@ -37,7 +37,7 @@ class VisaCheckoutConfigurationUnitTest {
         assertFalse(sut.isEnabled)
         assertEquals("", sut.apiKey)
         assertEquals("", sut.externalClientId)
-        assertTrue(sut.acceptedCardBrands!!.isEmpty())
+        assertTrue(sut.acceptedCardBrands.isEmpty())
     }
 
     @Test
@@ -46,6 +46,6 @@ class VisaCheckoutConfigurationUnitTest {
         assertFalse(sut.isEnabled)
         assertEquals("", sut.apiKey)
         assertEquals("", sut.externalClientId)
-        assertTrue(sut.acceptedCardBrands!!.isEmpty())
+        assertTrue(sut.acceptedCardBrands.isEmpty())
     }
 }

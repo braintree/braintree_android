@@ -1,8 +1,6 @@
 package com.braintreepayments.demo.views;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 
 import androidx.preference.EditTextPreference;
@@ -26,7 +24,6 @@ public class SummaryEditTestPreference extends EditTextPreference {
         init();
     }
 
-    @TargetApi(VERSION_CODES.LOLLIPOP)
     public SummaryEditTestPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();

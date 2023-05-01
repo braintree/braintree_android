@@ -7,15 +7,16 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 class ManifestValidator {
 
-    boolean isActivityDeclaredInAndroidManifest(Context context, Class klass) {
+    <T> boolean isActivityDeclaredInAndroidManifest(Context context, Class<T> klass) {
         return getActivityInfo(context, klass) != null;
     }
 
-    boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class klass) {
+    <T> boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class<T> klass) {
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(Uri.parse(urlScheme + "://"))
                 .addCategory(Intent.CATEGORY_DEFAULT)
@@ -28,7 +29,7 @@ class ManifestValidator {
     }
 
     @Nullable
-    ActivityInfo getActivityInfo(Context context, Class klass) {
+    <T> ActivityInfo getActivityInfo(Context context, Class<T> klass) {
         try {
             PackageInfo packageInfo =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);

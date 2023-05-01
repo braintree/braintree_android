@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static android.os.Looper.getMainLooper;
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -95,9 +97,10 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        // Ref: https://robolectric.org/blog/2019/06/04/paused-looper/
+        shadowOf(getMainLooper()).idle();
         verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -114,9 +117,9 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -136,9 +139,9 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -155,9 +158,9 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(threeDSecureClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
@@ -192,9 +195,9 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
+        shadowOf(getMainLooper()).idle();
         verify(threeDSecureClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
     }
 

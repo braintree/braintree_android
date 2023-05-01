@@ -21,12 +21,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayLifecycleObserverUnitTest {
+
+    @Mock
+    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
 
     @Captor
     ArgumentCaptor<ActivityResultCallback<GooglePayResult>> googlePayResultCaptor;
@@ -78,15 +82,14 @@ public class GooglePayLifecycleObserverUnitTest {
 
         PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(googlePayRequest.toJson());
         GooglePayIntentData intentData = new GooglePayIntentData(1, paymentDataRequest);
-        ActivityResultLauncher<GooglePayIntentData> resultLauncher = mock(ActivityResultLauncher.class);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         GooglePayClient googlePayClient = mock(GooglePayClient.class);
         GooglePayLifecycleObserver sut = new GooglePayLifecycleObserver(activityResultRegistry, googlePayClient);
-        sut.activityLauncher = resultLauncher;
+        sut.activityLauncher = activityLauncher;
 
         sut.launch(intentData);
-        verify(resultLauncher).launch(intentData);
+        verify(activityLauncher).launch(intentData);
     }
 }
 

@@ -1,9 +1,10 @@
 package com.braintreepayments.api
 
+import android.app.Activity
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
-import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.tasks.*
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
@@ -18,9 +19,51 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executor
 
 @RunWith(RobolectricTestRunner::class)
 class GooglePayInternalClientUnitTest {
+
+    // Ref: https://stackoverflow.com/a/75834762
+    abstract class MockBooleanTask : Task<Boolean>() {
+        override fun addOnFailureListener(p0: OnFailureListener): Task<Boolean> = this
+        override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<Boolean> = this
+        override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<Boolean> = this
+        override fun getException(): Exception? = null
+        override fun isCanceled(): Boolean = false
+        override fun isComplete(): Boolean = true
+        override fun isSuccessful(): Boolean = true
+
+        override fun addOnSuccessListener(
+            p0: Executor,
+            p1: OnSuccessListener<in Boolean>
+        ): Task<Boolean> = this
+
+        override fun addOnSuccessListener(
+            p0: Activity,
+            p1: OnSuccessListener<in Boolean>
+        ): Task<Boolean> = this
+
+        override fun addOnSuccessListener(p0: OnSuccessListener<in Boolean>): Task<Boolean> = this
+
+        override fun addOnCompleteListener(p0: OnCompleteListener<Boolean>): Task<Boolean> {
+            p0.onComplete(this)
+            return this
+        }
+    }
+
+    class SuccessfulBooleanTask(private val result: Boolean): MockBooleanTask() {
+        override fun getResult(): Boolean = result
+        override fun <X : Throwable?> getResult(p0: Class<X>): Boolean = result
+    }
+
+    class FailingBooleanTask(private val apiException: ApiException): MockBooleanTask() {
+        override fun getResult(): Boolean = false
+
+        override fun <X : Throwable?> getResult(p0: Class<X>): Boolean {
+            throw apiException
+        }
+    }
 
     private lateinit var activity: FragmentActivity
     private lateinit var isReadyToPayCallback: GooglePayIsReadyToPayCallback
@@ -52,7 +95,8 @@ class GooglePayInternalClientUnitTest {
 
     @Test
     fun `isReadyToPay requests Production Wallet environment when configuration environment is Production`() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY_PRODUCTION)
+        val configuration =
+            Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY_PRODUCTION)
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
@@ -70,9 +114,7 @@ class GooglePayInternalClientUnitTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
 
-        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } answers {
-            Tasks.forResult(true)
-        }
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->
@@ -90,9 +132,8 @@ class GooglePayInternalClientUnitTest {
         every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
 
         val expectedError = ApiException(Status.RESULT_INTERNAL_ERROR)
-        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } answers {
-            Tasks.forException(expectedError)
-        }
+        val failedTask: Task<Boolean> = FailingBooleanTask(expectedError)
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->

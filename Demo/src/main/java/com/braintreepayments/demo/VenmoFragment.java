@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -18,10 +17,8 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoListener;
-import com.braintreepayments.api.VenmoOnActivityResultCallback;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
-import com.braintreepayments.api.VenmoTokenizeAccountCallback;
 
 public class VenmoFragment extends BaseFragment implements VenmoListener {
 

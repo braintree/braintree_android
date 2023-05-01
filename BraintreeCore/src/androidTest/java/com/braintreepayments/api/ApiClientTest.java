@@ -1,6 +1,10 @@
 package com.braintreepayments.api;
 
-import androidx.appcompat.app.AppCompatActivity;
+import static com.braintreepayments.api.Assertions.assertIsANonce;
+import static junit.framework.Assert.fail;
+
+import android.content.Context;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
@@ -8,16 +12,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-
-import static com.braintreepayments.api.Assertions.assertIsANonce;
-import static junit.framework.Assert.fail;
-
-import android.content.Context;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ApiClientTest {
