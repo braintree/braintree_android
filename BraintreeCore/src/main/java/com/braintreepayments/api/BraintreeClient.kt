@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
@@ -344,6 +345,27 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     open fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
         return browserSwitchClient.deliverResultFromCache(context)
     }
+
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun getPendingBrowserSwitchRequest(context: Context) =
+        browserSwitchClient.getPendingRequest(context)
+
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun parseBrowserSwitchResult(request: BrowserSwitchRequest, requestCode: Int, intent: Intent) =
+        browserSwitchClient.parseResult(request, requestCode, intent)
+
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun clearPendingBrowserSwitchRequest(context: Context) =
+        browserSwitchClient.clearActiveRequest(context)
 
     /**
      * @suppress

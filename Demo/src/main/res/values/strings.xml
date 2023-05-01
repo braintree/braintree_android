@@ -76,8 +76,11 @@
     <string name="paypal_request_address_scope">Request Address Scope</string>
     <string name="paypal_request_address_scope_summary">Request address scope from the user</string>
     <string name="three_d_secure">3D Secure</string>
+    <string name="browser_switch">Browser Switch</string>
     <string name="enable_three_d_secure">Enable 3D Secure</string>
     <string name="enable_three_d_secure_summary">3D Secure will automatically be run on all Card payment methods</string>
+    <string name="enable_manual_browser_switching">Enable Manual Browser Switching</string>
+    <string name="enable_manual_browser_switching_summary">Use alternate integration pattern to give the Demo app more control over browser switching</string>
     <string name="require_three_d_secure">Require 3D Secure</string>
     <string name="require_three_d_secure_summary">Requires a successful authentication for 3D Secure transactions</string>
     <string name="paypal_disable_signature_verification">Disable app switch signature verification</string>

@@ -213,4 +213,8 @@ public class Settings {
     public static boolean isAmexRewardsBalanceEnabled(Context context) {
         return getPreferences(context).getBoolean("amex_rewards_balance", false);
     }
+
+    public static boolean isManualBrowserSwitchingEnabled(Context context) {
+        return getPreferences(context).getBoolean("enable_manual_browser_switching", false);
+    }
 }

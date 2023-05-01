@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -88,22 +89,18 @@ public class PayPalClient {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
-    /**
-     * Retrieve browser switch result from persistent storage for PayPal flow if one exists.
-     * Browser switch results can only be fetched once.
-     * @param activity Browser switch host activity.
-     * @return {@link BrowserSwitchResult}
-     */
     @Nullable
-    public BrowserSwitchResult fetchBrowserSwitchResultIfOneExists(@NonNull FragmentActivity activity) {
-        BrowserSwitchResult result = null;
-        BrowserSwitchResult browserSwitchResult = braintreeClient.getBrowserSwitchResult(activity);
-        if (browserSwitchResult != null) {
-            if (browserSwitchResult.getRequestCode() == BraintreeRequestCodes.PAYPAL) {
-                result = braintreeClient.deliverBrowserSwitchResult(activity);
-            }
-        }
-        return result;
+    public BrowserSwitchRequest getPendingBrowserSwitchRequest(@NonNull Context context) {
+        return braintreeClient.getPendingBrowserSwitchRequest(context);
+    }
+
+    @Nullable
+    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull BrowserSwitchRequest request, @NonNull Intent intent) {
+        return braintreeClient.parseBrowserSwitchResult(request, BraintreeRequestCodes.PAYPAL, intent);
+    }
+
+    public void clearPendingBrowserSwitchRequest(@NonNull Context context) {
+        braintreeClient.clearPendingBrowserSwitchRequest(context);
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {

@@ -3,6 +3,8 @@ package com.braintreepayments.demo;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BrowserSwitchRequest;
+import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
@@ -28,7 +32,10 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
+
     private DataCollector dataCollector;
+
+    private boolean useManualBrowserSwitch;
 
     @Nullable
     @Override
@@ -42,11 +49,41 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
         braintreeClient = getBraintreeClient();
 
-        payPalClient = new PayPalClient(this, braintreeClient);
-        payPalClient.setListener(this);
+        useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
+        if (useManualBrowserSwitch) {
+            payPalClient = new PayPalClient(braintreeClient);
+        } else {
+            payPalClient = new PayPalClient(this, braintreeClient);
+            payPalClient.setListener(this);
+        }
 
         amount = RandomDollarAmount.getNext();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (useManualBrowserSwitch) {
+            Activity activity = requireActivity();
+            BrowserSwitchRequest request = payPalClient.getPendingBrowserSwitchRequest(activity);
+            if (request != null) {
+                completeBrowserSwitchIfNecessary(request, activity.getIntent());
+            }
+        }
+    }
+    private void completeBrowserSwitchIfNecessary(BrowserSwitchRequest request, Intent intent) {
+        BrowserSwitchResult browserSwitchResult = payPalClient.parseBrowserSwitchResult(request, intent);
+        if (browserSwitchResult != null) {
+            payPalClient.onBrowserSwitchResult(browserSwitchResult, ((payPalAccountNonce, error) -> {
+                if (payPalAccountNonce != null) {
+                    handlePayPalResult(payPalAccountNonce);
+                } else if (error != null) {
+                    handleError(error);
+                }
+            }));
+            payPalClient.clearPendingBrowserSwitchRequest(requireContext());
+        }
     }
 
     public void launchSinglePayment(View v) {
@@ -90,7 +127,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 
@@ -100,7 +137,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
 
     @Override
     public void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
-       handlePayPalResult(payPalAccountNonce);
+        handlePayPalResult(payPalAccountNonce);
     }
 
     @Override
