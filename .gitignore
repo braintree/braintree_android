@@ -6,3 +6,7 @@ Gemfile.lock
 .bundle
 *.iml
 build
+
+# vim
+*.swp
+
