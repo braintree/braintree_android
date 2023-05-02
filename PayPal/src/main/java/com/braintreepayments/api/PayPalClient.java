@@ -93,22 +93,13 @@ public class PayPalClient {
     public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
         BrowserSwitchResult result = null;
         if (intent != null) {
-            BrowserSwitchRequest pendingRequest = getPendingBrowserSwitchRequest(context);
-            if (pendingRequest != null) {
-                result = parseBrowserSwitchResult(pendingRequest, intent);
+            BrowserSwitchRequest request = braintreeClient.getPendingBrowserSwitchRequest(context);
+            if (request != null) {
+                int requestCode = BraintreeRequestCodes.PAYPAL;
+                result = braintreeClient.parseBrowserSwitchResult(request, requestCode, intent);
             }
         }
         return result;
-    }
-
-    @Nullable
-    public BrowserSwitchRequest getPendingBrowserSwitchRequest(@NonNull Context context) {
-        return braintreeClient.getPendingBrowserSwitchRequest(context);
-    }
-
-    @Nullable
-    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull BrowserSwitchRequest request, @NonNull Intent intent) {
-        return braintreeClient.parseBrowserSwitchResult(request, BraintreeRequestCodes.PAYPAL, intent);
     }
 
     public void clearPendingBrowserSwitchRequests(@NonNull Context context) {
