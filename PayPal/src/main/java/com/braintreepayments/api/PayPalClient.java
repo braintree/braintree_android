@@ -97,7 +97,7 @@ public class PayPalClient {
      * If a BrowserSwitchResult exists, call {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
      * to allow the SDK to continue tokenization of the PayPalAccount.
      *
-     * Make sure to call {@link PayPalClient#clearPendingBrowserSwitchRequests(Context)} after
+     * Make sure to call {@link PayPalClient#clearActiveBrowserSwitchRequests(Context)} after
      * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
      * switch event handling.
      *
@@ -107,15 +107,8 @@ public class PayPalClient {
      */
     @Nullable
     public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
-        BrowserSwitchResult result = null;
-        if (intent != null) {
-            BrowserSwitchRequest request = braintreeClient.getPendingBrowserSwitchRequest(context);
-            if (request != null) {
-                int requestCode = BraintreeRequestCodes.PAYPAL;
-                result = braintreeClient.parseBrowserSwitchResult(request, requestCode, intent);
-            }
-        }
-        return result;
+        int requestCode = BraintreeRequestCodes.PAYPAL;
+        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
     }
 
     /**
@@ -125,8 +118,8 @@ public class PayPalClient {
      *
      * @param context The context used to clear pending browser switch requests
      */
-    public void clearPendingBrowserSwitchRequests(@NonNull Context context) {
-        braintreeClient.clearPendingBrowserSwitchRequests(context);
+    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
+        braintreeClient.clearActiveBrowserSwitchRequests(context);
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {

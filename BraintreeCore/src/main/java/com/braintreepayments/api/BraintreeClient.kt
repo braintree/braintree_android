@@ -350,21 +350,14 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getPendingBrowserSwitchRequest(context: Context) =
-        browserSwitchClient.getPendingRequest(context)
+    fun parseBrowserSwitchResult(context: Context, requestCode: Int, intent: Intent?) =
+        browserSwitchClient.parseResult(context, requestCode, intent)
 
     /**
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun parseBrowserSwitchResult(request: BrowserSwitchRequest, requestCode: Int, intent: Intent) =
-        browserSwitchClient.parseResult(request, requestCode, intent)
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun clearPendingBrowserSwitchRequests(context: Context) =
+    fun clearActiveBrowserSwitchRequests(context: Context) =
         browserSwitchClient.clearActiveRequests(context)
 
     /**

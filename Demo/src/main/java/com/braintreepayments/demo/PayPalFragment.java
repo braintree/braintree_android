@@ -4,7 +4,6 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalChecko
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BrowserSwitchRequest;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
@@ -82,7 +80,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
                 handleError(error);
             }
         }));
-        payPalClient.clearPendingBrowserSwitchRequests(requireContext());
+        payPalClient.clearActiveBrowserSwitchRequests(requireContext());
     }
 
     public void launchSinglePayment(View v) {
