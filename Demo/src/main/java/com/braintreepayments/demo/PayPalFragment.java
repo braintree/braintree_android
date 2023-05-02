@@ -66,24 +66,23 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         super.onResume();
         if (useManualBrowserSwitch) {
             Activity activity = requireActivity();
-            BrowserSwitchRequest request = payPalClient.getPendingBrowserSwitchRequest(activity);
-            if (request != null) {
-                completeBrowserSwitchIfNecessary(request, activity.getIntent());
+            BrowserSwitchResult browserSwitchResult =
+                payPalClient.parseBrowserSwitchResult(activity, activity.getIntent());
+            if (browserSwitchResult != null) {
+                handleBrowserSwitchResult(browserSwitchResult);
             }
         }
     }
-    private void completeBrowserSwitchIfNecessary(BrowserSwitchRequest request, Intent intent) {
-        BrowserSwitchResult browserSwitchResult = payPalClient.parseBrowserSwitchResult(request, intent);
-        if (browserSwitchResult != null) {
-            payPalClient.onBrowserSwitchResult(browserSwitchResult, ((payPalAccountNonce, error) -> {
-                if (payPalAccountNonce != null) {
-                    handlePayPalResult(payPalAccountNonce);
-                } else if (error != null) {
-                    handleError(error);
-                }
-            }));
-            payPalClient.clearPendingBrowserSwitchRequest(requireContext());
-        }
+
+    private void handleBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+        payPalClient.onBrowserSwitchResult(browserSwitchResult, ((payPalAccountNonce, error) -> {
+            if (payPalAccountNonce != null) {
+                handlePayPalResult(payPalAccountNonce);
+            } else if (error != null) {
+                handleError(error);
+            }
+        }));
+        payPalClient.clearPendingBrowserSwitchRequests(requireContext());
     }
 
     public void launchSinglePayment(View v) {
