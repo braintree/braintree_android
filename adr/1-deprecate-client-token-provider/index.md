@@ -27,7 +27,10 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    launchThreeDSecure(clientToken)
+
+    findViewById<Button>(R.id.submit).setOnClickListener {
+      launchThreeDSecure(clientToken)
+    }
   }
 
   private fun launchThreeDSecure() {
