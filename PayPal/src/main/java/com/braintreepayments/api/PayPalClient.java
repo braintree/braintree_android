@@ -118,6 +118,13 @@ public class PayPalClient {
         return result;
     }
 
+    /**
+     * Make sure to call this method after {@link PayPalClient#parseBrowserSwitchResult(Context, Intent)}
+     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
+     * switch event handling logic.
+     *
+     * @param context The context used to clear pending browser switch requests
+     */
     public void clearPendingBrowserSwitchRequests(@NonNull Context context) {
         braintreeClient.clearPendingBrowserSwitchRequest(context);
     }
