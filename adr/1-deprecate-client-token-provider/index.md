@@ -36,9 +36,7 @@ class MainActivity : AppCompatActivity() {
       try {
         val threeDSecureRequest = ThreeDSecureRequest()
         val threeDSecureResult = threeDSecureClient.performVerification(threeDSecureRequest)
-        threeDSecureResult.authChallenge?.let { authChallenge ->
-          threeDSecureLauncher.launch(authChallenge)
-        }
+        threeDSecureResult.authChallenge?.let { threeDSecureLauncher.launch(it) }
         // else send nonce to server
       } catch (error: ThreeDSecureError) {
         // handle error
