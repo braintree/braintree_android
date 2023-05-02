@@ -126,7 +126,7 @@ public class PayPalClient {
      * @param context The context used to clear pending browser switch requests
      */
     public void clearPendingBrowserSwitchRequests(@NonNull Context context) {
-        braintreeClient.clearPendingBrowserSwitchRequest(context);
+        braintreeClient.clearPendingBrowserSwitchRequests(context);
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {

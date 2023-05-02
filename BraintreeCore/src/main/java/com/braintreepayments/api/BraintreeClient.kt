@@ -364,8 +364,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun clearPendingBrowserSwitchRequest(context: Context) =
-        browserSwitchClient.clearActiveRequest(context)
+    fun clearPendingBrowserSwitchRequests(context: Context) =
+        browserSwitchClient.clearActiveRequests(context)
 
     /**
      * @suppress
