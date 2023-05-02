@@ -89,6 +89,22 @@ public class PayPalClient {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
+    /**
+     * After calling {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)},
+     * call this method in your Activity or Fragment's onResume() method to see if a response
+     * was provided through deep linking.
+     *
+     * If a BrowserSwitchResult exists, call {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
+     * to allow the SDK to continue tokenization of the PayPalAccount.
+     *
+     * Make sure to call {@link PayPalClient#clearPendingBrowserSwitchRequests(Context)} after
+     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
+     * switch event handling.
+     *
+     * @param context The context used to check for pending browser switch requests
+     * @param intent The intent containing a potential deep link response. May be null.
+     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
+     */
     @Nullable
     public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
         BrowserSwitchResult result = null;
