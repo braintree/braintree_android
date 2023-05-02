@@ -21,54 +21,48 @@ The main thing we can do to reduce onboarding friction is deprecated `ClientToke
 ```kotlin
 class MainActivity : AppCompatActivity() {
   private lateinit var threeDSecureClient: ThreeDSecureClient
-  private val threeDSecureLauncher = ThreeDSecureLauncher(this, (threeDSecureResult, threeDSecureError) -> {
-    threeDSecureResult?.let { threeDSecureClient.continuePerformVerification(it) }
-    // handle error
+  private val threeDSecureLauncher = ThreeDSecureLauncher(this, continuation -> {
+    handleThreeDSecureContinuation(continuation)
   })
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    
-    // use coroutines to fetch a client token
-    viewLifecycleOwner.lifecycleScope.launch {
-      val clientToken = merchantAPI.fetchClientToken()
-      launchThreeDSecure(clientToken)
+    launchThreeDSecure(clientToken)
+  }
+
+  private fun launchThreeDSecure() {
+    lifecycleScope.launch {
+      initThreeDSecureClientIfNecessary()
+      try {
+        val threeDSecureRequest = ThreeDSecureRequest()
+        val threeDSecureResult = threeDSecureClient.performVerification(threeDSecureRequest)
+        threeDSecureResult.authChallenge?.let { authChallenge ->
+          threeDSecureLauncher.launch(authChallenge)
+        }
+        // else send nonce to server
+      } catch (error: ThreeDSecureError) {
+        // handle error
+      }
     }
   }
 
-  private fun launchThreeDSecure(clientToken: String) {
+  private fun handleThreeDSecureContinuation(continuation: ThreeDSecureContinuation) {
+    lifecycleScope.launch {
+      initThreeDSecureClientIfNecessary()
+      try {
+        val threeDSecureResult = threeDSecureClient.continuePerformVerification(continuation)
+        // send nonce to server
+      } catch (error: ThreeDSecureError) {
+        // handle error
+      }
+    }
+  }
+
+  private suspend fun initThreeDSecureClientIfNecessary() {
+    // merchant may fetch a client asynchronously using coroutines (or any other method)
+    val clientToken = merchantAPI.fetchClientToken()
     val braintreeClient = BraintreeClient(this, clientToken)
     threeDSecureClient = ThreeDSecureClient(braintreeClient)
-    threeDSecureClient.performVerification(this, threeDSecureRequest) { threeDSecureResult, threeDSecureError ->
-      threeDSecureLauncher.launch(threeDSecureResult)
-    }
-  }
-}
-```
-
-### Option 2: Keep Activity Result Encapsulation and Forward ClientToken via Tokeniation Request Authorization Property
-
-```kotlin
-class MainActivity : AppCompatActivity() {
-  private val threeDSecureClient = ThreeDSecureClient(this, BraintreeClient())
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    
-    // use coroutines to fetch a client token
-    viewLifecycleOwner.lifecycleScope.launch {
-      val clientToken = merchantAPI.fetchClientToken()
-      launchThreeDSecure(clientToken)
-    }
-  }
-
-  private fun launchThreeDSecure(clientToken: String) {
-    threeDSecureRequest = ThreeDSecureRequest().apply {
-      authorization = clientToken
-    }
-    threeDSecureClient.performVerification(this, threeDSecureRequest) { threeDSecureResult, threeDSecureError ->
-      threeDSecureClient.continuePerformVerification(threeDSecureResult)
-    }
   }
 }
 ```
