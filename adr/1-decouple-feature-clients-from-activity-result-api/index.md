@@ -69,3 +69,7 @@ class MainActivity : AppCompatActivity() {
   }
 }
 ```
+
+## Consequences
+
+Removing abstraction will require more work for the merchant to onboard to the SDK. Existing merchants will also need to migrate to use the new version and integration patterns. On the other hand, less abstraction will provide merchants will more control. The SDK will become less opinionated and will have increased flexibility to fit into a wider range of merchant app architectures.
