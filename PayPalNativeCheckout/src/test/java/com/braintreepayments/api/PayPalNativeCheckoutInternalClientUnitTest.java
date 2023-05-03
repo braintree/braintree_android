@@ -40,7 +40,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
     private PayPalDataCollector payPalDataCollector;
     private ApiClient apiClient;
 
-    PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback payPalInternalClientCallback;
+    PayPalNativeCheckoutInternalClientCallback payPalInternalClientCallback;
 
     @Before
     public void beforeEach() {
@@ -51,7 +51,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
         payPalDataCollector = mock(PayPalDataCollector.class);
         apiClient = mock(ApiClient.class);
-        payPalInternalClientCallback = mock(PayPalNativeCheckoutInternalClient.PayPalNativeCheckoutInternalClientCallback.class);
+        payPalInternalClientCallback = mock(PayPalNativeCheckoutInternalClientCallback.class);
     }
 
     @Test
