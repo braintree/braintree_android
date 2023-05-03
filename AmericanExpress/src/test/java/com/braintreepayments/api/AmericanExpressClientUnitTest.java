@@ -1,18 +1,18 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 public class AmericanExpressClientUnitTest {
@@ -73,7 +73,7 @@ public class AmericanExpressClientUnitTest {
 
         ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
             ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), (Exception) isNull());
+        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), isNull());
 
         AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
         assertNotNull(rewardsBalance);
