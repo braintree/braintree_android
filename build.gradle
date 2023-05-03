@@ -24,7 +24,6 @@ buildscript {
             "kotlin"         : "1.7.0",
             "androidxTest"   : "1.4.0",
             "powermock"      : '2.0.9',
-            "powermockLegacy": "1.7.4",
             // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
             "room"           : roomVersion,
             "playServices"   : "19.1.0",
@@ -74,12 +73,6 @@ buildscript {
             "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
             "powermockMockito"           : "org.powermock:powermock-api-mockito2:${versions.powermock}",
             "powermockClassloading"      : "org.powermock:powermock-classloading-xstream:${versions.powermock}",
-
-            // Legacy versions of the powermock libraries are required until 3DS and Visa Checkout tests can be updated to resolve robolectric/powermock test issues
-            "powermockJunitLegacy"       : "org.powermock:powermock-module-junit4:${versions.powermockLegacy}",
-            "powermockRuleLegacy"        : "org.powermock:powermock-module-junit4-rule:${versions.powermockLegacy}",
-            "powermockMockitoLegacy"     : "org.powermock:powermock-api-mockito:${versions.powermockLegacy}",
-            "powermockClassloadingLegacy": "org.powermock:powermock-classloading-xstream:${versions.powermockLegacy}",
     ]
 
     dependencies {
