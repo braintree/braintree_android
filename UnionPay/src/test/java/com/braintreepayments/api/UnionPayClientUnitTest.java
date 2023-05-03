@@ -1,5 +1,17 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.net.Uri;
 
 import org.json.JSONException;
@@ -9,18 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class UnionPayClientUnitTest {
@@ -133,7 +133,7 @@ public class UnionPayClientUnitTest {
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<UnionPayEnrollment> resultCaptor = ArgumentCaptor.forClass(UnionPayEnrollment.class);
-        verify(unionPayEnrollCallback).onResult(resultCaptor.capture(), (Exception) isNull());
+        verify(unionPayEnrollCallback).onResult(resultCaptor.capture(), isNull());
 
         UnionPayEnrollment result = resultCaptor.getValue();
         assertEquals("some-enrollment-id", result.getId());
@@ -150,7 +150,7 @@ public class UnionPayClientUnitTest {
         sut.enroll(unionPayCard, unionPayEnrollCallback);
 
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(unionPayEnrollCallback).onResult((UnionPayEnrollment) isNull(), exceptionCaptor.capture());
+        verify(unionPayEnrollCallback).onResult(isNull(), exceptionCaptor.capture());
 
         Exception exception = exceptionCaptor.getValue();
         assertTrue(exception instanceof ConfigurationException);
