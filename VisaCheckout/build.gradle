@@ -50,6 +50,8 @@ dependencies {
     testImplementation deps.powermockRule
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
+    testImplementation deps.mockk
+    testImplementation deps.mockitoCore
     testImplementation deps.jsonAssert
 }
 

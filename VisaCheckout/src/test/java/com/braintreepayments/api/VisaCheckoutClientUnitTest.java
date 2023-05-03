@@ -1,5 +1,14 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
+
 import com.visa.checkout.Profile;
 import com.visa.checkout.Profile.CardBrand;
 import com.visa.checkout.Profile.ProfileBuilder;
@@ -23,15 +32,6 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "com.visa.checkout.Profile", "com.visa.checkout.Profile.ProfileBuilder"})
@@ -72,7 +72,7 @@ public class VisaCheckoutClientUnitTest {
         sut.createProfileBuilder(listener);
 
         ArgumentCaptor<ConfigurationException> captor = ArgumentCaptor.forClass(ConfigurationException.class);
-        verify(listener, times(1)).onResult((ProfileBuilder) isNull(), captor.capture());
+        verify(listener, times(1)).onResult(isNull(), captor.capture());
 
         ConfigurationException configurationException = captor.getValue();
         assertEquals("Visa Checkout is not enabled.", configurationException.getMessage());
