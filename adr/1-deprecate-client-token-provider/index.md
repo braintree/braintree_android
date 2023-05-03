@@ -1,4 +1,4 @@
-# Deprecate Client Token Provider and Decouple SDK from Activity Result API
+# Deprecate Decouple Feature Clients from Activity Result API
 
 **Status: Proposed**
 
@@ -12,11 +12,13 @@ Assuming the networking call is asynchronous, a merchant would need to fetch a c
 
 ## Decision
 
+We should decouple Feature Clients from the Activity Result API. Doing so will allow us to remove the `ClientTokenProvider` and reduce onboarding friction.
+
 The Client Token Provider pattern has been known to be [too opinionated](https://github.com/braintree/braintree_android/discussions/496) when it comes to asynchronous fetching. `ClientTokenProvider` provides the merchant with a callback object to notify the SDK that a client token has either been successfully obtained or an error encountered was encountered. Some merchants may prefer to use corutines or some other asynchronous programming pattern in order to obtain a client token. We should enable all merchants to use whatever strategy they wish to obtain a token.
 
-The main thing we can do to reduce onboarding friction is deprecated `ClientTokenProvider`. Then we have two options:
+We can lessen the responsibility of Feature Clients to execute an app switch by creating Feature Launchers. We may still wrap the Activity Result API for convenience and to bring app switching functionality into the Braintree Domain. Braintree Client then will only need access to a Context, decoupling Feature Clients from Activities and Fragments. <- This is helpful for Jetpack Compose integrations.
 
-### Option 1: Decouple Feature Clients from ActivityResult API
+We also have an opportunity to encapsulate the activity result with a "continuation" object that is opaque to the merchant, but allows them to forward the result to the SDK to complete a payment method's tokenization flow:
 
 ```kotlin
 class MainActivity : AppCompatActivity() {
