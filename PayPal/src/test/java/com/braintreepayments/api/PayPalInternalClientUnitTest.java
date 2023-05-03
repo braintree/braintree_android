@@ -4,11 +4,11 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -425,7 +425,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
         PayPalResponse payPalResponse = captor.getValue();
         assertEquals("risk-correlation-id", payPalResponse.getClientMetadataId());
