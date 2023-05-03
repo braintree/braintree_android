@@ -1,4 +1,4 @@
-# Deprecate Decouple Feature Clients from Activity Result API
+# Decouple Feature Clients from Activity Result API
 
 **Status: Proposed**
 
