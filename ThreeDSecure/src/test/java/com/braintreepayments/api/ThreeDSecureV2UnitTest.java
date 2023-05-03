@@ -6,10 +6,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -94,7 +94,7 @@ public class ThreeDSecureV2UnitTest {
         sut.prepareLookup(activity, basicRequest, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onResult(same(basicRequest), captor.capture(), (Exception) isNull());
+        verify(callback).onResult(same(basicRequest), captor.capture(), isNull());
 
         String clientData = captor.getValue();
         JSONObject lookup = new JSONObject(clientData);
