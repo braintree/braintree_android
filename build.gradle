@@ -23,7 +23,6 @@ buildscript {
     ext.versions = [
             "kotlin"         : "1.7.0",
             "androidxTest"   : "1.4.0",
-            "powermock"      : '2.0.9',
             // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
             "room"           : roomVersion,
             "playServices"   : "19.1.0",
@@ -68,11 +67,6 @@ buildscript {
             "mockitoCore"                : "org.mockito:mockito-core:5.3.1",
             "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.1",
             "mockk"                      : "io.mockk:mockk:1.13.4",
-
-            "powermockJunit"             : "org.powermock:powermock-module-junit4:${versions.powermock}",
-            "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
-            "powermockMockito"           : "org.powermock:powermock-api-mockito2:${versions.powermock}",
-            "powermockClassloading"      : "org.powermock:powermock-classloading-xstream:${versions.powermock}",
     ]
 
     dependencies {
