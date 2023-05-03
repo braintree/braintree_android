@@ -1,9 +1,5 @@
 package com.braintreepayments.api;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -13,8 +9,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 public class HttpClientUnitTest {
 
@@ -38,7 +38,7 @@ public class HttpClientUnitTest {
         HttpResponseCallback callback = mock(HttpResponseCallback.class);
         sut.sendRequest(httpRequest, callback);
 
-        verifyZeroInteractions(syncHttpClient);
+        verifyNoInteractions(syncHttpClient);
         threadScheduler.flushBackgroundThread();
 
         verify(syncHttpClient).request(httpRequest);
