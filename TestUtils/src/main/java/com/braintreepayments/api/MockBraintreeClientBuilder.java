@@ -144,11 +144,7 @@ public class MockBraintreeClientBuilder {
             }
         }).when(braintreeClient).getAuthorization(any(AuthorizationCallback.class));
 
-        // HACK: some google pay tests fail when getReturnUrlScheme is stubbed but not invoked
-        // TODO: create a wrapper around google wallet api to avoid having to use Powermock and Robolectric at the same time, which seems to be causing this issue
-        if (returnUrlScheme != null) {
-            when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
-        }
+        when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
 
         if (browserSwitchAssertionError != null) {
             try {
