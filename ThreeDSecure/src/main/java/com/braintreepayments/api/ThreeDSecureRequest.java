@@ -177,7 +177,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * exemption's conditions are satisfied, then it will be applied.
      * Possible values defined at {@link ThreeDSecureRequestedExemptionType}.
      *
-     * @param requestedExemptionType {@link ThreeDSecureRequestedExemptionType} The account type selected by the cardholder.
+     * @param requestedExemptionType {@link ThreeDSecureRequestedExemptionType} The exemption type selected by the cardholder.
      */
     public void setRequestedExemptionType(@Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
         this.requestedExemptionType = requestedExemptionType;
