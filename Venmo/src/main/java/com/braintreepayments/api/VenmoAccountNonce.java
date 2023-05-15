@@ -30,9 +30,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     private static final String VENMO_LAST_NAME_KEY = "lastName";
     private static final String VENMO_PHONE_NUMBER_KEY = "phoneNumber";
     private static final String VENMO_PAYMENT_METHOD_USERNAME_KEY = "userName";
-
     private static final String VENMO_BILLING_ADDRESS_KEY = "billingAddress";
-
     private static final String VENMO_SHIPPING_ADDRESS_KEY = "shippingAddress";
 
     private String email;
@@ -41,9 +39,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     private String lastName;
     private String phoneNumber;
     private String username;
-
     private PostalAddress billingAddress;
-
     private PostalAddress shippingAddress;
 
     static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {

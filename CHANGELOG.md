@@ -50,8 +50,15 @@
   * Deprecate 3DS v1. Any attempt to use 3DS v1 will now throw an error. See [Migrating to 3D Secure 2](https://developer.paypal.com/braintree/docs/guides/3d-secure/migration) for more information.
 
 * Venmo
-  * Add `collectCustomerBillingAddress`, `collectCustomerShippingAddress`, `totalAmount`, `subTotalAmount`, `discountAmount`,
-    `taxAmount`, `shippingAmount` and `lineItems` properties to `VenmoRequest` and use them during `createPaymentContext`
+  * Add the following properties to `VenmoRequest`:
+    * `collectCustomerBillingAddress`
+    * `collectCustomerShippingAddress`
+    * `totalAmount`
+    * `subTotalAmount`
+    * `discountAmount`
+    * `taxAmount`
+    * `shippingAmount`
+    * `lineItems`
 
 ## 4.26.1
 

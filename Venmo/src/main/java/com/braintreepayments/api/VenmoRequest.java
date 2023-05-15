@@ -145,7 +145,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @param subTotalAmount Optional. The subtotal amount of the transaction, excluding taxes, discounts, and shipping.
      */
-    public void setSubTotalAmount(String subTotalAmount) {
+    public void setSubTotalAmount(@Nullable String subTotalAmount) {
         this.subTotalAmount = subTotalAmount;
     }
 
@@ -160,7 +160,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @param shippingAmount Optional. The shipping amount charged for the transaction.
      */
-    public void setShippingAmount(String shippingAmount) {
+    public void setShippingAmount(@Nullable String shippingAmount) {
         this.shippingAmount = shippingAmount;
     }
 
@@ -175,7 +175,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @param discountAmount Optional. The total discount amount applied on the transaction.
      */
-    public void setDiscountAmount(String discountAmount) {
+    public void setDiscountAmount(@Nullable String discountAmount) {
         this.discountAmount = discountAmount;
     }
 
@@ -190,7 +190,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @param taxAmount Optional. The total tax amount applied to the transaction.
      */
-    public void setTaxAmount(String taxAmount) {
+    public void setTaxAmount(@Nullable String taxAmount) {
         this.taxAmount = taxAmount;
     }
 
@@ -205,7 +205,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @param totalAmount Optional. The grand total amount of the transaction that will be displayed on the paysheet.
      */
-    public void setTotalAmount(String totalAmount) {
+    public void setTotalAmount(@Nullable String totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -230,6 +230,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * @return The line items for this transaction. Can include up to 249 line items.
      */
+    @NonNull
     public ArrayList<VenmoLineItem> getLineItems() {
         return lineItems;
     }
@@ -276,8 +277,8 @@ public class VenmoRequest implements Parcelable {
         parcel.writeInt(paymentMethodUsage);
         parcel.writeString(subTotalAmount);
         parcel.writeString(discountAmount);
-        parcel.writeString(taxAmount);
         parcel.writeString(shippingAmount);
+        parcel.writeString(taxAmount);
         parcel.writeString(totalAmount);
         parcel.writeTypedList(lineItems);
     }

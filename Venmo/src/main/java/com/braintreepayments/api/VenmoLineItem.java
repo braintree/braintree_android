@@ -234,5 +234,4 @@ public class VenmoLineItem implements Parcelable {
         parcel.writeString(unitTaxAmount);
         parcel.writeString(url);
     }
-
 }
