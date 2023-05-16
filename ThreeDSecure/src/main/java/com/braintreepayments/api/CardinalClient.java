@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
@@ -65,6 +66,16 @@ class CardinalClient {
         cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
+
+        switch (request.getUIType()) {
+            case 1:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
+            case 2:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
+            case 3:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+        }
+
         if (request.getV2UiCustomization() != null) {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
         }

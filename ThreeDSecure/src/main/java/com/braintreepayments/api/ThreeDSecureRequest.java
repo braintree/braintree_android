@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
@@ -36,6 +37,13 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
     public static final String TRANSACTION_RISK_ANALYSIS = "transaction_risk_analysis";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({NATIVE, HTML, BOTH})
+    @interface ThreeDSecureUIType {}
+    public static final int NATIVE = 1;
+    public static final int HTML = 2;
+    public static final int BOTH = 3;
+
     private String nonce;
     private String amount;
     private String mobilePhoneNumber;
@@ -52,6 +60,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
+    private @ThreeDSecureUIType int uiType;
 
     /**
      * Set the nonce
@@ -218,6 +227,19 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces within the SDK.
+     * Possible Values:
+     * 01 BOTH
+     * 02 Native
+     * 03 HTML
+     *
+     * @param uiType {@link ThreeDSecureUIType} The UI type to request.
+     */
+    public void setUIType(@Nullable @ThreeDSecureUIType int uiType) {
+        this.uiType = uiType;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     @Nullable
@@ -339,6 +361,14 @@ public class ThreeDSecureRequest implements Parcelable {
     @Nullable
     public ThreeDSecureV1UiCustomization getV1UiCustomization() {
         return v1UiCustomization;
+    }
+
+    /**
+     * @return The UI type.
+     */
+    @Nullable
+    public @ThreeDSecureUIType int getUIType() {
+        return uiType;
     }
 
     public ThreeDSecureRequest() {}
