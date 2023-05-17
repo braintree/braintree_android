@@ -7,11 +7,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 /**
  * A class to contain 3D Secure request information used for authentication
@@ -44,6 +46,15 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final int HTML = 2;
     public static final int BOTH = 3;
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({OTP, SINGLE_SELECT, MULTI_SELECT, OOB, RENDER_HTML})
+    @interface ThreeDSecureRenderType {}
+    public static final int OTP = 1;
+    public static final int SINGLE_SELECT = 2;
+    public static final int MULTI_SELECT = 3;
+    public static final int OOB = 4;
+    public static final int RENDER_HTML = 5;
+
     private String nonce;
     private String amount;
     private String mobilePhoneNumber;
@@ -61,6 +72,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
     private @ThreeDSecureUIType int uiType;
+    private ArrayList<ThreeDSecureRenderType> renderType;
 
     /**
      * Set the nonce
@@ -240,6 +252,14 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     *
+     * @param renderType
+     */
+    public void setRenderType(ArrayList renderType) {
+        this.renderType = renderType;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     @Nullable
@@ -369,6 +389,14 @@ public class ThreeDSecureRequest implements Parcelable {
     @Nullable
     public @ThreeDSecureUIType int getUIType() {
         return uiType;
+    }
+
+    /**
+     *
+     * @return The render type.
+     */
+    public ArrayList getRenderType() {
+        return renderType;
     }
 
     public ThreeDSecureRequest() {}

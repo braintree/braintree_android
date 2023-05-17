@@ -443,6 +443,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
         threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
 
+        threeDSecureRequest.setUIType(ThreeDSecureRequest.BOTH);
+
         return threeDSecureRequest;
     }
 
