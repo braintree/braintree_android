@@ -45,7 +45,8 @@ buildscript {
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.3.3-SNAPSHOT",
-            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-3",            "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
+            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-3",
+            "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
             // NEXT_MAJOR_VERSION: upgrade to 2.7.1 (or latest) when Java 7 support is explicitly dropped
@@ -93,6 +94,9 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
     }
 }
 
