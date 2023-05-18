@@ -6,11 +6,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
+
+import org.json.JSONArray;
 
 class CardinalClient {
 
@@ -75,6 +78,24 @@ class CardinalClient {
             case 3:
                 cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
         }
+
+        JSONArray renderTypes = new JSONArray();
+
+        request.getRenderType().forEach((renderType) -> {
+            if (renderType.equals(1)) {
+                renderTypes.put(CardinalRenderType.OTP);
+            } else if (renderType.equals(2)) {
+                renderTypes.put(CardinalRenderType.SINGLE_SELECT);
+            } else if (renderType.equals(3)) {
+                renderTypes.put(CardinalRenderType.MULTI_SELECT);
+            } else if (renderType.equals(4)) {
+                renderTypes.put(CardinalRenderType.OOB);
+            } else if (renderType.equals(5)) {
+                renderTypes.put(CardinalRenderType.HTML);
+            }
+        });
+
+        cardinalConfigurationParameters.setRenderType(renderTypes);
 
         if (request.getV2UiCustomization() != null) {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
