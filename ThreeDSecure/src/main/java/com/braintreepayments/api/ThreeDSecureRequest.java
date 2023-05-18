@@ -239,7 +239,7 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces within the SDK.
+     * Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces in the 3D Secure challenge.
      * Possible Values:
      * 01 BOTH
      * 02 Native
@@ -252,8 +252,12 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. List of all the render types that the device supports for displaying specific challenge user interfaces within the 3D Secure challenge.
      *
-     * @param renderType
+     * When using `ThreeDSecureUIType.BOTH` or `ThreeDSecureUIType.HTML`, all `ThreeDSecureRenderType` options must be set.
+     * When using `ThreeDSecureUIType.NATIVE`, all `ThreeDSecureRenderType` options except `ThreeDSecureRenderType.RENDER_HTML` must be set.
+     *
+     * @param renderType specifies what render type to use in the 3D Secure challenge
      */
     public void setRenderType(ArrayList renderType) {
         this.renderType = renderType;
@@ -392,7 +396,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     *
      * @return The render type.
      */
     public ArrayList getRenderType() {
