@@ -71,30 +71,30 @@ class CardinalClient {
         cardinalConfigurationParameters.setEnableDFSync(true);
 
         switch (request.getUiType()) {
-            case 1:
+            case ThreeDSecureRequest.NATIVE:
                 cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
-            case 2:
+            case ThreeDSecureRequest.HTML:
                 cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
-            case 3:
+            case ThreeDSecureRequest.BOTH:
                 cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
         }
 
         if (request.getRenderTypes() != null) {
             JSONArray renderTypes = new JSONArray();
 
-            request.getRenderTypes().forEach((renderType) -> {
-                if (renderType.equals(1)) {
+            for (Integer renderType : request.getRenderTypes()) {
+                if (renderType.equals(ThreeDSecureRequest.OTP)) {
                     renderTypes.put(CardinalRenderType.OTP);
-                } else if (renderType.equals(2)) {
+                } else if (renderType.equals(ThreeDSecureRequest.SINGLE_SELECT)) {
                     renderTypes.put(CardinalRenderType.SINGLE_SELECT);
-                } else if (renderType.equals(3)) {
+                } else if (renderType.equals(ThreeDSecureRequest.MULTI_SELECT)) {
                     renderTypes.put(CardinalRenderType.MULTI_SELECT);
-                } else if (renderType.equals(4)) {
+                } else if (renderType.equals(ThreeDSecureRequest.OOB)) {
                     renderTypes.put(CardinalRenderType.OOB);
-                } else if (renderType.equals(5)) {
+                } else if (renderType.equals(ThreeDSecureRequest.HTML)) {
                     renderTypes.put(CardinalRenderType.HTML);
                 }
-            });
+            }
 
             cardinalConfigurationParameters.setRenderType(renderTypes);
         }
