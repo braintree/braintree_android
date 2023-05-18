@@ -244,6 +244,8 @@ public class ThreeDSecureRequest implements Parcelable {
      * 02 Native
      * 03 HTML
      *
+     * Defaults to BOTH
+     *
      * @param uiType {@link ThreeDSecureUiType} The UI type to request.
      */
     public void setUiType(@Nullable @ThreeDSecureUiType int uiType) {
@@ -255,6 +257,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * When using `ThreeDSecureUIType.BOTH` or `ThreeDSecureUIType.HTML`, all `ThreeDSecureRenderType` options must be set.
      * When using `ThreeDSecureUIType.NATIVE`, all `ThreeDSecureRenderType` options except `ThreeDSecureRenderType.RENDER_HTML` must be set.
+     *
+     * Defaults to OTP, OOB, SINGLE_SELECT, MULTI_SELECT, RENDER_HTML
      *
      * @param renderType specifies what render type to use in the 3D Secure challenge
      */
