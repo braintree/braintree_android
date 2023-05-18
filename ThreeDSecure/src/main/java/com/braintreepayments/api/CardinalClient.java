@@ -91,7 +91,7 @@ class CardinalClient {
                     renderTypes.put(CardinalRenderType.MULTI_SELECT);
                 } else if (renderType.equals(ThreeDSecureRequest.OOB)) {
                     renderTypes.put(CardinalRenderType.OOB);
-                } else if (renderType.equals(ThreeDSecureRequest.HTML)) {
+                } else if (renderType.equals(ThreeDSecureRequest.RENDER_HTML)) {
                     renderTypes.put(CardinalRenderType.HTML);
                 }
             }
