@@ -248,7 +248,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param uiType {@link ThreeDSecureUiType} The UI type to request.
      */
-    public void setUiType(@Nullable @ThreeDSecureUiType int uiType) {
+    public void setUiType(@ThreeDSecureUiType int uiType) {
         this.uiType = uiType;
     }
 
