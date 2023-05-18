@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.29.0
 
 * PayPalNativeCheckout
   * Reverting native version upgrade
