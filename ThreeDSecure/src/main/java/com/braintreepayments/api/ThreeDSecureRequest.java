@@ -71,7 +71,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
     private @ThreeDSecureUiType int uiType;
-    private List<Integer> renderType;
+    private List<Integer> renderTypes;
 
     /**
      * Set the nonce
@@ -262,8 +262,8 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param renderType specifies what render type to use in the 3D Secure challenge
      */
-    public void setRenderTypes(List<Integer> renderType) {
-        this.renderType = renderType;
+    public void setRenderTypes(List<Integer> renderTypes) {
+        this.renderTypes = renderTypes;
     }
 
     /**
@@ -402,7 +402,7 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     @Nullable
     public List<Integer> getRenderTypes() {
-        return renderType;
+        return renderTypes;
     }
 
     public ThreeDSecureRequest() {}
