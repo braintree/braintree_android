@@ -400,7 +400,6 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The render type.
      */
-    @Nullable
     public List<Integer> getRenderTypes() {
         return renderTypes;
     }
