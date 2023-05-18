@@ -5,6 +5,7 @@
 * PayPalNativeCheckout
   * Reverting native version upgrade
 * ThreeDSecure
+  * Bump Cardinal version to `2.2.7-3`
   * Add `setUiType` and `setRenderType` to `ThreeDSecureRequest`
 
 ## 4.28.0
