@@ -5,7 +5,7 @@
 * PayPalNativeCheckout
   * Reverting native version upgrade
 * ThreeDSecure
-  * Add `setUIType` and `setRenderType` to `ThreeDSecureRequest`
+  * Add `setUiType` and `setRenderType` to `ThreeDSecureRequest`
 
 ## 4.28.0
 

@@ -7,7 +7,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,7 +40,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NATIVE, HTML, BOTH})
-    @interface ThreeDSecureUIType {}
+    @interface ThreeDSecureUiType {}
     public static final int NATIVE = 1;
     public static final int HTML = 2;
     public static final int BOTH = 3;
@@ -71,7 +70,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
-    private @ThreeDSecureUIType int uiType;
+    private @ThreeDSecureUiType int uiType;
     private ArrayList<ThreeDSecureRenderType> renderType;
 
     /**
@@ -245,9 +244,9 @@ public class ThreeDSecureRequest implements Parcelable {
      * 02 Native
      * 03 HTML
      *
-     * @param uiType {@link ThreeDSecureUIType} The UI type to request.
+     * @param uiType {@link ThreeDSecureUiType} The UI type to request.
      */
-    public void setUIType(@Nullable @ThreeDSecureUIType int uiType) {
+    public void setUiType(@Nullable @ThreeDSecureUiType int uiType) {
         this.uiType = uiType;
     }
 
@@ -391,7 +390,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return The UI type.
      */
     @Nullable
-    public @ThreeDSecureUIType int getUIType() {
+    public @ThreeDSecureUiType int getUiType() {
         return uiType;
     }
 

@@ -70,7 +70,7 @@ class CardinalClient {
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
 
-        switch (request.getUIType()) {
+        switch (request.getUiType()) {
             case 1:
                 cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
             case 2:
