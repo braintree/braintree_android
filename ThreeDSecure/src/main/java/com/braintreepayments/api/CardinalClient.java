@@ -70,15 +70,13 @@ class CardinalClient {
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
 
-        if (request.getUiType() != null) {
-            switch (request.getUiType()) {
-                case 1:
-                    cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
-                case 2:
-                    cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
-                case 3:
-                    cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
-            }
+        switch (request.getUiType()) {
+            case 1:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
+            case 2:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
+            case 3:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
         }
 
         if (request.getRenderType() != null) {
