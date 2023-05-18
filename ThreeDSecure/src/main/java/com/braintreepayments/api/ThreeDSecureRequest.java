@@ -262,7 +262,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param renderType specifies what render type to use in the 3D Secure challenge
      */
-    public void setRenderTypes(List<Integer> renderType) {
+    public void setRenderTypes(@Nullable List<Integer> renderType) {
         this.renderType = renderType;
     }
 
