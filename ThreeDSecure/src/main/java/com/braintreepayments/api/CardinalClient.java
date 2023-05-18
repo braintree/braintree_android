@@ -70,32 +70,36 @@ class CardinalClient {
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
 
-        switch (request.getUiType()) {
-            case 1:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
-            case 2:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
-            case 3:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+        if (request.getRenderType() != null) {
+            switch (request.getUiType()) {
+                case 1:
+                    cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
+                case 2:
+                    cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
+                case 3:
+                    cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+            }
         }
 
-        JSONArray renderTypes = new JSONArray();
+        if (request.getRenderType() != null) {
+            JSONArray renderTypes = new JSONArray();
 
-        request.getRenderType().forEach((renderType) -> {
-            if (renderType.equals(1)) {
-                renderTypes.put(CardinalRenderType.OTP);
-            } else if (renderType.equals(2)) {
-                renderTypes.put(CardinalRenderType.SINGLE_SELECT);
-            } else if (renderType.equals(3)) {
-                renderTypes.put(CardinalRenderType.MULTI_SELECT);
-            } else if (renderType.equals(4)) {
-                renderTypes.put(CardinalRenderType.OOB);
-            } else if (renderType.equals(5)) {
-                renderTypes.put(CardinalRenderType.HTML);
-            }
-        });
+            request.getRenderType().forEach((renderType) -> {
+                if (renderType.equals(1)) {
+                    renderTypes.put(CardinalRenderType.OTP);
+                } else if (renderType.equals(2)) {
+                    renderTypes.put(CardinalRenderType.SINGLE_SELECT);
+                } else if (renderType.equals(3)) {
+                    renderTypes.put(CardinalRenderType.MULTI_SELECT);
+                } else if (renderType.equals(4)) {
+                    renderTypes.put(CardinalRenderType.OOB);
+                } else if (renderType.equals(5)) {
+                    renderTypes.put(CardinalRenderType.HTML);
+                }
+            });
 
-        cardinalConfigurationParameters.setRenderType(renderTypes);
+            cardinalConfigurationParameters.setRenderType(renderTypes);
+        }
 
         if (request.getV2UiCustomization() != null) {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
