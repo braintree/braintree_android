@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class to contain 3D Secure request information used for authentication
@@ -71,7 +71,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
     private @ThreeDSecureUiType int uiType;
-    private ArrayList<ThreeDSecureRenderType> renderType;
+    private List<Integer> renderType;
 
     /**
      * Set the nonce
@@ -262,7 +262,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param renderType specifies what render type to use in the 3D Secure challenge
      */
-    public void setRenderType(ArrayList renderType) {
+    public void setRenderTypes(List<Integer> renderType) {
         this.renderType = renderType;
     }
 
@@ -393,7 +393,6 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI type.
      */
-    @Nullable
     public @ThreeDSecureUiType int getUiType() {
         return uiType;
     }
@@ -401,7 +400,8 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The render type.
      */
-    public ArrayList getRenderType() {
+    @Nullable
+    public List<Integer> getRenderTypes() {
         return renderType;
     }
 

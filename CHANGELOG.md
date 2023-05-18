@@ -6,7 +6,7 @@
   * Reverting native version upgrade
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-3`
-  * Add `setUiType` and `setRenderType` to `ThreeDSecureRequest`
+  * Add `setUiType` and `setRenderTypes` to `ThreeDSecureRequest`
 
 ## 4.28.0
 

@@ -49,7 +49,7 @@ import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
@@ -447,14 +447,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         threeDSecureRequest.setUiType(ThreeDSecureRequest.BOTH);
 
-        ArrayList renderTypes = new ArrayList<>();
-        renderTypes.add(ThreeDSecureRequest.OTP);
-        renderTypes.add(ThreeDSecureRequest.SINGLE_SELECT);
-        renderTypes.add(ThreeDSecureRequest.MULTI_SELECT);
-        renderTypes.add(ThreeDSecureRequest.OOB);
-        renderTypes.add(ThreeDSecureRequest.RENDER_HTML);
-
-        threeDSecureRequest.setRenderType(renderTypes);
+        threeDSecureRequest.setRenderTypes(Arrays.asList(
+                ThreeDSecureRequest.OTP,
+                ThreeDSecureRequest.SINGLE_SELECT,
+                ThreeDSecureRequest.MULTI_SELECT,
+                ThreeDSecureRequest.OOB,
+                ThreeDSecureRequest.RENDER_HTML
+        ));
 
         return threeDSecureRequest;
     }

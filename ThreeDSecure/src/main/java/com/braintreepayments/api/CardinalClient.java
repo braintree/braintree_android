@@ -79,10 +79,10 @@ class CardinalClient {
                 cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
         }
 
-        if (request.getRenderType() != null) {
+        if (request.getRenderTypes() != null) {
             JSONArray renderTypes = new JSONArray();
 
-            request.getRenderType().forEach((renderType) -> {
+            request.getRenderTypes().forEach((renderType) -> {
                 if (renderType.equals(1)) {
                     renderTypes.put(CardinalRenderType.OTP);
                 } else if (renderType.equals(2)) {

@@ -143,7 +143,7 @@ public class CardinalClientUnitTest {
         renderTypes.add(ThreeDSecureRequest.RENDER_HTML);
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.setRenderType(renderTypes);
+        request.setRenderTypes(renderTypes);
 
         sut.initialize(context, configuration, request, cardinalInitializeCallback);
 
