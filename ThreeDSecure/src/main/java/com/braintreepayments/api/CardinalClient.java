@@ -6,10 +6,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
+
+import org.json.JSONArray;
 
 class CardinalClient {
 
@@ -65,6 +69,36 @@ class CardinalClient {
         cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
+
+        switch (request.getUiType()) {
+            case ThreeDSecureRequest.NATIVE:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
+            case ThreeDSecureRequest.HTML:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
+            case ThreeDSecureRequest.BOTH:
+                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+        }
+
+        if (request.getRenderTypes() != null) {
+            JSONArray renderTypes = new JSONArray();
+
+            for (Integer renderType : request.getRenderTypes()) {
+                if (renderType.equals(ThreeDSecureRequest.OTP)) {
+                    renderTypes.put(CardinalRenderType.OTP);
+                } else if (renderType.equals(ThreeDSecureRequest.SINGLE_SELECT)) {
+                    renderTypes.put(CardinalRenderType.SINGLE_SELECT);
+                } else if (renderType.equals(ThreeDSecureRequest.MULTI_SELECT)) {
+                    renderTypes.put(CardinalRenderType.MULTI_SELECT);
+                } else if (renderType.equals(ThreeDSecureRequest.OOB)) {
+                    renderTypes.put(CardinalRenderType.OOB);
+                } else if (renderType.equals(ThreeDSecureRequest.RENDER_HTML)) {
+                    renderTypes.put(CardinalRenderType.HTML);
+                }
+            }
+
+            cardinalConfigurationParameters.setRenderType(renderTypes);
+        }
+
         if (request.getV2UiCustomization() != null) {
             cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
         }

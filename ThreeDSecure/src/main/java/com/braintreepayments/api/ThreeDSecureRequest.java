@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * A class to contain 3D Secure request information used for authentication
@@ -36,6 +38,22 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
     public static final String TRANSACTION_RISK_ANALYSIS = "transaction_risk_analysis";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({NATIVE, HTML, BOTH})
+    @interface ThreeDSecureUiType {}
+    public static final int NATIVE = 1;
+    public static final int HTML = 2;
+    public static final int BOTH = 3;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({OTP, SINGLE_SELECT, MULTI_SELECT, OOB, RENDER_HTML})
+    @interface ThreeDSecureRenderType {}
+    public static final int OTP = 1;
+    public static final int SINGLE_SELECT = 2;
+    public static final int MULTI_SELECT = 3;
+    public static final int OOB = 4;
+    public static final int RENDER_HTML = 5;
+
     private String nonce;
     private String amount;
     private String mobilePhoneNumber;
@@ -52,6 +70,8 @@ public class ThreeDSecureRequest implements Parcelable {
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private ThreeDSecureV1UiCustomization v1UiCustomization;
+    private @ThreeDSecureUiType int uiType;
+    private List<Integer> renderTypes;
 
     /**
      * Set the nonce
@@ -218,6 +238,35 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces in the 3D Secure challenge.
+     * Possible Values:
+     * 01 BOTH
+     * 02 Native
+     * 03 HTML
+     *
+     * Defaults to BOTH
+     *
+     * @param uiType {@link ThreeDSecureUiType} The UI type to request.
+     */
+    public void setUiType(@ThreeDSecureUiType int uiType) {
+        this.uiType = uiType;
+    }
+
+    /**
+     * Optional. List of all the render types that the device supports for displaying specific challenge user interfaces within the 3D Secure challenge.
+     *
+     * When using `ThreeDSecureUIType.BOTH` or `ThreeDSecureUIType.HTML`, all `ThreeDSecureRenderType` options must be set.
+     * When using `ThreeDSecureUIType.NATIVE`, all `ThreeDSecureRenderType` options except `ThreeDSecureRenderType.RENDER_HTML` must be set.
+     *
+     * Defaults to OTP, OOB, SINGLE_SELECT, MULTI_SELECT, RENDER_HTML
+     *
+     * @param renderType specifies what render type to use in the 3D Secure challenge
+     */
+    public void setRenderTypes(List<Integer> renderTypes) {
+        this.renderTypes = renderTypes;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     @Nullable
@@ -339,6 +388,20 @@ public class ThreeDSecureRequest implements Parcelable {
     @Nullable
     public ThreeDSecureV1UiCustomization getV1UiCustomization() {
         return v1UiCustomization;
+    }
+
+    /**
+     * @return The UI type.
+     */
+    public @ThreeDSecureUiType int getUiType() {
+        return uiType;
+    }
+
+    /**
+     * @return The render type.
+     */
+    public List<Integer> getRenderTypes() {
+        return renderTypes;
     }
 
     public ThreeDSecureRequest() {}

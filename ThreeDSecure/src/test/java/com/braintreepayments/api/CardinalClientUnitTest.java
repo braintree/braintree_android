@@ -22,6 +22,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
@@ -32,6 +34,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Cardinal.class})
@@ -108,6 +112,46 @@ public class CardinalClientUnitTest {
 
         CardinalConfigurationParameters parameters = captor.getValue();
         assertEquals(CardinalEnvironment.PRODUCTION, parameters.getEnvironment());
+    }
+
+    @Test
+    public void initialize_whenUiTypeNotNull_setsCardinalConfigurationParameters() throws BraintreeException {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        CardinalClient sut = new CardinalClient();
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        request.setUiType(ThreeDSecureRequest.BOTH);
+        sut.initialize(context, configuration, request, cardinalInitializeCallback);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(cardinalInstance).configure(same(context), captor.capture());
+
+        CardinalConfigurationParameters parameters = captor.getValue();
+        assertEquals(CardinalUiType.BOTH, parameters.getUiType());
+    }
+
+    @Test
+    public void initialize_whenRenderTypeNotNull_setsCardinalConfigurationParameters() throws BraintreeException {
+        when(Cardinal.getInstance()).thenReturn(cardinalInstance);
+        CardinalClient sut = new CardinalClient();
+
+        ArrayList renderTypes = new ArrayList<>();
+        renderTypes.add(ThreeDSecureRequest.OTP);
+        renderTypes.add(ThreeDSecureRequest.SINGLE_SELECT);
+        renderTypes.add(ThreeDSecureRequest.MULTI_SELECT);
+        renderTypes.add(ThreeDSecureRequest.OOB);
+        renderTypes.add(ThreeDSecureRequest.RENDER_HTML);
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        request.setRenderTypes(renderTypes);
+
+        sut.initialize(context, configuration, request, cardinalInitializeCallback);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(cardinalInstance).configure(same(context), captor.capture());
+
+        CardinalConfigurationParameters parameters = captor.getValue();
+        assertEquals(5, parameters.getRenderType().length());
     }
 
     @Test

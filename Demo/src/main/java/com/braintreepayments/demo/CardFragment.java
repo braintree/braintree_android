@@ -49,6 +49,8 @@ import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Arrays;
+
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
@@ -442,6 +444,16 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
         threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
+
+        threeDSecureRequest.setUiType(ThreeDSecureRequest.BOTH);
+
+        threeDSecureRequest.setRenderTypes(Arrays.asList(
+                ThreeDSecureRequest.OTP,
+                ThreeDSecureRequest.SINGLE_SELECT,
+                ThreeDSecureRequest.MULTI_SELECT,
+                ThreeDSecureRequest.OOB,
+                ThreeDSecureRequest.RENDER_HTML
+        ));
 
         return threeDSecureRequest;
     }
