@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
@@ -18,6 +19,7 @@ import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
 import org.junit.Before
 import org.junit.Test
+
 
 class CardinalClientUnitTest {
 
@@ -94,6 +96,48 @@ class CardinalClientUnitTest {
 
         val parameters = parametersSlot.captured
         assertEquals(CardinalEnvironment.PRODUCTION, parameters.environment)
+    }
+
+    @Test
+    @Throws(BraintreeException::class)
+    fun initialize_whenUiTypeNotNull_setsCardinalConfigurationParameters() {
+        every { Cardinal.getInstance() } returns cardinalInstance
+
+        val sut = CardinalClient()
+        val request = ThreeDSecureRequest().apply {
+            uiType = ThreeDSecureRequest.BOTH
+        }
+        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+
+        val parametersSlot = slot<CardinalConfigurationParameters>()
+        verify { cardinalInstance.configure(context, capture(parametersSlot)) }
+
+        val parameters = parametersSlot.captured
+        assertEquals(CardinalUiType.BOTH, parameters.uiType)
+    }
+
+    @Test
+    @Throws(BraintreeException::class)
+    fun initialize_whenRenderTypeNotNull_setsCardinalConfigurationParameters() {
+        every { Cardinal.getInstance() } returns cardinalInstance
+
+        val sut = CardinalClient()
+        val request = ThreeDSecureRequest().apply {
+            renderTypes = listOf(
+                ThreeDSecureRequest.OTP,
+                ThreeDSecureRequest.SINGLE_SELECT,
+                ThreeDSecureRequest.MULTI_SELECT,
+                ThreeDSecureRequest.OOB,
+                ThreeDSecureRequest.RENDER_HTML,
+            )
+        }
+        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+
+        val parametersSlot = slot<CardinalConfigurationParameters>()
+        verify { cardinalInstance.configure(context, capture(parametersSlot)) }
+
+        val parameters = parametersSlot.captured
+        assertEquals(5, parameters.renderType.length())
     }
 
     @Test
