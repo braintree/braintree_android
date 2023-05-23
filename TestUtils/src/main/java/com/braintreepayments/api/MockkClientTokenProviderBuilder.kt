@@ -3,17 +3,17 @@ package com.braintreepayments.api
 import io.mockk.every
 import io.mockk.mockk
 
-class MockkAuthorizationProviderBuilder {
+class MockkClientTokenProviderBuilder {
 
     private var error: Exception? = null
     private var clientTokens: MutableList<String>? = null
 
-    fun clientToken(vararg clientTokens: String): MockkAuthorizationProviderBuilder {
+    fun clientToken(vararg clientTokens: String): MockkClientTokenProviderBuilder {
         this.clientTokens = clientTokens.toMutableList()
         return this
     }
 
-    fun error(error: Exception): MockkAuthorizationProviderBuilder {
+    fun error(error: Exception): MockkClientTokenProviderBuilder {
         this.error = error
         return this
     }

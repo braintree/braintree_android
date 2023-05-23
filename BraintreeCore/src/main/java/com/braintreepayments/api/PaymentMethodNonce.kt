@@ -2,6 +2,8 @@ package com.braintreepayments.api
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
+import androidx.annotation.VisibleForTesting
 
 /**
  * Base class representing a method of payment for a customer. [PaymentMethodNonce] represents the
@@ -25,7 +27,12 @@ open class PaymentMethodNonce : Parcelable {
     open val string: String
     open val isDefault: Boolean
 
-    protected constructor(nonce: String, isDefault: Boolean) {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(nonce: String, isDefault: Boolean) {
         string = nonce
         this.isDefault = isDefault
     }

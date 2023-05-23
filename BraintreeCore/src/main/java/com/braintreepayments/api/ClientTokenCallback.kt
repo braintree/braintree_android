@@ -1,22 +1,19 @@
-package com.braintreepayments.api;
-
-import androidx.annotation.NonNull;
+package com.braintreepayments.api
 
 /**
- * Callback used to communicate {@link ClientTokenProvider#getClientToken(ClientTokenCallback)} result
- * back to {@link BraintreeClient}.
+ * Callback used to communicate [ClientTokenProvider.getClientToken] result
+ * back to [BraintreeClient].
  */
-public interface ClientTokenCallback {
-
+interface ClientTokenCallback {
     /**
      * Invoke this method once a client token has been successfully fetched from the merchant server.
      * @param clientToken Client token fetched from merchant server
      */
-    void onSuccess(@NonNull String clientToken);
+    fun onSuccess(clientToken: String)
 
     /**
      * Invoke this method when an error occurs fetching the client token
      * @param error An error describing the cause of the client token fetch error
      */
-    void onFailure(@NonNull Exception error);
+    fun onFailure(error: Exception)
 }
