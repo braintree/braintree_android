@@ -13,7 +13,6 @@ The Braintree SDK uses code from the following libraries:
  * [leakcanary](https://github.com/square/leakcanary), Apache License Version 2.0
  * [mailable-log](https://github.com/lkorth/mailable-log), MIT License
  * [Mockito](https://github.com/mockito/mockito), MIT License
- * [PowerMock](https://github.com/jayway/powermock), Apache License Version 2.0
  * [Retrofit](https://github.com/square/retrofit), Apache License Version 2.0
  * [Robolectric](https://github.com/robolectric/robolectric), MIT License
  * [SDK Manager Plugin](https://github.com/JakeWharton/sdk-manager-plugin), Apache License Version 2.0

@@ -33,12 +33,9 @@ dependencies {
     implementation deps.junitTest
 
     compileOnly deps.robolectric
-    compileOnly deps.powermockJunit
-    compileOnly deps.powermockRule
-    compileOnly deps.powermockMockito
-    compileOnly deps.powermockClassloading
     compileOnly deps.jsonAssert
     compileOnly deps.mockk
+    compileOnly deps.mockitoCore
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')

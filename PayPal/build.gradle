@@ -38,10 +38,7 @@ dependencies {
     implementation project(':PayPalDataCollector')
 
     testImplementation deps.robolectric
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
+    testImplementation deps.mockitoCore
     testImplementation deps.jsonAssert
     testImplementation deps.mockitoCore
     testImplementation project(':TestUtils')

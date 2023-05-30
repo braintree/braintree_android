@@ -45,10 +45,7 @@ dependencies {
 
     testImplementation deps.robolectric
     testImplementation deps.junitTest
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
+    testImplementation deps.mockitoCore
     testImplementation deps.jsonAssert
     testImplementation project(':TestUtils')
 }

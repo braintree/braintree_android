@@ -2,18 +2,15 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -25,8 +22,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ TLSSocketFactory.class })
 public class SynchronousHttpClientUnitTest {
 
     BaseHttpResponseParser httpResponseParser;
@@ -34,7 +29,6 @@ public class SynchronousHttpClientUnitTest {
 
     @Before
     public void beforeEach() {
-        mockStatic(TLSSocketFactory.class);
         httpResponseParser = mock(BaseHttpResponseParser.class);
         sslSocketFactory = mock(SSLSocketFactory.class);
     }
@@ -108,12 +102,9 @@ public class SynchronousHttpClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
-        TLSSocketFactory defaultSocketFactory = mock(TLSSocketFactory.class);
-        when(TLSSocketFactory.newInstance()).thenReturn(defaultSocketFactory);
-
         SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
         sut.request(httpRequest);
-        verify(connection).setSSLSocketFactory(defaultSocketFactory);
+        verify(connection).setSSLSocketFactory(any(TLSSocketFactory.class));
     }
 
     @Test
@@ -152,9 +143,6 @@ public class SynchronousHttpClientUnitTest {
 
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
-
-        TLSSocketFactory defaultSocketFactory = mock(TLSSocketFactory.class);
-        when(TLSSocketFactory.newInstance()).thenReturn(defaultSocketFactory);
 
         final SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
         sut.setSSLSocketFactory(null);

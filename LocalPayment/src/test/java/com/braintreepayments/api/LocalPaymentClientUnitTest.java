@@ -6,10 +6,10 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -273,7 +273,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof ConfigurationException);
@@ -289,7 +289,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -305,7 +305,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(request, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -319,7 +319,7 @@ public class LocalPaymentClientUnitTest {
         sut.startPayment(null, localPaymentStartCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentStartCallback).onResult((LocalPaymentResult) isNull(), captor.capture());
+        verify(localPaymentStartCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);

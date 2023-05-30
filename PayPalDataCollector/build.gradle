@@ -47,10 +47,7 @@ dependencies {
     testImplementation deps.mockitoCore
     testImplementation deps.androidxTestCore
     testImplementation deps.jsonAssert
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
+    testImplementation deps.mockitoCore
 
     testImplementation project(':TestUtils')
 

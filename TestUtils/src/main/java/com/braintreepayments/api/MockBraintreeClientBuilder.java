@@ -1,8 +1,8 @@
 package com.braintreepayments.api;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -12,7 +12,6 @@ import android.content.pm.ActivityInfo;
 
 import androidx.fragment.app.FragmentActivity;
 
-import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -145,11 +144,7 @@ public class MockBraintreeClientBuilder {
             }
         }).when(braintreeClient).getAuthorization(any(AuthorizationCallback.class));
 
-        // HACK: some google pay tests fail when getReturnUrlScheme is stubbed but not invoked
-        // TODO: create a wrapper around google wallet api to avoid having to use Powermock and Robolectric at the same time, which seems to be causing this issue
-        if (returnUrlScheme != null) {
-            when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
-        }
+        when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
 
         if (browserSwitchAssertionError != null) {
             try {
@@ -158,7 +153,7 @@ public class MockBraintreeClientBuilder {
             } catch (BrowserSwitchException ignored) {}
         }
 
-        when(braintreeClient.getManifestActivityInfo(ArgumentMatchers.any())).thenReturn(activityInfo);
+        when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(browserSwitchResult);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(launchesBrowserSwitchAsNewTask);
 

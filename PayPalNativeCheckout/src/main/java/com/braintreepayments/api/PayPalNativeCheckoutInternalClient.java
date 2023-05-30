@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -19,10 +18,6 @@ class PayPalNativeCheckoutInternalClient {
 
     private final String cancelUrl;
     private final String successUrl;
-
-    interface PayPalNativeCheckoutInternalClientCallback {
-        void onResult(@Nullable PayPalNativeCheckoutResponse payPalResponse, @Nullable Exception error);
-    }
 
     PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalDataCollector(braintreeClient), new ApiClient(braintreeClient));

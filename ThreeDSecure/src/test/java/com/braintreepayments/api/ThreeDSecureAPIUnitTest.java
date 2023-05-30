@@ -5,10 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +60,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "another-session-id", callback);
 
-        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+        verify(callback).onResult(any(ThreeDSecureResult.class), isNull());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
 
-        verify(callback).onResult((ThreeDSecureResult) isNull(), any(JSONException.class));
+        verify(callback).onResult(isNull(), any(JSONException.class));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
 
-        verify(callback).onResult((ThreeDSecureResult) isNull(), same(httpError));
+        verify(callback).onResult(isNull(), same(httpError));
     }
 
     @Test

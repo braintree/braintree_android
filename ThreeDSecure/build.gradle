@@ -40,20 +40,18 @@ dependencies {
     implementation deps.appCompat
     implementation deps.lifecycleRuntime
 
+    testImplementation deps.robolectric
+    testImplementation deps.mockk
+    testImplementation deps.mockitoCore
+    testImplementation deps.jsonAssert
+    testImplementation deps.androidxTestCore
+    testImplementation project(':TestUtils')
+
     androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
     androidTestImplementation project(':TestUtils')
-
-    testImplementation deps.robolectric
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
-    testImplementation deps.jsonAssert
-    testImplementation deps.androidxTestCore
-    testImplementation project(':TestUtils')
 }
 
 // region signing and publishing

@@ -46,10 +46,8 @@ dependencies {
     testImplementation deps.androidxTestRules
     testImplementation deps.androidxTestRunner
     testImplementation deps.robolectric
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockRule
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockClassloading
+    testImplementation deps.mockk
+    testImplementation deps.mockitoCore
     testImplementation deps.jsonAssert
 }
 

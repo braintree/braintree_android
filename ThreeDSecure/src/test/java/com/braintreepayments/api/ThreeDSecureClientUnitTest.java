@@ -6,10 +6,10 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -215,7 +215,7 @@ public class ThreeDSecureClientUnitTest {
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
         assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
                 captor.getValue().getMessage());
     }
@@ -232,7 +232,7 @@ public class ThreeDSecureClientUnitTest {
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
-        verify(threeDSecureResultCallback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
 
         BraintreeException error = captor.getValue();
         String expectedMessage =
