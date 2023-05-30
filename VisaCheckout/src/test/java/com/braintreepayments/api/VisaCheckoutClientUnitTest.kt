@@ -34,8 +34,6 @@ class VisaCheckoutClientUnitTest {
         every { visaPaymentSummary.callId } returns "stubbedCallId"
         every { visaPaymentSummary.encKey } returns "stubbedEncKey"
         every { visaPaymentSummary.encPaymentData } returns "stubbedEncPaymentData"
-
-//        every { VisaPaymentSummary::class.java}.withAnyArguments() returns visaPaymentSummary)
     }
 
     @Test
