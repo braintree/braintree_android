@@ -351,6 +351,7 @@ open class Configuration internal constructor(configurationString: String?) {
         isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
         isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
         isGraphQLEnabled = graphQLConfiguration.isEnabled
+        // NEXT MAJOR VERSION: remove Kount related properties
         isKountEnabled = false
         isPayPalTouchDisabled = payPalConfiguration.isTouchDisabled
         kountMerchantId = ""
