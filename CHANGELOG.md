@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeDataCollector
+  * Remove Kount dependency
+
 ## 4.30.0
 
 * GooglePay
