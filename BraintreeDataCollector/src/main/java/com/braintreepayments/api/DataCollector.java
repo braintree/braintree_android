@@ -15,25 +15,19 @@ import org.json.JSONObject;
  */
 public class DataCollector {
 
-    private static final String DEVICE_SESSION_ID_KEY = "device_session_id";
-    private static final String FRAUD_MERCHANT_ID_KEY = "fraud_merchant_id";
     private static final String CORRELATION_ID_KEY = "correlation_id";
 
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
-    private final KountDataCollector kountDataCollector;
-    private final UUIDHelper uuidHelper;
 
     public DataCollector(@NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(braintreeClient), new KountDataCollector(braintreeClient), new UUIDHelper());
+        this(braintreeClient, new PayPalDataCollector(braintreeClient));
     }
 
     @VisibleForTesting
-    DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, KountDataCollector kountDataCollector, UUIDHelper uuidHelper) {
+    DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
-        this.kountDataCollector = kountDataCollector;
-        this.uuidHelper = uuidHelper;
     }
 
     /**
@@ -57,7 +51,9 @@ public class DataCollector {
      * @param context    Android Context
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
      * @param callback   {@link DataCollectorCallback}
+     * @deprecated Kount is officially deprecated, use {@link PayPalDataCollector#collectDeviceData(Context, String, PayPalDataCollectorCallback)} instead.
      */
+    @Deprecated
     public void collectDeviceData(@NonNull final Context context, @Nullable final String merchantId, @NonNull final DataCollectorCallback callback) {
         final Context appContext = context.getApplicationContext();
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -72,31 +68,7 @@ public class DataCollector {
                         }
                     } catch (JSONException ignored) {
                     }
-
-                    if (configuration.isKountEnabled()) {
-                        final String id;
-                        if (merchantId != null) {
-                            id = merchantId;
-                        } else {
-                            id = configuration.getKountMerchantId();
-                        }
-
-                        final String deviceSessionId = uuidHelper.getFormattedUUID();
-                        kountDataCollector.startDataCollection(context, id, deviceSessionId, new KountDataCollectorCallback() {
-                            @Override
-                            public void onResult(@Nullable String kountSessionId, @Nullable Exception error) {
-                                try {
-                                    deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
-                                    deviceData.put(FRAUD_MERCHANT_ID_KEY, id);
-                                } catch (JSONException ignored) {
-                                }
-
-                                callback.onResult(deviceData.toString(), null);
-                            }
-                        });
-                    } else {
-                        callback.onResult(deviceData.toString(), null);
-                    }
+                    callback.onResult(deviceData.toString(), null);
                 } else {
                     callback.onResult(null, error);
                 }

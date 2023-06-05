@@ -116,13 +116,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
-        try {
-            put(new JSONObject(kountConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
-        return this;
-    }
-
     public TestConfigurationBuilder visaCheckout(TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
         try {
             put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
@@ -194,13 +187,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return new TestPayPalConfigurationBuilder(jsonBody.getJSONObject("paypal"));
         } catch (JSONException ignored) {}
         return new TestPayPalConfigurationBuilder(true);
-    }
-
-    public TestKountConfigurationBuilder kount() {
-        try {
-            return new TestKountConfigurationBuilder(jsonBody.getJSONObject("kount"));
-        } catch (JSONException ignored) {}
-        return new TestKountConfigurationBuilder();
     }
 
     public TestVisaCheckoutConfigurationBuilder visaCheckout() {
@@ -351,22 +337,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestGooglePayConfigurationBuilder paypalClientId(String paypalClientId) {
             put(paypalClientId);
-            return this;
-        }
-    }
-
-    public static class TestKountConfigurationBuilder extends JSONBuilder {
-
-        public TestKountConfigurationBuilder() {
-            super();
-        }
-
-        protected TestKountConfigurationBuilder(JSONObject json) {
-            super(json);
-        }
-
-        public TestKountConfigurationBuilder kountMerchantId(String kountMerchantid) {
-            put(kountMerchantid);
             return this;
         }
     }

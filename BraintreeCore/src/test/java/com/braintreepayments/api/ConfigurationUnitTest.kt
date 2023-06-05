@@ -138,12 +138,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun returnsNewKountConfigurationWhenKountIsAbsent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        assertFalse(sut.isKountEnabled)
-    }
-
-    @Test
     fun returnsNewCardConfigurationWhenCardConfigurationIsAbsent() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertEquals(0, sut.supportedCardTypes.size)
@@ -239,15 +233,15 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun isKountEnabled_forwardsInvocationToKountConfiguration() {
+    fun isKountEnabled_alwaysReturnsFalse() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT)
-        assertTrue(sut.isKountEnabled)
+        assertFalse(sut.isKountEnabled)
     }
 
     @Test
-    fun kountMerchantId_forwardsInvocationToKountConfiguration() {
+    fun kountMerchantId_alwaysReturnsEmptyString() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT)
-        assertEquals("600000", sut.kountMerchantId)
+        assertEquals("", sut.kountMerchantId)
     }
 
     @Test
