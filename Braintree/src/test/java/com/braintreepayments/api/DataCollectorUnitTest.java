@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,10 +33,7 @@ public class DataCollectorUnitTest {
     @Before
     public void setup() {
         mBraintreeFragment = new MockFragmentBuilder()
-                .configuration(new TestConfigurationBuilder()
-                        .kount(new TestKountConfigurationBuilder()
-                                .kountMerchantId("600000"))
-                        .build())
+                .configuration(new TestConfigurationBuilder().build())
                 .build();
     }
 

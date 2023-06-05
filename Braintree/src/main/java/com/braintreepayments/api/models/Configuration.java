@@ -27,7 +27,6 @@ public class Configuration {
     private static final String BRAINTREE_API_KEY = "braintreeApi";
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
-    private static final String KOUNT_KEY = "kount";
     private static final String GOOGLE_PAYMENT_KEY = "androidPay";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
@@ -92,7 +91,8 @@ public class Configuration {
         mGooglePaymentConfiguration = GooglePaymentConfiguration.fromJson(json.optJSONObject(GOOGLE_PAYMENT_KEY));
         mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
         mVenmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
-        mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
+        // kount is always disabled
+        mKountConfiguration = KountConfiguration.fromJson(null);
         mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
