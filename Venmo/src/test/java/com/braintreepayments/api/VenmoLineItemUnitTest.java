@@ -21,13 +21,13 @@ public class VenmoLineItemUnitTest {
 
         JSONObject json = item.toJson();
 
-        assertEquals("debit", json.getString("kind"));
+        assertEquals("DEBIT", json.getString("type"));
         assertEquals("An Item", json.getString("name"));
         assertEquals("1", json.getString("quantity"));
-        assertEquals("2", json.getString("unit_amount"));
+        assertEquals("2", json.getString("unitAmount"));
         assertEquals("A new item", json.getString("description"));
-        assertEquals("abc-123", json.getString("product_code"));
-        assertEquals("1.50", json.getString("unit_tax_amount"));
+        assertEquals("abc-123", json.getString("productCode"));
+        assertEquals("1.50", json.getString("unitTaxAmount"));
         assertEquals("http://example.com", json.getString("url"));
     }
 }

@@ -26,16 +26,16 @@ public class VenmoLineItem implements Parcelable {
     @interface VenmoLineItemKind {
     }
 
-    public static final String KIND_CREDIT = "credit";
-    public static final String KIND_DEBIT = "debit";
+    public static final String KIND_CREDIT = "CREDIT";
+    public static final String KIND_DEBIT = "DEBIT";
 
     private static final String DESCRIPTION_KEY = "description";
-    private static final String KIND_KEY = "kind";
+    private static final String KIND_KEY = "type";
     private static final String NAME_KEY = "name";
-    private static final String PRODUCT_CODE_KEY = "product_code";
+    private static final String PRODUCT_CODE_KEY = "productCode";
     private static final String QUANTITY_KEY = "quantity";
-    private static final String UNIT_AMOUNT_KEY = "unit_amount";
-    private static final String UNIT_TAX_AMOUNT_KEY = "unit_tax_amount";
+    private static final String UNIT_AMOUNT_KEY = "unitAmount";
+    private static final String UNIT_TAX_AMOUNT_KEY = "unitTaxAmount";
     private static final String URL_KEY = "url";
 
     private String description;
