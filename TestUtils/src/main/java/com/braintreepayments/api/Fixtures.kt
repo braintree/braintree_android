@@ -2398,7 +2398,7 @@ object Fixtures {
             "description": "Visa •••• 1234",
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Google Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Google Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"bin\":\"123456\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
             },
             "type": "CARD",
             "info": {
