@@ -2302,7 +2302,7 @@ object Fixtures {
             },
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-google-pay-nonce\",\"description\":\"Google Pay\",\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-google-pay-nonce\",\"description\":\"Google Pay\",\"details\":{\"cardType\":\"Visa\",\"bin\":\"123456\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
             }
           }
         }

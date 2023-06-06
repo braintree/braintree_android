@@ -30,6 +30,7 @@ public class GooglePayCardNonceUnitTest {
 
         assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
         assertEquals("Visa", googlePayCardNonce.getCardType());
+        assertEquals("123456", googlePayCardNonce.getBin());
         assertEquals("11", googlePayCardNonce.getLastTwo());
         assertEquals("1234", googlePayCardNonce.getLastFour());
         assertEquals("android-user@example.com", googlePayCardNonce.getEmail());
