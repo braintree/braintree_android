@@ -20,6 +20,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
+    private static final String BIN_KEY = "bin";
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String LAST_FOUR_KEY = "lastFour";
     private static final String IS_NETWORK_TOKENIZED_KEY = "isNetworkTokenized";
@@ -28,6 +29,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
     private final String cardType;
+    private final String bin;
     private final String lastTwo;
     private final String lastFour;
     private final String email;
@@ -81,16 +83,18 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         PostalAddress shippingAddress = postalAddressFromJson(shippingAddressJson);
 
         BinData binData = BinData.fromJson(inputJson.optJSONObject(BIN_DATA_KEY));
+        String bin = details.getString(BIN_KEY);
         String lastTwo = details.getString(LAST_TWO_KEY);
         String lastFour = details.getString(LAST_FOUR_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
         boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, false);
 
-        return new GooglePayCardNonce(cardType, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
+        return new GooglePayCardNonce(cardType, bin, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
     }
 
     GooglePayCardNonce(
             String cardType,
+            String bin,
             String lastTwo,
             String lastFour,
             String email,
@@ -103,6 +107,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     ) {
         super(nonce, isDefault);
         this.cardType = cardType;
+        this.bin = bin;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;
         this.email = email;
@@ -144,6 +149,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     @NonNull
     public String getCardType() {
         return cardType;
+    }
+
+    /**
+     * @return First six digits of card number.
+     */
+    @NonNull
+    public String getBin() {
+        return bin;
     }
 
     /**
@@ -205,6 +218,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(cardType);
+        dest.writeString(bin);
         dest.writeString(lastTwo);
         dest.writeString(lastFour);
         dest.writeString(email);
@@ -217,6 +231,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private GooglePayCardNonce(Parcel in) {
         super(in);
         cardType = in.readString();
+        bin = in.readString();
         lastTwo = in.readString();
         lastFour = in.readString();
         email = in.readString();
