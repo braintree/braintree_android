@@ -4,6 +4,15 @@
 
 * Venmo
   * Fix issue caused by `VenmoActivityResultContract` where a user cancelation is being misinterpreted as an unknown exception because the intent data is `null` (fixes #734)
+  * Add the following properties to `VenmoRequest`:
+    * `collectCustomerBillingAddress`
+    * `collectCustomerShippingAddress`
+    * `totalAmount`
+    * `subTotalAmount`
+    * `discountAmount`
+    * `taxAmount`
+    * `shippingAmount`
+    * `lineItems`
 
 ## 4.31.0
 
@@ -48,17 +57,6 @@
 * ThreeDSecure
   * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
   * Deprecate 3DS v1. Any attempt to use 3DS v1 will now throw an error. See [Migrating to 3D Secure 2](https://developer.paypal.com/braintree/docs/guides/3d-secure/migration) for more information.
-
-* Venmo
-  * Add the following properties to `VenmoRequest`:
-    * `collectCustomerBillingAddress`
-    * `collectCustomerShippingAddress`
-    * `totalAmount`
-    * `subTotalAmount`
-    * `discountAmount`
-    * `taxAmount`
-    * `shippingAmount`
-    * `lineItems`
 
 ## 4.26.1
 
