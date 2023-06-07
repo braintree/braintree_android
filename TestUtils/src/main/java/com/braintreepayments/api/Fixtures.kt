@@ -2302,7 +2302,7 @@ object Fixtures {
             },
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-google-pay-nonce\",\"description\":\"Google Pay\",\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"fake-google-pay-nonce\",\"description\":\"Google Pay\",\"details\":{\"cardType\":\"Visa\",\"bin\":\"123456\",\"lastTwo\":\"11\",\"lastFour\":\"1234\",\"isNetworkTokenized\":true},\"binData\":{\"prepaid\":\"Unknown\",\"healthcare\":\"Yes\",\"debit\":\"No\",\"durbinRegulated\":\"Unknown\",\"commercial\":\"Unknown\",\"payroll\":\"Unknown\",\"issuingBank\":\"Unknown\",\"countryOfIssuance\":\"Something\",\"productId\":\"123\"}}]}"
             }
           }
         }
@@ -2398,7 +2398,7 @@ object Fixtures {
             "description": "Visa •••• 1234",
             "tokenizationData": {
               "type": "PAYMENT_GATEWAY",
-              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Google Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
+              "token": "{\"androidPayCards\":[{\"type\":\"AndroidPayCard\",\"nonce\":\"d887f42c-bda5-091a-0798-af42d3ed173e\",\"description\":\"Google Pay\",\"consumed\":false,\"details\":{\"cardType\":\"Visa\",\"bin\":\"123456\",\"lastTwo\":\"34\",\"lastFour\":\"1234\"},\"binData\":{\"prepaid\":\"No\",\"healthcare\":\"No\",\"debit\":\"No\",\"durbinRegulated\":\"No\",\"commercial\":\"No\",\"payroll\":\"No\",\"issuingBank\":\"Issuing Bank USA\",\"countryOfIssuance\":\"USA\",\"productId\":\"A\"}}]}"
             },
             "type": "CARD",
             "info": {

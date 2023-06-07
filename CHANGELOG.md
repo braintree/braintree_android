@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+  * Add `GooglePayCardNonce.getBin()`
+
 ## 4.29.0
 
 * PayPalNativeCheckout
