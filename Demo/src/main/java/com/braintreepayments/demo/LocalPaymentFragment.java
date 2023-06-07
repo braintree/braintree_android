@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentListener;
 import com.braintreepayments.api.LocalPaymentNonce;
@@ -21,6 +24,8 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
 
     private LocalPaymentClient localPaymentClient;
 
+    private boolean useManualBrowserSwitch;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,10 +34,33 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         mIdealButton.setOnClickListener(this::launchIdeal);
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        localPaymentClient = new LocalPaymentClient(this, braintreeClient);
-        localPaymentClient.setListener(this);
-
+        useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
+        if (useManualBrowserSwitch) {
+            localPaymentClient = new LocalPaymentClient(braintreeClient);
+        } else {
+            localPaymentClient = new LocalPaymentClient(this, braintreeClient);
+            localPaymentClient.setListener(this);
+        }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (useManualBrowserSwitch) {
+            Activity activity = requireActivity();
+            BrowserSwitchResult browserSwitchResult =
+                    localPaymentClient.parseBrowserSwitchResult(activity, activity.getIntent());
+            if (browserSwitchResult != null) {
+                handleManualBrowserSwitchResult(browserSwitchResult);
+            }
+        }
+    }
+
+    private void handleManualBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+        Context context = requireContext();
+        localPaymentClient.onBrowserSwitchResult(context, browserSwitchResult, this::handleLocalPaymentResult);
+        localPaymentClient.clearActiveBrowserSwitchRequests(context);
     }
 
     public void launchIdeal(View v) {
