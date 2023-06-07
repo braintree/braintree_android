@@ -175,6 +175,7 @@ public class ThreeDSecureClient {
                     try {
                         cardinalClient.initialize(activity, configuration, request, cardinalInitializeCallback);
                     } catch (BraintreeException initializeException) {
+                        braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.failed");
                         callback.onResult(null, initializeException);
                     }
                 }
@@ -237,6 +238,7 @@ public class ThreeDSecureClient {
                             try {
                                 cardinalClient.initialize(context, configuration, request, cardinalInitializeCallback);
                             } catch (BraintreeException initializeException) {
+                                braintreeClient.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.failed");
                                 callback.onResult(null, null, initializeException);
                             }
                         }
