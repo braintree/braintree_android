@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Fix issue caused by `VenmoActivityResultContract` where a user cancelation is being misinterpreted as an unknown exception because the intent data is `null` (fixes #734)
+
 ## 4.31.0
 
 * BraintreeDataCollector

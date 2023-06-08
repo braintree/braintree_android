@@ -81,7 +81,7 @@ public class VenmoActivityResultContractUnitTest {
     public void parseResult_whenResultIsCANCELED_returnsVenomResultWithError() {
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
-        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_CANCELED, new Intent());
+        VenmoResult venmoResult = sut.parseResult(Activity.RESULT_CANCELED, null);
         assertNotNull(venmoResult);
 
         UserCanceledException error = (UserCanceledException) venmoResult.getError();
