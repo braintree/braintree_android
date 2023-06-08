@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeDataCollector
+  * Remove Kount dependency
+  * Kount is no longer supported via Braintree, instead please use our [Fraud Protection Advanced product](https://developer.paypal.com/braintree/articles/guides/fraud-tools/premium/fraud-protection-advanced)
+
 ## 4.30.0
 
 * GooglePay

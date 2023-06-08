@@ -47,7 +47,6 @@ open class Configuration internal constructor(configurationString: String?) {
         private const val ENVIRONMENT_KEY = "environment"
         private const val GOOGLE_PAY_KEY = "androidPay"
         private const val GRAPHQL_KEY = "graphQL"
-        private const val KOUNT_KEY = "kount"
         private const val MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId"
         private const val MERCHANT_ID_KEY = "merchantId"
         private const val PAYPAL_ENABLED_KEY = "paypalEnabled"
@@ -284,7 +283,6 @@ open class Configuration internal constructor(configurationString: String?) {
     private val configurationString: String
     private val googlePayConfiguration: GooglePayConfiguration
     private val graphQLConfiguration: GraphQLConfiguration
-    private val kountConfiguration: KountConfiguration
     private val payPalConfiguration: PayPalConfiguration
     private val samsungPayConfiguration: SamsungPayConfiguration
     private val unionPayConfiguration: UnionPayConfiguration
@@ -320,7 +318,6 @@ open class Configuration internal constructor(configurationString: String?) {
         graphQLConfiguration = GraphQLConfiguration(json.optJSONObject(GRAPHQL_KEY))
         isPayPalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false)
         isThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false)
-        kountConfiguration = KountConfiguration(json.optJSONObject(KOUNT_KEY))
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
@@ -354,9 +351,10 @@ open class Configuration internal constructor(configurationString: String?) {
         isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
         isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
         isGraphQLEnabled = graphQLConfiguration.isEnabled
-        isKountEnabled = kountConfiguration.isEnabled
+        // NEXT MAJOR VERSION: remove Kount related properties
+        isKountEnabled = false
         isPayPalTouchDisabled = payPalConfiguration.isTouchDisabled
-        kountMerchantId = kountConfiguration.kountMerchantId
+        kountMerchantId = ""
         payPalClientId = payPalConfiguration.clientId
         payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
         payPalDisplayName = payPalConfiguration.displayName
