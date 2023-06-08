@@ -4,12 +4,9 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -44,18 +41,19 @@ public class DataCollector {
 
     /**
      * Collects device data based on your merchant configuration.
-     *
+     * <p>
      * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
      * call it at the beginning of customer checkout.
-     *
+     * <p>
      * Use the return value on your server, e.g. with `Transaction.sale`.
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param fragment   {@link BraintreeFragment}
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
-     * @param listener listener called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
+     * @param listener   listener called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
+     * @deprecated
      */
-    public static void collectDeviceData(final BraintreeFragment fragment, final String merchantId,
-            final BraintreeResponseListener<String> listener) {
+    @Deprecated
+    public static void collectDeviceData(final BraintreeFragment fragment, final String merchantId, final BraintreeResponseListener<String> listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -66,35 +64,10 @@ public class DataCollector {
                     if (!TextUtils.isEmpty(clientMetadataId)) {
                         deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
                     }
-                } catch (JSONException ignored) {}
-
-                if (configuration.getKount().isEnabled()) {
-                    final String id;
-                    if (merchantId != null) {
-                        id = merchantId;
-                    } else {
-                        id = configuration.getKount().getKountMerchantId();
-                    }
-
-                    try {
-                        final String deviceSessionId = UUIDHelper.getFormattedUUID();
-                        startDeviceCollector(fragment, id, deviceSessionId, new BraintreeResponseListener<String>() {
-                            @Override
-                            public void onResponse(String sessionId) {
-                                try {
-                                    deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
-                                    deviceData.put(FRAUD_MERCHANT_ID_KEY, id);
-                                } catch (JSONException ignored) {}
-
-                                listener.onResponse(deviceData.toString());
-                            }
-                        });
-                    } catch (ClassNotFoundException | NoClassDefFoundError | NumberFormatException ignored) {
-                        listener.onResponse(deviceData.toString());
-                    }
-                } else {
-                    listener.onResponse(deviceData.toString());
+                } catch (JSONException ignored) {
                 }
+
+                listener.onResponse(deviceData.toString());
             }
         });
     }
@@ -113,7 +86,8 @@ public class DataCollector {
             if (!TextUtils.isEmpty(clientMetadataId)) {
                 deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
             }
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         listener.onResponse(deviceData.toString());
     }
@@ -127,52 +101,15 @@ public class DataCollector {
     public static String getPayPalClientMetadataId(Context context) {
         try {
             return PayPalOneTouchCore.getClientMetadataId(context);
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
 
         try {
             return PayPalDataCollector.getClientMetadataId(context);
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
 
         return "";
-    }
-
-    private static void startDeviceCollector(final BraintreeFragment fragment, final String merchantId,
-            final String deviceSessionId, @Nullable final BraintreeResponseListener<String> listener)
-            throws ClassNotFoundException, NumberFormatException {
-        fragment.sendAnalyticsEvent("data-collector.kount.started");
-
-        Class.forName(com.kount.api.DataCollector.class.getName());
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                final com.kount.api.DataCollector dataCollector = com.kount.api.DataCollector.getInstance();
-                dataCollector.setContext(fragment.getApplicationContext());
-                dataCollector.setMerchantID(Integer.parseInt(merchantId));
-                dataCollector.setLocationCollectorConfig(com.kount.api.DataCollector.LocationConfig.COLLECT);
-                dataCollector.setEnvironment(getDeviceCollectorEnvironment(configuration.getEnvironment()));
-
-                dataCollector.collectForSession(deviceSessionId, new com.kount.api.DataCollector.CompletionHandler() {
-                    @Override
-                    public void completed(String sessionID) {
-                        fragment.sendAnalyticsEvent("data-collector.kount.succeeded");
-
-                        if (listener != null) {
-                            listener.onResponse(sessionID);
-                        }
-                    }
-
-                    @Override
-                    public void failed(String sessionID, final com.kount.api.DataCollector.Error error) {
-                        fragment.sendAnalyticsEvent("data-collector.kount.failed");
-
-                        if (listener != null) {
-                            listener.onResponse(sessionID);
-                        }
-                    }
-                });
-            }
-        });
     }
 
     static void collectRiskData(final BraintreeFragment fragment,
@@ -181,12 +118,12 @@ public class DataCollector {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (configuration.getCardConfiguration().isFraudDataCollectionEnabled()) {
-                    HashMap<String,String> additionalProperties = new HashMap<>();
+                    HashMap<String, String> additionalProperties = new HashMap<>();
                     additionalProperties.put("rda_tenant", "bt_card");
                     additionalProperties.put("mid", configuration.getMerchantId());
 
                     if (fragment.getAuthorization() instanceof ClientToken) {
-                        String customerId = ((ClientToken)fragment.getAuthorization()).getCustomerId();
+                        String customerId = ((ClientToken) fragment.getAuthorization()).getCustomerId();
                         if (customerId != null) {
                             additionalProperties.put("cid", customerId);
                         }
@@ -202,13 +139,5 @@ public class DataCollector {
                 }
             }
         });
-    }
-
-    @VisibleForTesting
-    static int getDeviceCollectorEnvironment(String environment) {
-        if ("production".equalsIgnoreCase(environment)) {
-            return com.kount.api.DataCollector.ENVIRONMENT_PRODUCTION;
-        }
-        return com.kount.api.DataCollector.ENVIRONMENT_TEST;
     }
 }

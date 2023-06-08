@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeDataCollector
+  * Remove Kount dependency
+  * Deprecate `DataCollector#collectDeviceData(BraintreeFragment, String, BraintreeResponseListener<String>)`
+  * Kount is no longer supported via Braintree, instead please use our [Fraud Protection Advanced product](https://developer.paypal.com/braintree/articles/guides/fraud-tools/premium/fraud-protection-advanced)
+
 ## 3.20.1
 
 * Update paypal-data-collector to 5.4.0

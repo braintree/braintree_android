@@ -4,8 +4,6 @@ plugins {
     id 'signing'
 }
 
-def deviceCollectorVersion = 'kount-data-collector-3.2.jar'
-
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion '30.0.3'
@@ -21,10 +19,6 @@ android {
         textReport true
         textOutput 'stdout'
     }
-}
-
-dependencies {
-    api files('libs/' + deviceCollectorVersion)
 }
 
 // region signing and publishing
