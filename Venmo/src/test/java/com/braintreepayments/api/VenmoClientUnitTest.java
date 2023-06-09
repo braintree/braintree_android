@@ -221,7 +221,7 @@ public class VenmoClientUnitTest {
 
         verify(listener).onVenmoFailure(captor.capture());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-        assertEquals("Cannot collect customer data when ECD is disabled.", captor.getValue().getMessage());
+        assertEquals("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data.", captor.getValue().getMessage());
     }
 
     @Test

@@ -58,21 +58,6 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
-        VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        venmoRequest.setProfileId(null);
-        venmoRequest.setShouldVault(shouldVault);
-        venmoRequest.setCollectCustomerBillingAddress(true);
-        venmoRequest.setTotalAmount("20");
-        venmoRequest.setSubTotalAmount("18");
-        venmoRequest.setTaxAmount("1");
-        venmoRequest.setShippingAmount("1");
-        ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
-        venmoRequest.setLineItems(lineItems);
-
-        venmoClient.tokenizeVenmoAccount(activity, venmoRequest);
-
         braintreeClient.getConfiguration((configuration, error) -> {
             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
                 VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
@@ -82,7 +67,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 venmoRequest.setCollectCustomerShippingAddress(true);
                 venmoRequest.setTotalAmount("20");
                 venmoRequest.setSubTotalAmount("18");
-                venmoRequest.setTaxAmount("2");
+                venmoRequest.setTaxAmount("1");
+                venmoRequest.setShippingAmount("1");
                 ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
