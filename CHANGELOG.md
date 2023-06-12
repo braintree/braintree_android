@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.21.0
 
 * BraintreeDataCollector
   * Remove Kount dependency
