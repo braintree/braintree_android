@@ -174,6 +174,13 @@ public class VenmoClient {
                     return;
                 }
 
+                // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
+                if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
+                    callback.onResult(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                    return;
+                }
+
                 String venmoProfileId = request.getProfileId();
                 if (TextUtils.isEmpty(venmoProfileId)) {
                     venmoProfileId = configuration.getVenmoMerchantId();

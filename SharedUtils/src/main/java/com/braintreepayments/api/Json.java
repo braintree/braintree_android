@@ -22,4 +22,12 @@ class Json {
             return json.optString(name, fallback);
         }
     }
+
+    static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
+        if (json == null || json.isNull(name)) {
+            return fallback;
+        } else {
+            return json.optBoolean(name, fallback);
+        }
+    }
 }

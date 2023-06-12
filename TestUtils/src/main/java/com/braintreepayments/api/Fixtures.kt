@@ -869,6 +869,21 @@ object Fixtures {
         }
     """
 
+    const val CONFIGURATION_WITH_PAY_WITH_VENMO_ECD_ENABLED = """
+        {
+          "clientApiUrl": "client_api_url",
+          "environment": "test",
+          "merchantId": "integration_merchant_id",
+          "merchantAccountId": "integration_merchant_account_id",
+          "payWithVenmo": {
+            "accessToken": "access-token",
+            "environment": "environment",
+            "merchantId": "merchant-id",
+            "enrichedCustomerDataEnabled": true
+          }
+        }
+    """
+
     // language=JSON
     const val CONFIGURATION_WITH_PAYPAL_TOUCH_DISABLED = """
         {
@@ -2029,6 +2044,37 @@ object Fixtures {
             "lastName": "venmo-last-name",
             "phoneNumber": "venmo-phone-number",
             "userName": "@sampleuser"
+          }
+        }
+    """
+
+    const val VENMO_PAYMENT_METHOD_CONTEXT_JSON_WITH_ADDRESSES = """
+        {
+          "paymentMethodId": "sample-payment-method-id",
+          "userName": "@sampleuser",
+          "payerInfo": {
+            "email": "venmo-email",
+            "externalId": "venmo-external-id",
+            "firstName": "venmo-first-name",
+            "lastName": "venmo-last-name",
+            "phoneNumber": "venmo-phone-number",
+            "userName": "@sampleuser",
+            "billingAddress": {
+                "addressLine1": "123 Fake St.",
+                "addressLine2": "Apt. 3",
+                "adminArea2": "Oakland",
+                "adminArea1": "CA",
+                "postalCode": "94602",
+                "countryCode": "US"
+              },
+              "shippingAddress": {
+                "addressLine1": "789 Fake St.",
+                "addressLine2": "Apt. 2",
+                "adminArea2": "Dallas",
+                "adminArea1": "TX",
+                "postalCode": "75001",
+                "countryCode": "US"
+              }
           }
         }
     """

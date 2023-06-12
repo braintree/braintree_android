@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -9,6 +10,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -16,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
+import java.util.ArrayList;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoApiUnitTest {
@@ -37,6 +40,15 @@ public class VenmoApiUnitTest {
         request.setProfileId("sample-venmo-merchant");
         request.setShouldVault(false);
         request.setDisplayName("display-name");
+        request.setCollectCustomerBillingAddress(true);
+        request.setCollectCustomerShippingAddress(true);
+        request.setTotalAmount("100");
+        request.setSubTotalAmount("90");
+        request.setTaxAmount("9.00");
+        request.setShippingAmount("1");
+        ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
+        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
+        request.setLineItems(lineItems);
 
         venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
 
@@ -55,6 +67,51 @@ public class VenmoApiUnitTest {
         assertEquals("MOBILE_APP", input.getString("customerClient"));
         assertEquals("CONTINUE", input.getString("intent"));
         assertEquals("display-name", input.getString("displayName"));
+
+        JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");
+        assertEquals("true", paysheetDetails.getString("collectCustomerBillingAddress"));
+        assertEquals("true", paysheetDetails.getString("collectCustomerShippingAddress"));
+        JSONObject transactionDetails = paysheetDetails.getJSONObject("transactionDetails");
+        assertEquals("1", transactionDetails.getString("shippingAmount"));
+        assertEquals("9.00", transactionDetails.getString("taxAmount"));
+        assertEquals("90", transactionDetails.getString("subTotalAmount"));
+        assertEquals("100", transactionDetails.getString("totalAmount"));
+        assertFalse(transactionDetails.has("discountAmount"));
+
+        lineItems.get(0).setUnitTaxAmount("0");
+        JSONArray expectedLineItems = new JSONArray().put(lineItems.get(0).toJson());
+        assertEquals(expectedLineItems.toString(), transactionDetails.getString("lineItems"));
+    }
+
+    @Test
+    public void createPaymentContext_whenTransactionAmountOptionsMissing() throws JSONException {
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+        request.setCollectCustomerBillingAddress(true);
+
+        venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
+
+        String graphQLBody = captor.getValue();
+        JSONObject graphQLJSON = new JSONObject(graphQLBody);
+        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
+        assertEquals(expectedQuery, graphQLJSON.getString("query"));
+
+        JSONObject variables = graphQLJSON.getJSONObject("variables");
+        JSONObject input = variables.getJSONObject("input");
+        assertEquals("SINGLE_USE", input.getString("paymentMethodUsage"));
+        assertEquals("sample-venmo-merchant", input.getString("merchantProfileId"));
+        assertEquals("MOBILE_APP", input.getString("customerClient"));
+        assertEquals("CONTINUE", input.getString("intent"));
+        JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");
+        assertEquals("true", paysheetDetails.getString("collectCustomerBillingAddress"));
+        assertFalse(paysheetDetails.has("transactionDetails"));
+        assertFalse(paysheetDetails.has("lineItems"));
     }
 
     @Test
@@ -121,7 +178,8 @@ public class VenmoApiUnitTest {
 
         String payload = captor.getValue();
         JSONObject jsonPayload = new JSONObject(payload);
-        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName } } } }";
+        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName" +
+                "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }";
         assertEquals(expectedQuery, jsonPayload.get("query"));
         assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }

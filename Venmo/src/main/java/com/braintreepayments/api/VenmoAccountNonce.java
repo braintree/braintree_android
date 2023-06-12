@@ -30,6 +30,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     private static final String VENMO_LAST_NAME_KEY = "lastName";
     private static final String VENMO_PHONE_NUMBER_KEY = "phoneNumber";
     private static final String VENMO_PAYMENT_METHOD_USERNAME_KEY = "userName";
+    private static final String VENMO_BILLING_ADDRESS_KEY = "billingAddress";
+    private static final String VENMO_SHIPPING_ADDRESS_KEY = "shippingAddress";
 
     private String email;
     private String externalId;
@@ -37,6 +39,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
     private String lastName;
     private String phoneNumber;
     private String username;
+    private PostalAddress billingAddress;
+    private PostalAddress shippingAddress;
 
     static VenmoAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         JSONObject json;
@@ -76,6 +80,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
             this.firstName = payerInfo.optString(VENMO_FIRST_NAME_KEY);
             this.lastName = payerInfo.optString(VENMO_LAST_NAME_KEY);
             this.phoneNumber = payerInfo.optString(VENMO_PHONE_NUMBER_KEY);
+            this.billingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(VENMO_BILLING_ADDRESS_KEY));
+            this.shippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(VENMO_SHIPPING_ADDRESS_KEY));
         }
     }
 
@@ -132,6 +138,18 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         return username;
     }
 
+    /**
+     * @return The Venmo user's billing address.
+     */
+    @NonNull
+    public PostalAddress getBillingAddress() { return billingAddress; }
+
+    /**
+     * @return The Venmo user's shipping address.
+     */
+    @NonNull
+    public PostalAddress getShippingAddress() { return shippingAddress; }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
@@ -141,6 +159,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         dest.writeString(lastName);
         dest.writeString(phoneNumber);
         dest.writeString(username);
+        dest.writeParcelable(billingAddress, flags);
+        dest.writeParcelable(shippingAddress, flags);
     }
 
     private VenmoAccountNonce(Parcel in) {
@@ -151,6 +171,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
         lastName = in.readString();
         phoneNumber = in.readString();
         username = in.readString();
+        billingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
     }
 
     public static final Creator<VenmoAccountNonce> CREATOR = new Creator<VenmoAccountNonce>() {

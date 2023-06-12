@@ -16,9 +16,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
+import java.util.ArrayList;
 
 public class VenmoFragment extends BaseFragment implements VenmoListener {
 
@@ -61,6 +63,16 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
                 venmoRequest.setProfileId(null);
                 venmoRequest.setShouldVault(shouldVault);
+                venmoRequest.setCollectCustomerBillingAddress(true);
+                venmoRequest.setCollectCustomerShippingAddress(true);
+                venmoRequest.setTotalAmount("20");
+                venmoRequest.setSubTotalAmount("18");
+                venmoRequest.setTaxAmount("1");
+                venmoRequest.setShippingAmount("1");
+                ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
+                lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
+                lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
+                venmoRequest.setLineItems(lineItems);
 
                 venmoClient.tokenizeVenmoAccount(activity, venmoRequest);
             } else if (configuration.isVenmoEnabled()) {

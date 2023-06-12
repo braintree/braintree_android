@@ -4,6 +4,15 @@
 
 * Venmo
   * Fix issue caused by `VenmoActivityResultContract` where a user cancelation is being misinterpreted as an unknown exception because the intent data is `null` (fixes #734)
+  * Add the following properties to `VenmoRequest`:
+    * `collectCustomerBillingAddress`
+    * `collectCustomerShippingAddress`
+    * `totalAmount`
+    * `subTotalAmount`
+    * `discountAmount`
+    * `taxAmount`
+    * `shippingAmount`
+    * `lineItems`
 
 ## 4.31.0
 
