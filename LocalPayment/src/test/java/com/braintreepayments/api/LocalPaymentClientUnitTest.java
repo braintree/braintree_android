@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.fragment.app.Fragment;
@@ -695,6 +696,31 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         assertSame(browserSwitchResult, sut.deliverBrowserSwitchResultFromNewTask(activity));
+    }
+
+    @Test
+    public void parseBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+        Intent intent = new Intent();
+        when(
+                braintreeClient.parseBrowserSwitchResult(activity, BraintreeRequestCodes.LOCAL_PAYMENT, intent)
+        ).thenReturn(browserSwitchResult);
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+
+        BrowserSwitchResult result = sut.parseBrowserSwitchResult(activity, intent);
+        assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void clearActiveBrowserSwitchRequests_forwardsInvocationToBraintreeClient() {
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+
+        sut.clearActiveBrowserSwitchRequests(activity);
+        verify(braintreeClient).clearActiveBrowserSwitchRequests(activity);
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {
