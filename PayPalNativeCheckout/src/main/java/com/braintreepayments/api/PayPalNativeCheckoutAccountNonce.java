@@ -39,11 +39,11 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
     private final String clientMetadataId;
     private final PostalAddress billingAddress;
     private final PostalAddress shippingAddress;
-    private final String firstName;
-    private final String lastName;
+    private String firstName;
+    private String lastName;
     private final String phone;
-    private final String email;
-    private final String payerId;
+    private String email;
+    private String payerId;
     private final PayPalNativeCheckoutCreditFinancing creditFinancing;
     private final String authenticateUrl;
 
@@ -196,6 +196,13 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
     @NonNull
     public String getPayerId() {
         return payerId;
+    }
+
+    public void setPayerInfo(String payerId, String firstName, String lastName, String email) {
+        this.payerId = payerId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
     }
 
     /**
