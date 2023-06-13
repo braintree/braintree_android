@@ -53,8 +53,7 @@ public class LocalPaymentClient {
     /**
      * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
      * <p>
-     * Deprecated. Use {@link LocalPaymentClient(Fragment, BraintreeClient)} or
-     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)}.
+     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
@@ -272,7 +271,7 @@ public class LocalPaymentClient {
     }
 
     /**
-     * Deprecated. Use {@link LocalPaymentListener} to handle results.
+     * Use this method with the manual browser switch integration pattern.
      *
      * @param context             Android Context
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}

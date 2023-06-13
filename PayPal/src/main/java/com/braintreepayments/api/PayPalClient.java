@@ -52,8 +52,7 @@ public class PayPalClient {
     /**
      * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
      * <p>
-     * Deprecated. Use {@link PayPalClient(Fragment, BraintreeClient)} or
-     * {@link PayPalClient(FragmentActivity, BraintreeClient)}.
+     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
@@ -350,7 +349,7 @@ public class PayPalClient {
     }
 
     /**
-     * Deprecated. Use {@link PayPalListener} to handle results.
+     * Use this method with the manual browser switch integration pattern.
      *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}

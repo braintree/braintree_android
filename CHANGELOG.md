@@ -2,6 +2,16 @@
 
 ## unreleased
 
+* PayPal
+  * Undeprecate `PayPalClient(BraintreeClient)` constrcutor
+  * Undeprecate `PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)`
+  * Add `PayPalClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `PayPalClient#clearActiveBrowserSwitchRequests(Context)` method
+* LocalPayment
+  * Undeprecate `LocalPaymentClient(BraintreeClient)` constrcutor
+  * Undeprecate `LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)`
+  * Add `LocalPaymentClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `LocalPaymentClient#clearActiveBrowserSwitchRequests(Context)` method
 * Venmo
   * Fix issue caused by `VenmoActivityResultContract` where a user cancelation is being misinterpreted as an unknown exception because the intent data is `null` (fixes #734)
   * Add the following properties to `VenmoRequest`:
