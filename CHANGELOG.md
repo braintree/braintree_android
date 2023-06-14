@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Bump target Kotlin version to `1.8.0`
 * PayPal
   * Undeprecate `PayPalClient(BraintreeClient)` constructor
   * Undeprecate `PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)`
