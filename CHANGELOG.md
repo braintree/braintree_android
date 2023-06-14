@@ -8,7 +8,7 @@
   * Add `PayPalClient#parseBrowserSwitchResult(Context, Intent)` method
   * Add `PayPalClient#clearActiveBrowserSwitchRequests(Context)` method
 * LocalPayment
-  * Undeprecate `LocalPaymentClient(BraintreeClient)` constrcutor
+  * Undeprecate `LocalPaymentClient(BraintreeClient)` constructor
   * Undeprecate `LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)`
   * Add `LocalPaymentClient#parseBrowserSwitchResult(Context, Intent)` method
   * Add `LocalPaymentClient#clearActiveBrowserSwitchRequests(Context)` method
