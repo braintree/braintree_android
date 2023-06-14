@@ -16,6 +16,7 @@ import com.paypal.checkout.error.ErrorInfo
 import com.paypal.checkout.error.OnError
 import com.paypal.checkout.shipping.OnShippingChange
 import com.paypal.pyplcheckout.data.model.pojo.Buyer
+import com.paypal.pyplcheckout.data.model.pojo.Email
 import com.paypal.pyplcheckout.data.model.pojo.Name
 import com.paypal.pyplcheckout.instrumentation.constants.PEnums
 import com.paypal.pyplcheckout.instrumentation.di.PLog
@@ -277,14 +278,33 @@ class PayPalNativeCheckoutClientUnitTest {
             .build()
         val buyer = Buyer(
             "2",
-            null,
+            Email("test@test.com"),
             Name("test", "givenNameTest", "familyNameTest"),
             emptyList(),
             emptyList()
         )
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
         val approvalData = ApprovalData("2", null, null, buyer, null, null, null, null, null)
-        val nonce = PayPalNativeCheckoutAccountNonce.fromJSON(JSONObject())
+        val nonceValue = "{\n" +
+            "  \"type\": \"PayPalAccount\",\n" +
+            "  \"nonce\": \"68a313fb-2747-10cd-1cdf-c85d49e55774\",\n" +
+            "  \"description\": \"PayPal\",\n" +
+            "  \"consumed\": false,\n" +
+            "  \"details\": {\n" +
+            "    \"correlationId\": \"EC-6XE6338828653824N\",\n" +
+            "    \"billingAddress\": null,\n" +
+            "    \"shippingAddress\": {\n" +
+            "      \"recipientName\": \"Brian Tree\",\n" +
+            "      \"line1\": \"123 Fake Street\",\n" +
+            "      \"line2\": \"Floor A\",\n" +
+            "      \"city\": \"San Francisco\",\n" +
+            "      \"state\": \"CA\",\n" +
+            "      \"postalCode\": \"94103\",\n" +
+            "      \"countryCode\": \"US\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}"
+        val nonce = PayPalNativeCheckoutAccountNonce.fromJSON(JSONObject(nonceValue))
         sut.setupPayerInfoIfNeeded(nonce, approvalData)
         assertEquals(nonce.payerId, "2")
         assertEquals(nonce.firstName, "givenNameTest")
