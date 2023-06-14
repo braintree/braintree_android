@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-  * Undeprecate `PayPalClient(BraintreeClient)` constrcutor
+  * Undeprecate `PayPalClient(BraintreeClient)` constructor
   * Undeprecate `PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)`
   * Add `PayPalClient#parseBrowserSwitchResult(Context, Intent)` method
   * Add `PayPalClient#clearActiveBrowserSwitchRequests(Context)` method
