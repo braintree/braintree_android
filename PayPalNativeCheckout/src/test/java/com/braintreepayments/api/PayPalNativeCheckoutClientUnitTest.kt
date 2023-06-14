@@ -15,11 +15,10 @@ import com.paypal.checkout.config.UIConfig
 import com.paypal.checkout.error.ErrorInfo
 import com.paypal.checkout.error.OnError
 import com.paypal.checkout.shipping.OnShippingChange
-import com.paypal.pyplcheckout.common.instrumentation.PEnums
-import com.paypal.pyplcheckout.common.instrumentation.PEnums.EventCode
-import com.paypal.pyplcheckout.common.instrumentation.PEnums.StateName
-import com.paypal.pyplcheckout.common.instrumentation.PEnums.TransitionName
-import com.paypal.pyplcheckout.common.instrumentation.PLog
+import com.paypal.pyplcheckout.data.model.pojo.Buyer
+import com.paypal.pyplcheckout.data.model.pojo.Name
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums
+import com.paypal.pyplcheckout.instrumentation.di.PLog
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -28,11 +27,13 @@ import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.json.JSONException
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.util.Collections.emptyList
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalNativeCheckoutClientUnitTest {
@@ -107,10 +108,10 @@ class PayPalNativeCheckoutClientUnitTest {
 
         verify {
             PLog.transition(
-                TransitionName.BRAINTREE_ROUTING,
+                PEnums.TransitionName.BRAINTREE_ROUTING,
                 PEnums.Outcome.THIRD_PARTY,
-                EventCode.E233,
-                StateName.BRAINTREE,
+                PEnums.EventCode.E233,
+                PEnums.StateName.BRAINTREE,
                 null,
                 null,
                 null,
@@ -207,10 +208,10 @@ class PayPalNativeCheckoutClientUnitTest {
 
         verify {
             PLog.transition(
-                TransitionName.BRAINTREE_ROUTING,
+                PEnums.TransitionName.BRAINTREE_ROUTING,
                 PEnums.Outcome.THIRD_PARTY,
-                EventCode.E233,
-                StateName.BRAINTREE,
+                PEnums.EventCode.E233,
+                PEnums.StateName.BRAINTREE,
                 null,
                 null,
                 null,
@@ -258,6 +259,39 @@ class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
+    fun payerInfoIsSetIfNonceIsEmpty() {
+        val riskCorrelationId = "riskId"
+        val sampleMerchantId = "sample-merchant-account-id"
+        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
+        payPalCheckoutRequest.intent = "authorize"
+        payPalCheckoutRequest.merchantAccountId = sampleMerchantId
+        payPalCheckoutRequest.returnUrl = "returnUrl://paypalpay"
+        payPalCheckoutRequest.riskCorrelationId = riskCorrelationId
+        val payPalResponse = PayPalNativeCheckoutResponse(payPalCheckoutRequest)
+            .clientMetadataId("sample-client-metadata-id")
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestSuccess(payPalResponse)
+            .build()
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(payPalEnabledConfig)
+            .build()
+        val buyer = Buyer(
+            "2",
+            null,
+            Name("test", "givenNameTest", "familyNameTest"),
+            emptyList(),
+            emptyList()
+        )
+        val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
+        val approvalData = ApprovalData("2", null, null, buyer, null, null, null, null, null)
+        val nonce = PayPalNativeCheckoutAccountNonce.fromJSON(JSONObject())
+        sut.setupPayerInfoIfNeeded(nonce, approvalData)
+        assertEquals(nonce.payerId, "2")
+        assertEquals(nonce.firstName, "givenNameTest")
+        assertEquals(nonce.lastName, "familyNameTest")
+    }
+
+    @Test
     @Throws(Exception::class)
     @Ignore("Refactor test to work with mockk")
     fun requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
@@ -279,10 +313,10 @@ class PayPalNativeCheckoutClientUnitTest {
 
         verify {
             PLog.transition(
-                TransitionName.BRAINTREE_ROUTING,
+                PEnums.TransitionName.BRAINTREE_ROUTING,
                 PEnums.Outcome.THIRD_PARTY,
-                EventCode.E233,
-                StateName.BRAINTREE,
+                PEnums.EventCode.E233,
+                PEnums.StateName.BRAINTREE,
                 null,
                 null,
                 null,
