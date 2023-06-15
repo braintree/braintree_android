@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,7 @@ public class LocalPaymentClient {
     /**
      * Create a new instance of {@link LocalPaymentClient} from within an Activity using a {@link BraintreeClient}.
      *
-     * @param activity a {@link FragmentActivity}
+     * @param activity        a {@link FragmentActivity}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
@@ -42,7 +43,7 @@ public class LocalPaymentClient {
     /**
      * Create a new instance of {@link LocalPaymentClient} from within a Fragment using a {@link BraintreeClient}.
      *
-     * @param fragment a {@link Fragment
+     * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
@@ -51,13 +52,11 @@ public class LocalPaymentClient {
 
     /**
      * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
-     *
-     * Deprecated. Use {@link LocalPaymentClient(Fragment, BraintreeClient)} or
-     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)}.
+     * <p>
+     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
-    @Deprecated
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
@@ -144,7 +143,7 @@ public class LocalPaymentClient {
 
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
-     *
+     * <p>
      * Errors encountered during the approval will be returned to the {@link LocalPaymentListener}.
      *
      * @param activity           Android FragmentActivity
@@ -161,7 +160,7 @@ public class LocalPaymentClient {
 
     /**
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
-     *
+     * <p>
      * Deprecated. Use {@link LocalPaymentClient#approveLocalPayment(FragmentActivity, LocalPaymentResult)}.
      *
      * @param activity           Android FragmentActivity
@@ -220,6 +219,39 @@ public class LocalPaymentClient {
         this.pendingBrowserSwitchResult = null;
     }
 
+    /**
+     * After calling {@link LocalPaymentClient#startPayment(LocalPaymentRequest, LocalPaymentStartCallback)},
+     * call this method in your Activity or Fragment's onResume() method to see if a response
+     * was provided through deep linking.
+     * <p>
+     * If a BrowserSwitchResult exists, call {@link LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)},
+     * to allow the SDK to continue tokenization of the PayPalAccount.
+     * <p>
+     * Make sure to call {@link LocalPaymentClient#clearActiveBrowserSwitchRequests(Context)} after
+     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
+     * switch event handling.
+     *
+     * @param context The context used to check for pending browser switch requests
+     * @param intent  The intent containing a potential deep link response. May be null.
+     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
+     */
+    @Nullable
+    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
+        int requestCode = BraintreeRequestCodes.LOCAL_PAYMENT;
+        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
+    }
+
+    /**
+     * Make sure to call this method after {@link LocalPaymentClient#parseBrowserSwitchResult(Context, Intent)}
+     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
+     * switch event handling logic.
+     *
+     * @param context The context used to clear pending browser switch requests
+     */
+    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
+        braintreeClient.clearActiveBrowserSwitchRequests(context);
+    }
+
     // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
     // logic into another component that also gives merchants more flexibility when using view models
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
@@ -239,13 +271,12 @@ public class LocalPaymentClient {
     }
 
     /**
-     * Deprecated. Use {@link LocalPaymentListener} to handle results.
+     * Use this method with the manual browser switch integration pattern.
      *
      * @param context             Android Context
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
      */
-    @Deprecated
     public void onBrowserSwitchResult(@NonNull final Context context, @NonNull BrowserSwitchResult browserSwitchResult, @NonNull final LocalPaymentBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {

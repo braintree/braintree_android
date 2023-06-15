@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
@@ -13,6 +14,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -445,6 +447,31 @@ class BraintreeClientUnitTest {
         sut.deliverBrowserSwitchResultFromNewTask(context)
 
         verify { browserSwitchClient.deliverResultFromCache(context) }
+    }
+
+    @Test
+    fun parseBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
+        val context = mockk<Context>(relaxed = true)
+        val params = createDefaultParams(configurationLoader, authorizationLoader)
+
+        val expected = mock<BrowserSwitchResult>()
+        val intent = Intent()
+        every { browserSwitchClient.parseResult(context, 123, intent) } returns expected
+
+        val sut = BraintreeClient(params)
+        val actual = sut.parseBrowserSwitchResult(context, 123, intent)
+        assertSame(expected, actual)
+    }
+
+    @Test
+    fun clearActiveBrowserSwitchRequests_forwardsInvocationToBrowserSwitchClient() {
+        val context = mockk<Context>(relaxed = true)
+        val params = createDefaultParams(configurationLoader, authorizationLoader)
+
+        val sut = BraintreeClient(params)
+        sut.clearActiveBrowserSwitchRequests(context)
+
+        verify { browserSwitchClient.clearActiveRequests(context) }
     }
 
     @Test

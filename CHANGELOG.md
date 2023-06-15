@@ -2,6 +2,17 @@
 
 ## unreleased
 
+* Bump target Kotlin version to `1.8.0`
+* PayPal
+  * Undeprecate `PayPalClient(BraintreeClient)` constructor
+  * Undeprecate `PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)`
+  * Add `PayPalClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `PayPalClient#clearActiveBrowserSwitchRequests(Context)` method
+* LocalPayment
+  * Undeprecate `LocalPaymentClient(BraintreeClient)` constructor
+  * Undeprecate `LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)`
+  * Add `LocalPaymentClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `LocalPaymentClient#clearActiveBrowserSwitchRequests(Context)` method
 * Venmo
   * Fix issue caused by `VenmoActivityResultContract` where a user cancelation is being misinterpreted as an unknown exception because the intent data is `null` (fixes #734)
   * Add the following properties to `VenmoRequest`:

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.fragment.app.Fragment;
@@ -797,5 +798,32 @@ public class PayPalClientUnitTest {
 
         BrowserSwitchResult result = sut.deliverBrowserSwitchResultFromNewTask(activity);
         assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void parseBrowserSwitchResult_forwardsInvocationToBraintreeClient() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+        Intent intent = new Intent();
+        when(
+                braintreeClient.parseBrowserSwitchResult(activity, BraintreeRequestCodes.PAYPAL, intent)
+        ).thenReturn(browserSwitchResult);
+
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+
+        BrowserSwitchResult result = sut.parseBrowserSwitchResult(activity, intent);
+        assertSame(browserSwitchResult, result);
+    }
+
+    @Test
+    public void clearActiveBrowserSwitchRequests_forwardsInvocationToBraintreeClient() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+
+        sut.clearActiveBrowserSwitchRequests(activity);
+        verify(braintreeClient).clearActiveBrowserSwitchRequests(activity);
     }
 }
