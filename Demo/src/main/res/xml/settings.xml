@@ -187,4 +187,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/browser_switch">
+
+        <CheckBoxPreference
+            android:key="enable_manual_browser_switching"
+            android:title="@string/enable_manual_browser_switching"
+            android:summary="@string/enable_manual_browser_switching_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

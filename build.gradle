@@ -21,7 +21,7 @@ buildscript {
     def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
 
     ext.versions = [
-            "kotlin"         : "1.7.0",
+            "kotlin"         : "1.8.0",
             "androidxTest"   : "1.4.0",
             // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
             "room"           : roomVersion,
@@ -38,13 +38,13 @@ buildscript {
             // NEXT_MAJOR_VERSION: upgrade to 2.4.0 (or latest) when Java 7 support is explicitly dropped
             "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.3.0",
 
-            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
-            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.3.2",
+            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.4.0",
             "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-3",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",

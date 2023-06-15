@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -50,12 +52,10 @@ public class PayPalClient {
     /**
      * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
      * <p>
-     * Deprecated. Use {@link PayPalClient(Fragment, BraintreeClient)} or
-     * {@link PayPalClient(FragmentActivity, BraintreeClient)}.
+     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
-    @Deprecated
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
     }
@@ -86,6 +86,39 @@ public class PayPalClient {
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
+    }
+
+    /**
+     * After calling {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)},
+     * call this method in your Activity or Fragment's onResume() method to see if a response
+     * was provided through deep linking.
+     *
+     * If a BrowserSwitchResult exists, call {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
+     * to allow the SDK to continue tokenization of the PayPalAccount.
+     *
+     * Make sure to call {@link PayPalClient#clearActiveBrowserSwitchRequests(Context)} after
+     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
+     * switch event handling.
+     *
+     * @param context The context used to check for pending browser switch requests
+     * @param intent The intent containing a potential deep link response. May be null.
+     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
+     */
+    @Nullable
+    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
+        int requestCode = BraintreeRequestCodes.PAYPAL;
+        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
+    }
+
+    /**
+     * Make sure to call this method after {@link PayPalClient#parseBrowserSwitchResult(Context, Intent)}
+     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
+     * switch event handling logic.
+     *
+     * @param context The context used to clear pending browser switch requests
+     */
+    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
+        braintreeClient.clearActiveBrowserSwitchRequests(context);
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {
@@ -187,7 +220,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                     Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
+                            createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
@@ -217,7 +250,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                     Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
+                            createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
                     return;
                 }
@@ -316,12 +349,11 @@ public class PayPalClient {
     }
 
     /**
-     * Deprecated. Use {@link PayPalListener} to handle results.
+     * Use this method with the manual browser switch integration pattern.
      *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
      */
-    @Deprecated
     public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (browserSwitchResult == null) {
