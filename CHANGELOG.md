@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.32.0
 
 * Bump target Kotlin version to `1.8.0`
 * PayPal
