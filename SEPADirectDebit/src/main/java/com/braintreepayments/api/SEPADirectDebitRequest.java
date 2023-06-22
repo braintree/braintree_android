@@ -14,6 +14,7 @@ public class SEPADirectDebitRequest {
     private SEPADirectDebitMandateType mandateType = SEPADirectDebitMandateType.ONE_OFF;
     private PostalAddress billingAddress;
     private String merchantAccountId;
+    private String locale;
 
     /**
      * @return The account holder name
@@ -109,5 +110,21 @@ public class SEPADirectDebitRequest {
      */
     public void setMerchantAccountId(@Nullable String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
+    }
+
+    /**
+     * @return A locale code to use for creating a mandate.
+     */
+    @Nullable
+    public String getLocale() {
+        return locale;
+    }
+
+    /**
+     * Optional.
+     * @param locale A locale code to use for creating a mandate.
+     */
+    public void setLocale(@Nullable String locale) {
+        this.locale = locale;
     }
 }
