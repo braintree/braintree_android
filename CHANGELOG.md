@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPalNativeCheckout (BETA)
+  * Fix bug where setting `setUserAction()` does not update button as expected
+
 ## 4.32.0
 
 * Bump target Kotlin version to `1.8.0`
@@ -38,7 +43,7 @@
 
 ## 4.29.0
 
-* PayPalNativeCheckout
+* PayPalNativeCheckout (BETA)
   * Reverting native version upgrade
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-3`
@@ -46,7 +51,7 @@
 
 ## 4.28.0
 
-* PayPalNativeCheckout
+* PayPalNativeCheckout (BETA)
   * Bump native-checkout version to release `0.112.0`
 
 ## 4.27.2
@@ -183,7 +188,7 @@
 
 ## 4.16.0
 
-* PayPalNativeCheckoutClient
+* PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.1 
   * Adding in Native checkout support for one time password
 * BraintreeCore

@@ -212,6 +212,10 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
             experienceProfile.put(LOCALE_CODE_KEY, getLocaleCode());
         }
 
+        if (getUserAction() != USER_ACTION_DEFAULT) {
+            experienceProfile.put(USER_ACTION_KEY, getUserAction());
+        }
+
         if (getShippingAddressOverride() != null) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, !isShippingAddressEditable());
 

@@ -38,6 +38,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String CORRELATION_ID_KEY = "correlation_id";
     static final String LINE_ITEMS_KEY = "line_items";
+    static final String USER_ACTION_KEY = "user_action";
 
     private String localeCode;
     private String billingAgreementDescription;

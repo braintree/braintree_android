@@ -14,8 +14,6 @@ class PayPalInternalClient {
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
 
-    private static final String USER_ACTION_KEY = "useraction";
-
     private final String cancelUrl;
     private final String successUrl;
 
@@ -82,11 +80,7 @@ class PayPalInternalClient {
                                                                 .clientMetadataId(clientMetadataId);
                                                     }
 
-                                                    String approvalUrl = parsedRedirectUri
-                                                            .buildUpon()
-                                                            .appendQueryParameter(USER_ACTION_KEY, payPalResponse.getUserAction())
-                                                            .toString();
-                                                    payPalResponse.approvalUrl(approvalUrl);
+                                                    payPalResponse.approvalUrl(parsedRedirectUri.toString());
                                                 }
                                                 callback.onResult(payPalResponse, null);
 
