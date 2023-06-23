@@ -123,6 +123,9 @@ public class SEPADirectDebitRequest {
     /**
      * Optional.
      * @param locale A locale code to use for creating a mandate.
+     *
+     * @see <a href="https://developer.paypal.com/reference/locale-codes/">Documentation</a>
+     * for possible values. Locale code should be supplied as a BCP-47 formatted locale code.
      */
     public void setLocale(@Nullable String locale) {
         this.locale = locale;
