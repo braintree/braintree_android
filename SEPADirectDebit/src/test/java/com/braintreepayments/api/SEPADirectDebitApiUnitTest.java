@@ -10,8 +10,6 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import junit.framework.Assert;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
