@@ -3,12 +3,15 @@ package com.braintreepayments.api;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +40,7 @@ public class SEPADirectDebitApiUnitTest {
         request.setIban("FR7618106000321234566666610");
         request.setMandateType(SEPADirectDebitMandateType.RECURRENT);
         request.setMerchantAccountId("a_merchant_account_id");
+        request.setLocale("fr-FR");
 
         billingAddress = new PostalAddress();
         billingAddress.setStreetAddress("Kantstraße 70");
@@ -45,6 +49,8 @@ public class SEPADirectDebitApiUnitTest {
         billingAddress.setRegion("Annaberg-buchholz");
         billingAddress.setPostalCode("09456");
         billingAddress.setCountryCodeAlpha2("FR");
+
+        request.setBillingAddress(billingAddress);
 
         returnUrl = "com.example";
     }
@@ -153,5 +159,39 @@ public class SEPADirectDebitApiUnitTest {
         sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
 
         verify(sepaDirectDebitTokenizeCallback).onResult(null, error);
+    }
+
+    @Test
+    public void createMandate_properlyFormatsPOSTBody() throws JSONException {
+        BraintreeClient mockBraintreeClient = new MockBraintreeClientBuilder()
+                .returnUrlScheme("com.example")
+                .build();
+
+        SEPADirectDebitApi sut = new SEPADirectDebitApi(mockBraintreeClient);
+        sut.createMandate(request, returnUrl, createMandateCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(mockBraintreeClient).sendPOST(eq("v1/sepa_debit"), String.valueOf(captor.capture()), any(HttpResponseCallback.class));
+
+        String result = captor.getValue();
+        JSONObject json = new JSONObject(result);
+        assertEquals("com.example://sepa/cancel", json.getString("cancel_url"));
+        assertEquals("com.example://sepa/success", json.getString("return_url"));
+        assertEquals("a_merchant_account_id", json.getString("merchant_account_id"));
+        assertEquals("fr-FR", json.getString("locale"));
+
+        JSONObject sepaJson = json.getJSONObject("sepa_debit");
+        assertEquals("John Doe", sepaJson.getString("account_holder_name"));
+        assertEquals("a-customer-id", sepaJson.getString("merchant_or_partner_customer_id"));
+        assertEquals("FR7618106000321234566666610", sepaJson.getString("iban"));
+        assertEquals("RECURRENT", sepaJson.getString("mandate_type"));
+
+        JSONObject billingAddressJson = sepaJson.getJSONObject("billing_address");
+        assertEquals("Kantstraße 70", billingAddressJson.getString("address_line_1"));
+        assertEquals("#170", billingAddressJson.getString("address_line_2"));
+        assertEquals("Freistaat Sachsen", billingAddressJson.getString("admin_area_1"));
+        assertEquals("Annaberg-buchholz", billingAddressJson.getString("admin_area_2"));
+        assertEquals("09456", billingAddressJson.getString("postal_code"));
+        assertEquals("FR", billingAddressJson.getString("country_code"));
     }
 }

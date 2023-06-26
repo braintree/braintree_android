@@ -4,6 +4,8 @@
 
 * PayPalNativeCheckout (BETA)
   * Fix bug where setting `setUserAction()` does not update button as expected
+* SEPADirectDebit
+  * Add `SEPADirectDebitRequest.setLocale()`
 
 ## 4.32.0
 

@@ -119,6 +119,10 @@ class SEPADirectDebitApi {
             requestData.putOpt("merchant_account_id", sepaDirectDebitRequest.getMerchantAccountId());
         }
 
+        if (sepaDirectDebitRequest.getLocale() != null) {
+            requestData.putOpt("locale", sepaDirectDebitRequest.getLocale());
+        }
+
         return requestData;
     }
 }
