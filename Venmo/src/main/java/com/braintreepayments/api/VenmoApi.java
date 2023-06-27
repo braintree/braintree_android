@@ -84,7 +84,7 @@ class VenmoApi {
     void createNonceFromPaymentContext(String paymentContextId, final VenmoOnActivityResultCallback callback) {
         JSONObject params = new JSONObject();
         try {
-            params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName" +
+            params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
                     "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }");
             JSONObject variables = new JSONObject();
             variables.put("id", paymentContextId);
