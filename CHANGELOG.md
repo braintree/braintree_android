@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.33.0
 
 * PayPalNativeCheckout (BETA)
   * Fix bug where setting `setUserAction()` does not update button as expected
