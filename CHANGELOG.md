@@ -6,6 +6,8 @@
   * Fix bug where setting `setUserAction()` does not update button as expected
 * SEPADirectDebit
   * Add `SEPADirectDebitRequest.setLocale()`
+* Venmo
+  * Add missing space to Venmo `PaymentContext` GraphQL query (fixes #749)
 
 ## 4.32.0
 
