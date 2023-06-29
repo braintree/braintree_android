@@ -1,9 +1,13 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.33.0
 
 * PayPalNativeCheckout (BETA)
   * Fix bug where setting `setUserAction()` does not update button as expected
+* SEPADirectDebit
+  * Add `SEPADirectDebitRequest.setLocale()`
+* Venmo
+  * Add missing space to Venmo `PaymentContext` GraphQL query (fixes #749)
 
 ## 4.32.0
 
