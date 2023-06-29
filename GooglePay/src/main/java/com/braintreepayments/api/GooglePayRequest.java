@@ -39,6 +39,7 @@ public class GooglePayRequest implements Parcelable {
     private final HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
     private final HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
     private String environment;
+    private boolean allowCreditCards;
 
     // NEXT_MAJOR_VERSION: remove googleMerchantId since it is no longer required/included in the
     // Google Pay API documentation
@@ -212,6 +213,15 @@ public class GooglePayRequest implements Parcelable {
     }
 
     /**
+     * Optional.
+     *
+     * @param allowCreditCards {@code true} credit cards are allowed, {@code false} otherwise.
+     */
+    public void setAllowCreditCards(boolean allowCreditCards) {
+        this.allowCreditCards = allowCreditCards;
+    }
+
+    /**
      * Assemble all declared parts of a GooglePayRequest to a JSON string
      * for use in making requests against Google
      *
@@ -267,7 +277,9 @@ public class GooglePayRequest implements Parcelable {
                         JSONObject paymentMethodParams = paymentMethod.getJSONObject("parameters");
                         paymentMethodParams
                                 .put("billingAddressRequired", isBillingAddressRequired())
-                                .put("allowPrepaidCards", getAllowPrepaidCards());
+                                .put("allowPrepaidCards", getAllowPrepaidCards())
+                                .put("allowCreditCards", getAllowedCreditCards());
+
 
                         if (isBillingAddressRequired()) {
                             paymentMethodParams
@@ -470,6 +482,13 @@ public class GooglePayRequest implements Parcelable {
         return countryCode;
     }
 
+    /**
+     * @return If credit cards are allowed.
+     */
+    public boolean getAllowedCreditCards() {
+        return allowCreditCards;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -490,6 +509,7 @@ public class GooglePayRequest implements Parcelable {
         dest.writeString(googleMerchantId);
         dest.writeString(googleMerchantName);
         dest.writeString(countryCode);
+        dest.writeByte((byte) (allowCreditCards ? 1 : 0));
     }
 
     GooglePayRequest(Parcel in) {
@@ -506,6 +526,7 @@ public class GooglePayRequest implements Parcelable {
         googleMerchantId = in.readString();
         googleMerchantName = in.readString();
         countryCode = in.readString();
+        allowCreditCards = in.readByte() != 0;
     }
 
     public static final Creator<GooglePayRequest> CREATOR = new Creator<GooglePayRequest>() {
