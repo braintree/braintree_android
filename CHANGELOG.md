@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+  * Add `GooglePayRequest.setAllowCreditCards()`
+
 ## 4.33.0
 
 * PayPalNativeCheckout (BETA)
