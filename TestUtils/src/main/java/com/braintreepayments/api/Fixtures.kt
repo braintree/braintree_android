@@ -2369,6 +2369,7 @@ object Fixtures {
                   "phoneNumberRequired": true
                 },
                 "allowPrepaidCards": true,
+                "allowCreditCards": true,
                 "allowedAuthMethods": [
                   "PAN_ONLY",
                   "CRYPTOGRAM_3DS"

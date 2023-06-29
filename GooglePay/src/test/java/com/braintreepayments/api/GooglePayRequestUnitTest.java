@@ -214,6 +214,7 @@ public class GooglePayRequestUnitTest {
         request.setShippingAddressRequirements(shippingAddressRequirements);
         request.setBillingAddressRequired(true);
         request.setAllowPrepaidCards(true);
+        request.setAllowCreditCards(true);
         request.setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams);
         request.setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams);
         request.setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams);
