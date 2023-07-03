@@ -69,6 +69,7 @@ public class GooglePayRequestUnitTest {
         assertFalse(request.isEmailRequired());
         assertFalse(request.isPhoneNumberRequired());
         assertFalse(request.isShippingAddressRequired());
+        assertTrue(request.isCreditCardsAllowed());
         assertNull(request.getShippingAddressRequirements());
         assertNull(request.getTransactionInfo());
         assertNull(request.getEnvironment());

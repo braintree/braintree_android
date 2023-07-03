@@ -39,7 +39,7 @@ public class GooglePayRequest implements Parcelable {
     private final HashMap<String, JSONArray> allowedAuthMethods = new HashMap<>();
     private final HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
     private String environment;
-    private boolean allowCreditCards;
+    private boolean allowCreditCards = true;
 
     // NEXT_MAJOR_VERSION: remove googleMerchantId since it is no longer required/included in the
     // Google Pay API documentation
@@ -215,7 +215,8 @@ public class GooglePayRequest implements Parcelable {
     /**
      * Optional.
      *
-     * @param allowCreditCards {@code true} credit cards are allowed, {@code false} otherwise.
+     * @param allowCreditCards Set to {@code false} if you don't support credit cards.
+     * Defaults to {@code true}.
      */
     public void setAllowCreditCards(boolean allowCreditCards) {
         this.allowCreditCards = allowCreditCards;
@@ -278,7 +279,7 @@ public class GooglePayRequest implements Parcelable {
                         paymentMethodParams
                                 .put("billingAddressRequired", isBillingAddressRequired())
                                 .put("allowPrepaidCards", getAllowPrepaidCards())
-                                .put("allowCreditCards", getAllowedCreditCards());
+                                .put("allowCreditCards", isCreditCardsAllowed());
 
 
                         if (isBillingAddressRequired()) {
@@ -485,7 +486,7 @@ public class GooglePayRequest implements Parcelable {
     /**
      * @return If credit cards are allowed.
      */
-    public boolean getAllowedCreditCards() {
+    public boolean isCreditCardsAllowed() {
         return allowCreditCards;
     }
 
