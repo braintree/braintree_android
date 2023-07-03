@@ -69,6 +69,7 @@ public class GooglePayRequestUnitTest {
         assertFalse(request.isEmailRequired());
         assertFalse(request.isPhoneNumberRequired());
         assertFalse(request.isShippingAddressRequired());
+        assertTrue(request.isCreditCardsAllowed());
         assertNull(request.getShippingAddressRequirements());
         assertNull(request.getTransactionInfo());
         assertNull(request.getEnvironment());
@@ -214,6 +215,7 @@ public class GooglePayRequestUnitTest {
         request.setShippingAddressRequirements(shippingAddressRequirements);
         request.setBillingAddressRequired(true);
         request.setAllowPrepaidCards(true);
+        request.setAllowCreditCards(true);
         request.setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams);
         request.setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams);
         request.setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams);
