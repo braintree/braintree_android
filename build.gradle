@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
         google()
         maven {
@@ -93,7 +92,6 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
-        mavenLocal()
         mavenCentral()
         google()
     }
