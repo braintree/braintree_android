@@ -198,6 +198,15 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
         return payerId;
     }
 
+    /**
+     * Sets the payer info if on the nonce object. This is used when the payer information is
+     * not returned from the json
+     *
+     * @param payerId - The payer id associated with the user
+     * @param firstName - The payer's first name
+     * @param lastName - The payer's last name
+     * @param email - The payer's email
+     */
     public void setPayerInfo(String payerId, String firstName, String lastName, String email) {
         this.payerId = payerId;
         this.firstName = firstName;
