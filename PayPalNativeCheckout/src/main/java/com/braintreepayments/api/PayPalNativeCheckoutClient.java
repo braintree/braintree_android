@@ -11,8 +11,8 @@ import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.config.SettingsConfig;
 import com.paypal.checkout.config.UIConfig;
-import com.paypal.pyplcheckout.common.instrumentation.PEnums;
-import com.paypal.pyplcheckout.common.instrumentation.PLog;
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums;
+import com.paypal.pyplcheckout.instrumentation.di.PLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -220,6 +220,9 @@ public class PayPalNativeCheckoutClient {
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
                             braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.succeeded");
+                            // if returned from web this will be empty, populate from the nxo approval data
+                            setupPayerInfoIfNeeded(payPalAccountNonce, approval.getData());
+
                             listener.onPayPalSuccess(payPalAccountNonce);
                         } else {
                             braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.failed");
@@ -237,6 +240,18 @@ public class PayPalNativeCheckoutClient {
                     listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()));
                 }
         );
+    }
+
+    @VisibleForTesting
+    void setupPayerInfoIfNeeded(PayPalNativeCheckoutAccountNonce payPalAccountNonce, ApprovalData data) {
+        if (payPalAccountNonce.getPayerId() == null && data != null) {
+            payPalAccountNonce.setPayerInfo(
+                    data.getPayerId(),
+                    data.getPayer().getName().getGivenName(),
+                    data.getPayer().getName().getFamilyName(),
+                    data.getPayer().getEmail().getStringValue()
+            );
+        }
     }
 
     @VisibleForTesting

@@ -93,7 +93,6 @@ class PayPalNativeCheckoutInternalClient {
                 try {
                     PayPalNativeCheckoutAccountNonce payPalAccountNonce = PayPalNativeCheckoutAccountNonce.fromJSON(tokenizationResponse);
                     callback.onResult(payPalAccountNonce, null);
-
                 } catch (JSONException e) {
                     callback.onResult(null, e);
                 }
