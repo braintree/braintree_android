@@ -4,6 +4,9 @@
 
 * GooglePay
   * Add `GooglePayRequest.setAllowCreditCards()`
+* PayPalNativeCheckout (General Availability release)
+  * Bump native-checkout version to release `1.0.0`
+  * Fix an issue where the return from web fallback was not returning the correct information
 
 ## 4.33.0
 
@@ -38,9 +41,6 @@
     * `taxAmount`
     * `shippingAmount`
     * `lineItems`
-* PayPalNativeCheckout
-  * Bump native-checkout version to release `1.0.0`
-  * Fix an issue where the return from web fallback was not returning the correct information
 
 ## 4.31.0
 
