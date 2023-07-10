@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.34.0
 
 * GooglePay
   * Add `GooglePayRequest.setAllowCreditCards()`
