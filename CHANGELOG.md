@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+  * Add `GooglePayCardNonce.getCardNetwork()`
+
 ## 4.34.0
 
 * GooglePay
