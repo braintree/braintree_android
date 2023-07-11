@@ -228,7 +228,6 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         return cardNetwork;
     }
 
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
