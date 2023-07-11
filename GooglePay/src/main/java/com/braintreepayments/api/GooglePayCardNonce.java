@@ -221,7 +221,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     }
 
     /**
-     * @return The card network. This card network value should not be displayed.
+     * @return The card network. This card network value should not be displayed to the buyer.
      */
     @NonNull
     public String getCardNetwork() {
