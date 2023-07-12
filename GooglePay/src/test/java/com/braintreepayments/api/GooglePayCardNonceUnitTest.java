@@ -37,6 +37,7 @@ public class GooglePayCardNonceUnitTest {
         assertPostalAddress(billingPostalAddress, googlePayCardNonce.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, googlePayCardNonce.getShippingAddress());
         assertTrue(googlePayCardNonce.isNetworkTokenized());
+        assertEquals("VISA", googlePayCardNonce.getCardNetwork());
     }
 
     @Test
@@ -109,6 +110,7 @@ public class GooglePayCardNonceUnitTest {
         assertTrue(parceled.isNetworkTokenized());
         assertPostalAddress(billingPostalAddress, parceled.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, parceled.getShippingAddress());
+        assertEquals("VISA", parceled.getCardNetwork());
 
         assertBinDataEqual(googlePayCardNonce.getBinData(), parceled.getBinData());
     }

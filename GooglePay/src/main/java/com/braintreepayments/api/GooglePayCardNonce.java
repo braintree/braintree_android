@@ -24,6 +24,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String LAST_FOUR_KEY = "lastFour";
     private static final String IS_NETWORK_TOKENIZED_KEY = "isNetworkTokenized";
+    private static final String CARD_NETWORK_KEY = "cardNetwork";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
@@ -33,6 +34,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
     private final String lastTwo;
     private final String lastFour;
     private final String email;
+    private final String cardNetwork;
     private boolean isNetworkTokenized;
     private final PostalAddress billingAddress;
     private final PostalAddress shippingAddress;
@@ -68,6 +70,8 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
                 .getJSONObject("paymentMethodData")
                 .getJSONObject("info");
 
+        String cardNetwork = info.getString(CARD_NETWORK_KEY);
+
         JSONObject billingAddressJson = new JSONObject();
         if (info.has("billingAddress")) {
             billingAddressJson = info.getJSONObject("billingAddress");
@@ -89,7 +93,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         String cardType = details.getString(CARD_TYPE_KEY);
         boolean isNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, false);
 
-        return new GooglePayCardNonce(cardType, bin, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault);
+        return new GooglePayCardNonce(cardType, bin, lastTwo, lastFour, email, isNetworkTokenized, billingAddress, shippingAddress, binData, nonce, isDefault, cardNetwork);
     }
 
     GooglePayCardNonce(
@@ -103,8 +107,9 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
             PostalAddress shippingAddress,
             BinData binData,
             String nonce,
-            boolean isDefault
-    ) {
+            boolean isDefault,
+            String cardNetwork
+            ) {
         super(nonce, isDefault);
         this.cardType = cardType;
         this.bin = bin;
@@ -115,6 +120,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;
         this.binData = binData;
+        this.cardNetwork = cardNetwork;
     }
 
     static PostalAddress postalAddressFromJson(JSONObject json) {
@@ -214,6 +220,14 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         return binData;
     }
 
+    /**
+     * @return The card network. This card network value should not be displayed to the buyer.
+     */
+    @NonNull
+    public String getCardNetwork() {
+        return cardNetwork;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
@@ -226,6 +240,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         dest.writeParcelable(shippingAddress, flags);
         dest.writeParcelable(binData, flags);
         dest.writeByte(isNetworkTokenized ? (byte) 1 : (byte) 0);
+        dest.writeString(cardNetwork);
     }
 
     private GooglePayCardNonce(Parcel in) {
@@ -239,6 +254,7 @@ public class GooglePayCardNonce extends PaymentMethodNonce {
         shippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         binData = in.readParcelable(BinData.class.getClassLoader());
         isNetworkTokenized = in.readByte() > 0;
+        cardNetwork = in.readString();
     }
 
     public static final Creator<GooglePayCardNonce> CREATOR = new Creator<GooglePayCardNonce>() {
