@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* All Modules
+  * Revert Kotlin version to `1.7.10`
+
 ## 4.35.0
 
 * GooglePay
