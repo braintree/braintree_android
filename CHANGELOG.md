@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Bump `browser-switch` version to `2.5.0`
 * All Modules
   * Revert Kotlin version to `1.7.10`
 
