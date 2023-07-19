@@ -144,6 +144,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param subTotalAmount Optional. The subtotal amount of the transaction, excluding taxes, discounts, and shipping.
+     *
+     * If this value is set, `totalAmount` must also be set.
      */
     public void setSubTotalAmount(@Nullable String subTotalAmount) {
         this.subTotalAmount = subTotalAmount;
@@ -159,6 +161,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param shippingAmount Optional. The shipping amount charged for the transaction.
+     *
+     * If this value is set, `totalAmount` must also be set.
      */
     public void setShippingAmount(@Nullable String shippingAmount) {
         this.shippingAmount = shippingAmount;
@@ -174,6 +178,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param discountAmount Optional. The total discount amount applied on the transaction.
+     *
+     * If this value is set, `totalAmount` must also be set.
      */
     public void setDiscountAmount(@Nullable String discountAmount) {
         this.discountAmount = discountAmount;
@@ -189,6 +195,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param taxAmount Optional. The total tax amount applied to the transaction.
+     *
+     * If this value is set, `totalAmount` must also be set.
      */
     public void setTaxAmount(@Nullable String taxAmount) {
         this.taxAmount = taxAmount;
@@ -220,6 +228,7 @@ public class VenmoRequest implements Parcelable {
     /**
      * Optional: The line items for this transaction. Can include up to 249 line items.
      *
+     * If this value is set, `totalAmount` must also be set.
      * @param lineItems a collection of {@link VenmoLineItem}
      */
     public void setLineItems(@NonNull Collection<VenmoLineItem> lineItems) {
