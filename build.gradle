@@ -166,7 +166,7 @@ task changeMigrationGuideVersion {
 task updateCHANGELOGVersion {
     doLast {
         def changelogFile = new File('CHANGELOG.md')
-        def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam)
+        def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam + " (" + new Date().format('yyyy-MM-dd') + ")")
         changelogFile.write(changelogFileText)
     }
 }
