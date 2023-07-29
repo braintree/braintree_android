@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Venmo Testing</string>
+    <string name="generating">Generating Payment\nContext ID</string>
+    <string name="merchant_profile_id">Merchant Profile ID</string>
+    <string name="introduce_merchant_profile_id_here">Introduce merchant profile ID here</string>
+    <string name="payment_intent">Payment Intent</string>
+    <string name="single_use">Single Use</string>
+    <string name="multi_use">Multi Use</string>
+    <string name="result_of_app_switch">Result of App Switch:</string>
+    <string name="waiting_for_laucn">Click Venmo button when ready...</string>
+    <string name="waiting_for_result">Waiting for result...</string>
+    <string name="application_variant">Application Variant</string>
+    <string name="debug">Debug</string>
+    <string name="production">Production</string>
+    <string name="sandbox">Sandbox</string>
+    <string name="environment">Environment</string>
+    <string name="release">Release</string>
+    <string name="default_merchant_id">2339505684439105989</string>
+</resources>
