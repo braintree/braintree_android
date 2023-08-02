@@ -92,6 +92,7 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
     }
