@@ -31,7 +31,7 @@ public class PayPalNativeCheckoutAccountUnitTest {
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
-        assertEquals("fake-url", jsonAccount.getJSONObject("response").getJSONObject("webURL").getString("webURL"));
+        assertEquals("fake-url", jsonAccount.getJSONObject("response").getString("webURL"));
         assertEquals(client, jsonAccount.getJSONObject("client"));
         assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
         assertFalse(jsonAccount.getJSONObject("options").getBoolean("validate"));
