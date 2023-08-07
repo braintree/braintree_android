@@ -16,7 +16,6 @@ import com.paypal.checkout.error.ErrorInfo
 import com.paypal.checkout.error.OnError
 import com.paypal.checkout.shipping.OnShippingChange
 import com.paypal.pyplcheckout.data.model.pojo.Buyer
-import com.paypal.pyplcheckout.data.model.pojo.Cart
 import com.paypal.pyplcheckout.data.model.pojo.Email
 import com.paypal.pyplcheckout.data.model.pojo.Name
 import com.paypal.pyplcheckout.instrumentation.constants.PEnums
@@ -254,9 +253,7 @@ class PayPalNativeCheckoutClientUnitTest {
             .configurationSuccess(payPalEnabledConfig)
             .build()
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
-        val approvalData = ApprovalData(null, null, null, null, Cart(
-
-        ), null, null, null, null)
+        val approvalData = ApprovalData(null, null, null, null, null, null, null, null, null)
         val account = sut.setupAccount(payPalCheckoutRequest, approvalData)
         assertEquals(account.clientMetadataId, riskCorrelationId)
         assertEquals(account.merchantAccountId, sampleMerchantId)
