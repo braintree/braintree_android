@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* PayPalNativeCheckout
+  * Changing the way the  `UrlResponseData` inside the PayPalNativeCheckoutClient is set
+
 ## 4.36.0
 
 * BraintreeCore
