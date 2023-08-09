@@ -96,7 +96,7 @@ public class CreateTransactionFragment extends Fragment {
             String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
             transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
-            String merchantAccountId = Settings.getMerchantAccountId(activity);
+            String merchantAccountId = "NativeXOTest";
             transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
         }
 
