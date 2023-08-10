@@ -2,7 +2,7 @@
 
 ## unreleased
 * PayPalNativeCheckout
-  * Changing the way the  `UrlResponseData` inside the PayPalNativeCheckoutClient is set
+  * Fix bug where `PayPalNativeCheckoutVaultRequest` flow in the EU results in failed requests when using the nonce in a server side request
 
 ## 4.36.0
 
