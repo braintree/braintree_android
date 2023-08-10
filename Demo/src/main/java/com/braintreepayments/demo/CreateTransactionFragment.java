@@ -29,6 +29,7 @@ import retrofit.client.Response;
 public class CreateTransactionFragment extends Fragment {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
+
     private ProgressBar loadingSpinner;
 
     @Override
