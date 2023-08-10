@@ -228,7 +228,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
 
     @Nullable
     public String getMerchantAccountId() {
-        return "NativeXOTest";
+        return merchantAccountId;
     }
 
     @Nullable

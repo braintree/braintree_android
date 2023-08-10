@@ -1,5 +1,7 @@
 package com.braintreepayments.demo;
 
+import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.PAYPAL_NATIVE_CHECKOUT_CLIENT_ID;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.demo.models.Transaction;
@@ -26,7 +29,6 @@ import retrofit.client.Response;
 public class CreateTransactionFragment extends Fragment {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
-
     private ProgressBar loadingSpinner;
 
     @Override
@@ -96,7 +98,10 @@ public class CreateTransactionFragment extends Fragment {
             String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
             transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
-            String merchantAccountId = "NativeXOTest";
+            String merchantAccountId = Settings.getMerchantAccountId(activity);
+            if (merchantAccountId == null && nonce instanceof PayPalNativeCheckoutAccountNonce) {
+                merchantAccountId = PAYPAL_NATIVE_CHECKOUT_CLIENT_ID;
+            }
             transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
         }
 

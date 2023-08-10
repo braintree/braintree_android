@@ -61,7 +61,7 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
 
         if (getMerchantAccountId() != null) {
-            parameters.put(MERCHANT_ACCOUNT_ID, "NativeXOTest");
+            parameters.put(MERCHANT_ACCOUNT_ID, getMerchantAccountId());
         }
 
         if (getRiskCorrelationId() != null) {
