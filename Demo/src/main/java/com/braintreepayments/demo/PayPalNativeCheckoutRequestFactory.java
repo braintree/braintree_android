@@ -8,7 +8,7 @@ import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PostalAddress;
 
 public class PayPalNativeCheckoutRequestFactory {
-    public static final String PAYPAL_NATIVE_CHECKOUT_CLIENT_ID = "NativeXOTest";
+    public static final String PAYPAL_NATIVE_CHECKOUT_MERCHANT_ID = "NativeXOTest";
 
     public static PayPalNativeCheckoutVaultRequest createPayPalVaultRequest(Context context) {
         PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
@@ -19,7 +19,7 @@ public class PayPalNativeCheckoutRequestFactory {
             request.setShouldOfferCredit(true);
         }
 
-        request.setMerchantAccountId(PAYPAL_NATIVE_CHECKOUT_CLIENT_ID);
+        request.setMerchantAccountId(PAYPAL_NATIVE_CHECKOUT_MERCHANT_ID);
 
         request.setReturnUrl("com.braintreepayments.demo://paypalpay");
         return request;
@@ -42,7 +42,7 @@ public class PayPalNativeCheckoutRequestFactory {
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
             request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
         }
-        request.setMerchantAccountId(PAYPAL_NATIVE_CHECKOUT_CLIENT_ID);
+        request.setMerchantAccountId(PAYPAL_NATIVE_CHECKOUT_MERCHANT_ID);
 
         if (Settings.usePayPalAddressOverride(context)) {
             request.setShippingAddressEditable(true);

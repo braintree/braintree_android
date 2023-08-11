@@ -1,6 +1,6 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.PAYPAL_NATIVE_CHECKOUT_CLIENT_ID;
+import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.PAYPAL_NATIVE_CHECKOUT_MERCHANT_ID;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -101,7 +101,7 @@ public class CreateTransactionFragment extends Fragment {
         } else {
             String merchantAccountId = Settings.getMerchantAccountId(activity);
             if (merchantAccountId == null && nonce instanceof PayPalNativeCheckoutAccountNonce) {
-                merchantAccountId = PAYPAL_NATIVE_CHECKOUT_CLIENT_ID;
+                merchantAccountId = PAYPAL_NATIVE_CHECKOUT_MERCHANT_ID;
             }
             transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
         }
