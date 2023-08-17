@@ -293,7 +293,7 @@ public class PayPalNativeCheckoutClient {
             }
             urlResponseData.put("response", response);
             urlResponseData.put("response_type", "web");
-            payPalAccount.setUrlResponseData(response);
+            payPalAccount.setUrlResponseData(urlResponseData);
         } catch (JSONException jsonException) {
             listener.onPayPalFailure(jsonException);
         }
