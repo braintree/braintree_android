@@ -40,7 +40,7 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
         }
 
         try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, Settings.getLocalPaymentsTokenizationKey(this));
+            mBraintreeFragment = BraintreeFragment.newInstance(this, "sandbox_f252zhq7_hh4cpc39zq4rgjcg");
             mIdealButton.setEnabled(true);
         } catch (InvalidArgumentException e) {
             onError(e);
