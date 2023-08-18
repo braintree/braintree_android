@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.21.1
 
 * LocalPayment
   * Fixed bug where the configuration was not returned the expected result for Local Payment Methods being enabled
