@@ -61,7 +61,7 @@ public class LocalPayment {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                if (!configuration.getPayPal().isEnabled()) {
+                if (!configuration.isPayPalEnabled()) {
                     fragment.postCallback(new ConfigurationException("Local payments are not enabled for this merchant."));
                     return;
                 }
