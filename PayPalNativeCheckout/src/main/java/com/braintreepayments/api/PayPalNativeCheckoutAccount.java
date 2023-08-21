@@ -53,10 +53,7 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
         Iterator<String> urlResponseDataKeyIterator = urlResponseData.keys();
         while (urlResponseDataKeyIterator.hasNext()) {
             String key = urlResponseDataKeyIterator.next();
-
-            JSONObject response = new JSONObject();
-            response.put("webURL", urlResponseData.get(key));
-            paymentMethodNonceJson.put("response", response);
+            paymentMethodNonceJson.put(key, urlResponseData.get(key));
         }
 
         if (merchantAccountId != null) {
