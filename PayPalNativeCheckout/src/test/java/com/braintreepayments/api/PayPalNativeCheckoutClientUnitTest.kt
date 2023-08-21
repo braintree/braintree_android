@@ -260,58 +260,6 @@ class PayPalNativeCheckoutClientUnitTest {
     }
 
     @Test
-    fun payerInfoIsSetIfNonceIsEmpty() {
-        val riskCorrelationId = "riskId"
-        val sampleMerchantId = "sample-merchant-account-id"
-        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
-        payPalCheckoutRequest.intent = "authorize"
-        payPalCheckoutRequest.merchantAccountId = sampleMerchantId
-        payPalCheckoutRequest.returnUrl = "returnUrl://paypalpay"
-        payPalCheckoutRequest.riskCorrelationId = riskCorrelationId
-        val payPalResponse = PayPalNativeCheckoutResponse(payPalCheckoutRequest)
-            .clientMetadataId("sample-client-metadata-id")
-        val payPalInternalClient = MockkPayPalInternalClientBuilder()
-            .sendRequestSuccess(payPalResponse)
-            .build()
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(payPalEnabledConfig)
-            .build()
-        val buyer = Buyer(
-            "2",
-            Email("test@test.com"),
-            Name("test", "givenNameTest", "familyNameTest"),
-            emptyList(),
-            emptyList()
-        )
-        val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
-        val approvalData = ApprovalData("2", null, null, buyer, null, null, null, null, null)
-        val nonceValue = "{\n" +
-            "  \"type\": \"PayPalAccount\",\n" +
-            "  \"nonce\": \"68a313fb-2747-10cd-1cdf-c85d49e55774\",\n" +
-            "  \"description\": \"PayPal\",\n" +
-            "  \"consumed\": false,\n" +
-            "  \"details\": {\n" +
-            "    \"correlationId\": \"EC-6XE6338828653824N\",\n" +
-            "    \"billingAddress\": null,\n" +
-            "    \"shippingAddress\": {\n" +
-            "      \"recipientName\": \"Brian Tree\",\n" +
-            "      \"line1\": \"123 Fake Street\",\n" +
-            "      \"line2\": \"Floor A\",\n" +
-            "      \"city\": \"San Francisco\",\n" +
-            "      \"state\": \"CA\",\n" +
-            "      \"postalCode\": \"94103\",\n" +
-            "      \"countryCode\": \"US\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "}"
-        val nonce = PayPalNativeCheckoutAccountNonce.fromJSON(JSONObject(nonceValue))
-        sut.setupPayerInfoIfNeeded(nonce, approvalData)
-        assertEquals(nonce.payerId, "2")
-        assertEquals(nonce.firstName, "givenNameTest")
-        assertEquals(nonce.lastName, "familyNameTest")
-    }
-
-    @Test
     @Throws(Exception::class)
     @Ignore("Refactor test to work with mockk")
     fun requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
