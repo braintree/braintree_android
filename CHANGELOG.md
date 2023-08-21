@@ -1,7 +1,9 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPalNativeCheckout
+  * Bump native-checkout version to release `1.1.0`
   * Fix bug where `PayPalNativeCheckoutVaultRequest` flow in the EU results in failed requests when using the nonce in a server side request
 
 ## 4.36.0
@@ -604,6 +606,18 @@
   * Make `TokenizationKey` package-private
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
+
+## 3.21.1
+
+* LocalPayment
+  * Fixed bug where the configuration was not returned the expected result for Local Payment Methods being enabled
+
+## 3.21.0
+
+* BraintreeDataCollector
+  * Remove Kount dependency
+  * Deprecate `DataCollector#collectDeviceData(BraintreeFragment, String, BraintreeResponseListener<String>)`
+  * Kount is no longer supported via Braintree, instead please use our [Fraud Protection Advanced product](https://developer.paypal.com/braintree/articles/guides/fraud-tools/premium/fraud-protection-advanced)
 
 ## 3.20.1
 
