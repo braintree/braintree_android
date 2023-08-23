@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPalNativeCheckout
+  * Bump min SDK version to 23 to prevent crashes on lower Android versions
+
 ## 4.37.0 (2023-08-22)
 
 * PayPalNativeCheckout
