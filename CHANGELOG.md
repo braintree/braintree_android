@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPalNativeCheckout
-  * Bumpe min SDK version to 23 to prevent crashes on lower Android versions
+  * Bump min SDK version to 23 to prevent crashes on lower Android versions
 
 ## 4.37.0 (2023-08-22)
 
