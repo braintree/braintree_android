@@ -8,7 +8,8 @@ android {
 
     defaultConfig {
         applicationId "com.braintreepayments.demo"
-        minSdkVersion rootProject.minSdkVersion
+        // required for PayPalNativeCheckout module
+        minSdkVersion 23
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
         versionName rootProject.versionName
