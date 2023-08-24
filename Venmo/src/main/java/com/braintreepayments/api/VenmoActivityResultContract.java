@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -56,7 +57,23 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             /* do nothing */
         }
 
-        return venmoIntent;
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
+        Uri encodedVenmoURL = venmoBaseURL.buildUpon()
+                .appendQueryParameter("x-success", "")
+                .appendQueryParameter("x-error", "")
+                .appendQueryParameter("x-cancel", "")
+                .appendQueryParameter("x-source", "Demo")
+                .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                .appendQueryParameter("resource_id", input.getPaymentContextId())
+                .appendQueryParameter("braintree_sdk_data", "")
+                .build();
+
+//        Uri venmoURL = Uri.parse("https://venmo.com/go/checkout?x-cancel=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Fcancel&braintree_environment=production&resource_id=cGF5bWVudGNvbnRleHRfZGZ5NDVqZGozZHhrbXo1bSNmZGEzMDc3ZS03NmY0LTQ2MGEtOTAyNC01ZWJjNGFhMzZjODY%3D&braintree_sdk_data=eyJfbWV0YSI6eyJ2ZXJzaW9uIjoiNi41LjAiLCJzZXNzaW9uSWQiOiIyNDVDQ0M3QTY0QTk0N0RFOThENUQxOTNFNDZFNzA0MSIsImludGVncmF0aW9uIjoiY3VzdG9tIiwicGxhdGZvcm0iOiJpb3MifX0%3D&x-error=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Ferror&x-source=SDK%20Demo&x-success=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Fsuccess&braintree_merchant_id=3317760510262248112&braintree_access_token=access_token%24production%24dfy45jdj3dxkmz5m%245b75d496d61f9aa6a15c11fe5aa11517");
+
+        return new Intent(Intent.ACTION_VIEW, encodedVenmoURL);
+        // return venmoIntent;
     }
 
     @Override

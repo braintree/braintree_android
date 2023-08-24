@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import static androidx.core.content.ContextCompat.createDeviceProtectedStorageContext;
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
