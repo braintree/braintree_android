@@ -59,9 +59,9 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
         Uri encodedVenmoURL = venmoBaseURL.buildUpon()
-                .appendQueryParameter("x-success", "")
-                .appendQueryParameter("x-error", "")
-                .appendQueryParameter("x-cancel", "")
+                .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
                 .appendQueryParameter("x-source", "Demo")
                 .appendQueryParameter("braintree_merchant_id", input.getProfileId())
                 .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())

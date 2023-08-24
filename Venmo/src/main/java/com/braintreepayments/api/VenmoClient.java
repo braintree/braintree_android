@@ -165,11 +165,11 @@ public class VenmoClient {
                 }
 
                 String exceptionMessage = null;
-                if (!configuration.isVenmoEnabled()) {
-                    exceptionMessage = "Venmo is not enabled";
-                } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
-                    exceptionMessage = "Venmo is not installed";
-                }
+//                if (!configuration.isVenmoEnabled()) {
+//                    exceptionMessage = "Venmo is not enabled";
+//                } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
+//                    exceptionMessage = "Venmo is not installed";
+//                }
 
                 if (exceptionMessage != null) {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
@@ -421,7 +421,8 @@ public class VenmoClient {
      * @return true if the Venmo app is installed, false otherwise
      */
     public boolean isVenmoAppSwitchAvailable(@NonNull Context context) {
-        return deviceInspector.isVenmoAppSwitchAvailable(context);
+        return true;
+//        return deviceInspector.isVenmoAppSwitchAvailable(context);
     }
 
     /**
