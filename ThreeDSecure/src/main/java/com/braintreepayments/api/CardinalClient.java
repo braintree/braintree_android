@@ -60,16 +60,6 @@ class CardinalClient {
         }
     }
 
-    void continueLookup(ThreeDSecureResult threeDSecureResult, CardinalChallengeObserver challengeObserver) throws BraintreeException {
-        ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
-        String transactionId = lookup.getTransactionId();
-        String paReq = lookup.getPareq();
-        try {
-            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver);
-        } catch (RuntimeException e) {
-            throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
-        }
-    }
 
     private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) throws BraintreeException {
         CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
