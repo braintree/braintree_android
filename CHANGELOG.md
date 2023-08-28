@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Bump `browser-switch` version to `2.5.1`
 * PayPalNativeCheckout
   * Bump min SDK version to 23 to prevent crashes on lower Android versions
 
