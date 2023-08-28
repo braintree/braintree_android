@@ -8,6 +8,7 @@ import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
@@ -54,6 +55,17 @@ class CardinalClient {
         String paReq = lookup.getPareq();
         try {
             Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
+        } catch (RuntimeException e) {
+            throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
+        }
+    }
+
+    void continueLookup(ThreeDSecureResult threeDSecureResult, CardinalChallengeObserver challengeObserver) throws BraintreeException {
+        ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
+        String transactionId = lookup.getTransactionId();
+        String paReq = lookup.getPareq();
+        try {
+            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver);
         } catch (RuntimeException e) {
             throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
         }

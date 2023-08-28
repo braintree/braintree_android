@@ -8,13 +8,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow
  */
-public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
+public class ThreeDSecureActivity extends AppCompatActivity {
 
     static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
     static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
@@ -24,6 +25,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     static final int RESULT_COULD_NOT_START_CARDINAL = RESULT_FIRST_USER;
 
     private final CardinalClient cardinalClient = new CardinalClient();
+    private CardinalChallengeObserver cardinalChallengeObserver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,10 +40,18 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
             extras = new Bundle();
         }
 
+        cardinalChallengeObserver = new CardinalChallengeObserver(this, new CardinalValidateReceiver() {
+            @Override
+            public void onValidated(Context context, ValidateResponse validateResponse, String s) {
+                handleValidated(validateResponse, s);
+            }
+        });
+
         ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
         if (threeDSecureResult != null) {
             try {
-                cardinalClient.continueLookup(this, threeDSecureResult, this);
+//                cardinalClient.continueLookup(this, threeDSecureResult, this);
+                cardinalClient.continueLookup(threeDSecureResult, cardinalChallengeObserver);
             } catch (BraintreeException e) {
                 finishWithError(e.getMessage());
             }
@@ -57,8 +67,19 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         finish();
     }
 
-    @Override
-    public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
+//    @Override
+//    public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
+//        Intent result = new Intent();
+//        result.putExtra(EXTRA_JWT, jwt);
+//        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
+//                .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
+//        result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
+//
+//        setResult(RESULT_OK, result);
+//        finish();
+//    }
+
+    private void handleValidated(ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
         result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
