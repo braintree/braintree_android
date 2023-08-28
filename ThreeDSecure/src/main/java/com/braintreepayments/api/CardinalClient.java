@@ -49,17 +49,6 @@ class CardinalClient {
         }
     }
 
-    void continueLookup(FragmentActivity activity, ThreeDSecureResult threeDSecureResult, CardinalValidateReceiver validateReceiver) throws BraintreeException {
-        ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
-        String transactionId = lookup.getTransactionId();
-        String paReq = lookup.getPareq();
-        try {
-            Cardinal.getInstance().cca_continue(transactionId, paReq, activity, validateReceiver);
-        } catch (RuntimeException e) {
-            throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
-        }
-    }
-
     void continueLookup(ThreeDSecureResult threeDSecureResult, CardinalChallengeObserver challengeObserver) throws BraintreeException {
         ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
         String transactionId = lookup.getTransactionId();
