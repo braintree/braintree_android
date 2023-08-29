@@ -42,15 +42,25 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                if (!isFinishing()) {
-                    onCreateInternal(cardinalClient);
-                }
+                launchCardinalAuthChallenge(cardinalClient);
             }
         });
     }
 
     @VisibleForTesting
-    void onCreateInternal(CardinalClient cardinalClient) {
+    void launchCardinalAuthChallenge(CardinalClient cardinalClient) {
+        if (isFinishing()) {
+            /*
+               After a process kill, we may have already parsed a Cardinal result via the
+               CardinalChallengeObserver and are in the process of propagating the result back to
+               the merchant app.
+
+               This guard prevents the Cardinal Auth Challenge from being shown while the Activity
+               is finishing.
+             */
+            return;
+        }
+
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             extras = new Bundle();

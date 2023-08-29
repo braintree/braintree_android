@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -17,12 +16,9 @@ import static org.mockito.Mockito.when;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -48,7 +44,7 @@ public class ThreeDSecureActivityUnitTest {
         sut.setIntent(intent);
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
-        sut.onCreateInternal(cardinalClient);
+        sut.launchCardinalAuthChallenge(cardinalClient);
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(cardinalClient).continueLookup(captor.capture(), any());
@@ -78,7 +74,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         doThrow(cardinalError).when(cardinalClient).continueLookup(any(ThreeDSecureResult.class), any());
 
-        sut.onCreateInternal(cardinalClient);
+        sut.launchCardinalAuthChallenge(cardinalClient);
         verify(sut).finish();
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -96,7 +92,7 @@ public class ThreeDSecureActivityUnitTest {
         sut.setIntent(intent);
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
-        sut.onCreateInternal(cardinalClient);
+        sut.launchCardinalAuthChallenge(cardinalClient);
 
         verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class), any(CardinalChallengeObserver.class));
         verify(sut).finish();
