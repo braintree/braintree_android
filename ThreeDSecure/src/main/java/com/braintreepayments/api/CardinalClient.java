@@ -60,7 +60,6 @@ class CardinalClient {
         }
     }
 
-
     private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) throws BraintreeException {
         CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
         if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
