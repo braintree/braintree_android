@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
@@ -29,6 +30,7 @@ class CardinalClientUnitTest {
     private lateinit var context: Context
     private lateinit var cardinalInitializeCallback: CardinalInitializeCallback
     private lateinit var cardinalValidateReceiver: CardinalValidateReceiver
+    private lateinit var cardinalChallengeObserver: CardinalChallengeObserver
 
     @Before
     fun beforeEach() {
@@ -40,6 +42,7 @@ class CardinalClientUnitTest {
         cardinalInstance = mockk(relaxed = true)
         activity = mockk(relaxed = true)
         cardinalValidateReceiver = mockk(relaxed = true)
+        cardinalChallengeObserver = mockk(relaxed = true)
     }
 
     @Test
@@ -233,13 +236,12 @@ class CardinalClientUnitTest {
         val threeDSecureResult = mockk<ThreeDSecureResult>(relaxed = true)
         every { threeDSecureResult.lookup } returns threeDSecureLookup
 
-        sut.continueLookup(activity, threeDSecureResult, cardinalValidateReceiver)
+        sut.continueLookup(threeDSecureResult, cardinalChallengeObserver)
         verify {
             cardinalInstance.cca_continue(
                 "sample-transaction-id",
                 "sample-payer-authentication-request",
-                activity,
-                cardinalValidateReceiver
+                cardinalChallengeObserver
             )
         }
     }
@@ -249,7 +251,7 @@ class CardinalClientUnitTest {
         every { Cardinal.getInstance() } returns cardinalInstance
 
         val runtimeException = RuntimeException("fake message")
-        every { cardinalInstance.cca_continue(any(), any(), any(), any()) } throws runtimeException
+        every { cardinalInstance.cca_continue(any(), any(), any()) } throws runtimeException
 
         val sut = CardinalClient()
         val threeDSecureLookup = mockk<ThreeDSecureLookup>(relaxed = true)
@@ -260,7 +262,7 @@ class CardinalClientUnitTest {
         every { threeDSecureResult.lookup } returns threeDSecureLookup
 
         try {
-            sut.continueLookup(activity, threeDSecureResult, cardinalValidateReceiver)
+            sut.continueLookup(threeDSecureResult, cardinalChallengeObserver)
             fail("should not get here")
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK cca_continue Error.", e.message)

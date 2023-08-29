@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
@@ -24,10 +25,17 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     static final int RESULT_COULD_NOT_START_CARDINAL = RESULT_FIRST_USER;
 
     private final CardinalClient cardinalClient = new CardinalClient();
+    private CardinalChallengeObserver challengeObserver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        challengeObserver = new CardinalChallengeObserver(this, new CardinalValidateReceiver() {
+            @Override
+            public void onValidated(Context context, ValidateResponse validateResponse, String s) {
+                handleValidated(validateResponse, s);
+            }
+        });
         onCreateInternal(cardinalClient);
     }
 
@@ -41,7 +49,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         ThreeDSecureResult threeDSecureResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
         if (threeDSecureResult != null) {
             try {
-                cardinalClient.continueLookup(this, threeDSecureResult, this);
+                cardinalClient.continueLookup(threeDSecureResult, challengeObserver);
             } catch (BraintreeException e) {
                 finishWithError(e.getMessage());
             }
@@ -57,8 +65,13 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         finish();
     }
 
+    // TODO: NEXT_MAJOR_VERSION remove implementation of CardinalValidateReceiver
     @Override
     public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
+        handleValidated(validateResponse, jwt);
+    }
+
+    private void handleValidated(ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
         result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()

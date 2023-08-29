@@ -20,6 +20,7 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
@@ -50,7 +51,7 @@ public class ThreeDSecureActivityUnitTest {
         sut.onCreateInternal(cardinalClient);
 
         ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
-        verify(cardinalClient).continueLookup(same(sut), captor.capture(), same(sut));
+        verify(cardinalClient).continueLookup(captor.capture(), any());
 
         ThreeDSecureResult actualResult = captor.getValue();
         ThreeDSecureLookup actualLookup = actualResult.getLookup();
@@ -75,7 +76,7 @@ public class ThreeDSecureActivityUnitTest {
         BraintreeException cardinalError = new BraintreeException("fake cardinal error");
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
-        doThrow(cardinalError).when(cardinalClient).continueLookup(same(sut), any(ThreeDSecureResult.class), same(sut));
+        doThrow(cardinalError).when(cardinalClient).continueLookup(any(ThreeDSecureResult.class), any());
 
         sut.onCreateInternal(cardinalClient);
         verify(sut).finish();
@@ -97,7 +98,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.onCreateInternal(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(FragmentActivity.class), any(ThreeDSecureResult.class), any(CardinalValidateReceiver.class));
+        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class), any(CardinalChallengeObserver.class));
         verify(sut).finish();
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);

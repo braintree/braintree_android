@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-4`
 * BraintreeCore
   * Bump `browser-switch` version to `2.5.1`
 * PayPalNativeCheckout
