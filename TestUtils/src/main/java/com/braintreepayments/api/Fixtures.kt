@@ -906,7 +906,7 @@ object Fixtures {
             "merchantId": "some-merchant-id",
             "merchantAccountId": "some-merchant-account-id",
             "analytics": {
-                "url": "https://client-analytics.braintreegateway.com/some-merchant-id"
+                "url": "https://client-analytics.braintreegateway.com/dcpspy2brwdjr3qn"
             }
         }
     """
