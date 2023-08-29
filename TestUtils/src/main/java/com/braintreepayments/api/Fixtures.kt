@@ -951,7 +951,7 @@ object Fixtures {
             "merchantId": "some-merchant-id",
             "merchantAccountId": "some-merchant-account-id",
             "analytics": {
-                "url": "https://origin-analytics-sand.sandbox.braintree-api.com/some-merchant-id"
+                "url": "https://origin-analytics-sand.sandbox.braintree-api.com/dcpspy2brwdjr3qn"
             }
         }
     """
