@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -36,7 +38,15 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
                 handleValidated(validateResponse, s);
             }
         });
-        onCreateInternal(cardinalClient);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isFinishing()) {
+                    onCreateInternal(cardinalClient);
+                }
+            }
+        });
     }
 
     @VisibleForTesting
