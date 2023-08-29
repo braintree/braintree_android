@@ -32,19 +32,15 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        challengeObserver = new CardinalChallengeObserver(this, new CardinalValidateReceiver() {
-            @Override
-            public void onValidated(Context context, ValidateResponse validateResponse, String s) {
-                handleValidated(validateResponse, s);
-            }
-        });
+        challengeObserver = new CardinalChallengeObserver(
+                this, (context, validateResponse, s) -> handleValidated(validateResponse, s));
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                launchCardinalAuthChallenge(cardinalClient);
-            }
-        });
+        /*
+            Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
+            complete. This gives the CardinalValidateReceiver callback a chance to run before 3DS
+            is initiated.
+         */
+        new Handler(Looper.getMainLooper()).post(() -> launchCardinalAuthChallenge(cardinalClient));
     }
 
     @VisibleForTesting
