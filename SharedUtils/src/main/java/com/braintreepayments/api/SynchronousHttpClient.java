@@ -73,8 +73,8 @@ class SynchronousHttpClient {
             httpRequest.dispose();
         }
 
-        int responseCode = connection.getResponseCode();
         try {
+            int responseCode = connection.getResponseCode();
             return parser.parse(responseCode, connection);
         } finally {
             connection.disconnect();
