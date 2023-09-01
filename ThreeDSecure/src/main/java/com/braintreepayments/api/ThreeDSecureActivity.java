@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -30,17 +32,31 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        challengeObserver = new CardinalChallengeObserver(this, new CardinalValidateReceiver() {
-            @Override
-            public void onValidated(Context context, ValidateResponse validateResponse, String s) {
-                handleValidated(validateResponse, s);
-            }
-        });
-        onCreateInternal(cardinalClient);
+        challengeObserver = new CardinalChallengeObserver(
+                this, (context, validateResponse, s) -> handleValidated(validateResponse, s));
+
+        /*
+            Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
+            complete. This gives the CardinalValidateReceiver callback a chance to run before 3DS
+            is initiated.
+         */
+        new Handler(Looper.getMainLooper()).post(() -> launchCardinalAuthChallenge(cardinalClient));
     }
 
     @VisibleForTesting
-    void onCreateInternal(CardinalClient cardinalClient) {
+    void launchCardinalAuthChallenge(CardinalClient cardinalClient) {
+        if (isFinishing()) {
+            /*
+               After a process kill, we may have already parsed a Cardinal result via the
+               CardinalChallengeObserver and are in the process of propagating the result back to
+               the merchant app.
+
+               This guard prevents the Cardinal Auth Challenge from being shown while the Activity
+               is finishing.
+             */
+            return;
+        }
+
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             extras = new Bundle();
