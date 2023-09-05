@@ -7,7 +7,7 @@
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-4`
 * BraintreeCore
-  * Bump `browser-switch` version to `2.5.1`
+  * Bump `browser-switch` version to `2.6.0`
 * PayPalNativeCheckout
   * Bump min SDK version to 23 to prevent crashes on lower Android versions
 
