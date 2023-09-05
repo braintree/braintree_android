@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static androidx.core.content.ContextCompat.createDeviceProtectedStorageContext;
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -227,12 +228,55 @@ public class VenmoClient {
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
-            observer.launch(intentData);
+            startActivityUsingAppLink(activity, intentData);
+//            observer.launch(intentData);
         } else {
             Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
             activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
         }
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+    }
+
+    private void startActivityUsingAppLink(FragmentActivity activity, VenmoIntentData input) {
+        Intent venmoIntent = getVenmoIntent()
+                .putExtra(EXTRA_MERCHANT_ID, input.getProfileId())
+                .putExtra(EXTRA_ACCESS_TOKEN, input.getConfiguration().getVenmoAccessToken())
+                .putExtra(EXTRA_ENVIRONMENT, input.getConfiguration().getVenmoEnvironment());
+
+        if (input.getPaymentContextId() != null) {
+            venmoIntent.putExtra(EXTRA_RESOURCE_ID, input.getPaymentContextId());
+        }
+
+        Uri encodedVenmoURL = Uri.parse("www.paypal.com");
+        try {
+            JSONObject braintreeData = new JSONObject();
+
+            JSONObject meta = new MetadataBuilder()
+                    .sessionId(input.getSessionId())
+                    .integration(input.getIntegrationType())
+                    .version()
+                    .build();
+
+            braintreeData.put(META_KEY, meta);
+            venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
+            Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
+            encodedVenmoURL = venmoBaseURL.buildUpon()
+                    .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
+                    .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
+                    .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
+                    .appendQueryParameter("x-source", "Demo")
+                    .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                    .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                    .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                    .appendQueryParameter("resource_id", input.getPaymentContextId())
+                    .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                    .build();
+        } catch (JSONException ignored) {
+            /* do nothing */
+        }
+//        Uri venmoURL = Uri.parse("https://venmo.com/go/checkout?x-cancel=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Fcancel&braintree_environment=production&resource_id=cGF5bWVudGNvbnRleHRfZGZ5NDVqZGozZHhrbXo1bSNmZGEzMDc3ZS03NmY0LTQ2MGEtOTAyNC01ZWJjNGFhMzZjODY%3D&braintree_sdk_data=eyJfbWV0YSI6eyJ2ZXJzaW9uIjoiNi41LjAiLCJzZXNzaW9uSWQiOiIyNDVDQ0M3QTY0QTk0N0RFOThENUQxOTNFNDZFNzA0MSIsImludGVncmF0aW9uIjoiY3VzdG9tIiwicGxhdGZvcm0iOiJpb3MifX0%3D&x-error=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Ferror&x-source=SDK%20Demo&x-success=com.braintreepayments.Demo.payments%3A%2F%2Fx-callback-url%2Fvzero%2Fauth%2Fvenmo%2Fsuccess&braintree_merchant_id=3317760510262248112&braintree_access_token=access_token%24production%24dfy45jdj3dxkmz5m%245b75d496d61f9aa6a15c11fe5aa11517");
+
+        activity.startActivity(new Intent(Intent.ACTION_VIEW, encodedVenmoURL));
     }
 
     void onVenmoResult(final VenmoResult venmoResult) {
