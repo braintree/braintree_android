@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.38.0 (2023-09-06)
 
 * All Modules
   * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 34
