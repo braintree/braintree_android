@@ -3,7 +3,8 @@
 ## 4.38.0 (2023-09-06)
 
 * All Modules
-  * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 34
+  * Android 14 Support
+    * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 34
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-4`
 * BraintreeCore
