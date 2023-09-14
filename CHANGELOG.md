@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.38.1 (2023-09-14)
 
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-5`
