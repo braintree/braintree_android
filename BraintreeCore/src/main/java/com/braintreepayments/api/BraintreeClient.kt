@@ -62,7 +62,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
-    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token.
