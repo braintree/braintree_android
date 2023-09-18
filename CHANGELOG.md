@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.38.2 (2023-09-18)
 
 * BraintreeCore
   * Internal Fixes
