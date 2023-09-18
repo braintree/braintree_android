@@ -62,6 +62,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
+    /**
+     * @suppress
+     */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
