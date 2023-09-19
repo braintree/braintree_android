@@ -13,8 +13,7 @@ public class VenmoLauncher {
         activityLauncher = fragment.getActivity().getActivityResultRegistry().register(VENMO_SECURE_RESULT, fragment.getViewLifecycleOwner(), new VenmoActivityResultContract(), new ActivityResultCallback<VenmoResult>() {
             @Override
             public void onActivityResult(VenmoResult venmoResult) {
-                VenmoAccountNonce nonce = new VenmoAccountNonce(venmoResult.getVenmoAccountNonce(), venmoResult.getVenmoUsername(), false);
-                callback.onVenmoResult(nonce);
+                callback.onVenmoResult(venmoResult);
             }
         });
     }

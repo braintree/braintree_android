@@ -45,8 +45,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
         venmoLauncher = new VenmoLauncher(this, new VenmoResultCallback() {
             @Override
-            public void onVenmoResult(VenmoAccountNonce venmoAccountNonce) {
-                onVenmoSuccess(venmoAccountNonce);
+            public void onVenmoResult(VenmoResult venmoResult) {
+                venmoClient.onVenmoResult(venmoResult);
             }
         });
 
@@ -70,6 +70,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
         braintreeClient = getBraintreeClient();
         venmoClient = new VenmoClient(this, braintreeClient);
+        venmoClient.setListener(this);
 
         braintreeClient.getConfiguration((configuration, error) -> {
             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {

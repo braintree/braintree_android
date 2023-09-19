@@ -254,7 +254,7 @@ public class VenmoClient {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
     }
 
-    void onVenmoResult(final VenmoResult venmoResult) {
+    public void onVenmoResult(final VenmoResult venmoResult) {
         if (venmoResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
 
@@ -267,7 +267,6 @@ public class VenmoClient {
                         String paymentContextId = venmoResult.getPaymentContextId();
                         if (paymentContextId != null) {
                             venmoApi.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
-                                @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
                                         boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());

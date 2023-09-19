@@ -24,7 +24,7 @@ public class VenmoResult {
         return paymentContextId;
     }
 
-    public String getVenmoAccountNonce() {
+    String getVenmoAccountNonce() {
         return venmoAccountNonce;
     }
 
