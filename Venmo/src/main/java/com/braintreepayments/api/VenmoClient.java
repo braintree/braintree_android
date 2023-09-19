@@ -85,9 +85,9 @@ public class VenmoClient {
         this.sharedPrefsWriter = sharedPrefsWriter;
         this.deviceInspector = deviceInspector;
         this.venmoApi = venmoApi;
-        if (activity != null && lifecycle != null) {
-            addObserver(activity, lifecycle);
-        }
+//        if (activity != null && lifecycle != null) {
+//            addObserver(activity, lifecycle);
+//        }
     }
 
     private void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
@@ -129,13 +129,19 @@ public class VenmoClient {
      */
     public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request) {
         tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
-            @Override
-            public void onResult(@Nullable Exception error) {
-                if (error != null) {
-                    listener.onVenmoFailure(error);
-                }
-            }
-        });
+                    @Override
+                    public void onResult(@Nullable Exception error) {
+                        if (error != null) {
+                            listener.onVenmoFailure(error);
+                        }
+                    }
+                },
+                new VenmoIntenDataCallback() {
+                    @Override
+                    public void onVenmoIntentData(VenmoIntentData venmoIntentData) {
+                        // todo
+                    }
+                });
     }
 
     /**
@@ -150,7 +156,7 @@ public class VenmoClient {
      * @param callback {@link VenmoTokenizeAccountCallback}
      */
     @Deprecated
-    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback) {
+    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback, VenmoIntenDataCallback intentDataCallback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -195,7 +201,7 @@ public class VenmoClient {
                                 @Override
                                 public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
                                     if (authorization != null) {
-                                        startVenmoActivityForResult(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId);
+                                        startVenmoActivityForResult(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId, intentDataCallback);
                                     } else {
                                         callback.onResult(authError);
                                     }
@@ -229,6 +235,22 @@ public class VenmoClient {
             Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
             activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
         }
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+    }
+    private void startVenmoActivityForResult(
+            final FragmentActivity activity,
+            final VenmoRequest request,
+            final Configuration configuration,
+            Authorization authorization,
+            final String venmoProfileId,
+            @Nullable final String paymentContextId,
+            VenmoIntenDataCallback callback
+    ) {
+        boolean isClientTokenAuth = (authorization instanceof ClientToken);
+        boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
+        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
+        VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
+        callback.onVenmoIntentData(intentData);
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
     }
 

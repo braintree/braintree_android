@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import androidx.annotation.Nullable;
 
-class VenmoResult {
+public class VenmoResult {
 
     private final Exception error;
     private final String paymentContextId;
@@ -24,7 +24,7 @@ class VenmoResult {
         return paymentContextId;
     }
 
-    String getVenmoAccountNonce() {
+    public String getVenmoAccountNonce() {
         return venmoAccountNonce;
     }
 

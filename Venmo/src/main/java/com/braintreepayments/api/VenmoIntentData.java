@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-class VenmoIntentData {
+public class VenmoIntentData {
 
     private final Configuration configuration;
     private final String profileId;

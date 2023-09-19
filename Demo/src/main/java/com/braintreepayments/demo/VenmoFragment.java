@@ -16,16 +16,24 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.VenmoIntenDataCallback;
+import com.braintreepayments.api.VenmoIntentData;
+import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
+import com.braintreepayments.api.VenmoResult;
+import com.braintreepayments.api.VenmoResultCallback;
+
 import java.util.ArrayList;
 
 public class VenmoFragment extends BaseFragment implements VenmoListener {
 
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
+
+    private VenmoLauncher venmoLauncher;
     private BraintreeClient braintreeClient;
 
     @Nullable
@@ -35,9 +43,12 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        braintreeClient = getBraintreeClient();
-        venmoClient = new VenmoClient(this, braintreeClient);
-        venmoClient.setListener(this);
+        venmoLauncher = new VenmoLauncher(this, new VenmoResultCallback() {
+            @Override
+            public void onVenmoResult(VenmoAccountNonce venmoAccountNonce) {
+                onVenmoSuccess(venmoAccountNonce);
+            }
+        });
 
         return view;
     }
@@ -57,6 +68,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
+        braintreeClient = getBraintreeClient();
+        venmoClient = new VenmoClient(this, braintreeClient);
 
         braintreeClient.getConfiguration((configuration, error) -> {
             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
@@ -74,7 +87,12 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.tokenizeVenmoAccount(activity, venmoRequest);
+                venmoClient.tokenizeVenmoAccount(activity, venmoRequest, null, new VenmoIntenDataCallback() {
+                    @Override
+                    public void onVenmoIntentData(VenmoIntentData venmoIntentData) {
+                        venmoLauncher.launch(venmoIntentData);
+                    }
+                });
             } else if (configuration.isVenmoEnabled()) {
                 showDialog("Please install the Venmo app first.");
             } else {
