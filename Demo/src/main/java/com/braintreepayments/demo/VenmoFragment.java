@@ -43,12 +43,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        venmoLauncher = new VenmoLauncher(this, new VenmoResultCallback() {
-            @Override
-            public void onVenmoResult(VenmoResult venmoResult) {
-                venmoClient.onVenmoResult(venmoResult);
-            }
-        });
+        venmoLauncher = new VenmoLauncher(this, venmoResult -> venmoClient.onVenmoResult(venmoResult));
 
         return view;
     }
@@ -69,7 +64,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
         braintreeClient = getBraintreeClient();
-        venmoClient = new VenmoClient(this, braintreeClient);
+        venmoClient = new VenmoClient(braintreeClient);
         venmoClient.setListener(this);
 
         braintreeClient.getConfiguration((configuration, error) -> {
@@ -88,12 +83,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.tokenizeVenmoAccount(activity, venmoRequest, null, new VenmoIntenDataCallback() {
-                    @Override
-                    public void onVenmoIntentData(VenmoIntentData venmoIntentData) {
-                        venmoLauncher.launch(venmoIntentData);
-                    }
-                });
+                venmoClient.tokenizeVenmoAccount(activity, venmoRequest, venmoIntentData -> venmoLauncher.launch(venmoIntentData));
             } else if (configuration.isVenmoEnabled()) {
                 showDialog("Please install the Venmo app first.");
             } else {

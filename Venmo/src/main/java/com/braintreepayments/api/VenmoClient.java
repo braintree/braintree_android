@@ -144,6 +144,16 @@ public class VenmoClient {
                 });
     }
 
+    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, VenmoIntenDataCallback callback) {
+       tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
+           @Override
+           public void onResult(@Nullable Exception error) {
+               if (error != null) {
+                   listener.onVenmoFailure(error);
+               }
+           }
+       }, callback);
+    }
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
@@ -201,7 +211,7 @@ public class VenmoClient {
                                 @Override
                                 public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
                                     if (authorization != null) {
-                                        startVenmoActivityForResult(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId, intentDataCallback);
+                                        createVenmoIntentData(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId, intentDataCallback);
                                     } else {
                                         callback.onResult(authError);
                                     }
@@ -237,7 +247,7 @@ public class VenmoClient {
         }
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
     }
-    private void startVenmoActivityForResult(
+    private void createVenmoIntentData(
             final FragmentActivity activity,
             final VenmoRequest request,
             final Configuration configuration,
