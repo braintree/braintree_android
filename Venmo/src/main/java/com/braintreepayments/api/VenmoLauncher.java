@@ -13,10 +13,6 @@ public class VenmoLauncher {
         activityLauncher = fragment.getActivity().getActivityResultRegistry().register(VENMO_SECURE_RESULT, fragment.getViewLifecycleOwner(), new VenmoActivityResultContract(), callback::onVenmoResult);
     }
 
-    public VenmoLauncher(FragmentActivity activity, VenmoResultCallback callback) {
-        activityLauncher = activity.getActivityResultRegistry().register(VENMO_SECURE_RESULT, activity, new VenmoActivityResultContract(), callback::onVenmoResult);
-    }
-
     public void launch(VenmoIntentData venmoIntentData) {
         activityLauncher.launch(venmoIntentData);
     }
