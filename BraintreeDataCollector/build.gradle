@@ -2,8 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
-    id 'de.marcphilipp.nexus-publish'
-    id 'signing'
 }
 
 android {
@@ -64,65 +62,11 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
-    sign publishing.publications
-}
+project.ext.name = "data-collector"
+project.ext.pom_name = "data-collector"
+project.ext.pom_desc = "Fraud tools for Braintree integrations on Android."
 
-nexusPublishing {
-    // give nexus sonatype more time to initialize the staging repository
-    clientTimeout = Duration.ofMinutes(3)
-    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-    repositories {
-        sonatype()
-    }
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                artifact sourcesJar
-
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'data-collector'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'data-collector'
-                    packaging = 'aar'
-                    description = 'Fraud tools for Braintree integrations on Android.'
-                    url = 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+apply from: rootProject.file("gradle/gradle-publish.gradle")
 
 // endregion
 

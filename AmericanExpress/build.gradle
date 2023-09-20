@@ -47,22 +47,6 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
-    sign publishing.publications
-}
-
-nexusPublishing {
-    // give nexus sonatype more time to initialize the staging repository
-    clientTimeout = Duration.ofMinutes(3)
-    useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-    repositories {
-        sonatype()
-    }
-}
-
 project.ext.name = "american-express"
 project.ext.pom_name = "american-express"
 project.ext.pom_desc = "American Express dependencies for Braintree Android."
