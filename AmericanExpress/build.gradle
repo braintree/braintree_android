@@ -2,8 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
-    id 'de.marcphilipp.nexus-publish'
-    id 'signing'
 }
 
 android {
@@ -65,48 +63,10 @@ nexusPublishing {
     }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
+project.ext.name = "american-express"
+project.ext.pom_name = "american-express"
+project.ext.pom_desc = "American Express dependencies for Braintree Android."
 
-                artifact sourcesJar
-
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'american-express'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'american-express'
-                    packaging = 'aar'
-                    description = 'American Express dependencies for Braintree Android.'
-                    url = 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+apply from: rootProject.file("gradle/gradle-publish.gradle")
 
 // endregion
