@@ -106,11 +106,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 // region signing and publishing
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-}
-
 project.ext.name = "braintree-core"
 project.ext.pom_name = "braintree-core"
 project.ext.pom_desc = "This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app."

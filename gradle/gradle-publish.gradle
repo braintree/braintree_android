@@ -15,7 +15,6 @@ afterEvaluate {
                 artifactId project.ext.name
                 from components.release
                 artifact sourcesJar
-                artifact javadocsJar
 
                 pom {
                     name = project.ext.pom_name ?: ''
@@ -52,13 +51,11 @@ afterEvaluate {
     }
 }
 
-task androidSourcesJar(type: Jar) {
+task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
-    from android.sourceSets.main.kotlin.srcDirs
 }
 
 artifacts {
     archives sourcesJar
-    archives javadocsJar
 }

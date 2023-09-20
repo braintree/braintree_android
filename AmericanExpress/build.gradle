@@ -42,11 +42,6 @@ dependencies {
 
 // region signing and publishing
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-}
-
 project.ext.name = "american-express"
 project.ext.pom_name = "american-express"
 project.ext.pom_desc = "American Express dependencies for Braintree Android."
