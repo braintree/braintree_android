@@ -1,9 +1,5 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
-
-* Upgrade publish plugin
-
 ## 4.38.1 (2023-09-14)
 
 * ThreeDSecure
