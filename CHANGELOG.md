@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 4.38.2 (2023-09-18)
+
+* BraintreeCore
+  * Internal Fixes
+
 ## 4.38.1 (2023-09-14)
 
 * ThreeDSecure

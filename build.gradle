@@ -96,12 +96,12 @@ allprojects {
     }
 }
 
-version '4.38.2-SNAPSHOT'
+version '4.38.3-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
-    versionCode = 181
+    versionCode = 182
     targetSdkVersion = 34
     versionName = version
 }
