@@ -108,6 +108,6 @@ public class PreferredPaymentMethodsFragment extends BaseFragment {
             if (requestError != null) {
                 handleError(requestError);
             }
-        }, null);
+        });
     }
 }
