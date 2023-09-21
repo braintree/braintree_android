@@ -49,6 +49,8 @@ dependencies {
 
 project.ext.name = "sepa-direct-debit"
 project.ext.pom_name = "sepa-direct-debit"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "SEPA Direct Debit dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

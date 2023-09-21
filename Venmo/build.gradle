@@ -48,6 +48,8 @@ dependencies {
 
 project.ext.name = "venmo"
 project.ext.pom_name = "venmo"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Venmo dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

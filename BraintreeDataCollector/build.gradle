@@ -59,6 +59,8 @@ dependencies {
 
 project.ext.name = "data-collector"
 project.ext.pom_name = "data-collector"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Fraud tools for Braintree integrations on Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

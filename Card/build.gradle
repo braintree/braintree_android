@@ -53,6 +53,8 @@ dependencies {
 
 project.ext.name = "card"
 project.ext.pom_name = "card"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Card dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

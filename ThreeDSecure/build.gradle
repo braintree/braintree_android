@@ -56,6 +56,8 @@ dependencies {
 
 project.ext.name = "three-d-secure"
 project.ext.pom_name = "three-d-secure"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "3DS dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

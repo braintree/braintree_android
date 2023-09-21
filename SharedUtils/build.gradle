@@ -51,6 +51,8 @@ dependencies {
 
 project.ext.name = "shared-utils"
 project.ext.pom_name = "shared-utils"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Library containing shared components used across Braintree\'s Android SDKs."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

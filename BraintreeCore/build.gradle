@@ -108,6 +108,8 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 project.ext.name = "braintree-core"
 project.ext.pom_name = "braintree-core"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

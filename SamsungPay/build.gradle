@@ -52,6 +52,8 @@ dependencies {
 
 project.ext.name = "samsung-pay"
 project.ext.pom_name = "samsung-pay"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Samsung Pay Module for Braintree\'s Android SDK."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

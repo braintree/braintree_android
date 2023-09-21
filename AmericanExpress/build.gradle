@@ -44,6 +44,8 @@ dependencies {
 
 project.ext.name = "american-express"
 project.ext.pom_name = "american-express"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "American Express dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

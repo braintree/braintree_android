@@ -50,6 +50,8 @@ dependencies {
 
 project.ext.name = "local-payment"
 project.ext.pom_name = "local-payment"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
 project.ext.pom_desc = "Local Payment dependencies for Braintree Android."
 
 apply from: rootProject.file("gradle/gradle-publish.gradle")

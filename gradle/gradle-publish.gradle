@@ -10,11 +10,12 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                groupId group
-                version project.version
+                groupId project.ext.group_id
+                version project.ext.version
                 artifactId project.ext.name
                 from components.release
-                artifact sourcesJar
+                artifact androidSourcesJar
+                artifact javadocsJar
 
                 pom {
                     name = project.ext.pom_name ?: ''
@@ -51,11 +52,24 @@ afterEvaluate {
     }
 }
 
-task sourcesJar(type: Jar) {
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    archiveClassifier.set('javadoc')
+    from javadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
+    from android.sourceSets.main.kotlin.srcDirs
 }
 
 artifacts {
-    archives sourcesJar
+    archives androidSourcesJar
+    archives javadocsJar
 }
