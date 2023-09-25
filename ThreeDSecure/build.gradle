@@ -2,8 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
-    id 'de.marcphilipp.nexus-publish'
-    id 'signing'
 }
 
 android {
@@ -56,70 +54,13 @@ dependencies {
 
 // region signing and publishing
 
- task sourcesJar(type: Jar) {
-     archiveClassifier.set('sources')
-     from android.sourceSets.main.java.srcDirs
- }
+project.ext.name = "three-d-secure"
+project.ext.pom_name = "three-d-secure"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
+project.ext.pom_desc = "3DS dependencies for Braintree Android."
 
- signing {
-     required {
-         !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-     }
-     sign publishing.publications
- }
-
- nexusPublishing {
-     // give nexus sonatype more time to initialize the staging repository
-     clientTimeout = Duration.ofMinutes(3)
-     useStaging = !rootProject.versionName.endsWith("SNAPSHOT")
-     repositories {
-         sonatype()
-     }
- }
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                artifact sourcesJar
-
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'three-d-secure'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'three-d-secure'
-                    packaging = 'aar'
-                    description = '3DS dependencies for Braintree Android.'
-                    url = 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+apply from: rootProject.file("gradle/gradle-publish.gradle")
 
  // endregion
 
