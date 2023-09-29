@@ -29,6 +29,18 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_FILE: ${{ env.SIGNING_KEY_FILE_PATH }}
 
+  # Run static analysis after successful build
+  static_analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: ./.github/actions/setup_java
+      - name: Run Static Analysis
+        uses: ./.github/actions/static_analysis
+
   # Once building is finished, we unit test every module in parallel
   unit_test_american_express:
     name: AmericanExpress Unit Tests
