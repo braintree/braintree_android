@@ -16,4 +16,4 @@ jobs:
           java-version: '11'
           distribution: 'microsoft'
       - name: Lint
-        run: ./ci android_lint
+        run: ./ci lint
