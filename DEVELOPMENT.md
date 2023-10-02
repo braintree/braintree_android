@@ -52,7 +52,7 @@ The individual components may be of interest for advanced integrations and are e
 
 ## Deployment and Code Organization
 
-* Code on master is assumed to be in a relatively good state at all times
+* Code on main is assumed to be in a relatively good state at all times
   * Tests should be passing, all demo apps should run
   * Functionality and user experience should be cohesive
   * Dead code should be kept to a minimum
