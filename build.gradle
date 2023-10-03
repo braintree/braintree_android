@@ -83,6 +83,7 @@ buildscript {
 plugins {
     id 'org.jetbrains.dokka' version '1.7.10'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.22.0'
 }
 
 ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''
@@ -119,6 +120,40 @@ nexusPublishing {
     transitionCheckOptions {
         // give nexus sonatype more time to close the staging repository
         delayBetween.set(Duration.ofSeconds(20))
+    }
+}
+
+dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-rules-libraries:1.22.0"
+}
+
+detekt {
+    toolVersion = "1.22.0"
+    config = files("detekt/detekt-config.yml")
+    input = files(
+            "BraintreeCore/src",
+            "AmericanExpress/src",
+            "BraintreeDataCollector/src",
+            "Card/src",
+            "Demo/src",
+            "GooglePay/src",
+            "LocalPayment/src",
+            "PayPal/src",
+            "PayPalDataCollector/src",
+            "PayPalNativeCheckout/src",
+            "SEPADirectDebit/src",
+            "SharedUtils/src",
+            "TestUtils/src",
+            "ThreeDSecure/src",
+            "Venmo/src",
+    )
+    autoCorrect = project.hasProperty('detektAutoCorrect')
+    reports {
+        html {
+            enabled = true
+            destination = file("build/reports/detekt_report.html")
+        }
     }
 }
 

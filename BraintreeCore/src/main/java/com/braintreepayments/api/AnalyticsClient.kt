@@ -2,7 +2,11 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ListenableWorker
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.braintreepayments.api.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
@@ -10,6 +14,7 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsClient @VisibleForTesting constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
@@ -96,7 +101,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
-            .setInitialDelay(30, TimeUnit.SECONDS)
+            .setInitialDelay(DELAY_TIME_SECONDS, TimeUnit.SECONDS)
             .setInputData(inputData)
             .build()
         workManager.enqueueUniqueWork(
@@ -114,22 +119,24 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             listOf(configuration, authorization, sessionId, integration).contains(null)
         return if (isMissingInputData) {
             ListenableWorker.Result.failure()
-        } else try {
-            val analyticsEventDao = analyticsDatabase.analyticsEventDao()
-            val events = analyticsEventDao.getAllEvents()
-            if (events.isNotEmpty()) {
-                val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
-                val analyticsRequest = serializeEvents(authorization, events, metadata)
-                configuration?.analyticsUrl?.let { analyticsUrl ->
-                    httpClient.post(
-                        analyticsUrl, analyticsRequest.toString(), configuration, authorization
-                    )
-                    analyticsEventDao.deleteEvents(events)
+        } else {
+            try {
+                val analyticsEventDao = analyticsDatabase.analyticsEventDao()
+                val events = analyticsEventDao.getAllEvents()
+                if (events.isNotEmpty()) {
+                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+                    val analyticsRequest = serializeEvents(authorization, events, metadata)
+                    configuration?.analyticsUrl?.let { analyticsUrl ->
+                        httpClient.post(
+                            analyticsUrl, analyticsRequest.toString(), configuration, authorization
+                        )
+                        analyticsEventDao.deleteEvents(events)
+                    }
                 }
+                ListenableWorker.Result.success()
+            } catch (e: Exception) {
+                ListenableWorker.Result.failure()
             }
-            ListenableWorker.Result.success()
-        } catch (e: Exception) {
-            ListenableWorker.Result.failure()
         }
     }
 
@@ -210,6 +217,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
+        private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
             inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {

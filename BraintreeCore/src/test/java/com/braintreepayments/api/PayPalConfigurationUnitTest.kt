@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalConfigurationUnitTest {
-    
+
     @Test
     @Throws(JSONException::class)
     fun fromJson_parsesFullInput() {
@@ -24,7 +24,7 @@ class PayPalConfigurationUnitTest {
             .put("environment", "live")
             .put("touchDisabled", true)
             .put("currencyIsoCode", "USD")
-        
+
         val sut = PayPalConfiguration(input)
         Assert.assertEquals("sample display name", sut.displayName)
         Assert.assertEquals("sample-client-id", sut.clientId)

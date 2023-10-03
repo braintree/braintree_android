@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import java.io.File
 
 /**
  * @suppress
@@ -19,15 +18,11 @@ class DeviceInspector @VisibleForTesting internal constructor(
     private val appHelper: AppHelper,
     private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
-    private val runtime: Runtime,
-    private val superUserApkFile: File
 ) {
     constructor() : this(
         AppHelper(),
         UUIDHelper(),
         SignatureVerifier(),
-        Runtime.getRuntime(),
-        File("/system/app/Superuser.apk")
     )
 
     internal fun getDeviceMetadata(
@@ -87,6 +82,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
                 context?.packageManager?.getApplicationLabel(appInfo).toString()
         } ?: "ApplicationNameUnknown"
 
+    @Suppress("SwallowedException")
     private fun getApplicationInfo(context: Context?) =
         try {
             context?.packageManager?.getApplicationInfo(context.packageName, 0)
@@ -99,7 +95,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             val connectivityManager =
                 it.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.activeNetworkInfo?.typeName
-        }?: "none"
+        } ?: "none"
 
     private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
 

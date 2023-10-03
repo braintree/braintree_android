@@ -39,7 +39,8 @@ class PreferredPaymentMethodsClientUnitTest {
         sut.fetchPreferredPaymentMethods(context, object : PreferredPaymentMethodsCallback {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred())
-                verify { braintreeClient.sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true") }
+                verify { braintreeClient.sendAnalyticsEvent(
+                    "preferred-payment-methods.paypal.app-installed.true") }
             }
         })
     }
@@ -58,7 +59,8 @@ class PreferredPaymentMethodsClientUnitTest {
         sut.fetchPreferredPaymentMethods(context, object : PreferredPaymentMethodsCallback {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isVenmoPreferred())
-                verify { braintreeClient.sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.true") }
+                verify { braintreeClient.sendAnalyticsEvent(
+                    "preferred-payment-methods.venmo.app-installed.true") }
             }
         })
     }
@@ -75,7 +77,8 @@ class PreferredPaymentMethodsClientUnitTest {
         sut.fetchPreferredPaymentMethods(context, object : PreferredPaymentMethodsCallback {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred())
-                verify { braintreeClient.sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.false") }
+                verify { braintreeClient.sendAnalyticsEvent(
+                    "preferred-payment-methods.venmo.app-installed.false") }
             }
         })
     }
@@ -98,10 +101,12 @@ class PreferredPaymentMethodsClientUnitTest {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 val querySlot = slot<String>()
 
-                verify { braintreeClient.sendGraphQLPOST(capture(querySlot), ofType(HttpResponseCallback::class)) }
+                verify { braintreeClient.sendGraphQLPOST(capture(querySlot),
+                    ofType(HttpResponseCallback::class)) }
 
                 val expectedQuery =
-                    "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }"
+                    "{ \"query\": \"query PreferredPaymentMethods " +
+                            "{ preferredPaymentMethods { paypalPreferred } }\" }"
                 assertEquals(expectedQuery, querySlot.captured)
             }
         })
@@ -109,7 +114,7 @@ class PreferredPaymentMethodsClientUnitTest {
 
     @Test
     @Throws(InterruptedException::class)
-    fun fetchPreferredPaymentMethods_whenGraphQLIsNotEnabled_andPayPalAppNotInstalled_callsListenerWithFalseForPayPal() {
+    fun fetchPreferredPaymentMethods_whenGraphQLNotEnabled_andPayPalNotInstalled_payPalFalse() {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
         every { braintreeClient.getConfiguration(any()) } answers {
             firstArg<ConfigurationCallback>().onResult(graphQLDisabledConfiguration, null)
@@ -120,7 +125,8 @@ class PreferredPaymentMethodsClientUnitTest {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred())
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred())
                 verify {
-                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-disabled")
+                    braintreeClient.sendAnalyticsEvent(
+                        "preferred-payment-methods.api-disabled")
                 }
             }
         })
@@ -144,7 +150,8 @@ class PreferredPaymentMethodsClientUnitTest {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred())
                 verify {
-                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.true")
+                    braintreeClient.sendAnalyticsEvent(
+                        "preferred-payment-methods.paypal.api-detected.true")
                 }
             }
         })
@@ -168,7 +175,8 @@ class PreferredPaymentMethodsClientUnitTest {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred())
                 verify {
-                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.false")
+                    braintreeClient.sendAnalyticsEvent(
+                        "preferred-payment-methods.paypal.api-detected.false")
                 }
             }
         })
@@ -191,7 +199,8 @@ class PreferredPaymentMethodsClientUnitTest {
             override fun onResult(preferredPaymentMethodsResult: PreferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred())
                 verify {
-                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error")
+                    braintreeClient.sendAnalyticsEvent(
+                        "preferred-payment-methods.api-error")
                 }
             }
         })

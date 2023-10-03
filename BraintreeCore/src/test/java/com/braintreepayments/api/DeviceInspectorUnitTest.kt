@@ -19,7 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.util.ReflectionHelpers
-import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class DeviceInspectorUnitTest {
@@ -31,9 +30,6 @@ class DeviceInspectorUnitTest {
     private var appHelper: AppHelper = mockk(relaxed = true)
     private var uuidHelper: UUIDHelper = mockk(relaxed = true)
     private var signatureVerifier: SignatureVerifier = mockk(relaxed = true)
-    private var runtime: Runtime = mockk(relaxed = true)
-    private var process: Process = mockk(relaxed = true)
-    private var superUserApkFile: File = mockk(relaxed = true)
     private lateinit var sut: DeviceInspector
 
     @Before
@@ -50,8 +46,6 @@ class DeviceInspectorUnitTest {
             appHelper,
             uuidHelper,
             signatureVerifier,
-            runtime,
-            superUserApkFile
         )
     }
 
@@ -99,8 +93,8 @@ class DeviceInspectorUnitTest {
     @Throws(PackageManager.NameNotFoundException::class, JSONException::class)
     fun getDeviceMetadata_returnsAppNameFromPackageManager() {
         val applicationInfo = ApplicationInfo()
-        every {  packageManager.getApplicationInfo("com.sample.app", 0) } returns applicationInfo
-        every {  packageManager.getApplicationLabel(applicationInfo) } returns "SampleAppName"
+        every { packageManager.getApplicationInfo("com.sample.app", 0) } returns applicationInfo
+        every { packageManager.getApplicationLabel(applicationInfo) } returns "SampleAppName"
         val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
         assertEquals("SampleAppName", metadata.toJSON().getString("merchantAppName"))
     }

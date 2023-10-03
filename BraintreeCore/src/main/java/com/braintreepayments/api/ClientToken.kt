@@ -19,6 +19,7 @@ import kotlin.jvm.Throws
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
 class ClientToken @Throws(InvalidArgumentException::class) constructor(
     clientTokenString: String
 ) : Authorization(clientTokenString) {

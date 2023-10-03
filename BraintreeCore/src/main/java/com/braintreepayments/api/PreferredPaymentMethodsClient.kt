@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 
-//NEXT MAJOR VERSION: remove open modifier
+// NEXT MAJOR VERSION: remove open modifier
 /**
  * Fetches information about which payment methods are preferred on the device.
  * Used to determine which payment methods are given preference in your UI,
@@ -15,7 +15,7 @@ import androidx.annotation.VisibleForTesting
 open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient, private val deviceInspector: DeviceInspector
 ) {
-    constructor(braintreeClient: BraintreeClient) : this(braintreeClient, DeviceInspector()) {}
+    constructor(braintreeClient: BraintreeClient) : this(braintreeClient, DeviceInspector())
 
     /**
      * Fetches information about which payment methods should be given preference in your UI.

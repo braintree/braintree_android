@@ -45,7 +45,8 @@ class CardUnitTest {
             "}"
 
     private val GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED = "" +
-            "mutation TokenizeCreditCard(\$input: TokenizeCreditCardInput!, \$authenticationInsightInput: AuthenticationInsightInput!) {" +
+            "mutation TokenizeCreditCard(\$input: TokenizeCreditCardInput!, " +
+            "\$authenticationInsightInput: AuthenticationInsightInput!) {" +
             "  tokenizeCreditCard(input: \$input) {" +
             "    token" +
             "    creditCard {" +
@@ -169,7 +170,6 @@ class CardUnitTest {
             assertEquals("custom", metadata.getString("integration"))
             assertEquals("form", metadata.getString("source"))
         }
-
     }
 
     @Test
@@ -178,7 +178,8 @@ class CardUnitTest {
         val card = Card()
         val jsonObject = card.buildJSON()
 
-        assertEquals("form", jsonObject?.getJSONObject("_meta")?.getString("source"))
+        assertEquals("form",
+            jsonObject?.getJSONObject("_meta")?.getString("source"))
     }
 
     @Test
@@ -189,9 +190,9 @@ class CardUnitTest {
 
         val jsonObject = card.buildJSON()
 
-        assertEquals("form", jsonObject?.getJSONObject("_meta")?.getString("source"))
+        assertEquals("form",
+            jsonObject?.getJSONObject("_meta")?.getString("source"))
     }
-
 
     @Test
     @Throws(JSONException::class)
@@ -320,7 +321,8 @@ class CardUnitTest {
             .getJSONObject(PaymentMethod.OPTIONS_KEY)
         val jsonMetadata = json.getJSONObject("clientSdkMetadata")
 
-        assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED, json.getString(GraphQLConstants.Keys.QUERY))
+        assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED,
+            json.getString(GraphQLConstants.Keys.QUERY))
         assertEquals(VISA, jsonCard.getString("number"))
         assertEquals("01", jsonCard.getString("expirationMonth"))
         assertEquals("2015", jsonCard.getString("expirationYear"))
@@ -386,7 +388,8 @@ class CardUnitTest {
         val card = Card()
 
         val json = card.buildJSONForGraphQL()
-        assertEquals("form", json.getJSONObject("clientSdkMetadata").getString("source"))
+        assertEquals("form",
+            json.getJSONObject("clientSdkMetadata").getString("source"))
     }
 
     @Test
@@ -397,7 +400,8 @@ class CardUnitTest {
 
         val json = card.buildJSONForGraphQL()
 
-        assertEquals("test-source", json.getJSONObject("clientSdkMetadata").getString("source"))
+        assertEquals("test-source",
+            json.getJSONObject("clientSdkMetadata").getString("source"))
     }
 
     @Test
@@ -408,7 +412,8 @@ class CardUnitTest {
 
         val json = card.buildJSONForGraphQL()
 
-        assertEquals("test-integration", json.getJSONObject("clientSdkMetadata").getString("integration"))
+        assertEquals("test-integration",
+            json.getJSONObject("clientSdkMetadata").getString("integration"))
     }
 
     @Test
@@ -483,7 +488,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsTrue_requestsAuthInsight() {
+    fun buildJSONForGraphQL_withMerchantAccountId_andAuthInsightRequested_requestsAuthInsight() {
         val card = Card()
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
@@ -491,13 +496,16 @@ class CardUnitTest {
         val json = card.buildJSONForGraphQL()
         val variablesJson = json.optJSONObject(GraphQLConstants.Keys.VARIABLES)
 
-        assertEquals(variablesJson!!.getJSONObject("authenticationInsightInput")["merchantAccountId"], "merchant-account-id")
-        assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED, json.getString(GraphQLConstants.Keys.QUERY))
+        assertEquals(variablesJson!!
+            .getJSONObject("authenticationInsightInput")["merchantAccountId"],
+            "merchant-account-id")
+        assertEquals(GRAPH_QL_MUTATION_WITH_AUTH_INSIGHT_REQUESTED,
+            json.getString(GraphQLConstants.Keys.QUERY))
     }
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenMerchantAccountIdIsPresent_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() {
+    fun buildJSONForGraphQL_withMerchantAccountId_andNoAuthInsightRequested_doesNotRequestInsight() {
         val card = Card()
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = false
@@ -511,7 +519,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsTrue_throwsException() {
+    fun buildJSONForGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequested_throwsException() {
         val card = Card()
         card.merchantAccountId = null
         card.isAuthenticationInsightRequested = true
@@ -520,12 +528,13 @@ class CardUnitTest {
             card.buildJSONForGraphQL()
         }
 
-        assertEquals("A merchant account ID is required when authenticationInsightRequested is true.", expectedException.message)
+        assertEquals("A merchant account ID is required when " +
+                "authenticationInsightRequested is true.", expectedException.message)
     }
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequestedIsFalse_doesNotRequestAuthInsight() {
+    fun buildJSONForGraphQL_withNullMerchantAccountId_andNoInsightRequested_doesNotRequestInsight() {
         val card = Card()
         card.merchantAccountId = null
         card.isAuthenticationInsightRequested = false

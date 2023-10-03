@@ -60,7 +60,6 @@ open class ErrorWithResponse : Exception, Parcelable {
         }
     }
 
-
     /**
      * Method to extract an error for an individual field, e.g. creditCard, customer, etc.
      *
@@ -86,7 +85,7 @@ open class ErrorWithResponse : Exception, Parcelable {
     override fun toString(): String {
         return """
             ErrorWithResponse ($statusCode): $message
-            ${fieldErrors.toString()}
+            $fieldErrors
         """.trimIndent()
     }
 
@@ -101,17 +100,18 @@ open class ErrorWithResponse : Exception, Parcelable {
         dest.writeTypedList(fieldErrors)
     }
 
-    protected constructor(`in`: Parcel) {
-        statusCode = `in`.readInt()
-        _message = `in`.readString()
-        _originalResponse = `in`.readString()
-        fieldErrors = `in`.createTypedArrayList(BraintreeError.CREATOR)
+    protected constructor(inParcel: Parcel) {
+        statusCode = inParcel.readInt()
+        _message = inParcel.readString()
+        _originalResponse = inParcel.readString()
+        fieldErrors = inParcel.createTypedArrayList(BraintreeError.CREATOR)
     }
 
     companion object {
         private const val ERROR_KEY = "error"
         private const val MESSAGE_KEY = "message"
         private const val FIELD_ERRORS_KEY = "fieldErrors"
+        private const val GRAPHQL_ERROR_CODE = 422
 
         /**
          * @suppress
@@ -127,7 +127,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         internal fun fromGraphQLJson(json: String?): ErrorWithResponse {
             val errorWithResponse = ErrorWithResponse().apply {
                 _originalResponse = json
-                statusCode = 422
+                statusCode = GRAPHQL_ERROR_CODE
             }
 
             try {

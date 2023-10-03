@@ -366,7 +366,8 @@ class ConfigurationUnitTest {
         assertEquals("pay-pal-client-id", sut.googlePayPayPalClientId)
     }
 
-    @Ignore("Update Samsung Pay Configuration to only check configuration instead of checking for `braintree-android-samsung-pay` classes to be present on Java classpath.")
+    @Ignore("Update Samsung Pay Configuration to only check configuration instead of checking " +
+            "for `braintree-android-samsung-pay` classes to be present on Java classpath.")
     @Test
     @Throws(JSONException::class)
     fun isSamsungPayEnabled_returnsTrueWhenSamsungPayEnabledInConfiguration() {

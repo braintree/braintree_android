@@ -10,7 +10,7 @@ import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class SamsungPayConfigurationUnitTest {
-    
+
     @Test
     fun fromJson_parsesFullInput() {
         val input = JSONObject()

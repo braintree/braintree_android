@@ -6,8 +6,10 @@ import org.json.JSONObject
 
 /**
  * Contains the remote Google Pay configuration for the Braintree SDK.
- * @property isEnabled {@code true} if Google Pay is enabled and supported in the current environment, {@code false} otherwise.
- * @property googleAuthorizationFingerprint the authorization fingerprint to use for Google Pay, only allows tokenizing Google Pay cards.
+ * @property isEnabled {@code true} if Google Pay is enabled and supported in the current
+ * environment, {@code false} otherwise.
+ * @property googleAuthorizationFingerprint the authorization fingerprint to use for Google Pay,
+ * only allows tokenizing Google Pay cards.
  * @property environment the current Google Pay environment.
  * @property displayName the display name to show to the user.
  * @property supportedNetworks a string array of supported card networks for Google Pay.

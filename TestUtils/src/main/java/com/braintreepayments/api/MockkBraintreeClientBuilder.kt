@@ -25,7 +25,7 @@ class MockkBraintreeClientBuilder {
 
     fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
         this.authorizationSuccess = authorizationSuccess
-        return this;
+        return this
     }
 
     fun build(): BraintreeClient {
