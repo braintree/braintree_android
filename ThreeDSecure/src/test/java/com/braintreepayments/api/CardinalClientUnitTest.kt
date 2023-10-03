@@ -21,7 +21,6 @@ import junit.framework.TestCase.fail
 import org.junit.Before
 import org.junit.Test
 
-
 class CardinalClientUnitTest {
 
     private lateinit var cardinalInstance: Cardinal

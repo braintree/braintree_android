@@ -133,6 +133,20 @@ detekt {
     config = files("detekt/detekt-config.yml")
     input = files(
             "BraintreeCore/src",
+            "AmericanExpress/src",
+            "BraintreeDataCollector/src",
+            "Card/src",
+            "Demo/src",
+            "GooglePay/src",
+            "LocalPayment/src",
+            "PayPal/src",
+            "PayPalDataCollector/src",
+            "PayPalNativeCheckout/src",
+            "SEPADirectDebit/src",
+            "SharedUtils/src",
+            "TestUtils/src",
+            "ThreeDSecure/src",
+            "Venmo/src",
     )
     autoCorrect = project.hasProperty('detektAutoCorrect')
     reports {

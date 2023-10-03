@@ -52,12 +52,12 @@ class GooglePayInternalClientUnitTest {
         }
     }
 
-    class SuccessfulBooleanTask(private val result: Boolean): MockBooleanTask() {
+    class SuccessfulBooleanTask(private val result: Boolean) : MockBooleanTask() {
         override fun getResult(): Boolean = result
         override fun <X : Throwable?> getResult(p0: Class<X>): Boolean = result
     }
 
-    class FailingBooleanTask(private val apiException: ApiException): MockBooleanTask() {
+    class FailingBooleanTask(private val apiException: ApiException) : MockBooleanTask() {
         override fun getResult(): Boolean = false
 
         override fun <X : Throwable?> getResult(p0: Class<X>): Boolean {
