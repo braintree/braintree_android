@@ -80,7 +80,6 @@ dependencies {
     testImplementation deps.mockk
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
-    testImplementation project(':UnionPay')
     testImplementation project(':Venmo')
 
     // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
