@@ -121,22 +121,22 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.failure()
         } else {
             try {
-            val analyticsEventDao = analyticsDatabase.analyticsEventDao()
-            val events = analyticsEventDao.getAllEvents()
-            if (events.isNotEmpty()) {
-                val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
-                val analyticsRequest = serializeEvents(authorization, events, metadata)
-                configuration?.analyticsUrl?.let { analyticsUrl ->
-                    httpClient.post(
-                        analyticsUrl, analyticsRequest.toString(), configuration, authorization
-                    )
-                    analyticsEventDao.deleteEvents(events)
+                val analyticsEventDao = analyticsDatabase.analyticsEventDao()
+                val events = analyticsEventDao.getAllEvents()
+                if (events.isNotEmpty()) {
+                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+                    val analyticsRequest = serializeEvents(authorization, events, metadata)
+                    configuration?.analyticsUrl?.let { analyticsUrl ->
+                        httpClient.post(
+                            analyticsUrl, analyticsRequest.toString(), configuration, authorization
+                        )
+                        analyticsEventDao.deleteEvents(events)
+                    }
                 }
+                ListenableWorker.Result.success()
+            } catch (e: Exception) {
+                ListenableWorker.Result.failure()
             }
-            ListenableWorker.Result.success()
-        } catch (e: Exception) {
-            ListenableWorker.Result.failure()
-        }
         }
     }
 
