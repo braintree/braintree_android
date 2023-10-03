@@ -1,8 +1,5 @@
 package com.braintreepayments.demo;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -39,34 +36,25 @@ import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
-import com.braintreepayments.api.UnionPayCapabilities;
-import com.braintreepayments.api.UnionPayCard;
-import com.braintreepayments.api.UnionPayClient;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Arrays;
 
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
-    private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
     private String deviceData;
-    private boolean isUnionPay;
     private String enrollmentId;
     private boolean threeDSecureRequested;
 
     private ProgressDialog loading;
     private CardForm cardForm;
-    private TextInputLayout smsCodeContainer;
-    private EditText smsCode;
-    private Button sendSmsButton;
     private Button purchaseButton;
     private Button autofillButton;
 
@@ -75,7 +63,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
     private ThreeDSecureClient threeDSecureClient;
-    private UnionPayClient unionPayClient;
     private DataCollector dataCollector;
 
     private String cardFormActionLabel;
@@ -90,17 +77,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
         threeDSecureClient.setListener(this);
 
-        unionPayClient = new UnionPayClient(braintreeClient);
         dataCollector = new DataCollector(braintreeClient);
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
-            isUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
             enrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
-
-            if (isUnionPay) {
-                sendSmsButton.setVisibility(VISIBLE);
-            }
         }
     }
 
@@ -115,19 +96,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         cardFormActionLabel = getString(R.string.purchase);
 
-        smsCodeContainer = view.findViewById(R.id.sms_code_container);
-        smsCode = view.findViewById(R.id.sms_code);
-        sendSmsButton = view.findViewById(R.id.unionpay_enroll_button);
         purchaseButton = view.findViewById(R.id.purchase_button);
         autofillButton = view.findViewById(R.id.autofill_button);
 
-        sendSmsButton.setOnClickListener(this::sendSms);
         purchaseButton.setOnClickListener(this::onPurchase);
         autofillButton.setOnClickListener(this::onAutofill);
-
-        if (isUnionPay) {
-            sendSmsButton.setVisibility(VISIBLE);
-        }
 
         purchaseButton.setEnabled(true);
         autofillButton.setEnabled(true);
@@ -146,16 +119,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_THREE_D_SECURE_REQUESTED, threeDSecureRequested);
-        outState.putBoolean(EXTRA_UNIONPAY, isUnionPay);
         outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, enrollmentId);
     }
 
     private void configureCardForm() {
-
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         BraintreeClient braintreeClient = getBraintreeClient();
 
-        // check if union pay is enabled
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
                 cardForm.cardRequired(true)
@@ -196,82 +166,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             CardType cardType = CardType.forCardNumber(cardForm.getCardNumber());
             if (this.cardType != cardType) {
                 this.cardType = cardType;
-
-                if (!Settings.useTokenizationKey(getActivity().getApplicationContext())) {
-                    String cardNumber = cardForm.getCardNumber();
-                    unionPayClient.fetchCapabilities(cardNumber, (capabilities, error) -> {
-                        if (capabilities != null) {
-                            handleUnionPayCapabilitiesFetched(capabilities);
-                        } else {
-                            handleError(error);
-                        }
-                    });
-                }
             }
         }
-    }
-
-    private void handleUnionPayCapabilitiesFetched(final UnionPayCapabilities capabilities) {
-        smsCodeContainer.setVisibility(GONE);
-        smsCode.setText("");
-
-        BraintreeClient braintreeClient = getBraintreeClient();
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        braintreeClient.getConfiguration((configuration, error) -> {
-            if (capabilities.isUnionPay()) {
-                if (!capabilities.isSupported()) {
-                    cardForm.setCardNumberError("Card not accepted");
-                    return;
-                }
-                isUnionPay = true;
-                enrollmentId = null;
-
-                cardForm.cardRequired(true)
-                        .expirationRequired(true)
-                        .cvvRequired(true)
-                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                        .mobileNumberRequired(true)
-                        .actionLabel(cardFormActionLabel)
-                        .setup(activity);
-
-                sendSmsButton.setVisibility(VISIBLE);
-            } else {
-                isUnionPay = false;
-
-                cardForm.cardRequired(true)
-                        .expirationRequired(true)
-                        .cvvRequired(configuration.isCvvChallengePresent())
-                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                        .mobileNumberRequired(false)
-                        .actionLabel(cardFormActionLabel)
-                        .setup(activity);
-
-                if (!configuration.isCvvChallengePresent()) {
-                    ((EditText) activity.findViewById(R.id.bt_card_form_cvv)).setText("");
-                }
-            }
-        });
-    }
-
-    public void sendSms(View v) {
-        UnionPayCard unionPayCard = new UnionPayCard();
-        unionPayCard.setNumber(cardForm.getCardNumber());
-        unionPayCard.setExpirationMonth(cardForm.getExpirationMonth());
-        unionPayCard.setExpirationYear(cardForm.getExpirationYear());
-        unionPayCard.setCvv(cardForm.getCvv());
-        unionPayCard.setPostalCode(cardForm.getPostalCode());
-        unionPayCard.setMobileCountryCode(cardForm.getCountryCode());
-        unionPayCard.setMobilePhoneNumber(cardForm.getMobileNumber());
-
-        unionPayClient.enroll(unionPayCard, (enrollment, error) -> {
-            enrollmentId = enrollment.getId();
-            if (enrollment.isSmsCodeRequired()) {
-                smsCodeContainer.setVisibility(VISIBLE);
-            } else {
-                onCardFormSubmit();
-            }
-        });
     }
 
     @Override
@@ -281,43 +177,22 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     public void onPurchase(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
-        if (isUnionPay) {
-            UnionPayCard unionPayCard = new UnionPayCard();
-            unionPayCard.setNumber(cardForm.getCardNumber());
-            unionPayCard.setExpirationMonth(cardForm.getExpirationMonth());
-            unionPayCard.setExpirationYear(cardForm.getExpirationYear());
-            unionPayCard.setCvv(cardForm.getCvv());
-            unionPayCard.setPostalCode(cardForm.getPostalCode());
-            unionPayCard.setMobileCountryCode(cardForm.getCountryCode());
-            unionPayCard.setMobilePhoneNumber(cardForm.getMobileNumber());
-            unionPayCard.setSmsCode(smsCode.getText().toString());
-            unionPayCard.setEnrollmentId(enrollmentId);
 
-            unionPayClient.tokenize(unionPayCard, (cardNonce, tokenizeError) -> {
-                if (cardNonce != null) {
-                    handlePaymentMethodNonceCreated(cardNonce);
-                } else {
-                    handleError(tokenizeError);
-                }
-            });
+        Card card = new Card();
+        card.setNumber(cardForm.getCardNumber());
+        card.setExpirationMonth(cardForm.getExpirationMonth());
+        card.setExpirationYear(cardForm.getExpirationYear());
+        card.setCvv(cardForm.getCvv());
+        card.setShouldValidate(false); // TODO GQL currently only returns the bin if validate = false
+        card.setPostalCode(cardForm.getPostalCode());
 
-        } else {
-            Card card = new Card();
-            card.setNumber(cardForm.getCardNumber());
-            card.setExpirationMonth(cardForm.getExpirationMonth());
-            card.setExpirationYear(cardForm.getExpirationYear());
-            card.setCvv(cardForm.getCvv());
-            card.setShouldValidate(false); // TODO GQL currently only returns the bin if validate = false
-            card.setPostalCode(cardForm.getPostalCode());
-
-            cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
-                if (cardNonce != null) {
-                    handlePaymentMethodNonceCreated(cardNonce);
-                } else {
-                    handleError(tokenizeError);
-                }
-            });
-        }
+        cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
+            if (cardNonce != null) {
+                handlePaymentMethodNonceCreated(cardNonce);
+            } else {
+                handleError(tokenizeError);
+            }
+        });
     }
 
     public void onAutofill(View v) {
