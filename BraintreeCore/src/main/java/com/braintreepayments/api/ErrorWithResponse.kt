@@ -100,11 +100,11 @@ open class ErrorWithResponse : Exception, Parcelable {
         dest.writeTypedList(fieldErrors)
     }
 
-    protected constructor(`in`: Parcel) {
-        statusCode = `in`.readInt()
-        _message = `in`.readString()
-        _originalResponse = `in`.readString()
-        fieldErrors = `in`.createTypedArrayList(BraintreeError.CREATOR)
+    protected constructor(inParcel: Parcel) {
+        statusCode = inParcel.readInt()
+        _message = inParcel.readString()
+        _originalResponse = inParcel.readString()
+        fieldErrors = inParcel.createTypedArrayList(BraintreeError.CREATOR)
     }
 
     companion object {

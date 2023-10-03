@@ -46,8 +46,8 @@ open class PaymentMethodNonce : Parcelable {
         dest.writeByte(if (isDefault) 1.toByte() else 0.toByte())
     }
 
-    protected constructor(`in`: Parcel) {
-        string = `in`.readString() ?: ""
-        isDefault = `in`.readByte() > 0
+    protected constructor(inParcel: Parcel) {
+        string = inParcel.readString() ?: ""
+        isDefault = inParcel.readByte() > 0
     }
 }

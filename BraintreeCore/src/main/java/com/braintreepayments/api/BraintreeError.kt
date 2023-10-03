@@ -63,10 +63,10 @@ open class BraintreeError : Parcelable {
         dest.writeTypedList(fieldErrors)
     }
 
-    protected constructor(`in`: Parcel) {
-        field = `in`.readString()
-        message = `in`.readString()
-        fieldErrors = `in`.createTypedArrayList(CREATOR)
+    protected constructor(inParcel: Parcel) {
+        field = inParcel.readString()
+        message = inParcel.readString()
+        fieldErrors = inParcel.createTypedArrayList(CREATOR)
     }
 
     companion object {
