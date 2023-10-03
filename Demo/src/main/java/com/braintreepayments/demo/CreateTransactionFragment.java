@@ -92,9 +92,6 @@ public class CreateTransactionFragment extends Fragment {
             if (Settings.isThreeDSecureRequired(activity)) {
                 transactionRequest.setThreeDSecureRequired(true);
             }
-        } else if (isUnionPayCardNonce(nonce)) {
-            String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
             String merchantAccountId = Settings.getMerchantAccountId(activity);
             transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
