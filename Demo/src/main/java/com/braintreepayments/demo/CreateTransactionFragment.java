@@ -126,8 +126,4 @@ public class CreateTransactionFragment extends Fragment {
 
         return false;
     }
-
-    private boolean isUnionPayCardNonce(PaymentMethodNonce nonce) {
-        return (nonce instanceof CardNonce) && ((CardNonce) nonce).getCardType().equals("UnionPay");
-    }
 }

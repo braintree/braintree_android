@@ -47,10 +47,8 @@ import java.util.Arrays;
 public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
-    private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
     private String deviceData;
-    private String enrollmentId;
     private boolean threeDSecureRequested;
 
     private ProgressDialog loading;
@@ -81,7 +79,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
-            enrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
         }
     }
 
@@ -119,7 +116,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_THREE_D_SECURE_REQUESTED, threeDSecureRequested);
-        outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, enrollmentId);
     }
 
     private void configureCardForm() {
