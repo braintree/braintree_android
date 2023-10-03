@@ -35,16 +35,15 @@ class MockkApiClientBuilder {
     fun build(): ApiClient {
         val apiClient = mockk<ApiClient>(relaxed = true)
 
-        every { apiClient.tokenizeREST(any(), any())} answers {
+        every { apiClient.tokenizeREST(any(), any()) } answers {
             val listener = lastArg() as TokenizeCallback
             listener.onResult(tokenizeRESTSuccess, tokenizeRESTError)
         }
 
-        every { apiClient.tokenizeGraphQL(any(), any())} answers {
+        every { apiClient.tokenizeGraphQL(any(), any()) } answers {
             val listener = lastArg() as TokenizeCallback
             listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError)
         }
         return apiClient
     }
-
 }

@@ -72,7 +72,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * Create a new instance of [BraintreeClient] using a tokenization key or client token.
      *
      * @param context       Android Context
-     * @param authorization The tokenization key or client token to use. If an invalid authorization is provided, a [BraintreeException] will be returned via callback.
+     * @param authorization The tokenization key or client token to use. If an invalid authorization
+     * is provided, a [BraintreeException] will be returned via callback.
      */
     constructor(context: Context, authorization: String) :
             this(BraintreeOptions(context = context, initialAuthString = authorization))
@@ -81,21 +82,25 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * Create a new instance of [BraintreeClient] using a [ClientTokenProvider].
      *
      * @param context             Android Context
-     * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient] will use to fetch a client token on demand.
+     * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
+     * will use to fetch a client token on demand.
      */
     constructor(context: Context, clientTokenProvider: ClientTokenProvider) :
             this(BraintreeOptions(context = context, clientTokenProvider = clientTokenProvider))
 
     /**
-     * Create a new instance of [BraintreeClient] using a tokenization key or client token and a custom url scheme.
+     * Create a new instance of [BraintreeClient] using a tokenization key or client token and a
+     * custom url scheme.
      *
      *
-     * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
-     * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
-     * Drop-in uses the same custom url scheme as the default BraintreeClient constructor.
+     * This constructor should only be used for applications with multiple activities and multiple
+     * supported return url schemes. This can be helpful for integrations using Drop-in and
+     * BraintreeClient to avoid deep linking collisions, since Drop-in uses the same custom url
+     * scheme as the default BraintreeClient constructor.
      *
      * @param context         Android Context
-     * @param authorization   The tokenization key or client token to use. If an invalid authorization is provided, a [BraintreeException] will be returned via callback.
+     * @param authorization   The tokenization key or client token to use. If an invalid
+     * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
@@ -107,15 +112,18 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     )
 
     /**
-     * Create a new instance of [BraintreeClient] using a [ClientTokenProvider] and a custom url scheme.
+     * Create a new instance of [BraintreeClient] using a [ClientTokenProvider] and a custom url
+     * scheme.
      *
      *
-     * This constructor should only be used for applications with multiple activities and multiple supported return url schemes.
-     * This can be helpful for integrations using Drop-in and BraintreeClient to avoid deep linking collisions, since
-     * Drop-in uses the same custom url scheme as the default BraintreeClient constructor.
+     * This constructor should only be used for applications with multiple activities and multiple
+     * supported return url schemes. This can be helpful for integrations using Drop-in and
+     * BraintreeClient to avoid deep linking collisions, since Drop-in uses the same custom url
+     * scheme as the default BraintreeClient constructor.
      *
      * @param context             Android Context
-     * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient] will use to fetch a client token on demand.
+     * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
+     * will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
     constructor(
@@ -162,8 +170,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         // NEXT MAJOR VERSION: CrashReporter isn't a part of BraintreeClientParams
         // because it requires a reference to BraintreeClient. This is a design flaw that creates
         // a circular reference. We should consider if we need CrashReporter anymore since
-        // merchants already have access to Crash statistics via GooglePlay. We also have crash statistics
-        // access via the sdk console
+        // merchants already have access to Crash statistics via GooglePlay. We also have crash
+        // statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
     }
@@ -371,7 +379,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     fun getReturnUrlScheme(): String {
         return if (launchesBrowserSwitchAsNewTask) {
             braintreeDeepLinkReturnUrlScheme
-        } else returnUrlScheme
+        } else {
+            returnUrlScheme
+        }
     }
 
     /**
@@ -440,12 +450,14 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * Set this property to true to allow the SDK to handle deep links on behalf of the host
      * application for browser switched flows.
      *
-     * For web payment flows, this means launching the browser in a task separate from the calling activity.
+     * For web payment flows, this means launching the browser in a task separate from the calling
+     * activity.
      *
      * NOTE: When this property is set to true, all custom url schemes set in [BraintreeClient]
      * constructors will be ignored.
      *
-     * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links. This value is false by default.
+     * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links.
+     * This value is false by default.
      */
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask

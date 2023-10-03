@@ -60,7 +60,6 @@ open class ErrorWithResponse : Exception, Parcelable {
         }
     }
 
-
     /**
      * Method to extract an error for an individual field, e.g. creditCard, customer, etc.
      *
@@ -86,7 +85,7 @@ open class ErrorWithResponse : Exception, Parcelable {
     override fun toString(): String {
         return """
             ErrorWithResponse ($statusCode): $message
-            ${fieldErrors.toString()}
+            $fieldErrors
         """.trimIndent()
     }
 

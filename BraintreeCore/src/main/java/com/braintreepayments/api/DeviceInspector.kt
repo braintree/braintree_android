@@ -99,7 +99,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             val connectivityManager =
                 it.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.activeNetworkInfo?.typeName
-        }?: "none"
+        } ?: "none"
 
     private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
 

@@ -1,6 +1,5 @@
 package com.braintreepayments.api
 
-
 import org.json.JSONObject
 import java.util.ArrayList
 
@@ -27,7 +26,6 @@ internal data class VisaCheckoutConfiguration(
             CardConfiguration(json).supportedCardTypes
         )
     )
-
 
     companion object {
 

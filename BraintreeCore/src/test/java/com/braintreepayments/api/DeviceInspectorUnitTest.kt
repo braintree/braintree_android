@@ -99,8 +99,8 @@ class DeviceInspectorUnitTest {
     @Throws(PackageManager.NameNotFoundException::class, JSONException::class)
     fun getDeviceMetadata_returnsAppNameFromPackageManager() {
         val applicationInfo = ApplicationInfo()
-        every {  packageManager.getApplicationInfo("com.sample.app", 0) } returns applicationInfo
-        every {  packageManager.getApplicationLabel(applicationInfo) } returns "SampleAppName"
+        every { packageManager.getApplicationInfo("com.sample.app", 0) } returns applicationInfo
+        every { packageManager.getApplicationLabel(applicationInfo) } returns "SampleAppName"
         val metadata = sut.getDeviceMetadata(context, "session-id", "integration-type")
         assertEquals("SampleAppName", metadata.toJSON().getString("merchantAppName"))
     }

@@ -14,16 +14,24 @@ import org.json.JSONObject
  * @property cardinalAuthenticationJwt the JWT for Cardinal
  * @property clientApiUrl The url of the Braintree client API for the current environment.
  * @property environment The current environment.
- * @property isCvvChallengePresent `true` if cvv is required for card transactions, `false` otherwise.
- * @property isGooglePayEnabled `true` if Google Payment is enabled and supported in the current environment; `false` otherwise.
- * @property isLocalPaymentEnabled `true` if Local Payment is enabled for the merchant account; `false` otherwise.
- * @property isPayPalEnabled `true` if PayPal is enabled and supported in the current environment, `false` otherwise.
- * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions, `false` otherwise.
+ * @property isCvvChallengePresent `true` if cvv is required for card transactions, `false`
+ * otherwise.
+ * @property isGooglePayEnabled `true` if Google Payment is enabled and supported in the current
+ * environment; `false` otherwise.
+ * @property isLocalPaymentEnabled `true` if Local Payment is enabled for the merchant account;
+ * `false` otherwise.
+ * @property isPayPalEnabled `true` if PayPal is enabled and supported in the current environment,
+ * `false` otherwise.
+ * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions,
+ * `false` otherwise.
  * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
- * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current merchant account, * `false` otherwise.
- * @property isUnionPayEnabled `true` if UnionPay is enabled for the merchant account; `false` otherwise.
+ * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
+ * merchant account, * `false` otherwise.
+ * @property isUnionPayEnabled `true` if UnionPay is enabled for the merchant account; `false`
+ * otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
- * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account; `false` otherwise.
+ * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
+ * `false` otherwise.
  * @property merchantAccountId the current Braintree merchant account id.
  * @property merchantId the current Braintree merchant id.
  * @property payPalDirectBaseUrl the url for custom PayPal environments.
@@ -109,7 +117,8 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiUrl: String
 
     /**
-     * @return the authorization fingerprint to use for Google Payment, only allows tokenizing Google Payment cards.
+     * @return the authorization fingerprint to use for Google Payment, only allows tokenizing
+     * Google Payment cards.
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayAuthorizationFingerprint: String?

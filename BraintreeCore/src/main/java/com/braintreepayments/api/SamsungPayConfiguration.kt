@@ -20,7 +20,7 @@ internal data class SamsungPayConfiguration(
     val samsungAuthorization: String
 ) {
 
-    constructor(json: JSONObject?): this(
+    constructor(json: JSONObject?) : this(
         Json.optString(json, ENVIRONMENT, ""),
         Json.optString(json, SERVICE_ID_KEY, ""),
         Json.optString(json, DISPLAY_NAME_KEY, ""),

@@ -114,7 +114,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             listOf(configuration, authorization, sessionId, integration).contains(null)
         return if (isMissingInputData) {
             ListenableWorker.Result.failure()
-        } else try {
+        } else {
+            try {
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             val events = analyticsEventDao.getAllEvents()
             if (events.isNotEmpty()) {
@@ -130,6 +131,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.success()
         } catch (e: Exception) {
             ListenableWorker.Result.failure()
+        }
         }
     }
 

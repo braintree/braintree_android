@@ -2435,7 +2435,6 @@ object Fixtures {
         } 
     """
 
-
     // language=JSON
     const val RESPONSE_GOOGLE_PAY_CARD = """
         {

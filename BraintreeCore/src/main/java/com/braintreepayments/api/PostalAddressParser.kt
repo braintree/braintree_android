@@ -47,12 +47,12 @@ object PostalAddressParser {
             var extendedAddress = Json.optString(accountAddress, EXTENDED_ADDRESS_KEY, null)
             var countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_ALPHA_2_KEY, null)
 
-            //Check alternate keys
+            // Check alternate keys
             streetAddress = streetAddress ?: Json.optString(accountAddress, LINE_1_KEY, null)
             extendedAddress = extendedAddress ?: Json.optString(accountAddress, LINE_2_KEY, null)
             countryCodeAlpha2 = countryCodeAlpha2 ?: Json.optString(accountAddress, COUNTRY_CODE_KEY, null)
 
-            streetAddress = streetAddress ?: Json.optString(accountAddress, VENMO_GQL_ADDRESS1_KEY, null);
+            streetAddress = streetAddress ?: Json.optString(accountAddress, VENMO_GQL_ADDRESS1_KEY, null)
             extendedAddress = extendedAddress ?: Json.optString(accountAddress, VENMO_GQL_ADDRESS2_KEY, null)
             // If this is a UserAddress-like JSON, parse it as such
             if (streetAddress == null && Json.optString(
@@ -73,11 +73,10 @@ object PostalAddressParser {
                 postalCode = Json.optString(accountAddress, POSTAL_CODE_KEY, null)
                 this.countryCodeAlpha2 = countryCodeAlpha2
 
-                recipientName = recipientName ?: Json.optString(accountAddress, VENMO_GQL_RECIPIENT_KEY, null);
-                locality = locality ?: Json.optString(accountAddress, VENMO_GQL_LOCALITY_KEY, null);
-                region = region ?: Json.optString(accountAddress, VENMO_GQL_REGION_KEY, null);
+                recipientName = recipientName ?: Json.optString(accountAddress, VENMO_GQL_RECIPIENT_KEY, null)
+                locality = locality ?: Json.optString(accountAddress, VENMO_GQL_LOCALITY_KEY, null)
+                region = region ?: Json.optString(accountAddress, VENMO_GQL_REGION_KEY, null)
             }
-
         } ?: PostalAddress()
 
     fun fromUserAddressJson(json: JSONObject): PostalAddress =

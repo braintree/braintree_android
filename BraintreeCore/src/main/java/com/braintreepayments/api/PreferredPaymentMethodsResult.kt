@@ -4,7 +4,7 @@ import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 
-//NEXT MAJOR VERSION: constructor with optional params
+// NEXT MAJOR VERSION: constructor with optional params
 /**
  * Contains information about which payment methods are preferred on the device.
  * This class is currently in beta and may be removed in future releases.
@@ -48,7 +48,7 @@ open class PreferredPaymentMethodsResult @RestrictTo(RestrictTo.Scope.LIBRARY_GR
                 val response = JSONObject(responseBody)
                 val preferredPaymentMethods =
                     getObjectAtKeyPath(response, "data.preferredPaymentMethods")
-                if (preferredPaymentMethods != null) { //NEXT MAJOR VERSION: this shouldn't be null
+                if (preferredPaymentMethods != null) { // NEXT MAJOR VERSION: this shouldn't be null
                     payPalPreferred = preferredPaymentMethods.getBoolean("paypalPreferred")
                 }
             } catch (ignored: JSONException) {

@@ -55,7 +55,10 @@ class CrashReporterUnitTest {
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace =
-            arrayOf(StackTraceElement("test", "test", "test", 1))
+            arrayOf(StackTraceElement("test",
+                "test",
+                "test",
+                1))
         val sut = CrashReporter(braintreeClient)
         sut.start()
         sut.uncaughtException(thread, exception)
@@ -69,7 +72,10 @@ class CrashReporterUnitTest {
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace = arrayOf(
-            StackTraceElement("com.braintreepayments.api.CrashReporting", "test", "test", 1)
+            StackTraceElement("com.braintreepayments.api.CrashReporting",
+                "test",
+                "test",
+                1)
         )
         val sut = CrashReporter(braintreeClient)
         sut.start()
@@ -85,7 +91,10 @@ class CrashReporterUnitTest {
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace = arrayOf(
-            StackTraceElement("com.paypal.CrashReporting", "test", "test", 1)
+            StackTraceElement("com.paypal.CrashReporting",
+                "test",
+                "test",
+                1)
         )
         val sut = CrashReporter(braintreeClient)
         sut.start()

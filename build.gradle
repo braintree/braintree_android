@@ -133,7 +133,6 @@ detekt {
     config = files("detekt/detekt-config.yml")
     input = files(
             "BraintreeCore/src",
-            "TestUtils/src",
     )
     autoCorrect = project.hasProperty('detektAutoCorrect')
     reports {
