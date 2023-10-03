@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Breaking Changes
+  * UnionPay
+    * Remove module
+
 ## 4.38.2 (2023-09-18)
 
 * BraintreeCore
