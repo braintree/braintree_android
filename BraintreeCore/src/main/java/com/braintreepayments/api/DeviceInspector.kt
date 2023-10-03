@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import java.io.File
 
 /**
  * @suppress
@@ -19,15 +18,11 @@ class DeviceInspector @VisibleForTesting internal constructor(
     private val appHelper: AppHelper,
     private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
-    private val runtime: Runtime,
-    private val superUserApkFile: File
 ) {
     constructor() : this(
         AppHelper(),
         UUIDHelper(),
         SignatureVerifier(),
-        Runtime.getRuntime(),
-        File("/system/app/Superuser.apk")
     )
 
     internal fun getDeviceMetadata(

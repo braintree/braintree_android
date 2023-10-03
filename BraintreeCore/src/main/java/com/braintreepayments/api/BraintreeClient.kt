@@ -12,6 +12,7 @@ import com.braintreepayments.api.IntegrationType.Integration
 /**
  * Core Braintree class that handles network requests.
  */
+@Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 open class BraintreeClient @VisibleForTesting internal constructor(
 
     /**

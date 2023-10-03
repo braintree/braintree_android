@@ -19,7 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.util.ReflectionHelpers
-import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class DeviceInspectorUnitTest {
@@ -31,8 +30,6 @@ class DeviceInspectorUnitTest {
     private var appHelper: AppHelper = mockk(relaxed = true)
     private var uuidHelper: UUIDHelper = mockk(relaxed = true)
     private var signatureVerifier: SignatureVerifier = mockk(relaxed = true)
-    private var runtime: Runtime = mockk(relaxed = true)
-    private var superUserApkFile: File = mockk(relaxed = true)
     private lateinit var sut: DeviceInspector
 
     @Before
@@ -49,8 +46,6 @@ class DeviceInspectorUnitTest {
             appHelper,
             uuidHelper,
             signatureVerifier,
-            runtime,
-            superUserApkFile
         )
     }
 

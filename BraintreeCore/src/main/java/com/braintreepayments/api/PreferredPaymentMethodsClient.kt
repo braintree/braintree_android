@@ -15,7 +15,7 @@ import androidx.annotation.VisibleForTesting
 open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient, private val deviceInspector: DeviceInspector
 ) {
-    constructor(braintreeClient: BraintreeClient) : this(braintreeClient, DeviceInspector()) {}
+    constructor(braintreeClient: BraintreeClient) : this(braintreeClient, DeviceInspector())
 
     /**
      * Fetches information about which payment methods should be given preference in your UI.
