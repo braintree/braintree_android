@@ -39,14 +39,16 @@ class ClientTokenUnitTest {
     @Test
     fun getCustomerId_returnsNull_whenCustomerIdNotPresent() {
         val clientToken =
-            fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN_WITH_AUTHORIZATION_FINGERPRINT_OPTIONS)) as ClientToken
+            fromString(FixturesHelper.base64Encode(
+                Fixtures.CLIENT_TOKEN_WITH_AUTHORIZATION_FINGERPRINT_OPTIONS)) as ClientToken
         assertNull(clientToken.customerId)
     }
 
     @Test
     fun getCustomerId_returnsCustomerId() {
         val clientToken =
-            fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN_WITH_CUSTOMER_ID_IN_AUTHORIZATION_FINGERPRINT)) as ClientToken
+            fromString(FixturesHelper.base64Encode(
+                Fixtures.CLIENT_TOKEN_WITH_CUSTOMER_ID_IN_AUTHORIZATION_FINGERPRINT)) as ClientToken
         assertEquals("fake-customer-123", clientToken.customerId)
     }
 }

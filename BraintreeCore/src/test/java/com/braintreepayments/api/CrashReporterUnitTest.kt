@@ -29,7 +29,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenClientReferenceNull_forwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenClientReferenceNull_forwardsToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception("error")
@@ -67,7 +67,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
@@ -86,7 +86,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()

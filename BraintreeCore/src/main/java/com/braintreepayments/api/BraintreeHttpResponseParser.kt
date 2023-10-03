@@ -18,9 +18,14 @@ internal class BraintreeHttpResponseParser(
     override fun parse(responseCode: Int, connection: HttpURLConnection): String = try {
         baseParser.parse(responseCode, connection)
     } catch (e: AuthorizationException) {
-        val errorMessage = ErrorWithResponse(403, e.message).message
+        val errorMessage = ErrorWithResponse(AUTH_ERROR_CODE, e.message).message
         throw AuthorizationException(errorMessage)
     } catch (e: UnprocessableEntityException) {
-        throw ErrorWithResponse(422, e.message)
+        throw ErrorWithResponse(UNPROCESSABLE_ENTITY_ERROR_CODE, e.message)
+    }
+
+    companion object {
+        private const val AUTH_ERROR_CODE = 403
+        private const val UNPROCESSABLE_ENTITY_ERROR_CODE = 422
     }
 }

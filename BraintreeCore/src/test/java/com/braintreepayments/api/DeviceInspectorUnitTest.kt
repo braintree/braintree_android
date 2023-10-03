@@ -32,7 +32,6 @@ class DeviceInspectorUnitTest {
     private var uuidHelper: UUIDHelper = mockk(relaxed = true)
     private var signatureVerifier: SignatureVerifier = mockk(relaxed = true)
     private var runtime: Runtime = mockk(relaxed = true)
-    private var process: Process = mockk(relaxed = true)
     private var superUserApkFile: File = mockk(relaxed = true)
     private lateinit var sut: DeviceInspector
 

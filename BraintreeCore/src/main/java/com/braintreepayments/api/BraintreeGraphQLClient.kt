@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import java.util.Locale
+
 internal class BraintreeGraphQLClient(
     private val httpClient: HttpClient = createDefaultHttpClient()
 ) {
@@ -22,7 +24,8 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization", String.format("Bearer %s", authorization.bearer))
+            .addHeader("Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer))
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
         httpClient.sendRequest(request, callback)
     }
@@ -44,7 +47,8 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization", String.format("Bearer %s", authorization.bearer))
+            .addHeader("Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer))
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
         httpClient.sendRequest(request, callback)
     }
@@ -66,7 +70,8 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization", String.format("Bearer %s", authorization.bearer))
+            .addHeader("Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer))
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
         return httpClient.sendRequest(request)
     }

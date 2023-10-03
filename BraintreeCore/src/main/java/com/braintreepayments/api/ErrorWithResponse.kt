@@ -111,6 +111,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         private const val ERROR_KEY = "error"
         private const val MESSAGE_KEY = "message"
         private const val FIELD_ERRORS_KEY = "fieldErrors"
+        private const val GRAPHQL_ERROR_CODE = 422
 
         /**
          * @suppress
@@ -126,7 +127,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         internal fun fromGraphQLJson(json: String?): ErrorWithResponse {
             val errorWithResponse = ErrorWithResponse().apply {
                 _originalResponse = json
-                statusCode = 422
+                statusCode = GRAPHQL_ERROR_CODE
             }
 
             try {

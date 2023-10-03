@@ -2,7 +2,11 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ListenableWorker
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.braintreepayments.api.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
@@ -96,7 +100,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
-            .setInitialDelay(30, TimeUnit.SECONDS)
+            .setInitialDelay(DELAY_TIME_SECONDS, TimeUnit.SECONDS)
             .setInputData(inputData)
             .build()
         workManager.enqueueUniqueWork(
@@ -212,6 +216,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
+        private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
             inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {
