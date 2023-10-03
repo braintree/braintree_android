@@ -498,6 +498,7 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(BrowserSwitchException::class)
+    @Suppress("SwallowedException")
     fun assertCanPerformBrowserSwitch_onSuccess_doesNotThrow() {
         val activity = mockk<FragmentActivity>(relaxed = true)
         every { browserSwitchClient.assertCanPerformBrowserSwitch(activity, any()) } returns Unit

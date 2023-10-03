@@ -82,6 +82,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
                 context?.packageManager?.getApplicationLabel(appInfo).toString()
         } ?: "ApplicationNameUnknown"
 
+    @Suppress("SwallowedException")
     private fun getApplicationInfo(context: Context?) =
         try {
             context?.packageManager?.getApplicationInfo(context.packageName, 0)

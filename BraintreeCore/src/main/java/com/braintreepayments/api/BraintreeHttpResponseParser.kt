@@ -15,6 +15,7 @@ internal class BraintreeHttpResponseParser(
      * @return the body of the http response.
      */
     @Throws(Exception::class)
+    @Suppress("SwallowedException")
     override fun parse(responseCode: Int, connection: HttpURLConnection): String = try {
         baseParser.parse(responseCode, connection)
     } catch (e: AuthorizationException) {

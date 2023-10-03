@@ -224,6 +224,7 @@ exceptions:
       - 'InterruptedException'
       - 'ParseException'
       - 'MalformedURLException'
+      - 'JSONException'
     allowedExceptionNameRegex: '_|(ignore|expected).*'
   ThrowingExceptionFromFinally:
     active: true

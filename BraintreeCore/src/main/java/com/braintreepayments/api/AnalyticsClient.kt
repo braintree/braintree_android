@@ -14,6 +14,7 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsClient @VisibleForTesting constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
