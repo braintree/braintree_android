@@ -92,6 +92,9 @@ public class CreateTransactionFragment extends Fragment {
             if (Settings.isThreeDSecureRequired(activity)) {
                 transactionRequest.setThreeDSecureRequired(true);
             }
+        } else if (isUnionPayCardNonce(nonce)) {
+            String unionPayMerchantAccountId = Settings.getUnionPayMerchantAccountId(activity);
+            transactionRequest = new TransactionRequest(amount, nonceString, unionPayMerchantAccountId);
         } else {
             String merchantAccountId = Settings.getMerchantAccountId(activity);
             transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
@@ -125,5 +128,9 @@ public class CreateTransactionFragment extends Fragment {
         }
 
         return false;
+    }
+
+    private boolean isUnionPayCardNonce(PaymentMethodNonce nonce) {
+        return (nonce instanceof CardNonce) && ((CardNonce) nonce).getCardType().equals("UnionPay");
     }
 }

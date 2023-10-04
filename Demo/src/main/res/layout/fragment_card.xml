@@ -18,6 +18,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp" />
 
+        <Button
+            android:id="@+id/unionpay_enroll_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/send_sms"
+            android:visibility="gone" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sms_code_container"
+            style="@style/text_input_layout"
+            android:layout_marginTop="20dp"
+            android:labelFor="@+id/sms_code"
+            android:visibility="gone">
+
+            <com.braintreepayments.cardform.view.ErrorEditText
+                android:id="@+id/sms_code"
+                style="@style/card_form_field"
+                android:contentDescription="@string/sms_auth_code" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

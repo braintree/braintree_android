@@ -91,6 +91,14 @@ public class Settings {
         }
     }
 
+    public static String getUnionPayMerchantAccountId(Context context) {
+        if ("sandbox".equals(getEnvironment(context))) {
+            return "fake_switch_usd";
+        } else {
+            return null;
+        }
+    }
+
     public static boolean useTokenizationKey(Context context) {
         return getAuthorizationType(context).equals(context.getString(R.string.tokenization_key));
     }

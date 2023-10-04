@@ -94,6 +94,7 @@ class ApiClientUnitTest {
 
         val sut = ApiClient(braintreeClient)
         sut.tokenizeREST(PayPalAccount(), tokenizeCallback)
+        sut.tokenizeREST(UnionPayCard(), tokenizeCallback)
         sut.tokenizeREST(VenmoAccount(), tokenizeCallback)
 
         verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }

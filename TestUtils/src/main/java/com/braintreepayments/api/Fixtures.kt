@@ -1000,6 +1000,20 @@ object Fixtures {
     """
 
     // language=JSON
+    const val CONFIGURATION_WITH_UNIONPAY = """
+        {
+            "clientApiUrl": "client_api_url",
+            "environment": "test",
+            "merchantId": "integration_merchant_id",
+            "merchantAccountId": "integration_merchant_account_id",
+            "unionPay": {
+                "enabled": true,
+                "merchantAccountId": "merchant_account_id"
+            }
+        }
+    """
+
+    // language=JSON
     const val CONFIGURATION_WITH_VISA_CHECKOUT = """
         {
           "clientApiUrl": "client_api_url",
@@ -2265,6 +2279,20 @@ object Fixtures {
           "response_type": "authorization_code",
           "user": {
             "display_string": "some_email"
+          }
+        }
+    """
+    // endregion
+
+    // region UnionPay
+    // language=JSON
+    const val UNIONPAY_CAPABILITIES_SUCCESS_RESPONSE = """
+        {
+          "isUnionPay": true,
+          "isDebit": false,
+          "unionPay": {
+            "supportsTwoStepAuthAndCapture": true,
+            "isSupported": true
           }
         }
     """
