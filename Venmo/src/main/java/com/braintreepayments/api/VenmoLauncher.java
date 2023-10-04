@@ -8,7 +8,7 @@ public class VenmoLauncher {
     ActivityResultLauncher<VenmoAuthChallenge> activityLauncher;
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
 
-    public VenmoLauncher(Fragment fragment, VenmoResultCallback callback) {
+    public VenmoLauncher(Fragment fragment, VenmoAuthChallengeResultCallback callback) {
         activityLauncher = fragment.getActivity().getActivityResultRegistry().register(VENMO_SECURE_RESULT, fragment.getViewLifecycleOwner(), new VenmoActivityResultContract(), callback::onVenmoResult);
     }
 

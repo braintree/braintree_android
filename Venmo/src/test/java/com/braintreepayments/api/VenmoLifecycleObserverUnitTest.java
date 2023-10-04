@@ -32,7 +32,7 @@ public class VenmoLifecycleObserverUnitTest {
     ActivityResultLauncher<VenmoAuthChallenge> activityResultLauncher;
 
     @Captor
-    ArgumentCaptor<ActivityResultCallback<VenmoResult>> venmoResultCaptor;
+    ArgumentCaptor<ActivityResultCallback<VenmoAuthChallengeResult>> venmoResultCaptor;
 
     @Before
     public void beforeEach() {
@@ -49,13 +49,13 @@ public class VenmoLifecycleObserverUnitTest {
         sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
 
         String expectedKey = "com.braintreepayments.api.Venmo.RESULT";
-        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(VenmoActivityResultContract.class), Mockito.<ActivityResultCallback<VenmoResult>>any());
+        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(VenmoActivityResultContract.class), Mockito.<ActivityResultCallback<VenmoAuthChallengeResult>>any());
     }
 
     @Test
     public void onCreate_whenActivityResultReceived_forwardsActivityResultToVenmoClient() {
-        VenmoResult venmoResult =
-                new VenmoResult("payment-context-id", "venmoAccount", "venmoUsername", null);
+        VenmoAuthChallengeResult venmoAuthChallengeResult =
+                new VenmoAuthChallengeResult("payment-context-id", "venmoAccount", "venmoUsername", null);
 
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
@@ -66,9 +66,9 @@ public class VenmoLifecycleObserverUnitTest {
         sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
         verify(activityResultRegistry).register(anyString(), any(LifecycleOwner.class), any(VenmoActivityResultContract.class), venmoResultCaptor.capture());
 
-        ActivityResultCallback<VenmoResult> activityResultCallback = venmoResultCaptor.getValue();
-        activityResultCallback.onActivityResult(venmoResult);
-        verify(venmoClient).onVenmoResult(venmoResult);
+        ActivityResultCallback<VenmoAuthChallengeResult> activityResultCallback = venmoResultCaptor.getValue();
+        activityResultCallback.onActivityResult(venmoAuthChallengeResult);
+        verify(venmoClient).tokenizeVenmoAccount(venmoAuthChallengeResult);
     }
 
     @Test

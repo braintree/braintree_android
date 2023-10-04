@@ -24,9 +24,8 @@ import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoOnActivityResultCallback;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
-import com.braintreepayments.api.VenmoResult;
-import com.braintreepayments.api.VenmoResultCallback;
-import com.braintreepayments.api.VenmoTokenizeAccountCallback;
+import com.braintreepayments.api.VenmoAuthChallengeResult;
+import com.braintreepayments.api.VenmoAuthChallengeResultCallback;
 
 import java.util.ArrayList;
 
@@ -46,10 +45,10 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
         braintreeClient = getBraintreeClient();
         venmoClient = new VenmoClient( braintreeClient);
-        venmoLauncher = new VenmoLauncher(this, new VenmoResultCallback() {
+        venmoLauncher = new VenmoLauncher(this, new VenmoAuthChallengeResultCallback() {
             @Override
-            public void onVenmoResult(VenmoResult venmoResult) {
-                venmoClient.onVenmoResult(venmoResult, new VenmoOnActivityResultCallback() {
+            public void onVenmoResult(VenmoAuthChallengeResult venmoAuthChallengeResult) {
+                venmoClient.tokenizeVenmoAccount(venmoAuthChallengeResult, new VenmoOnActivityResultCallback() {
                     @Override
                     public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                         handleVenmoResult(venmoAccountNonce);
@@ -94,15 +93,15 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest, new VenmoTokenizeAccountCallback() {
-                    @Override
-                    public void onResult(@Nullable Exception error) {
-
-                    }
-                }, new VenmoAuthChallengeCallback() {
+                venmoClient.requestAuthChallenge(requireActivity(), venmoRequest, new VenmoAuthChallengeCallback() {
                     @Override
                     public void onVenmoAuthChallenge(VenmoAuthChallenge venmoAuthChallenge) {
                         venmoLauncher.launch(venmoAuthChallenge);
+                    }
+
+                    @Override
+                    public void onVenmoError(Exception error) {
+
                     }
                 });
             } else if (configuration.isVenmoEnabled()) {
