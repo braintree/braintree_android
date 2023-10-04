@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
+
 ## 4.38.2 (2023-09-18)
 
 * BraintreeCore
