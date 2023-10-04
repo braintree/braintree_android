@@ -8,4 +8,11 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 
 ## Union Pay
 
-Union Pay is no longer supported in v5.
+The `union-pay` module, and all containing classes, was removed in v5. UnionPay cards can now be processed as regular cards, through the `card` module. You no longer need to manage card enrollment via SMS authorization.
+
+Now, you can tokenize with just the card details:
+
+// TODO: code snippet of card integration in v5
+
+
+
