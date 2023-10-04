@@ -34,7 +34,6 @@ public class MainFragment extends BaseFragment {
         Button venmoButton = view.findViewById(R.id.venmo);
         Button visaCheckoutButton = view.findViewById(R.id.visa_checkout);
         Button localPaymentsButton = view.findViewById(R.id.local_payment);
-        Button preferredPaymentMethodsButton = view.findViewById(R.id.preferred_payment_methods);
         Button samsungButton = view.findViewById(R.id.samsung_pay);
         Button sepaDirectDebitButton = view.findViewById(R.id.sepa_debit);
         Button payPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout);
