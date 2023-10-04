@@ -32,9 +32,6 @@
             android:id="@+id/action_mainFragment_to_venmoFragment"
             app:destination="@id/venmoFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_preferredPaymentMethodsFragment"
-            app:destination="@id/preferredPaymentMethodsFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_sepaDirectDebitFragment"
             app:destination="@id/SEPADirectDebitFragment" />
         <action
@@ -151,11 +148,6 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
-    <fragment
-        android:id="@+id/preferredPaymentMethodsFragment"
-        android:name="com.braintreepayments.demo.PreferredPaymentMethodsFragment"
-        tools:layout="@layout/fragment_preferred_payment_methods"
-        />
     <fragment
         android:id="@+id/samsungPayFragment"
         android:name="com.braintreepayments.demo.SamsungPayFragment"
