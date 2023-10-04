@@ -180,10 +180,10 @@ public class VenmoClientUnitTest {
         sut.observer = observer;
         sut.tokenizeVenmoAccount(activity, request);
 
-        ArgumentCaptor<VenmoIntentData> captor = ArgumentCaptor.forClass(VenmoIntentData.class);
+        ArgumentCaptor<VenmoAuthChallenge> captor = ArgumentCaptor.forClass(VenmoAuthChallenge.class);
         verify(observer).launch(captor.capture());
 
-        VenmoIntentData intent = captor.getValue();
+        VenmoAuthChallenge intent = captor.getValue();
         assertEquals("venmo-payment-context-id", intent.getPaymentContextId());
         assertSame(venmoEnabledConfiguration, intent.getConfiguration());
         assertEquals("custom", intent.getIntegrationType());

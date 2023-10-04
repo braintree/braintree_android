@@ -223,7 +223,7 @@ public class VenmoClient {
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
-            VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
+            VenmoAuthChallenge intentData = new VenmoAuthChallenge(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             observer.launch(intentData);
         } else {
             Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);

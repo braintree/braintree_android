@@ -21,7 +21,7 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
     ActivityResultRegistry activityResultRegistry;
 
     @VisibleForTesting
-    ActivityResultLauncher<VenmoIntentData> activityLauncher;
+    ActivityResultLauncher<VenmoAuthChallenge> activityLauncher;
 
     VenmoLifecycleObserver(ActivityResultRegistry activityResultRegistry, VenmoClient venmoClient) {
         this.activityResultRegistry = activityResultRegistry;
@@ -40,7 +40,7 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
         }
     }
 
-    void launch(VenmoIntentData venmoIntentData) {
+    void launch(VenmoAuthChallenge venmoIntentData) {
         activityLauncher.launch(venmoIntentData);
     }
 }
