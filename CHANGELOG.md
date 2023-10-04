@@ -2,8 +2,6 @@
 
 ## unreleased
 * Breaking Changes
-  * All Modules
-    * Bump `minSdkVersion` to API 23
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
