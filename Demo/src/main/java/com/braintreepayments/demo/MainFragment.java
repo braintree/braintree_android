@@ -45,7 +45,6 @@ public class MainFragment extends BaseFragment {
         googlePayButton.setOnClickListener(this::launchGooglePay);
         visaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
         venmoButton.setOnClickListener(this::launchVenmo);
-        preferredPaymentMethodsButton.setOnClickListener(this::launchPreferredPaymentMethods);
         samsungButton.setOnClickListener(this::launchSamsungPay);
         payPalNativeCheckoutButton.setOnClickListener(this::launchPayPalNativeCheckout);
         sepaDirectDebitButton.setOnClickListener(this::launchSEPADirectDebit);
@@ -110,12 +109,6 @@ public class MainFragment extends BaseFragment {
     public void launchLocalPayment(View v) {
         NavDirections action =
                 MainFragmentDirections.actionMainFragmentToLocalPaymentFragment();
-        Navigation.findNavController(v).navigate(action);
-    }
-
-    public void launchPreferredPaymentMethods(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToPreferredPaymentMethodsFragment();
         Navigation.findNavController(v).navigate(action);
     }
 
