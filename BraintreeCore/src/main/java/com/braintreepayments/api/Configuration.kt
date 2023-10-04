@@ -27,8 +27,6 @@ import org.json.JSONObject
  * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
  * merchant account, * `false` otherwise.
- * @property isUnionPayEnabled `true` if UnionPay is enabled for the merchant account; `false`
- * otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
  * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
  * `false` otherwise.
@@ -62,7 +60,6 @@ open class Configuration internal constructor(configurationString: String?) {
         private const val PAY_WITH_VENMO_KEY = "payWithVenmo"
         private const val SAMSUNG_PAY_KEY = "samsungPay"
         private const val THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled"
-        private const val UNIONPAY_KEY = "unionPay"
         private const val VISA_CHECKOUT_KEY = "visaCheckout"
 
         @JvmStatic
@@ -85,7 +82,6 @@ open class Configuration internal constructor(configurationString: String?) {
     open val isPostalCodeChallengePresent: Boolean
     open val isSamsungPayEnabled: Boolean
     open val isThreeDSecureEnabled: Boolean
-    open val isUnionPayEnabled: Boolean
     open val isVenmoEnabled: Boolean
     open val isVisaCheckoutEnabled: Boolean
     open val merchantAccountId: String?
@@ -300,7 +296,6 @@ open class Configuration internal constructor(configurationString: String?) {
     private val graphQLConfiguration: GraphQLConfiguration
     private val payPalConfiguration: PayPalConfiguration
     private val samsungPayConfiguration: SamsungPayConfiguration
-    private val unionPayConfiguration: UnionPayConfiguration
     private val venmoConfiguration: VenmoConfiguration
     private val visaCheckoutConfiguration: VisaCheckoutConfiguration
     // endregion
@@ -337,7 +332,6 @@ open class Configuration internal constructor(configurationString: String?) {
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
         samsungPayConfiguration = SamsungPayConfiguration(json.optJSONObject(SAMSUNG_PAY_KEY))
-        unionPayConfiguration = UnionPayConfiguration(json.optJSONObject(UNIONPAY_KEY))
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
         visaCheckoutConfiguration = VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
 
@@ -346,7 +340,6 @@ open class Configuration internal constructor(configurationString: String?) {
         isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
         isPostalCodeChallengePresent = challenges.contains("postal_code")
         isSamsungPayEnabled = samsungPayConfiguration.isEnabled
-        isUnionPayEnabled = unionPayConfiguration.isEnabled
         isVenmoEnabled = venmoConfiguration.isAccessTokenValid
         isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
         payPalDirectBaseUrl = payPalConfiguration.directBaseUrl

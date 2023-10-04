@@ -162,18 +162,6 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: ThreeDSecure
-  unit_test_union_pay:
-    name: UnionPay Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Java 8
-        uses: ./.github/actions/setup
-      - name: Run Unit Tests
-        uses: ./.github/actions/unit_test_module
-        with:
-          module: UnionPay
   unit_test_venmo:
     name: Venmo Unit Tests
     runs-on: ubuntu-latest
@@ -236,7 +224,6 @@ jobs:
       unit_test_paypal,
       unit_test_samsung_pay,
       unit_test_three_d_secure,
-      unit_test_union_pay,
       unit_test_venmo,
       unit_test_visa_checkout,
       unit_test_sepa_direct_debit,

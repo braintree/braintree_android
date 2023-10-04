@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Breaking Changes
+  * UnionPay
+    * Remove `union-pay` module
+      * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
+
 ## 4.38.2 (2023-09-18)
 
 * BraintreeCore
