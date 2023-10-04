@@ -71,44 +71,23 @@ public class VenmoClient {
         activity.startActivity(intent);
     }
 
-    /**
-     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
-     * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoListener#onVenmoFailure(Exception)}
-     *
-     * @param activity Android FragmentActivity
-     * @param request  {@link VenmoRequest}
-     */
-    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request) {
-        tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
-            @Override
-            public void onResult(@Nullable Exception error) {
-                if (error != null) {
-                    listener.onVenmoFailure(error);
-                }
-            }
-        });
-    }
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoTokenizeAccountCallback#onResult(Exception)}
-     * <p>
-     * Deprecated. Use {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest)}.
      *
      * @param activity Android FragmentActivity
      * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoTokenizeAccountCallback}
      */
-    @Deprecated
-    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback, VenmoAuthChallengeCallback callback) {
+    public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback tokenizeCallback, VenmoAuthChallengeCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (configuration == null) {
-                    callback.onResult(error);
+                    tokenizeCallback.onResult(error);
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
@@ -121,14 +100,14 @@ public class VenmoClient {
                 }
 
                 if (exceptionMessage != null) {
-                    callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
+                    tokenizeCallback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
 
                 // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
                 if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
-                    callback.onResult(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
+                    tokenizeCallback.onResult(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
@@ -149,12 +128,12 @@ public class VenmoClient {
                                     if (authorization != null) {
                                         createVenmoAuthChallenge(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId, callback);
                                     } else {
-                                        callback.onResult(authError);
+                                        tokenizeCallback.onResult(authError);
                                     }
                                 }
                             });
                         } else {
-                            callback.onResult(exception);
+                            tokenizeCallback.onResult(exception);
                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                         }
                     }
