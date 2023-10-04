@@ -67,11 +67,11 @@ public class VenmoClient {
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoTokenizeAccountCallback#onResult(Exception)}
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoAuthChallengeCallbackk#onVenmoError(Exception)}
      *
      * @param activity Android FragmentActivity
      * @param request  {@link VenmoRequest}
-     * @param callback {@link VenmoTokenizeAccountCallback}
+     * @param callback {@link VenmoAuthChallengeCallback}
      */
     public void requestAuthChallenge(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, VenmoAuthChallengeCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");

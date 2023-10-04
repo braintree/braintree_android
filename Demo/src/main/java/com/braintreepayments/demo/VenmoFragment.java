@@ -20,7 +20,6 @@ import com.braintreepayments.api.VenmoAuthChallengeCallback;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
-import com.braintreepayments.api.VenmoListener;
 import com.braintreepayments.api.VenmoOnActivityResultCallback;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
