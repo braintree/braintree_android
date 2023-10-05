@@ -79,7 +79,7 @@ public class VenmoClient {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (configuration == null) {
-                    callback.onVenmoError(error);
+                    callback.onVenmoAuthChallenge(null, error);
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
@@ -92,14 +92,14 @@ public class VenmoClient {
                 }
 
                 if (exceptionMessage != null) {
-                    callback.onVenmoError(new AppSwitchNotAvailableException(exceptionMessage));
+                    callback.onVenmoAuthChallenge(null, new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
 
                 // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
                 if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
-                    callback.onVenmoError(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
+                    callback.onVenmoAuthChallenge(null, new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
                 }
@@ -120,12 +120,12 @@ public class VenmoClient {
                                     if (authorization != null) {
                                         createVenmoAuthChallenge(activity, request, configuration, authorization, finalVenmoProfileId, paymentContextId, callback);
                                     } else {
-                                        callback.onVenmoError(authError);
+                                        callback.onVenmoAuthChallenge(null, authError);
                                     }
                                 }
                             });
                         } else {
-                            callback.onVenmoError(exception);
+                            callback.onVenmoAuthChallenge(null, exception);
                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                         }
                     }
@@ -147,11 +147,11 @@ public class VenmoClient {
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         VenmoAuthChallenge authChallenge = new VenmoAuthChallenge(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
-        callback.onVenmoAuthChallenge(authChallenge);
+        callback.onVenmoAuthChallenge(authChallenge, null);
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
     }
 
-    public void tokenizeVenmoAccount(final VenmoAuthChallengeResult venmoAuthChallengeResult, VenmoOnActivityResultCallback callback) {
+    public void tokenizeVenmoAccount(final VenmoAuthChallengeResult venmoAuthChallengeResult, VenmoResultCallback callback) {
         if (venmoAuthChallengeResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
 

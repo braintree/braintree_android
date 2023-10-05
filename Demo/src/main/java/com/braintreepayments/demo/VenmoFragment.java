@@ -25,10 +25,12 @@ import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
 import com.braintreepayments.api.VenmoAuthChallengeResult;
 import com.braintreepayments.api.VenmoAuthChallengeResultCallback;
+import com.braintreepayments.api.VenmoResult;
+import com.braintreepayments.api.VenmoResultCallback;
 
 import java.util.ArrayList;
 
-public class VenmoFragment extends BaseFragment implements VenmoListener {
+public class VenmoFragment extends BaseFragment {
 
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
@@ -42,25 +44,20 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        braintreeClient = getBraintreeClient();
-        venmoClient = new VenmoClient( braintreeClient);
-        venmoLauncher = new VenmoLauncher(this, new VenmoAuthChallengeResultCallback() {
-            @Override
-            public void onVenmoResult(VenmoAuthChallengeResult venmoAuthChallengeResult) {
-                venmoClient.tokenizeVenmoAccount(venmoAuthChallengeResult, new VenmoOnActivityResultCallback() {
-                    @Override
-                    public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                        handleVenmoResult(venmoAccountNonce);
-                    }
-                });
-            }
-        });
-
+        venmoLauncher = new VenmoLauncher(this, venmoAuthChallengeResult ->
+                venmoClient.tokenizeVenmoAccount(venmoAuthChallengeResult, this::handleVenmoResult));
 
         return view;
     }
 
-    private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
+    private void handleVenmoResult(VenmoAccountNonce nonce, Exception error) {
+        if (nonce != null) {
+            handleVenmoAccountNonce(nonce);
+        } else {
+            handleError(error);
+        }
+    }
+    private void handleVenmoAccountNonce(VenmoAccountNonce venmoAccountNonce) {
         super.onPaymentMethodNonceCreated(venmoAccountNonce);
 
         NavDirections action =
@@ -70,6 +67,10 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
 
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
+        if (venmoClient == null) {
+            braintreeClient = getBraintreeClient();
+            venmoClient = new VenmoClient(braintreeClient);
+        }
 
         FragmentActivity activity = getActivity();
 
@@ -92,16 +93,12 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.requestAuthChallenge(requireActivity(), venmoRequest, new VenmoAuthChallengeCallback() {
-                    @Override
-                    public void onVenmoAuthChallenge(VenmoAuthChallenge venmoAuthChallenge) {
-                        venmoLauncher.launch(venmoAuthChallenge);
+                venmoClient.requestAuthChallenge(requireActivity(), venmoRequest, (venmoAuthChallenge, authError) -> {
+                    if (authError != null) {
+                        handleError(authError);
+                        return;
                     }
-
-                    @Override
-                    public void onVenmoError(Exception error) {
-
-                    }
+                    venmoLauncher.launch(venmoAuthChallenge);
                 });
             } else if (configuration.isVenmoEnabled()) {
                 showDialog("Please install the Venmo app first.");
@@ -109,15 +106,5 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 showDialog("Venmo is not enabled for the current merchant.");
             }
         });
-    }
-
-    @Override
-    public void onVenmoSuccess(@NonNull VenmoAccountNonce venmoAccountNonce) {
-        handleVenmoResult(venmoAccountNonce);
-    }
-
-    @Override
-    public void onVenmoFailure(@NonNull Exception error) {
-        handleError(error);
     }
 }
