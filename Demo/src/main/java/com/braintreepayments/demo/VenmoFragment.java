@@ -15,18 +15,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.VenmoAccountNonce;
-import com.braintreepayments.api.VenmoAuthChallenge;
-import com.braintreepayments.api.VenmoAuthChallengeCallback;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
-import com.braintreepayments.api.VenmoOnActivityResultCallback;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoRequest;
-import com.braintreepayments.api.VenmoAuthChallengeResult;
-import com.braintreepayments.api.VenmoAuthChallengeResultCallback;
-import com.braintreepayments.api.VenmoResult;
-import com.braintreepayments.api.VenmoResultCallback;
 
 import java.util.ArrayList;
 

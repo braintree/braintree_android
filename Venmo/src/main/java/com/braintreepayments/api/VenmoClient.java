@@ -163,13 +163,13 @@ public class VenmoClient {
 
                         String paymentContextId = venmoAuthChallengeResult.getPaymentContextId();
                         if (paymentContextId != null) {
-                            venmoApi.createNonceFromPaymentContext(paymentContextId, new VenmoOnActivityResultCallback() {
+                            venmoApi.createNonceFromPaymentContext(paymentContextId, new VenmoResultCallback() {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
                                         boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
                                         if (shouldVault && isClientTokenAuth) {
-                                            vaultVenmoAccountNonce(nonce.getString(), new VenmoOnActivityResultCallback() {
+                                            vaultVenmoAccountNonce(nonce.getString(), new VenmoResultCallback() {
                                                 @Override
                                                 public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                                     if (venmoAccountNonce != null) {
@@ -194,7 +194,7 @@ public class VenmoClient {
 
                             boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
                             if (shouldVault && isClientTokenAuth) {
-                                vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
+                                vaultVenmoAccountNonce(nonce, new VenmoResultCallback() {
                                     @Override
                                     public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                         if (venmoAccountNonce != null) {
@@ -225,8 +225,8 @@ public class VenmoClient {
         }
     }
 
-    private void vaultVenmoAccountNonce(String nonce, final VenmoOnActivityResultCallback callback) {
-        venmoApi.vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
+    private void vaultVenmoAccountNonce(String nonce, final VenmoResultCallback callback) {
+        venmoApi.vaultVenmoAccountNonce(nonce, new VenmoResultCallback() {
             @Override
             public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                 if (venmoAccountNonce != null) {
