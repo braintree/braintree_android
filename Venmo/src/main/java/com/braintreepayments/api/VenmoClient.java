@@ -69,10 +69,12 @@ public class VenmoClient {
 
 
     /**
-     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     * Start the Pay With Venmo flow. This will return a {@link VenmoAuthChallenge} that will be 
+     * used to authenticate the user by switching to the Venmo app in {@link 
+     * VenmoLauncher#launch(VenmoAuthChallenge)} 
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link VenmoAuthChallengeCallbackk#onVenmoError(Exception)}
+     * {@link VenmoAuthChallengeCallback#onVenmoAuthChallenge(VenmoAuthChallenge, Exception)} 
      *
      * @param activity Android FragmentActivity
      * @param request  {@link VenmoRequest}
@@ -172,6 +174,16 @@ public class VenmoClient {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
     }
 
+    /**
+     * After successfully authenticating a Venmo user account via {@link 
+     * VenmoClient#requestAuthChallenge(FragmentActivity, VenmoRequest, VenmoAuthChallengeCallback)}, 
+     * this method should be invoked to tokenize the account to retrieve a
+     * {@link VenmoAccountNonce}.
+     * 
+     * @param venmoAuthChallengeResult the result of {@link VenmoLauncher#launch(VenmoAuthChallenge)}
+     * @param callback a {@link VenmoResultCallback} to receive a {@link VenmoAccountNonce} or 
+     *                 error from Venmo tokenization
+     */
     public void tokenizeVenmoAccount(final VenmoAuthChallengeResult venmoAuthChallengeResult,
                                      VenmoResultCallback callback) {
         if (venmoAuthChallengeResult.getError() == null) {
