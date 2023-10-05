@@ -7,6 +7,15 @@
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
+  * Venmo
+    * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`
+    * Add `VenmoLauncher`, `VenmoAuthChallenge`, `VenmoAuthChallengeCallback`, 
+      `VenmoAuthChallengeResult`, `VenmoResult`, and 
+      `VenmoAuthChallengeResultCallback`
+    * Rename `VenmoOnActivityResultCallback` to `VenmoResultCallback`
+    * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
+    * Change `VenmoClient#tokenizeVenmoAccount` parameters
+    * Add `VenmoClient#requestAuthChallenge`
 
 ## 4.38.2 (2023-09-18)
 

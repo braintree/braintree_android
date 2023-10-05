@@ -82,7 +82,7 @@ public class VenmoClient {
      */
     public void requestAuthChallenge(@NonNull final FragmentActivity activity,
                                      @NonNull final VenmoRequest request,
-                                     VenmoAuthChallengeCallback callback) {
+                                     @NonNull VenmoAuthChallengeCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -184,8 +184,8 @@ public class VenmoClient {
      * @param callback a {@link VenmoResultCallback} to receive a {@link VenmoAccountNonce} or 
      *                 error from Venmo tokenization
      */
-    public void tokenizeVenmoAccount(final VenmoAuthChallengeResult venmoAuthChallengeResult,
-                                     VenmoResultCallback callback) {
+    public void tokenizeVenmoAccount(@NonNull final VenmoAuthChallengeResult venmoAuthChallengeResult,
+                                     @NonNull VenmoResultCallback callback) {
         if (venmoAuthChallengeResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
 

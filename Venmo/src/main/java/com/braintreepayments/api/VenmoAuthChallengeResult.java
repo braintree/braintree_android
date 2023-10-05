@@ -9,7 +9,8 @@ public class VenmoAuthChallengeResult {
     private final String venmoAccountNonce;
     private final String venmoUsername;
 
-    VenmoAuthChallengeResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce, @Nullable String venmoUsername, @Nullable Exception error) {
+    VenmoAuthChallengeResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce,
+                             @Nullable String venmoUsername, @Nullable Exception error) {
         this.paymentContextId = paymentContextId;
         this.venmoAccountNonce = venmoAccountNonce;
         this.venmoUsername = venmoUsername;

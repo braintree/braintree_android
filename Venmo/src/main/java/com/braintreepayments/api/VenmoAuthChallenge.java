@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+/**
+ * Used to request Venmo authentication via {@link VenmoLauncher#launch(VenmoAuthChallenge)}
+ */
 public class VenmoAuthChallenge {
 
     private Configuration configuration;
@@ -8,22 +11,12 @@ public class VenmoAuthChallenge {
     private String sessionId;
     private String integrationType;
 
-    private Exception error;
-
     VenmoAuthChallenge(Configuration configuration, String profileId, String paymentContextId, String sessionId, String integrationType) {
        this.configuration = configuration;
        this.profileId = profileId;
        this.paymentContextId = paymentContextId;
        this.sessionId = sessionId;
        this.integrationType = integrationType;
-    }
-
-    VenmoAuthChallenge(Exception error) {
-        this.error = error;
-    }
-
-    public Exception getError() {
-        return error;
     }
 
     Configuration getConfiguration() {
