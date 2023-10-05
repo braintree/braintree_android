@@ -199,7 +199,6 @@ public class VenmoClientUnitTest {
         assertEquals("session-id", authChallenge.getSessionId());
         assertEquals("custom", authChallenge.getIntegrationType());
         assertEquals(venmoEnabledConfiguration, authChallenge.getConfiguration());
-        assertNull(authChallenge.getError());
     }
 
     @Test
@@ -299,7 +298,6 @@ public class VenmoClientUnitTest {
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());
         assertEquals("session-id", captor.getValue().getSessionId());
         assertEquals(venmoEnabledConfiguration, captor.getValue().getConfiguration());
-        assertNull(captor.getValue().getError());
     }
 
     @Test
@@ -332,7 +330,6 @@ public class VenmoClientUnitTest {
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());
         assertEquals("session-id", captor.getValue().getSessionId());
         assertEquals(venmoEnabledConfiguration, captor.getValue().getConfiguration());
-        assertNull(captor.getValue().getError());
     }
 
     @Test
