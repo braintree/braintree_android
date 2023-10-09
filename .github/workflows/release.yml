@@ -78,18 +78,6 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: PayPalDataCollector
-  unit_test_braintree_data_collector:
-    name: BraintreeDataCollector Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Java 8
-        uses: ./.github/actions/setup
-      - name: Run Unit Tests
-        uses: ./.github/actions/unit_test_module
-        with:
-          module: BraintreeDataCollector
   unit_test_card:
     name: Card Unit Tests
     runs-on: ubuntu-latest

@@ -29,7 +29,6 @@ runs:
           :AmericanExpress:publishToSonatype \
           :BraintreeCore:publishToSonatype \
           :PayPalDataCollector:publishToSonatype \
-          :BraintreeDataCollector:publishToSonatype \
           :Card:publishToSonatype \
           :GooglePay:publishToSonatype \
           :LocalPayment:publishToSonatype \
