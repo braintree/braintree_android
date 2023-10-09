@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 /**
  * Used to configuration the PayPalDataCollector request
  */
-class PayPalDataCollectorRequest {
+class DataCollectorRequest {
 
     private String applicationGuid;
     private String clientMetadataId;
@@ -17,7 +17,7 @@ class PayPalDataCollectorRequest {
     /**
      * @param additionalData Additional data that should be associated with the data collection.
      */
-    PayPalDataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
+    DataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
         this.additionalData = additionalData;
 
         return this;
@@ -27,7 +27,7 @@ class PayPalDataCollectorRequest {
      * @param applicationGuid The application global unique identifier.
      *                        There is a 36 character length limit on this value.
      */
-    PayPalDataCollectorRequest setApplicationGuid(String applicationGuid) {
+    DataCollectorRequest setApplicationGuid(String applicationGuid) {
         this.applicationGuid = applicationGuid;
 
         return this;
@@ -36,7 +36,7 @@ class PayPalDataCollectorRequest {
     /**
      * @param riskCorrelationId The desired pairing ID, trimmed to 32 characters.
      */
-    PayPalDataCollectorRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
+    DataCollectorRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
         this.clientMetadataId = riskCorrelationId.substring(0, Math.min(riskCorrelationId.length(), 32));
 
         return this;
@@ -45,7 +45,7 @@ class PayPalDataCollectorRequest {
     /**
      * @param disableBeacon Indicates if the beacon feature should be disabled.
      */
-    PayPalDataCollectorRequest setDisableBeacon(boolean disableBeacon) {
+    DataCollectorRequest setDisableBeacon(boolean disableBeacon) {
         this.disableBeacon = disableBeacon;
 
         return this;

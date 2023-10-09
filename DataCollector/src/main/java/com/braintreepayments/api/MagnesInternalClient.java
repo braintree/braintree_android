@@ -27,7 +27,7 @@ class MagnesInternalClient {
     }
 
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration, PayPalDataCollectorRequest request) {
+    String getClientMetadataId(Context context, Configuration configuration, DataCollectorRequest request) {
         if (context == null) {
             return "";
         }

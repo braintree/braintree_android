@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.PayPalDataCollector;
+import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PayPalNativeCheckoutListener;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
@@ -28,7 +28,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
     private String deviceData;
     private BraintreeClient braintreeClient;
     private PayPalNativeCheckoutClient payPalClient;
-    private PayPalDataCollector dataCollector;
+    private DataCollector dataCollector;
 
     public Button launchPayPalNativeCheckoutButton;
     public Button launchPayPalNativeVaultCheckoutButton;
@@ -58,7 +58,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new PayPalDataCollector(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (Settings.shouldCollectDeviceData(requireActivity())) {

@@ -23,7 +23,7 @@ public class LocalPaymentClient {
     static final String LOCAL_PAYMENT_SUCCESS = "local-payment-success";
 
     private final BraintreeClient braintreeClient;
-    private final PayPalDataCollector payPalDataCollector;
+    private final DataCollector dataCollector;
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
 
@@ -37,7 +37,7 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
+        this(activity, activity.getLifecycle(), braintreeClient, new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -47,7 +47,7 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
+        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient, new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -58,13 +58,14 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
+        this(null, null, braintreeClient, new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
-    LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle, @NonNull BraintreeClient braintreeClient, @NonNull PayPalDataCollector payPalDataCollector, @NonNull LocalPaymentApi localPaymentApi) {
+    LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle, @NonNull BraintreeClient braintreeClient, @NonNull
+    DataCollector dataCollector, @NonNull LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
-        this.payPalDataCollector = payPalDataCollector;
+        this.dataCollector = dataCollector;
         this.localPaymentApi = localPaymentApi;
         if (activity != null && lifecycle != null) {
             LocalPaymentLifecycleObserver observer = new LocalPaymentLifecycleObserver(this);
@@ -313,7 +314,7 @@ public class LocalPaymentClient {
                     @Override
                     public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                         if (configuration != null) {
-                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
+                            localPaymentApi.tokenize(merchantAccountId, responseString, dataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
                                 @Override
                                 public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
                                     if (localPaymentNonce != null) {

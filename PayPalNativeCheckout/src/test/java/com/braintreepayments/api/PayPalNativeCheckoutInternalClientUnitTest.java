@@ -37,7 +37,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
     private ClientToken clientToken;
     private TokenizationKey tokenizationKey;
 
-    private PayPalDataCollector payPalDataCollector;
+    private DataCollector dataCollector;
     private ApiClient apiClient;
 
     PayPalNativeCheckoutInternalClientCallback payPalInternalClientCallback;
@@ -49,7 +49,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         clientToken = mock(ClientToken.class);
         tokenizationKey = mock(TokenizationKey.class);
 
-        payPalDataCollector = mock(PayPalDataCollector.class);
+        dataCollector = mock(DataCollector.class);
         apiClient = mock(ApiClient.class);
         payPalInternalClientCallback = mock(PayPalNativeCheckoutInternalClientCallback.class);
     }
@@ -63,7 +63,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
@@ -105,7 +106,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutLineItem item = new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "Item 0", "1", "2");
         item.setDescription("A new item");
@@ -173,7 +175,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .build();
         when(tokenizationKey.getBearer()).thenReturn("tokenization-key-bearer");
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -195,7 +198,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setDisplayName("");
@@ -217,7 +221,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setLocaleCode(null);
@@ -239,7 +244,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setMerchantAccountId(null);
@@ -261,7 +267,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setBillingAgreementDescription("");
@@ -283,7 +290,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -304,7 +312,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalRequest.setLineItems(new ArrayList<PayPalNativeCheckoutLineItem>());
@@ -321,7 +330,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -329,7 +338,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalRequest.setRiskCorrelationId("risk-correlation-id");
@@ -345,7 +355,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -353,7 +363,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
 
@@ -374,7 +385,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationSuccess(tokenizationKey)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalRequest.setShouldRequestBillingAgreement(false);
@@ -393,7 +405,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -402,7 +414,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -424,7 +437,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -433,7 +446,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .returnUrlScheme("sample-scheme")
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalRequest.setIntent("authorize");
@@ -461,7 +475,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         payPalRequest.setIntent("authorize");
@@ -481,7 +496,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutVaultRequest payPalRequest = new PayPalNativeCheckoutVaultRequest();
 
@@ -500,7 +516,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTErrorResponse(httpError)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -516,7 +533,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse("{bad:")
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -531,7 +549,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .authorizationError(authError)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -547,7 +566,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
                 .configurationError(configurationError)
                 .build();
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
@@ -561,7 +581,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
         PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         sut.tokenize(payPalAccount, callback);
 
@@ -577,7 +598,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
         PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         sut.tokenize(payPalAccount, callback);
 
@@ -599,7 +621,8 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         PayPalNativeCheckoutAccount payPalAccount = mock(PayPalNativeCheckoutAccount.class);
         PayPalNativeCheckoutResultCallback callback = mock(PayPalNativeCheckoutResultCallback.class);
 
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
+                dataCollector, apiClient);
 
         sut.tokenize(payPalAccount, callback);
 

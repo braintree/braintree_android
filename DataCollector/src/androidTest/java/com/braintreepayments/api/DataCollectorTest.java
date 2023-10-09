@@ -12,13 +12,13 @@ import org.junit.runner.RunWith;
 import static junit.framework.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class PayPalDataCollectorTest {
+public class DataCollectorTest {
 
     @Test
     public void getClientMetadataId_returnsClientMetadataId() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
-        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient);
+        DataCollector sut = new DataCollector(braintreeClient);
         String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));

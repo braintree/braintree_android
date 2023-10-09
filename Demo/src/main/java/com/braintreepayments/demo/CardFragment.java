@@ -25,7 +25,7 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
-import com.braintreepayments.api.PayPalDataCollector;
+import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
@@ -76,7 +76,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private CardClient cardClient;
     private ThreeDSecureClient threeDSecureClient;
     private UnionPayClient unionPayClient;
-    private PayPalDataCollector dataCollector;
+    private DataCollector dataCollector;
 
     private String cardFormActionLabel;
 
@@ -91,7 +91,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureClient.setListener(this);
 
         unionPayClient = new UnionPayClient(braintreeClient);
-        dataCollector = new PayPalDataCollector(braintreeClient);
+        dataCollector = new DataCollector(braintreeClient);
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);

@@ -13,20 +13,20 @@ class PayPalNativeCheckoutInternalClient {
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
 
     private final BraintreeClient braintreeClient;
-    private final PayPalDataCollector payPalDataCollector;
+    private final DataCollector dataCollector;
     private final ApiClient apiClient;
 
     private final String cancelUrl;
     private final String successUrl;
 
     PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(braintreeClient), new ApiClient(braintreeClient));
+        this(braintreeClient, new DataCollector(braintreeClient), new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, ApiClient apiClient) {
+    PayPalNativeCheckoutInternalClient(BraintreeClient braintreeClient, DataCollector dataCollector, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.payPalDataCollector = payPalDataCollector;
+        this.dataCollector = dataCollector;
         this.apiClient = apiClient;
         this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
         this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
@@ -60,7 +60,7 @@ class PayPalNativeCheckoutInternalClient {
                                         String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
                                         String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
                                         String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
-                                                ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
+                                                ? payPalRequest.getRiskCorrelationId() : dataCollector.getClientMetadataId(context, configuration);
 
                                         if (pairingId != null) {
                                             payPalResponse

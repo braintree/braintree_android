@@ -14,7 +14,7 @@ import org.json.JSONObject;
 /**
  * PayPalDataCollector is used to collect PayPal specific device information to aid in fraud detection and prevention.
  */
-public class PayPalDataCollector {
+public class DataCollector {
 
     private static final String CORRELATION_ID_KEY = "correlation_id";
 
@@ -22,12 +22,12 @@ public class PayPalDataCollector {
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
-    public PayPalDataCollector(@NonNull BraintreeClient braintreeClient) {
+    public DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 
     @VisibleForTesting
-    PayPalDataCollector(BraintreeClient braintreeClient, MagnesInternalClient magnesInternalClient, UUIDHelper uuidHelper) {
+    DataCollector(BraintreeClient braintreeClient, MagnesInternalClient magnesInternalClient, UUIDHelper uuidHelper) {
         this.braintreeClient = braintreeClient;
         this.magnesInternalClient = magnesInternalClient;
         this.uuidHelper = uuidHelper;
@@ -50,7 +50,7 @@ public class PayPalDataCollector {
      */
     @MainThread
     String getClientMetadataId(Context context, Configuration configuration) {
-        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+        DataCollectorRequest request = new DataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
         return getClientMetadataId(context, request, configuration);
@@ -69,7 +69,7 @@ public class PayPalDataCollector {
      * @param configuration the merchant configuration
      */
     @MainThread
-    String getClientMetadataId(Context context, PayPalDataCollectorRequest request, Configuration configuration) {
+    String getClientMetadataId(Context context, DataCollectorRequest request, Configuration configuration) {
         return magnesInternalClient.getClientMetadataId(context, configuration, request);
     }
 
@@ -82,9 +82,9 @@ public class PayPalDataCollector {
      * Use the return value on your server, e.g. with `Transaction.sale`.
      *
      * @param context  Android Context
-     * @param callback {@link PayPalDataCollectorCallback}
+     * @param callback {@link DataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull final Context context, @NonNull final PayPalDataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull final Context context, @NonNull final DataCollectorCallback callback) {
         collectDeviceData(context, null, callback);
     }
 
@@ -98,16 +98,16 @@ public class PayPalDataCollector {
      *
      * @param context           Android Context
      * @param riskCorrelationId Optional client metadata id
-     * @param callback          {@link PayPalDataCollectorCallback}
+     * @param callback          {@link DataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull final Context context, @Nullable final String riskCorrelationId, @NonNull final PayPalDataCollectorCallback callback) {
+    public void collectDeviceData(@NonNull final Context context, @Nullable final String riskCorrelationId, @NonNull final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                        DataCollectorRequest request = new DataCollectorRequest()
                                 .setApplicationGuid(getPayPalInstallationGUID(context));
                         if (riskCorrelationId != null) {
                             request.setRiskCorrelationId(riskCorrelationId);
