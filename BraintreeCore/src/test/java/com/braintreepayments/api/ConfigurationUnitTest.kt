@@ -132,12 +132,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun returnsNewUnionPayConfigurationWhenUnionPayIsAbsent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        assertFalse(sut.isUnionPayEnabled)
-    }
-
-    @Test
     fun returnsNewCardConfigurationWhenCardConfigurationIsAbsent() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertEquals(0, sut.supportedCardTypes.size)
@@ -224,12 +218,6 @@ class ConfigurationUnitTest {
     fun isGraphQLEnabled_forwardsInvocationToGraphQLConfiguration() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertTrue(sut.isGraphQLEnabled)
-    }
-
-    @Test
-    fun isUnionPayEnabled_forwardsInvocationToUnionPayConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY)
-        assertTrue(sut.isUnionPayEnabled)
     }
 
     @Test

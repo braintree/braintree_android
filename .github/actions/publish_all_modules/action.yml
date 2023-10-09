@@ -35,7 +35,6 @@ runs:
           :PayPal:publishToSonatype \
           :SharedUtils:publishToSonatype \
           :ThreeDSecure:publishToSonatype \
-          :UnionPay:publishToSonatype \
           :Venmo:publishToSonatype \
           :SamsungPay:publishToSonatype \
           :SEPADirectDebit:publishToSonatype \

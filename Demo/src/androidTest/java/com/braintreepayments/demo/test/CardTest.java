@@ -59,55 +59,6 @@ public class CardTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @Ignore("There is an issue with our merchant account not tokenizing UnionPay. " +
-            "Our merchant account can process capabilities and enrollment but " +
-            "when tokenizing we get a 422 that the merchant account is not setup for credit card " +
-            "processing. " +
-            "Disabling UnionPay tests that involve tokenizing until the issue has been resolved.")
-    @Test(timeout = 60000)
-    public void tokenizesUnionPay() {
-        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
-        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
-        onDevice(withText("CVN")).perform(setText("123"));
-        onDevice(withText("Postal Code")).perform(setText("12345"));
-        onDevice(withText("Country Code")).perform(setText("1"));
-        onDevice(withText("Mobile Number")).perform(setText("5555555555"));
-        onDevice(withText("Send SMS")).perform(click());
-
-        onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
-        onDevice(withContentDescription("SMS Auth Code")).perform(setText("12345"));
-
-        onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
-        onDevice(withText("Purchase")).perform(click());
-
-        getNonceDetails().check(text(containsString("Card Last Two: 32")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    @Ignore("There is an issue with our merchant account not tokenizing UnionPay. " +
-            "Our merchant account can process capabilities and enrollment but " +
-            "when tokenizing we get a 422 that the merchant account is not setup for credit card " +
-            "processing. " +
-            "Disabling UnionPay tests that involve tokenizing until the issue has been resolved.")
-    @Test(timeout = 60000)
-    public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
-        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
-        onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
-        onDevice(withText("CVN")).perform(setText("123"));
-        onDevice(withText("Postal Code")).perform(setText("12345"));
-        onDevice(withText("Country Code")).perform(setText("1"));
-        onDevice(withText("Mobile Number")).perform(setText("5555555555"));
-        onDevice(withText("Send SMS")).perform(click());
-
-        getNonceDetails().check(text(containsString("Card Last Two: 85")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    @Test(timeout = 60000)
     public void amexRewardsBalance_whenCardHasBalance() {
         Context context = ApplicationProvider.getApplicationContext();
         PreferenceManager.getDefaultSharedPreferences(context)

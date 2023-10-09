@@ -90,7 +90,6 @@ dependencies {
     implementation project(':SamsungPay')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
-    implementation project(':UnionPay')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
 

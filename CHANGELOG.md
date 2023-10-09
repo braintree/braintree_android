@@ -1,13 +1,17 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
-
-* BraintreeDataCollector
-  * Remove module (use PayPalDataCollector)
-* PayPalDataCollector
-  * Rename `PayPalDataCollector` to `DataCollector` 
-  * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
-  * Rename `PayPalDataCollectorCallback` to `DataCollectorCallback`
+* Breaking Changes
+  * All Modules
+    * Bump `minSdkVersion` to API 23
+  * UnionPay
+    * Remove `union-pay` module
+      * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
+  * BraintreeDataCollector
+    * Remove module (use PayPalDataCollector)
+  * PayPalDataCollector
+    * Rename `PayPalDataCollector` to `DataCollector` 
+    * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
+    * Rename `PayPalDataCollectorCallback` to `DataCollectorCallback`
 
 ## unreleased
 

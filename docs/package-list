@@ -23,7 +23,5 @@ module:SEPADirectDebit
 com.braintreepayments.api
 module:ThreeDSecure
 com.braintreepayments.api
-module:UnionPay
-com.braintreepayments.api
 module:Venmo
 com.braintreepayments.api

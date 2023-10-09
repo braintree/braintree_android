@@ -196,24 +196,4 @@ public class ApiClientTest {
 
         countDownLatch.await();
     }
-
-    @Test(timeout = 10000)
-    public void createTransaction_createsAUnionPayTransaction() throws InterruptedException {
-        TransactionRequest request =
-                new TransactionRequest("6.00", "fake-valid-unionpay-credit-nonce", "fake_switch_usd");
-        apiClient.createTransaction(request, new Callback<Transaction>() {
-            @Override
-            public void success(Transaction transaction, Response response) {
-                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                fail(error.getMessage());
-            }
-        });
-
-        countDownLatch.await();
-    }
 }
