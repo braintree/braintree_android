@@ -2,6 +2,15 @@
 
 ## unreleased
 
+* BraintreeDataCollector
+  * Remove module (use PayPalDataCollector)
+* PayPalDataCollector
+  * Rename `PayPalDataCollector` to `DataCollector` 
+  * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
+  * Rename `PayPalDataCollectorCallback` to `DataCollectorCallback`
+
+## unreleased
+
 * BraintreeCore
   * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
 
