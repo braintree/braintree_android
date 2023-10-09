@@ -86,7 +86,7 @@ dependencies {
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':PayPalNativeCheckout')
-    implementation project(':PayPalDataCollector')
+    implementation project(':DataCollector')
     implementation project(':SamsungPay')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')

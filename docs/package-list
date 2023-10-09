@@ -13,7 +13,7 @@ module:LocalPayment
 com.braintreepayments.api
 module:PayPal
 com.braintreepayments.api
-module:PayPalDataCollector
+module:DataCollector
 com.braintreepayments.api
 module:PayPalNativeCheckout
 com.braintreepayments.api
