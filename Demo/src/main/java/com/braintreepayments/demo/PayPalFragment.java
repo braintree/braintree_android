@@ -17,9 +17,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchResult;
-import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalDataCollector;
 import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
@@ -31,7 +31,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
 
-    private DataCollector dataCollector;
+    private PayPalDataCollector dataCollector;
 
     private boolean useManualBrowserSwitch;
 
@@ -95,7 +95,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new DataCollector(braintreeClient);
+        dataCollector = new PayPalDataCollector(braintreeClient);
 
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (Settings.shouldCollectDeviceData(requireActivity())) {

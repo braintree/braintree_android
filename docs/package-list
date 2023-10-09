@@ -5,8 +5,6 @@ module:AmericanExpress
 com.braintreepayments.api
 module:BraintreeCore
 com.braintreepayments.api
-module:BraintreeDataCollector
-com.braintreepayments.api
 module:Card
 com.braintreepayments.api
 module:GooglePay
