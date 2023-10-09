@@ -7,7 +7,7 @@
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
   * BraintreeDataCollector
-    * Remove module (use PayPalDataCollector)
+    * Remove `data-collector` module (use `paypal-data-collector`) 
   * PayPalDataCollector
     * Rename `PayPalDataCollector` to `DataCollector` 
     * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
