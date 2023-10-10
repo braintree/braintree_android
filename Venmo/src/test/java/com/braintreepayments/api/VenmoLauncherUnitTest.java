@@ -43,7 +43,6 @@ public class VenmoLauncherUnitTest {
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
                 Mockito.<ActivityResultContract<VenmoAuthChallenge, VenmoAuthChallengeResult>>any(),
                 Mockito.any());
-
     }
 
     @Test
