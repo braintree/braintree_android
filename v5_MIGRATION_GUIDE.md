@@ -40,14 +40,14 @@ class MyActivity : FragmentActivity() {
     private lateinit var venmoClient: VenmoClient
     
     @override fun onCreate(savedInstanceState: Bundle?) {
--       initializeClients()
 +       // can initialize clients outside of onCreate if desired
+-       initializeClients()
 +       venmoLauncher = VenmoLauncher(this) { authChallengeResult ->
-            venmoClient.tokenizeVenmoAccount(authChallengeResult) { venmoAccountNonce, error ->
-                error?.let { /* handle error */ }
-                venmoAccountNonce?.let { /* handle Venmo account nonce */ }
-            }
-        }
++            venmoClient.tokenizeVenmoAccount(authChallengeResult) { venmoAccountNonce, error ->
++                error?.let { /* handle error */ }
++                venmoAccountNonce?.let { /* handle Venmo account nonce */ }
++            }
++       }
     }
     
     fun initializeClients() {
@@ -60,18 +60,18 @@ class MyActivity : FragmentActivity() {
     fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
 +       venmoClient.requestAuthChallenge(this, venmoRequest) { authChallenge, error ->
-            error?.let { /* handle error */ }
-            authChallenge?.let { venmoLauncher.launch(it) }
-        }
++            error?.let { /* handle error */ }
++            authChallenge?.let { venmoLauncher.launch(it) }
++       }
     }
     
 -   override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
-        // handle Venmo account nonce
-    }
+-        // handle Venmo account nonce
+-   }
       
 -   override fun onVenmoFailure(error: java.lang.Exception) {
-        // handle error
-    }
+-        // handle error
+-   }
 }
 ```
 
