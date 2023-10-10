@@ -92,11 +92,8 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build());
         googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
-        googlePayRequest.setAllowCreditCards(true);
-        googlePayRequest.setPayPalEnabled(true);
         googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
-//        googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
-        googlePayRequest.setBillingAddressRequired(true);
+        googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
         googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
         googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
         googlePayRequest.setShippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
