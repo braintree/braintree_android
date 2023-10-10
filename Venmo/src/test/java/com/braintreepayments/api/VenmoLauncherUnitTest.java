@@ -31,6 +31,7 @@ public class VenmoLauncherUnitTest {
         MockitoAnnotations.openMocks(this);
         callback = mock(VenmoAuthChallengeResultCallback.class);
     }
+    
     @Test
     public void constructor_createsActivityLauncher() {
         String expectedKey = "com.braintreepayments.api.Venmo.RESULT";
