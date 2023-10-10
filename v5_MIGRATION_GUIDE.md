@@ -32,16 +32,18 @@ must be instantiated in the `OnCreate` method of your Activity or Fragment.
 `BraintreeClient` and `VenmoClient` no longer require references to Fragment or Activity and do not 
 need to be instantiated in `OnCreate`.
 
-```kotlin
+```diff
 
 class MyActivity : FragmentActivity() {
     
-    private lateinit var venmoLauncher: VenmoLauncher
+    + private lateinit var venmoLauncher: VenmoLauncher
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var venmoClient: VenmoClient
     
     @override fun onCreate(savedInstanceState: Bundle?) {
-        venmoLauncher = VenmoLauncher(this) { authChallengeResult ->
+        - initializeClients()
+        + // can initialize clients outside of onCreate if desired
+        + venmoLauncher = VenmoLauncher(this) { authChallengeResult ->
             venmoClient.tokenizeVenmoAccount(authChallengeResult) { venmoAccountNonce, error ->
                 error?.let { /* handle error */ }
                 venmoAccountNonce?.let { /* handle Venmo account nonce */ }
@@ -51,15 +53,26 @@ class MyActivity : FragmentActivity() {
     
     fun initializeClients() {
         braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
-        venmoClient = VenmoClient(braintreeClient)
+        - venmoClient = VenmoClient(this, braintreeClient)
+        + venmoClient = VenmoClient(braintreeClient)
+        - venmoClient.setListener(this)
     }
     
     fun onVenmoButtonClick() {
-        venmoClient.requestAuthChallenge(this, venmoRequest) { authChallenge, error ->
+        - venmoClient.tokenizeVenmoAccount(activity, request)
+        + venmoClient.requestAuthChallenge(this, venmoRequest) { authChallenge, error ->
             error?.let { /* handle error */ }
             authChallenge?.let { venmoLauncher.launch(it) }
         }
     }
+    
+    - override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
+        // handle Venmo account nonce
+      }
+      
+    - override fun onVenmoFailure(error: java.lang.Exception) {
+        // handle error
+     }
 }
 ```
 
