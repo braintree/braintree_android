@@ -1,34 +1,22 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+public class VenmoResult {
 
-class VenmoResult {
-
-    private final Exception error;
-    private final String paymentContextId;
-    private final String venmoAccountNonce;
-    private final String venmoUsername;
-
-    VenmoResult(@Nullable String paymentContextId, @Nullable String venmoAccountNonce, @Nullable String venmoUsername, @Nullable Exception error) {
-        this.paymentContextId = paymentContextId;
+    private VenmoAccountNonce venmoAccountNonce;
+    private Exception error;
+    VenmoResult(VenmoAccountNonce venmoAccountNonce) {
         this.venmoAccountNonce = venmoAccountNonce;
-        this.venmoUsername = venmoUsername;
-        this.error = error;
     }
 
-    Exception getError() {
-        return error;
+    VenmoResult(Exception venmoError) {
+        this.error = venmoError;
     }
 
-    String getPaymentContextId() {
-        return paymentContextId;
-    }
-
-    String getVenmoAccountNonce() {
+    public VenmoAccountNonce getVenmoAccountNonce() {
         return venmoAccountNonce;
     }
 
-    String getVenmoUsername() {
-        return venmoUsername;
+    public Exception getError() {
+        return error;
     }
 }

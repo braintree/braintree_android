@@ -12,6 +12,15 @@
     * Rename `PayPalDataCollector` to `DataCollector` 
     * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
     * Rename `PayPalDataCollectorCallback` to `DataCollectorCallback`
+  * Venmo
+    * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`
+    * Add `VenmoLauncher`, `VenmoAuthChallenge`, `VenmoAuthChallengeCallback`, 
+      `VenmoAuthChallengeResult`, `VenmoResult`, and 
+      `VenmoAuthChallengeResultCallback`
+    * Rename `VenmoOnActivityResultCallback` to `VenmoResultCallback`
+    * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
+    * Change `VenmoClient#tokenizeVenmoAccount` parameters
+    * Add `VenmoClient#requestAuthChallenge`
 
 ## unreleased
 

@@ -81,7 +81,7 @@ class VenmoApi {
         });
     }
 
-    void createNonceFromPaymentContext(String paymentContextId, final VenmoOnActivityResultCallback callback) {
+    void createNonceFromPaymentContext(String paymentContextId, final VenmoResultCallback callback) {
         JSONObject params = new JSONObject();
         try {
             params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
@@ -114,7 +114,7 @@ class VenmoApi {
         }
     }
 
-    void vaultVenmoAccountNonce(String nonce, final VenmoOnActivityResultCallback callback) {
+    void vaultVenmoAccountNonce(String nonce, final VenmoResultCallback callback) {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 
