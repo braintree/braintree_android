@@ -21,6 +21,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoLauncherUnitTest {
+
     @Mock
     ActivityResultLauncher<VenmoAuthChallenge> activityResultLauncher;
     private VenmoAuthChallengeResultCallback callback;
