@@ -231,7 +231,7 @@ public class GooglePayRequestUnitTest {
     }
 
     @Test
-    public void generatesToJsonRequest_whenCreditCardNotAllowed_billingAddressNotRequired() throws JSONException {
+    public void generatesToJsonRequest_whenCreditCardNotAllowed_billingAddressRequired() throws JSONException {
         GooglePayRequest request = new GooglePayRequest();
         String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST_NO_CREDIT_CARDS;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
@@ -281,7 +281,7 @@ public class GooglePayRequestUnitTest {
         request.setEmailRequired(true);
         request.setShippingAddressRequired(true);
         request.setShippingAddressRequirements(shippingAddressRequirements);
-        request.setBillingAddressRequired(false);
+        request.setBillingAddressRequired(true);
         request.setAllowPrepaidCards(true);
         request.setAllowCreditCards(false);
         request.setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams);

@@ -2457,7 +2457,7 @@ object Fixtures {
             {
               "type": "CARD",
               "parameters": {
-                "billingAddressRequired": false, 
+                "billingAddressRequired": true, 
                 "allowPrepaidCards": true,
                 "allowCreditCards": true,
                 "allowedAuthMethods": [
