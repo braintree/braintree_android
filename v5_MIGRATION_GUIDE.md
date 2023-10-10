@@ -54,7 +54,7 @@ class MyActivity : FragmentActivity() {
         venmoClient = VenmoClient(braintreeClient)
     }
     
-    fun launchVenmoFlow() {
+    fun onVenmoButtonClick() {
         venmoClient.requestAuthChallenge(this, venmoRequest) { authChallenge, error ->
             error?.let { /* handle error */ }
             authChallenge?.let { venmoLauncher.launch(it) }
