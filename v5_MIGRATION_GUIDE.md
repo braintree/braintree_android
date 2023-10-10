@@ -15,13 +15,14 @@ The minimum supported Android API level for v5 of this SDK has increased to 23.
 
 ## Data Collector
 
-The `data-collector` module has been removed and replaced by the `paypal-data-collector` module. 
-The `DataCollector` class within the `paypal-data-collector` module has the same 
-`collectDeviceData` methods, so if you were previously using the `data-collector` library, no code 
-changes are required aside from updating your dependency.
+The `paypal-data-collector` module has been removed and replaced by the `data-collector` module. 
+The `DataCollector` class within the `data-collector` module has the same 
+`collectDeviceData` methods, so if you were previously using the `paypal-data-collector` library,
+no code changes are required aside from updating your dependency.
 
-If you were using the `paypal-data-collector` library in v4, the `PayPal` prefix has been 
-removed from all class names in v5.
+If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context, 
+merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId, 
+callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(braintreeClient)

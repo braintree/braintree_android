@@ -7,11 +7,10 @@
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
   * BraintreeDataCollector
-    * Remove `data-collector` module (use `paypal-data-collector`) 
+    * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with 
+      `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
   * PayPalDataCollector
-    * Rename `PayPalDataCollector` to `DataCollector` 
-    * Rename `PayPalDataCollectorRequest` to `DataCollectorRequest`
-    * Rename `PayPalDataCollectorCallback` to `DataCollectorCallback`
+    * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
     * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`
     * Add `VenmoLauncher`, `VenmoAuthChallenge`, `VenmoAuthChallengeCallback`, 
