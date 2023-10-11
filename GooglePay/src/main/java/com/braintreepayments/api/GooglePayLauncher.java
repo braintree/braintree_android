@@ -20,11 +20,12 @@ public class GooglePayLauncher {
 
     public GooglePayLauncher(@NonNull Fragment fragment,
                              @NonNull GooglePayResultCallback callback) {
-        this(fragment.getActivity().getActivityResultRegistry(), fragment.getViewLifecycleOwner(), callback);
+        this(fragment.getActivity().getActivityResultRegistry(), fragment.getViewLifecycleOwner(),
+                callback);
     }
 
     public GooglePayLauncher(@NonNull FragmentActivity activity,
-                         @NonNull GooglePayResultCallback callback) {
+                             @NonNull GooglePayResultCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
 

@@ -1,11 +1,5 @@
 package com.braintreepayments.api;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_FIRST_USER;
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.GooglePayClient.EXTRA_ENVIRONMENT;
-import static com.braintreepayments.api.GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST;
-import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -16,18 +10,13 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
@@ -55,25 +44,20 @@ import java.util.Collection;
 public class GooglePayClientUnitTest {
 
     private FragmentActivity activity;
-    private Lifecycle lifecycle;
 
     private GooglePayRequest baseRequest;
 
     private GooglePayIsReadyToPayCallback readyToPayCallback;
-    private GooglePayRequestPaymentCallback requestPaymentCallback;
+    private GooglePayIntentDataCallback intentDataCallback;
     private GooglePayOnActivityResultCallback activityResultCallback;
-    private GooglePayListener listener;
-
     private ActivityInfo activityInfo;
 
     @Before
     public void beforeEach() {
         activity = mock(FragmentActivity.class);
-        lifecycle = mock(Lifecycle.class);
         readyToPayCallback = mock(GooglePayIsReadyToPayCallback.class);
-        requestPaymentCallback = mock(GooglePayRequestPaymentCallback.class);
         activityResultCallback = mock(GooglePayOnActivityResultCallback.class);
-        listener = mock(GooglePayListener.class);
+        intentDataCallback = mock(GooglePayIntentDataCallback.class);
         activityInfo = mock(ActivityInfo.class);
 
         baseRequest = new GooglePayRequest();
@@ -85,55 +69,6 @@ public class GooglePayClientUnitTest {
 
         when(activityInfo.getThemeResource()).thenReturn(R.style.bt_transparent_activity);
     }
-
-    // region Constructor
-
-    @Test
-    public void constructor_withFragment_passesFragmentLifecycleAndActivityToObserver() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-        Fragment fragment = mock(Fragment.class);
-        when(fragment.requireActivity()).thenReturn(activity);
-        when(fragment.getLifecycle()).thenReturn(lifecycle);
-
-        GooglePayClient sut = new GooglePayClient(fragment, braintreeClient);
-        ArgumentCaptor<GooglePayLifecycleObserver> captor = ArgumentCaptor.forClass(GooglePayLifecycleObserver.class);
-        verify(lifecycle).addObserver(captor.capture());
-
-        GooglePayLifecycleObserver observer = captor.getValue();
-        assertSame(resultRegistry, observer.activityResultRegistry);
-        assertSame(sut, observer.googlePayClient);
-    }
-
-    @Test
-    public void constructor_withFragmentActivity_passesActivityLifecycleAndActivityToObserver() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-
-        ActivityResultRegistry resultRegistry = mock(ActivityResultRegistry.class);
-        when(activity.getLifecycle()).thenReturn(lifecycle);
-        when(activity.getActivityResultRegistry()).thenReturn(resultRegistry);
-
-        GooglePayClient sut = new GooglePayClient(activity, braintreeClient);
-        ArgumentCaptor<GooglePayLifecycleObserver> captor = ArgumentCaptor.forClass(GooglePayLifecycleObserver.class);
-        verify(lifecycle).addObserver(captor.capture());
-
-        GooglePayLifecycleObserver observer = captor.getValue();
-        assertSame(resultRegistry, observer.activityResultRegistry);
-        assertSame(sut, observer.googlePayClient);
-    }
-
-    @Test
-    public void constructor_withoutFragmentOrActivity_doesNotSetObserver() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient);
-
-        verify(lifecycle, never()).addObserver(any(GooglePayLifecycleObserver.class));
-    }
-
-    // endregion
 
     // region isReadyToPay
 
@@ -149,13 +84,16 @@ public class GooglePayClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(activity, null, readyToPayCallback);
 
-        ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
-        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
+        ArgumentCaptor<IsReadyToPayRequest> captor =
+                ArgumentCaptor.forClass(IsReadyToPayRequest.class);
+        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration),
+                captor.capture(), any(GooglePayIsReadyToPayCallback.class));
 
         String actualJson = captor.getValue().toJson();
         JSONAssert.assertEquals(
@@ -163,7 +101,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() throws JSONException {
+    public void isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired()
+            throws JSONException {
         ReadyForGooglePayRequest readyForGooglePayRequest = new ReadyForGooglePayRequest();
         readyForGooglePayRequest.setExistingPaymentMethodRequired(true);
 
@@ -177,13 +116,16 @@ public class GooglePayClientUnitTest {
                 .configuration(configuration)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(activity, readyForGooglePayRequest, readyToPayCallback);
 
-        ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
-        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
+        ArgumentCaptor<IsReadyToPayRequest> captor =
+                ArgumentCaptor.forClass(IsReadyToPayRequest.class);
+        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration),
+                captor.capture(), any(GooglePayIsReadyToPayCallback.class));
 
         String actualJson = captor.getValue().toJson();
         JSONAssert.assertEquals(
@@ -193,7 +135,8 @@ public class GooglePayClientUnitTest {
     @Test
     public void isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() {
         Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(false))
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(
+                        false))
                 .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -215,7 +158,8 @@ public class GooglePayClientUnitTest {
     @Test
     public void isReadyToPay_whenActivityIsNull_forwardsErrorToCallback() {
         Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(true))
+                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(
+                        true))
                 .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -224,7 +168,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.isReadyToPay(null, null, readyToPayCallback);
@@ -242,60 +187,7 @@ public class GooglePayClientUnitTest {
     // region requestPayment
 
     @Test
-    public void requestPayment_withObserver_launchesWithObserver() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, baseRequest);
-
-        verify(sut.observer).launch(any(GooglePayIntentData.class));
-    }
-
-    @Test
-    public void requestPayment_withoutObserver_startsActivityWithDeprecatedAPI() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.requestPayment(activity, baseRequest, requestPaymentCallback);
-
-        verify(activity).startActivityForResult(any(Intent.class), eq(BraintreeRequestCodes.GOOGLE_PAY));
-    }
-
-    @Test
-    public void requestPayment_withObserver_launchesWithOptionalValues() throws JSONException {
+    public void requestPayment_callsBackIntentData() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -319,22 +211,23 @@ public class GooglePayClientUnitTest {
         googlePayRequest.setEmailRequired(true);
         googlePayRequest.setPhoneNumberRequired(true);
         googlePayRequest.setShippingAddressRequired(true);
-        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
+        googlePayRequest.setShippingAddressRequirements(
+                ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
         googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
                 .setTotalPrice("1.00")
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .setCurrencyCode("USD")
                 .build());
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
 
         GooglePayIntentData intent = captor.getValue();
 
@@ -354,7 +247,8 @@ public class GooglePayClientUnitTest {
         assertEquals("1.00", transactionInfoJson.getString("totalPrice"));
         assertEquals("USD", transactionInfoJson.getString("currencyCode"));
 
-        JSONArray allowedPaymentMethods = paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
+        JSONArray allowedPaymentMethods =
+                paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
         JSONObject paypal = allowedPaymentMethods.getJSONObject(0);
         assertEquals("PAYPAL", paypal.getString("type"));
 
@@ -368,19 +262,27 @@ public class GooglePayClientUnitTest {
                 .getString("client_id"));
         assertEquals("true", purchaseUnit.getString("recurring_payment"));
 
-        JSONObject paypalTokenizationSpecification = paypal.getJSONObject("tokenizationSpecification");
+        JSONObject paypalTokenizationSpecification =
+                paypal.getJSONObject("tokenizationSpecification");
         assertEquals("PAYMENT_GATEWAY", paypalTokenizationSpecification.getString("type"));
 
-        JSONObject paypalTokenizationSpecificationParams = paypalTokenizationSpecification.getJSONObject("parameters");
+        JSONObject paypalTokenizationSpecificationParams =
+                paypalTokenizationSpecification.getJSONObject("parameters");
         assertEquals("braintree", paypalTokenizationSpecificationParams.getString("gateway"));
         assertEquals("v1", paypalTokenizationSpecificationParams.getString("braintree:apiVersion"));
 
-        String googlePayModuleVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
-        assertEquals(googlePayModuleVersion, paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
-        assertEquals("integration_merchant_id", paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
+        String googlePayModuleVersion =
+                com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
+        assertEquals(googlePayModuleVersion,
+                paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals("integration_merchant_id",
+                paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion +
+                        "\",\"platform\":\"android\"}",
+                paypalTokenizationSpecificationParams.getString("braintree:metadata"));
         assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"));
-        assertEquals("paypal-client-id-for-google-payment", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
+        assertEquals("paypal-client-id-for-google-payment",
+                paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
 
         JSONObject card = allowedPaymentMethods.getJSONObject(1);
         assertEquals("CARD", card.getString("type"));
@@ -400,126 +302,19 @@ public class GooglePayClientUnitTest {
         JSONObject tokenizationSpecification = card.getJSONObject("tokenizationSpecification");
         assertEquals("PAYMENT_GATEWAY", tokenizationSpecification.getString("type"));
 
-        JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
+        JSONObject cardTokenizationSpecificationParams =
+                tokenizationSpecification.getJSONObject("parameters");
         assertEquals("braintree", cardTokenizationSpecificationParams.getString("gateway"));
         assertEquals("v1", cardTokenizationSpecificationParams.getString("braintree:apiVersion"));
-        assertEquals(googlePayModuleVersion, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
-        assertEquals("integration_merchant_id", cardTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", cardTokenizationSpecificationParams.getString("braintree:metadata"));
-        assertEquals("sandbox_tokenization_string", cardTokenizationSpecificationParams.getString("braintree:clientKey"));
-    }
-
-    @Test
-    public void requestPayment_withoutObserver_startsActivityWithOptionalValues() throws JSONException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setAllowPrepaidCards(true);
-        googlePayRequest.setBillingAddressFormat(1);
-        googlePayRequest.setBillingAddressRequired(true);
-        googlePayRequest.setEmailRequired(true);
-        googlePayRequest.setPhoneNumberRequired(true);
-        googlePayRequest.setShippingAddressRequired(true);
-        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.requestPayment(activity, googlePayRequest, requestPaymentCallback);
-
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAY));
-        Intent intent = captor.getValue();
-
-        assertEquals(GooglePayActivity.class.getName(), intent.getComponent().getClassName());
-        assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getIntExtra(EXTRA_ENVIRONMENT, -1));
-        PaymentDataRequest paymentDataRequest = intent.getParcelableExtra(EXTRA_PAYMENT_DATA_REQUEST);
-
-        JSONObject paymentDataRequestJson = new JSONObject(paymentDataRequest.toJson());
-
-        assertEquals(2, paymentDataRequestJson.get("apiVersion"));
-        assertEquals(0, paymentDataRequestJson.get("apiVersionMinor"));
-
-        assertEquals(true, paymentDataRequestJson.get("emailRequired"));
-        assertEquals(true, paymentDataRequestJson.get("shippingAddressRequired"));
-
-        JSONObject transactionInfoJson = paymentDataRequestJson.getJSONObject("transactionInfo");
-        assertEquals("FINAL", transactionInfoJson.getString("totalPriceStatus"));
-        assertEquals("1.00", transactionInfoJson.getString("totalPrice"));
-        assertEquals("USD", transactionInfoJson.getString("currencyCode"));
-
-        JSONArray allowedPaymentMethods = paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
-        JSONObject paypal = allowedPaymentMethods.getJSONObject(0);
-        assertEquals("PAYPAL", paypal.getString("type"));
-
-        JSONArray purchaseUnits = paypal.getJSONObject("parameters")
-                .getJSONObject("purchase_context")
-                .getJSONArray("purchase_units");
-        assertEquals(1, purchaseUnits.length());
-
-        JSONObject purchaseUnit = purchaseUnits.getJSONObject(0);
-        assertEquals("paypal-client-id-for-google-payment", purchaseUnit.getJSONObject("payee")
-                .getString("client_id"));
-        assertEquals("true", purchaseUnit.getString("recurring_payment"));
-
-        JSONObject paypalTokenizationSpecification = paypal.getJSONObject("tokenizationSpecification");
-        assertEquals("PAYMENT_GATEWAY", paypalTokenizationSpecification.getString("type"));
-
-        JSONObject paypalTokenizationSpecificationParams = paypalTokenizationSpecification.getJSONObject("parameters");
-        assertEquals("braintree", paypalTokenizationSpecificationParams.getString("gateway"));
-        assertEquals("v1", paypalTokenizationSpecificationParams.getString("braintree:apiVersion"));
-
-        String googlePayModuleVersion = com.braintreepayments.api.googlepay.BuildConfig.VERSION_NAME;
-        assertEquals(googlePayModuleVersion, paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
-        assertEquals("integration_merchant_id", paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
-        assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"));
-        assertEquals("paypal-client-id-for-google-payment", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
-
-        JSONObject card = allowedPaymentMethods.getJSONObject(1);
-        assertEquals("CARD", card.getString("type"));
-
-        JSONObject cardParams = card.getJSONObject("parameters");
-        assertTrue(cardParams.getBoolean("billingAddressRequired"));
-        assertTrue(cardParams.getBoolean("allowPrepaidCards"));
-
-        assertEquals("PAN_ONLY", cardParams.getJSONArray("allowedAuthMethods").getString(0));
-        assertEquals("CRYPTOGRAM_3DS", cardParams.getJSONArray("allowedAuthMethods").getString(1));
-
-        assertEquals("VISA", cardParams.getJSONArray("allowedCardNetworks").getString(0));
-        assertEquals("MASTERCARD", cardParams.getJSONArray("allowedCardNetworks").getString(1));
-        assertEquals("AMEX", cardParams.getJSONArray("allowedCardNetworks").getString(2));
-        assertEquals("DISCOVER", cardParams.getJSONArray("allowedCardNetworks").getString(3));
-
-        JSONObject tokenizationSpecification = card.getJSONObject("tokenizationSpecification");
-        assertEquals("PAYMENT_GATEWAY", tokenizationSpecification.getString("type"));
-
-        JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
-        assertEquals("braintree", cardTokenizationSpecificationParams.getString("gateway"));
-        assertEquals("v1", cardTokenizationSpecificationParams.getString("braintree:apiVersion"));
-        assertEquals(googlePayModuleVersion, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
-        assertEquals("integration_merchant_id", cardTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion + "\",\"platform\":\"android\"}", cardTokenizationSpecificationParams.getString("braintree:metadata"));
-        assertEquals("sandbox_tokenization_string", cardTokenizationSpecificationParams.getString("braintree:clientKey"));
+        assertEquals(googlePayModuleVersion,
+                cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals("integration_merchant_id",
+                cardTokenizationSpecificationParams.getString("braintree:merchantId"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePayModuleVersion +
+                        "\",\"platform\":\"android\"}",
+                cardTokenizationSpecificationParams.getString("braintree:metadata"));
+        assertEquals("sandbox_tokenization_string",
+                cardTokenizationSpecificationParams.getString("braintree:clientKey"));
     }
 
     @Test
@@ -546,25 +341,28 @@ public class GooglePayClientUnitTest {
                 .setCurrencyCode("USD")
                 .build());
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
         JSONObject paymentDataRequestJson = new JSONObject(paymentDataRequest.toJson());
 
-        JSONArray allowedPaymentMethods = paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
+        JSONArray allowedPaymentMethods =
+                paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
         JSONObject card = allowedPaymentMethods.getJSONObject(0);
         JSONObject tokenizationSpecification = card.getJSONObject("tokenizationSpecification");
-        JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
-        assertEquals(Fixtures.TOKENIZATION_KEY, cardTokenizationSpecificationParams.get("braintree:clientKey"));
+        JSONObject cardTokenizationSpecificationParams =
+                tokenizationSpecification.getJSONObject("parameters");
+        assertEquals(Fixtures.TOKENIZATION_KEY,
+                cardTokenizationSpecificationParams.get("braintree:clientKey"));
     }
 
     @Test
@@ -591,24 +389,26 @@ public class GooglePayClientUnitTest {
                 .setCurrencyCode("USD")
                 .build());
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
         JSONObject paymentDataRequestJson = new JSONObject(paymentDataRequest.toJson());
 
-        JSONArray allowedPaymentMethods = paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
+        JSONArray allowedPaymentMethods =
+                paymentDataRequestJson.getJSONArray("allowedPaymentMethods");
         JSONObject card = allowedPaymentMethods.getJSONObject(0);
         JSONObject tokenizationSpecification = card.getJSONObject("tokenizationSpecification");
-        JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
+        JSONObject cardTokenizationSpecificationParams =
+                tokenizationSpecification.getJSONObject("parameters");
         assertFalse(cardTokenizationSpecificationParams.has("braintree:clientKey"));
     }
 
@@ -637,12 +437,11 @@ public class GooglePayClientUnitTest {
                 .setCurrencyCode("USD")
                 .build());
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.setListener(listener);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(googlePayRequest, intentDataCallback);
 
         InOrder order = inOrder(braintreeClient);
         order.verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.selected"));
@@ -667,13 +466,12 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
         GooglePayRequest googlePayRequest = new GooglePayRequest();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.setListener(listener);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(googlePayRequest, intentDataCallback);
 
         InOrder order = inOrder(braintreeClient);
         order.verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.selected"));
@@ -690,16 +488,19 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.setListener(listener);
-        sut.requestPayment(activity, baseRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onGooglePayFailure(captor.capture());
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
+                Exception.class);
+        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
+
         assertTrue(captor.getValue() instanceof BraintreeException);
-        assertEquals("Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
+        assertEquals(
+                "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
                 captor.getValue().getMessage());
     }
 
@@ -721,15 +522,15 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, baseRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -757,15 +558,15 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, baseRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -793,18 +594,17 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest;
         baseRequest.setGoogleMerchantId("google-merchant-id-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -816,7 +616,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_withGoogleMerchantName_sendGoogleMerchantName() throws JSONException {
+    public void requestPayment_withGoogleMerchantName_sendGoogleMerchantName()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -833,18 +634,17 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = baseRequest;
         baseRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -856,7 +656,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() throws JSONException {
+    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -876,15 +677,15 @@ public class GooglePayClientUnitTest {
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -900,7 +701,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() throws JSONException {
+    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -921,15 +723,15 @@ public class GooglePayClientUnitTest {
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
         googlePayRequest.setPayPalEnabled(false);
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -944,7 +746,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal() throws JSONException {
+    public void requestPayment_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -966,15 +769,15 @@ public class GooglePayClientUnitTest {
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -1013,15 +816,15 @@ public class GooglePayClientUnitTest {
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -1047,7 +850,8 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() throws JSONException {
+    public void requestPayment_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1066,15 +870,15 @@ public class GooglePayClientUnitTest {
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -1087,11 +891,13 @@ public class GooglePayClientUnitTest {
         assertEquals("CARD", allowedPaymentMethods.getJSONObject(0)
                 .getString("type"));
 
-        assertFalse(allowedPaymentMethods.toString().contains("paypal-client-id-for-google-payment"));
+        assertFalse(
+                allowedPaymentMethods.toString().contains("paypal-client-id-for-google-payment"));
     }
 
     @Test
-    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() throws JSONException {
+    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods()
+            throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1110,15 +916,15 @@ public class GooglePayClientUnitTest {
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.requestPayment(activity, googlePayRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayIntentData> captor = ArgumentCaptor.forClass(
                 GooglePayIntentData.class);
-        verify(sut.observer).launch(captor.capture());
+        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
         GooglePayIntentData intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -1153,16 +959,15 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.observer = mock(GooglePayLifecycleObserver.class);
-        sut.setListener(listener);
-        sut.requestPayment(activity, null);
+        sut.requestPayment(null, intentDataCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onGooglePayFailure(captor.capture());
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
+                Exception.class);
+        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -1187,25 +992,26 @@ public class GooglePayClientUnitTest {
                 .activityInfo(null)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.setListener(listener);
-        sut.requestPayment(activity, baseRequest);
+        sut.requestPayment(baseRequest, intentDataCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(listener).onGooglePayFailure(captor.capture());
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
+                Exception.class);
+        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("GooglePayActivity was not found in the Android " +
-                "manifest, or did not have a theme of R.style.bt_transparent_activity", exception.getMessage());
+                        "manifest, or did not have a theme of R.style.bt_transparent_activity",
+                exception.getMessage());
     }
 
     // endregion
 
-    // region tokenize
+    // region internal tokenize
 
     @Test
     public void tokenize_withCardToken_returnsGooglePayNonce() {
@@ -1229,12 +1035,14 @@ public class GooglePayClientUnitTest {
 
         PaymentData pd = PaymentData.fromJson(paymentDataJson);
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        ArgumentCaptor<PaymentMethodNonce> captor =
+                ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), isNull());
 
         assertTrue(captor.getValue() instanceof GooglePayCardNonce);
@@ -1262,12 +1070,14 @@ public class GooglePayClientUnitTest {
 
         PaymentData pd = PaymentData.fromJson(paymentDataJson);
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        ArgumentCaptor<PaymentMethodNonce> captor =
+                ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
 
         assertTrue(captor.getValue() instanceof PayPalAccountNonce);
@@ -1275,25 +1085,27 @@ public class GooglePayClientUnitTest {
 
     // endregion
 
-    // region onGooglePayResult
+    // region public tokenize
 
     @Test
-    public void onGooglePayResult_whenPaymentDataExists_returnsResultToListener_andSendsAnalytics() throws JSONException {
+    public void tokenize_whenPaymentDataExists_returnsResultToListener_andSendsAnalytics()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.setListener(listener);
 
         String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD;
         PaymentData paymentData = PaymentData.fromJson(paymentDataJson);
         GooglePayResult
                 googlePayResult = new GooglePayResult(paymentData, null);
-        sut.onGooglePayResult(googlePayResult);
+        sut.tokenize(googlePayResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(listener).onGooglePaySuccess(captor.capture());
+        ArgumentCaptor<PaymentMethodNonce> captor =
+                ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(activityResultCallback).onResult(captor.capture(), isNull());
 
         PaymentMethodNonce nonce = captor.getValue();
         JSONObject result = new JSONObject(paymentData.toJson());
@@ -1302,134 +1114,38 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void onGooglePayResult_whenErrorExists_returnsErrorToListener_andSendsAnalytics() {
+    public void tokenize_whenErrorExists_returnsErrorToListener_andSendsAnalytics() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.setListener(listener);
 
         Exception error = new Exception("Error");
         GooglePayResult
                 googlePayResult = new GooglePayResult(null, error);
-        sut.onGooglePayResult(googlePayResult);
+        sut.tokenize(googlePayResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-        verify(listener).onGooglePayFailure(error);
+        verify(activityResultCallback).onResult(null, error);
     }
 
     @Test
-    public void onGooglePayResult_whenUserCanceledErrorExists_returnsErrorToListener_andSendsAnalytics() {
+    public void tokenize_whenUserCanceledErrorExists_returnsErrorToListener_andSendsAnalytics() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.setListener(listener);
 
-        UserCanceledException userCanceledError = new UserCanceledException("User canceled Google Pay.");
+        UserCanceledException userCanceledError =
+                new UserCanceledException("User canceled Google Pay.");
         GooglePayResult
                 googlePayResult = new GooglePayResult(null, userCanceledError);
-        sut.onGooglePayResult(googlePayResult);
+        sut.tokenize(googlePayResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
-        verify(listener).onGooglePayFailure(userCanceledError);
-    }
-
-    // endregion
-
-    // region onActivityResult
-
-    @Test
-    public void onActivityResult_OnCancel_sendsAnalyticsAndReturnsErrorToCallback() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(RESULT_CANCELED, new Intent(), activityResultCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
-
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(activityResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
-
-        Exception exception = captor.getValue();
-        assertEquals("User canceled Google Pay.", exception.getMessage());
-        assertTrue(exception instanceof UserCanceledException);
-        assertTrue(((UserCanceledException) exception).isExplicitCancelation());
-    }
-
-    @Test
-    public void onActivityResult_OnNonOkOrCanceledResult_sendsAnalyticsAndReturnsErrorToCallback() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(RESULT_FIRST_USER, new Intent(), activityResultCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-
-        ArgumentCaptor<GooglePayException> captor = ArgumentCaptor.forClass(GooglePayException.class);
-        verify(activityResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
-
-        Exception exception = captor.getValue();
-        assertEquals("An error was encountered during the Google Pay flow. See the status object in this exception for more details.", exception.getMessage());
-        assertTrue(exception instanceof BraintreeException);
-    }
-
-    @Test
-    public void onActivityResult_OnOkResponse_sendsAnalytics() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.onActivityResult(RESULT_OK, new Intent(), activityResultCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
+        verify(activityResultCallback).onResult(null, userCanceledError);
     }
 
     // endregion
@@ -1449,7 +1165,8 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
 
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
@@ -1482,17 +1199,21 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
+        Bundle tokenizationParameters =
+                sut.getTokenizationParameters(configuration, authorization).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
-        assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
+        assertEquals(configuration.getMerchantId(),
+                tokenizationParameters.getString("braintree:merchantId"));
         assertEquals(configuration.getGooglePayAuthorizationFingerprint(),
                 tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
-        assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
+        assertEquals(BuildConfig.VERSION_NAME,
+                tokenizationParameters.getString("braintree:sdkVersion"));
     }
 
     @Test
@@ -1511,10 +1232,12 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
+        Bundle tokenizationParameters =
+                sut.getTokenizationParameters(configuration, authorization).getParameters();
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
     }
 
@@ -1534,11 +1257,14 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        Bundle tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).getParameters();
-        assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"));
+        Bundle tokenizationParameters =
+                sut.getTokenizationParameters(configuration, authorization).getParameters();
+        assertEquals(Fixtures.TOKENIZATION_KEY,
+                tokenizationParameters.getString("braintree:clientKey"));
     }
 
     @Test
@@ -1556,13 +1282,17 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayInternalClient internalGooglePayClient =
+                new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback = mock(GooglePayGetTokenizationParametersCallback.class);
+        GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback =
+                mock(GooglePayGetTokenizationParametersCallback.class);
         sut.getTokenizationParameters(getTokenizationParametersCallback);
 
-        verify(getTokenizationParametersCallback).onResult(any(PaymentMethodTokenizationParameters.class), eq(sut.getAllowedCardNetworks(configuration)));
+        verify(getTokenizationParametersCallback).onResult(
+                any(PaymentMethodTokenizationParameters.class),
+                eq(sut.getAllowedCardNetworks(configuration)));
     }
 
     // endregion
