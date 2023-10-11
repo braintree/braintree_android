@@ -28,31 +28,25 @@ public class BraintreeClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getConfiguration_succeedsWithATokenizationKey() throws InvalidArgumentException, InterruptedException {
+    public void getConfiguration_succeedsWithATokenizationKey() throws InterruptedException {
         BraintreeClient sut = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
-        sut.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                assertNotNull(configuration);
-                countDownLatch.countDown();
-            }
+        sut.getConfiguration((configuration, error) -> {
+            assertNotNull(configuration);
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
     }
 
     @Test(timeout = 10000)
-    public void getConfiguration_succeedsWithAClientToken() throws InterruptedException, InvalidArgumentException {
+    public void getConfiguration_succeedsWithAClientToken() throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().build();
         BraintreeClient sut = new BraintreeClient(context, clientToken);
 
-        sut.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                assertNotNull(configuration);
-                countDownLatch.countDown();
-            }
+        sut.getConfiguration((configuration, error) -> {
+            assertNotNull(configuration);
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();

@@ -26,15 +26,12 @@ public class BraintreeHttpClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, authorization, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                // Make sure exception is due to authorization not SSL handshake
-                assertTrue(httpError instanceof AuthorizationException);
-                countDownLatch.countDown();
-            }
-        });
+        braintreeHttpClient.get("https://api.sandbox.braintreegateway.com/", null, authorization,
+                (responseBody, httpError) -> {
+                    // Make sure exception is due to authorization not SSL handshake
+                    assertTrue(httpError instanceof AuthorizationException);
+                    countDownLatch.countDown();
+                });
 
         countDownLatch.await();
     }
@@ -44,15 +41,12 @@ public class BraintreeHttpClientTest {
         Authorization authorization = Authorization.fromString("development_testing_integration_merchant_id");
         BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://gateway.qa.braintreepayments.com/", null, authorization, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                // Make sure http request to qa works to verify certificate pinning strategy
-                assertNull(httpError);
-                countDownLatch.countDown();
-            }
-        });
+        braintreeHttpClient.get("https://gateway.qa.braintreepayments.com/", null, authorization,
+                (responseBody, httpError) -> {
+                    // Make sure http request to qa works to verify certificate pinning strategy
+                    assertNull(httpError);
+                    countDownLatch.countDown();
+                });
 
         countDownLatch.await();
     }
@@ -62,15 +56,12 @@ public class BraintreeHttpClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         BraintreeHttpClient braintreeHttpClient = new BraintreeHttpClient();
 
-        braintreeHttpClient.get("https://api.braintreegateway.com/",null, authorization, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                // Make sure exception is due to authorization not SSL handshake
-                assertTrue(httpError instanceof AuthorizationException);
-                countDownLatch.countDown();
-            }
-        });
+        braintreeHttpClient.get("https://api.braintreegateway.com/",null, authorization,
+                (responseBody, httpError) -> {
+                    // Make sure exception is due to authorization not SSL handshake
+                    assertTrue(httpError instanceof AuthorizationException);
+                    countDownLatch.countDown();
+                });
 
         countDownLatch.await();
     }

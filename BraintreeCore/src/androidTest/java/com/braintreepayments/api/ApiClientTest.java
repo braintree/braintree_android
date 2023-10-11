@@ -40,20 +40,17 @@ public class ApiClientTest {
         PayPalAccount paypalAccount = new PayPalAccount();
         paypalAccount.setUrlResponseData(urlResponseData);
 
-        apiClient.tokenizeREST(paypalAccount, new TokenizeCallback() {
-            @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (exception != null) {
-                    fail(exception.getMessage());
-                }
+        apiClient.tokenizeREST(paypalAccount, (tokenizationResponse, exception) -> {
+            if (exception != null) {
+                fail(exception.getMessage());
+            }
 
-                try {
-                    PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
-                    assertIsANonce(payPalAccountNonce.getString());
-                    latch.countDown();
-                } catch (JSONException e) {
-                    fail("This should not fail");
-                }
+            try {
+                PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(tokenizationResponse);
+                assertIsANonce(payPalAccountNonce.getString());
+                latch.countDown();
+            } catch (JSONException e) {
+                fail("This should not fail");
             }
         });
 

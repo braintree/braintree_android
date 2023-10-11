@@ -35,23 +35,19 @@ public class AmericanExpressClient {
                 .toString();
 
         braintreeClient.sendAnalyticsEvent("amex.rewards-balance.start");
-        braintreeClient.sendGET(getRewardsBalanceUrl, new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    braintreeClient.sendAnalyticsEvent("amex.rewards-balance.success");
-                    try {
-                        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.fromJson(responseBody);
-                        callback.onResult(rewardsBalance, null);
-                    } catch (JSONException e) {
-                        braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    callback.onResult(null, httpError);
-                    braintreeClient.sendAnalyticsEvent("amex.rewards-balance.error");
+        braintreeClient.sendGET(getRewardsBalanceUrl, (responseBody, httpError) -> {
+            if (responseBody != null) {
+                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.success");
+                try {
+                    AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.fromJson(responseBody);
+                    callback.onResult(rewardsBalance, null);
+                } catch (JSONException e) {
+                    braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
+                    callback.onResult(null, e);
                 }
+            } else {
+                callback.onResult(null, httpError);
+                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.error");
             }
         });
     }
