@@ -25,7 +25,8 @@ public class MockLocalPaymentApiBuilder {
         return this;
     }
 
-    public MockLocalPaymentApiBuilder createPaymentMethodSuccess(LocalPaymentResult createPaymentMethodSuccess) {
+    public MockLocalPaymentApiBuilder createPaymentMethodSuccess(
+            LocalPaymentResult createPaymentMethodSuccess) {
         this.createPaymentMethodSuccess = createPaymentMethodSuccess;
         return this;
     }
@@ -41,7 +42,8 @@ public class MockLocalPaymentApiBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                LocalPaymentBrowserSwitchResultCallback callback = (LocalPaymentBrowserSwitchResultCallback) invocation.getArguments()[3];
+                LocalPaymentBrowserSwitchResultCallback callback =
+                        (LocalPaymentBrowserSwitchResultCallback) invocation.getArguments()[3];
                 if (tokenizeSuccess != null) {
                     callback.onResult(tokenizeSuccess, null);
                 } else if (tokenizeError != null) {
@@ -49,20 +51,20 @@ public class MockLocalPaymentApiBuilder {
                 }
                 return null;
             }
-        }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(), any(LocalPaymentBrowserSwitchResultCallback.class));
+        }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(),
+                any(LocalPaymentBrowserSwitchResultCallback.class));
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                LocalPaymentStartCallback callback = (LocalPaymentStartCallback) invocation.getArguments()[1];
-                if (createPaymentMethodSuccess != null) {
-                    callback.onResult(createPaymentMethodSuccess, null);
-                } else if (createPaymentMethodError != null) {
-                    callback.onResult(null, createPaymentMethodError);
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            LocalPaymentStartCallback callback =
+                    (LocalPaymentStartCallback) invocation.getArguments()[1];
+            if (createPaymentMethodSuccess != null) {
+                callback.onResult(createPaymentMethodSuccess, null);
+            } else if (createPaymentMethodError != null) {
+                callback.onResult(null, createPaymentMethodError);
             }
-        }).when(localPaymentAPI).createPaymentMethod(any(LocalPaymentRequest.class), any(LocalPaymentStartCallback.class));
+            return null;
+        }).when(localPaymentAPI).createPaymentMethod(any(LocalPaymentRequest.class),
+                any(LocalPaymentStartCallback.class));
 
         return localPaymentAPI;
     }
