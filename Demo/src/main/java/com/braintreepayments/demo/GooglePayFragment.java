@@ -14,7 +14,6 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;

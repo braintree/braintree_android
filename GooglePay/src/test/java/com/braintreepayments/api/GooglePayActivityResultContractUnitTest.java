@@ -39,7 +39,7 @@ public class GooglePayActivityResultContractUnitTest {
 
         PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(googlePayRequest.toJson());
 
-        GooglePayAuthChallenge intentData = new GooglePayAuthChallenge(1, paymentDataRequest);
+        GooglePayIntentData intentData = new GooglePayIntentData(1, paymentDataRequest);
 
         Context context = ApplicationProvider.getApplicationContext();
 
@@ -58,7 +58,7 @@ public class GooglePayActivityResultContractUnitTest {
 
         GooglePayActivityResultContract sut = new GooglePayActivityResultContract();
 
-        GooglePayAuthChallengeResult result = sut.parseResult(RESULT_OK, data);
+        GooglePayResult result = sut.parseResult(RESULT_OK, data);
         assertNotNull(result.getPaymentData());
         assertNull(result.getError());
     }
@@ -69,7 +69,7 @@ public class GooglePayActivityResultContractUnitTest {
 
         GooglePayActivityResultContract sut = new GooglePayActivityResultContract();
 
-        GooglePayAuthChallengeResult result = sut.parseResult(RESULT_CANCELED, data);
+        GooglePayResult result = sut.parseResult(RESULT_CANCELED, data);
 
         Exception error = result.getError();
         assertTrue(error instanceof UserCanceledException);
@@ -84,7 +84,7 @@ public class GooglePayActivityResultContractUnitTest {
 
         GooglePayActivityResultContract sut = new GooglePayActivityResultContract();
 
-        GooglePayAuthChallengeResult result = sut.parseResult(RESULT_ERROR, data);
+        GooglePayResult result = sut.parseResult(RESULT_ERROR, data);
 
         Exception error = result.getError();
         assertTrue(error instanceof GooglePayException);
@@ -99,7 +99,7 @@ public class GooglePayActivityResultContractUnitTest {
 
         GooglePayActivityResultContract sut = new GooglePayActivityResultContract();
 
-        GooglePayAuthChallengeResult result = sut.parseResult(2, data);
+        GooglePayResult result = sut.parseResult(2, data);
 
         Exception error = result.getError();
         assertTrue(error instanceof BraintreeException);
