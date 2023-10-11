@@ -17,6 +17,12 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters
     * Add `VenmoClient#requestAuthChallenge`
+  * GooglePay
+    * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
+    * Add `GooglePayLauncher`, `GooglePayIntentData`, `GooglePayIntentDataCallback`, `GooglePayResult`, and `GooglePayResultCallback`
+    * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
+    * Change `GooglePayClient#requestPayment` parameters
+    * Add `GooglePayClient#tokenize` 
 
 ## unreleased
 
