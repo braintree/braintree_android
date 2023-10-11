@@ -272,16 +272,17 @@ public class GooglePayRequest implements Parcelable {
                         .put("tokenizationSpecification", tokenizationSpecifications.get(pm.getKey()));
 
                 if ("CARD".equals(pm.getKey())) {
+                    JSONObject paymentMethodParams = paymentMethod.getJSONObject("parameters");
+                    paymentMethodParams
+                            .put("billingAddressRequired", isBillingAddressRequired())
+                            .put("allowPrepaidCards", getAllowPrepaidCards())
+                            .put("allowCreditCards", isCreditCardsAllowed());
                     try {
-                        pm.getValue().get("billingAddressParameters");
-                    } catch (JSONException ignored) {
-                        JSONObject paymentMethodParams = paymentMethod.getJSONObject("parameters");
+                        JSONObject billingAddressParameters = (JSONObject) pm.getValue().get(
+                                "billingAddressParameters");
                         paymentMethodParams
-                                .put("billingAddressRequired", isBillingAddressRequired())
-                                .put("allowPrepaidCards", getAllowPrepaidCards())
-                                .put("allowCreditCards", isCreditCardsAllowed());
-
-
+                                .put("billingAddressParameters", billingAddressParameters);
+                    } catch (JSONException ignored) {
                         if (isBillingAddressRequired()) {
                             paymentMethodParams
                                     .put("billingAddressParameters", new JSONObject()

@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * Breaking Changes
   * All Modules
     * Bump `minSdkVersion` to API 23
@@ -16,6 +17,13 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters
     * Add `VenmoClient#requestAuthChallenge`
+
+## unreleased
+
+* BraintreeCore
+  * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
+* GooglePay
+  * Fix bug where credit cards were allowed when `GooglePayRequest#setAllowedCreditCards(false)`
 
 ## 4.38.2 (2023-09-18)
 
