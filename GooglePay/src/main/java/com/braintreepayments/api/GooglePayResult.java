@@ -4,6 +4,10 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.wallet.PaymentData;
 
+/**
+ * Result returned from the callback used to instantiate {@link GooglePayLauncher} that should be
+ * passed to {@link GooglePayClient#tokenize(GooglePayResult, GooglePayOnActivityResultCallback)}
+ */
 public class GooglePayResult {
 
     private final PaymentData paymentData;
