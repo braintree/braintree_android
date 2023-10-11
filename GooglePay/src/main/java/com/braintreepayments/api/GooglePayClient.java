@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.AutoResolveHelper;
@@ -49,62 +48,19 @@ public class GooglePayClient {
 
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
-    private GooglePayListener listener;
-    @VisibleForTesting
-    GooglePayLifecycleObserver observer;
-
-    /**
-     * Create a new instance of {@link GooglePayClient} from within an Activity using a {@link BraintreeClient}.
-     *
-     * @param activity a {@link FragmentActivity}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public GooglePayClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new GooglePayInternalClient());
-    }
-
-    /**
-     * Create a new instance of {@link GooglePayClient} from within a Fragment using a {@link BraintreeClient}.
-     *
-     * @param fragment a {@link Fragment}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public GooglePayClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient, new GooglePayInternalClient());
-    }
 
     /**
      * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
-     *
-     * Deprecated. Use {@link GooglePayClient(Fragment, BraintreeClient)} or
-     * {@link GooglePayClient(FragmentActivity, BraintreeClient)} instead.
-     *
      * @param braintreeClient a {@link BraintreeClient}
      */
-    @Deprecated
     public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new GooglePayInternalClient());
+        this(braintreeClient, new GooglePayInternalClient());
     }
 
     @VisibleForTesting
-    GooglePayClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
+    GooglePayClient(BraintreeClient braintreeClient, GooglePayInternalClient internalGooglePayClient) {
         this.braintreeClient = braintreeClient;
         this.internalGooglePayClient = internalGooglePayClient;
-        if (activity != null && lifecycle != null) {
-            this.observer = new GooglePayLifecycleObserver(activity.getActivityResultRegistry(), this);
-            lifecycle.addObserver(this.observer);
-        }
-    }
-
-    /**
-     * Add a {@link GooglePayListener} to your client to receive results or errors from the Google Pay flow.
-     * This method must be invoked on a {@link GooglePayClient(Fragment, BraintreeClient)} or
-     * {@link GooglePayClient(FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param listener a {@link GooglePayListener}
-     */
-    public void setListener(GooglePayListener listener) {
-        this.listener = listener;
     }
 
     /**
@@ -221,35 +177,17 @@ public class GooglePayClient {
     /**
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
      *
-     * @param activity Android FragmentActivity
-     * @param request The {@link GooglePayRequest} containing options for the transaction.
-     */
-    public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request) {
-        requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
-            @Override
-            public void onResult(@Nullable Exception error) {
-                if (error != null) {
-                    listener.onGooglePayFailure(error);
-                }
-            }
-        });
-    }
-
-    /**
-     * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
-     *
-     * Deprecated. Use {@link GooglePayClient#requestPayment(FragmentActivity, GooglePayRequest)}.
-     *
-     * @param activity Android FragmentActivity
      * @param request The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayRequestPaymentCallback}
      */
-    @Deprecated
-    public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request, @NonNull final GooglePayRequestPaymentCallback callback) {
+    public void requestPayment(@NonNull final GooglePayRequest request,
+                               @NonNull final GooglePayIntentDataCallback callback) {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
-            callback.onResult(new BraintreeException("GooglePayActivity was not found in the Android " +
+            callback.onGooglePayIntentData(null, new BraintreeException("GooglePayActivity was " +
+                    "not found in the " +
+                    "Android " +
                     "manifest, or did not have a theme of R.style.bt_transparent_activity"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
@@ -257,13 +195,17 @@ public class GooglePayClient {
 
         //noinspection ConstantConditions
         if (request == null) {
-            callback.onResult(new BraintreeException("Cannot pass null GooglePayRequest to requestPayment"));
+            callback.onGooglePayIntentData(null, new BraintreeException("Cannot pass null " +
+                    "GooglePayRequest to " +
+                    "requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         if (request.getTransactionInfo() == null) {
-            callback.onResult(new BraintreeException("Cannot pass null TransactionInfo to requestPayment"));
+            callback.onGooglePayIntentData(null, new BraintreeException("Cannot pass null " +
+                    "TransactionInfo to" +
+                    " requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
@@ -276,12 +218,14 @@ public class GooglePayClient {
                         @Override
                         public void onResult(@Nullable Configuration configuration, @Nullable Exception configError) {
                             if (configuration == null) {
-                                callback.onResult(configError);
+                                callback.onGooglePayIntentData(null, configError);
                                 return;
                             }
 
                             if (!configuration.isGooglePayEnabled()) {
-                                callback.onResult(new BraintreeException("Google Pay is not enabled for your Braintree account," +
+                                callback.onGooglePayIntentData(null, new BraintreeException(
+                                        "Google Pay " +
+                                        "is not enabled for your Braintree account," +
                                         " or Google Play Services are not configured correctly."));
                                 return;
                             }
@@ -291,21 +235,14 @@ public class GooglePayClient {
 
                             PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
 
-                            if (observer != null) {
-                                GooglePayIntentData intent = new GooglePayIntentData(getGooglePayEnvironment(configuration), paymentDataRequest);
-                                observer.launch(intent);
-                            } else {
-                                Intent intent = new Intent(activity, GooglePayActivity.class)
-                                        .putExtra(EXTRA_ENVIRONMENT, getGooglePayEnvironment(configuration))
-                                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
+                            GooglePayIntentData intent = new GooglePayIntentData(getGooglePayEnvironment(configuration), paymentDataRequest);
+                            callback.onGooglePayIntentData(intent, null);
 
-                                activity.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAY);
-                            }
                         }
                     });
 
                 } else {
-                    callback.onResult(authError);
+                    callback.onGooglePayIntentData(null, authError);
                 }
             }
         });
@@ -340,50 +277,18 @@ public class GooglePayClient {
         }
     }
 
-    void onGooglePayResult(GooglePayResult googlePayResult) {
+    public void tokenize(GooglePayResult googlePayResult,
+                                  GooglePayOnActivityResultCallback callback) {
         if (googlePayResult.getPaymentData() != null) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
-            tokenize(googlePayResult.getPaymentData(), new GooglePayOnActivityResultCallback() {
-                @Override
-                public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
-                    if (paymentMethodNonce != null) {
-                        listener.onGooglePaySuccess(paymentMethodNonce);
-                    } else if (error != null) {
-                        listener.onGooglePayFailure(error);
-                    }
-                }
-            });
+            tokenize(googlePayResult.getPaymentData(), callback);
         } else if (googlePayResult.getError() != null) {
            if (googlePayResult.getError() instanceof UserCanceledException) {
                braintreeClient.sendAnalyticsEvent("google-payment.canceled");
            } else {
                braintreeClient.sendAnalyticsEvent("google-payment.failed");
            }
-            listener.onGooglePayFailure(googlePayResult.getError());
-        }
-    }
-
-    /**
-     * Deprecated. Use {@link GooglePayListener} to receive results.
-     *
-     * @param resultCode a code associated with the Activity result
-     * @param data Android Intent
-     * @param callback {@link GooglePayOnActivityResultCallback}
-     */
-    @Deprecated
-    public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final GooglePayOnActivityResultCallback callback) {
-        if (resultCode == AppCompatActivity.RESULT_OK) {
-            braintreeClient.sendAnalyticsEvent("google-payment.authorized");
-            tokenize(PaymentData.getFromIntent(data), callback);
-        } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
-            braintreeClient.sendAnalyticsEvent("google-payment.failed");
-
-            callback.onResult(null, new GooglePayException("An error was encountered during the Google Pay " +
-                    "flow. See the status object in this exception for more details.",
-                    AutoResolveHelper.getStatusFromIntent(data)));
-        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            braintreeClient.sendAnalyticsEvent("google-payment.canceled");
-            callback.onResult(null, new UserCanceledException("User canceled Google Pay.", true));
+            callback.onResult(null, googlePayResult.getError());
         }
     }
 

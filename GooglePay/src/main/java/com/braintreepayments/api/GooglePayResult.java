@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.wallet.PaymentData;
 
-class GooglePayResult {
+public class GooglePayResult {
 
     private final PaymentData paymentData;
     private final Exception error;
@@ -14,11 +14,11 @@ class GooglePayResult {
         this.error = error;
     }
 
-    public PaymentData getPaymentData() {
+    PaymentData getPaymentData() {
         return paymentData;
     }
 
-    public Exception getError() {
+    Exception getError() {
         return error;
     }
 }

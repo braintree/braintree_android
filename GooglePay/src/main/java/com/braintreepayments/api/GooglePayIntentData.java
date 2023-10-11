@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.wallet.PaymentDataRequest;
 
-class GooglePayIntentData {
+public class GooglePayIntentData {
 
     private final int googlePayEnvironment;
     private final PaymentDataRequest paymentDataRequest;
@@ -14,11 +14,11 @@ class GooglePayIntentData {
         this.paymentDataRequest = paymentDataRequest;
     }
 
-    public int getGooglePayEnvironment() {
+    int getGooglePayEnvironment() {
         return googlePayEnvironment;
     }
 
-    public PaymentDataRequest getPaymentDataRequest() {
+    PaymentDataRequest getPaymentDataRequest() {
         return paymentDataRequest;
     }
 }

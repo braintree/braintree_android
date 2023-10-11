@@ -34,4 +34,8 @@ public class GooglePayLauncher {
         activityLauncher = registry.register(GOOGLE_PAY_RESULT, lifecycleOwner,
                 new GooglePayActivityResultContract(), callback::onGooglePayResult);
     }
+
+    public void launch(GooglePayIntentData googlePayIntentData) {
+        activityLauncher.launch(googlePayIntentData);
+    }
 }
