@@ -292,7 +292,7 @@ public class GooglePayClient {
                             PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
 
                             if (observer != null) {
-                                GooglePayIntentData intent = new GooglePayIntentData(getGooglePayEnvironment(configuration), paymentDataRequest);
+                                GooglePayAuthChallenge intent = new GooglePayAuthChallenge(getGooglePayEnvironment(configuration), paymentDataRequest);
                                 observer.launch(intent);
                             } else {
                                 Intent intent = new Intent(activity, GooglePayActivity.class)
@@ -340,10 +340,10 @@ public class GooglePayClient {
         }
     }
 
-    void onGooglePayResult(GooglePayResult googlePayResult) {
-        if (googlePayResult.getPaymentData() != null) {
+    void onGooglePayResult(GooglePayAuthChallengeResult googlePayAuthChallengeResult) {
+        if (googlePayAuthChallengeResult.getPaymentData() != null) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
-            tokenize(googlePayResult.getPaymentData(), new GooglePayOnActivityResultCallback() {
+            tokenize(googlePayAuthChallengeResult.getPaymentData(), new GooglePayOnActivityResultCallback() {
                 @Override
                 public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
                     if (paymentMethodNonce != null) {
@@ -353,13 +353,13 @@ public class GooglePayClient {
                     }
                 }
             });
-        } else if (googlePayResult.getError() != null) {
-           if (googlePayResult.getError() instanceof UserCanceledException) {
+        } else if (googlePayAuthChallengeResult.getError() != null) {
+           if (googlePayAuthChallengeResult.getError() instanceof UserCanceledException) {
                braintreeClient.sendAnalyticsEvent("google-payment.canceled");
            } else {
                braintreeClient.sendAnalyticsEvent("google-payment.failed");
            }
-            listener.onGooglePayFailure(googlePayResult.getError());
+            listener.onGooglePayFailure(googlePayAuthChallengeResult.getError());
         }
     }
 

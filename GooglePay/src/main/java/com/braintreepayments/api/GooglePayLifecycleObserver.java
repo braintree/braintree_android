@@ -21,7 +21,7 @@ class GooglePayLifecycleObserver implements LifecycleEventObserver {
     ActivityResultRegistry activityResultRegistry;
 
     @VisibleForTesting
-    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
+    ActivityResultLauncher<GooglePayAuthChallenge> activityLauncher;
 
     GooglePayLifecycleObserver(ActivityResultRegistry activityResultRegistry, GooglePayClient googlePayClient) {
         this.activityResultRegistry = activityResultRegistry;
@@ -31,16 +31,17 @@ class GooglePayLifecycleObserver implements LifecycleEventObserver {
     @Override
     public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
         if (event == Lifecycle.Event.ON_CREATE) {
-            activityLauncher = activityResultRegistry.register(GOOGLE_PAY_RESULT, lifecycleOwner, new GooglePayActivityResultContract(), new ActivityResultCallback<GooglePayResult>() {
+            activityLauncher = activityResultRegistry.register(GOOGLE_PAY_RESULT, lifecycleOwner, new GooglePayActivityResultContract(), new ActivityResultCallback<GooglePayAuthChallengeResult>() {
                 @Override
-                public void onActivityResult(GooglePayResult googlePayResult) {
-                    googlePayClient.onGooglePayResult(googlePayResult);
+                public void onActivityResult(
+                        GooglePayAuthChallengeResult googlePayAuthChallengeResult) {
+                    googlePayClient.onGooglePayResult(googlePayAuthChallengeResult);
                 }
             });
         }
     }
 
-    void launch(GooglePayIntentData googlePayIntentData) {
-        activityLauncher.launch(googlePayIntentData);
+    void launch(GooglePayAuthChallenge googlePayAuthChallenge) {
+        activityLauncher.launch(googlePayAuthChallenge);
     }
 }

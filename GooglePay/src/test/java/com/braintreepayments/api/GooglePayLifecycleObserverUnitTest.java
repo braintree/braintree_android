@@ -30,10 +30,10 @@ import org.robolectric.RobolectricTestRunner;
 public class GooglePayLifecycleObserverUnitTest {
 
     @Mock
-    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
+    ActivityResultLauncher<GooglePayAuthChallenge> activityLauncher;
 
     @Captor
-    ArgumentCaptor<ActivityResultCallback<GooglePayResult>> googlePayResultCaptor;
+    ArgumentCaptor<ActivityResultCallback<GooglePayAuthChallengeResult>> googlePayResultCaptor;
 
     @Before
     public void beforeEach() {
@@ -50,7 +50,7 @@ public class GooglePayLifecycleObserverUnitTest {
         sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
 
         String expectedKey = "com.braintreepayments.api.GooglePay.RESULT";
-        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(GooglePayActivityResultContract.class), Mockito.<ActivityResultCallback<GooglePayResult>>any());
+        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(GooglePayActivityResultContract.class), Mockito.<ActivityResultCallback<GooglePayAuthChallengeResult>>any());
     }
 
     @Test
@@ -65,8 +65,8 @@ public class GooglePayLifecycleObserverUnitTest {
         String expectedKey = "com.braintreepayments.api.GooglePay.RESULT";
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(GooglePayActivityResultContract.class), googlePayResultCaptor.capture());
 
-        ActivityResultCallback<GooglePayResult> activityResultCallback = googlePayResultCaptor.getValue();
-        GooglePayResult result = new GooglePayResult(null, null);
+        ActivityResultCallback<GooglePayAuthChallengeResult> activityResultCallback = googlePayResultCaptor.getValue();
+        GooglePayAuthChallengeResult result = new GooglePayAuthChallengeResult(null, null);
         activityResultCallback.onActivityResult(result);
         verify(googlePayClient).onGooglePayResult(result);
     }
@@ -81,7 +81,7 @@ public class GooglePayLifecycleObserverUnitTest {
                 .build());
 
         PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(googlePayRequest.toJson());
-        GooglePayIntentData intentData = new GooglePayIntentData(1, paymentDataRequest);
+        GooglePayAuthChallenge intentData = new GooglePayAuthChallenge(1, paymentDataRequest);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         GooglePayClient googlePayClient = mock(GooglePayClient.class);

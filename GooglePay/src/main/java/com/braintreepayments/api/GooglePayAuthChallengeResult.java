@@ -4,12 +4,12 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.wallet.PaymentData;
 
-class GooglePayResult {
+class GooglePayAuthChallengeResult {
 
     private final PaymentData paymentData;
     private final Exception error;
 
-    GooglePayResult(@Nullable PaymentData paymentData, @Nullable Exception error) {
+    GooglePayAuthChallengeResult(@Nullable PaymentData paymentData, @Nullable Exception error) {
         this.paymentData = paymentData;
         this.error = error;
     }
