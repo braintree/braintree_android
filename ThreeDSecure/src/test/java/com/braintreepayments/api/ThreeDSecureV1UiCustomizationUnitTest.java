@@ -21,7 +21,8 @@ public class ThreeDSecureV1UiCustomizationUnitTest {
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV1UiCustomization actual = ThreeDSecureV1UiCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV1UiCustomization actual =
+                ThreeDSecureV1UiCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("some-button-text", actual.getRedirectButtonText());
         assertEquals("some-label-text", actual.getRedirectDescription());

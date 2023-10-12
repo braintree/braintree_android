@@ -20,9 +20,11 @@ class CardinalClient {
 
     private String consumerSessionId;
 
-    CardinalClient () {}
+    CardinalClient() {
+    }
 
-    void initialize(Context context, Configuration configuration, final ThreeDSecureRequest request, final CardinalInitializeCallback callback) throws BraintreeException {
+    void initialize(Context context, Configuration configuration, final ThreeDSecureRequest request,
+                    final CardinalInitializeCallback callback) throws BraintreeException {
         configureCardinal(context, configuration, request);
 
         CardinalInitService cardinalInitService = new CardinalInitService() {
@@ -35,7 +37,8 @@ class CardinalClient {
             @Override
             public void onValidated(ValidateResponse validateResponse, String serverJWT) {
                 if (consumerSessionId == null) {
-                    callback.onResult(null, new BraintreeException("consumer session id not available"));
+                    callback.onResult(null,
+                            new BraintreeException("consumer session id not available"));
                 } else {
                     callback.onResult(consumerSessionId, null);
                 }
@@ -43,13 +46,15 @@ class CardinalClient {
         };
 
         try {
-            Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), cardinalInitService);
+            Cardinal.getInstance()
+                    .init(configuration.getCardinalAuthenticationJwt(), cardinalInitService);
         } catch (RuntimeException e) {
             throw new BraintreeException("Cardinal SDK init Error.", e);
         }
     }
 
-    void continueLookup(ThreeDSecureResult threeDSecureResult, CardinalChallengeObserver challengeObserver) throws BraintreeException {
+    void continueLookup(ThreeDSecureResult threeDSecureResult,
+                        CardinalChallengeObserver challengeObserver) throws BraintreeException {
         ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
         String transactionId = lookup.getTransactionId();
         String paReq = lookup.getPareq();
@@ -60,13 +65,15 @@ class CardinalClient {
         }
     }
 
-    private void configureCardinal(Context context, Configuration configuration, ThreeDSecureRequest request) throws BraintreeException {
+    private void configureCardinal(Context context, Configuration configuration,
+                                   ThreeDSecureRequest request) throws BraintreeException {
         CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
         if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
             cardinalEnvironment = CardinalEnvironment.PRODUCTION;
         }
 
-        CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
+        CardinalConfigurationParameters cardinalConfigurationParameters =
+                new CardinalConfigurationParameters();
         cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
         cardinalConfigurationParameters.setRequestTimeout(8000);
         cardinalConfigurationParameters.setEnableDFSync(true);
@@ -101,7 +108,8 @@ class CardinalClient {
         }
 
         if (request.getV2UiCustomization() != null) {
-            cardinalConfigurationParameters.setUICustomization(request.getV2UiCustomization().getCardinalUiCustomization());
+            cardinalConfigurationParameters.setUICustomization(
+                    request.getV2UiCustomization().getCardinalUiCustomization());
         }
 
         try {

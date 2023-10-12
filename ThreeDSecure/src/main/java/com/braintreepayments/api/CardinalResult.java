@@ -10,7 +10,8 @@ class CardinalResult {
 
     private final Exception error;
 
-    CardinalResult(ThreeDSecureResult threeDSecureResult, String jwt, ValidateResponse validateResponse) {
+    CardinalResult(ThreeDSecureResult threeDSecureResult, String jwt,
+                   ValidateResponse validateResponse) {
         this.jwt = jwt;
         this.validateResponse = validateResponse;
         this.threeDSecureResult = threeDSecureResult;

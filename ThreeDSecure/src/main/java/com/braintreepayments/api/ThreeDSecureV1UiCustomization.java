@@ -13,10 +13,12 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
     private String redirectButtonText;
     private String redirectDescription;
 
-    public ThreeDSecureV1UiCustomization() {}
+    public ThreeDSecureV1UiCustomization() {
+    }
 
     /**
-     * Optional. Text displayed in the Redirect button after a 3DS1 challenge is completed in the browser.
+     * Optional. Text displayed in the Redirect button after a 3DS1 challenge is completed in the
+     * browser.
      *
      * @param text The text to display in the button.
      */
@@ -25,7 +27,8 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
     }
 
     /**
-     * Optional. Text displayed below the Redirect button after a 3DS1 challenge is completed in the browser.
+     * Optional. Text displayed below the Redirect button after a 3DS1 challenge is completed in the
+     * browser.
      *
      * @param text The text to display below the button.
      */
@@ -42,7 +45,8 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
     }
 
     /**
-     * @return Text displayed below the Redirect button after a 3DS1 challenge is completed in browser.
+     * @return Text displayed below the Redirect button after a 3DS1 challenge is completed in
+     * browser.
      */
     @Nullable
     public String getRedirectDescription() {
@@ -65,15 +69,16 @@ public class ThreeDSecureV1UiCustomization implements Parcelable {
         redirectDescription = in.readString();
     }
 
-    public static final Creator<ThreeDSecureV1UiCustomization> CREATOR = new Creator<ThreeDSecureV1UiCustomization>() {
-        @Override
-        public ThreeDSecureV1UiCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV1UiCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV1UiCustomization> CREATOR =
+            new Creator<ThreeDSecureV1UiCustomization>() {
+                @Override
+                public ThreeDSecureV1UiCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV1UiCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV1UiCustomization[] newArray(int size) {
-            return new ThreeDSecureV1UiCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV1UiCustomization[] newArray(int size) {
+                    return new ThreeDSecureV1UiCustomization[size];
+                }
+            };
 }

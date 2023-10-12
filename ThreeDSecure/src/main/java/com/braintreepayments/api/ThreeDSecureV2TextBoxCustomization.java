@@ -10,7 +10,8 @@ import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 /**
  * Text box customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
+public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization
+        implements Parcelable {
 
     private final TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
 
@@ -151,15 +152,16 @@ public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustom
         }
     }
 
-    public static final Creator<ThreeDSecureV2TextBoxCustomization> CREATOR = new Creator<ThreeDSecureV2TextBoxCustomization>() {
-        @Override
-        public ThreeDSecureV2TextBoxCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV2TextBoxCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV2TextBoxCustomization> CREATOR =
+            new Creator<ThreeDSecureV2TextBoxCustomization>() {
+                @Override
+                public ThreeDSecureV2TextBoxCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV2TextBoxCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV2TextBoxCustomization[] newArray(int size) {
-            return new ThreeDSecureV2TextBoxCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV2TextBoxCustomization[] newArray(int size) {
+                    return new ThreeDSecureV2TextBoxCustomization[size];
+                }
+            };
 }

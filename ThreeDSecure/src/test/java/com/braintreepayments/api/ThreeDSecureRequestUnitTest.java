@@ -27,7 +27,8 @@ public class ThreeDSecureRequestUnitTest {
 
     @Test
     public void writeToParcel() {
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        ThreeDSecureAdditionalInformation additionalInformation =
+                new ThreeDSecureAdditionalInformation();
         additionalInformation.setAccountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
@@ -42,23 +43,28 @@ public class ThreeDSecureRequestUnitTest {
         billingAddress.setCountryCodeAlpha2("US");
         billingAddress.setPostalCode("54321");
 
-        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        ThreeDSecureV2LabelCustomization labelCustomization =
+                new ThreeDSecureV2LabelCustomization();
         labelCustomization.setHeadingTextColor("#FFA5FF");
 
-        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization =
+                new ThreeDSecureV2TextBoxCustomization();
         textBoxCustomization.setBorderColor("#000000");
 
-        ThreeDSecureV2ButtonCustomization buttonCustomization = new ThreeDSecureV2ButtonCustomization();
+        ThreeDSecureV2ButtonCustomization buttonCustomization =
+                new ThreeDSecureV2ButtonCustomization();
         buttonCustomization.setBackgroundColor("#FFFFFF");
 
-        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization =
+                new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setTextColor("#F0F0F0");
         toolbarCustomization.setButtonText("TEST");
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
-        v2UiCustomization.setButtonCustomization(buttonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setButtonCustomization(buttonCustomization,
+                ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
@@ -96,17 +102,28 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
         assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
-        assertEquals(expected.getBillingAddress().getGivenName(), actual.getBillingAddress().getGivenName());
-        assertEquals(expected.getBillingAddress().getSurname(), actual.getBillingAddress().getSurname());
-        assertEquals(expected.getBillingAddress().getPhoneNumber(), actual.getBillingAddress().getPhoneNumber());
-        assertEquals(expected.getBillingAddress().getStreetAddress(), actual.getBillingAddress().getStreetAddress());
-        assertEquals(expected.getBillingAddress().getExtendedAddress(), actual.getBillingAddress().getExtendedAddress());
-        assertEquals(expected.getBillingAddress().getLine3(), actual.getBillingAddress().getLine3());
-        assertEquals(expected.getBillingAddress().getLocality(), actual.getBillingAddress().getLocality());
-        assertEquals(expected.getBillingAddress().getRegion(), actual.getBillingAddress().getRegion());
-        assertEquals(expected.getBillingAddress().getCountryCodeAlpha2(), actual.getBillingAddress().getCountryCodeAlpha2());
-        assertEquals(expected.getBillingAddress().getPostalCode(), actual.getBillingAddress().getPostalCode());
-        assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
+        assertEquals(expected.getBillingAddress().getGivenName(),
+                actual.getBillingAddress().getGivenName());
+        assertEquals(expected.getBillingAddress().getSurname(),
+                actual.getBillingAddress().getSurname());
+        assertEquals(expected.getBillingAddress().getPhoneNumber(),
+                actual.getBillingAddress().getPhoneNumber());
+        assertEquals(expected.getBillingAddress().getStreetAddress(),
+                actual.getBillingAddress().getStreetAddress());
+        assertEquals(expected.getBillingAddress().getExtendedAddress(),
+                actual.getBillingAddress().getExtendedAddress());
+        assertEquals(expected.getBillingAddress().getLine3(),
+                actual.getBillingAddress().getLine3());
+        assertEquals(expected.getBillingAddress().getLocality(),
+                actual.getBillingAddress().getLocality());
+        assertEquals(expected.getBillingAddress().getRegion(),
+                actual.getBillingAddress().getRegion());
+        assertEquals(expected.getBillingAddress().getCountryCodeAlpha2(),
+                actual.getBillingAddress().getCountryCodeAlpha2());
+        assertEquals(expected.getBillingAddress().getPostalCode(),
+                actual.getBillingAddress().getPostalCode());
+        assertEquals(expected.getAdditionalInformation().getAccountId(),
+                actual.getAdditionalInformation().getAccountId());
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
         assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
@@ -149,7 +166,8 @@ public class ThreeDSecureRequestUnitTest {
 
     @Test
     public void toJson() throws JSONException {
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        ThreeDSecureAdditionalInformation additionalInformation =
+                new ThreeDSecureAdditionalInformation();
         additionalInformation.setAccountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
@@ -304,7 +322,8 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void build_whenCardAddChallengeRequestedNotSet_doesNotSetCardAddChallengeRequested() throws JSONException {
+    public void build_whenCardAddChallengeRequestedNotSet_doesNotSetCardAddChallengeRequested()
+            throws JSONException {
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
 
         JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
@@ -312,7 +331,8 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void build_whenCardAddChallengeRequestedFalse_setsCardAddChallengeRequestedFalse() throws JSONException {
+    public void build_whenCardAddChallengeRequestedFalse_setsCardAddChallengeRequestedFalse()
+            throws JSONException {
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
         threeDSecureRequest.setCardAddChallengeRequested(false);
 

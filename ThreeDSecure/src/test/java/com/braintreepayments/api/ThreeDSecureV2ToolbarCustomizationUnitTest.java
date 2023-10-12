@@ -47,7 +47,8 @@ public class ThreeDSecureV2ToolbarCustomizationUnitTest {
         customization.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureV2ToolbarCustomization actual = (ThreeDSecureV2ToolbarCustomization) ThreeDSecureV2ToolbarCustomization.CREATOR.createFromParcel(parcel);
+        ThreeDSecureV2ToolbarCustomization actual =
+                ThreeDSecureV2ToolbarCustomization.CREATOR.createFromParcel(parcel);
 
         assertEquals("#FFFFFF", actual.getBackgroundColor());
         assertEquals("Button", actual.getButtonText());

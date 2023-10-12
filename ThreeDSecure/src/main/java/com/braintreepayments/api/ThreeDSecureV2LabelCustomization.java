@@ -10,7 +10,8 @@ import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 /**
  * Label customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
+public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization
+        implements Parcelable {
 
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
@@ -62,7 +63,8 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
     }
 
     /**
-     * @param headingTextColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @param headingTextColor Color code in Hex format. For example, the color code can be
+     *                         “#999999”.
      */
     public void setHeadingTextColor(@Nullable String headingTextColor) {
         cardinalLabelCustomization.setHeadingTextColor(headingTextColor);
@@ -152,15 +154,16 @@ public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomiz
         parcel.writeInt(cardinalLabelCustomization.getHeadingTextFontSize());
     }
 
-    public static final Creator<ThreeDSecureV2LabelCustomization> CREATOR = new Creator<ThreeDSecureV2LabelCustomization>() {
-        @Override
-        public ThreeDSecureV2LabelCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV2LabelCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV2LabelCustomization> CREATOR =
+            new Creator<ThreeDSecureV2LabelCustomization>() {
+                @Override
+                public ThreeDSecureV2LabelCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV2LabelCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV2LabelCustomization[] newArray(int size) {
-            return new ThreeDSecureV2LabelCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV2LabelCustomization[] newArray(int size) {
+                    return new ThreeDSecureV2LabelCustomization[size];
+                }
+            };
 }

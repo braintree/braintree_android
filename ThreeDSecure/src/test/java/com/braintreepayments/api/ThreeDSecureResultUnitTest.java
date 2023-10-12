@@ -21,7 +21,8 @@ public class ThreeDSecureResultUnitTest {
 
         assertEquals("11", authResponse.getTokenizedCard().getLastTwo());
         assertTrue(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(
+                authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNull(authResponse.getErrorMessage());
     }
 
@@ -32,7 +33,8 @@ public class ThreeDSecureResultUnitTest {
 
         assertEquals("91", authResponse.getTokenizedCard().getLastTwo());
         assertTrue(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(
+                authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNull(authResponse.getErrorMessage());
     }
 
@@ -42,7 +44,8 @@ public class ThreeDSecureResultUnitTest {
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getTokenizedCard());
-        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
+        assertEquals("Failed to authenticate, please try a different form of payment.",
+                authResponse.getErrorMessage());
     }
 
     @Test
@@ -51,7 +54,8 @@ public class ThreeDSecureResultUnitTest {
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getTokenizedCard());
-        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrorMessage());
+        assertEquals("Failed to authenticate, please try a different form of payment.",
+                authResponse.getErrorMessage());
     }
 
     @Test
@@ -64,13 +68,17 @@ public class ThreeDSecureResultUnitTest {
 
         ThreeDSecureResult parceled = ThreeDSecureResult.CREATOR.createFromParcel(parcel);
 
-        assertEquals(authResponse.getTokenizedCard().getLastTwo(), parceled.getTokenizedCard().getLastTwo());
+        assertEquals(authResponse.getTokenizedCard().getLastTwo(),
+                parceled.getTokenizedCard().getLastTwo());
         assertEquals(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted(),
                 parceled.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
+        assertEquals(
+                authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parceled.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted(), parceled.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
+        assertEquals(authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted(),
+                parceled.getTokenizedCard().getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(
+                authResponse.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parceled.getTokenizedCard().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 }

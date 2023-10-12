@@ -16,7 +16,8 @@ import androidx.annotation.Nullable;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
-class ThreeDSecureActivityResultContract extends ActivityResultContract<ThreeDSecureResult, CardinalResult> {
+class ThreeDSecureActivityResultContract
+        extends ActivityResultContract<ThreeDSecureResult, CardinalResult> {
 
     @NonNull
     @Override

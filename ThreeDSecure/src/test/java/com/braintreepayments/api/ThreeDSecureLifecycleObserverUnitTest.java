@@ -49,17 +49,21 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         FragmentActivity lifecycleOwner = new FragmentActivity();
         sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
 
         String expectedKey = "com.braintreepayments.api.ThreeDSecure.RESULT";
-        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner), any(ThreeDSecureActivityResultContract.class), Mockito.<ActivityResultCallback<CardinalResult>>any());
+        verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
+                any(ThreeDSecureActivityResultContract.class),
+                Mockito.<ActivityResultCallback<CardinalResult>>any());
     }
 
     @Test
-    public void onCreate_whenActivityResultReceived_forwardsActivityResultToThreeDSecureClient() throws JSONException {
+    public void onCreate_whenActivityResultReceived_forwardsActivityResultToThreeDSecureClient()
+            throws JSONException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -70,13 +74,16 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         FragmentActivity lifecycleOwner = new FragmentActivity();
         sut.onStateChanged(lifecycleOwner, Lifecycle.Event.ON_CREATE);
-        verify(activityResultRegistry).register(anyString(), any(LifecycleOwner.class), any(ThreeDSecureActivityResultContract.class), cardinalResultCaptor.capture());
+        verify(activityResultRegistry).register(anyString(), any(LifecycleOwner.class),
+                any(ThreeDSecureActivityResultContract.class), cardinalResultCaptor.capture());
 
-        ActivityResultCallback<CardinalResult> activityResultCallback = cardinalResultCaptor.getValue();
+        ActivityResultCallback<CardinalResult> activityResultCallback =
+                cardinalResultCaptor.getValue();
         activityResultCallback.onActivityResult(cardinalResult);
         verify(threeDSecureClient).onCardinalResult(cardinalResult);
     }
@@ -94,9 +101,11 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
         // Ref: https://robolectric.org/blog/2019/06/04/paused-looper/
@@ -114,9 +123,11 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
         shadowOf(getMainLooper()).idle();
@@ -135,10 +146,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
         shadowOf(getMainLooper()).idle();
@@ -154,10 +168,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
         shadowOf(getMainLooper()).idle();
@@ -174,9 +191,11 @@ public class ThreeDSecureLifecycleObserverUnitTest {
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
         when(threeDSecureClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
-        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.deliverBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
@@ -192,9 +211,11 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(threeDSecureClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
         shadowOf(getMainLooper()).idle();
@@ -205,11 +226,13 @@ public class ThreeDSecureLifecycleObserverUnitTest {
     public void launch_launchesActivityWithThreeDSecureResult() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        ActivityResultLauncher<ThreeDSecureResult> resultLauncher = mock(ActivityResultLauncher.class);
+        ActivityResultLauncher<ThreeDSecureResult> resultLauncher =
+                mock(ActivityResultLauncher.class);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 
         ThreeDSecureClient threeDSecureClient = mock(ThreeDSecureClient.class);
-        ThreeDSecureLifecycleObserver sut = new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
+        ThreeDSecureLifecycleObserver sut =
+                new ThreeDSecureLifecycleObserver(activityResultRegistry, threeDSecureClient);
         sut.activityLauncher = resultLauncher;
 
         sut.launch(threeDSecureResult);

@@ -22,8 +22,11 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
      * Button types that can be customized in 3D Secure 2 flows.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({BUTTON_TYPE_VERIFY, BUTTON_TYPE_CONTINUE, BUTTON_TYPE_NEXT, BUTTON_TYPE_CANCEL, BUTTON_TYPE_RESEND})
-    @interface ThreeDSecureV2ButtonType {}
+    @IntDef({BUTTON_TYPE_VERIFY, BUTTON_TYPE_CONTINUE, BUTTON_TYPE_NEXT, BUTTON_TYPE_CANCEL,
+            BUTTON_TYPE_RESEND})
+    @interface ThreeDSecureV2ButtonType {
+    }
+
     public static final int BUTTON_TYPE_VERIFY = 0;
     public static final int BUTTON_TYPE_CONTINUE = 1;
     public static final int BUTTON_TYPE_NEXT = 2;
@@ -37,44 +40,57 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     private @ThreeDSecureV2ButtonType int buttonType;
     private UiCustomization cardinalValue = new UiCustomization();
 
-    public ThreeDSecureV2UiCustomization() {}
+    public ThreeDSecureV2UiCustomization() {
+    }
 
     /**
      * Set button customization options for 3D Secure 2 flows.
+     *
      * @param buttonCustomization {@link ThreeDSecureV2ButtonCustomization}
-     * @param buttonType Button type
+     * @param buttonType          Button type
      */
-    public void setButtonCustomization(@Nullable ThreeDSecureV2ButtonCustomization buttonCustomization, @ThreeDSecureV2ButtonType int buttonType) {
+    public void setButtonCustomization(
+            @Nullable ThreeDSecureV2ButtonCustomization buttonCustomization,
+            @ThreeDSecureV2ButtonType int buttonType) {
         this.buttonCustomization = buttonCustomization;
         this.buttonType = buttonType;
-        cardinalValue.setButtonCustomization(buttonCustomization.getCardinalButtonCustomization(), getCardinalButtonType(buttonType));
+        cardinalValue.setButtonCustomization(buttonCustomization.getCardinalButtonCustomization(),
+                getCardinalButtonType(buttonType));
     }
 
     /**
      * Label customization options for 3D Secure 2 flows.
+     *
      * @param labelCustomization {@link ThreeDSecureV2LabelCustomization}
      */
-    public void setLabelCustomization(@Nullable ThreeDSecureV2LabelCustomization labelCustomization) {
+    public void setLabelCustomization(
+            @Nullable ThreeDSecureV2LabelCustomization labelCustomization) {
         this.labelCustomization = labelCustomization;
         cardinalValue.setLabelCustomization(labelCustomization.getCardinalLabelCustomization());
     }
 
     /**
      * Text box customization options for 3D Secure 2 flows.
+     *
      * @param textBoxCustomization {@link ThreeDSecureV2TextBoxCustomization}
      */
-    public void setTextBoxCustomization(@Nullable ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
+    public void setTextBoxCustomization(
+            @Nullable ThreeDSecureV2TextBoxCustomization textBoxCustomization) {
         this.textBoxCustomization = textBoxCustomization;
-        cardinalValue.setTextBoxCustomization(textBoxCustomization.getCardinalTextBoxCustomization());
+        cardinalValue.setTextBoxCustomization(
+                textBoxCustomization.getCardinalTextBoxCustomization());
     }
 
     /**
      * Toolbar customization options for 3D Secure 2 flows.
+     *
      * @param toolbarCustomization {@link ThreeDSecureV2ToolbarCustomization}
      */
-    public void setToolbarCustomization(@Nullable ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
+    public void setToolbarCustomization(
+            @Nullable ThreeDSecureV2ToolbarCustomization toolbarCustomization) {
         this.toolbarCustomization = toolbarCustomization;
-        cardinalValue.setToolbarCustomization(toolbarCustomization.getCardinalToolbarCustomization());
+        cardinalValue.setToolbarCustomization(
+                toolbarCustomization.getCardinalToolbarCustomization());
     }
 
     /**
@@ -146,23 +162,28 @@ public class ThreeDSecureV2UiCustomization implements Parcelable {
     }
 
     private ThreeDSecureV2UiCustomization(Parcel in) {
-        buttonCustomization = in.readParcelable(ThreeDSecureV2ButtonCustomization.class.getClassLoader());
-        labelCustomization = in.readParcelable(ThreeDSecureV2LabelCustomization.class.getClassLoader());
-        textBoxCustomization = in.readParcelable(ThreeDSecureV2TextBoxCustomization.class.getClassLoader());
-        toolbarCustomization = in.readParcelable(ThreeDSecureV2ToolbarCustomization.class.getClassLoader());
+        buttonCustomization =
+                in.readParcelable(ThreeDSecureV2ButtonCustomization.class.getClassLoader());
+        labelCustomization =
+                in.readParcelable(ThreeDSecureV2LabelCustomization.class.getClassLoader());
+        textBoxCustomization =
+                in.readParcelable(ThreeDSecureV2TextBoxCustomization.class.getClassLoader());
+        toolbarCustomization =
+                in.readParcelable(ThreeDSecureV2ToolbarCustomization.class.getClassLoader());
         buttonType = in.readInt();
         cardinalValue = (UiCustomization) in.readSerializable();
     }
 
-    public static final Creator<ThreeDSecureV2UiCustomization> CREATOR = new Creator<ThreeDSecureV2UiCustomization>() {
-        @Override
-        public ThreeDSecureV2UiCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV2UiCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV2UiCustomization> CREATOR =
+            new Creator<ThreeDSecureV2UiCustomization>() {
+                @Override
+                public ThreeDSecureV2UiCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV2UiCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV2UiCustomization[] newArray(int size) {
-            return new ThreeDSecureV2UiCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV2UiCustomization[] newArray(int size) {
+                    return new ThreeDSecureV2UiCustomization[size];
+                }
+            };
 }
