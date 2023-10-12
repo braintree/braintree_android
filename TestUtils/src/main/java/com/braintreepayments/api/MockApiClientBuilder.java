@@ -39,22 +39,16 @@ public class MockApiClientBuilder {
     public ApiClient build() {
         ApiClient apiClient = mock(ApiClient.class);
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
-                listener.onResult(tokenizeRESTSuccess, tokenizeRESTError);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
+            listener.onResult(tokenizeRESTSuccess, tokenizeRESTError);
+            return null;
         }).when(apiClient).tokenizeREST(any(PaymentMethod.class), any(TokenizeCallback.class));
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
-                listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            TokenizeCallback listener = (TokenizeCallback) invocation.getArguments()[1];
+            listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError);
+            return null;
         }).when(apiClient).tokenizeGraphQL(any(JSONObject.class), any(TokenizeCallback.class));
 
         return apiClient;
