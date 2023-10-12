@@ -20,7 +20,6 @@ import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment implements PayPalListener {

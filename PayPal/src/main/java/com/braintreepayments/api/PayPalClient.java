@@ -25,8 +25,6 @@ public class PayPalClient {
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
 
-    private PayPalListener listener;
-
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -74,20 +72,6 @@ public class PayPalClient {
         if (activity != null && lifecycle != null) {
             PayPalLifecycleObserver observer = new PayPalLifecycleObserver(this);
             lifecycle.addObserver(observer);
-        }
-    }
-
-    /**
-     * Add a {@link PayPalListener} to your client to receive results or errors from the PayPal
-     * flow. This method must be invoked on a {@link PayPalClient(Fragment, BraintreeClient)} or
-     * {@link PayPalClient(FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param listener a {@link PayPalListener}
-     */
-    public void setListener(PayPalListener listener) {
-        this.listener = listener;
-        if (pendingBrowserSwitchResult != null) {
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
 
