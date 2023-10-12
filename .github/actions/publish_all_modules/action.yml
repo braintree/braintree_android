@@ -25,7 +25,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        ./gradlew --stacktrace clean publishToSonatype
+        ./gradlew --stacktrace clean publishToSonatype closeAndReleaseSonatypeStagingRepository
       shell: bash
       env:
         SONATYPE_NEXUS_USERNAME: ${{ inputs.sonatype_usr }}
