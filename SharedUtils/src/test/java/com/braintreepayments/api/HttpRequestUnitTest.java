@@ -69,7 +69,8 @@ public class HttpRequestUnitTest {
 
             assertEquals(2, sut.getHeaders().size());
             assertEquals("gzip", sut.getHeaders().get("Accept-Encoding"));
-            assertEquals(Locale.getDefault().getLanguage(), sut.getHeaders().get("Accept-Language"));
+            assertEquals(Locale.getDefault().getLanguage(),
+                    sut.getHeaders().get("Accept-Language"));
         }
 
         @Test
@@ -83,7 +84,8 @@ public class HttpRequestUnitTest {
         }
 
         @Test
-        public void getURL_whenPathStartsWithHttp_returnsPathWithNoModification() throws MalformedURLException, URISyntaxException {
+        public void getURL_whenPathStartsWithHttp_returnsPathWithNoModification()
+                throws MalformedURLException, URISyntaxException {
             HttpRequest sut = HttpRequest.newInstance()
                     .path("https://anothersite.com/path");
 
@@ -148,22 +150,38 @@ public class HttpRequestUnitTest {
         @Parameterized.Parameters(name = "Joins baseUrl: {0} and path: {1}")
         public static Collection<Object[]> urlScenarios() throws IOException {
             return Arrays.asList(new Object[][]{
-                    {"https://www.example.com", "sample/path?param=1#fragment", new URL("https://www.example.com/sample/path?param=1#fragment")},
-                    {"https://www.example.com/", "sample/path?param=1#fragment", new URL("https://www.example.com/sample/path?param=1#fragment")},
-                    {"https://www.example.com", "/sample/path?param=1#fragment", new URL("https://www.example.com/sample/path?param=1#fragment")},
-                    {"https://www.example.com/", "/sample/path?param=1#fragment", new URL("https://www.example.com/sample/path?param=1#fragment")},
-                    {"https://www.example.com/existing/path", "sample/path?param=1#fragment", new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com/existing/path/", "sample/path?param=1#fragment", new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com/existing/path", "/sample/path?param=1#fragment", new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com/existing/path/", "/sample/path?param=1#fragment", new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123", "sample/path?param=1#fragment", new URL("https://www.example.com:123/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/", "sample/path?param=1#fragment", new URL("https://www.example.com:123/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123", "/sample/path?param=1#fragment", new URL("https://www.example.com:123/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/", "/sample/path?param=1#fragment", new URL("https://www.example.com:123/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/existing/path", "sample/path?param=1#fragment", new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/existing/path/", "sample/path?param=1#fragment", new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/existing/path", "/sample/path?param=1#fragment", new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
-                    {"https://www.example.com:123/existing/path/", "/sample/path?param=1#fragment", new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com/sample/path?param=1#fragment")},
+                    {"https://www.example.com/", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com/sample/path?param=1#fragment")},
+                    {"https://www.example.com", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com/sample/path?param=1#fragment")},
+                    {"https://www.example.com/", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com/sample/path?param=1#fragment")},
+                    {"https://www.example.com/existing/path", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com/existing/path/", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com/existing/path", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com/existing/path/", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/existing/path", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/existing/path/", "sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/existing/path", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
+                    {"https://www.example.com:123/existing/path/", "/sample/path?param=1#fragment",
+                            new URL("https://www.example.com:123/existing/path/sample/path?param=1#fragment")},
             });
         }
 

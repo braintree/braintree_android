@@ -15,7 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 class HttpClient {
 
-    @IntDef({ NO_RETRY, RETRY_MAX_3_TIMES })
+    @IntDef({NO_RETRY, RETRY_MAX_3_TIMES})
     @Retention(RetentionPolicy.SOURCE)
     @interface RetryStrategy {
     }
@@ -49,38 +49,39 @@ class HttpClient {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy,
+                     HttpResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy,
+                                 final HttpResponseCallback callback) {
         resetRetryCount(request);
 
-        scheduler.runOnBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String responseBody = syncHttpClient.request(request);
-                    notifySuccessOnMainThread(callback, responseBody);
-                } catch (Exception e) {
-                    switch (retryStrategy) {
-                        case HttpClient.NO_RETRY:
-                            notifyErrorOnMainThread(callback, e);
-                            break;
-                        case HttpClient.RETRY_MAX_3_TIMES:
-                            retryGet(request, retryStrategy, callback);
-                            break;
-                    }
+        scheduler.runOnBackground(() -> {
+            try {
+                String responseBody = syncHttpClient.request(request);
+                notifySuccessOnMainThread(callback, responseBody);
+            } catch (Exception e) {
+                switch (retryStrategy) {
+                    case HttpClient.NO_RETRY:
+                        notifyErrorOnMainThread(callback, e);
+                        break;
+                    case HttpClient.RETRY_MAX_3_TIMES:
+                        retryGet(request, retryStrategy, callback);
+                        break;
                 }
             }
         });
     }
 
-    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy,
+                          final HttpResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
-        } catch (MalformedURLException | URISyntaxException ignore) {}
+        } catch (MalformedURLException | URISyntaxException ignore) {
+        }
 
         if (url != null) {
             int retryCount = getNumRetriesSoFar(url);
@@ -108,32 +109,24 @@ class HttpClient {
         URL url = null;
         try {
             url = request.getURL();
-        } catch (MalformedURLException | URISyntaxException ignore) {}
+        } catch (MalformedURLException | URISyntaxException ignore) {
+        }
 
         if (url != null) {
             retryCountMap.remove(url);
         }
     }
 
-    private void notifySuccessOnMainThread(final HttpResponseCallback callback, final String responseBody) {
+    private void notifySuccessOnMainThread(final HttpResponseCallback callback,
+                                           final String responseBody) {
         if (callback != null) {
-            scheduler.runOnMain(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onResult(responseBody, null);
-                }
-            });
+            scheduler.runOnMain(() -> callback.onResult(responseBody, null));
         }
     }
 
     private void notifyErrorOnMainThread(final HttpResponseCallback callback, final Exception e) {
         if (callback != null) {
-            scheduler.runOnMain(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onResult(null, e);
-                }
-            });
+            scheduler.runOnMain(() -> callback.onResult(null, e));
         }
     }
 }
