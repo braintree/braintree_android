@@ -19,13 +19,15 @@ public class VenmoSharedPrefsWriterUnitTest {
     public void persistVenmoVaultOption_persistsVaultOption() {
         VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
         sut.persistVenmoVaultOption(braintreeSharedPreferences, true);
-        verify(braintreeSharedPreferences).putBoolean("com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", true);
+        verify(braintreeSharedPreferences).putBoolean(
+                "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY", true);
     }
 
     @Test
     public void getVenmoVaultOption_retrievesVaultOptionFromSharedPrefs() {
         VenmoSharedPrefsWriter sut = new VenmoSharedPrefsWriter();
         sut.getVenmoVaultOption(braintreeSharedPreferences);
-        verify(braintreeSharedPreferences).getBoolean("com.braintreepayments.api.Venmo.VAULT_VENMO_KEY");
+        verify(braintreeSharedPreferences).getBoolean(
+                "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY");
     }
 }

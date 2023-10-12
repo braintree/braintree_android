@@ -13,7 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class VenmoActivityResultContract extends ActivityResultContract<VenmoAuthChallenge, VenmoAuthChallengeResult> {
+class VenmoActivityResultContract
+        extends ActivityResultContract<VenmoAuthChallenge, VenmoAuthChallengeResult> {
 
     static final String VENMO_PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
@@ -22,7 +23,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoAuthChalle
     static final String EXTRA_ACCESS_TOKEN = "com.braintreepayments.api.ACCESS_TOKEN";
     static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.ENVIRONMENT";
     static final String EXTRA_BRAINTREE_DATA = "com.braintreepayments.api.EXTRA_BRAINTREE_DATA";
-    static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
+    static final String EXTRA_PAYMENT_METHOD_NONCE =
+            "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
@@ -63,19 +65,22 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoAuthChalle
     public VenmoAuthChallengeResult parseResult(int resultCode, @Nullable Intent intent) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (intent == null) {
-                return new VenmoAuthChallengeResult(null, null, null, new BraintreeException("An unknown Android error occurred with the activity result API."));
+                return new VenmoAuthChallengeResult(null, null, null, new BraintreeException(
+                        "An unknown Android error occurred with the activity result API."));
             }
             String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
             String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
             return new VenmoAuthChallengeResult(paymentContextId, nonce, venmoUsername, null);
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            return new VenmoAuthChallengeResult(null, null, null, new UserCanceledException("User canceled Venmo."));
+            return new VenmoAuthChallengeResult(null, null, null,
+                    new UserCanceledException("User canceled Venmo."));
         }
         return null;
     }
 
     private static Intent getVenmoIntent() {
-        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME,
+                VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 }

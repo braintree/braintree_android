@@ -27,11 +27,11 @@ public class VenmoLauncherUnitTest {
     private VenmoAuthChallengeResultCallback callback;
 
     @Before
-    public void beforeEach()  {
+    public void beforeEach() {
         MockitoAnnotations.openMocks(this);
         callback = mock(VenmoAuthChallengeResultCallback.class);
     }
-    
+
     @Test
     public void constructor_createsActivityLauncher() {
         String expectedKey = "com.braintreepayments.api.Venmo.RESULT";
@@ -48,7 +48,9 @@ public class VenmoLauncherUnitTest {
     @Test
     public void launch_launchesAuthChallenge() throws JSONException {
         VenmoAuthChallenge authChallenge =
-                new VenmoAuthChallenge(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO), "profile-id", "payment-context-id", "session-id", "custom");
+                new VenmoAuthChallenge(
+                        Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO),
+                        "profile-id", "payment-context-id", "session-id", "custom");
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
         VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);

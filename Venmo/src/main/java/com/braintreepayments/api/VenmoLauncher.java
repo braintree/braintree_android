@@ -19,12 +19,12 @@ public class VenmoLauncher {
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
 
     /**
-     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must
-     * be instantiated in the OnCreate method of your Fragment.
+     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
+     * instantiated in the OnCreate method of your Fragment.
      *
      * @param fragment an Android Fragment from which you will launch the Venmo app
-     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the
-     *                 Venmo app switch authentication flow
+     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the Venmo
+     *                 app switch authentication flow
      */
     public VenmoLauncher(@NonNull Fragment fragment,
                          @NonNull VenmoAuthChallengeResultCallback callback) {
@@ -33,12 +33,12 @@ public class VenmoLauncher {
     }
 
     /**
-     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must
-     * be instantiated in the OnCreate method of your Activity.
+     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
+     * instantiated in the OnCreate method of your Activity.
      *
      * @param activity an Android Activity from which you will launch the Venmo app
-     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the
-     *                 Venmo app switch authentication flow
+     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the Venmo
+     *                 app switch authentication flow
      */
     public VenmoLauncher(@NonNull FragmentActivity activity,
                          @NonNull VenmoAuthChallengeResultCallback callback) {
@@ -55,7 +55,9 @@ public class VenmoLauncher {
     /**
      * Launches the Venmo authentication flow by switching to the Venmo app.
      *
-     * @param venmoAuthChallenge the result of {@link VenmoClient#requestAuthChallenge(FragmentActivity, VenmoRequest, VenmoAuthChallengeCallback)}
+     * @param venmoAuthChallenge the result of
+     *                           {@link VenmoClient#requestAuthChallenge(FragmentActivity,
+     *                           VenmoRequest, VenmoAuthChallengeCallback)}
      */
     public void launch(VenmoAuthChallenge venmoAuthChallenge) {
         activityLauncher.launch(venmoAuthChallenge);

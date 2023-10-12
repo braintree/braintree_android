@@ -18,8 +18,8 @@ public class VenmoLineItem implements Parcelable {
     /**
      * The type of Venmo line item.
      * <p>
-     * {@link #KIND_CREDIT} A line item that is a credit.
-     * {@link #KIND_DEBIT} A line item that debits.
+     * {@link #KIND_CREDIT} A line item that is a credit. {@link #KIND_DEBIT} A line item that
+     * debits.
      */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({VenmoLineItem.KIND_CREDIT, VenmoLineItem.KIND_DEBIT})
@@ -56,9 +56,9 @@ public class VenmoLineItem implements Parcelable {
      * @param unitAmount The unit amount.
      */
     public VenmoLineItem(@NonNull @VenmoLineItemKind String kind,
-                          @NonNull String name,
-                          @NonNull Integer quantity,
-                          @NonNull String unitAmount) {
+                         @NonNull String name,
+                         @NonNull Integer quantity,
+                         @NonNull String unitAmount) {
         this.kind = kind;
         this.name = name;
         this.quantity = quantity;
@@ -102,7 +102,8 @@ public class VenmoLineItem implements Parcelable {
     }
 
     /**
-     * Number of units of the item purchased. This value must be a whole number and can't be negative or zero.
+     * Number of units of the item purchased. This value must be a whole number and can't be
+     * negative or zero.
      *
      * @param quantity The quantity.
      */
@@ -111,7 +112,8 @@ public class VenmoLineItem implements Parcelable {
     }
 
     /**
-     * Per-unit price of the item. Can include up to 2 decimal places. This value can't be negative or zero.
+     * Per-unit price of the item. Can include up to 2 decimal places. This value can't be negative
+     * or zero.
      *
      * @param unitAmount The unit amount.
      */
@@ -120,7 +122,8 @@ public class VenmoLineItem implements Parcelable {
     }
 
     /**
-     * Per-unit tax price of the item. Can include up to 2 decimal places. This value can't be negative or zero.
+     * Per-unit tax price of the item. Can include up to 2 decimal places. This value can't be
+     * negative or zero.
      *
      * @param unitTaxAmount The unit tax amount.
      */
