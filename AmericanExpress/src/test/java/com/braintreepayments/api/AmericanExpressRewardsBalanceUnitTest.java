@@ -51,7 +51,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
         Parcel parcel = Parcel.obtain();
         rewardsBalanceFromJson.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel);
+        AmericanExpressRewardsBalance rewardsBalance =
+                AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel);
 
         assertEquals("0.0070", rewardsBalance.getConversionRate());
         assertEquals("316795.03", rewardsBalance.getCurrencyAmount());
@@ -71,7 +72,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
         Parcel parcel = Parcel.obtain();
         rewardsBalanceFromJson.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel);
+        AmericanExpressRewardsBalance rewardsBalance =
+                AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel);
 
         assertNull(rewardsBalance.getConversionRate());
         assertNull(rewardsBalance.getCurrencyAmount());

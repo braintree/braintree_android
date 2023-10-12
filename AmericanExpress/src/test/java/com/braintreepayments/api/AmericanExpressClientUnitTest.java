@@ -34,7 +34,9 @@ public class AmericanExpressClientUnitTest {
         verify(braintreeClient).sendGET(urlCaptor.capture(), any(HttpResponseCallback.class));
 
         String url = urlCaptor.getValue();
-        assertEquals("/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD", url);
+        assertEquals(
+                "/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD",
+                url);
     }
 
     @Test
@@ -47,7 +49,7 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-            ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
+                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
         verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), (Exception) isNull());
 
         AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
@@ -72,7 +74,7 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-            ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
+                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
         verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), isNull());
 
         AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
@@ -97,7 +99,7 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-            ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
+                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
         verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), (Exception) isNull());
 
         AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();

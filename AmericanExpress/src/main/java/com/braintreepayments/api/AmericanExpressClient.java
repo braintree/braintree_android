@@ -12,7 +12,7 @@ import org.json.JSONException;
 public class AmericanExpressClient {
 
     private static final String AMEX_REWARDS_BALANCE_PATH =
-        ApiClient.versionedPath("payment_methods/amex_rewards_balance");
+            ApiClient.versionedPath("payment_methods/amex_rewards_balance");
 
     private final BraintreeClient braintreeClient;
 
@@ -22,11 +22,14 @@ public class AmericanExpressClient {
 
     /**
      * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
-     * @param nonce A nonce representing a card that will be used to look up the rewards balance
+     *
+     * @param nonce           A nonce representing a card that will be used to look up the rewards
+     *                        balance
      * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
-     * @param callback {@link AmericanExpressGetRewardsBalanceCallback}
+     * @param callback        {@link AmericanExpressGetRewardsBalanceCallback}
      */
-    public void getRewardsBalance(@NonNull String nonce, @NonNull String currencyIsoCode, @NonNull final AmericanExpressGetRewardsBalanceCallback callback) {
+    public void getRewardsBalance(@NonNull String nonce, @NonNull String currencyIsoCode, @NonNull
+    final AmericanExpressGetRewardsBalanceCallback callback) {
         String getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)
                 .buildUpon()
                 .appendQueryParameter("paymentMethodNonce", nonce)
@@ -39,7 +42,8 @@ public class AmericanExpressClient {
             if (responseBody != null) {
                 braintreeClient.sendAnalyticsEvent("amex.rewards-balance.success");
                 try {
-                    AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.fromJson(responseBody);
+                    AmericanExpressRewardsBalance rewardsBalance =
+                            AmericanExpressRewardsBalance.fromJson(responseBody);
                     callback.onResult(rewardsBalance, null);
                 } catch (JSONException e) {
                     braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
