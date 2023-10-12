@@ -71,8 +71,10 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
-        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
@@ -89,8 +91,10 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(PAYPAL);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
-        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
+        when(payPalClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
@@ -125,7 +129,8 @@ public class PayPalLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
 
         PayPalClient payPalClient = mock(PayPalClient.class);
-        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(payPalClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(
+                browserSwitchResult);
 
         PayPalLifecycleObserver sut = new PayPalLifecycleObserver(payPalClient);
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);

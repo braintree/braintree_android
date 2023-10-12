@@ -93,7 +93,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
                 billingAddressJson = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
             }
 
-            shippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
+            shippingAddress =
+                    PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
             billingAddress = PostalAddressParser.fromJson(billingAddressJson);
             firstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
             lastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
@@ -117,10 +118,16 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault);
+        return new PayPalAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName,
+                lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce,
+                isDefault);
     }
 
-    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
+    private PayPalAccountNonce(String clientMetadataId, PostalAddress billingAddress,
+                               PostalAddress shippingAddress, String firstName, String lastName,
+                               String phone, String email, String payerId,
+                               PayPalCreditFinancing creditFinancing, String authenticateUrl,
+                               String nonce, boolean isDefault) {
         super(nonce, isDefault);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
@@ -199,7 +206,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     }
 
     /**
-     * @return The credit financing details. This property will only be present when the customer pays with PayPal Credit.
+     * @return The credit financing details. This property will only be present when the customer
+     * pays with PayPal Credit.
      */
     @Nullable
     public PayPalCreditFinancing getCreditFinancing() {

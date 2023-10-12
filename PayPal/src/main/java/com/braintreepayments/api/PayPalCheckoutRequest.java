@@ -24,20 +24,23 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      * The call-to-action in the PayPal Checkout flow
      */
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalCheckoutRequest.USER_ACTION_DEFAULT, PayPalCheckoutRequest.USER_ACTION_COMMIT})
+    @StringDef(
+            {PayPalCheckoutRequest.USER_ACTION_DEFAULT, PayPalCheckoutRequest.USER_ACTION_COMMIT})
     @interface PayPalPaymentUserAction {
     }
 
     /**
-     * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
-     * confirmation will be shown on the merchant checkout site before the user's payment method is charged.
+     * Shows the default call-to-action text on the PayPal Express Checkout page. This option
+     * indicates that a final confirmation will be shown on the merchant checkout site before the
+     * user's payment method is charged.
      */
     public static final String USER_ACTION_DEFAULT = "";
 
     /**
-     * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
-     * when they click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
-     * be shown on the merchant's checkout page. This option works for both checkout and vault flows.
+     * Shows a deterministic call-to-action. This option indicates to the user that their payment
+     * method will be charged when they click the call-to-action button on the PayPal Checkout page,
+     * and that no final confirmation page will be shown on the merchant's checkout page. This
+     * option works for both checkout and vault flows.
      */
     public static final String USER_ACTION_COMMIT = "commit";
 
@@ -50,13 +53,13 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
 
     /**
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
-     *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
-     *               number, may optionally contain exactly 2 decimal places separated by '.' and is
-     *               limited to 7 digits before the decimal point.
+     *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be
+     *               a non-negative number, may optionally contain exactly 2 decimal places
+     *               separated by '.' and is limited to 7 digits before the decimal point.
      *               <p>
-     *               This amount may differ slightly from the transaction amount. The exact decline rules
-     *               for mismatches between this client-side amount and the final amount in the Transaction
-     *               are determined by the gateway.
+     *               This amount may differ slightly from the transaction amount. The exact decline
+     *               rules for mismatches between this client-side amount and the final amount in
+     *               the Transaction are determined by the gateway.
      **/
     public PayPalCheckoutRequest(@NonNull String amount) {
         this.amount = amount;
@@ -76,15 +79,18 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: Payment intent. Must be set to {@link PayPalPaymentIntent#SALE} for immediate payment,
-     * {@link PayPalPaymentIntent#AUTHORIZE} to authorize a payment for capture later, or
+     * Optional: Payment intent. Must be set to {@link PayPalPaymentIntent#SALE} for immediate
+     * payment, {@link PayPalPaymentIntent#AUTHORIZE} to authorize a payment for capture later, or
      * {@link PayPalPaymentIntent#ORDER} to create an order.
      * <p>
      * Defaults to authorize.
      *
      * @param intent {@link PayPalPaymentIntent}
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent" under the "payment" definition</a>
-     * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
+     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent"
+     * under the "payment" definition</a>
+     * @see <a
+     * href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create
+     * and process orders</a>
      * for more information
      */
     public void setIntent(@NonNull @PayPalPaymentIntent String intent) {
@@ -104,7 +110,9 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *                   <li>{@link PayPalCheckoutRequest#USER_ACTION_COMMIT}</li>
      *                   <li>{@link PayPalCheckoutRequest#USER_ACTION_DEFAULT}</li>
      *                   </ul>
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
+     * @see <a
+     * href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See
+     * "user_action" under the "application_context" definition</a>
      */
     public void setUserAction(@NonNull @PayPalPaymentUserAction String userAction) {
         this.userAction = userAction;
@@ -120,8 +128,8 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be
-     * prompted to consent to a billing agreement during checkout.
+     * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will
+     * be prompted to consent to a billing agreement during checkout.
      *
      * @param shouldRequestBillingAgreement Whether to request billing agreement during checkout.
      */
@@ -159,7 +167,8 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         return shouldRequestBillingAgreement;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+    String createRequestBody(Configuration configuration, Authorization authorization,
+                             String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
@@ -225,9 +234,12 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
             parameters.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
             parameters.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
             parameters.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
-            parameters.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            parameters.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            parameters.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+            parameters.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY,
+                    shippingAddress.getPostalCode());
+            parameters.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY,
+                    shippingAddress.getCountryCodeAlpha2());
+            parameters.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY,
+                    shippingAddress.getRecipientName());
         } else {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }
@@ -270,15 +282,16 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         return 0;
     }
 
-    public static final Creator<PayPalCheckoutRequest> CREATOR = new Creator<PayPalCheckoutRequest>() {
-        @Override
-        public PayPalCheckoutRequest createFromParcel(Parcel in) {
-            return new PayPalCheckoutRequest(in);
-        }
+    public static final Creator<PayPalCheckoutRequest> CREATOR =
+            new Creator<PayPalCheckoutRequest>() {
+                @Override
+                public PayPalCheckoutRequest createFromParcel(Parcel in) {
+                    return new PayPalCheckoutRequest(in);
+                }
 
-        @Override
-        public PayPalCheckoutRequest[] newArray(int size) {
-            return new PayPalCheckoutRequest[size];
-        }
-    };
+                @Override
+                public PayPalCheckoutRequest[] newArray(int size) {
+                    return new PayPalCheckoutRequest[size];
+                }
+            };
 }

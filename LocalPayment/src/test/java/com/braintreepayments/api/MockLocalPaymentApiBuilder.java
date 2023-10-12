@@ -39,18 +39,15 @@ public class MockLocalPaymentApiBuilder {
     public LocalPaymentApi build() {
         LocalPaymentApi localPaymentAPI = mock(LocalPaymentApi.class);
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                LocalPaymentBrowserSwitchResultCallback callback =
-                        (LocalPaymentBrowserSwitchResultCallback) invocation.getArguments()[3];
-                if (tokenizeSuccess != null) {
-                    callback.onResult(tokenizeSuccess, null);
-                } else if (tokenizeError != null) {
-                    callback.onResult(null, tokenizeError);
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            LocalPaymentBrowserSwitchResultCallback callback =
+                    (LocalPaymentBrowserSwitchResultCallback) invocation.getArguments()[3];
+            if (tokenizeSuccess != null) {
+                callback.onResult(tokenizeSuccess, null);
+            } else if (tokenizeError != null) {
+                callback.onResult(null, tokenizeError);
             }
+            return null;
         }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(),
                 any(LocalPaymentBrowserSwitchResultCallback.class));
 
