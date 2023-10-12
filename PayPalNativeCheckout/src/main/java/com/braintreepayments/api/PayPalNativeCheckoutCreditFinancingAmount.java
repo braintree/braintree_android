@@ -18,10 +18,12 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     private String currency;
     private String value;
 
-    private PayPalNativeCheckoutCreditFinancingAmount() {}
+    private PayPalNativeCheckoutCreditFinancingAmount() {
+    }
 
     static PayPalNativeCheckoutCreditFinancingAmount fromJson(JSONObject amount) {
-        PayPalNativeCheckoutCreditFinancingAmount result = new PayPalNativeCheckoutCreditFinancingAmount();
+        PayPalNativeCheckoutCreditFinancingAmount result =
+                new PayPalNativeCheckoutCreditFinancingAmount();
 
         if (amount == null) {
             return result;
@@ -34,7 +36,8 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     }
 
     /**
-     * @return 3 letter currency code as defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a>.
+     * @return 3 letter currency code as defined by <a
+     * href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a>.
      */
     @Nullable
     public String getCurrency() {
@@ -42,7 +45,9 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     }
 
     /**
-     * @return An amount defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a> for the given currency.
+     * @return An amount defined by <a
+     * href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a> for the given
+     * currency.
      */
     @Nullable
     public String getValue() {
@@ -70,13 +75,14 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
         value = in.readString();
     }
 
-    public static final Creator<PayPalNativeCheckoutCreditFinancingAmount> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancingAmount>() {
-        public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
-            return new PayPalNativeCheckoutCreditFinancingAmount(source);
-        }
+    public static final Creator<PayPalNativeCheckoutCreditFinancingAmount> CREATOR =
+            new Creator<PayPalNativeCheckoutCreditFinancingAmount>() {
+                public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
+                    return new PayPalNativeCheckoutCreditFinancingAmount(source);
+                }
 
-        public PayPalNativeCheckoutCreditFinancingAmount[] newArray(int size) {
-            return new PayPalNativeCheckoutCreditFinancingAmount[size];
-        }
-    };
+                public PayPalNativeCheckoutCreditFinancingAmount[] newArray(int size) {
+                    return new PayPalNativeCheckoutCreditFinancingAmount[size];
+                }
+            };
 }

@@ -11,5 +11,6 @@ public interface PayPalNativeCheckoutResultCallback {
      * @param payPalAccountNonce {@link PayPalNativeCheckoutAccountNonce}
      * @param error              an exception that occurred while processing a PayPal result
      */
-    void onResult(@Nullable PayPalNativeCheckoutAccountNonce payPalAccountNonce, @Nullable Exception error);
+    void onResult(@Nullable PayPalNativeCheckoutAccountNonce payPalAccountNonce,
+                  @Nullable Exception error);
 }

@@ -38,7 +38,8 @@ public class PayPalNativeCheckoutAccountUnitTest {
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse() throws JSONException {
+    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse()
+            throws JSONException {
         PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setPaymentType("single-payment");
         sut.setUrlResponseData(getUrlResponseData());
@@ -50,7 +51,8 @@ public class PayPalNativeCheckoutAccountUnitTest {
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate() throws JSONException {
+    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate()
+            throws JSONException {
         PayPalNativeCheckoutAccount sut = new PayPalNativeCheckoutAccount();
         sut.setPaymentType("billing-agreement");
         sut.setUrlResponseData(getUrlResponseData());

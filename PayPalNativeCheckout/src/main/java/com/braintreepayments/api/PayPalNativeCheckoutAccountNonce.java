@@ -83,7 +83,8 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
         try {
             if (details.has(CREDIT_FINANCING_KEY)) {
                 JSONObject creditFinancing = details.getJSONObject(CREDIT_FINANCING_KEY);
-                payPalCreditFinancing = PayPalNativeCheckoutCreditFinancing.fromJson(creditFinancing);
+                payPalCreditFinancing =
+                        PayPalNativeCheckoutCreditFinancing.fromJson(creditFinancing);
             }
 
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
@@ -93,7 +94,8 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
                 billingAddressJson = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
             }
 
-            shippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
+            shippingAddress =
+                    PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
             billingAddress = PostalAddressParser.fromJson(billingAddressJson);
             firstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
             lastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
@@ -117,10 +119,18 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
             }
         }
 
-        return new PayPalNativeCheckoutAccountNonce(clientMetadataId, billingAddress, shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing, authenticateUrl, nonce, isDefault);
+        return new PayPalNativeCheckoutAccountNonce(clientMetadataId, billingAddress,
+                shippingAddress, firstName, lastName, phone, email, payerId, payPalCreditFinancing,
+                authenticateUrl, nonce, isDefault);
     }
 
-    private PayPalNativeCheckoutAccountNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String firstName, String lastName, String phone, String email, String payerId, PayPalNativeCheckoutCreditFinancing creditFinancing, String authenticateUrl, String nonce, boolean isDefault) {
+    private PayPalNativeCheckoutAccountNonce(String clientMetadataId, PostalAddress billingAddress,
+                                             PostalAddress shippingAddress, String firstName,
+                                             String lastName, String phone, String email,
+                                             String payerId,
+                                             PayPalNativeCheckoutCreditFinancing creditFinancing,
+                                             String authenticateUrl, String nonce,
+                                             boolean isDefault) {
         super(nonce, isDefault);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
@@ -199,13 +209,13 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
     }
 
     /**
-     * Sets the payer info if on the nonce object. This is used when the payer information is
-     * not returned from the json
+     * Sets the payer info if on the nonce object. This is used when the payer information is not
+     * returned from the json
      *
-     * @param payerId - The payer id associated with the user
+     * @param payerId   - The payer id associated with the user
      * @param firstName - The payer's first name
-     * @param lastName - The payer's last name
-     * @param email - The payer's email
+     * @param lastName  - The payer's last name
+     * @param email     - The payer's email
      */
     public void setPayerInfo(String payerId, String firstName, String lastName, String email) {
         this.payerId = payerId;
@@ -215,7 +225,8 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
     }
 
     /**
-     * @return The credit financing details. This property will only be present when the customer pays with PayPal Credit.
+     * @return The credit financing details. This property will only be present when the customer
+     * pays with PayPal Credit.
      */
     @Nullable
     public PayPalNativeCheckoutCreditFinancing getCreditFinancing() {
@@ -256,17 +267,19 @@ public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
         email = in.readString();
         phone = in.readString();
         payerId = in.readString();
-        creditFinancing = in.readParcelable(PayPalNativeCheckoutCreditFinancing.class.getClassLoader());
+        creditFinancing =
+                in.readParcelable(PayPalNativeCheckoutCreditFinancing.class.getClassLoader());
         authenticateUrl = in.readString();
     }
 
-    public static final Creator<PayPalNativeCheckoutAccountNonce> CREATOR = new Creator<PayPalNativeCheckoutAccountNonce>() {
-        public PayPalNativeCheckoutAccountNonce createFromParcel(Parcel source) {
-            return new PayPalNativeCheckoutAccountNonce(source);
-        }
+    public static final Creator<PayPalNativeCheckoutAccountNonce> CREATOR =
+            new Creator<PayPalNativeCheckoutAccountNonce>() {
+                public PayPalNativeCheckoutAccountNonce createFromParcel(Parcel source) {
+                    return new PayPalNativeCheckoutAccountNonce(source);
+                }
 
-        public PayPalNativeCheckoutAccountNonce[] newArray(int size) {
-            return new PayPalNativeCheckoutAccountNonce[size];
-        }
-    };
+                public PayPalNativeCheckoutAccountNonce[] newArray(int size) {
+                    return new PayPalNativeCheckoutAccountNonce[size];
+                }
+            };
 }

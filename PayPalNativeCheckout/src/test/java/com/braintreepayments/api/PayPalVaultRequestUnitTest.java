@@ -64,13 +64,16 @@ public class PayPalVaultRequestUnitTest {
         request.setMerchantAccountId("merchant_account_id");
 
         ArrayList<PayPalNativeCheckoutLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "An Item", "1", "1"));
+        lineItems.add(
+                new PayPalNativeCheckoutLineItem(PayPalNativeCheckoutLineItem.KIND_DEBIT, "An Item",
+                        "1", "1"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        PayPalNativeCheckoutVaultRequest result = PayPalNativeCheckoutVaultRequest.CREATOR.createFromParcel(parcel);
+        PayPalNativeCheckoutVaultRequest result =
+                PayPalNativeCheckoutVaultRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals("en-US", result.getLocaleCode());
         assertEquals("Billing Agreement Description",
