@@ -12,7 +12,8 @@ import androidx.fragment.app.FragmentActivity;
 public interface PayPalFlowStartedCallback {
 
     /**
-     * @param error an exception that occurred while initiating a PayPal transaction
+     * @param payPalResponse
+     * @param error          an exception that occurred while initiating a PayPal transaction
      */
-    void onResult(@Nullable Exception error);
+    void onResult(PayPalResponse payPalResponse, @Nullable Exception error);
 }

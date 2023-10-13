@@ -1,16 +1,12 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,31 +25,6 @@ public class PayPalClient {
     BrowserSwitchResult pendingBrowserSwitchResult;
 
     /**
-     * Create a new instance of {@link PayPalClient} from within an Activity using a
-     * {@link BraintreeClient}.
-     *
-     * @param activity        a {@link FragmentActivity}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalClient(@NonNull FragmentActivity activity,
-                        @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient,
-                new PayPalInternalClient(braintreeClient));
-    }
-
-    /**
-     * Create a new instance of {@link PayPalClient} from within a Fragment using a
-     * {@link BraintreeClient}.
-     *
-     * @param fragment        a {@link Fragment
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient,
-                new PayPalInternalClient(braintreeClient));
-    }
-
-    /**
      * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
      * <p>
      * Use this constructor with the manual browser switch integration pattern.
@@ -61,60 +32,18 @@ public class PayPalClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public PayPalClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalInternalClient(braintreeClient));
+        this(braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalClient(FragmentActivity activity, Lifecycle lifecycle, BraintreeClient braintreeClient,
+    PayPalClient(BraintreeClient braintreeClient,
                  PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
-        if (activity != null && lifecycle != null) {
-            PayPalLifecycleObserver observer = new PayPalLifecycleObserver(this);
-            lifecycle.addObserver(observer);
-        }
     }
 
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
-    }
-
-    /**
-     * After calling {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)},
-     * call this method in your Activity or Fragment's onResume() method to see if a response was
-     * provided through deep linking.
-     * <p>
-     * If a BrowserSwitchResult exists, call
-     * {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult,
-     * PayPalBrowserSwitchResultCallback)} to allow the SDK to continue tokenization of the
-     * PayPalAccount.
-     * <p>
-     * Make sure to call {@link PayPalClient#clearActiveBrowserSwitchRequests(Context)} after
-     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
-     * switch event handling.
-     *
-     * @param context The context used to check for pending browser switch requests
-     * @param intent  The intent containing a potential deep link response. May be null.
-     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep
-     * link; null when an input Intent is null
-     */
-    @Nullable
-    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context,
-                                                        @Nullable Intent intent) {
-        int requestCode = BraintreeRequestCodes.PAYPAL;
-        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
-    }
-
-    /**
-     * Make sure to call this method after
-     * {@link PayPalClient#parseBrowserSwitchResult(Context, Intent)} parses a
-     * {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser switch
-     * event handling logic.
-     *
-     * @param context The context used to clear pending browser switch requests
-     */
-    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
-        braintreeClient.clearActiveBrowserSwitchRequests(context);
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity)
@@ -138,32 +67,11 @@ public class PayPalClient {
 
     /**
      * Tokenize a PayPal account for vault or checkout.
-     * <p>
-     * This method must be invoked on a {@link PayPalClient(Fragment, BraintreeClient)} or
-     * {@link PayPalClient(FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param activity      Android FragmentActivity
-     * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     */
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
-                                      @NonNull final PayPalRequest payPalRequest) {
-        tokenizePayPalAccount(activity, payPalRequest, error -> {
-            if (error != null && listener != null) {
-                listener.onPayPalFailure(error);
-            }
-        });
-    }
-
-    /**
-     * Tokenize a PayPal account for vault or checkout.
-     * <p>
-     * Deprecated. Use {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest)}
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback      {@link PayPalFlowStartedCallback}
      */
-    @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
                                       @NonNull final PayPalRequest payPalRequest,
                                       @NonNull final PayPalFlowStartedCallback callback) {
@@ -172,36 +80,6 @@ public class PayPalClient {
         } else if (payPalRequest instanceof PayPalVaultRequest) {
             sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
         }
-    }
-
-    /**
-     * @param activity              Android FragmentActivity
-     * @param payPalCheckoutRequest a {@link PayPalCheckoutRequest} used to customize the request.
-     * @param callback              {@link PayPalFlowStartedCallback}
-     * @deprecated Use
-     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
-     * PayPalFlowStartedCallback)} instead. Starts the One-Time Payment (Checkout) flow for PayPal.
-     */
-    @Deprecated
-    public void requestOneTimePayment(@NonNull final FragmentActivity activity,
-                                      @NonNull final PayPalCheckoutRequest payPalCheckoutRequest,
-                                      @NonNull final PayPalFlowStartedCallback callback) {
-        tokenizePayPalAccount(activity, payPalCheckoutRequest, callback);
-    }
-
-    /**
-     * @param activity           Android FragmentActivity
-     * @param payPalVaultRequest a {@link PayPalVaultRequest} used to customize the request.
-     * @param callback           {@link PayPalFlowStartedCallback}
-     * @deprecated Use
-     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
-     * PayPalFlowStartedCallback)} instead. Starts the Billing Agreement (Vault) flow for PayPal.
-     */
-    @Deprecated
-    public void requestBillingAgreement(@NonNull final FragmentActivity activity,
-                                        @NonNull final PayPalVaultRequest payPalVaultRequest,
-                                        @NonNull final PayPalFlowStartedCallback callback) {
-        tokenizePayPalAccount(activity, payPalVaultRequest, callback);
     }
 
     private void sendCheckoutRequest(final FragmentActivity activity,
@@ -215,7 +93,7 @@ public class PayPalClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onResult(configInvalidError);
+                callback.onResult(null, configInvalidError);
                 return;
             }
 
@@ -225,7 +103,7 @@ public class PayPalClient {
                 braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                 Exception manifestInvalidError =
                         createBrowserSwitchError(browserSwitchException);
-                callback.onResult(manifestInvalidError);
+                callback.onResult(null, manifestInvalidError);
                 return;
             }
             sendPayPalRequest(activity, payPalCheckoutRequest, callback);
@@ -244,7 +122,7 @@ public class PayPalClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onResult(configInvalidError);
+                callback.onResult(null, configInvalidError);
                 return;
             }
 
@@ -254,7 +132,7 @@ public class PayPalClient {
                 braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                 Exception manifestInvalidError =
                         createBrowserSwitchError(browserSwitchException);
-                callback.onResult(manifestInvalidError);
+                callback.onResult(null, manifestInvalidError);
                 return;
             }
             sendPayPalRequest(activity, payPalVaultRequest, callback);
@@ -272,19 +150,21 @@ public class PayPalClient {
                                 String.format("%s.browser-switch.started", analyticsPrefix));
 
                         try {
-                            startBrowserSwitch(activity, payPalResponse);
-                            callback.onResult(null);
-                        } catch (JSONException | BrowserSwitchException exception) {
-                            callback.onResult(exception);
+                            BrowserSwitchOptions options =
+                                    buildBrowserSwitchOptions(payPalResponse);
+                            payPalResponse.setBrowserSwitchOptions(options);
+                            callback.onResult(payPalResponse, null);
+                        } catch (JSONException exception) {
+                            callback.onResult(null, exception);
                         }
                     } else {
-                        callback.onResult(error);
+                        callback.onResult(null , error);
                     }
                 });
     }
 
-    private void startBrowserSwitch(FragmentActivity activity, PayPalResponse payPalResponse)
-            throws JSONException, BrowserSwitchException {
+    private BrowserSwitchOptions buildBrowserSwitchOptions(PayPalResponse payPalResponse)
+            throws JSONException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", payPalResponse.getApprovalUrl());
         metadata.put("success-url", payPalResponse.getSuccessUrl());
@@ -304,51 +184,12 @@ public class PayPalClient {
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
-        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+        return browserSwitchOptions;
     }
 
     private static String getAnalyticsEventPrefix(PayPalRequest request) {
         return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
                 "paypal.single-payment";
-    }
-
-    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
-        this.pendingBrowserSwitchResult = browserSwitchResult;
-        if (listener != null) {
-            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
-            // from the client to allow more flexibility to merchants who rely heavily on view model.
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
-    private void deliverBrowserSwitchResultToListener(
-            final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(browserSwitchResult, (payPalAccountNonce, error) -> {
-            if (payPalAccountNonce != null && listener != null) {
-                listener.onPayPalSuccess(payPalAccountNonce);
-            } else if (error != null && listener != null) {
-                listener.onPayPalFailure(error);
-            }
-        });
-        this.pendingBrowserSwitchResult = null;
-    }
-
-    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
-    // logic into another component that also gives merchants more flexibility when using view models
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
     }
 
     /**

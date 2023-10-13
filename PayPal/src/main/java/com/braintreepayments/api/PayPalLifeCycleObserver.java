@@ -17,11 +17,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 class PayPalLifecycleObserver implements LifecycleEventObserver {
 
-    @VisibleForTesting
-    final PayPalClient payPalClient;
 
-    PayPalLifecycleObserver(PayPalClient payPalClient) {
-        this.payPalClient = payPalClient;
+    PayPalLifecycleObserver() {
     }
 
     @Override
@@ -30,12 +27,8 @@ class PayPalLifecycleObserver implements LifecycleEventObserver {
             FragmentActivity activity = null;
             if (lifecycleOwner instanceof FragmentActivity) {
                 activity = (FragmentActivity) lifecycleOwner;
-            } else if (lifecycleOwner instanceof Fragment) {
-                activity = ((Fragment) lifecycleOwner).getActivity();
             }
-
             if (activity != null) {
-
                 /*
                  * WORKAROUND: Android 9 onResume() / onNewIntent() are called in an unpredictable way.
                  *
