@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 public class PayPalLauncher {
@@ -13,7 +14,12 @@ public class PayPalLauncher {
     private final BrowserSwitchClient browserSwitchClient;
 
     public PayPalLauncher() {
-        browserSwitchClient = new BrowserSwitchClient();
+        this(new BrowserSwitchClient());
+    }
+
+    @VisibleForTesting
+    PayPalLauncher(@NonNull BrowserSwitchClient browserSwitchClient) {
+        this.browserSwitchClient = browserSwitchClient;
     }
     public void launch(@NonNull FragmentActivity activity, PayPalResponse payPalResponse)
             throws BrowserSwitchException {

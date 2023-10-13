@@ -153,7 +153,8 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.tokenizePayPalAccount(activity, new PayPalCheckoutRequest("1.00"), payPalFlowStartedCallback);
+        sut.tokenizePayPalAccount(activity, new PayPalCheckoutRequest("1.00"),
+                payPalFlowStartedCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(payPalFlowStartedCallback).onResult(isNull(), errorCaptor.capture());
@@ -174,7 +175,8 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.tokenizePayPalAccount(activity, new PayPalCheckoutRequest("1.00"), payPalFlowStartedCallback);
+        sut.tokenizePayPalAccount(activity, new PayPalCheckoutRequest("1.00"),
+                payPalFlowStartedCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(payPalFlowStartedCallback).onResult(isNull(), errorCaptor.capture());
