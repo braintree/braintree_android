@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.wallet.PaymentDataRequest;
 
-class GooglePayIntentData {
+/**
+ * Used to request Google Pay payment authorization via
+ * {@link GooglePayLauncher#launch(GooglePayIntentData)}
+ */
+public class GooglePayIntentData {
 
     private final int googlePayEnvironment;
     private final PaymentDataRequest paymentDataRequest;
@@ -14,11 +18,11 @@ class GooglePayIntentData {
         this.paymentDataRequest = paymentDataRequest;
     }
 
-    public int getGooglePayEnvironment() {
+    int getGooglePayEnvironment() {
         return googlePayEnvironment;
     }
 
-    public PaymentDataRequest getPaymentDataRequest() {
+    PaymentDataRequest getPaymentDataRequest() {
         return paymentDataRequest;
     }
 }
