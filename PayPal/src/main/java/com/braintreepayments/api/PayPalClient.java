@@ -45,7 +45,6 @@ public class PayPalClient {
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
-
     private void assertCanPerformBrowserSwitch(FragmentActivity activity)
             throws BrowserSwitchException {
         braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
@@ -64,6 +63,7 @@ public class PayPalClient {
                         "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                         "for the correct configuration: " + exception.getMessage());
     }
+
 
     /**
      * Tokenize a PayPal account for vault or checkout.
@@ -187,9 +187,9 @@ public class PayPalClient {
         return browserSwitchOptions;
     }
 
-    private static String getAnalyticsEventPrefix(PayPalRequest request) {
-        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
-                "paypal.single-payment";
+    private static String getAnalyticsEventPrefix(PayPalRequest request){
+            return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
+                    "paypal.single-payment";
     }
 
     /**
