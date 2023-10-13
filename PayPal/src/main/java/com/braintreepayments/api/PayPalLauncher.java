@@ -10,17 +10,14 @@ import androidx.fragment.app.FragmentActivity;
 
 public class PayPalLauncher {
 
-    private BrowserSwitchClient browserSwitchClient;
+    private final BrowserSwitchClient browserSwitchClient;
 
     public PayPalLauncher() {
         browserSwitchClient = new BrowserSwitchClient();
     }
-    public void launch(@NonNull FragmentActivity activity, PayPalResponse payPalResponse) {
-        try {
-            browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
-        } catch (BrowserSwitchException e) {
-            throw new RuntimeException(e);
-        }
+    public void launch(@NonNull FragmentActivity activity, PayPalResponse payPalResponse)
+            throws BrowserSwitchException {
+        browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
     }
 
     public BrowserSwitchResult deliverResult(Context context, Intent intent) {

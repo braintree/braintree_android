@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalAccountNonce;
@@ -113,7 +114,13 @@ public class PayPalFragment extends BaseFragment {
             payPalRequest = createPayPalCheckoutRequest(activity, amount);
         }
         payPalClient.tokenizePayPalAccount(activity, payPalRequest,
-                (payPalResponse, error) -> payPalLauncher.launch(requireActivity(), payPalResponse));
+                (payPalResponse, error) -> {
+                    try {
+                        payPalLauncher.launch(requireActivity(), payPalResponse);
+                    } catch (BrowserSwitchException e) {
+                        handleError(e);
+                    }
+                });
     }
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
