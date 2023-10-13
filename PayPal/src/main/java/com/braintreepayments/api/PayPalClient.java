@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -21,13 +23,8 @@ public class PayPalClient {
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
 
-    @VisibleForTesting
-    BrowserSwitchResult pendingBrowserSwitchResult;
-
     /**
      * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
-     * <p>
-     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
@@ -64,9 +61,9 @@ public class PayPalClient {
                         "for the correct configuration: " + exception.getMessage());
     }
 
-
     /**
-     * Tokenize a PayPal account for vault or checkout.
+     * Starts the PayPal tokenization process by creating a {@link PayPalResponse} to be used to
+     * launch the PayPal web authentication flow in {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
@@ -193,7 +190,10 @@ public class PayPalClient {
     }
 
     /**
-     * Use this method with the manual browser switch integration pattern.
+     * After receiving a result from the PayPal web authentication flow via
+     * {@link PayPalLauncher#deliverResult(Context, Intent)}, pass the
+     * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
+     * receive a {@link PayPalAccountNonce} on success.
      *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}
