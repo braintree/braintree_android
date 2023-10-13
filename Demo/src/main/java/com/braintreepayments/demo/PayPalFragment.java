@@ -65,13 +65,15 @@ public class PayPalFragment extends BaseFragment {
         super.onResume();
         BrowserSwitchResult result = payPalLauncher.deliverResult(requireContext(),
                 requireActivity().getIntent());
-        payPalClient.onBrowserSwitchResult(result, (payPalAccountNonce, error) -> {
-            if (error != null) {
-                handleError(error);
-            } else if (payPalAccountNonce != null) {
-                handlePayPalResult(payPalAccountNonce);
-            }
-        });
+        if (result != null) {
+            payPalClient.onBrowserSwitchResult(result, (payPalAccountNonce, error) -> {
+                if (error != null) {
+                    handleError(error);
+                } else if (payPalAccountNonce != null) {
+                    handlePayPalResult(payPalAccountNonce);
+                }
+            });
+        }
     }
 
     public void launchSinglePayment(View v) {
