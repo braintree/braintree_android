@@ -169,7 +169,7 @@ class MyActivity : FragmentActivity() {
 +       }
     }
     
-    // ALL OTHER LAUNCH MODES 
+    // ALL OTHER ACTIVITY LAUNCH MODES 
     @override fun onResume() {
 +       val result = payPalLauncher.deliverResult(requireContext(), requireActivity().intent)
 +       result?.let {
