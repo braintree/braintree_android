@@ -204,7 +204,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     @Nullable
-    public String getAuthEmail() {
+    public String getUserAuthenticationEmail() {
         return authEmail;
     }
 
@@ -213,7 +213,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
      *
      * @param authEmail the users email address
      */
-    public void setAuthEmail(@NonNull String authEmail) {
+    public void setUserAuthenticationEmail(@NonNull String authEmail) {
         this.authEmail = authEmail;
     }
 
