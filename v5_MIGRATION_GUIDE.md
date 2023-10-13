@@ -7,7 +7,8 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 1. [Android API](#android-api)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
-1. [Google Pay] (#google-pay)
+1. [Google Pay](#google-pay)
+1. [PayPal](#paypal)
 
 ## Android API
 
@@ -131,3 +132,75 @@ class MyActivity : FragmentActivity() {
 }
 ```
 
+## PayPal
+
+The PayPal integration has been updated to allow for more flexibility with browser switching and
+result handling.
+
+`PayPalLauncher` has been added to handle the browser switching portion of the PayPal flow for
+payment authorization via PayPal login. This class is used to handle browser switch 
+results upon returning to your app from the web flow, therefore must be instantiated in or 
+before the `OnResume` method of your Activity or Fragment.
+
+`BraintreeClient` and `PayPalClient` no longer require references to Fragment or Activity and
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+    
++   private lateinit var payPalLauncher: payPalLauncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var payPalClient: PayPalClient
+    
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       payPalLauncher = PayPalLauncher() 
+    }
+    
+    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    @override fun onNewIntent(intent: Intent) {
+        setIntent(intent)
++       val result = payPalLauncher.deliverResult(requireContext(), intent)
++       result?.let {
++           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
++               // handle paypal account nonce or error
++           }
++       }
+    }
+    
+    // ALL OTHER LAUNCH MODES 
+    @override fun onResume() {
++       val result = payPalLauncher.deliverResult(requireContext(), requireActivity().intent)
++       result?.let {
++           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
++               // handle paypal account nonce or error
++           }
++       }
+    }
+    
+    
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       payPalClient = PayPalClient(this, braintreeClient)
++       payPalClient = PayPalClient(braintreeClient)
+-       payPalClient.setListener(this)
+    }
+    
+    fun onPayPalButtonClick() {
+-       payPalClient.tokenizePayPalAccount(activity, request)
++       payPalClient.tokenizePayPalAccount(this, request) { payPalResponse, error ->
++            error?.let { /* handle error */ }
++            payPalResponse?.let { payPalLauncher.launch(requireActivity(), it) }
++       }
+    }
+    
+-   override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
+-        // handle paypal account nonce
+-   }
+      
+-   override fun onPayPalFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
+```
