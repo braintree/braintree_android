@@ -39,8 +39,6 @@ public class PayPalFragment extends BaseFragment {
 
     private DataCollector dataCollector;
 
-    private boolean useManualBrowserSwitch;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,8 +50,6 @@ public class PayPalFragment extends BaseFragment {
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         braintreeClient = getBraintreeClient();
-
-        useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
         payPalClient = new PayPalClient(braintreeClient);
         payPalLauncher = new PayPalLauncher();
 
