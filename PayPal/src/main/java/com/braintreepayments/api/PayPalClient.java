@@ -14,8 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Used to tokenize PayPal accounts. For more information see the
- * <a
+ * Used to tokenize PayPal accounts. For more information see the <a
  * href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
  */
 public class PayPalClient {
@@ -42,6 +41,7 @@ public class PayPalClient {
     private static boolean payPalConfigInvalid(Configuration configuration) {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
+
     private void assertCanPerformBrowserSwitch(FragmentActivity activity)
             throws BrowserSwitchException {
         braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
@@ -63,7 +63,8 @@ public class PayPalClient {
 
     /**
      * Starts the PayPal tokenization process by creating a {@link PayPalResponse} to be used to
-     * launch the PayPal web authentication flow in {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
+     * launch the PayPal web authentication flow in
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
@@ -155,7 +156,7 @@ public class PayPalClient {
                             callback.onResult(null, exception);
                         }
                     } else {
-                        callback.onResult(null , error);
+                        callback.onResult(null, error);
                     }
                 });
     }
@@ -184,16 +185,16 @@ public class PayPalClient {
         return browserSwitchOptions;
     }
 
-    private static String getAnalyticsEventPrefix(PayPalRequest request){
-            return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
-                    "paypal.single-payment";
+    private static String getAnalyticsEventPrefix(PayPalRequest request) {
+        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
+                "paypal.single-payment";
     }
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * {@link PayPalLauncher#deliverResult(Context, Intent)}, pass the
-     * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
-     * receive a {@link PayPalAccountNonce} on success.
+     * {@link PayPalLauncher#deliverResult(Context, Intent)}, pass the {@link BrowserSwitchResult}
+     * returned to this method to tokenize the PayPal account and receive a
+     * {@link PayPalAccountNonce} on success.
      *
      * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
      * @param callback            {@link PayPalBrowserSwitchResultCallback}

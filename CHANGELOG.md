@@ -24,6 +24,14 @@
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
     * Change `GooglePayClient#requestPayment` parameters
     * Add `GooglePayClient#tokenize` 
+  * PayPal
+    * Remove `PayPalListener`
+    * Add `PayPalLauncher` and `PayPalResponse`
+    * Add parameter to `PayPalFlowStartedCallback`
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult` 
+      `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
+      `PayPalClient`
+    * Change `PayPalClient#tokenizePayPalAccount` parameters
 
 ## unreleased
 
