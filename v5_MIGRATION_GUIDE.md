@@ -191,7 +191,13 @@ class MyActivity : FragmentActivity() {
 -       payPalClient.tokenizePayPalAccount(activity, request)
 +       payPalClient.tokenizePayPalAccount(this, request) { payPalResponse, error ->
 +            error?.let { /* handle error */ }
-+            payPalResponse?.let { payPalLauncher.launch(requireActivity(), it) }
++            payPalResponse?.let { 
++               try {
++                   payPalLauncher.launch(requireActivity(), it) 
++               } catch (error: BrowserSwitchException) {
++                   // handle error
++               }
++           }
 +       }
     }
     
