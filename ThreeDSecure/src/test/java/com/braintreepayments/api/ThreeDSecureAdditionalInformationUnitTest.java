@@ -64,7 +64,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         preSerialized.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureAdditionalInformation postSerialized = ThreeDSecureAdditionalInformation.CREATOR.createFromParcel(parcel);
+        ThreeDSecureAdditionalInformation postSerialized =
+                ThreeDSecureAdditionalInformation.CREATOR.createFromParcel(parcel);
 
         assertEquals("shipping-given-name", postSerialized.getShippingAddress().getGivenName());
         assertEquals("shipping-method-indicator", postSerialized.getShippingMethodIndicator());
@@ -83,7 +84,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("account_change_date", postSerialized.getAccountChangeDate());
         assertEquals("account_pwd_change_indicator", postSerialized.getAccountPwdChangeIndicator());
         assertEquals("account_pwd_change_date", postSerialized.getAccountPwdChangeDate());
-        assertEquals("shipping_address_usage_indicator", postSerialized.getShippingAddressUsageIndicator());
+        assertEquals("shipping_address_usage_indicator",
+                postSerialized.getShippingAddressUsageIndicator());
         assertEquals("shipping_address_usage_date", postSerialized.getShippingAddressUsageDate());
         assertEquals("transaction_count_day", postSerialized.getTransactionCountDay());
         assertEquals("transaction_count_year", postSerialized.getTransactionCountYear());
@@ -122,7 +124,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         shippingAddress.setPostalCode("shipping-postal-code");
         shippingAddress.setCountryCodeAlpha2("shipping-country-code");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        ThreeDSecureAdditionalInformation additionalInformation =
+                new ThreeDSecureAdditionalInformation();
         additionalInformation.setShippingAddress(shippingAddress);
         additionalInformation.setShippingMethodIndicator("shipping-method-indicator");
         additionalInformation.setProductCode("product_code");
@@ -176,7 +179,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("shipping-state", jsonParams.getString("shipping_state"));
         assertEquals("shipping-postal-code", jsonParams.getString("shipping_postal_code"));
         assertEquals("shipping-country-code", jsonParams.getString("shipping_country_code"));
-        assertEquals("shipping-method-indicator", jsonParams.getString("shipping_method_indicator"));
+        assertEquals("shipping-method-indicator",
+                jsonParams.getString("shipping_method_indicator"));
         assertEquals("product_code", jsonParams.getString("product_code"));
         assertEquals("delivery_timeframe", jsonParams.getString("delivery_timeframe"));
         assertEquals("delivery_email", jsonParams.getString("delivery_email"));
@@ -190,17 +194,21 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("account_create_date", jsonParams.getString("account_create_date"));
         assertEquals("account_change_indicator", jsonParams.getString("account_change_indicator"));
         assertEquals("account_change_date", jsonParams.getString("account_change_date"));
-        assertEquals("account_pwd_change_indicator", jsonParams.getString("account_pwd_change_indicator"));
+        assertEquals("account_pwd_change_indicator",
+                jsonParams.getString("account_pwd_change_indicator"));
         assertEquals("account_pwd_change_date", jsonParams.getString("account_pwd_change_date"));
-        assertEquals("shipping_address_usage_indicator", jsonParams.getString("shipping_address_usage_indicator"));
-        assertEquals("shipping_address_usage_date", jsonParams.getString("shipping_address_usage_date"));
+        assertEquals("shipping_address_usage_indicator",
+                jsonParams.getString("shipping_address_usage_indicator"));
+        assertEquals("shipping_address_usage_date",
+                jsonParams.getString("shipping_address_usage_date"));
         assertEquals("transaction_count_day", jsonParams.getString("transaction_count_day"));
         assertEquals("transaction_count_year", jsonParams.getString("transaction_count_year"));
         assertEquals("add_card_attempts", jsonParams.getString("add_card_attempts"));
         assertEquals("account_purchases", jsonParams.getString("account_purchases"));
         assertEquals("fraud_activity", jsonParams.getString("fraud_activity"));
         assertEquals("shipping_name_indicator", jsonParams.getString("shipping_name_indicator"));
-        assertEquals("payment_account_indicator", jsonParams.getString("payment_account_indicator"));
+        assertEquals("payment_account_indicator",
+                jsonParams.getString("payment_account_indicator"));
         assertEquals("payment_account_age", jsonParams.getString("payment_account_age"));
         assertEquals("address_match", jsonParams.getString("address_match"));
         assertEquals("account_id", jsonParams.getString("account_id"));
@@ -219,7 +227,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
     @Test
     public void testToJson_buildsEmptyParameters() {
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        ThreeDSecureAdditionalInformation additionalInformation =
+                new ThreeDSecureAdditionalInformation();
 
         JSONObject jsonParams = additionalInformation.toJson();
 

@@ -15,18 +15,21 @@ public class SharedPreferencesHelper {
         return context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
     }
 
-    public static void overrideConfigurationCache(Context context, Authorization authorization, Configuration configuration) {
+    public static void overrideConfigurationCache(Context context, Authorization authorization,
+                                                  Configuration configuration) {
         final String configUrl = Uri.parse(authorization.getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()
                 .toString();
 
-        String cacheKey = Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
+        String cacheKey = Base64.encodeToString(
+                String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
         String timestampKey = String.format("%s_timestamp", cacheKey);
         BraintreeSharedPreferences
                 .getInstance(context)
-                .putStringAndLong(cacheKey, configuration.toJson(), timestampKey, System.currentTimeMillis());
+                .putStringAndLong(cacheKey, configuration.toJson(), timestampKey,
+                        System.currentTimeMillis());
     }
 
     public static void clearConfigurationCacheOverride(Context context) {

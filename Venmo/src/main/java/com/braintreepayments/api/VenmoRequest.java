@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- A VenmoRequest specifies options that contribute to the Venmo flow
+ * A VenmoRequest specifies options that contribute to the Venmo flow
  */
 public class VenmoRequest implements Parcelable {
 
@@ -31,7 +31,8 @@ public class VenmoRequest implements Parcelable {
     /**
      * Request to tokenize a Venmo account.
      *
-     * @param paymentMethodUsage {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
+     * @param paymentMethodUsage {@link VenmoPaymentMethodUsage} for the tokenized Venmo account:
+     *                           either multi-use or single use.
      */
     public VenmoRequest(@VenmoPaymentMethodUsage int paymentMethodUsage) {
         this.paymentMethodUsage = paymentMethodUsage;
@@ -40,8 +41,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
-     *                    Vaulting will only occur if a client token with a customer ID is being used.
-     *                    Defaults to false.
+     *                    Vaulting will only occur if a client token with a customer ID is being
+     *                    used. Defaults to false.
      */
     public void setShouldVault(boolean shouldVault) {
         this.shouldVault = shouldVault;
@@ -51,8 +52,8 @@ public class VenmoRequest implements Parcelable {
      * @param profileId Optional - The Venmo profile ID to be used during payment authorization.
      *                  Customers will see the business name and logo associated with this Venmo
      *                  profile, and it will show up in the Venmo app as a "Connected Merchant".
-     *                  Venmo profile IDs can be found in the Braintree Control Panel.
-     *                  Leaving this `null` will use the default Venmo profile.
+     *                  Venmo profile IDs can be found in the Braintree Control Panel. Leaving this
+     *                  `null` will use the default Venmo profile.
      */
     public void setProfileId(@Nullable String profileId) {
         this.profileId = profileId;
@@ -74,21 +75,25 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @return {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or single use.
+     * @return {@link VenmoPaymentMethodUsage} for the tokenized Venmo account: either multi-use or
+     * single use.
      */
     public @VenmoPaymentMethodUsage int getPaymentMethodUsage() {
         return paymentMethodUsage;
     }
 
     /**
-     * @param displayName Optional. The business name that will be displayed in the Venmo app payment approval screen. Only used by merchants onboarded as PayFast channel partners.
+     * @param displayName Optional. The business name that will be displayed in the Venmo app
+     *                    payment approval screen. Only used by merchants onboarded as PayFast
+     *                    channel partners.
      */
     public void setDisplayName(@Nullable String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * @return The business name that will be displayed in the Venmo app payment approval screen. Only used by merchants onboarded as PayFast channel partners.
+     * @return The business name that will be displayed in the Venmo app payment approval screen.
+     * Only used by merchants onboarded as PayFast channel partners.
      */
     @Nullable
     public String getDisplayName() {
@@ -107,14 +112,16 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @param flag Optional. Whether or not shipping address should be collected and displayed on Venmo paysheet.
+     * @param flag Optional. Whether or not shipping address should be collected and displayed on
+     *             Venmo paysheet.
      */
     public void setCollectCustomerShippingAddress(boolean flag) {
         this.collectCustomerShippingAddress = flag;
     }
 
     /**
-     * @return The boolean value of the flag that signifies whether customer shipping address will be collected.
+     * @return The boolean value of the flag that signifies whether customer shipping address will
+     * be collected.
      */
     public boolean getCollectCustomerShippingAddress() {
         return collectCustomerShippingAddress;
@@ -125,14 +132,16 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @param flag Optional. Whether or not billing address should be collected and displayed on Venmo paysheet.
+     * @param flag Optional. Whether or not billing address should be collected and displayed on
+     *             Venmo paysheet.
      */
     public void setCollectCustomerBillingAddress(boolean flag) {
         this.collectCustomerBillingAddress = flag;
     }
 
     /**
-     * @return The boolean value of the flag that signifies whether customer billing address will be collected.
+     * @return The boolean value of the flag that signifies whether customer billing address will be
+     * collected.
      */
     public boolean getCollectCustomerBillingAddress() {
         return collectCustomerBillingAddress;
@@ -143,9 +152,10 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @param subTotalAmount Optional. The subtotal amount of the transaction, excluding taxes, discounts, and shipping.
-     *
-     * If this value is set, `totalAmount` must also be set.
+     * @param subTotalAmount Optional. The subtotal amount of the transaction, excluding taxes,
+     *                       discounts, and shipping.
+     *                       <p>
+     *                       If this value is set, `totalAmount` must also be set.
      */
     public void setSubTotalAmount(@Nullable String subTotalAmount) {
         this.subTotalAmount = subTotalAmount;
@@ -161,8 +171,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param shippingAmount Optional. The shipping amount charged for the transaction.
-     *
-     * If this value is set, `totalAmount` must also be set.
+     *                       <p>
+     *                       If this value is set, `totalAmount` must also be set.
      */
     public void setShippingAmount(@Nullable String shippingAmount) {
         this.shippingAmount = shippingAmount;
@@ -178,8 +188,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param discountAmount Optional. The total discount amount applied on the transaction.
-     *
-     * If this value is set, `totalAmount` must also be set.
+     *                       <p>
+     *                       If this value is set, `totalAmount` must also be set.
      */
     public void setDiscountAmount(@Nullable String discountAmount) {
         this.discountAmount = discountAmount;
@@ -195,8 +205,8 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * @param taxAmount Optional. The total tax amount applied to the transaction.
-     *
-     * If this value is set, `totalAmount` must also be set.
+     *                  <p>
+     *                  If this value is set, `totalAmount` must also be set.
      */
     public void setTaxAmount(@Nullable String taxAmount) {
         this.taxAmount = taxAmount;
@@ -211,7 +221,8 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @param totalAmount Optional. The grand total amount of the transaction that will be displayed on the paysheet.
+     * @param totalAmount Optional. The grand total amount of the transaction that will be displayed
+     *                    on the paysheet.
      */
     public void setTotalAmount(@Nullable String totalAmount) {
         this.totalAmount = totalAmount;
@@ -227,8 +238,9 @@ public class VenmoRequest implements Parcelable {
 
     /**
      * Optional: The line items for this transaction. Can include up to 249 line items.
-     *
+     * <p>
      * If this value is set, `totalAmount` must also be set.
+     *
      * @param lineItems a collection of {@link VenmoLineItem}
      */
     public void setLineItems(@NonNull Collection<VenmoLineItem> lineItems) {

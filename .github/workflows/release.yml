@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       # After decoding the secret key, place the file in ~ /. Gradle/ secring.gpg
       - name: Decode Signing Key
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -60,7 +60,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -84,7 +84,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -96,7 +96,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -108,7 +108,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -120,7 +120,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -132,7 +132,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -144,7 +144,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -156,7 +156,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -168,7 +168,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -180,7 +180,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -192,7 +192,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
@@ -231,7 +231,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Setup Java
         uses: ./.github/actions/setup
       - name: Decode Signing Key
         uses: ./.github/actions/decode_signing_key_action

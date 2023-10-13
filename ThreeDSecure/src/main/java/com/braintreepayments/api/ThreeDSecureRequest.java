@@ -20,19 +20,25 @@ import java.util.List;
 public class ThreeDSecureRequest implements Parcelable {
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({VERSION_1, VERSION_2})
-    @interface ThreeDSecureVersion {}
+    @interface ThreeDSecureVersion {
+    }
+
     public static final String VERSION_1 = "1";
     public static final String VERSION_2 = "2";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({CREDIT, DEBIT})
-    @interface ThreeDSecureAccountType {}
+    @interface ThreeDSecureAccountType {
+    }
+
     public static final String CREDIT = "credit";
     public static final String DEBIT = "debit";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({LOW_VALUE, SECURE_CORPORATE, TRUSTED_BENEFICIARY, TRANSACTION_RISK_ANALYSIS})
-    @interface ThreeDSecureRequestedExemptionType {}
+    @interface ThreeDSecureRequestedExemptionType {
+    }
+
     public static final String LOW_VALUE = "low_value";
     public static final String SECURE_CORPORATE = "secure_corporate";
     public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
@@ -40,14 +46,18 @@ public class ThreeDSecureRequest implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NATIVE, HTML, BOTH})
-    @interface ThreeDSecureUiType {}
+    @interface ThreeDSecureUiType {
+    }
+
     public static final int NATIVE = 1;
     public static final int HTML = 2;
     public static final int BOTH = 3;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({OTP, SINGLE_SELECT, MULTI_SELECT, OOB, RENDER_HTML})
-    @interface ThreeDSecureRenderType {}
+    @interface ThreeDSecureRenderType {
+    }
+
     public static final int OTP = 1;
     public static final int SINGLE_SELECT = 2;
     public static final int MULTI_SELECT = 3;
@@ -85,7 +95,10 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * Set the amount
      *
-     * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
+     * @param amount The amount of the transaction in the current merchant account's currency. This
+     *               must be expressed in numbers with an optional decimal (using `.`) and precision
+     *               up to the hundredths place. For example, if you're processing a transaction for
+     *               1.234,56 € then `amount` should be `1234.56`.
      */
     public void setAmount(@Nullable String amount) {
         this.amount = amount;
@@ -94,7 +107,8 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * Optional. Set the mobilePhoneNumber
      *
-     * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
+     * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove
+     *                          dashes, parentheses and other characters.
      */
     public void setMobilePhoneNumber(@Nullable String mobilePhoneNumber) {
         this.mobilePhoneNumber = mobilePhoneNumber;
@@ -110,16 +124,11 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Set the shippingMethod
-     * Possible Values:
-     * 01 Same Day
-     * 02 Overnight / Expedited
-     * 03 Priority (2-3 Days)
-     * 04 Ground
-     * 05 Electronic Delivery
-     * 06 Ship to Store
+     * Optional. Set the shippingMethod Possible Values: 01 Same Day 02 Overnight / Expedited 03
+     * Priority (2-3 Days) 04 Ground 05 Electronic Delivery 06 Ship to Store
      *
-     * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
+     * @param shippingMethod The 2-digit string indicating the shipping method chosen for the
+     *                       transaction.
      */
     public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
         this.shippingMethod = shippingMethod;
@@ -135,8 +144,8 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Set the desired ThreeDSecure version.
-     * Possible Values defined at {@link ThreeDSecureVersion}.
+     * Optional. Set the desired ThreeDSecure version. Possible Values defined at
+     * {@link ThreeDSecureVersion}.
      * <ul>
      * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible. Default value.</li>
      * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired.</li>
@@ -152,10 +161,11 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * Optional. The account type selected by the cardholder. Some cards can be processed using
-     * either a credit or debit account and cardholders have the option to choose which account to use.
-     * Possible values defined at {@link ThreeDSecureAccountType}.
+     * either a credit or debit account and cardholders have the option to choose which account to
+     * use. Possible values defined at {@link ThreeDSecureAccountType}.
      *
-     * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
+     * @param accountType {@link ThreeDSecureAccountType} The account type selected by the
+     *                    cardholder.
      */
     public void setAccountType(@Nullable @ThreeDSecureAccountType String accountType) {
         this.accountType = accountType;
@@ -166,12 +176,14 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param additionalInformation Additional information.
      */
-    public void setAdditionalInformation(@Nullable ThreeDSecureAdditionalInformation additionalInformation) {
+    public void setAdditionalInformation(
+            @Nullable ThreeDSecureAdditionalInformation additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 
     /**
-     * Optional If set to true, the customer will be asked to complete the authentication challenge if possible
+     * Optional If set to true, the customer will be asked to complete the authentication challenge
+     * if possible
      *
      * @param challengeRequested decides if a challenge will be forced.
      */
@@ -194,33 +206,36 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * Optional. 3D Secure requested exemption type. If an exemption is requested and the
-     * exemption's conditions are satisfied, then it will be applied.
-     * Possible values defined at {@link ThreeDSecureRequestedExemptionType}.
+     * exemption's conditions are satisfied, then it will be applied. Possible values defined at
+     * {@link ThreeDSecureRequestedExemptionType}.
      *
-     * @param requestedExemptionType {@link ThreeDSecureRequestedExemptionType} The exemption type selected by the cardholder.
+     * @param requestedExemptionType {@link ThreeDSecureRequestedExemptionType} The exemption type
+     *                               selected by the cardholder.
      */
-    public void setRequestedExemptionType(@Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
+    public void setRequestedExemptionType(
+            @Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
         this.requestedExemptionType = requestedExemptionType;
     }
 
     /**
-     * Optional. An authentication created using this flag should only be used for adding a
-     * payment method to the merchant's vault and not for creating transactions.
+     * Optional. An authentication created using this flag should only be used for adding a payment
+     * method to the merchant's vault and not for creating transactions.
      *
-     * @param cardAddChallengeRequested If set to true, the authentication challenge will be requested
-     *                                  from the issuer to confirm adding new card to the merchant's
-     *                                  vault. If not set and amount is 0, the authentication challenge
-     *                                  will be presented to the user. If set to false, when the amount
-     *                                  is 0, the authentication challenge will not be presented to the user.
-     *
+     * @param cardAddChallengeRequested If set to true, the authentication challenge will be
+     *                                  requested from the issuer to confirm adding new card to the
+     *                                  merchant's vault. If not set and amount is 0, the
+     *                                  authentication challenge will be presented to the user. If
+     *                                  set to false, when the amount is 0, the authentication
+     *                                  challenge will not be presented to the user.
      */
     public void setCardAddChallengeRequested(@Nullable Boolean cardAddChallengeRequested) {
         this.cardAddChallengeRequested = cardAddChallengeRequested;
     }
 
     /**
-     * Optional UI Customization for the 3DS2 challenge views.
-     * See <a href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization documentation</a>.
+     * Optional UI Customization for the 3DS2 challenge views. See <a
+     * href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization
+     * documentation</a>.
      *
      * @param v2UiCustomization specifies how 3DS2 challenge views should be customized.
      */
@@ -238,12 +253,9 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces in the 3D Secure challenge.
-     * Possible Values:
-     * 01 BOTH
-     * 02 Native
-     * 03 HTML
-     *
+     * Optional. Sets all UI types that the device supports for displaying specific challenge user
+     * interfaces in the 3D Secure challenge. Possible Values: 01 BOTH 02 Native 03 HTML
+     * <p>
      * Defaults to BOTH
      *
      * @param uiType {@link ThreeDSecureUiType} The UI type to request.
@@ -253,11 +265,13 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. List of all the render types that the device supports for displaying specific challenge user interfaces within the 3D Secure challenge.
-     *
-     * When using `ThreeDSecureUIType.BOTH` or `ThreeDSecureUIType.HTML`, all `ThreeDSecureRenderType` options must be set.
-     * When using `ThreeDSecureUIType.NATIVE`, all `ThreeDSecureRenderType` options except `ThreeDSecureRenderType.RENDER_HTML` must be set.
-     *
+     * Optional. List of all the render types that the device supports for displaying specific
+     * challenge user interfaces within the 3D Secure challenge.
+     * <p>
+     * When using `ThreeDSecureUIType.BOTH` or `ThreeDSecureUIType.HTML`, all
+     * `ThreeDSecureRenderType` options must be set. When using `ThreeDSecureUIType.NATIVE`, all
+     * `ThreeDSecureRenderType` options except `ThreeDSecureRenderType.RENDER_HTML` must be set.
+     * <p>
      * Defaults to OTP, OOB, SINGLE_SELECT, MULTI_SELECT, RENDER_HTML
      *
      * @param renderType specifies what render type to use in the 3D Secure challenge
@@ -404,7 +418,8 @@ public class ThreeDSecureRequest implements Parcelable {
         return renderTypes;
     }
 
-    public ThreeDSecureRequest() {}
+    public ThreeDSecureRequest() {
+    }
 
     @Override
     public int describeContents() {
@@ -439,7 +454,8 @@ public class ThreeDSecureRequest implements Parcelable {
         shippingMethod = in.readInt();
         billingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         versionRequested = in.readString();
-        additionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
+        additionalInformation =
+                in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
@@ -480,7 +496,7 @@ public class ThreeDSecureRequest implements Parcelable {
             base.putOpt("account_type", accountType);
 
             if (cardAddChallengeRequested != null) {
-               base.put("card_add", cardAddChallengeRequested);
+                base.put("card_add", cardAddChallengeRequested);
             }
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());

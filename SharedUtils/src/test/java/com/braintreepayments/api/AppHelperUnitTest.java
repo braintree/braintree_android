@@ -27,16 +27,19 @@ public class AppHelperUnitTest {
     }
 
     @Test
-    public void isAppInstalled_whenAppInfoExistsForPackageName_returnsTrue() throws NameNotFoundException {
+    public void isAppInstalled_whenAppInfoExistsForPackageName_returnsTrue()
+            throws NameNotFoundException {
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(mock(ApplicationInfo.class));
+        when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(
+                mock(ApplicationInfo.class));
 
         AppHelper sut = new AppHelper();
         assertTrue(sut.isAppInstalled(context, "package.name"));
     }
 
     @Test
-    public void isAppInstalled_whenAppInfoIsNullForPackageName_returnsTrue() throws NameNotFoundException {
+    public void isAppInstalled_whenAppInfoIsNullForPackageName_returnsTrue()
+            throws NameNotFoundException {
         when(context.getPackageManager()).thenReturn(packageManager);
         when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(null);
 
@@ -45,9 +48,11 @@ public class AppHelperUnitTest {
     }
 
     @Test
-    public void isAppInstalled_whenAppInfoNotFoundForPackageName_returnsTrue() throws NameNotFoundException {
+    public void isAppInstalled_whenAppInfoNotFoundForPackageName_returnsTrue()
+            throws NameNotFoundException {
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(packageManager.getApplicationInfo("package.name", 0)).thenThrow(new NameNotFoundException());
+        when(packageManager.getApplicationInfo("package.name", 0)).thenThrow(
+                new NameNotFoundException());
 
         AppHelper sut = new AppHelper();
         assertFalse(sut.isAppInstalled(context, "package.name"));

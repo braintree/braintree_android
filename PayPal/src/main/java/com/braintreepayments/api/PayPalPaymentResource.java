@@ -29,8 +29,8 @@ class PayPalPaymentResource {
     }
 
     /**
-     * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with
-     * Single Payment and Billing Agreement flows.
+     * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with Single
+     * Payment and Billing Agreement flows.
      *
      * @param jsonString a valid JSON string representing the payment resource
      * @return a PayPal payment resource

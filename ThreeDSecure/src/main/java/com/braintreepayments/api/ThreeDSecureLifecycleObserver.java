@@ -19,7 +19,8 @@ import androidx.lifecycle.LifecycleOwner;
 // NEXT_MAJOR_VERSION: Update to implement DefaultLifeCycleObserver when Java 7 support is explicitly dropped.
 class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
 
-    private static final String THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecure.RESULT";
+    private static final String THREE_D_SECURE_RESULT =
+            "com.braintreepayments.api.ThreeDSecure.RESULT";
 
     @VisibleForTesting
     ThreeDSecureClient threeDSecureClient;
@@ -30,7 +31,8 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
     @VisibleForTesting
     ActivityResultLauncher activityLauncher;
 
-    ThreeDSecureLifecycleObserver(ActivityResultRegistry activityResultRegistry, ThreeDSecureClient threeDSecureClient) {
+    ThreeDSecureLifecycleObserver(ActivityResultRegistry activityResultRegistry,
+                                  ThreeDSecureClient threeDSecureClient) {
         this.activityResultRegistry = activityResultRegistry;
         this.threeDSecureClient = threeDSecureClient;
     }
@@ -40,15 +42,15 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
     }
 
     @Override
-    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
+    public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner,
+                               @NonNull Lifecycle.Event event) {
         switch (event) {
             case ON_CREATE:
-                activityLauncher = activityResultRegistry.register(THREE_D_SECURE_RESULT, lifecycleOwner, new ThreeDSecureActivityResultContract(), new ActivityResultCallback<CardinalResult>() {
-                    @Override
-                    public void onActivityResult(CardinalResult cardinalResult) {
-                        threeDSecureClient.onCardinalResult(cardinalResult);
-                    }
-                });
+                activityLauncher =
+                        activityResultRegistry.register(THREE_D_SECURE_RESULT, lifecycleOwner,
+                                new ThreeDSecureActivityResultContract(),
+                                cardinalResult -> threeDSecureClient.onCardinalResult(
+                                        cardinalResult));
             case ON_RESUME:
                 FragmentActivity activity = null;
                 if (lifecycleOwner instanceof FragmentActivity) {
@@ -77,26 +79,28 @@ class ThreeDSecureLifecycleObserver implements LifecycleEventObserver {
                      * has not yet been delivered via onNewIntent.
                      */
                     final FragmentActivity finalActivity = activity;
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            BrowserSwitchResult resultToDeliver = null;
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        BrowserSwitchResult resultToDeliver = null;
 
-                            BrowserSwitchResult pendingResult = threeDSecureClient.getBrowserSwitchResult(finalActivity);
-                            if (pendingResult != null && pendingResult.getRequestCode() == THREE_D_SECURE) {
-                                resultToDeliver = threeDSecureClient.deliverBrowserSwitchResult(finalActivity);
-                            }
+                        BrowserSwitchResult pendingResult =
+                                threeDSecureClient.getBrowserSwitchResult(finalActivity);
+                        if (pendingResult != null &&
+                                pendingResult.getRequestCode() == THREE_D_SECURE) {
+                            resultToDeliver =
+                                    threeDSecureClient.deliverBrowserSwitchResult(finalActivity);
+                        }
 
-                            BrowserSwitchResult pendingResultFromCache =
-                                    threeDSecureClient.getBrowserSwitchResultFromNewTask(finalActivity);
-                            if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == THREE_D_SECURE) {
-                                resultToDeliver =
-                                        threeDSecureClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
-                            }
+                        BrowserSwitchResult pendingResultFromCache =
+                                threeDSecureClient.getBrowserSwitchResultFromNewTask(finalActivity);
+                        if (pendingResultFromCache != null &&
+                                pendingResultFromCache.getRequestCode() == THREE_D_SECURE) {
+                            resultToDeliver =
+                                    threeDSecureClient.deliverBrowserSwitchResultFromNewTask(
+                                            finalActivity);
+                        }
 
-                            if (resultToDeliver != null) {
-                                threeDSecureClient.onBrowserSwitchResult(resultToDeliver);
-                            }
+                        if (resultToDeliver != null) {
+                            threeDSecureClient.onBrowserSwitchResult(resultToDeliver);
                         }
                     });
                 }

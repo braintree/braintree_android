@@ -10,7 +10,8 @@ import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
 /**
  * Toolbar customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
+public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization
+        implements Parcelable {
 
     private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
@@ -62,7 +63,8 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
     }
 
     /**
-     * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @param backgroundColor Color code in Hex format. For example, the color code can be
+     *                        “#999999”.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
         cardinalToolbarCustomization.setBackgroundColor(backgroundColor);
@@ -153,15 +155,16 @@ public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustom
         }
     }
 
-    public static final Creator<ThreeDSecureV2ToolbarCustomization> CREATOR = new Creator<ThreeDSecureV2ToolbarCustomization>() {
-        @Override
-        public ThreeDSecureV2ToolbarCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV2ToolbarCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV2ToolbarCustomization> CREATOR =
+            new Creator<ThreeDSecureV2ToolbarCustomization>() {
+                @Override
+                public ThreeDSecureV2ToolbarCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV2ToolbarCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV2ToolbarCustomization[] newArray(int size) {
-            return new ThreeDSecureV2ToolbarCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV2ToolbarCustomization[] newArray(int size) {
+                    return new ThreeDSecureV2ToolbarCustomization[size];
+                }
+            };
 }

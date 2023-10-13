@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Represents the parameters that are needed to tokenize a PayPal account.
- * See {@link PayPalNativeCheckoutRequest} and {@link PayPalNativeCheckoutVaultRequest}.
+ * Represents the parameters that are needed to tokenize a PayPal account. See
+ * {@link PayPalNativeCheckoutRequest} and {@link PayPalNativeCheckoutVaultRequest}.
  */
 public abstract class PayPalNativeRequest implements Parcelable {
 
@@ -70,9 +70,9 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Defaults to false. Set to true to enable user editing of the shipping address.
-     * Only applies when {@link PayPalNativeRequest#setShippingAddressOverride(PostalAddress)} is set
-     * with a {@link PostalAddress}.
+     * Defaults to false. Set to true to enable user editing of the shipping address. Only applies
+     * when {@link PayPalNativeRequest#setShippingAddressOverride(PostalAddress)} is set with a
+     * {@link PostalAddress}.
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
@@ -129,7 +129,8 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
+     * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on
+     * your Braintree account.
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
@@ -147,7 +148,8 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Optional: A valid shipping address to be displayed in the transaction flow. An error will occur if this address is not valid
+     * Optional: A valid shipping address to be displayed in the transaction flow. An error will
+     * occur if this address is not valid
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
@@ -193,11 +195,11 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Required: This is required in order for your app to redirect after authentication to the correct
-     * application
+     * Required: This is required in order for your app to redirect after authentication to the
+     * correct application
      *
-     * @param returnUrl the client application redirect link
-     * More info: https://developer.paypal.com/limited-release/paypal-mobile-checkout/android/#link-enablethesdk
+     * @param returnUrl the client application redirect link More info:
+     *                  https://developer.paypal.com/limited-release/paypal-mobile-checkout/android/#link-enablethesdk
      */
     public void setReturnUrl(@NonNull String returnUrl) {
         this.returnUrl = returnUrl;
@@ -241,7 +243,8 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return lineItems;
     }
 
-    abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
+    abstract String createRequestBody(Configuration configuration, Authorization authorization,
+                                      String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalNativeRequest(Parcel in) {
         localeCode = in.readString();

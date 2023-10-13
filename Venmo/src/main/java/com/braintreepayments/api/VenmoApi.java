@@ -18,18 +18,22 @@ class VenmoApi {
         this.apiClient = apiClient;
     }
 
-    void createPaymentContext(@NonNull final VenmoRequest request, String venmoProfileId, final VenmoApiCallback callback) {
+    void createPaymentContext(@NonNull final VenmoRequest request, String venmoProfileId,
+                              final VenmoApiCallback callback) {
         JSONObject params = new JSONObject();
         try {
-            params.put("query", "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
+            params.put("query",
+                    "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }");
             JSONObject input = new JSONObject();
             input.put("paymentMethodUsage", request.getPaymentMethodUsageAsString());
             input.put("merchantProfileId", venmoProfileId);
             input.put("customerClient", "MOBILE_APP");
             input.put("intent", "CONTINUE");
             JSONObject paysheetDetails = new JSONObject();
-            paysheetDetails.put("collectCustomerShippingAddress", request.getCollectCustomerShippingAddressAsString());
-            paysheetDetails.put("collectCustomerBillingAddress", request.getCollectCustomerBillingAddressAsString());
+            paysheetDetails.put("collectCustomerShippingAddress",
+                    request.getCollectCustomerShippingAddressAsString());
+            paysheetDetails.put("collectCustomerBillingAddress",
+                    request.getCollectCustomerBillingAddressAsString());
 
             JSONObject transactionDetails = new JSONObject();
             transactionDetails.put("subTotalAmount", request.getSubTotalAmount());
@@ -41,7 +45,8 @@ class VenmoApi {
             if (!request.getLineItems().isEmpty()) {
                 JSONArray lineItems = new JSONArray();
                 for (VenmoLineItem lineItem : request.getLineItems()) {
-                    if (lineItem.getUnitTaxAmount() == null || lineItem.getUnitTaxAmount().equals("")) {
+                    if (lineItem.getUnitTaxAmount() == null ||
+                            lineItem.getUnitTaxAmount().equals("")) {
                         lineItem.setUnitTaxAmount("0");
                     }
                     lineItems.put(lineItem.toJson());
@@ -63,49 +68,45 @@ class VenmoApi {
             callback.onResult(null, new BraintreeException("unexpected error"));
         }
 
-        braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    String paymentContextId = parsePaymentContextId(responseBody);
-                    if (TextUtils.isEmpty(paymentContextId)) {
-                        callback.onResult(null, new BraintreeException("Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
-                        return;
-                    }
-                    callback.onResult(paymentContextId,null);
-                } else {
-                    callback.onResult(null, httpError);
+        braintreeClient.sendGraphQLPOST(params.toString(), (responseBody, httpError) -> {
+            if (responseBody != null) {
+                String paymentContextId = parsePaymentContextId(responseBody);
+                if (TextUtils.isEmpty(paymentContextId)) {
+                    callback.onResult(null, new BraintreeException(
+                            "Failed to fetch a Venmo paymentContextId while constructing the requestURL."));
+                    return;
                 }
+                callback.onResult(paymentContextId, null);
+            } else {
+                callback.onResult(null, httpError);
             }
         });
     }
 
-    void createNonceFromPaymentContext(String paymentContextId, final VenmoResultCallback callback) {
+    void createNonceFromPaymentContext(String paymentContextId,
+                                       final VenmoResultCallback callback) {
         JSONObject params = new JSONObject();
         try {
-            params.put("query", "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
-                    "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }");
+            params.put("query",
+                    "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
+                            "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }");
             JSONObject variables = new JSONObject();
             variables.put("id", paymentContextId);
             params.put("variables", variables);
 
-            braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+            braintreeClient.sendGraphQLPOST(params.toString(), (responseBody, httpError) -> {
+                if (responseBody != null) {
+                    try {
+                        JSONObject data = new JSONObject(responseBody).getJSONObject("data");
+                        VenmoAccountNonce nonce =
+                                VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
 
-                @Override
-                public void onResult(String responseBody, Exception httpError) {
-                    if (responseBody != null) {
-                        try {
-                            JSONObject data = new JSONObject(responseBody).getJSONObject("data");
-                            VenmoAccountNonce nonce = VenmoAccountNonce.fromJSON(data.getJSONObject("node"));
-
-                            callback.onResult(nonce, null);
-                        } catch (JSONException exception) {
-                            callback.onResult(null, exception);
-                        }
-                    } else {
-                        callback.onResult(null, httpError);
+                        callback.onResult(nonce, null);
+                    } catch (JSONException exception) {
+                        callback.onResult(null, exception);
                     }
+                } else {
+                    callback.onResult(null, httpError);
                 }
             });
 
@@ -118,19 +119,17 @@ class VenmoApi {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 
-        apiClient.tokenizeREST(venmoAccount, new TokenizeCallback() {
-            @Override
-            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                if (tokenizationResponse != null) {
-                    try {
-                        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(tokenizationResponse);
-                        callback.onResult(venmoAccountNonce, null);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    callback.onResult(null, exception);
+        apiClient.tokenizeREST(venmoAccount, (tokenizationResponse, exception) -> {
+            if (tokenizationResponse != null) {
+                try {
+                    VenmoAccountNonce venmoAccountNonce =
+                            VenmoAccountNonce.fromJSON(tokenizationResponse);
+                    callback.onResult(venmoAccountNonce, null);
+                } catch (JSONException e) {
+                    callback.onResult(null, e);
                 }
+            } else {
+                callback.onResult(null, exception);
             }
         });
     }
@@ -140,7 +139,8 @@ class VenmoApi {
         try {
             JSONObject data = new JSONObject(createPaymentContextResponse).getJSONObject("data");
             JSONObject createVenmoPaymentContext = data.getJSONObject("createVenmoPaymentContext");
-            JSONObject venmoPaymentContext = createVenmoPaymentContext.getJSONObject("venmoPaymentContext");
+            JSONObject venmoPaymentContext =
+                    createVenmoPaymentContext.getJSONObject("venmoPaymentContext");
             paymentContextId = venmoPaymentContext.getString("id");
         } catch (JSONException ignored) { /* do nothing */ }
 

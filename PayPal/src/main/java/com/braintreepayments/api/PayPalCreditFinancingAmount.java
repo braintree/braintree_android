@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
@@ -17,7 +18,8 @@ public class PayPalCreditFinancingAmount implements Parcelable {
     private String currency;
     private String value;
 
-    private PayPalCreditFinancingAmount() {}
+    private PayPalCreditFinancingAmount() {
+    }
 
     static PayPalCreditFinancingAmount fromJson(JSONObject amount) {
         PayPalCreditFinancingAmount result = new PayPalCreditFinancingAmount();
@@ -33,7 +35,8 @@ public class PayPalCreditFinancingAmount implements Parcelable {
     }
 
     /**
-     * @return 3 letter currency code as defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a>.
+     * @return 3 letter currency code as defined by <a
+     * href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a>.
      */
     @Nullable
     public String getCurrency() {
@@ -41,7 +44,9 @@ public class PayPalCreditFinancingAmount implements Parcelable {
     }
 
     /**
-     * @return An amount defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a> for the given currency.
+     * @return An amount defined by <a
+     * href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a> for the given
+     * currency.
      */
     @Nullable
     public String getValue() {
@@ -69,13 +74,14 @@ public class PayPalCreditFinancingAmount implements Parcelable {
         value = in.readString();
     }
 
-    public static final Creator<PayPalCreditFinancingAmount> CREATOR = new Creator<PayPalCreditFinancingAmount>() {
-        public PayPalCreditFinancingAmount createFromParcel(Parcel source) {
-            return new PayPalCreditFinancingAmount(source);
-        }
+    public static final Creator<PayPalCreditFinancingAmount> CREATOR =
+            new Creator<PayPalCreditFinancingAmount>() {
+                public PayPalCreditFinancingAmount createFromParcel(Parcel source) {
+                    return new PayPalCreditFinancingAmount(source);
+                }
 
-        public PayPalCreditFinancingAmount[] newArray(int size) {
-            return new PayPalCreditFinancingAmount[size];
-        }
-    };
+                public PayPalCreditFinancingAmount[] newArray(int size) {
+                    return new PayPalCreditFinancingAmount[size];
+                }
+            };
 }

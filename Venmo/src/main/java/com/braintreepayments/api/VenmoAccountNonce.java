@@ -80,8 +80,10 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
             this.firstName = payerInfo.optString(VENMO_FIRST_NAME_KEY);
             this.lastName = payerInfo.optString(VENMO_LAST_NAME_KEY);
             this.phoneNumber = payerInfo.optString(VENMO_PHONE_NUMBER_KEY);
-            this.billingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(VENMO_BILLING_ADDRESS_KEY));
-            this.shippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(VENMO_SHIPPING_ADDRESS_KEY));
+            this.billingAddress = PostalAddressParser.fromJson(
+                    payerInfo.optJSONObject(VENMO_BILLING_ADDRESS_KEY));
+            this.shippingAddress = PostalAddressParser.fromJson(
+                    payerInfo.optJSONObject(VENMO_SHIPPING_ADDRESS_KEY));
         }
     }
 
@@ -142,13 +144,17 @@ public class VenmoAccountNonce extends PaymentMethodNonce {
      * @return The Venmo user's billing address.
      */
     @NonNull
-    public PostalAddress getBillingAddress() { return billingAddress; }
+    public PostalAddress getBillingAddress() {
+        return billingAddress;
+    }
 
     /**
      * @return The Venmo user's shipping address.
      */
     @NonNull
-    public PostalAddress getShippingAddress() { return shippingAddress; }
+    public PostalAddress getShippingAddress() {
+        return shippingAddress;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

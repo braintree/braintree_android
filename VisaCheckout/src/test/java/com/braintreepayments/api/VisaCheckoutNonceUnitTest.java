@@ -34,8 +34,10 @@ public class VisaCheckoutNonceUnitTest {
         assertNotNull(visaCheckoutNonce.getBillingAddress());
         assertEquals("billingFirstName", visaCheckoutNonce.getBillingAddress().getFirstName());
         assertEquals("billingLastName", visaCheckoutNonce.getBillingAddress().getLastName());
-        assertEquals("billingStreetAddress", visaCheckoutNonce.getBillingAddress().getStreetAddress());
-        assertEquals("billingExtendedAddress", visaCheckoutNonce.getBillingAddress().getExtendedAddress());
+        assertEquals("billingStreetAddress",
+                visaCheckoutNonce.getBillingAddress().getStreetAddress());
+        assertEquals("billingExtendedAddress",
+                visaCheckoutNonce.getBillingAddress().getExtendedAddress());
         assertEquals("billingLocality", visaCheckoutNonce.getBillingAddress().getLocality());
         assertEquals("billingRegion", visaCheckoutNonce.getBillingAddress().getRegion());
         assertEquals("billingPostalCode", visaCheckoutNonce.getBillingAddress().getPostalCode());
@@ -44,12 +46,15 @@ public class VisaCheckoutNonceUnitTest {
         assertNotNull(visaCheckoutNonce.getShippingAddress());
         assertEquals("shippingFirstName", visaCheckoutNonce.getShippingAddress().getFirstName());
         assertEquals("shippingLastName", visaCheckoutNonce.getShippingAddress().getLastName());
-        assertEquals("shippingStreetAddress", visaCheckoutNonce.getShippingAddress().getStreetAddress());
-        assertEquals("shippingExtendedAddress", visaCheckoutNonce.getShippingAddress().getExtendedAddress());
+        assertEquals("shippingStreetAddress",
+                visaCheckoutNonce.getShippingAddress().getStreetAddress());
+        assertEquals("shippingExtendedAddress",
+                visaCheckoutNonce.getShippingAddress().getExtendedAddress());
         assertEquals("shippingLocality", visaCheckoutNonce.getShippingAddress().getLocality());
         assertEquals("shippingRegion", visaCheckoutNonce.getShippingAddress().getRegion());
         assertEquals("shippingPostalCode", visaCheckoutNonce.getShippingAddress().getPostalCode());
-        assertEquals("shippingCountryCode", visaCheckoutNonce.getShippingAddress().getCountryCode());
+        assertEquals("shippingCountryCode",
+                visaCheckoutNonce.getShippingAddress().getCountryCode());
 
         assertNotNull(visaCheckoutNonce.getUserData());
         assertEquals("userFirstName", visaCheckoutNonce.getUserData().getUserFirstName());
@@ -71,10 +76,13 @@ public class VisaCheckoutNonceUnitTest {
     }
 
     @Test
-    public void fromJson_whenNoCallId_createsVisaCheckoutNonceWithEmptyCallId() throws JSONException {
-        JSONObject visaCheckoutResponseJson = new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+    public void fromJson_whenNoCallId_createsVisaCheckoutNonceWithEmptyCallId()
+            throws JSONException {
+        JSONObject visaCheckoutResponseJson =
+                new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
 
-        JSONArray visaCheckoutCardsJson = visaCheckoutResponseJson.getJSONArray("visaCheckoutCards");
+        JSONArray visaCheckoutCardsJson =
+                visaCheckoutResponseJson.getJSONArray("visaCheckoutCards");
         JSONObject visaCheckoutNonceJson = visaCheckoutCardsJson.getJSONObject(0);
         visaCheckoutNonceJson.remove("callId");
 
@@ -88,7 +96,8 @@ public class VisaCheckoutNonceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(
+                new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
 
         Parcel parcel = Parcel.obtain();
         visaCheckoutNonce.writeToParcel(parcel, 0);
@@ -100,16 +109,23 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
         assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());
         assertBinDataEqual(visaCheckoutNonce.getBinData(), actual.getBinData());
-        assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(), actual.getBillingAddress());
-        assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(), actual.getShippingAddress());
+        assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(),
+                actual.getBillingAddress());
+        assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(),
+                actual.getShippingAddress());
         assertEquals(visaCheckoutNonce.getCallId(), actual.getCallId());
-        assertEquals(visaCheckoutNonce.getUserData().getUserFirstName(), actual.getUserData().getUserFirstName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserLastName(), actual.getUserData().getUserLastName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserFullName(), actual.getUserData().getUserFullName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserEmail(), actual.getUserData().getUserEmail());
+        assertEquals(visaCheckoutNonce.getUserData().getUserFirstName(),
+                actual.getUserData().getUserFirstName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserLastName(),
+                actual.getUserData().getUserLastName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserFullName(),
+                actual.getUserData().getUserFullName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserEmail(),
+                actual.getUserData().getUserEmail());
     }
 
-    private void assertVisaCheckoutAddress(VisaCheckoutAddress expected, VisaCheckoutAddress actual) {
+    private void assertVisaCheckoutAddress(VisaCheckoutAddress expected,
+                                           VisaCheckoutAddress actual) {
         assertEquals(expected.getFirstName(), actual.getFirstName());
         assertEquals(expected.getLastName(), actual.getLastName());
         assertEquals(expected.getStreetAddress(), actual.getStreetAddress());

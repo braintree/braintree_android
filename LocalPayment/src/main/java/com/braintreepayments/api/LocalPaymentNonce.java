@@ -78,7 +78,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             phone = Json.optString(payerInfo, PHONE_KEY, "");
             payerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
-            if(email == null) {
+            if (email == null) {
                 email = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
@@ -86,10 +86,14 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
             shippingAddress = new PostalAddress();
         }
 
-        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName, surname, phone, email, payerId, type, nonce, isDefault);
+        return new LocalPaymentNonce(clientMetadataId, billingAddress, shippingAddress, givenName,
+                surname, phone, email, payerId, type, nonce, isDefault);
     }
 
-    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress, PostalAddress shippingAddress, String givenName, String surname, String phone, String email, String payerId, String type, String nonce, boolean isDefault) {
+    private LocalPaymentNonce(String clientMetadataId, PostalAddress billingAddress,
+                              PostalAddress shippingAddress, String givenName, String surname,
+                              String phone, String email, String payerId, String type, String nonce,
+                              boolean isDefault) {
         super(nonce, isDefault);
         this.clientMetadataId = clientMetadataId;
         this.billingAddress = billingAddress;
@@ -154,7 +158,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
      * @return The ClientMetadataId associated with this transaction.
      */
     @Nullable
-    public String getClientMetadataId(){
+    public String getClientMetadataId() {
         return clientMetadataId;
     }
 
@@ -162,7 +166,7 @@ public class LocalPaymentNonce extends PaymentMethodNonce {
      * @return The Payer ID provided in local payment flows.
      */
     @NonNull
-    public String getPayerId(){
+    public String getPayerId() {
         return payerId;
     }
 

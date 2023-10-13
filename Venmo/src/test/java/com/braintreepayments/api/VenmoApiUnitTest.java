@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
+
 import java.util.ArrayList;
 
 @RunWith(RobolectricTestRunner.class)
@@ -27,7 +28,7 @@ public class VenmoApiUnitTest {
     private ApiClient apiClient;
 
     @Before
-    public void beforeEach() throws JSONException {
+    public void beforeEach() {
         braintreeClient = mock(BraintreeClient.class);
         apiClient = mock(ApiClient.class);
     }
@@ -50,14 +51,16 @@ public class VenmoApiUnitTest {
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
         request.setLineItems(lineItems);
 
-        venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
+        venmoAPI.createPaymentContext(request, request.getProfileId(),
+                mock(VenmoApiCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         String graphQLBody = captor.getValue();
         JSONObject graphQLJSON = new JSONObject(graphQLBody);
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
+        String expectedQuery =
+                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
         assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
@@ -92,14 +95,16 @@ public class VenmoApiUnitTest {
         request.setShouldVault(false);
         request.setCollectCustomerBillingAddress(true);
 
-        venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
+        venmoAPI.createPaymentContext(request, request.getProfileId(),
+                mock(VenmoApiCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         String graphQLBody = captor.getValue();
         JSONObject graphQLJSON = new JSONObject(graphQLBody);
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
+        String expectedQuery =
+                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
         assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
@@ -117,7 +122,8 @@ public class VenmoApiUnitTest {
     @Test
     public void createPaymentContext_whenGraphQLPostSuccess_includesPaymentContextID_callsBackNull() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
+                .sendGraphQLPOSTSuccessfulResponse(
+                        Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
         VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
@@ -127,13 +133,14 @@ public class VenmoApiUnitTest {
         VenmoApiCallback callback = mock(VenmoApiCallback.class);
         venmoAPI.createPaymentContext(request, request.getProfileId(), callback);
 
-        verify(callback).onResult(anyString(), (Exception) isNull());
+        verify(callback).onResult(anyString(), isNull());
     }
 
     @Test
     public void createPaymentContext_whenGraphQLPostSuccess_missingPaymentContextID_callsBackError() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
+                .sendGraphQLPOSTSuccessfulResponse(
+                        Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
                 .build();
         VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
 
@@ -144,11 +151,12 @@ public class VenmoApiUnitTest {
         venmoAPI.createPaymentContext(request, request.getProfileId(), callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((String) isNull(), captor.capture());
+        verify(callback).onResult(isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertTrue(error instanceof BraintreeException);
-        assertEquals("Failed to fetch a Venmo paymentContextId while constructing the requestURL.", error.getMessage());
+        assertEquals("Failed to fetch a Venmo paymentContextId while constructing the requestURL.",
+                error.getMessage());
     }
 
     @Test
@@ -178,14 +186,15 @@ public class VenmoApiUnitTest {
 
         String payload = captor.getValue();
         JSONObject jsonPayload = new JSONObject(payload);
-        String expectedQuery = "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
-                "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }";
+        String expectedQuery =
+                "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
+                        "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }";
         assertEquals(expectedQuery, jsonPayload.get("query"));
         assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }
 
     @Test
-    public void createNonceFromPaymentContext_whenGraphQLPostSuccess_forwardsNonceToCallback() throws JSONException {
+    public void createNonceFromPaymentContext_whenGraphQLPostSuccess_forwardsNonceToCallback() {
         String graphQLResponse = Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE;
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendGraphQLPOSTSuccessfulResponse(graphQLResponse)
@@ -197,7 +206,7 @@ public class VenmoApiUnitTest {
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
-        verify(callback).onResult(captor.capture(), (Exception) isNull());
+        verify(callback).onResult(captor.capture(), isNull());
         assertEquals("@somebody", captor.getValue().getUsername());
     }
 
@@ -213,7 +222,7 @@ public class VenmoApiUnitTest {
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((VenmoAccountNonce) isNull(), captor.capture());
+        verify(callback).onResult(isNull(), captor.capture());
         assertTrue(captor.getValue() instanceof JSONException);
     }
 
@@ -229,7 +238,7 @@ public class VenmoApiUnitTest {
         VenmoResultCallback callback = mock(VenmoResultCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
-        verify(callback).onResult((VenmoAccountNonce) isNull(), same(error));
+        verify(callback).onResult(isNull(), same(error));
     }
 
     @Test
@@ -237,7 +246,8 @@ public class VenmoApiUnitTest {
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
         sut.vaultVenmoAccountNonce("nonce", mock(VenmoResultCallback.class));
 
-        ArgumentCaptor<VenmoAccount> accountBuilderCaptor = ArgumentCaptor.forClass(VenmoAccount.class);
+        ArgumentCaptor<VenmoAccount> accountBuilderCaptor =
+                ArgumentCaptor.forClass(VenmoAccount.class);
         verify(apiClient).tokenizeREST(accountBuilderCaptor.capture(), any(TokenizeCallback.class));
 
         VenmoAccount venmoAccount = accountBuilderCaptor.getValue();
@@ -248,7 +258,8 @@ public class VenmoApiUnitTest {
     @Test
     public void vaultVenmoAccountNonce_tokenizeRESTSuccess_callsBackNonce() throws JSONException {
         ApiClient apiClient = new MockApiClientBuilder()
-                .tokenizeRESTSuccess(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
+                .tokenizeRESTSuccess(new JSONObject(
+                        Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
                 .build();
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
@@ -256,7 +267,7 @@ public class VenmoApiUnitTest {
         sut.vaultVenmoAccountNonce("nonce", callback);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
-        verify(callback).onResult(captor.capture(), (Exception) isNull());
+        verify(callback).onResult(captor.capture(), isNull());
 
         VenmoAccountNonce nonce = captor.getValue();
         assertEquals("@sampleuser", nonce.getUsername());
@@ -273,6 +284,6 @@ public class VenmoApiUnitTest {
         VenmoResultCallback callback = mock(VenmoResultCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
 
-        verify(callback).onResult((VenmoAccountNonce) isNull(), same(error));
+        verify(callback).onResult(isNull(), same(error));
     }
 }

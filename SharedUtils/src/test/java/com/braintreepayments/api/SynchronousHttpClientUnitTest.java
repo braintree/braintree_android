@@ -40,7 +40,8 @@ public class SynchronousHttpClientUnitTest {
                 .method("GET")
                 .baseUrl("/:/");
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        final SynchronousHttpClient sut =
+                new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         assertThrows(MalformedURLException.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
@@ -54,13 +55,15 @@ public class SynchronousHttpClientUnitTest {
         final HttpRequest httpRequest = new HttpRequest()
                 .path(null);
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, new ThrowingRunnable() {
-            @Override
-            public void run() throws Throwable {
-                sut.request(httpRequest);
-            }
-        });
+        final SynchronousHttpClient sut =
+                new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        sut.request(httpRequest);
+                    }
+                });
 
         assertEquals("Path cannot be null", exception.getMessage());
     }
@@ -87,7 +90,8 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenConnectionIsHttps_usesDefaultSSLSocketFactoryWhenNoFactoryIsSet() throws Exception {
+    public void request_whenConnectionIsHttps_usesDefaultSSLSocketFactoryWhenNoFactoryIsSet()
+            throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
                 .method("GET")
@@ -129,7 +133,8 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException() throws Exception {
+    public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException()
+            throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
                 .method("GET")
@@ -153,7 +158,8 @@ public class SynchronousHttpClientUnitTest {
             }
         });
 
-        assertEquals(exception.getMessage(), "SSLSocketFactory was not set or failed to initialize");
+        assertEquals(exception.getMessage(),
+                "SSLSocketFactory was not set or failed to initialize");
     }
 
     @Test
@@ -267,7 +273,8 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_onHttpResponseParserException_propagatesExceptionAndClosesUrlConnection() throws Exception {
+    public void request_onHttpResponseParserException_propagatesExceptionAndClosesUrlConnection()
+            throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
                 .method("GET")
@@ -282,7 +289,8 @@ public class SynchronousHttpClientUnitTest {
         when(connection.getResponseCode()).thenReturn(200);
         when(httpResponseParser.parse(200, connection)).thenThrow(new Exception("error"));
 
-        final SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
+        final SynchronousHttpClient sut =
+                new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         assertThrows(Exception.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {

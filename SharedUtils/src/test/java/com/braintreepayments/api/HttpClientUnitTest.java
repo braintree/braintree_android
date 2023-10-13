@@ -45,7 +45,8 @@ public class HttpClientUnitTest {
     }
 
     @Test
-    public void sendRequest_whenBaseHttpClientThrowsException_notifiesErrorViaCallbackOnMainThread() throws Exception {
+    public void sendRequest_whenBaseHttpClientThrowsException_notifiesErrorViaCallbackOnMainThread()
+            throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         Exception exception = new Exception("error");
@@ -62,7 +63,8 @@ public class HttpClientUnitTest {
     }
 
     @Test
-    public void sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread() throws Exception {
+    public void sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread()
+            throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         when(syncHttpClient.request(httpRequest)).thenReturn("response body");
@@ -116,7 +118,8 @@ public class HttpClientUnitTest {
     }
 
     @Test
-    public void sendRequest_whenRetryMax3TimesEnabled_notifiesMaxRetriesLimitExceededOnForegroundThread() throws Exception {
+    public void sendRequest_whenRetryMax3TimesEnabled_notifiesMaxRetriesLimitExceededOnForegroundThread()
+            throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         Exception exception = new Exception("error");

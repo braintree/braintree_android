@@ -28,9 +28,11 @@ public class SEPADirectDebitLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA_DEBIT);
 
         SEPADirectDebitClient sepaDirectDebitClient = mock(SEPADirectDebitClient.class);
-        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        SEPADirectDebitLifecycleObserver sut = new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
+        SEPADirectDebitLifecycleObserver sut =
+                new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
 
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
@@ -45,9 +47,11 @@ public class SEPADirectDebitLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.SEPA_DEBIT);
 
         SEPADirectDebitClient sepaDirectDebitClient = mock(SEPADirectDebitClient.class);
-        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        SEPADirectDebitLifecycleObserver sut = new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
+        SEPADirectDebitLifecycleObserver sut =
+                new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
@@ -62,9 +66,11 @@ public class SEPADirectDebitLifecycleObserverUnitTest {
         when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.PAYPAL);
 
         SEPADirectDebitClient sepaDirectDebitClient = mock(SEPADirectDebitClient.class);
-        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(sepaDirectDebitClient.getBrowserSwitchResult(activity)).thenReturn(
+                browserSwitchResult);
 
-        SEPADirectDebitLifecycleObserver sut = new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
+        SEPADirectDebitLifecycleObserver sut =
+                new SEPADirectDebitLifecycleObserver(sepaDirectDebitClient);
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 

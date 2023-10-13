@@ -30,7 +30,8 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureActivityUnitTest {
 
     @Test
-    public void onCreate_withExtras_invokesCardinalWithLookupData() throws JSONException, BraintreeException {
+    public void onCreate_withExtras_invokesCardinalWithLookupData()
+            throws JSONException, BraintreeException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
@@ -46,7 +47,8 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        ArgumentCaptor<ThreeDSecureResult> captor = ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        ArgumentCaptor<ThreeDSecureResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecureResult.class);
         verify(cardinalClient).continueLookup(captor.capture(), any());
 
         ThreeDSecureResult actualResult = captor.getValue();
@@ -56,7 +58,8 @@ public class ThreeDSecureActivityUnitTest {
     }
 
     @Test
-    public void onCreate_withExtrasAndCardinalError_finishesWithError() throws JSONException, BraintreeException {
+    public void onCreate_withExtrasAndCardinalError_finishesWithError()
+            throws JSONException, BraintreeException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
@@ -72,7 +75,8 @@ public class ThreeDSecureActivityUnitTest {
         BraintreeException cardinalError = new BraintreeException("fake cardinal error");
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
-        doThrow(cardinalError).when(cardinalClient).continueLookup(any(ThreeDSecureResult.class), any());
+        doThrow(cardinalError).when(cardinalClient)
+                .continueLookup(any(ThreeDSecureResult.class), any());
 
         sut.launchCardinalAuthChallenge(cardinalClient);
         verify(sut).finish();
@@ -94,7 +98,8 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class), any(CardinalChallengeObserver.class));
+        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class),
+                any(CardinalChallengeObserver.class));
         verify(sut).finish();
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
@@ -128,10 +133,12 @@ public class ThreeDSecureActivityUnitTest {
         verify(sut).setResult(eq(RESULT_OK), captor.capture());
 
         Intent intentForResult = captor.getValue();
-        ValidateResponse activityResult = (ValidateResponse) (intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
+        ValidateResponse activityResult = (ValidateResponse) (intentForResult.getSerializableExtra(
+                ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
 
         assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT));
-        assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
+        assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(
+                ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
         assertNotNull(activityResult);
         assertEquals("SUCCESS", activityResult.getActionCode().getString());
     }

@@ -19,7 +19,8 @@ import org.json.JSONObject;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
- * <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
+ * <a
+ * href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
  */
 public class PayPalNativeCheckoutClient {
 
@@ -31,12 +32,15 @@ public class PayPalNativeCheckoutClient {
     /**
      * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
-     * @deprecated see {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
+     * @deprecated see
+     * {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
      * <p>
-     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
+     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a
+     * {@link BraintreeClient}.
      */
     @Deprecated
-    public PayPalNativeCheckoutClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
+    public PayPalNativeCheckoutClient(@NonNull Fragment fragment,
+                                      @NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
@@ -50,15 +54,18 @@ public class PayPalNativeCheckoutClient {
     }
 
     @VisibleForTesting
-    PayPalNativeCheckoutClient(BraintreeClient braintreeClient, PayPalNativeCheckoutInternalClient internalPayPalClient) {
+    PayPalNativeCheckoutClient(BraintreeClient braintreeClient,
+                               PayPalNativeCheckoutInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
     }
 
     /**
-     * Add a {@link PayPalNativeCheckoutListener} to your client to receive results or errors from the PayPal flow.
-     * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
-     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
+     * Add a {@link PayPalNativeCheckoutListener} to your client to receive results or errors from
+     * the PayPal flow. This method must be invoked on a
+     * {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
+     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive
+     * results.
      *
      * @param listener a {@link PayPalNativeCheckoutListener}
      */
@@ -69,15 +76,21 @@ public class PayPalNativeCheckoutClient {
     /**
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
-     * @deprecated see {@link PayPalNativeCheckoutClient#launchNativeCheckout(FragmentActivity, PayPalNativeRequest)}
+     * @deprecated see
+     * {@link PayPalNativeCheckoutClient#launchNativeCheckout(FragmentActivity,
+     * PayPalNativeRequest)}
      * <p>
      * Tokenize a PayPal account for vault or checkout.
      * <p>
-     * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
-     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
+     * This method must be invoked on a
+     * {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
+     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive
+     * results.
      */
     @Deprecated
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
+    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
+                                      @NonNull final PayPalNativeRequest payPalRequest)
+            throws Exception {
         braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         // NEXT_MAJOR_VERSION: remove tokenizePayPalAccount method and refactor tests to center
         // around launchNativeCheckout in the future. Keeping the tests as they are for now allows
@@ -97,13 +110,16 @@ public class PayPalNativeCheckoutClient {
     /**
      * Tokenize a PayPal account for vault or checkout.
      * <p>
-     * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
-     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
+     * This method must be invoked on a
+     * {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
+     * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive
+     * results.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
-    public void launchNativeCheckout(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
+    public void launchNativeCheckout(@NonNull final FragmentActivity activity,
+                                     @NonNull final PayPalNativeRequest payPalRequest) {
         braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started");
         if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalNativeCheckoutRequest) payPalRequest);
@@ -119,7 +135,8 @@ public class PayPalNativeCheckoutClient {
         }
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalNativeCheckoutRequest payPalCheckoutRequest) {
+    private void sendCheckoutRequest(final FragmentActivity activity,
+                                     final PayPalNativeCheckoutRequest payPalCheckoutRequest) {
         braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.paylater.offered");
@@ -130,7 +147,8 @@ public class PayPalNativeCheckoutClient {
         });
     }
 
-    private void sendVaultRequest(final FragmentActivity activity, final PayPalNativeCheckoutVaultRequest payPalVaultRequest) {
+    private void sendVaultRequest(final FragmentActivity activity,
+                                  final PayPalNativeCheckoutVaultRequest payPalVaultRequest) {
         braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.selected");
         if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.credit.offered");
@@ -148,8 +166,10 @@ public class PayPalNativeCheckoutClient {
     ) {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
-                String analyticsPrefix = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
-                braintreeClient.sendAnalyticsEvent(String.format("paypal-native.%s.started", analyticsPrefix));
+                String analyticsPrefix = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ?
+                        "billing-agreement" : "single-payment";
+                braintreeClient.sendAnalyticsEvent(
+                        String.format("paypal-native.%s.started", analyticsPrefix));
 
                 Environment environment;
                 if ("sandbox".equals(configuration.getEnvironment())) {
@@ -160,35 +180,35 @@ public class PayPalNativeCheckoutClient {
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
-                    new CheckoutConfig(
-                        activity.getApplication(),
-                        configuration.getPayPalClientId(),
-                        environment,
-                        null,
-                        null,
-                        null,
-                        new SettingsConfig(),
-                        new UIConfig(
-                                false
-                        ),
-                        payPalRequest.getReturnUrl()
-                    )
+                        new CheckoutConfig(
+                                activity.getApplication(),
+                                configuration.getPayPalClientId(),
+                                environment,
+                                null,
+                                null,
+                                null,
+                                new SettingsConfig(),
+                                new UIConfig(
+                                        false
+                                ),
+                                payPalRequest.getReturnUrl()
+                        )
                 );
 
                 String infoMessage = "BrainTree";
 
                 PLog.transition(
-                    PEnums.TransitionName.BRAINTREE_ROUTING,
-                    PEnums.Outcome.THIRD_PARTY,
-                    PEnums.EventCode.E233,
-                    PEnums.StateName.BRAINTREE,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    infoMessage
+                        PEnums.TransitionName.BRAINTREE_ROUTING,
+                        PEnums.Outcome.THIRD_PARTY,
+                        PEnums.EventCode.E233,
+                        PEnums.StateName.BRAINTREE,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        infoMessage
                 );
 
                 registerCallbacks(configuration, payPalRequest, payPalResponse);
@@ -196,10 +216,12 @@ public class PayPalNativeCheckoutClient {
                 PayPalCheckout.startCheckout(createOrderActions -> {
                     if (payPalRequest instanceof PayPalNativeCheckoutRequest) {
                         createOrderActions.set(payPalResponse.getPairingId());
-                        braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.succeeded");
+                        braintreeClient.sendAnalyticsEvent(
+                                "paypal-native.single-payment.succeeded");
                     } else if (payPalRequest instanceof PayPalNativeCheckoutVaultRequest) {
                         createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
-                        braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.succeeded");
+                        braintreeClient.sendAnalyticsEvent(
+                                "paypal-native.billing-agreement.succeeded");
                     }
                 });
             } else {
@@ -216,10 +238,12 @@ public class PayPalNativeCheckoutClient {
         PayPalCheckout.registerCallbacks(
                 approval -> {
                     braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.started");
-                    PayPalNativeCheckoutAccount payPalAccount = setupAccount(payPalRequest, approval.getData());
+                    PayPalNativeCheckoutAccount payPalAccount =
+                            setupAccount(payPalRequest, approval.getData());
                     internalPayPalClient.tokenize(payPalAccount, (payPalAccountNonce, error) -> {
                         if (payPalAccountNonce != null) {
-                            braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.succeeded");
+                            braintreeClient.sendAnalyticsEvent(
+                                    "paypal-native.on-approve.succeeded");
                             listener.onPayPalSuccess(payPalAccountNonce);
                         } else {
                             braintreeClient.sendAnalyticsEvent("paypal-native.on-approve.failed");
@@ -241,13 +265,15 @@ public class PayPalNativeCheckoutClient {
 
     @VisibleForTesting
     PayPalNativeCheckoutAccount setupAccount(
-        final PayPalNativeRequest payPalRequest,
-        final ApprovalData approvalData
+            final PayPalNativeRequest payPalRequest,
+            final ApprovalData approvalData
     ) {
         PayPalNativeCheckoutAccount payPalAccount = new PayPalNativeCheckoutAccount();
 
         String merchantAccountId = payPalRequest.getMerchantAccountId();
-        String paymentType = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
+        String paymentType =
+                payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" :
+                        "single-payment";
         String riskId = null;
         if (payPalRequest.getRiskCorrelationId() != null) {
             riskId = payPalRequest.getRiskCorrelationId();

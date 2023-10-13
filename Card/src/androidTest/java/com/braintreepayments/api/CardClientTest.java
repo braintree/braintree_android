@@ -197,13 +197,10 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onResult(CardNonce cardNonce, Exception error) {
-                assertEquals("CVV verification failed",
-                        ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
-                countDownLatch.countDown();
-            }
+        sut.tokenize(card, (cardNonce, error) -> {
+            assertEquals("CVV verification failed",
+                    ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -235,14 +232,11 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onResult(CardNonce cardNonce, Exception error) {
-                assertEquals("Postal code verification failed",
-                        ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
-                                .getFieldErrors().get(0).getMessage());
-                countDownLatch.countDown();
-            }
+        sut.tokenize(card, (cardNonce, error) -> {
+            assertEquals("Postal code verification failed",
+                    ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
+                            .getFieldErrors().get(0).getMessage());
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -261,14 +255,11 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onResult(CardNonce cardNonce, Exception error) {
-                assertEquals("Country code (alpha3) is not an accepted country",
-                        ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
-                                .getFieldErrors().get(0).getMessage());
-                countDownLatch.countDown();
-            }
+        sut.tokenize(card, (cardNonce, error) -> {
+            assertEquals("Country code (alpha3) is not an accepted country",
+                    ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
+                            .getFieldErrors().get(0).getMessage());
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -302,40 +293,37 @@ public class CardClientTest {
         CardClient sut = new CardClient(braintreeClient);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onResult(CardNonce cardNonce, Exception error) {
+        sut.tokenize(card, (cardNonce, error) -> {
 
-                assertNotNull(cardNonce.getString());
-                assertEquals("Visa", cardNonce.getCardType());
-                assertEquals("1111", cardNonce.getLastFour());
-                assertEquals("11", cardNonce.getLastTwo());
-                assertEquals("08", cardNonce.getExpirationMonth());
-                assertEquals("20", cardNonce.getExpirationYear());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDebit());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCommercial());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPayroll());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getIssuingBank());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
-                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getProductId());
-                assertFalse(cardNonce.getThreeDSecureInfo().wasVerified());
+            assertNotNull(cardNonce.getString());
+            assertEquals("Visa", cardNonce.getCardType());
+            assertEquals("1111", cardNonce.getLastFour());
+            assertEquals("11", cardNonce.getLastTwo());
+            assertEquals("08", cardNonce.getExpirationMonth());
+            assertEquals("20", cardNonce.getExpirationYear());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDebit());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCommercial());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPayroll());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getIssuingBank());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
+            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getProductId());
+            assertFalse(cardNonce.getThreeDSecureInfo().wasVerified());
 
-                countDownLatch.countDown();
-            }
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
     }
 
-    private CardClient setupCardClient(String authorization) throws Exception {
+    private CardClient setupCardClient(String authorization) {
         BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
         return new CardClient(braintreeClient);
     }
 
-    private static void overrideConfigurationCache(String authString, String requestProtocol) throws JSONException, InvalidArgumentException {
+    private static void overrideConfigurationCache(String authString, String requestProtocol) throws JSONException {
         Authorization authorization = Authorization.fromString(authString);
 
         Configuration configuration;

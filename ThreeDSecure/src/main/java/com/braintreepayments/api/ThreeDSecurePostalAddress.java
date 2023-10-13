@@ -36,7 +36,8 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     private String countryCodeAlpha2;
     private String phoneNumber;
 
-    public ThreeDSecurePostalAddress() {}
+    public ThreeDSecurePostalAddress() {
+    }
 
     /**
      * Optional. Set the given name
@@ -60,7 +61,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * Optional. Set the streetAddress
      *
      * @param streetAddress Line 1 of the Address (eg. number, street, etc).
-     * */
+     */
     public void setStreetAddress(@Nullable String streetAddress) {
         this.streetAddress = streetAddress;
     }
@@ -69,7 +70,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * Optional. Set the extendedAddress
      *
      * @param extendedAddress Line 2 of the Address (eg. suite, apt #, etc.).
-     * */
+     */
     public void setExtendedAddress(@Nullable String extendedAddress) {
         this.extendedAddress = extendedAddress;
     }
@@ -78,7 +79,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * Optional. Set line 3 of the address
      *
      * @param line3 Line 3 of the Address (eg. suite, apt #, etc.).
-     * */
+     */
     public void setLine3(@Nullable String line3) {
         this.line3 = line3;
     }
@@ -87,7 +88,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * Optional. Set the locality
      *
      * @param locality City name.
-     * */
+     */
     public void setLocality(@Nullable String locality) {
         this.locality = locality;
     }
@@ -95,18 +96,19 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * Optional. Set the region
      *
-     * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country subdivision code of up to three letters.
-     * */
+     * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country
+     *               subdivision code of up to three letters.
+     */
     public void setRegion(@Nullable String region) {
         this.region = region;
     }
 
     /**
-     * Optional. Set the postalCode
-     * For a list of countries that do not have postal codes please refer to http://en.wikipedia.org/wiki/Postal_code
+     * Optional. Set the postalCode For a list of countries that do not have postal codes please
+     * refer to http://en.wikipedia.org/wiki/Postal_code
      *
      * @param postalCode Zip code or equivalent is usually required for countries that have them.
-     * */
+     */
     public void setPostalCode(@Nullable String postalCode) {
         this.postalCode = postalCode;
     }
@@ -115,7 +117,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * Optional. Set the countryCodeAlpha2
      *
      * @param countryCodeAlpha2 2 letter country code.
-     * */
+     */
     public void setCountryCodeAlpha2(@Nullable String countryCodeAlpha2) {
         this.countryCodeAlpha2 = countryCodeAlpha2;
     }
@@ -123,8 +125,9 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * Optional. Set the phoneNumber
      *
-     * @param phoneNumber The phone number associated with the address. Only numbers. Remove dashes, parentheses and other characters.
-     * */
+     * @param phoneNumber The phone number associated with the address. Only numbers. Remove dashes,
+     *                    parentheses and other characters.
+     */
     public void setPhoneNumber(@Nullable String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -241,17 +244,18 @@ public class ThreeDSecurePostalAddress implements Parcelable {
         return 0;
     }
 
-    public static final Creator<ThreeDSecurePostalAddress> CREATOR = new Creator<ThreeDSecurePostalAddress>() {
-        @Override
-        public ThreeDSecurePostalAddress createFromParcel(Parcel in) {
-            return new ThreeDSecurePostalAddress(in);
-        }
+    public static final Creator<ThreeDSecurePostalAddress> CREATOR =
+            new Creator<ThreeDSecurePostalAddress>() {
+                @Override
+                public ThreeDSecurePostalAddress createFromParcel(Parcel in) {
+                    return new ThreeDSecurePostalAddress(in);
+                }
 
-        @Override
-        public ThreeDSecurePostalAddress[] newArray(int size) {
-            return new ThreeDSecurePostalAddress[size];
-        }
-    };
+                @Override
+                public ThreeDSecurePostalAddress[] newArray(int size) {
+                    return new ThreeDSecurePostalAddress[size];
+                }
+            };
 
     /**
      * @return JSONObject representation of {@link ThreeDSecurePostalAddress}.
@@ -271,12 +275,14 @@ public class ThreeDSecurePostalAddress implements Parcelable {
             billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, locality);
             billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, region);
             billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, postalCode);
-            billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, countryCodeAlpha2);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY,
+                    countryCodeAlpha2);
 
             if (billingAddress.length() != 0) {
                 base.putOpt(ThreeDSecurePostalAddress.BILLING_ADDRESS_KEY, billingAddress);
             }
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
 
         return base;
     }

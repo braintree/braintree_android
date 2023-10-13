@@ -27,7 +27,8 @@ public class MockCardinalClientBuilder {
         return this;
     }
 
-    public MockCardinalClientBuilder initializeRuntimeError(BraintreeException initializeRuntimeError) {
+    public MockCardinalClientBuilder initializeRuntimeError(
+            BraintreeException initializeRuntimeError) {
         this.initializeRuntimeError = initializeRuntimeError;
         return this;
     }
@@ -39,20 +40,20 @@ public class MockCardinalClientBuilder {
         if (initializeRuntimeError != null) {
             doThrow(initializeRuntimeError)
                     .when(cardinalClient)
-                    .initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
+                    .initialize(any(Context.class), any(Configuration.class),
+                            any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
         } else {
-            doAnswer(new Answer<Void>() {
-                @Override
-                public Void answer(InvocationOnMock invocation) {
-                    CardinalInitializeCallback listener = (CardinalInitializeCallback) invocation.getArguments()[3];
-                    if (successReferenceId != null) {
-                        listener.onResult(successReferenceId, null);
-                    } else if (error != null) {
-                        listener.onResult(null, error);
-                    }
-                    return null;
+            doAnswer((Answer<Void>) invocation -> {
+                CardinalInitializeCallback listener =
+                        (CardinalInitializeCallback) invocation.getArguments()[3];
+                if (successReferenceId != null) {
+                    listener.onResult(successReferenceId, null);
+                } else if (error != null) {
+                    listener.onResult(null, error);
                 }
-            }).when(cardinalClient).initialize(any(Context.class), any(Configuration.class), any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
+                return null;
+            }).when(cardinalClient).initialize(any(Context.class), any(Configuration.class),
+                    any(ThreeDSecureRequest.class), any(CardinalInitializeCallback.class));
 
         }
 

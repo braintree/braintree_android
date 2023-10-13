@@ -15,18 +15,21 @@ public class PayPalPaymentResourceUnitTest {
                         .put("redirectUrl", "www.example.com/redirect")
                 ).toString();
 
-        PayPalNativeCheckoutPaymentResource sut = PayPalNativeCheckoutPaymentResource.fromJson(oneTimePaymentJson);
+        PayPalNativeCheckoutPaymentResource sut =
+                PayPalNativeCheckoutPaymentResource.fromJson(oneTimePaymentJson);
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
     }
 
     @Test
-    public void fromJson_parsesRedirectUrlFromBillingAgreementPaymentResource() throws JSONException {
+    public void fromJson_parsesRedirectUrlFromBillingAgreementPaymentResource()
+            throws JSONException {
         String billingAgreementJson = new JSONObject()
                 .put("agreementSetup", new JSONObject()
                         .put("approvalUrl", "www.example.com/redirect")
                 ).toString();
 
-        PayPalNativeCheckoutPaymentResource sut = PayPalNativeCheckoutPaymentResource.fromJson(billingAgreementJson);
+        PayPalNativeCheckoutPaymentResource sut =
+                PayPalNativeCheckoutPaymentResource.fromJson(billingAgreementJson);
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
     }
 }

@@ -8,12 +8,13 @@ class CreateMandateResult {
     private final String bankReferenceToken;
     private final SEPADirectDebitMandateType mandateType;
 
-    CreateMandateResult(String approvalUrl, String ibanLastFour, String customerId, String bankReferenceToken, String mandateType) {
-       this.approvalUrl = approvalUrl;
-       this.ibanLastFour = ibanLastFour;
-       this.customerId = customerId;
-       this.bankReferenceToken = bankReferenceToken;
-       this.mandateType = SEPADirectDebitMandateType.fromString(mandateType);
+    CreateMandateResult(String approvalUrl, String ibanLastFour, String customerId,
+                        String bankReferenceToken, String mandateType) {
+        this.approvalUrl = approvalUrl;
+        this.ibanLastFour = ibanLastFour;
+        this.customerId = customerId;
+        this.bankReferenceToken = bankReferenceToken;
+        this.mandateType = SEPADirectDebitMandateType.fromString(mandateType);
     }
 
     String getApprovalUrl() {

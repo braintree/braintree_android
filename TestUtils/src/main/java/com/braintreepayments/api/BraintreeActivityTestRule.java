@@ -28,7 +28,8 @@ public class BraintreeActivityTestRule<T extends AppCompatActivity> extends Acti
         getSharedPreferences(context).edit().clear().commit();
         BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
 
-        keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE))
+        keyguardLock = ((KeyguardManager) ApplicationProvider.getApplicationContext()
+                .getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
         keyguardLock.disableKeyguard();
     }
