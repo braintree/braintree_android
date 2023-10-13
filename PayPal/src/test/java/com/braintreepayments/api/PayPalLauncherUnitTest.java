@@ -31,6 +31,7 @@ public class PayPalLauncherUnitTest {
         intent = new Intent();
 
     }
+
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
         PayPalResponse payPalResponse = mock(PayPalResponse.class);
@@ -46,7 +47,8 @@ public class PayPalLauncherUnitTest {
     @Test
     public void deliverResult_returnsResultFromBrowserSwitchClient() {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(result);
+        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
+                result);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         assertSame(result, sut.deliverResult(activity, intent));
@@ -55,7 +57,8 @@ public class PayPalLauncherUnitTest {
     @Test
     public void deliverResult_clearsActiveBrowserSwitchRequests() {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(result);
+        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
+                result);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.deliverResult(activity, intent);
