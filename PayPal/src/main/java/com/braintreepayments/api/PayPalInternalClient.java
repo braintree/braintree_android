@@ -83,7 +83,7 @@ class PayPalInternalClient {
                                                         payPalRequest.getRiskCorrelationId() != null
                                                                 ?
                                                                 payPalRequest.getRiskCorrelationId() :
-                                                                payPalDataCollector.getClientMetadataId(
+                                                                dataCollector.getClientMetadataId(
                                                                         context, configuration);
 
                                                 if (pairingId != null) {

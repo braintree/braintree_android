@@ -40,7 +40,7 @@ public class LocalPaymentClient {
     public LocalPaymentClient(@NonNull FragmentActivity activity,
                               @NonNull BraintreeClient braintreeClient) {
         this(activity, activity.getLifecycle(), braintreeClient,
-                new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
+                new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -53,7 +53,7 @@ public class LocalPaymentClient {
     public LocalPaymentClient(@NonNull Fragment fragment,
                               @NonNull BraintreeClient braintreeClient) {
         this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient,
-                new PayPalDataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
+                new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
     }
 
     /**
@@ -64,14 +64,14 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new PayPalDataCollector(braintreeClient),
+        this(null, null, braintreeClient, new DataCollector(braintreeClient),
                 new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
     LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle,
                        @NonNull BraintreeClient braintreeClient,
-                       @NonNull PayPalDataCollector payPalDataCollector,
+                       @NonNull DataCollector dataCollector,
                        @NonNull LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
         this.dataCollector = dataCollector;
@@ -343,7 +343,7 @@ public class LocalPaymentClient {
                 braintreeClient.getConfiguration((configuration, error) -> {
                     if (configuration != null) {
                         localPaymentApi.tokenize(merchantAccountId, responseString,
-                                payPalDataCollector.getClientMetadataId(context, configuration),
+                                dataCollector.getClientMetadataId(context, configuration),
                                 new LocalPaymentBrowserSwitchResultCallback() {
                                     @Override
                                     public void onResult(
