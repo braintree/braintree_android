@@ -330,7 +330,7 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
@@ -355,7 +355,7 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.true");
@@ -380,7 +380,7 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.false");
@@ -405,7 +405,7 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
     }
@@ -431,7 +431,7 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.3ds-version.2.1.0");
@@ -455,7 +455,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        sut.continuePerformVerification(activity, threeDSecureResult,
+        sut.continuePerformVerification(threeDSecureResult,
                 mock(ThreeDSecureResultCallback.class));
 
         verify(activity).startActivityForResult(any(Intent.class), any(Integer.class));
@@ -488,7 +488,7 @@ public class ThreeDSecureV2UnitTest {
                 .when(activity).startActivityForResult(any(Intent.class), anyInt());
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.continuePerformVerification(activity, threeDSecureResult, callback);
+        sut.continuePerformVerification(threeDSecureResult, callback);
 
         ArgumentCaptor<BraintreeException> captor =
                 ArgumentCaptor.forClass(BraintreeException.class);
@@ -525,7 +525,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
 
         try {
-            sut.continuePerformVerification(activity, threeDSecureResult, callback);
+            sut.continuePerformVerification(threeDSecureResult, callback);
             fail("should not get here");
         } catch (Exception e) {
             assertSame(e, runtimeException);
@@ -560,7 +560,7 @@ public class ThreeDSecureV2UnitTest {
         doThrow(runtimeException).when(threeDSecureLifecycleObserver).launch(threeDSecureResult);
         sut.observer = threeDSecureLifecycleObserver;
 
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+        sut.continuePerformVerification(basicRequest, threeDSecureResult);
         ArgumentCaptor<BraintreeException> captor =
                 ArgumentCaptor.forClass(BraintreeException.class);
         verify(listener).onThreeDSecureFailure(captor.capture());
@@ -597,7 +597,7 @@ public class ThreeDSecureV2UnitTest {
         sut.observer = threeDSecureLifecycleObserver;
 
         try {
-            sut.continuePerformVerification(activity, basicRequest, threeDSecureResult);
+            sut.continuePerformVerification(basicRequest, threeDSecureResult);
             fail("should not get here");
         } catch (Exception e) {
             assertSame(e, runtimeException);

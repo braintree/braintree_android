@@ -25,6 +25,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
+import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -42,9 +43,11 @@ import com.braintreepayments.cardform.view.CardForm;
 
 import java.util.Arrays;
 
-public class CardFragment extends BaseFragment implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener, ThreeDSecureListener {
+public class CardFragment extends BaseFragment implements OnCardFormSubmitListener,
+        OnCardFormFieldFocusedListener {
 
-    private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
+    private static final String EXTRA_THREE_D_SECURE_REQUESTED =
+            "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
 
     private String deviceData;
     private boolean threeDSecureRequested;
@@ -59,6 +62,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
     private ThreeDSecureClient threeDSecureClient;
+    private ThreeDSecureLauncher threeDSecureLauncher;
     private DataCollector dataCollector;
 
     private String cardFormActionLabel;
@@ -70,8 +74,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         BraintreeClient braintreeClient = getBraintreeClient();
         americanExpressClient = new AmericanExpressClient(braintreeClient);
         cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(this, braintreeClient);
-        threeDSecureClient.setListener(this);
+        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 
         dataCollector = new DataCollector(braintreeClient);
 
@@ -82,8 +85,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
+
+        threeDSecureLauncher = new ThreeDSecureLauncher(this,
+                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                        this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
@@ -131,7 +139,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                         .setup(activity);
 
                 if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity, (deviceData, e) -> this.deviceData = deviceData);
+                    dataCollector.collectDeviceData(activity,
+                            (deviceData, e) -> this.deviceData = deviceData);
                 }
             } else {
                 handleError(configError);
@@ -177,7 +186,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         card.setExpirationMonth(cardForm.getExpirationMonth());
         card.setExpirationYear(cardForm.getExpirationYear());
         card.setCvv(cardForm.getCvv());
-        card.setShouldValidate(false); // TODO GQL currently only returns the bin if validate = false
+        card.setShouldValidate(
+                false); // TODO GQL currently only returns the bin if validate = false
         card.setPostalCode(cardForm.getPostalCode());
 
         cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
@@ -211,21 +221,29 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
-        if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(activity)) {
+        if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce &&
+                Settings.isThreeDSecureEnabled(activity)) {
             threeDSecureRequested = true;
-            loading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
+            loading = ProgressDialog.show(activity, getString(R.string.loading),
+                    getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
-            threeDSecureClient.performVerification(activity, threeDSecureRequest, (threeDSecureResult, error) -> {
-                if (threeDSecureResult != null) {
-                    threeDSecureClient.continuePerformVerification(activity, threeDSecureRequest, threeDSecureResult);
-                } else {
-                    handleError(error);
-                    safelyCloseLoadingView();
-                }
-            });
-        } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(activity)) {
-            loading = ProgressDialog.show(activity, getString(R.string.loading), getString(R.string.loading), true, false);
+            threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
+                    (threeDSecureResult,
+                     error) -> {
+                        if (threeDSecureResult != null) {
+                            threeDSecureClient.continuePerformVerification(threeDSecureResult,
+                                    (threeDSecureResult1, error1) -> threeDSecureLauncher.launch(
+                                            threeDSecureResult1));
+                        } else {
+                            handleError(error);
+                            safelyCloseLoadingView();
+                        }
+                    });
+        } else if (paymentMethodNonce instanceof CardNonce &&
+                Settings.isAmexRewardsBalanceEnabled(activity)) {
+            loading = ProgressDialog.show(activity, getString(R.string.loading),
+                    getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getString();
 
             americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
@@ -239,7 +257,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         } else {
 
             CardFragmentDirections.ActionCardFragmentToDisplayNonceFragment action =
-                    CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    CardFragmentDirections.actionCardFragmentToDisplayNonceFragment(
+                            paymentMethodNonce);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
@@ -272,43 +291,49 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         billingAddress.setPostalCode("12345");
         billingAddress.setCountryCodeAlpha2("US");
 
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+        ThreeDSecureAdditionalInformation additionalInformation =
+                new ThreeDSecureAdditionalInformation();
         additionalInformation.setAccountId("account-id");
 
-        ThreeDSecureV2ButtonCustomization submitButtonCustomization = new ThreeDSecureV2ButtonCustomization();
+        ThreeDSecureV2ButtonCustomization submitButtonCustomization =
+                new ThreeDSecureV2ButtonCustomization();
         submitButtonCustomization.setBackgroundColor("#D3D3D3");
         submitButtonCustomization.setTextColor("#000000");
 
-        ThreeDSecureV2ToolbarCustomization toolbarCustomization = new ThreeDSecureV2ToolbarCustomization();
+        ThreeDSecureV2ToolbarCustomization toolbarCustomization =
+                new ThreeDSecureV2ToolbarCustomization();
         toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
         toolbarCustomization.setBackgroundColor("#FF5A5F");
         toolbarCustomization.setButtonText("Close");
         toolbarCustomization.setTextColor("#222222");
         toolbarCustomization.setTextFontSize(18);
 
-        ThreeDSecureV2LabelCustomization labelCustomization = new ThreeDSecureV2LabelCustomization();
+        ThreeDSecureV2LabelCustomization labelCustomization =
+                new ThreeDSecureV2LabelCustomization();
         labelCustomization.setHeadingTextColor("#0082CB");
         labelCustomization.setTextFontSize(14);
 
-        ThreeDSecureV2TextBoxCustomization textBoxCustomization = new ThreeDSecureV2TextBoxCustomization();
+        ThreeDSecureV2TextBoxCustomization textBoxCustomization =
+                new ThreeDSecureV2TextBoxCustomization();
         textBoxCustomization.setBorderColor("#0082CB");
 
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
-        v2UiCustomization.setButtonCustomization(submitButtonCustomization, ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setButtonCustomization(submitButtonCustomization,
+                ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
         v1UiCustomization.setRedirectButtonText("Return to Demo App");
-        v1UiCustomization.setRedirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
+        v1UiCustomization.setRedirectDescription(
+                "Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
         threeDSecureRequest.setAmount("10");
         threeDSecureRequest.setEmail("test@email.com");
         threeDSecureRequest.setBillingAddress(billingAddress);
         threeDSecureRequest.setNonce(cardNonce.getString());
-        threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
         threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
@@ -325,15 +350,5 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         ));
 
         return threeDSecureRequest;
-    }
-
-    @Override
-    public void onThreeDSecureSuccess(@NonNull ThreeDSecureResult threeDSecureResult) {
-        handleThreeDSecureResult(threeDSecureResult, null);
-    }
-
-    @Override
-    public void onThreeDSecureFailure(@NonNull Exception error) {
-        handleThreeDSecureResult(null, error);
     }
 }

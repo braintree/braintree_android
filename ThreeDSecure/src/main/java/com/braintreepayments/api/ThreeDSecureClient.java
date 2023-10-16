@@ -1,15 +1,8 @@
 package com.braintreepayments.api;
 
-import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
-
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.TransactionTooLargeException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -37,10 +30,6 @@ public class ThreeDSecureClient {
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
-    @VisibleForTesting
-    ThreeDSecureLifecycleObserver observer;
-
-
     /**
      * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
      * <p>
@@ -49,7 +38,6 @@ public class ThreeDSecureClient {
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
-    @Deprecated
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(),
                 new ThreeDSecureAPI(braintreeClient));
@@ -77,11 +65,11 @@ public class ThreeDSecureClient {
      * created with this nonce will be 3D Secure, and benefit from the appropriate liability shift
      * if authentication is successful or fail with a 3D Secure failure.
      *
-     * @param activity Android FragmentActivity
+     * @param context  Android context
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void performVerification(@NonNull final FragmentActivity activity,
+    public void performVerification(@NonNull final Context context,
                                     @NonNull final ThreeDSecureRequest request,
                                     @NonNull final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
@@ -127,7 +115,7 @@ public class ThreeDSecureClient {
                     };
 
             try {
-                cardinalClient.initialize(activity, configuration, request,
+                cardinalClient.initialize(context, configuration, request,
                         cardinalInitializeCallback);
             } catch (BraintreeException initializeException) {
                 braintreeClient.sendAnalyticsEvent(
@@ -216,18 +204,15 @@ public class ThreeDSecureClient {
      * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest,
      * ThreeDSecureResult)} instead.
      *
-     * @param activity Android FragmentActivity
      * @param result   the {@link ThreeDSecureResult} returned for this request. Contains
      *                 information about the 3DS verification request that will be invoked in this
      *                 method.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    @Deprecated
-    public void continuePerformVerification(@NonNull final FragmentActivity activity,
-                                            @NonNull final ThreeDSecureResult result,
+    public void continuePerformVerification(@NonNull final ThreeDSecureResult result,
                                             @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(
-                (configuration, error) -> startVerificationFlow(activity,
+                (configuration, error) -> startVerificationFlow(
                         result, callback));
     }
 
@@ -238,20 +223,17 @@ public class ThreeDSecureClient {
      * {@link ThreeDSecureClient#initializeChallengeWithLookupResponse(FragmentActivity,
      * ThreeDSecureRequest, String)} instead.
      *
-     * @param activity       Android FragmentActivity
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
      *                       information.
      * @param callback       {@link ThreeDSecureResultCallback}
      */
-    @Deprecated
-    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity,
-                                                      @NonNull final String lookupResponse, @NonNull
+    public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
                                                       final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
             ThreeDSecureResult result;
             try {
                 result = ThreeDSecureResult.fromJson(lookupResponse);
-                startVerificationFlow(activity, result, callback);
+                startVerificationFlow(result, callback);
             } catch (JSONException e) {
                 callback.onResult(null, e);
             }
@@ -260,8 +242,7 @@ public class ThreeDSecureClient {
 
     // endregion
 
-    private void startVerificationFlow(FragmentActivity activity,
-                                       ThreeDSecureResult result,
+    private void startVerificationFlow(ThreeDSecureResult result,
                                        ThreeDSecureResultCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
@@ -301,31 +282,7 @@ public class ThreeDSecureClient {
 
         // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-
-        try {
-            if (observer != null) {
-                observer.launch(result);
-            } else {
-                Bundle extras = new Bundle();
-                extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, result);
-
-                Intent intent = new Intent(activity, ThreeDSecureActivity.class);
-                intent.putExtras(extras);
-
-                activity.startActivityForResult(intent, THREE_D_SECURE);
-            }
-        } catch (RuntimeException runtimeException) {
-            Throwable exceptionCause = runtimeException.getCause();
-            if (exceptionCause instanceof TransactionTooLargeException) {
-                String errorMessage = "The 3D Secure response returned is too large to continue. "
-                        + "Please contact Braintree Support for assistance.";
-                BraintreeException threeDSecureResponseTooLargeError =
-                        new BraintreeException(errorMessage, runtimeException);
-                callback.onResult(null, threeDSecureResponseTooLargeError);
-            } else {
-                throw runtimeException;
-            }
-        }
+        callback.onResult(result, null);
     }
 
     // region Internal Handle App/Browser Switch Results
