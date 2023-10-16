@@ -19,11 +19,10 @@ import java.util.List;
  */
 public class ThreeDSecureRequest implements Parcelable {
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({VERSION_1, VERSION_2})
+    @StringDef({VERSION_2})
     @interface ThreeDSecureVersion {
     }
 
-    public static final String VERSION_1 = "1";
     public static final String VERSION_2 = "2";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -144,22 +143,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Set the desired ThreeDSecure version. Possible Values defined at
-     * {@link ThreeDSecureVersion}.
-     * <ul>
-     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible. Default value.</li>
-     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired.</li>
-     * </ul>
-     * <p>
-     * Will default to {@link #VERSION_2}.
-     *
-     * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
-     */
-    public void setVersionRequested(@Nullable @ThreeDSecureVersion String versionRequested) {
-        this.versionRequested = versionRequested;
-    }
-
-    /**
      * Optional. The account type selected by the cardholder. Some cards can be processed using
      * either a credit or debit account and cardholders have the option to choose which account to
      * use. Possible values defined at {@link ThreeDSecureAccountType}.
@@ -274,7 +257,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * <p>
      * Defaults to OTP, OOB, SINGLE_SELECT, MULTI_SELECT, RENDER_HTML
      *
-     * @param renderType specifies what render type to use in the 3D Secure challenge
+     * @param renderTypes specifies what render types to use in the 3D Secure challenge
      */
     public void setRenderTypes(List<Integer> renderTypes) {
         this.renderTypes = renderTypes;

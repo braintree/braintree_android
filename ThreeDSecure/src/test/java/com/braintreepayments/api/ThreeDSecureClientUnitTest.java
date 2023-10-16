@@ -97,7 +97,7 @@ public class ThreeDSecureClientUnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
 
@@ -126,7 +126,7 @@ public class ThreeDSecureClientUnitTest {
         request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
@@ -164,7 +164,7 @@ public class ThreeDSecureClientUnitTest {
         request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.performVerification(activity, request, threeDSecureResultCallback);
 
@@ -207,7 +207,7 @@ public class ThreeDSecureClientUnitTest {
         request.setBillingAddress(billingAddress);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         sut.performVerification(activity, request, threeDSecureResultCallback);
@@ -223,7 +223,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.setListener(listener);
 
@@ -245,7 +245,7 @@ public class ThreeDSecureClientUnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         basicRequest.setVersionRequested(ThreeDSecureRequest.VERSION_1);
         sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
@@ -267,7 +267,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         verifyNoMoreInteractions(braintreeClient);
@@ -301,7 +301,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.setListener(listener);
 
@@ -335,7 +335,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.setListener(listener);
         sut.onBrowserSwitchResult(browserSwitchResult);
@@ -363,7 +363,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.setListener(listener);
         sut.onBrowserSwitchResult(browserSwitchResult);
@@ -388,7 +388,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.setListener(listener);
         sut.onBrowserSwitchResult(browserSwitchResult);
@@ -412,7 +412,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.onBrowserSwitchResult(browserSwitchResult);
 
@@ -428,7 +428,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -449,7 +449,7 @@ public class ThreeDSecureClientUnitTest {
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -473,7 +473,7 @@ public class ThreeDSecureClientUnitTest {
         when(validateResponse.getErrorDescription()).thenReturn("Error");
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -500,7 +500,7 @@ public class ThreeDSecureClientUnitTest {
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.CANCEL);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -540,7 +540,7 @@ public class ThreeDSecureClientUnitTest {
                 any(ThreeDSecureResultCallback.class));
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -583,7 +583,7 @@ public class ThreeDSecureClientUnitTest {
                 any(ThreeDSecureResultCallback.class));
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -621,7 +621,7 @@ public class ThreeDSecureClientUnitTest {
                 any(ThreeDSecureResultCallback.class));
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
@@ -642,7 +642,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         ArgumentCaptor<ThreeDSecureLifecycleObserver> captor =
@@ -714,7 +714,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
         sut.setListener(listener);
@@ -732,7 +732,7 @@ public class ThreeDSecureClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
         sut.pendingBrowserSwitchResult = null;
         sut.setListener(listener);
@@ -753,7 +753,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         BrowserSwitchResult result = sut.getBrowserSwitchResult(activity);
@@ -770,7 +770,7 @@ public class ThreeDSecureClientUnitTest {
         when(braintreeClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         BrowserSwitchResult result = sut.deliverBrowserSwitchResult(activity);
@@ -788,7 +788,7 @@ public class ThreeDSecureClientUnitTest {
                 browserSwitchResult);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         BrowserSwitchResult result = sut.getBrowserSwitchResultFromNewTask(activity);
@@ -806,7 +806,7 @@ public class ThreeDSecureClientUnitTest {
                 browserSwitchResult);
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         BrowserSwitchResult result = sut.deliverBrowserSwitchResultFromNewTask(activity);

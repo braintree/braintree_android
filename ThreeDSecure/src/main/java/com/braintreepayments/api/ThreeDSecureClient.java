@@ -5,7 +5,6 @@ import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.TransactionTooLargeException;
 
@@ -14,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -35,7 +33,6 @@ public class ThreeDSecureClient {
     private final CardinalClient cardinalClient;
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureAPI api;
-    private ThreeDSecureListener listener;
 
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
@@ -43,31 +40,6 @@ public class ThreeDSecureClient {
     @VisibleForTesting
     ThreeDSecureLifecycleObserver observer;
 
-    /**
-     * Create a new instance of {@link ThreeDSecureClient} from within an Activity using a
-     * {@link BraintreeClient}.
-     *
-     * @param activity        a {@link FragmentActivity}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public ThreeDSecureClient(@NonNull FragmentActivity activity,
-                              @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient, new CardinalClient(),
-                new ThreeDSecureAPI(braintreeClient));
-    }
-
-    /**
-     * Create a new instance of {@link ThreeDSecureClient} from within a Fragment using a
-     * {@link BraintreeClient}.
-     *
-     * @param fragment        a {@link Fragment}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public ThreeDSecureClient(@NonNull Fragment fragment,
-                              @NonNull BraintreeClient braintreeClient) {
-        this(fragment.requireActivity(), fragment.getLifecycle(), braintreeClient,
-                new CardinalClient(), new ThreeDSecureAPI(braintreeClient));
-    }
 
     /**
      * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
@@ -79,26 +51,16 @@ public class ThreeDSecureClient {
      */
     @Deprecated
     public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new CardinalClient(),
+        this(braintreeClient, new CardinalClient(),
                 new ThreeDSecureAPI(braintreeClient));
     }
 
     @VisibleForTesting
-    ThreeDSecureClient(FragmentActivity activity, Lifecycle lifecycle,
-                       BraintreeClient braintreeClient, CardinalClient cardinalClient,
+    ThreeDSecureClient(BraintreeClient braintreeClient, CardinalClient cardinalClient,
                        ThreeDSecureAPI threeDSecureAPI) {
         this.cardinalClient = cardinalClient;
         this.braintreeClient = braintreeClient;
         this.api = threeDSecureAPI;
-        if (activity != null && lifecycle != null) {
-            addObserver(activity, lifecycle);
-        }
-    }
-
-    @VisibleForTesting
-    void addObserver(@NonNull FragmentActivity activity, @NonNull Lifecycle lifecycle) {
-        observer = new ThreeDSecureLifecycleObserver(activity.getActivityResultRegistry(), this);
-        lifecycle.addObserver(observer);
     }
 
     // region Cardinal Initialize/Prepare Callback Methods
@@ -141,46 +103,36 @@ public class ThreeDSecureClient {
                 return;
             }
 
-            if (ThreeDSecureRequest.VERSION_1.equals(request.getVersionRequested())) {
-                String threeDSecureV1UnsupportedMessage =
-                        "3D Secure v1 is deprecated and no longer supported. See https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 for more information.";
-                BraintreeException threeDSecureV1UnsupportedError =
-                        new BraintreeException(threeDSecureV1UnsupportedMessage);
-                callback.onResult(null, threeDSecureV1UnsupportedError);
+            if (configuration.getCardinalAuthenticationJwt() == null) {
+                callback.onResult(null,
+                        new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                                "Please contact Braintree Support for assistance."));
+                return;
+            }
+            braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
-            } else {
-                // VERSION_2
-                if (configuration.getCardinalAuthenticationJwt() == null) {
-                    callback.onResult(null,
-                            new BraintreeException("Merchant is not configured for 3DS 2.0. " +
-                                    "Please contact Braintree Support for assistance."));
-                    return;
-                }
-                braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
+            CardinalInitializeCallback cardinalInitializeCallback =
+                    (consumerSessionId, error1) -> {
+                        if (consumerSessionId != null) {
+                            api.performLookup(request,
+                                    cardinalClient.getConsumerSessionId(), callback);
+                            braintreeClient.sendAnalyticsEvent(
+                                    "three-d-secure.cardinal-sdk.init.setup-completed");
+                        } else {
+                            api.performLookup(request,
+                                    cardinalClient.getConsumerSessionId(), callback);
+                            braintreeClient.sendAnalyticsEvent(
+                                    "three-d-secure.cardinal-sdk.init.setup-failed");
+                        }
+                    };
 
-                CardinalInitializeCallback cardinalInitializeCallback =
-                        (consumerSessionId, error1) -> {
-                            if (consumerSessionId != null) {
-                                api.performLookup(request,
-                                        cardinalClient.getConsumerSessionId(), callback);
-                                braintreeClient.sendAnalyticsEvent(
-                                        "three-d-secure.cardinal-sdk.init.setup-completed");
-                            } else {
-                                api.performLookup(request,
-                                        cardinalClient.getConsumerSessionId(), callback);
-                                braintreeClient.sendAnalyticsEvent(
-                                        "three-d-secure.cardinal-sdk.init.setup-failed");
-                            }
-                        };
-
-                try {
-                    cardinalClient.initialize(activity, configuration, request,
-                            cardinalInitializeCallback);
-                } catch (BraintreeException initializeException) {
-                    braintreeClient.sendAnalyticsEvent(
-                            "three-d-secure.cardinal-sdk.init.failed");
-                    callback.onResult(null, initializeException);
-                }
+            try {
+                cardinalClient.initialize(activity, configuration, request,
+                        cardinalInitializeCallback);
+            } catch (BraintreeException initializeException) {
+                braintreeClient.sendAnalyticsEvent(
+                        "three-d-secure.cardinal-sdk.init.failed");
+                callback.onResult(null, initializeException);
             }
         });
     }
@@ -250,74 +202,6 @@ public class ThreeDSecureClient {
                 callback.onResult(null, null, authError);
             }
         });
-    }
-
-    // endregion
-
-    // region Launch 3DS With App/Browser Switch Encapsulation
-
-    /**
-     * Continues the 3DS verification. Should be called from
-     * {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}. The result of
-     * this verification will be returned to your {@link ThreeDSecureListener}.
-     *
-     * @param activity an Android FragmentActivity
-     * @param request  the {@link ThreeDSecureRequest} with information used for authentication
-     * @param result   a {@link ThreeDSecureResult} that contains information about the 3DS
-     *                 verification request.
-     */
-    public void continuePerformVerification(@NonNull final FragmentActivity activity,
-                                            @NonNull final ThreeDSecureRequest request,
-                                            @NonNull final ThreeDSecureResult result) {
-        continuePerformVerification(activity, request, result, (threeDSecureResult, error) -> {
-            if (threeDSecureResult != null) {
-                listener.onThreeDSecureSuccess(threeDSecureResult);
-            } else if (error != null) {
-                listener.onThreeDSecureFailure(error);
-            }
-        });
-    }
-
-    /**
-     * Initialize a challenge from a server side lookup call. The result of this challenge will be
-     * returned to your {@link ThreeDSecureListener}.
-     *
-     * @param activity       Android FragmentActivity
-     * @param lookupResponse The lookup response String from the server side call to lookup the 3D
-     *                       Secure information.
-     */
-    public void initializeChallengeWithLookupResponse(@NonNull FragmentActivity activity,
-                                                      @NonNull String lookupResponse) {
-        initializeChallengeWithLookupResponse(activity, lookupResponse,
-                (threeDSecureResult, error) -> {
-                    if (threeDSecureResult != null) {
-                        listener.onThreeDSecureSuccess(threeDSecureResult);
-                    } else if (error != null) {
-                        listener.onThreeDSecureFailure(error);
-                    }
-                });
-    }
-
-    /**
-     * Initialize a challenge from a server side lookup call. The result of this challenge will be
-     * returned to your {@link ThreeDSecureListener}.
-     *
-     * @param activity       Android FragmentActivity
-     * @param request        The {@link ThreeDSecureRequest} with optional UI customization.
-     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
-     *                       information.
-     */
-    public void initializeChallengeWithLookupResponse(@NonNull final FragmentActivity activity,
-                                                      @Nullable final ThreeDSecureRequest request,
-                                                      @NonNull final String lookupResponse) {
-        initializeChallengeWithLookupResponse(activity, request, lookupResponse,
-                (threeDSecureResult, error) -> {
-                    if (threeDSecureResult != null) {
-                        listener.onThreeDSecureSuccess(threeDSecureResult);
-                    } else if (error != null) {
-                        listener.onThreeDSecureFailure(error);
-                    }
-                });
     }
 
     // endregion

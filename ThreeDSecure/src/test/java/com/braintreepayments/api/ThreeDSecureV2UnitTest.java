@@ -90,7 +90,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -126,7 +126,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
@@ -160,7 +160,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
@@ -184,7 +184,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
@@ -206,7 +206,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
@@ -233,7 +233,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
@@ -256,7 +256,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -279,7 +279,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
@@ -301,7 +301,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
@@ -322,7 +322,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.addObserver(activity, lifecycle);
@@ -349,7 +349,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -374,7 +374,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -399,7 +399,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -423,7 +423,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
         sut.addObserver(activity, lifecycle);
@@ -450,7 +450,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(null, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
@@ -474,7 +474,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(null, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
@@ -513,7 +513,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(null, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
@@ -545,7 +545,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -584,7 +584,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -618,7 +618,7 @@ public class ThreeDSecureV2UnitTest {
                 .build();
 
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
         sut.setListener(listener);
 
@@ -654,7 +654,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -697,7 +697,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -737,7 +737,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -761,7 +761,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecureResult threeDSecureResult =
@@ -788,7 +788,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ThreeDSecureResult threeDSecureResult =
@@ -815,7 +815,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -847,7 +847,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
@@ -868,7 +868,7 @@ public class ThreeDSecureV2UnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ThreeDSecureClient sut =
-                new ThreeDSecureClient(activity, lifecycle, braintreeClient, cardinalClient,
+                new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
