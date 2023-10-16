@@ -16,7 +16,8 @@ class ManifestValidator {
         return getActivityInfo(context, klass) != null;
     }
 
-    <T> boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class<T> klass) {
+    <T> boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme,
+                                                     Class<T> klass) {
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(Uri.parse(urlScheme + "://"))
                 .addCategory(Intent.CATEGORY_DEFAULT)
@@ -24,7 +25,8 @@ class ManifestValidator {
 
         ActivityInfo activityInfo = getActivityInfo(context, klass);
         AppHelper appHelper = new AppHelper();
-        return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
+        return (activityInfo != null &&
+                activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
                 appHelper.isIntentAvailable(context, intent));
     }
 
@@ -32,7 +34,8 @@ class ManifestValidator {
     <T> ActivityInfo getActivityInfo(Context context, Class<T> klass) {
         try {
             PackageInfo packageInfo =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+                    context.getPackageManager().getPackageInfo(context.getPackageName(),
+                            PackageManager.GET_ACTIVITIES);
             ActivityInfo[] activities = packageInfo.activities;
             if (activities != null) {
                 for (ActivityInfo activityInfo : activities) {
@@ -41,7 +44,8 @@ class ManifestValidator {
                     }
                 }
             }
-        } catch (NameNotFoundException ignored) {}
+        } catch (NameNotFoundException ignored) {
+        }
 
         return null;
     }

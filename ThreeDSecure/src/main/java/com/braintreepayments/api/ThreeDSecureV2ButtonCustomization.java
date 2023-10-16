@@ -10,7 +10,8 @@ import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 /**
  * Button customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization implements Parcelable {
+public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization
+        implements Parcelable {
 
     private final ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
 
@@ -62,7 +63,8 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
     }
 
     /**
-     * @param backgroundColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @param backgroundColor Color code in Hex format. For example, the color code can be
+     *                        “#999999”.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
@@ -132,15 +134,16 @@ public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomi
         }
     }
 
-    public static final Creator<ThreeDSecureV2ButtonCustomization> CREATOR = new Creator<ThreeDSecureV2ButtonCustomization>() {
-        @Override
-        public ThreeDSecureV2ButtonCustomization createFromParcel(Parcel in) {
-            return new ThreeDSecureV2ButtonCustomization(in);
-        }
+    public static final Creator<ThreeDSecureV2ButtonCustomization> CREATOR =
+            new Creator<ThreeDSecureV2ButtonCustomization>() {
+                @Override
+                public ThreeDSecureV2ButtonCustomization createFromParcel(Parcel in) {
+                    return new ThreeDSecureV2ButtonCustomization(in);
+                }
 
-        @Override
-        public ThreeDSecureV2ButtonCustomization[] newArray(int size) {
-            return new ThreeDSecureV2ButtonCustomization[size];
-        }
-    };
+                @Override
+                public ThreeDSecureV2ButtonCustomization[] newArray(int size) {
+                    return new ThreeDSecureV2ButtonCustomization[size];
+                }
+            };
 }

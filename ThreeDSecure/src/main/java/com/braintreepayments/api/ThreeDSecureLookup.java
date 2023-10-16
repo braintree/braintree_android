@@ -33,8 +33,7 @@ public class ThreeDSecureLookup implements Parcelable {
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure lookup route.
-     * @return The {@link ThreeDSecureLookup} to use when
-     *         performing 3D Secure authentication.
+     * @return The {@link ThreeDSecureLookup} to use when performing 3D Secure authentication.
      * @throws JSONException when parsing fails.
      */
     static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
@@ -106,16 +105,18 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     /**
-     * @return {@code boolean}
-     * When `true`, the user will be presented with a 3D Secure challenge when calling
-     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest, ThreeDSecureResult, ThreeDSecureResultCallback)}
+     * @return {@code boolean} When `true`, the user will be presented with a 3D Secure challenge
+     * when calling
+     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest,
+     * ThreeDSecureResult, ThreeDSecureResultCallback)}
      */
     public boolean requiresUserAuthentication() {
         return acsUrl != null;
     }
 
     // NEXT_MAJOR_VERSION: make package-private
-    public ThreeDSecureLookup() {}
+    public ThreeDSecureLookup() {
+    }
 
     @Override
     public int describeContents() {

@@ -26,10 +26,7 @@ public class ThreadSchedulerUnitTest {
     @Test
     public void runOnBackground_submitsRunnableToThreadPool() {
         ThreadScheduler sut = new ThreadScheduler(mainThreadHandler, backgroundThreadPool);
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {}
-        };
+        Runnable runnable = () -> {};
 
         sut.runOnBackground(runnable);
 
@@ -40,10 +37,7 @@ public class ThreadSchedulerUnitTest {
     @Test
     public void runOnMain_postsRunnableToHandler() {
         ThreadScheduler sut = new ThreadScheduler(mainThreadHandler, backgroundThreadPool);
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {}
-        };
+        Runnable runnable = () -> {};
 
         sut.runOnMain(runnable);
 

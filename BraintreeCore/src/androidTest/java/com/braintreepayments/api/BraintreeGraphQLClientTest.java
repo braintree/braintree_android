@@ -30,13 +30,10 @@ public class BraintreeGraphQLClientTest {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                // Make sure SSL handshake is successful
-                assertFalse(httpError instanceof SSLException);
-                countDownLatch.countDown();
-            }
+        braintreeClient.sendGraphQLPOST("{}", (responseBody, httpError) -> {
+            // Make sure SSL handshake is successful
+            assertFalse(httpError instanceof SSLException);
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -47,14 +44,10 @@ public class BraintreeGraphQLClientTest {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", new HttpResponseCallback() {
-
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                // Make sure SSL handshake is successful
-                assertFalse(httpError instanceof SSLException);
-                countDownLatch.countDown();
-            }
+        braintreeClient.sendGraphQLPOST("{}", (responseBody, httpError) -> {
+            // Make sure SSL handshake is successful
+            assertFalse(httpError instanceof SSLException);
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();

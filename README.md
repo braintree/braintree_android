@@ -8,7 +8,7 @@ Welcome to Braintree's Android SDK. This library will help you accept card and a
 
 **The Braintree SDK supports Android API 23 and above.**
 
-The Braintree SDK requires Java 8 as of version 4.24.0. See the [CHANGELOG](https://github.com/braintree/braintree_android/blob/main/CHANGELOG.md#4240) for more details. The Braintree SDK uses Kotlin 1.7. 
+The Braintree SDK requires Java 11 and uses Kotlin 1.7. 
 
 ## Adding It To Your Project
 

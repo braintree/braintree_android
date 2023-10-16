@@ -13,7 +13,8 @@ class VenmoSharedPrefsWriter {
     }
 
     @VisibleForTesting
-    void persistVenmoVaultOption(BraintreeSharedPreferences braintreeSharedPreferences, boolean shouldVault) {
+    void persistVenmoVaultOption(BraintreeSharedPreferences braintreeSharedPreferences,
+                                 boolean shouldVault) {
         braintreeSharedPreferences.putBoolean(VAULT_VENMO_KEY, shouldVault);
     }
 

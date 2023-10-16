@@ -19,7 +19,7 @@ public class LocalPaymentClientTest {
     private BraintreeClient braintreeClient;
 
     @Before
-    public void setUp() throws InvalidArgumentException {
+    public void setUp() {
         countDownLatch = new CountDownLatch(1);
         braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), "sandbox_f252zhq7_hh4cpc39zq4rgjcg");
     }
@@ -44,13 +44,10 @@ public class LocalPaymentClientTest {
         request.setCurrencyCode("EUR");
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient);
-        sut.startPayment(request, new LocalPaymentStartCallback() {
-            @Override
-            public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
-                assertNotNull(localPaymentResult.getApprovalUrl());
-                assertNotNull(localPaymentResult.getPaymentId());
-                countDownLatch.countDown();
-            }
+        sut.startPayment(request, (localPaymentResult, error) -> {
+            assertNotNull(localPaymentResult.getApprovalUrl());
+            assertNotNull(localPaymentResult.getPaymentId());
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();

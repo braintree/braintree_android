@@ -27,9 +27,9 @@ public class ThreeDSecureResult implements Parcelable {
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
-     * @param jsonString The json response from the Braintree Gateway 3D Secure authentication route.
-     * @return The {@link ThreeDSecureResult} to use when performing 3D Secure
-     * authentication.
+     * @param jsonString The json response from the Braintree Gateway 3D Secure authentication
+     *                   route.
+     * @return The {@link ThreeDSecureResult} to use when performing 3D Secure authentication.
      */
     static ThreeDSecureResult fromJson(String jsonString) throws JSONException {
         ThreeDSecureResult result = new ThreeDSecureResult();
@@ -42,7 +42,9 @@ public class ThreeDSecureResult implements Parcelable {
 
         if (json.has(ERRORS_KEY)) {
             // 3DS v2
-            result.errorMessage = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
+            result.errorMessage =
+                    Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY,
+                            null);
         } else if (json.has(ERROR_KEY)) {
             // 3DS v1
             result.errorMessage = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
@@ -57,8 +59,7 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @return The {@link CardNonce} associated with the 3D Secure
-     * authentication
+     * @return The {@link CardNonce} associated with the 3D Secure authentication
      */
     @Nullable
     public CardNonce getTokenizedCard() {

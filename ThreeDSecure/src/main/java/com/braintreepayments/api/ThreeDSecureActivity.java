@@ -19,9 +19,12 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
  */
 public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
 
-    static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
-    static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
-    static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
+    static final String EXTRA_ERROR_MESSAGE =
+            "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
+    static final String EXTRA_THREE_D_SECURE_RESULT =
+            "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
+    static final String EXTRA_VALIDATION_RESPONSE =
+            "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
 
     static final int RESULT_COULD_NOT_START_CARDINAL = RESULT_FIRST_USER;

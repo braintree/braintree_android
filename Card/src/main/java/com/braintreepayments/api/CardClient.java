@@ -9,7 +9,8 @@ import org.json.JSONObject;
 
 /**
  * Used to tokenize credit or debit cards using a {@link Card}. For more information see the
- * <a href="https://developer.paypal.com/braintree/docs/guides/credit-cards/overview">documentation</a>
+ * <a
+ * href="https://developer.paypal.com/braintree/docs/guides/credit-cards/overview">documentation</a>
  */
 public class CardClient {
 
@@ -32,8 +33,8 @@ public class CardClient {
      * The tokenization result is returned via a {@link CardTokenizeCallback} callback.
      *
      * <p>
-     * On success, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will
-     * be invoked with a nonce.
+     * On success, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be
+     * invoked with a nonce.
      *
      * <p>
      * If creation fails validation, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)}
@@ -41,49 +42,43 @@ public class CardClient {
      *
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, the
-     * {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be invoked with
-     * an {@link Exception} describing the error.
-     *  @param card {@link Card}
+     * {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be invoked with an
+     * {@link Exception} describing the error.
+     *
+     * @param card     {@link Card}
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(@NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (error != null) {
-                    callback.onResult(null, error);
-                    return;
-                }
+        braintreeClient.getConfiguration((configuration, error) -> {
+            if (error != null) {
+                callback.onResult(null, error);
+                return;
+            }
 
-                boolean shouldTokenizeViaGraphQL =
-                    configuration.isGraphQLFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS);
+            boolean shouldTokenizeViaGraphQL =
+                    configuration.isGraphQLFeatureEnabled(
+                            GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS);
 
-                if (shouldTokenizeViaGraphQL) {
-                    card.setSessionId(braintreeClient.getSessionId());
-                    try {
-                        JSONObject tokenizePayload = card.buildJSONForGraphQL();
-                        apiClient.tokenizeGraphQL(tokenizePayload, new TokenizeCallback() {
-                            @Override
-                            public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                                handleTokenizeResponse(tokenizationResponse, exception, callback);
-                            }
-                        });
-                    } catch (BraintreeException | JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                } else {
-                    apiClient.tokenizeREST(card, new TokenizeCallback() {
-                        @Override
-                        public void onResult(JSONObject tokenizationResponse, Exception exception) {
-                            handleTokenizeResponse(tokenizationResponse, exception, callback);
-                        }
-                    });
+            if (shouldTokenizeViaGraphQL) {
+                card.setSessionId(braintreeClient.getSessionId());
+                try {
+                    JSONObject tokenizePayload = card.buildJSONForGraphQL();
+                    apiClient.tokenizeGraphQL(tokenizePayload,
+                            (tokenizationResponse, exception) -> handleTokenizeResponse(
+                                    tokenizationResponse, exception, callback));
+                } catch (BraintreeException | JSONException e) {
+                    callback.onResult(null, e);
                 }
+            } else {
+                apiClient.tokenizeREST(card,
+                        (tokenizationResponse, exception) -> handleTokenizeResponse(
+                                tokenizationResponse, exception, callback));
             }
         });
     }
 
-    private void handleTokenizeResponse(JSONObject tokenizationResponse, Exception exception, CardTokenizeCallback callback) {
+    private void handleTokenizeResponse(JSONObject tokenizationResponse, Exception exception,
+                                        CardTokenizeCallback callback) {
         if (tokenizationResponse != null) {
             try {
                 CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);

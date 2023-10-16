@@ -32,10 +32,13 @@ public class PayPalCreditFinancingUnitTest {
     @Test
     public void canCreateCreditFinancing_fromStandardJson() throws JSONException {
         String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
-        JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
-                .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
+        JSONObject creditFinancingJsonObject =
+                new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
+                        .getJSONObject(0).getJSONObject("details")
+                        .getJSONObject("creditFinancingOffered");
 
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        PayPalCreditFinancing payPalCreditFinancing =
+                PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
 
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
@@ -51,15 +54,19 @@ public class PayPalCreditFinancingUnitTest {
     @Test
     public void writeToParcel_serializesCorrectly() throws JSONException {
         String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
-        JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
-                .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
+        JSONObject creditFinancingJsonObject =
+                new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
+                        .getJSONObject(0).getJSONObject("details")
+                        .getJSONObject("creditFinancingOffered");
 
-        PayPalCreditFinancing preSerialized = PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        PayPalCreditFinancing preSerialized =
+                PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.CREATOR.createFromParcel(parcel);
+        PayPalCreditFinancing payPalCreditFinancing =
+                PayPalCreditFinancing.CREATOR.createFromParcel(parcel);
 
         assertNotNull(payPalCreditFinancing);
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());

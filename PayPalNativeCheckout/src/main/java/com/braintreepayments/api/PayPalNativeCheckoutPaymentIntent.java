@@ -9,7 +9,8 @@ import java.lang.annotation.RetentionPolicy;
  * The payment intent in the PayPal Checkout flow
  */
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({PayPalNativeCheckoutPaymentIntent.ORDER, PayPalNativeCheckoutPaymentIntent.SALE, PayPalNativeCheckoutPaymentIntent.AUTHORIZE})
+@StringDef({PayPalNativeCheckoutPaymentIntent.ORDER, PayPalNativeCheckoutPaymentIntent.SALE,
+        PayPalNativeCheckoutPaymentIntent.AUTHORIZE})
 public @interface PayPalNativeCheckoutPaymentIntent {
 
     /**

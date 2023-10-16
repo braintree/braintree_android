@@ -11,12 +11,13 @@ public class VenmoAuthChallenge {
     private String sessionId;
     private String integrationType;
 
-    VenmoAuthChallenge(Configuration configuration, String profileId, String paymentContextId, String sessionId, String integrationType) {
-       this.configuration = configuration;
-       this.profileId = profileId;
-       this.paymentContextId = paymentContextId;
-       this.sessionId = sessionId;
-       this.integrationType = integrationType;
+    VenmoAuthChallenge(Configuration configuration, String profileId, String paymentContextId,
+                       String sessionId, String integrationType) {
+        this.configuration = configuration;
+        this.profileId = profileId;
+        this.paymentContextId = paymentContextId;
+        this.sessionId = sessionId;
+        this.integrationType = integrationType;
     }
 
     Configuration getConfiguration() {

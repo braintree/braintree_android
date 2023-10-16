@@ -78,7 +78,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
             JSONObject analyticsJson = new JSONObject();
             analyticsJson.put("url", analyticsUrl);
             put(analyticsJson);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
@@ -86,7 +87,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
         try {
             paypalEnabled(true);
             put(new JSONObject(builder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
@@ -96,7 +98,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
         if (enabled) {
             try {
                 put("paypal", new JSONObject(new TestPayPalConfigurationBuilder(true).build()));
-            } catch (JSONException ignored) {}
+            } catch (JSONException ignored) {
+            }
         }
 
         return this;
@@ -105,28 +108,35 @@ public class TestConfigurationBuilder extends JSONBuilder {
     public TestConfigurationBuilder googlePay(TestGooglePayConfigurationBuilder builder) {
         try {
             put("androidPay", new JSONObject(builder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
-    public TestConfigurationBuilder payWithVenmo(TestVenmoConfigurationBuilder venmoConfigurationBuilder) {
+    public TestConfigurationBuilder payWithVenmo(
+            TestVenmoConfigurationBuilder venmoConfigurationBuilder) {
         try {
             put(new JSONObject(venmoConfigurationBuilder.build()));
-        } catch(JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
-    public TestConfigurationBuilder visaCheckout(TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
+    public TestConfigurationBuilder visaCheckout(
+            TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
         try {
             put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
-    public TestConfigurationBuilder braintreeApi(TestBraintreeApiConfigurationBuilder braintreeApiConfigurationBuilder) {
+    public TestConfigurationBuilder braintreeApi(
+            TestBraintreeApiConfigurationBuilder braintreeApiConfigurationBuilder) {
         try {
             put(new JSONObject(braintreeApiConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
@@ -136,21 +146,26 @@ public class TestConfigurationBuilder extends JSONBuilder {
             graphQLJson.put("url", "http://10.0.2.2:8080/graphql");
             graphQLJson.put("features", new JSONArray().put(Features.TOKENIZE_CREDIT_CARDS));
             put(graphQLJson);
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
-    public TestConfigurationBuilder graphQL(TestGraphQLConfigurationBuilder graphQLConfigurationBuilder) {
+    public TestConfigurationBuilder graphQL(
+            TestGraphQLConfigurationBuilder graphQLConfigurationBuilder) {
         try {
             put(new JSONObject(graphQLConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
-    public TestConfigurationBuilder samsungPay(TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder) {
+    public TestConfigurationBuilder samsungPay(
+            TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder) {
         try {
             put(new JSONObject(samsungPayConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return this;
     }
 
@@ -160,10 +175,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
             Class configuration = Class.forName("com.braintreepayments.api.Configuration");
             Method fromJson = configuration.getDeclaredMethod("fromJson", String.class);
             return (T) fromJson.invoke(null, build());
-        } catch (NoSuchMethodException ignored) {}
-        catch (InvocationTargetException ignored) {}
-        catch (IllegalAccessException ignored) {}
-        catch (ClassNotFoundException ignored) {}
+        } catch (NoSuchMethodException ignored) {
+        } catch (InvocationTargetException ignored) {
+        } catch (IllegalAccessException ignored) {
+        } catch (ClassNotFoundException ignored) {
+        }
 
         return (T) build();
     }
@@ -171,42 +187,48 @@ public class TestConfigurationBuilder extends JSONBuilder {
     public TestVenmoConfigurationBuilder payWithVenmo() {
         try {
             return new TestVenmoConfigurationBuilder(jsonBody.getJSONObject("payWithVenmo"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestVenmoConfigurationBuilder();
     }
 
     public TestGooglePayConfigurationBuilder googlePay() {
         try {
             return new TestGooglePayConfigurationBuilder(jsonBody.getJSONObject("androidPay"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestGooglePayConfigurationBuilder();
     }
 
     public TestPayPalConfigurationBuilder paypal() {
         try {
             return new TestPayPalConfigurationBuilder(jsonBody.getJSONObject("paypal"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestPayPalConfigurationBuilder(true);
     }
 
     public TestVisaCheckoutConfigurationBuilder visaCheckout() {
         try {
             return new TestVisaCheckoutConfigurationBuilder(jsonBody.getJSONObject("visaCheckout"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestVisaCheckoutConfigurationBuilder();
     }
 
     public TestGraphQLConfigurationBuilder graphQLConfigurationBuilder() {
         try {
             return new TestGraphQLConfigurationBuilder(jsonBody.getJSONObject("graphQL"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestGraphQLConfigurationBuilder();
     }
 
     public TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder() {
         try {
             return new TestSamsungPayConfigurationBuilder(jsonBody.getJSONObject("samsungPay"));
-        } catch (JSONException ignored) {}
+        } catch (JSONException ignored) {
+        }
         return new TestSamsungPayConfigurationBuilder();
     }
 
@@ -294,7 +316,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return this;
         }
 
-        public TestPayPalConfigurationBuilder billingAgreementsEnabled(boolean billingAgreementsEnabled) {
+        public TestPayPalConfigurationBuilder billingAgreementsEnabled(
+                boolean billingAgreementsEnabled) {
             put(Boolean.toString(billingAgreementsEnabled));
             return this;
         }
@@ -315,7 +338,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return this;
         }
 
-        public TestGooglePayConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
+        public TestGooglePayConfigurationBuilder googleAuthorizationFingerprint(
+                String fingerprint) {
             put(fingerprint);
             return this;
         }
@@ -361,7 +385,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return this;
         }
 
-        public TestVisaCheckoutConfigurationBuilder supportedCardTypes(String... supportedCardTypes) {
+        public TestVisaCheckoutConfigurationBuilder supportedCardTypes(
+                String... supportedCardTypes) {
             put(new JSONArray(Arrays.asList(supportedCardTypes)));
             return this;
         }
@@ -434,7 +459,8 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return this;
         }
 
-        public TestSamsungPayConfigurationBuilder supportedCardBrands(List<String> supportedCardBrands) {
+        public TestSamsungPayConfigurationBuilder supportedCardBrands(
+                List<String> supportedCardBrands) {
             JSONArray jsonBrands = new JSONArray();
             for (String feature : supportedCardBrands) {
                 jsonBrands.put(feature);

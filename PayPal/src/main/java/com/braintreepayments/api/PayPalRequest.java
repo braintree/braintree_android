@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Represents the parameters that are needed to tokenize a PayPal account.
- * See {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
+ * Represents the parameters that are needed to tokenize a PayPal account. See
+ * {@link PayPalCheckoutRequest} and {@link PayPalVaultRequest}.
  */
 public abstract class PayPalRequest implements Parcelable {
 
@@ -88,9 +88,9 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Defaults to false. Set to true to enable user editing of the shipping address.
-     * Only applies when {@link PayPalRequest#setShippingAddressOverride(PostalAddress)} is set
-     * with a {@link PostalAddress}.
+     * Defaults to false. Set to true to enable user editing of the shipping address. Only applies
+     * when {@link PayPalRequest#setShippingAddressOverride(PostalAddress)} is set with a
+     * {@link PostalAddress}.
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
@@ -138,7 +138,8 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
+     * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on
+     * your Braintree account.
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
@@ -156,7 +157,8 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: A valid shipping address to be displayed in the transaction flow. An error will occur if this address is not valid
+     * Optional: A valid shipping address to be displayed in the transaction flow. An error will
+     * occur if this address is not valid
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
@@ -165,13 +167,16 @@ public abstract class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Optional: Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
+     * Optional: Use this option to specify the PayPal page to display when a user lands on the
+     * PayPal site to complete the payment.
      *
      * @param landingPageType Must be a {@link PayPalLandingPageType} value:
      *                        <ul>
      *                        <li>{@link #LANDING_PAGE_TYPE_BILLING}</li>
      *                        <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
-     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
+     * @see <a
+     * href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See
+     * "landing_page" under the "application_context" definition</a>
      */
     public void setLandingPageType(@Nullable @PayPalLandingPageType String landingPageType) {
         this.landingPageType = landingPageType;
@@ -254,7 +259,8 @@ public abstract class PayPalRequest implements Parcelable {
         return landingPageType;
     }
 
-    abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
+    abstract String createRequestBody(Configuration configuration, Authorization authorization,
+                                      String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalRequest(Parcel in) {
         localeCode = in.readString();

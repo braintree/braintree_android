@@ -1,8 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
 * Breaking Changes
   * All Modules
     * Bump `minSdkVersion` to API 23
+    * Bump target Java version to Java 11
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
@@ -20,6 +23,19 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters
     * Add `VenmoClient#requestAuthChallenge`
+  * GooglePay
+    * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
+    * Add `GooglePayLauncher`, `GooglePayIntentData`, `GooglePayIntentDataCallback`, `GooglePayResult`, and `GooglePayResultCallback`
+    * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
+    * Change `GooglePayClient#requestPayment` parameters
+    * Add `GooglePayClient#tokenize` 
+
+## unreleased
+
+* BraintreeCore
+  * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
+* GooglePay
+  * Fix bug where credit cards were allowed when `GooglePayRequest#setAllowedCreditCards(false)`
 
 ## unreleased
 

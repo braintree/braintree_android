@@ -21,7 +21,6 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class SEPADirectDebitApiUnitTest {
 
-    private BraintreeClient braintreeClient;
     private CreateMandateCallback createMandateCallback;
     private SEPADirectDebitTokenizeCallback sepaDirectDebitTokenizeCallback;
     private SEPADirectDebitRequest request;
@@ -30,7 +29,6 @@ public class SEPADirectDebitApiUnitTest {
 
     @Before
     public void beforeEach() {
-        braintreeClient = mock(BraintreeClient.class);
         createMandateCallback = mock(CreateMandateCallback.class);
         sepaDirectDebitTokenizeCallback = mock(SEPADirectDebitTokenizeCallback.class);
 
@@ -56,7 +54,7 @@ public class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    public void createMandate_onSuccessfulHttpResponse_callsBackCreateMandateResult() throws JSONException {
+    public void createMandate_onSuccessfulHttpResponse_callsBackCreateMandateResult() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .returnUrlScheme("sample-scheme")
                 .sendPOSTSuccessfulResponse(Fixtures.SEPA_DEBIT_CREATE_MANDATE_RESPONSE)
@@ -65,13 +63,16 @@ public class SEPADirectDebitApiUnitTest {
         SEPADirectDebitApi sut = new SEPADirectDebitApi(braintreeClient);
         sut.createMandate(request, returnUrl, createMandateCallback);
 
-        ArgumentCaptor<CreateMandateResult> createMandateCaptor = ArgumentCaptor.forClass(CreateMandateResult.class);
-        verify(createMandateCallback).onResult(createMandateCaptor.capture(), (Exception) isNull());
+        ArgumentCaptor<CreateMandateResult> createMandateCaptor =
+                ArgumentCaptor.forClass(CreateMandateResult.class);
+        verify(createMandateCallback).onResult(createMandateCaptor.capture(), isNull());
 
         CreateMandateResult result = createMandateCaptor.getValue();
 
         assertEquals("6610", result.getIbanLastFour());
-        assertEquals("https://api.test19.stage.paypal.com/directdebit/mandate/authorize?cart_id=1JH42426EL748934W\u0026auth_code=C21_A.AAdcUj4loKRxLtfw336KxbGY7dA7UsLJQTpZU3cE2h49eKkhN1OjFcLxxxzOGVzRiwOzGLlS_cS2BU4ZLKjMnR6lZSG2iQ", result.getApprovalUrl());
+        assertEquals(
+                "https://api.test19.stage.paypal.com/directdebit/mandate/authorize?cart_id=1JH42426EL748934W\u0026auth_code=C21_A.AAdcUj4loKRxLtfw336KxbGY7dA7UsLJQTpZU3cE2h49eKkhN1OjFcLxxxzOGVzRiwOzGLlS_cS2BU4ZLKjMnR6lZSG2iQ",
+                result.getApprovalUrl());
         assertEquals("QkEtWDZDQkpCUU5TWENDVw", result.getBankReferenceToken());
         assertEquals("a-customer-id", result.getCustomerId());
         assertEquals(SEPADirectDebitMandateType.RECURRENT, result.getMandateType());
@@ -88,7 +89,7 @@ public class SEPADirectDebitApiUnitTest {
         sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(createMandateCallback).onResult((CreateMandateResult) isNull(), captor.capture());
+        verify(createMandateCallback).onResult(isNull(), captor.capture());
         Exception error = captor.getValue();
 
         assertNotNull(error);
@@ -107,7 +108,7 @@ public class SEPADirectDebitApiUnitTest {
         SEPADirectDebitApi sut = new SEPADirectDebitApi(braintreeClient);
         sut.createMandate(request, returnUrl, createMandateCallback);
 
-        verify(createMandateCallback).onResult((CreateMandateResult) isNull(), same(exception));
+        verify(createMandateCallback).onResult(isNull(), same(exception));
     }
 
     @Test
@@ -118,10 +119,12 @@ public class SEPADirectDebitApiUnitTest {
                 .build();
 
         SEPADirectDebitApi sut = new SEPADirectDebitApi(braintreeClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF",
+                sepaDirectDebitTokenizeCallback);
 
-        ArgumentCaptor<SEPADirectDebitNonce> captor = ArgumentCaptor.forClass(SEPADirectDebitNonce.class);
-        verify(sepaDirectDebitTokenizeCallback).onResult(captor.capture(), (Exception) isNull());
+        ArgumentCaptor<SEPADirectDebitNonce> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitNonce.class);
+        verify(sepaDirectDebitTokenizeCallback).onResult(captor.capture(), isNull());
 
         SEPADirectDebitNonce result = captor.getValue();
         assertEquals("1234", result.getIbanLastFour());
@@ -137,10 +140,12 @@ public class SEPADirectDebitApiUnitTest {
                 .build();
 
         SEPADirectDebitApi sut = new SEPADirectDebitApi(braintreeClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF",
+                sepaDirectDebitTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(sepaDirectDebitTokenizeCallback).onResult((SEPADirectDebitNonce) isNull(), captor.capture());
+        verify(sepaDirectDebitTokenizeCallback).onResult(isNull(),
+                captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof JSONException);
@@ -156,7 +161,8 @@ public class SEPADirectDebitApiUnitTest {
                 .build();
 
         SEPADirectDebitApi sut = new SEPADirectDebitApi(braintreeClient);
-        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF", sepaDirectDebitTokenizeCallback);
+        sut.tokenize("1234", "a-customer-id", "a-bank-reference-token", "ONE_OFF",
+                sepaDirectDebitTokenizeCallback);
 
         verify(sepaDirectDebitTokenizeCallback).onResult(null, error);
     }
@@ -171,7 +177,8 @@ public class SEPADirectDebitApiUnitTest {
         sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mockBraintreeClient).sendPOST(eq("v1/sepa_debit"), String.valueOf(captor.capture()), any(HttpResponseCallback.class));
+        verify(mockBraintreeClient).sendPOST(eq("v1/sepa_debit"), String.valueOf(captor.capture()),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject json = new JSONObject(result);

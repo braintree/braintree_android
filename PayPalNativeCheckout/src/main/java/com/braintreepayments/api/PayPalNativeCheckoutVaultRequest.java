@@ -30,7 +30,8 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         return shouldOfferCredit;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+    String createRequestBody(Configuration configuration, Authorization authorization,
+                             String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)

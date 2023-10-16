@@ -97,7 +97,7 @@ public class CardClientUnitTest {
         sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
-        verify(cardTokenizeCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(cardTokenizeCallback).onResult(captor.capture(), isNull());
 
         CardNonce cardNonce = captor.getValue();
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());

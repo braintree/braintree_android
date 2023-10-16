@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 /**
  * {@link PaymentMethodNonce} representing a Visa Checkout card.
+ *
  * @see PaymentMethodNonce
  */
 public class VisaCheckoutNonce extends PaymentMethodNonce {
@@ -48,19 +49,25 @@ public class VisaCheckoutNonce extends PaymentMethodNonce {
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         String lastTwo = details.getString(LAST_TWO_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
-        VisaCheckoutAddress billingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
-        VisaCheckoutAddress shippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
-        VisaCheckoutUserData userData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
+        VisaCheckoutAddress billingAddress =
+                VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
+        VisaCheckoutAddress shippingAddress =
+                VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
+        VisaCheckoutUserData userData =
+                VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
         String callId = Json.optString(json, CALL_ID_KEY, "");
         BinData binData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
 
         String nonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         boolean isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
 
-        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData, callId, binData, nonce, isDefault);
+        return new VisaCheckoutNonce(lastTwo, cardType, billingAddress, shippingAddress, userData,
+                callId, binData, nonce, isDefault);
     }
 
-    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress, VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData, String callId, BinData binData, String nonce, boolean isDefault) {
+    private VisaCheckoutNonce(String lastTwo, String cardType, VisaCheckoutAddress billingAddress,
+                              VisaCheckoutAddress shippingAddress, VisaCheckoutUserData userData,
+                              String callId, BinData binData, String nonce, boolean isDefault) {
         super(nonce, isDefault);
         this.lastTwo = lastTwo;
         this.cardType = cardType;

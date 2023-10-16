@@ -39,13 +39,16 @@ public class VenmoActivityResultContractUnitTest {
 
     @Test
     public void createIntent_returnsIntentWithExtras() throws JSONException {
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        VenmoAuthChallenge input = new VenmoAuthChallenge(configuration, "sample-venmo-merchant", "venmo-payment-context-id", "session-id" , "custom");
+        Configuration configuration =
+                Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
+        VenmoAuthChallenge input = new VenmoAuthChallenge(configuration, "sample-venmo-merchant",
+                "venmo-payment-context-id", "session-id", "custom");
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent intent = sut.createIntent(context, input);
 
-        assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"), intent.getComponent());
+        assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"),
+                intent.getComponent());
         assertEquals("sample-venmo-merchant", intent.getStringExtra(EXTRA_MERCHANT_ID));
         assertEquals("access-token", intent.getStringExtra(EXTRA_ACCESS_TOKEN));
         assertEquals("environment", intent.getStringExtra(EXTRA_ENVIRONMENT));
@@ -58,7 +61,9 @@ public class VenmoActivityResultContractUnitTest {
                         .put("integration", "custom")
                         .put("version", BuildConfig.VERSION_NAME)
                 );
-        JSONAssert.assertEquals(expectedBraintreeData, new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)), JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedBraintreeData,
+                new JSONObject(intent.getStringExtra(EXTRA_BRAINTREE_DATA)),
+                JSONCompareMode.STRICT);
     }
 
     @Test
@@ -70,7 +75,8 @@ public class VenmoActivityResultContractUnitTest {
         successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
         successIntent.putExtra(EXTRA_USERNAME, "username");
 
-        VenmoAuthChallengeResult venmoAuthChallengeResult = sut.parseResult(Activity.RESULT_OK, successIntent);
+        VenmoAuthChallengeResult venmoAuthChallengeResult =
+                sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(venmoAuthChallengeResult);
         assertEquals("resource_id", venmoAuthChallengeResult.getPaymentContextId());
         assertEquals("payment_method_nonce", venmoAuthChallengeResult.getVenmoAccountNonce());
@@ -81,7 +87,8 @@ public class VenmoActivityResultContractUnitTest {
     public void parseResult_whenResultIsCANCELED_returnsVenomResultWithError() {
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
-        VenmoAuthChallengeResult venmoAuthChallengeResult = sut.parseResult(Activity.RESULT_CANCELED, null);
+        VenmoAuthChallengeResult venmoAuthChallengeResult =
+                sut.parseResult(Activity.RESULT_CANCELED, null);
         assertNotNull(venmoAuthChallengeResult);
 
         UserCanceledException error = (UserCanceledException) venmoAuthChallengeResult.getError();

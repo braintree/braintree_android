@@ -24,16 +24,22 @@ public class ThreeDSecureLookupUnitTest {
 
     @Before
     public void setUp() throws JSONException {
-        JSONObject lookupWithoutVersionJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE).getJSONObject("lookup");
-        lookupWithoutVersion = ThreeDSecureLookup.fromJson(lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
+        JSONObject lookupWithoutVersionJSON =
+                new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE).getJSONObject("lookup");
+        lookupWithoutVersion = ThreeDSecureLookup.fromJson(
+                lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
 
-        JSONObject lookupVersionOneJSON = new JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE).getJSONObject("lookup");
+        JSONObject lookupVersionOneJSON =
+                new JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE).getJSONObject("lookup");
         lookupWithVersion1 = ThreeDSecureLookup.fromJson(lookupVersionOneJSON.toString());
 
-        JSONObject lookupVersionTwoJSON = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE).getJSONObject("lookup");
+        JSONObject lookupVersionTwoJSON =
+                new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE).getJSONObject("lookup");
         lookupWithVersion2 = ThreeDSecureLookup.fromJson(lookupVersionTwoJSON.toString());
 
-        JSONObject lookupWithoutAcsURLJSON = new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL).getJSONObject("lookup");
+        JSONObject lookupWithoutAcsURLJSON =
+                new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL).getJSONObject(
+                        "lookup");
         lookupWithoutAcsURL = ThreeDSecureLookup.fromJson(lookupWithoutAcsURLJSON.toString());
     }
 
@@ -79,16 +85,19 @@ public class ThreeDSecureLookupUnitTest {
 
     @Test
     public void fromJson_whenPareqNull_parsesCorrectly() throws JSONException {
-        JSONObject lookupV2NullPareq = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_NULL_PAREQ).getJSONObject("lookup");
+        JSONObject lookupV2NullPareq =
+                new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_NULL_PAREQ).getJSONObject(
+                        "lookup");
         ThreeDSecureLookup sut = ThreeDSecureLookup.fromJson(lookupV2NullPareq.toString());
-        assertEquals("",sut.getPareq());
+        assertEquals("", sut.getPareq());
     }
 
     @Test
     public void fromJson_whenPareqMissing_parsesCorrectly() throws JSONException {
-        JSONObject lookupV2MissingPareq = new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_MISSING_PAREQ).getJSONObject("lookup");
+        JSONObject lookupV2MissingPareq = new JSONObject(
+                Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_MISSING_PAREQ).getJSONObject("lookup");
         ThreeDSecureLookup sut = ThreeDSecureLookup.fromJson(lookupV2MissingPareq.toString());
-        assertEquals("",sut.getPareq());
+        assertEquals("", sut.getPareq());
     }
 
     @Test
@@ -103,7 +112,8 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals(lookupWithVersion1.getMd(), parceled.getMd());
         assertEquals(lookupWithVersion1.getTermUrl(), parceled.getTermUrl());
         assertEquals(lookupWithVersion1.getPareq(), parceled.getPareq());
-        assertEquals(lookupWithVersion1.getThreeDSecureVersion(), parceled.getThreeDSecureVersion());
+        assertEquals(lookupWithVersion1.getThreeDSecureVersion(),
+                parceled.getThreeDSecureVersion());
         assertEquals(lookupWithVersion1.getTransactionId(), parceled.getTransactionId());
     }
 }

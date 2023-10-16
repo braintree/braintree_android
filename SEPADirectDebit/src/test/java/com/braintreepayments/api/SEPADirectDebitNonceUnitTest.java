@@ -15,7 +15,8 @@ public class SEPADirectDebitNonceUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
+        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(
+                new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
 
         assertEquals("1194c322-9763-08b7-4777-0b9b5e5cc3e4", sut.getString());
         assertEquals("1234", sut.getIbanLastFour());
@@ -25,7 +26,8 @@ public class SEPADirectDebitNonceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
+        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(
+                new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
         Parcel parcel = Parcel.obtain();
         sut.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);

@@ -27,9 +27,11 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
     private PayPalNativeCheckoutCreditFinancingAmount totalCost;
     private PayPalNativeCheckoutCreditFinancingAmount totalInterest;
 
-    private PayPalNativeCheckoutCreditFinancing() {}
+    private PayPalNativeCheckoutCreditFinancing() {
+    }
 
-    static PayPalNativeCheckoutCreditFinancing fromJson(JSONObject creditFinancing) throws JSONException {
+    static PayPalNativeCheckoutCreditFinancing fromJson(JSONObject creditFinancing)
+            throws JSONException {
         PayPalNativeCheckoutCreditFinancing result = new PayPalNativeCheckoutCreditFinancing();
 
         if (creditFinancing == null) {
@@ -37,11 +39,14 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
         }
 
         result.cardAmountImmutable = creditFinancing.optBoolean(CARD_AMOUNT_IMMUTABLE_KEY, false);
-        result.monthlyPayment = PayPalNativeCheckoutCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(MONTHLY_PAYMENT_KEY));
+        result.monthlyPayment = PayPalNativeCheckoutCreditFinancingAmount.fromJson(
+                creditFinancing.getJSONObject(MONTHLY_PAYMENT_KEY));
         result.payerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false);
         result.term = creditFinancing.optInt(TERM_KEY, 0);
-        result.totalCost = PayPalNativeCheckoutCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_COST_KEY));
-        result.totalInterest = PayPalNativeCheckoutCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_INTEREST_KEY));
+        result.totalCost = PayPalNativeCheckoutCreditFinancingAmount.fromJson(
+                creditFinancing.getJSONObject(TOTAL_COST_KEY));
+        result.totalInterest = PayPalNativeCheckoutCreditFinancingAmount.fromJson(
+                creditFinancing.getJSONObject(TOTAL_INTEREST_KEY));
 
         return result;
     }
@@ -54,14 +59,16 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
     }
 
     /**
-     * @return Indicates whether the card amount is editable after payer's acceptance on PayPal side.
+     * @return Indicates whether the card amount is editable after payer's acceptance on PayPal
+     * side.
      */
     public boolean isCardAmountImmutable() {
         return cardAmountImmutable;
     }
 
     /**
-     * @return Estimated amount per month that the customer will need to pay including fees and interest.
+     * @return Estimated amount per month that the customer will need to pay including fees and
+     * interest.
      */
     @NonNull
     public PayPalNativeCheckoutCreditFinancingAmount getMonthlyPayment() {
@@ -69,14 +76,16 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
     }
 
     /**
-     * @return Status of whether the customer ultimately was approved for and chose to make the payment using the approved installment credit.
+     * @return Status of whether the customer ultimately was approved for and chose to make the
+     * payment using the approved installment credit.
      */
     public boolean hasPayerAcceptance() {
         return payerAcceptance;
     }
 
     /**
-     * @return Estimated total payment amount including interest and fees the user will pay during the lifetime of the loan.
+     * @return Estimated total payment amount including interest and fees the user will pay during
+     * the lifetime of the loan.
      */
     @NonNull
     public PayPalNativeCheckoutCreditFinancingAmount getTotalCost() {
@@ -84,7 +93,8 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
     }
 
     /**
-     * @return Estimated interest or fees amount the payer will have to pay during the lifetime of the loan.
+     * @return Estimated interest or fees amount the payer will have to pay during the lifetime of
+     * the loan.
      */
     @NonNull
     public PayPalNativeCheckoutCreditFinancingAmount getTotalInterest() {
@@ -98,9 +108,9 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(cardAmountImmutable ? (byte) 1:0);
+        dest.writeByte(cardAmountImmutable ? (byte) 1 : 0);
         dest.writeParcelable(monthlyPayment, flags);
-        dest.writeByte(payerAcceptance ? (byte) 1:0);
+        dest.writeByte(payerAcceptance ? (byte) 1 : 0);
         dest.writeInt(term);
         dest.writeParcelable(totalCost, flags);
         dest.writeParcelable(totalInterest, flags);
@@ -108,20 +118,24 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
 
     private PayPalNativeCheckoutCreditFinancing(Parcel in) {
         cardAmountImmutable = in.readByte() != 0;
-        monthlyPayment = in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
+        monthlyPayment =
+                in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
         payerAcceptance = in.readByte() != 0;
         term = in.readInt();
-        totalCost = in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
-        totalInterest = in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
+        totalCost =
+                in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
+        totalInterest =
+                in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
     }
 
-    public static final Creator<PayPalNativeCheckoutCreditFinancing> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancing>() {
-        public PayPalNativeCheckoutCreditFinancing createFromParcel(Parcel source) {
-            return new PayPalNativeCheckoutCreditFinancing(source);
-        }
+    public static final Creator<PayPalNativeCheckoutCreditFinancing> CREATOR =
+            new Creator<PayPalNativeCheckoutCreditFinancing>() {
+                public PayPalNativeCheckoutCreditFinancing createFromParcel(Parcel source) {
+                    return new PayPalNativeCheckoutCreditFinancing(source);
+                }
 
-        public PayPalNativeCheckoutCreditFinancing[] newArray(int size) {
-            return new PayPalNativeCheckoutCreditFinancing[size];
-        }
-    };
+                public PayPalNativeCheckoutCreditFinancing[] newArray(int size) {
+                    return new PayPalNativeCheckoutCreditFinancing[size];
+                }
+            };
 }

@@ -30,7 +30,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         return shouldOfferCredit;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
+    String createRequestBody(Configuration configuration, Authorization authorization,
+                             String successUrl, String cancelUrl) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
@@ -67,13 +68,19 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
             parameters.put(SHIPPING_ADDRESS_KEY, shippingAddressJson);
 
             PostalAddress shippingAddress = getShippingAddressOverride();
-            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
-            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
+            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY,
+                    shippingAddress.getStreetAddress());
+            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY,
+                    shippingAddress.getExtendedAddress());
+            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY,
+                    shippingAddress.getLocality());
             shippingAddressJson.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
-            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY,
+                    shippingAddress.getPostalCode());
+            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY,
+                    shippingAddress.getCountryCodeAlpha2());
+            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY,
+                    shippingAddress.getRecipientName());
         } else {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }

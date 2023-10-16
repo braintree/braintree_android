@@ -71,8 +71,8 @@ class PayPalAccount extends PaymentMethod {
     }
 
     /**
-     * Response data from callback url. Used by PayPal wrappers to construct
-     * a request to create a PayPal account.
+     * Response data from callback url. Used by PayPal wrappers to construct a request to create a
+     * PayPal account.
      * <p>
      * Response data will be merged into the payment method json on {@link #buildJSON()}
      *
@@ -87,7 +87,8 @@ class PayPalAccount extends PaymentMethod {
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or {@link PayPalPaymentIntent#SALE}.
+     * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or
+     *               {@link PayPalPaymentIntent#SALE}.
      */
     void setIntent(@PayPalPaymentIntent String intent) {
         this.intent = intent;

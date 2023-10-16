@@ -29,8 +29,8 @@ class PayPalNativeCheckoutPaymentResource {
     }
 
     /**
-     * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with
-     * Single Payment and Billing Agreement flows.
+     * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with Single
+     * Payment and Billing Agreement flows.
      *
      * @param jsonString a valid JSON string representing the payment resource
      * @return a PayPal payment resource
@@ -39,7 +39,8 @@ class PayPalNativeCheckoutPaymentResource {
     static PayPalNativeCheckoutPaymentResource fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
-        PayPalNativeCheckoutPaymentResource payPalPaymentResource = new PayPalNativeCheckoutPaymentResource();
+        PayPalNativeCheckoutPaymentResource payPalPaymentResource =
+                new PayPalNativeCheckoutPaymentResource();
         JSONObject redirectJson = json.optJSONObject(PAYMENT_RESOURCE_KEY);
         if (redirectJson != null) {
             payPalPaymentResource.redirectUrl(Json.optString(redirectJson, REDIRECT_URL_KEY, ""));

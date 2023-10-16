@@ -18,12 +18,14 @@ public class VenmoAccountNonceUnitTest {
 
     private static final String NONCE = "venmo-nonce";
     private static final String USERNAME = "venmo-username";
-    private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, USERNAME, false);
+    private static final VenmoAccountNonce VENMO_NONCE =
+            new VenmoAccountNonce(NONCE, USERNAME, false);
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
         VenmoAccountNonce venmoAccountNonce =
-            VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
+                VenmoAccountNonce.fromJSON(
+                        new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
 
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getString());
@@ -33,7 +35,8 @@ public class VenmoAccountNonceUnitTest {
     @Test
     public void fromJson_withPaymentMethodId_parsesResponse() throws JSONException {
         VenmoAccountNonce venmoAccountNonce =
-                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
+                VenmoAccountNonce.fromJSON(
+                        new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
 
         assertEquals("@sampleuser", venmoAccountNonce.getUsername());
         assertEquals("sample-payment-method-id", venmoAccountNonce.getString());
@@ -48,7 +51,8 @@ public class VenmoAccountNonceUnitTest {
     @Test
     public void fromJson_withShippingAndBillingAddresses_parsesResponse() throws JSONException {
         VenmoAccountNonce venmoAccountNonce =
-                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON_WITH_ADDRESSES));
+                VenmoAccountNonce.fromJSON(
+                        new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON_WITH_ADDRESSES));
 
         assertEquals("123 Fake St.", venmoAccountNonce.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", venmoAccountNonce.getBillingAddress().getExtendedAddress());
@@ -68,7 +72,7 @@ public class VenmoAccountNonceUnitTest {
     @Test
     public void fromJson_withPaymentMethodIdAndNullPayerInfo_parsesResponse() throws JSONException {
         JSONObject json =
-            new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON);
+                new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON);
         VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(json);
 
         assertEquals("@sampleuser", venmoAccountNonce.getUsername());
@@ -94,7 +98,8 @@ public class VenmoAccountNonceUnitTest {
     @Test
     public void parcelsCorrectly() throws JSONException {
         VenmoAccountNonce venmoAccountNonce =
-                VenmoAccountNonce.fromJSON(new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
+                VenmoAccountNonce.fromJSON(
+                        new JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON));
 
         Parcel parcel = Parcel.obtain();
         venmoAccountNonce.writeToParcel(parcel, 0);

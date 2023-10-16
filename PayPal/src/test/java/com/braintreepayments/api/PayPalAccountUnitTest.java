@@ -63,7 +63,8 @@ public class PayPalAccountUnitTest {
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse() throws JSONException {
+    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse()
+            throws JSONException {
         PayPalAccount sut = new PayPalAccount();
         sut.setPaymentType("single-payment");
 
@@ -74,7 +75,8 @@ public class PayPalAccountUnitTest {
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate() throws JSONException {
+    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate()
+            throws JSONException {
         PayPalAccount sut = new PayPalAccount();
         sut.setPaymentType("billing-agreement");
 
@@ -111,7 +113,8 @@ public class PayPalAccountUnitTest {
                 .put("data1", "data1")
                 .put("data2", "data2")
                 .put("data3", "data3");
-        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson,
+                JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test

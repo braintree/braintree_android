@@ -88,7 +88,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"),
+                captor.capture(), any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -162,7 +163,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/create_payment_resource"), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/create_payment_resource"),
+                captor.capture(), any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -220,7 +222,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -230,7 +233,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withEmptyDisplayName_fallsBackToPayPalConfigurationDisplayName() throws JSONException {
+    public void sendRequest_withEmptyDisplayName_fallsBackToPayPalConfigurationDisplayName()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(tokenizationKey)
@@ -243,12 +247,14 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
 
-        assertEquals("paypal_merchant", ((JSONObject) actual.get("experience_profile")).get("brand_name"));
+        assertEquals("paypal_merchant",
+                ((JSONObject) actual.get("experience_profile")).get("brand_name"));
     }
 
     @Test
@@ -265,7 +271,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -274,7 +281,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withMerchantAccountIdNotSpecified_omitsMerchantAccountId() throws JSONException {
+    public void sendRequest_withMerchantAccountIdNotSpecified_omitsMerchantAccountId()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(tokenizationKey)
@@ -287,7 +295,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -296,7 +305,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse() throws JSONException {
+    public void sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(tokenizationKey)
@@ -309,16 +319,19 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
 
-        assertEquals(false, ((JSONObject) actual.get("experience_profile")).get("address_override"));
+        assertEquals(false,
+                ((JSONObject) actual.get("experience_profile")).get("address_override"));
     }
 
     @Test
-    public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAdressEditability() throws JSONException {
+    public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAdressEditability()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
@@ -334,7 +347,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"),
+                captor.capture(), any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -343,7 +357,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() throws JSONException {
+    public void sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(tokenizationKey)
@@ -356,7 +371,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -365,7 +381,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_INR))
                 .authorizationSuccess(tokenizationKey)
@@ -377,7 +394,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -399,7 +417,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -456,7 +475,8 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalCheckoutRequest_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription() throws JSONException {
+    public void sendRequest_withPayPalCheckoutRequest_whenRequestBillingAgreementFalse_andBillingAgreementDescriptionSet_doesNotSettBillingAgreementDescription()
+            throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(tokenizationKey)
@@ -470,7 +490,8 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
+                any(HttpResponseCallback.class));
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -500,7 +521,8 @@ public class PayPalInternalClientUnitTest {
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&ba_token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+        String expectedUrl =
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&ba_token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
         PayPalResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
@@ -533,7 +555,8 @@ public class PayPalInternalClientUnitTest {
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+        String expectedUrl =
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
         PayPalResponse payPalResponse = captor.getValue();
         assertFalse(payPalResponse.isBillingAgreement());
         assertEquals("authorize", payPalResponse.getIntent());
@@ -574,7 +597,8 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(payPalInternalClientCallback).onResult((PayPalResponse) isNull(), any(JSONException.class));
+        verify(payPalInternalClientCallback).onResult((PayPalResponse) isNull(),
+                any(JSONException.class));
     }
 
     @Test
@@ -625,7 +649,8 @@ public class PayPalInternalClientUnitTest {
     public void tokenize_onTokenizeResult_returnsAccountNonceToCallback() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         ApiClient apiClient = new MockApiClientBuilder()
-                .tokenizeRESTSuccess(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
+                .tokenizeRESTSuccess(
+                        new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
         PayPalAccount payPalAccount = mock(PayPalAccount.class);
         PayPalBrowserSwitchResultCallback callback = mock(PayPalBrowserSwitchResultCallback.class);
@@ -634,10 +659,12 @@ public class PayPalInternalClientUnitTest {
 
         sut.tokenize(payPalAccount, callback);
 
-        ArgumentCaptor<PayPalAccountNonce> captor = ArgumentCaptor.forClass(PayPalAccountNonce.class);
+        ArgumentCaptor<PayPalAccountNonce> captor =
+                ArgumentCaptor.forClass(PayPalAccountNonce.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-        PayPalAccountNonce expectedNonce = PayPalAccountNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
+        PayPalAccountNonce expectedNonce = PayPalAccountNonce.fromJSON(
+                new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
         PayPalAccountNonce result = captor.getValue();
         assertEquals(expectedNonce.getString(), result.getString());
     }

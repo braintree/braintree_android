@@ -41,36 +41,43 @@ public class SignatureVerifierUnitTest {
         Signature[] signatures = new Signature[1];
         Signature signature = createMockSignature("example-signature");
         signatures[0] = signature;
-        when(certificateHelper.getEncodedCertificate(signature.toByteArray())).thenReturn("example-signature".getBytes());
+        when(certificateHelper.getEncodedCertificate(signature.toByteArray())).thenReturn(
+                "example-signature".getBytes());
 
         packageInfo.signatures = signatures;
-        when(packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES))).thenReturn(packageInfo);
+        when(packageManager.getPackageInfo(eq("com.example"),
+                eq(PackageManager.GET_SIGNATURES))).thenReturn(packageInfo);
         when(context.getPackageManager()).thenReturn(packageManager);
 
         sut = new SignatureVerifier(certificateHelper);
     }
 
     @Test
-    public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue() throws NoSuchAlgorithmException {
+    public void isSignatureValid_whenEncodedSignaturesMatch_returnsTrue()
+            throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("example-signature");
         assertTrue(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
-    public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException {
+    public void isSignatureValid_whenEncodedSignaturesDoNotMatch_returnsFalse()
+            throws NoSuchAlgorithmException {
         String base64EncodedSignature = base64EncodedSHA256("different-signature");
         assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));
     }
 
     @Test
-    public void isSignatureValid_whenAdditionalSignaturesDoNotMatch_returnsFalse() throws NoSuchAlgorithmException, CertificateException {
+    public void isSignatureValid_whenAdditionalSignaturesDoNotMatch_returnsFalse()
+            throws NoSuchAlgorithmException, CertificateException {
         Signature[] signatures = new Signature[2];
         signatures[0] = createMockSignature("example-signature1");
         signatures[1] = createMockSignature("example-signature2");
 
         packageInfo.signatures = signatures;
-        when(certificateHelper.getEncodedCertificate("example-signature1".getBytes())).thenReturn("example-signature1".getBytes());
-        when(certificateHelper.getEncodedCertificate("example-signature2".getBytes())).thenReturn("example-signature2".getBytes());
+        when(certificateHelper.getEncodedCertificate("example-signature1".getBytes())).thenReturn(
+                "example-signature1".getBytes());
+        when(certificateHelper.getEncodedCertificate("example-signature2".getBytes())).thenReturn(
+                "example-signature2".getBytes());
 
         String base64EncodedSignature = base64EncodedSHA256("example-signature1");
         assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature));

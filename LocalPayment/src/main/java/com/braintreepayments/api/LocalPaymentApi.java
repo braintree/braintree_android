@@ -14,34 +14,36 @@ class LocalPaymentApi {
         this.braintreeClient = braintreeClient;
     }
 
-    void createPaymentMethod(final LocalPaymentRequest request, final LocalPaymentStartCallback callback) {
+    void createPaymentMethod(final LocalPaymentRequest request,
+                             final LocalPaymentStartCallback callback) {
         String returnUrl = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESS;
         String cancel = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
 
         String url = "/v1/local_payments/create";
-        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, request.build(returnUrl, cancel),
+                (responseBody, httpError) -> {
+                    if (responseBody != null) {
+                        try {
+                            JSONObject responseJson = new JSONObject(responseBody);
+                            String redirectUrl = responseJson.getJSONObject("paymentResource")
+                                    .getString("redirectUrl");
+                            String paymentToken = responseJson.getJSONObject("paymentResource")
+                                    .getString("paymentToken");
 
-            @Override
-            public void onResult(String responseBody, Exception httpError) {
-                if (responseBody != null) {
-                    try {
-                        JSONObject responseJson = new JSONObject(responseBody);
-                        String redirectUrl = responseJson.getJSONObject("paymentResource").getString("redirectUrl");
-                        String paymentToken = responseJson.getJSONObject("paymentResource").getString("paymentToken");
-
-                        LocalPaymentResult transaction = new LocalPaymentResult(request, redirectUrl, paymentToken);
-                        callback.onResult(transaction, null);
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
+                            LocalPaymentResult transaction =
+                                    new LocalPaymentResult(request, redirectUrl, paymentToken);
+                            callback.onResult(transaction, null);
+                        } catch (JSONException e) {
+                            callback.onResult(null, e);
+                        }
+                    } else {
+                        callback.onResult(null, httpError);
                     }
-                } else {
-                    callback.onResult(null, httpError);
-                }
-            }
-        });
+                });
     }
 
-    void tokenize(String merchantAccountId, String responseString, String clientMetadataID, final LocalPaymentBrowserSwitchResultCallback callback) {
+    void tokenize(String merchantAccountId, String responseString, String clientMetadataID,
+                  final LocalPaymentBrowserSwitchResultCallback callback) {
         JSONObject payload = new JSONObject();
 
         try {
@@ -62,20 +64,17 @@ class LocalPaymentApi {
             payload.put("_meta", metaData);
 
             String url = "/v1/payment_methods/paypal_accounts";
-            braintreeClient.sendPOST(url, payload.toString(), new HttpResponseCallback() {
-
-                @Override
-                public void onResult(String responseBody, Exception httpError) {
-                    if (responseBody != null) {
-                        try {
-                            LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(responseBody));
-                            callback.onResult(result, null);
-                        } catch (JSONException jsonException) {
-                            callback.onResult(null, jsonException);
-                        }
-                    } else {
-                        callback.onResult(null, httpError);
+            braintreeClient.sendPOST(url, payload.toString(), (responseBody, httpError) -> {
+                if (responseBody != null) {
+                    try {
+                        LocalPaymentNonce result =
+                                LocalPaymentNonce.fromJSON(new JSONObject(responseBody));
+                        callback.onResult(result, null);
+                    } catch (JSONException jsonException) {
+                        callback.onResult(null, jsonException);
                     }
+                } else {
+                    callback.onResult(null, httpError);
                 }
             });
         } catch (JSONException ignored) { /* do nothing */ }

@@ -8,6 +8,7 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 1. [Data Collector](#data-collector)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
+1. [Google Pay] (#google-pay)
 
 ## Android API
 
@@ -89,6 +90,61 @@ class MyActivity : FragmentActivity() {
 -   }
       
 -   override fun onVenmoFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
+```
+
+## Google Pay
+
+The Google Pay integration has been updated to allow for more flexibility with app switching and
+activity result handling.
+
+`GooglePayLauncher` has been added to handle the app switching portion of the Google Pay flow for 
+payment authorization via the Google Pay payment sheet. This class uses the Android Activity Result 
+API and therefore must be instantiated in the `OnCreate` method of your Activity or Fragment.
+
+`BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and 
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+    
++   private lateinit var googlePayLauncher: GooglePayLauncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var googlePayClient: GooglePayClient
+    
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       googlePayLauncher = GooglePayLauncher(this) { googlePayResult ->
++            googlePayClient.tokenize(googlePayResult) { paymentMethodNonce, error ->
++                error?.let { /* handle error */ }
++                paymentMethodNonce?.let { /* handle nonce */ }
++            }
++       }
+    }
+    
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       goolePayClient = GooglePayClient(this, braintreeClient)
++       googlePayClient = GooglePayClient(braintreeClient)
+-       googlePayClient.setListener(this)
+    }
+    
+    fun onGooglePayButtonClick() {
+-       googlePayClient.requestPayment(activity, request)
++       googlePayClient.requestPayment(this, request) { googlePayIntentData, error ->
++            error?.let { /* handle error */ }
++            googlePayIntentData?.let { googlePayLauncher.launch(it) }
++       }
+    }
+    
+-   override fun onGooglePaySuccess(paymentMethodNonce: PaymentMethodNonce) {
+-        // handle payment method nonce
+-   }
+      
+-   override fun onGooglePayFailure(error: java.lang.Exception) {
 -        // handle error
 -   }
 }

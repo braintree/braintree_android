@@ -57,7 +57,8 @@ public class ThreeDSecurePostalAddressUnitTest {
         preSerialized.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecurePostalAddress postSerialized = ThreeDSecurePostalAddress.CREATOR.createFromParcel(parcel);
+        ThreeDSecurePostalAddress postSerialized =
+                ThreeDSecurePostalAddress.CREATOR.createFromParcel(parcel);
 
         assertNotNull(postSerialized);
         assertEquals("123 Fake St.", postSerialized.getStreetAddress());
