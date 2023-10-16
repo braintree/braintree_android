@@ -435,7 +435,7 @@ public class ThreeDSecureClientUnitTest {
 
         Exception threeDSecureError = new Exception("3DS error.");
         CardinalResult cardinalResult = new CardinalResult(threeDSecureError);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         verify(listener).onThreeDSecureFailure(threeDSecureError);
     }
@@ -456,7 +456,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.cardinal-sdk.action-code.success");
@@ -480,7 +480,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onThreeDSecureFailure(captor.capture());
@@ -507,7 +507,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onThreeDSecureFailure(captor.capture());
@@ -547,7 +547,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
         verify(braintreeClient).sendAnalyticsEvent(
@@ -590,7 +590,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
         verify(braintreeClient).sendAnalyticsEvent(
@@ -628,7 +628,7 @@ public class ThreeDSecureClientUnitTest {
 
         CardinalResult cardinalResult =
                 new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult);
+        sut.onCardinalResult(cardinalResult, );
 
         verify(listener).onThreeDSecureFailure(exception);
         braintreeClient.sendAnalyticsEvent(

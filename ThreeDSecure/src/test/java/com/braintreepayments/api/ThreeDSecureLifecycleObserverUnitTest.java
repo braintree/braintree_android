@@ -85,7 +85,7 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ActivityResultCallback<CardinalResult> activityResultCallback =
                 cardinalResultCaptor.getValue();
         activityResultCallback.onActivityResult(cardinalResult);
-        verify(threeDSecureClient).onCardinalResult(cardinalResult);
+        verify(threeDSecureClient).onCardinalResult(cardinalResult, );
     }
 
     @Test

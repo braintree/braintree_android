@@ -455,7 +455,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult,
+        sut.continuePerformVerification(activity, threeDSecureResult,
                 mock(ThreeDSecureResultCallback.class));
 
         verify(activity).startActivityForResult(any(Intent.class), any(Integer.class));
@@ -488,7 +488,7 @@ public class ThreeDSecureV2UnitTest {
                 .when(activity).startActivityForResult(any(Intent.class), anyInt());
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, callback);
+        sut.continuePerformVerification(activity, threeDSecureResult, callback);
 
         ArgumentCaptor<BraintreeException> captor =
                 ArgumentCaptor.forClass(BraintreeException.class);
@@ -525,7 +525,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
 
         try {
-            sut.continuePerformVerification(activity, basicRequest, threeDSecureResult, callback);
+            sut.continuePerformVerification(activity, threeDSecureResult, callback);
             fail("should not get here");
         } catch (Exception e) {
             assertSame(e, runtimeException);
