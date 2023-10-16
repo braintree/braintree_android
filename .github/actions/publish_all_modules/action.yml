@@ -25,20 +25,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        ./gradlew clean \
-          :AmericanExpress:publishToSonatype \
-          :BraintreeCore:publishToSonatype \
-          :PayPalDataCollector:publishToSonatype \
-          :Card:publishToSonatype \
-          :GooglePay:publishToSonatype \
-          :LocalPayment:publishToSonatype \
-          :PayPal:publishToSonatype \
-          :SharedUtils:publishToSonatype \
-          :ThreeDSecure:publishToSonatype \
-          :Venmo:publishToSonatype \
-          :SamsungPay:publishToSonatype \
-          :SEPADirectDebit:publishToSonatype \
-          :PayPalNativeCheckout:publishToSonatype
+        ./gradlew --stacktrace clean publishToSonatype closeAndReleaseSonatypeStagingRepository
       shell: bash
       env:
         SONATYPE_NEXUS_USERNAME: ${{ inputs.sonatype_usr }}

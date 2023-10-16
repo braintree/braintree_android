@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.39.0 (2023-10-16)
 
 * Breaking Changes
   * All Modules
