@@ -101,21 +101,6 @@ public class ThreeDSecureClient {
         lifecycle.addObserver(observer);
     }
 
-    /**
-     * Add a {@link ThreeDSecureListener} to your client to receive results or errors from the 3DS
-     * payment flow. This method must be invoked on a
-     * {@link ThreeDSecureClient(Fragment, BraintreeClient)} or
-     * {@link ThreeDSecureClient(FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param listener a {@link ThreeDSecureListener}
-     */
-    public void setListener(ThreeDSecureListener listener) {
-        this.listener = listener;
-        if (pendingBrowserSwitchResult != null) {
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
     // region Cardinal Initialize/Prepare Callback Methods
 
     /**
@@ -487,47 +472,6 @@ public class ThreeDSecureClient {
     /**
      * Deprecated. Use {@link ThreeDSecureListener}. To handle results.
      *
-     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link ThreeDSecureResultCallback}
-     */
-    @Deprecated
-    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult,
-                                      @NonNull final ThreeDSecureResultCallback callback) {
-        // V1 flow
-        //noinspection ConstantConditions
-        if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
-            return;
-        }
-        int status = browserSwitchResult.getStatus();
-        switch (status) {
-            case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new UserCanceledException("User canceled 3DS."));
-                break;
-            case BrowserSwitchStatus.SUCCESS:
-            default:
-                Uri deepLinkUrl = browserSwitchResult.getDeepLinkUrl();
-                if (deepLinkUrl != null) {
-                    String authResponse = deepLinkUrl.getQueryParameter("auth_response");
-                    try {
-                        ThreeDSecureResult result = ThreeDSecureResult.fromJson(authResponse);
-                        if (result.hasError()) {
-                            callback.onResult(null, new ErrorWithResponse(422, authResponse));
-                        } else {
-                            sendLiabilityShiftedAnalytics(result);
-                            callback.onResult(result, null);
-                        }
-                    } catch (JSONException e) {
-                        callback.onResult(null, e);
-                    }
-                }
-                break;
-        }
-    }
-
-    /**
-     * Deprecated. Use {@link ThreeDSecureListener}. To handle results.
-     *
      * @param resultCode a code associated with the Activity result
      * @param data       Android Intent
      * @param callback   {@link ThreeDSecureResultCallback}
@@ -591,27 +535,6 @@ public class ThreeDSecureClient {
     // endregion
 
     // region Internal Handle App/Browser Switch Results
-
-    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
-        this.pendingBrowserSwitchResult = browserSwitchResult;
-        if (listener != null) {
-            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
-            // from the client to allow more flexibility to merchants who rely heavily on view model.
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
-    private void deliverBrowserSwitchResultToListener(
-            final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
-            if (threeDSecureResult != null) {
-                listener.onThreeDSecureSuccess(threeDSecureResult);
-            } else if (error != null) {
-                listener.onThreeDSecureFailure(error);
-            }
-        });
-        this.pendingBrowserSwitchResult = null;
-    }
 
     void onCardinalResult(CardinalResult cardinalResult) {
         Exception threeDSecureError = cardinalResult.getError();
@@ -677,24 +600,5 @@ public class ThreeDSecureClient {
                 String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
                         info.isLiabilityShiftPossible()));
     }
-
-    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
-    // logic into another component that also gives merchants more flexibility when using view models
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
-    }
-
     // endregion
 }
