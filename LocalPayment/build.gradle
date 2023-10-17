@@ -33,7 +33,7 @@ dependencies {
     implementation deps.appCompat
 
     api project(':BraintreeCore')
-    implementation project(':PayPalDataCollector')
+    implementation project(':DataCollector')
 
     testImplementation deps.robolectric
     testImplementation deps.mockitoCore

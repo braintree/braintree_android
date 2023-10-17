@@ -5,6 +5,7 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 ## Table of Contents
 
 1. [Android API](#android-api)
+1. [Data Collector](#data-collector)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
 1. [Google Pay](#google-pay)
@@ -13,6 +14,24 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 ## Android API
 
 The minimum supported Android API level for v5 of this SDK has increased to 23.
+
+## Data Collector
+
+The `paypal-data-collector` module has been removed and replaced by the `data-collector` module. 
+The `DataCollector` class within the `data-collector` module has the same 
+`collectDeviceData` methods, so if you were previously using the `paypal-data-collector` library,
+no code changes are required aside from updating your dependency.
+
+If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context, 
+merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId, 
+callback)`, where `riskCorrelationId` is an optional client metadata ID.
+
+```kotlin
+val dataCollector = DataCollector(braintreeClient)
+dataCollector.collectDeviceData(context) { deviceData, error -> 
+    // send deviceData to your server
+}
+```
 
 ## Union Pay
 

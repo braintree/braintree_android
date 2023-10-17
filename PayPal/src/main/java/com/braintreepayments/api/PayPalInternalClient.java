@@ -20,19 +20,17 @@ class PayPalInternalClient {
     private final String successUrl;
 
     private final BraintreeClient braintreeClient;
-    private final PayPalDataCollector payPalDataCollector;
+    private final DataCollector dataCollector;
     private final ApiClient apiClient;
 
     PayPalInternalClient(BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalDataCollector(braintreeClient),
-                new ApiClient(braintreeClient));
+        this(braintreeClient, new DataCollector(braintreeClient), new ApiClient(braintreeClient));
     }
 
     @VisibleForTesting
-    PayPalInternalClient(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector,
-                         ApiClient apiClient) {
+    PayPalInternalClient(BraintreeClient braintreeClient, DataCollector dataCollector, ApiClient apiClient) {
         this.braintreeClient = braintreeClient;
-        this.payPalDataCollector = payPalDataCollector;
+        this.dataCollector = dataCollector;
         this.apiClient = apiClient;
 
         this.cancelUrl =
@@ -85,7 +83,7 @@ class PayPalInternalClient {
                                                         payPalRequest.getRiskCorrelationId() != null
                                                                 ?
                                                                 payPalRequest.getRiskCorrelationId() :
-                                                                payPalDataCollector.getClientMetadataId(
+                                                                dataCollector.getClientMetadataId(
                                                                         context, configuration);
 
                                                 if (pairingId != null) {
