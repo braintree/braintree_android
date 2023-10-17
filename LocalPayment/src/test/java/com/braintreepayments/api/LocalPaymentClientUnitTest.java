@@ -42,7 +42,7 @@ public class LocalPaymentClientUnitTest {
     private LocalPaymentListener listener;
 
     private BraintreeClient braintreeClient;
-    private PayPalDataCollector payPalDataCollector;
+    private DataCollector dataCollector;
     private LocalPaymentApi localPaymentApi;
 
     private Configuration payPalEnabledConfig;
@@ -56,7 +56,7 @@ public class LocalPaymentClientUnitTest {
         listener = mock(LocalPaymentListener.class);
 
         braintreeClient = mock(BraintreeClient.class);
-        payPalDataCollector = mock(PayPalDataCollector.class);
+        dataCollector = mock(DataCollector.class);
         localPaymentApi = mock(LocalPaymentApi.class);
 
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
@@ -68,9 +68,8 @@ public class LocalPaymentClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
-        LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
-                        localPaymentApi);
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient,
+                dataCollector, localPaymentApi);
 
         ArgumentCaptor<LocalPaymentLifecycleObserver> captor =
                 ArgumentCaptor.forClass(LocalPaymentLifecycleObserver.class);
@@ -121,7 +120,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(null, null, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(null, null, braintreeClient, dataCollector,
                         localPaymentApi);
 
         verify(lifecycle, never()).addObserver(any(LocalPaymentLifecycleObserver.class));
@@ -150,11 +149,11 @@ public class LocalPaymentClientUnitTest {
                 .integration("sample-integration-type")
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(activity);
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
         sut.setListener(listener);
@@ -170,7 +169,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(null, null, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(null, null, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.pendingBrowserSwitchResult = null;
         sut.setListener(listener);
@@ -189,7 +188,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder().build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -210,7 +209,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -228,7 +227,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -245,7 +244,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -264,7 +263,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -281,7 +280,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -296,7 +295,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
@@ -312,7 +311,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_whenAmountIsNull_returnsErrorToCallback() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         request.setAmount(null);
@@ -331,7 +330,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_whenPaymentTypeIsNull_returnsErrorToCallback() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         request.setPaymentType(null);
@@ -350,7 +349,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void startPayment_whenLocalPaymentRequestIsNull_returnsErrorToCallback() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         sut.startPayment(null, localPaymentStartCallback);
@@ -367,7 +366,7 @@ public class LocalPaymentClientUnitTest {
     public void startPayment_whenCallbackIsNull_throwsError() {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         try {
@@ -382,7 +381,7 @@ public class LocalPaymentClientUnitTest {
     public void approvePayment_startsBrowserWithProperRequestCode()
             throws JSONException, BrowserSwitchException {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -415,7 +414,7 @@ public class LocalPaymentClientUnitTest {
             BrowserSwitchException {
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(true);
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -435,7 +434,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void approvePayment_sendsAnalyticsEvents() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -450,7 +449,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void approvePayment_whenActivityIsNull_returnsErrorToListener() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -468,7 +467,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void approvePayment_whenTransactionIsNull_returnsErrorToListener() {
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -486,7 +485,7 @@ public class LocalPaymentClientUnitTest {
         doThrow(browserSwitchError).when(braintreeClient)
                 .startBrowserSwitch(any(FragmentActivity.class), any(BrowserSwitchOptions.class));
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -509,7 +508,7 @@ public class LocalPaymentClientUnitTest {
                 .put("merchant-account-id", "local-merchant-account-id"));
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -552,11 +551,11 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeError(postError)
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -583,11 +582,11 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -614,7 +613,7 @@ public class LocalPaymentClientUnitTest {
                 .integration("custom")
                 .sessionId("session-id")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(any(Context.class),
+        when(dataCollector.getClientMetadataId(any(Context.class),
                 same(payPalEnabledConfig))).thenReturn("client-metadata-id");
 
         LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(
@@ -624,7 +623,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -655,11 +654,11 @@ public class LocalPaymentClientUnitTest {
                         new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)))
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(any(Context.class),
+        when(dataCollector.getClientMetadataId(any(Context.class),
                 same(payPalEnabledConfig))).thenReturn("client-metadata-id");
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -687,11 +686,11 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -713,7 +712,7 @@ public class LocalPaymentClientUnitTest {
         when(browserSwitchResult.getDeepLinkUrl()).thenReturn(Uri.parse(webUrl));
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -739,7 +738,7 @@ public class LocalPaymentClientUnitTest {
                 .put("merchant-account-id", "local-merchant-account-id"));
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         sut.setListener(listener);
 
@@ -760,7 +759,7 @@ public class LocalPaymentClientUnitTest {
         when(braintreeClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity));
     }
@@ -771,7 +770,7 @@ public class LocalPaymentClientUnitTest {
         when(braintreeClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         assertSame(browserSwitchResult, sut.deliverBrowserSwitchResult(activity));
     }
@@ -783,7 +782,7 @@ public class LocalPaymentClientUnitTest {
                 browserSwitchResult);
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         assertSame(browserSwitchResult, sut.getBrowserSwitchResultFromNewTask(activity));
     }
@@ -795,7 +794,7 @@ public class LocalPaymentClientUnitTest {
                 browserSwitchResult);
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
         assertSame(browserSwitchResult, sut.deliverBrowserSwitchResultFromNewTask(activity));
     }
@@ -812,7 +811,7 @@ public class LocalPaymentClientUnitTest {
         ).thenReturn(browserSwitchResult);
 
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         BrowserSwitchResult result = sut.parseBrowserSwitchResult(activity, intent);
@@ -823,7 +822,7 @@ public class LocalPaymentClientUnitTest {
     public void clearActiveBrowserSwitchRequests_forwardsInvocationToBraintreeClient() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         LocalPaymentClient sut =
-                new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector,
+                new LocalPaymentClient(activity, lifecycle, braintreeClient, dataCollector,
                         localPaymentApi);
 
         sut.clearActiveBrowserSwitchRequests(activity);
