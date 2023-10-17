@@ -32,9 +32,6 @@ public class ThreeDSecureClient {
 
     /**
      * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
-     * <p>
-     * Deprecated. Use {@link ThreeDSecureClient(Fragment, BraintreeClient)} or
-     * {@link ThreeDSecureClient(FragmentActivity, BraintreeClient)} instead.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
@@ -50,8 +47,6 @@ public class ThreeDSecureClient {
         this.braintreeClient = braintreeClient;
         this.api = threeDSecureAPI;
     }
-
-    // region Cardinal Initialize/Prepare Callback Methods
 
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
@@ -192,17 +187,9 @@ public class ThreeDSecureClient {
         });
     }
 
-    // endregion
-
-    // region Deprecated Launch 3DS
-
     /**
      * Continues the 3DS verification. Should be called from
      * {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
-     * <p>
-     * Deprecated. Use
-     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest,
-     * ThreeDSecureResult)} instead.
      *
      * @param result   the {@link ThreeDSecureResult} returned for this request. Contains
      *                 information about the 3DS verification request that will be invoked in this
@@ -218,10 +205,6 @@ public class ThreeDSecureClient {
 
     /**
      * Initialize a challenge from a server side lookup call.
-     * <p>
-     * Deprecated. Use
-     * {@link ThreeDSecureClient#initializeChallengeWithLookupResponse(FragmentActivity,
-     * ThreeDSecureRequest, String)} instead.
      *
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
      *                       information.
@@ -239,8 +222,6 @@ public class ThreeDSecureClient {
             }
         });
     }
-
-    // endregion
 
     private void startVerificationFlow(ThreeDSecureResult result,
                                        ThreeDSecureResultCallback callback) {
@@ -285,8 +266,11 @@ public class ThreeDSecureClient {
         callback.onResult(result, null);
     }
 
-    // region Internal Handle App/Browser Switch Results
-
+    /**
+     *
+     * @param cardinalResult
+     * @param callback
+     */
     public void onCardinalResult(CardinalResult cardinalResult, ThreeDSecureResultCallback callback) {
         Exception threeDSecureError = cardinalResult.getError();
         if (threeDSecureError != null ) {
@@ -351,5 +335,4 @@ public class ThreeDSecureClient {
                 String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
                         info.isLiabilityShiftPossible()));
     }
-    // endregion
 }

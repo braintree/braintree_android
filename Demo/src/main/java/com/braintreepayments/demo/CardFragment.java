@@ -21,6 +21,8 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.CardinalResult;
+import com.braintreepayments.api.CardinalResultCallback;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
@@ -29,6 +31,7 @@ import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
+import com.braintreepayments.api.ThreeDSecureResultCallback;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
@@ -89,11 +92,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
-        threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
-                        this::handleThreeDSecureResult));
+        threeDSecureLauncher = new ThreeDSecureLauncher(this, cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                this::handleThreeDSecureResult));
 
-        cardForm = view.findViewById(R.id.card_form);
+                cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
         cardForm.setOnCardFormSubmitListener(this);
 
