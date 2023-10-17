@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
@@ -176,13 +175,12 @@ public class PayPalClient {
         metadata.put("source", "paypal-browser");
         metadata.put("intent", payPalResponse.getIntent());
 
-        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+        return new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(payPalResponse.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
-        return browserSwitchOptions;
     }
 
     private static String getAnalyticsEventPrefix(PayPalRequest request) {
@@ -192,18 +190,33 @@ public class PayPalClient {
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * {@link PayPalLauncher#deliverResult(Context, Intent)}, pass the {@link BrowserSwitchResult}
-     * returned to this method to tokenize the PayPal account and receive a
-     * {@link PayPalAccountNonce} on success.
+     * {@link PayPalLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
+     * receive a {@link PayPalAccountNonce} on success.
      *
-     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link PayPalBrowserSwitchResultCallback}
+     * @param payPalBrowserSwitchResult a {@link PayPalBrowserSwitchResult} received in the callback
+     *                                  of
+     *                                  {@link
+     *                                  PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
+     *                                  PayPalLauncher}
+     * @param callback                  {@link PayPalBrowserSwitchResultCallback}
      */
-    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult,
+    public void onBrowserSwitchResult(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
                                       @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
+        if (payPalBrowserSwitchResult == null) {
+            callback.onResult(null,
+                    new BraintreeException("PayPalBrowserSwitchResult cannot be null"));
+            return;
+        }
+        BrowserSwitchResult browserSwitchResult =
+                payPalBrowserSwitchResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && payPalBrowserSwitchResult.getError() != null) {
+            callback.onResult(null, payPalBrowserSwitchResult.getError());
+            return;
+        }
         if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+            callback.onResult(null, new BraintreeException("An unexpected error occurred"));
             return;
         }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();

@@ -15,31 +15,41 @@ import androidx.fragment.app.FragmentActivity;
 public class PayPalLauncher {
 
     private final BrowserSwitchClient browserSwitchClient;
+    private final PayPalLauncherCallback callback;
 
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
+     *
+     * @param callback a {@link PayPalLauncherCallback} to handle the result of
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}
      */
-    public PayPalLauncher() {
-        this(new BrowserSwitchClient());
+    public PayPalLauncher(@NonNull PayPalLauncherCallback callback) {
+        this(new BrowserSwitchClient(), callback);
     }
 
     @VisibleForTesting
-    PayPalLauncher(@NonNull BrowserSwitchClient browserSwitchClient) {
+    PayPalLauncher(@NonNull BrowserSwitchClient browserSwitchClient,
+                   PayPalLauncherCallback callback) {
         this.browserSwitchClient = browserSwitchClient;
+        this.callback = callback;
     }
 
     /**
-     * Launches the PayPal flow by switching to a web browser for user authentication
+     * Launches the PayPal flow by switching to a web browser for user authentication and
+     * delivers results to the {@link PayPalLauncherCallback} passed into
+     * {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param payPalResponse the result of the PayPal web authentication flow received from invoking
      *                       {@link PayPalClient#tokenizePayPalAccount(FragmentActivity,
      *                       PayPalRequest, PayPalFlowStartedCallback)}
-     * @throws BrowserSwitchException if there is an error launching the PayPal web flow
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse)
-            throws BrowserSwitchException {
-        browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
+    public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse) {
+        try {
+            browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
+        } catch (BrowserSwitchException e) {
+            callback.onResult(new PayPalBrowserSwitchResult(e));
+        }
     }
 
     /**
@@ -51,17 +61,22 @@ public class PayPalLauncher {
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity, after invoking setIntent(intent).
+     * <p>
+     * This method will deliver a {@link PayPalBrowserSwitchResult} to the
+     * {@link PayPalLauncherCallback} used to instantiate this class. The
+     * {@link PayPalBrowserSwitchResult} should be passed to
+     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
+     * PayPalFlowStartedCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
      *                the PayPal browser flow
-     * @return a {@link BrowserSwitchResult} to be passed to
-     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
-     * PayPalFlowStartedCallback)}
      */
-    public BrowserSwitchResult deliverResult(@NonNull Context context, @NonNull Intent intent) {
+    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, PAYPAL, intent);
-        browserSwitchClient.clearActiveRequests(context);
-        return result;
+        if (result != null) {
+           callback.onResult(new PayPalBrowserSwitchResult(result));
+           browserSwitchClient.clearActiveRequests(context);
+        }
     }
 }
