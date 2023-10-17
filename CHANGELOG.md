@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## 4.39.0 (2023-10-16)
+## unreleased
 
 * Breaking Changes
   * All Modules
@@ -25,7 +25,7 @@
     * Change `GooglePayClient#requestPayment` parameters
     * Add `GooglePayClient#tokenize` 
 
-## unreleased
+## 4.39.0 (2023-10-16)
 
 * BraintreeCore
   * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
