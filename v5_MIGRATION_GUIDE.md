@@ -48,7 +48,7 @@ activity result handling.
 
 `VenmoLauncher` has been added to handle the app switching portion of the Venmo flow for user 
 authentication via the Venmo app. This class uses the Android Activity Result API and therefore 
-must be instantiated in the `OnCreate` method of your Activity or Fragment.
+must be instantiated in the `OnCreate` method of your Activity or `OnCreateView` of your Fragment.
 
 `BraintreeClient` and `VenmoClient` no longer require references to Fragment or Activity and do not 
 need to be instantiated in `OnCreate`.
@@ -103,7 +103,8 @@ activity result handling.
 
 `GooglePayLauncher` has been added to handle the app switching portion of the Google Pay flow for 
 payment authorization via the Google Pay payment sheet. This class uses the Android Activity Result 
-API and therefore must be instantiated in the `OnCreate` method of your Activity or Fragment.
+API and therefore must be instantiated in the `OnCreate` method of your Activity or `OnCreateView` 
+of your Fragment.
 
 `BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and 
 do not need to be instantiated in `OnCreate`.
@@ -174,28 +175,22 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       payPalLauncher = PayPalLauncher() 
++       payPalLauncher = PayPalLauncher() { payPalBrowserSwitchResult ->
++           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
++               // handle paypal account nonce or error
++           }
++       }
     }
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     @override fun onNewIntent(intent: Intent) {
         setIntent(intent)
-+       val result = payPalLauncher.deliverResult(requireContext(), intent)
-+       result?.let {
-+           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
-+               // handle paypal account nonce or error
-+           }
-+       }
++       payPalLauncher.deliverResult(requireContext(), intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     @override fun onResume() {
-+       val result = payPalLauncher.deliverResult(requireContext(), requireActivity().intent)
-+       result?.let {
-+           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
-+               // handle paypal account nonce or error
-+           }
-+       }
++       payPalLauncher.deliverResult(requireContext(), requireActivity().intent)
     }
     
     
@@ -211,11 +206,7 @@ class MyActivity : FragmentActivity() {
 +       payPalClient.tokenizePayPalAccount(this, request) { payPalResponse, error ->
 +            error?.let { /* handle error */ }
 +            payPalResponse?.let { 
-+               try {
-+                   payPalLauncher.launch(requireActivity(), it) 
-+               } catch (error: BrowserSwitchException) {
-+                   // handle error
-+               }
++                payPalLauncher.launch(requireActivity(), it) 
 +           }
 +       }
     }
