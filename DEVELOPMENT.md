@@ -27,11 +27,10 @@ You will need to start an emulator before running `rake integration_tests`.
 There are several components that comprise this SDK:
 
 * [Braintree](Braintree) provides the networking, communication and modeling layer for Braintree.
-* [BraintreeDataCollector](BraintreeDataCollector) collects and provides data for fraud detection.
 * [Core](Core) provides shared code across all the modules in the SDK.
 * [Demo](Demo) is a collection of Braintree reference integrations.
 * [PayPalOneTouch](PayPalOneTouch) provides support for PayPal app and browser switch.
-* [PayPalDataCollector](PayPalDataCollector) collects and provides data for PayPal fraud detection.
+* [DataCollector](DataCollector) collects and provides data for PayPal fraud detection.
 * [TestUtils](TestUtils) contains common test code used between modules.
 
 The individual components may be of interest for advanced integrations and are each available as modules in maven.

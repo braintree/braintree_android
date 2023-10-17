@@ -53,8 +53,8 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: BraintreeCore
-  unit_test_paypal_data_collector:
-    name: PayPalDataCollector Unit Tests
+  unit_test_data_collector:
+    name: DataCollector Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -64,19 +64,7 @@ jobs:
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
         with:
-          module: PayPalDataCollector
-  unit_test_braintree_data_collector:
-    name: BraintreeDataCollector Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: ./.github/actions/setup
-      - name: Run Unit Tests
-        uses: ./.github/actions/unit_test_module
-        with:
-          module: BraintreeDataCollector
+          module: DataCollector
   unit_test_card:
     name: Card Unit Tests
     runs-on: ubuntu-latest
@@ -203,8 +191,7 @@ jobs:
     needs: [
       unit_test_american_express,
       unit_test_braintree_core,
-      unit_test_paypal_data_collector,
-      unit_test_braintree_data_collector,
+      unit_test_data_collector,
       unit_test_card,
       unit_test_google_pay,
       unit_test_local_payment,

@@ -81,12 +81,12 @@ dependencies {
     }
 
     implementation project(':AmericanExpress')
-    implementation project(':BraintreeDataCollector')
     implementation project(':Card')
     implementation project(':GooglePay')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':PayPalNativeCheckout')
+    implementation project(':DataCollector')
     implementation project(':SamsungPay')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
