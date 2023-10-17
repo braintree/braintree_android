@@ -1,37 +1,19 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.TransactionTooLargeException;
-
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
@@ -45,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 
@@ -111,7 +92,8 @@ public class ThreeDSecureClientUnitTest {
 
         String clientData = captor.getValue();
         JSONObject lookup = new JSONObject(clientData);
-        Assert.assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"));
+        Assert.assertEquals("encoded_auth_fingerprint",
+                lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
                 "Android-" + BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("dfReferenceId"), "fake-df");
@@ -119,7 +101,8 @@ public class ThreeDSecureClientUnitTest {
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-        Assert.assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
+        Assert.assertEquals(clientMetaData.getString("sdkVersion"),
+                "Android/" + BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -146,7 +129,8 @@ public class ThreeDSecureClientUnitTest {
 
         String clientData = captor.getValue();
         JSONObject lookup = new JSONObject(clientData);
-        Assert.assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"));
+        Assert.assertEquals("encoded_auth_fingerprint",
+                lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
                 "Android-" + BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
@@ -154,7 +138,8 @@ public class ThreeDSecureClientUnitTest {
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-        Assert.assertEquals(clientMetaData.getString("sdkVersion"), "Android/" + BuildConfig.VERSION_NAME);
+        Assert.assertEquals(clientMetaData.getString("sdkVersion"),
+                "Android/" + BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -226,8 +211,9 @@ public class ThreeDSecureClientUnitTest {
                 captor.capture());
 
         TestCase.assertTrue(captor.getValue() instanceof BraintreeException);
-        Assert.assertEquals(captor.getValue().getMessage(), "Merchant is not configured for 3DS 2.0. " +
-                "Please contact Braintree Support for assistance.");
+        Assert.assertEquals(captor.getValue().getMessage(),
+                "Merchant is not configured for 3DS 2.0. " +
+                        "Please contact Braintree Support for assistance.");
     }
 
     // endregion
@@ -379,7 +365,9 @@ public class ThreeDSecureClientUnitTest {
         verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
         assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
                 captor.getValue().getMessage());
-    }   @Test
+    }
+
+    @Test
     public void performVerification_initializesCardinal() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("df-reference-id")
@@ -486,8 +474,9 @@ public class ThreeDSecureClientUnitTest {
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult(isNull(), captor.capture());
         TestCase.assertTrue(captor.getValue() instanceof BraintreeException);
-        Assert.assertEquals(captor.getValue().getMessage(), "Merchant is not configured for 3DS 2.0. " +
-                "Please contact Braintree Support for assistance.");
+        Assert.assertEquals(captor.getValue().getMessage(),
+                "Merchant is not configured for 3DS 2.0. " +
+                        "Please contact Braintree Support for assistance.");
     }
 
     // endregion
@@ -589,7 +578,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void continuePerformVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent()
+    public void continuePerformVerification_sendsAnalyticsEvent()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -613,7 +602,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void continuePerformVerification_whenObserverIsNull_startsActivity()
+    public void continuePerformVerification_callsBackThreeDSecureResultForLaunch()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -631,146 +620,9 @@ public class ThreeDSecureClientUnitTest {
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         sut.continuePerformVerification(threeDSecureResult,
-                mock(ThreeDSecureResultCallback.class));
+                threeDSecureResultCallback);
 
-        verify(activity).startActivityForResult(any(Intent.class), any(Integer.class));
-    }
-
-    @Test
-    public void continuePerformVerification_whenObserverIsNullAndTransactionIsTooLarge_callsBackAnException()
-            throws JSONException, BraintreeException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .successReferenceId("reference-id")
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-                .configuration(threeDSecureEnabledConfig)
-                .build();
-
-        ThreeDSecureClient sut =
-                new ThreeDSecureClient(braintreeClient, cardinalClient,
-                        new ThreeDSecureAPI(braintreeClient));
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-
-        TransactionTooLargeException transactionTooLargeException =
-                new TransactionTooLargeException();
-        RuntimeException runtimeException = new RuntimeException(
-                "runtime exception caused by transaction too large", transactionTooLargeException);
-
-        doThrow(runtimeException)
-                .when(activity).startActivityForResult(any(Intent.class), anyInt());
-
-        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.continuePerformVerification(threeDSecureResult, callback);
-
-        ArgumentCaptor<BraintreeException> captor =
-                ArgumentCaptor.forClass(BraintreeException.class);
-        verify(callback).onResult(isNull(), captor.capture());
-
-        BraintreeException braintreeException = captor.getValue();
-        String expectedMessage = "The 3D Secure response returned is too large to continue. "
-                + "Please contact Braintree Support for assistance.";
-        Assert.assertEquals(expectedMessage, braintreeException.getMessage());
-    }
-
-    @Test
-    public void continuePerformVerification_whenObserverIsNullAndRuntimeExceptionThrown_rethrowsException()
-            throws JSONException, BraintreeException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .successReferenceId("reference-id")
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-                .configuration(threeDSecureEnabledConfig)
-                .build();
-
-        ThreeDSecureClient sut =
-                new ThreeDSecureClient(braintreeClient, cardinalClient,
-                        new ThreeDSecureAPI(braintreeClient));
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-
-        RuntimeException runtimeException = new RuntimeException("random runtime exception");
-        doThrow(runtimeException)
-                .when(activity).startActivityForResult(any(Intent.class), anyInt());
-
-        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-
-        try {
-            sut.continuePerformVerification(threeDSecureResult, callback);
-            fail("should not get here");
-        } catch (Exception e) {
-            Assert.assertSame(e, runtimeException);
-        }
-    }
-
-    @Test
-    public void continuePerformVerification_withObserverAndTransactionIsTooLarge_callsBackAnException()
-            throws JSONException, BraintreeException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .successReferenceId("reference-id")
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-                .configuration(threeDSecureEnabledConfig)
-                .build();
-
-        ThreeDSecureClient sut =
-                new ThreeDSecureClient(braintreeClient, cardinalClient,
-                        new ThreeDSecureAPI(braintreeClient));
-
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        TransactionTooLargeException transactionTooLargeException =
-                new TransactionTooLargeException();
-        RuntimeException runtimeException = new RuntimeException(
-                "runtime exception caused by transaction too large", transactionTooLargeException);
-        doThrow(runtimeException).when(threeDSecureLifecycleObserver).launch(threeDSecureResult);
-        sut.observer = threeDSecureLifecycleObserver;
-
-        sut.continuePerformVerification(basicRequest, threeDSecureResult);
-        ArgumentCaptor<BraintreeException> captor =
-                ArgumentCaptor.forClass(BraintreeException.class);
-        verify(listener).onThreeDSecureFailure(captor.capture());
-
-        BraintreeException braintreeException = captor.getValue();
-        String expectedMessage = "The 3D Secure response returned is too large to continue. "
-                + "Please contact Braintree Support for assistance.";
-        Assert.assertEquals(expectedMessage, braintreeException.getMessage());
-    }
-
-    @Test
-    public void continuePerformVerification_withObserverAndRuntimeExceptionThrown_rethrowsException()
-            throws JSONException, BraintreeException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-                .successReferenceId("reference-id")
-                .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
-                .configuration(threeDSecureEnabledConfig)
-                .build();
-
-        ThreeDSecureClient sut =
-                new ThreeDSecureClient(braintreeClient, cardinalClient,
-                        new ThreeDSecureAPI(braintreeClient));
-
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        RuntimeException runtimeException = new RuntimeException("random runtime exception");
-        doThrow(runtimeException).when(threeDSecureLifecycleObserver).launch(threeDSecureResult);
-        sut.observer = threeDSecureLifecycleObserver;
-
-        try {
-            sut.continuePerformVerification(basicRequest, threeDSecureResult);
-            fail("should not get here");
-        } catch (Exception e) {
-            Assert.assertSame(e, runtimeException);
-        }
+        verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
     }
 
     // endregion
