@@ -239,15 +239,7 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
-        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
-        JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
-
-        assertFalse(json.has("df_reference_id"));
-    }
-
-    @Test
-    public void build_withVersion2_containsDfReferenceId() throws JSONException {
+    public void build_containsDfReferenceId() throws JSONException {
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
         JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
 
