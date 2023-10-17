@@ -37,11 +37,6 @@
 * GooglePay
   * Fix bug where credit cards were allowed when `GooglePayRequest#setAllowedCreditCards(false)`
 
-## unreleased
-
-* BraintreeCore
-  * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
-
 ## 4.38.2 (2023-09-18)
 
 * BraintreeCore
