@@ -27,9 +27,6 @@ public class ThreeDSecureClient {
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureAPI api;
 
-    @VisibleForTesting
-    BrowserSwitchResult pendingBrowserSwitchResult;
-
     /**
      * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
      *
@@ -49,6 +46,8 @@ public class ThreeDSecureClient {
     }
 
     /**
+     * Call this method to initiate the 3D Secure flow.
+     * <p>
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
      * account id when <a
@@ -188,8 +187,9 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Continues the 3DS verification. Should be called from
-     * {@link ThreeDSecureResultCallback#onResult(ThreeDSecureResult, Exception)}
+     * Continues the 3DS verification. Call this method from the callback of
+     * {@link ThreeDSecureClient#performVerification(Context, ThreeDSecureRequest,
+     * ThreeDSecureResultCallback)} if a {@link ThreeDSecureResult} exists.
      *
      * @param result   the {@link ThreeDSecureResult} returned for this request. Contains
      *                 information about the 3DS verification request that will be invoked in this
@@ -211,7 +211,7 @@ public class ThreeDSecureClient {
      * @param callback       {@link ThreeDSecureResultCallback}
      */
     public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
-                                                      final ThreeDSecureResultCallback callback) {
+    final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
             ThreeDSecureResult result;
             try {
@@ -267,13 +267,16 @@ public class ThreeDSecureClient {
     }
 
     /**
+     * Call this method from the {@link CardinalResultCallback} passed to the
+     * {@link ThreeDSecureLauncher} used to launch the 3DS authentication challenge.
      *
-     * @param cardinalResult
-     * @param callback
+     * @param cardinalResult a {@link CardinalResult} received in {@link CardinalResultCallback}
+     * @param callback       a {@link ThreeDSecureResultCallback}
      */
-    public void onCardinalResult(CardinalResult cardinalResult, ThreeDSecureResultCallback callback) {
+    public void onCardinalResult(CardinalResult cardinalResult,
+                                 ThreeDSecureResultCallback callback) {
         Exception threeDSecureError = cardinalResult.getError();
-        if (threeDSecureError != null ) {
+        if (threeDSecureError != null) {
             callback.onResult(null, threeDSecureError);
         } else {
             ThreeDSecureResult threeDSecureResult = cardinalResult.getThreeSecureResult();
