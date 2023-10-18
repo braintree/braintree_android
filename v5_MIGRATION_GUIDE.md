@@ -185,12 +185,12 @@ class MyActivity : FragmentActivity() {
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     @override fun onNewIntent(intent: Intent) {
         setIntent(intent)
-+       payPalLauncher.deliverResult(requireContext(), intent)
++       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     @override fun onResume() {
-+       payPalLauncher.deliverResult(requireContext(), requireActivity().intent)
++       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().intent)
     }
     
     
