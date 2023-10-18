@@ -1,9 +1,9 @@
 name: Release Snapshot
 on:
-  # update SNAPSHOT build whenever a push or merge occurs on master
+  # update SNAPSHOT build whenever a push or merge occurs on main
   push:
     branches:
-      - 'master'
+      - 'main'
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
 jobs:

@@ -231,6 +231,74 @@ public class GooglePayRequestUnitTest {
     }
 
     @Test
+    public void generatesToJsonRequest_whenCreditCardNotAllowed_billingAddressRequired() throws JSONException {
+        GooglePayRequest request = new GooglePayRequest();
+        String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST_NO_CREDIT_CARDS;
+        List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
+
+        ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
+                .addAllowedCountryCodes(shippingAllowedCountryCodes)
+                .build();
+
+
+        TransactionInfo info = TransactionInfo.newBuilder()
+                .setCurrencyCode("USD")
+                .setTotalPrice("12.24")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .build();
+
+        JSONObject tokenizationSpecificationParams = new JSONObject()
+                .put("type", "PAYMENT_GATEWAY")
+                .put("parameters", new JSONObject()
+                        .put("gateway", "braintree")
+                        .put("braintree:apiVersion", "v1")
+                        .put("braintree:sdkVersion", "BETA")
+                        .put("braintree:merchantId", "BRAINTREE_MERCHANT_ID")
+                        .put("braintree:authorizationFingerprint", "BRAINTREE_AUTH_FINGERPRINT")
+                );
+
+        JSONArray cardAllowedAuthMethods = new JSONArray()
+                .put("PAN_ONLY")
+                .put("CRYPTOGRAM_3DS");
+
+        JSONArray cardAllowedCardNetworks = new JSONArray()
+                .put("VISA")
+                .put("AMEX")
+                .put("JCB")
+                .put("DISCOVER")
+                .put("MASTERCARD");
+
+        JSONObject cardAllowedPaymentMethodParams = new JSONObject()
+                .put("allowedAuthMethods", cardAllowedAuthMethods)
+                .put("allowedCardNetworks", cardAllowedCardNetworks);
+
+        JSONObject paypalAllowedPaymentMethodParams = new JSONObject()
+                .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
+
+        request.setTransactionInfo(info);
+        request.setCountryCode("US");
+        request.setPhoneNumberRequired(true);
+        request.setEmailRequired(true);
+        request.setShippingAddressRequired(true);
+        request.setShippingAddressRequirements(shippingAddressRequirements);
+        request.setBillingAddressRequired(true);
+        request.setAllowPrepaidCards(true);
+        request.setAllowCreditCards(false);
+        request.setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams);
+        request.setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams);
+        request.setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams);
+        request.setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
+
+        request.setEnvironment("production");
+        request.setGoogleMerchantId("GOOGLE_MERCHANT_ID");
+        request.setGoogleMerchantName("GOOGLE_MERCHANT_NAME");
+
+        String actual = request.toJson();
+
+        JSONAssert.assertEquals(expected, actual, false);
+    }
+
+    @Test
     public void allowsNullyOptionalParameters() throws JSONException {
         GooglePayRequest request = new GooglePayRequest();
         String expected = "{\"apiVersion\":2,\"apiVersionMinor\":0,\"allowedPaymentMethods\":[],\"shippingAddressRequired\":true,\"merchantInfo\":{},\"transactionInfo\":{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\",\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}";

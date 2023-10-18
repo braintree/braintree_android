@@ -155,7 +155,8 @@ class AuthorizationLoaderUnitTest {
 
         val error = errorSlot.captured
         val expectedMessage =
-            "Authorization required. See https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization for more info."
+            "Authorization required. See https://developer.paypal.com/braintree/docs/guides/" +
+                    "client-sdk/setup/android/v4#initialization for more info."
         assertEquals(expectedMessage, error.message)
     }
 

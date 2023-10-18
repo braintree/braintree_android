@@ -15,9 +15,6 @@ import com.paypal.checkout.config.UIConfig
 import com.paypal.checkout.error.ErrorInfo
 import com.paypal.checkout.error.OnError
 import com.paypal.checkout.shipping.OnShippingChange
-import com.paypal.pyplcheckout.data.model.pojo.Buyer
-import com.paypal.pyplcheckout.data.model.pojo.Email
-import com.paypal.pyplcheckout.data.model.pojo.Name
 import com.paypal.pyplcheckout.instrumentation.constants.PEnums
 import com.paypal.pyplcheckout.instrumentation.di.PLog
 import io.mockk.every
@@ -28,13 +25,11 @@ import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.json.JSONException
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.Collections.emptyList
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalNativeCheckoutClientUnitTest {
@@ -83,8 +78,8 @@ class PayPalNativeCheckoutClientUnitTest {
             capturedException = e
         }
         assertNotNull(capturedException)
-        val expectedMessage = ("Unsupported request type. Please use either a "
-                + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.")
+        val expectedMessage = ("Unsupported request type. Please use either a " +
+                "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.")
         assertEquals(expectedMessage, capturedException!!.message)
     }
 
@@ -147,6 +142,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     @Ignore("Refactor test to work with mockk")
+    @Suppress("LongMethod")
     fun requestOneTimePayment_launchNativeCheckout_sendsAnalyticsEvents() {
         val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
         payPalCheckoutRequest.intent = "authorize"
@@ -367,8 +363,8 @@ class PayPalNativeCheckoutClientUnitTest {
         val exceptionSlot = slot<Exception>()
         verify { listener.onPayPalFailure(capture(exceptionSlot)) }
         val capturedException = exceptionSlot.captured
-        val expectedMessage = ("Unsupported request type. Please use either a "
-                + "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.")
+        val expectedMessage = ("Unsupported request type. Please use either a " +
+                "PayPalNativeCheckoutRequest or a PayPalNativeCheckoutVaultRequest.")
         assertEquals(expectedMessage, capturedException.message)
         verify { braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started") }
         verify { braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.invalid-request.failed") }

@@ -3,7 +3,6 @@ package com.braintreepayments.api
 import android.text.TextUtils
 import androidx.annotation.RestrictTo
 
-
 /**
  * Generic base class for Braintree authorization
  * @property configUrl The url to fetch configuration for the current Braintree environment.
@@ -39,7 +38,7 @@ abstract class Authorization(private val rawValue: String) {
             val authTrimmed = authorizationString?.trim { it <= ' ' }
             if (authTrimmed == null || TextUtils.isEmpty(authorizationString)) {
                 val errorMessage = "Authorization provided is invalid: $authTrimmed"
-                return InvalidAuthorization(authTrimmed?: "null", errorMessage)
+                return InvalidAuthorization(authTrimmed ?: "null", errorMessage)
             }
             return try {
                     if (isTokenizationKey(authTrimmed)) {

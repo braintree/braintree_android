@@ -13,6 +13,7 @@ import java.net.MalformedURLException
 import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
@@ -106,6 +107,7 @@ class BraintreeHttpClientUnitTest {
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
         val expectedUrlString = String.format(
+            Locale.US,
             "https://example.com/sample/path?authorizationFingerprint=%s",
             clientToken.bearer
         )

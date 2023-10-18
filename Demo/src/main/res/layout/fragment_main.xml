@@ -23,14 +23,6 @@
             android:text="@string/cards"
             android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/samsung_pay"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/samsung_pay"
-            android:textSize="12sp" />
     </TableRow>
 
     <TableRow
@@ -70,13 +62,14 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/visa_checkout"
+            android:id="@+id/paypal_native_checkout"
             style="?android:attr/buttonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/visa_checkout_button"
+            android:text="@string/paypal_native_checkout"
             android:textSize="12sp" />
+
     </TableRow>
 
     <TableRow
@@ -93,26 +86,20 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/preferred_payment_methods"
+            android:id="@+id/samsung_pay"
             style="?android:attr/buttonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/preferred_payment_methods_button"
+            android:text="@string/samsung_pay"
             android:textSize="12sp" />
+
     </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <Button
-            android:id="@+id/paypal_native_checkout"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/paypal_native_checkout"
-            android:textSize="12sp" />
+
         <Button
             android:id="@+id/sepa_debit"
             style="?android:attr/buttonStyle"
@@ -120,6 +107,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/sepa_direct_debit_button"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/visa_checkout"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/visa_checkout_button"
             android:textSize="12sp" />
 
     </TableRow>

@@ -6,7 +6,7 @@ import androidx.annotation.RestrictTo
 import java.io.IOException
 import java.io.InputStream
 
-//NEXT_MAJOR_VERSION: remove class once its added to drop in
+// NEXT_MAJOR_VERSION: remove class once its added to drop in
 /**
  * @suppress
  */

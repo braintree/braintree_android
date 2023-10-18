@@ -6,6 +6,13 @@
   * Bump native-checkout version to release `1.2.0`
   * Adding in support for the merchant passed email feature (opt in only)
 
+## 4.39.0 (2023-10-16)
+
+* BraintreeCore
+  * Remove beta features `PreferredPaymentMethodsClient`, `PreferredPaymentMethodsResult`, and `PreferredPaymentmethodsCallback`
+* GooglePay
+  * Fix bug where credit cards were allowed when `GooglePayRequest#setAllowedCreditCards(false)`
+
 ## 4.38.2 (2023-09-18)
 
 * BraintreeCore

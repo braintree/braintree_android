@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 import java.lang.StringBuilder
 import java.nio.charset.Charset
 
-//NEXT_MAJOR_VERSION: remove class once its added to drop in
+// NEXT_MAJOR_VERSION: remove class once its added to drop in
 /**
  * @suppress
  */

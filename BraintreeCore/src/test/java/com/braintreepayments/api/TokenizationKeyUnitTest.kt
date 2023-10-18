@@ -92,5 +92,4 @@ class TokenizationKeyUnitTest {
     fun getBearer_returnsTokenizationKey() {
         assertEquals(TOKENIZATION_KEY, fromString(TOKENIZATION_KEY).bearer)
     }
-
 }

@@ -19,7 +19,7 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
 
-        every{ authorization.configUrl } returns "https://example.com/config"
+        every { authorization.configUrl } returns "https://example.com/config"
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)

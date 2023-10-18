@@ -11,7 +11,7 @@ internal class DeviceMetadata internal constructor(
     private var dropInVersion: String? = null,
     private var integration: String? = null,
     private var isPayPalInstalled: Boolean = false,
-    private var isSimulator: Boolean  = false,
+    private var isSimulator: Boolean = false,
     private var isVenmoInstalled: Boolean = false,
     private var merchantAppId: String? = null,
     private var merchantAppName: String? = null,

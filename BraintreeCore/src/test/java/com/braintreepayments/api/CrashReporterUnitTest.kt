@@ -29,7 +29,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenClientReferenceNull_forwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenClientReferenceNull_forwardsToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception("error")
@@ -55,7 +55,10 @@ class CrashReporterUnitTest {
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace =
-            arrayOf(StackTraceElement("test", "test", "test", 1))
+            arrayOf(StackTraceElement("test",
+                "test",
+                "test",
+                1))
         val sut = CrashReporter(braintreeClient)
         sut.start()
         sut.uncaughtException(thread, exception)
@@ -64,12 +67,15 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace = arrayOf(
-            StackTraceElement("com.braintreepayments.api.CrashReporting", "test", "test", 1)
+            StackTraceElement("com.braintreepayments.api.CrashReporting",
+                "test",
+                "test",
+                1)
         )
         val sut = CrashReporter(braintreeClient)
         sut.start()
@@ -80,12 +86,15 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+    fun uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashToExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
         exception.stackTrace = arrayOf(
-            StackTraceElement("com.paypal.CrashReporting", "test", "test", 1)
+            StackTraceElement("com.paypal.CrashReporting",
+                "test",
+                "test",
+                1)
         )
         val sut = CrashReporter(braintreeClient)
         sut.start()

@@ -13,4 +13,4 @@ jobs:
           java-version: '11'
           distribution: 'zulu'
       - name: Unit Tests
-        run: ./gradlew --stacktrace testRelease
+        run: ./ci unit_tests
