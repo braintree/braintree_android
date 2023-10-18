@@ -24,6 +24,8 @@ public class ThreeDSecureResult implements Parcelable {
 
     private ThreeDSecureLookup lookup;
 
+    private boolean requiresAuthenticationChallenge = true;
+
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
@@ -120,4 +122,12 @@ public class ThreeDSecureResult implements Parcelable {
                     return new ThreeDSecureResult[size];
                 }
             };
+
+    public boolean requiresAuthenticationChallenge() {
+        return requiresAuthenticationChallenge;
+    }
+
+    void setRequiresAuthenticationChallenge(boolean requiresAuthenticationChallenge) {
+        this.requiresAuthenticationChallenge = requiresAuthenticationChallenge;
+    }
 }

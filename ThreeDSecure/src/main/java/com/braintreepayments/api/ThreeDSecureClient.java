@@ -248,6 +248,7 @@ public class ThreeDSecureClient {
                     String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
                             info.isLiabilityShiftPossible()));
 
+            result.setRequiresAuthenticationChallenge(false);
             callback.onResult(result, null);
             return;
         }
