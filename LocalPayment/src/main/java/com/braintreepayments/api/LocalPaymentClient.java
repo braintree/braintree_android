@@ -1,13 +1,11 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
@@ -32,8 +30,6 @@ public class LocalPaymentClient {
 
     /**
      * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
-     * <p>
-     * Use this constructor with the manual browser switch integration pattern.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
@@ -53,22 +49,6 @@ public class LocalPaymentClient {
         if (activity != null && lifecycle != null) {
             LocalPaymentLifecycleObserver observer = new LocalPaymentLifecycleObserver(this);
             lifecycle.addObserver(observer);
-        }
-    }
-
-    /**
-     * Add a {@link LocalPaymentListener} to your client to receive results or errors from the Local
-     * Payment flow. This method must be invoked on a
-     * {@link LocalPaymentClient(Fragment, BraintreeClient)} or
-     * {@link LocalPaymentClient(FragmentActivity, BraintreeClient)} in order to receive results.
-     *
-     * @param listener a {@link LocalPaymentListener}
-     */
-    public void setListener(LocalPaymentListener listener) {
-        this.listener = listener;
-        if (pendingBrowserSwitchResult != null) {
-            deliverBrowserSwitchResultToListener(braintreeClient.getApplicationContext(),
-                    pendingBrowserSwitchResult);
         }
     }
 
@@ -112,13 +92,15 @@ public class LocalPaymentClient {
                     localPaymentApi.createPaymentMethod(request,
                             (localPaymentResult, error1) -> {
                                 if (localPaymentResult != null) {
+                                    approvePayment(localPaymentResult, callback);
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.create.succeeded");
                                 } else if (error1 != null) {
+                                    callback.onResult(null, new BraintreeException("An error " +
+                                            "occurred creating the local payment method."));
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.webswitch.initiate.failed");
                                 }
-                                callback.onResult(localPaymentResult, error1);
                             });
                 } else {
                     callback.onResult(null, error);
@@ -127,54 +109,8 @@ public class LocalPaymentClient {
         }
     }
 
-    /**
-     * Initiates the browser switch for a payment flow by opening a browser where the customer can
-     * authenticate with their bank.
-     * <p>
-     * Errors encountered during the approval will be returned to the {@link LocalPaymentListener}.
-     *
-     * @param activity           Android FragmentActivity
-     * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to
-     *                           {@link #startPayment(LocalPaymentRequest,
-     *                           LocalPaymentStartCallback)} and now has an approvalUrl and
-     *                           paymentId.
-     */
-    public void approveLocalPayment(@NonNull FragmentActivity activity,
-                                    @NonNull LocalPaymentResult localPaymentResult) {
-        try {
-            approvePayment(activity, localPaymentResult);
-        } catch (Exception error) {
-            listener.onLocalPaymentFailure(error);
-        }
-    }
-
-    /**
-     * Initiates the browser switch for a payment flow by opening a browser where the customer can
-     * authenticate with their bank.
-     * <p>
-     * Deprecated. Use
-     * {@link LocalPaymentClient#approveLocalPayment(FragmentActivity, LocalPaymentResult)}.
-     *
-     * @param activity           Android FragmentActivity
-     * @param localPaymentResult {@link LocalPaymentRequest} which has already been sent to
-     *                           {@link #startPayment(LocalPaymentRequest,
-     *                           LocalPaymentStartCallback)} and now has an approvalUrl and
-     *                           paymentId.
-     */
-    @Deprecated
-    public void approvePayment(@NonNull FragmentActivity activity,
-                               @NonNull LocalPaymentResult localPaymentResult)
-            throws JSONException, BrowserSwitchException {
-        //noinspection ConstantConditions
-        if (activity == null) {
-            throw new RuntimeException("A FragmentActivity is required.");
-        }
-
-        //noinspection ConstantConditions
-        if (localPaymentResult == null) {
-            throw new RuntimeException("A LocalPaymentTransaction is required.");
-        }
-
+    void approvePayment(@NonNull LocalPaymentResult localPaymentResult,
+                               @NonNull LocalPaymentStartCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -183,92 +119,17 @@ public class LocalPaymentClient {
 
         String paymentType = localPaymentResult.getRequest().getPaymentType();
 
-        browserSwitchOptions.metadata(new JSONObject()
-                .put("merchant-account-id", localPaymentResult.getRequest().getMerchantAccountId())
-                .put("payment-type", localPaymentResult.getRequest().getPaymentType()));
-
-        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
-        sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
-    }
-
-    void onBrowserSwitchResult(@NonNull Context context,
-                               @NonNull BrowserSwitchResult browserSwitchResult) {
-        this.pendingBrowserSwitchResult = browserSwitchResult;
-        if (listener != null) {
-            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
-            // from the client to allow more flexibility to merchants who rely heavily on view model.
-            deliverBrowserSwitchResultToListener(context, pendingBrowserSwitchResult);
+        try {
+            browserSwitchOptions.metadata(new JSONObject()
+                    .put("merchant-account-id", localPaymentResult.getRequest().getMerchantAccountId())
+                    .put("payment-type", localPaymentResult.getRequest().getPaymentType()));
+        } catch (JSONException e) {
+            callback.onResult(null, new BraintreeException("Error parsing local payment request"));
         }
-    }
 
-    private void deliverBrowserSwitchResultToListener(Context context,
-                                                      final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(context, browserSwitchResult, (localPaymentNonce, error) -> {
-            if (localPaymentNonce != null) {
-                listener.onLocalPaymentSuccess(localPaymentNonce);
-            } else if (error != null) {
-                listener.onLocalPaymentFailure(error);
-            }
-        });
-
-        this.pendingBrowserSwitchResult = null;
-    }
-
-    /**
-     * After calling
-     * {@link LocalPaymentClient#startPayment(LocalPaymentRequest, LocalPaymentStartCallback)}, call
-     * this method in your Activity or Fragment's onResume() method to see if a response was
-     * provided through deep linking.
-     * <p>
-     * If a BrowserSwitchResult exists, call
-     * {@link LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult,
-     * LocalPaymentBrowserSwitchResultCallback)}, to allow the SDK to continue tokenization of the
-     * PayPalAccount.
-     * <p>
-     * Make sure to call {@link LocalPaymentClient#clearActiveBrowserSwitchRequests(Context)} after
-     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
-     * switch event handling.
-     *
-     * @param context The context used to check for pending browser switch requests
-     * @param intent  The intent containing a potential deep link response. May be null.
-     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep
-     * link; null when an input Intent is null
-     */
-    @Nullable
-    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context,
-                                                        @Nullable Intent intent) {
-        int requestCode = BraintreeRequestCodes.LOCAL_PAYMENT;
-        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
-    }
-
-    /**
-     * Make sure to call this method after
-     * {@link LocalPaymentClient#parseBrowserSwitchResult(Context, Intent)} parses a
-     * {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser switch
-     * event handling logic.
-     *
-     * @param context The context used to clear pending browser switch requests
-     */
-    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
-        braintreeClient.clearActiveBrowserSwitchRequests(context);
-    }
-
-    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
-    // logic into another component that also gives merchants more flexibility when using view models
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
+        localPaymentResult.setBrowserSwitchOptions(browserSwitchOptions);
+        callback.onResult(localPaymentResult, null);
+        sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
     /**

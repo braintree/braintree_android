@@ -15,7 +15,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
-import com.braintreepayments.api.LocalPaymentListener;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.PostalAddress;
