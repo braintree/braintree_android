@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.os.TransactionTooLargeException;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -61,8 +62,9 @@ public class ThreeDSecureLauncher {
     /**
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
      * callback of
-     * {@link ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult,
-     * ThreeDSecureResultCallback)}
+     * {@link ThreeDSecureClient#performVerification(Context, ThreeDSecureRequest,
+     * ThreeDSecureResultCallback)} if user authentication is required
+     * {@link ThreeDSecureLookup#requiresUserAuthentication()}
      *
      * @param threeDSecureResult the result of
      *                           {@link

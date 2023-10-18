@@ -92,10 +92,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
-        threeDSecureLauncher = new ThreeDSecureLauncher(this, cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
-                this::handleThreeDSecureResult));
+        threeDSecureLauncher = new ThreeDSecureLauncher(this,
+                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                        this::handleThreeDSecureResult));
 
-                cardForm = view.findViewById(R.id.card_form);
+        cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
         cardForm.setOnCardFormSubmitListener(this);
 
@@ -232,19 +233,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
                     (threeDSecureResult, error) -> {
-                        if (threeDSecureResult != null) {
-                            threeDSecureClient.continuePerformVerification(threeDSecureResult,
-                                    (threeDSecureResult1, error1) -> {
-                                        if (threeDSecureResult1.requiresAuthenticationChallenge()) {
-                                            threeDSecureLauncher.launch(threeDSecureResult1);
-                                        } else {
-                                            handleThreeDSecureResult(threeDSecureResult1, error1);
-                                        }
-                                    });
+                        if (threeDSecureResult != null &&
+                                threeDSecureResult.getLookup().requiresUserAuthentication()) {
+                            threeDSecureLauncher.launch(threeDSecureResult);
                         } else {
-                            handleError(error);
-                            safelyCloseLoadingView();
+                            handleThreeDSecureResult(threeDSecureResult, error);
                         }
+                        safelyCloseLoadingView();
                     });
         } else if (paymentMethodNonce instanceof CardNonce &&
                 Settings.isAmexRewardsBalanceEnabled(activity)) {

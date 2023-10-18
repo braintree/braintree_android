@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -93,16 +94,25 @@ public class ThreeDSecureClient {
             }
             braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
+            ThreeDSecureResultCallback internalResultCallback =
+                    (threeDSecureResult, performLookupError) -> {
+                if (threeDSecureResult != null) {
+                    continuePerformVerification(threeDSecureResult, callback);
+                } else {
+                    callback.onResult(null, performLookupError);
+                }
+            };
+
             CardinalInitializeCallback cardinalInitializeCallback =
                     (consumerSessionId, error1) -> {
                         if (consumerSessionId != null) {
                             api.performLookup(request,
-                                    cardinalClient.getConsumerSessionId(), callback);
+                                    cardinalClient.getConsumerSessionId(), internalResultCallback);
                             braintreeClient.sendAnalyticsEvent(
                                     "three-d-secure.cardinal-sdk.init.setup-completed");
                         } else {
                             api.performLookup(request,
-                                    cardinalClient.getConsumerSessionId(), callback);
+                                    cardinalClient.getConsumerSessionId(), internalResultCallback);
                             braintreeClient.sendAnalyticsEvent(
                                     "three-d-secure.cardinal-sdk.init.setup-failed");
                         }
@@ -186,17 +196,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    /**
-     * Continues the 3DS verification. Call this method from the callback of
-     * {@link ThreeDSecureClient#performVerification(Context, ThreeDSecureRequest,
-     * ThreeDSecureResultCallback)} if a {@link ThreeDSecureResult} exists.
-     *
-     * @param result   the {@link ThreeDSecureResult} returned for this request. Contains
-     *                 information about the 3DS verification request that will be invoked in this
-     *                 method.
-     * @param callback {@link ThreeDSecureResultCallback}
-     */
-    public void continuePerformVerification(@NonNull final ThreeDSecureResult result,
+    void continuePerformVerification(@NonNull final ThreeDSecureResult result,
                                             @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(
                 (configuration, error) -> startVerificationFlow(
@@ -248,7 +248,6 @@ public class ThreeDSecureClient {
                     String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
                             info.isLiabilityShiftPossible()));
 
-            result.setRequiresAuthenticationChallenge(false);
             callback.onResult(result, null);
             return;
         }
