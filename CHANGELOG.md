@@ -1,11 +1,13 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPalNativeCheckout
   * Bump native-checkout version to release `1.2.0`
   * Adding in support for the merchant passed email feature (opt in only)
 
 ## 4.38.2 (2023-09-18)
+
 * BraintreeCore
   * Internal Fixes
 

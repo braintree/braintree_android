@@ -209,11 +209,11 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Optional: Sets the email of the user prior to calling authentication
+     * Optional: Sets the email of the user prior to launching authentication
      *
      * @param authEmail the users email address
      */
-    public void setUserAuthenticationEmail(@NonNull String authEmail) {
+    public void setUserAuthenticationEmail(@Nullable String authEmail) {
         this.authEmail = authEmail;
     }
 
