@@ -11,6 +11,8 @@ public class LocalPaymentResult {
     private final String approvalUrl;
     private final String paymentId;
 
+    private BrowserSwitchOptions browserSwitchOptions;
+
     LocalPaymentResult(LocalPaymentRequest request, String approvalUrl, String paymentId) {
         this.request = request;
         this.approvalUrl = approvalUrl;
@@ -39,5 +41,13 @@ public class LocalPaymentResult {
     @NonNull
     public String getPaymentId() {
         return paymentId;
+    }
+
+    BrowserSwitchOptions getBrowserSwitchOptions() {
+        return browserSwitchOptions;
+    }
+
+    void setBrowserSwitchOptions(BrowserSwitchOptions browserSwitchOptions) {
+        this.browserSwitchOptions = browserSwitchOptions;
     }
 }

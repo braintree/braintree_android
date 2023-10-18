@@ -31,32 +31,6 @@ public class LocalPaymentClient {
     BrowserSwitchResult pendingBrowserSwitchResult;
 
     /**
-     * Create a new instance of {@link LocalPaymentClient} from within an Activity using a
-     * {@link BraintreeClient}.
-     *
-     * @param activity        a {@link FragmentActivity}
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public LocalPaymentClient(@NonNull FragmentActivity activity,
-                              @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient,
-                new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
-    }
-
-    /**
-     * Create a new instance of {@link LocalPaymentClient} from within a Fragment using a
-     * {@link BraintreeClient}.
-     *
-     * @param fragment        a {@link Fragment
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public LocalPaymentClient(@NonNull Fragment fragment,
-                              @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient,
-                new DataCollector(braintreeClient), new LocalPaymentApi(braintreeClient));
-    }
-
-    /**
      * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
      * <p>
      * Use this constructor with the manual browser switch integration pattern.
