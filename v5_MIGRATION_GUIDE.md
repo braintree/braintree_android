@@ -176,7 +176,7 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       payPalLauncher = PayPalLauncher() { payPalBrowserSwitchResult ->
-+           payPalClient.onBrowserSwitchResult(it) { payPalAccountNonce, error ->
++           payPalClient.onBrowserSwitchResult(payPalBrowserSwitchResult) { payPalAccountNonce, error ->
 +               // handle paypal account nonce or error
 +           }
 +       }
