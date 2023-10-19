@@ -20,6 +20,7 @@ import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayRequest;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
+import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 public class GooglePayFragment extends BaseFragment implements GooglePayListener {
@@ -85,6 +86,11 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         activity.setProgressBarIndeterminateVisibility(true);
 
         GooglePayRequest googlePayRequest = new GooglePayRequest();
+        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
+                .setCurrencyCode(Settings.getGooglePayCurrency(activity))
+                .setTotalPrice("1.00")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .build());
         googlePayRequest.setTotalPriceLabel("Braintree Demo Payment");
         googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
         googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
