@@ -47,6 +47,8 @@ public class GooglePayRequest implements Parcelable {
     private String googleMerchantName;
     private String countryCode;
 
+    private String 
+
     public GooglePayRequest() {
     }
 
