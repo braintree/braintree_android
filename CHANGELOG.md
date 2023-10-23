@@ -30,7 +30,7 @@
     * Change `GooglePayClient#requestPayment` parameters
     * Add `GooglePayClient#tokenize` 
   * ThreeDSecure
-    * Remove `ThreeDSecreListener`
+    * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `CardinalResult`, and `CardinalResultCallback`
     * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
     * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
