@@ -82,13 +82,12 @@ public class LocalPaymentClient {
                             "local-payment.start-payment.selected");
 
                     localPaymentApi.createPaymentMethod(request,
-                            (localPaymentResult, error1) -> {
-                        // TODO: unit test
+                            (localPaymentResult, createPaymentMethodError) -> {
                                 if (localPaymentResult != null) {
                                     approvePayment(localPaymentResult, callback);
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.create.succeeded");
-                                } else if (error1 != null) {
+                                } else if (createPaymentMethodError != null) {
                                     callback.onResult(null, new BraintreeException("An error " +
                                             "occurred creating the local payment method."));
                                     sendAnalyticsEvent(request.getPaymentType(),

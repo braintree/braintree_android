@@ -54,7 +54,9 @@ public class LocalPaymentClientUnitTest {
         localPaymentBrowserSwitchResultCallback =
                 mock(LocalPaymentBrowserSwitchResultCallback.class);
 
-        braintreeClient = mock(BraintreeClient.class);
+        braintreeClient =
+                new MockBraintreeClientBuilder().configuration(
+                        Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)).build();
         dataCollector = mock(DataCollector.class);
         localPaymentApi = mock(LocalPaymentApi.class);
         localPaymentResult = mock(LocalPaymentResult.class);
@@ -259,6 +261,41 @@ public class LocalPaymentClientUnitTest {
         } catch (RuntimeException exception) {
             assertEquals("A LocalPaymentCallback is required.", exception.getMessage());
         }
+    }
+
+    @Test
+    public void startPayment_whenCreatePaymentMethodError_returnsErrorToCallback() {
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodError(new Exception("error"))
+                .build();
+        LocalPaymentClient sut =
+                new LocalPaymentClient(braintreeClient, dataCollector,
+                        localPaymentApi);
+
+        sut.startPayment(getIdealLocalPaymentRequest(), localPaymentStartCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(localPaymentStartCallback).onResult(isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("An error occurred creating the local payment method.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void startPayment_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() {
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(localPaymentResult)
+                .build();
+
+        LocalPaymentClient sut =
+                new LocalPaymentClient(braintreeClient, dataCollector,
+                        localPaymentApi);
+
+        sut.startPayment(getIdealLocalPaymentRequest(), localPaymentStartCallback);
+
+        verify(localPaymentStartCallback).onResult(same(localPaymentResult), isNull());
     }
 
     @Test
