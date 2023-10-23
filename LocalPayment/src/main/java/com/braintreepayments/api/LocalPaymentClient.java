@@ -22,9 +22,6 @@ public class LocalPaymentClient {
     private final DataCollector dataCollector;
     private final LocalPaymentApi localPaymentApi;
 
-    @VisibleForTesting
-    BrowserSwitchResult pendingBrowserSwitchResult;
-
     /**
      * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
      *
