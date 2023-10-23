@@ -25,12 +25,16 @@ import java.util.Map;
  */
 public class GooglePayRequest implements Parcelable {
 
+    // NEXT_MAJOR_VERSION: allow merchants to set transaction info params individually and build
+    // JSON object under the hood
     private TransactionInfo transactionInfo;
     private boolean emailRequired;
     private boolean phoneNumberRequired;
     private boolean billingAddressRequired;
     private int billingAddressFormat;
     private boolean shippingAddressRequired;
+    // NEXT_MAJOR_VERSION: allow merchants to set shipping address requirements params individually
+    // and build JSON object under the hood
     private ShippingAddressRequirements shippingAddressRequirements;
     private boolean allowPrepaidCards;
     private boolean payPalEnabled = true;
@@ -46,6 +50,7 @@ public class GooglePayRequest implements Parcelable {
     private String googleMerchantId;
     private String googleMerchantName;
     private String countryCode;
+    private String totalPriceLabel;
 
     public GooglePayRequest() {
     }
@@ -223,6 +228,15 @@ public class GooglePayRequest implements Parcelable {
     }
 
     /**
+     * Optional
+     *
+     * @param totalPriceLabel Custom label for the total price within the display items
+     */
+    public void setTotalPriceLabel(@Nullable String totalPriceLabel) {
+        this.totalPriceLabel = totalPriceLabel;
+    }
+
+    /**
      * Assemble all declared parts of a GooglePayRequest to a JSON string
      * for use in making requests against Google
      *
@@ -259,6 +273,10 @@ public class GooglePayRequest implements Parcelable {
 
             if (countryCode != null) {
                 transactionInfoJson.put("countryCode", countryCode);
+            }
+
+            if (totalPriceLabel != null) {
+                transactionInfoJson.put("totalPriceLabel", totalPriceLabel);
             }
 
         } catch (JSONException ignored) {
@@ -491,6 +509,11 @@ public class GooglePayRequest implements Parcelable {
         return allowCreditCards;
     }
 
+    @Nullable
+    public String getTotalPriceLabel() {
+        return totalPriceLabel;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -512,6 +535,7 @@ public class GooglePayRequest implements Parcelable {
         dest.writeString(googleMerchantName);
         dest.writeString(countryCode);
         dest.writeByte((byte) (allowCreditCards ? 1 : 0));
+        dest.writeString(totalPriceLabel);
     }
 
     GooglePayRequest(Parcel in) {
@@ -529,6 +553,7 @@ public class GooglePayRequest implements Parcelable {
         googleMerchantName = in.readString();
         countryCode = in.readString();
         allowCreditCards = in.readByte() != 0;
+        totalPriceLabel = in.readString();
     }
 
     public static final Creator<GooglePayRequest> CREATOR = new Creator<GooglePayRequest>() {

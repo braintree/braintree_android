@@ -140,7 +140,7 @@ public class Settings {
     }
 
     public static String getGooglePayCurrency(Context context) {
-        return getPreferences(context).getString("google_pay_currency", "USD");
+        return getPreferences(context).getString("google_pay_currency", "EUR");
     }
 
     public static String getGooglePayMerchantId(Context context) {
