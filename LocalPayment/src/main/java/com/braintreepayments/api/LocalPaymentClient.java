@@ -6,8 +6,6 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,22 +31,17 @@ public class LocalPaymentClient {
      * @param braintreeClient a {@link BraintreeClient}
      */
     public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
-        this(null, null, braintreeClient, new DataCollector(braintreeClient),
+        this(braintreeClient, new DataCollector(braintreeClient),
                 new LocalPaymentApi(braintreeClient));
     }
 
     @VisibleForTesting
-    LocalPaymentClient(FragmentActivity activity, Lifecycle lifecycle,
-                       @NonNull BraintreeClient braintreeClient,
+    LocalPaymentClient(@NonNull BraintreeClient braintreeClient,
                        @NonNull DataCollector dataCollector,
                        @NonNull LocalPaymentApi localPaymentApi) {
         this.braintreeClient = braintreeClient;
         this.dataCollector = dataCollector;
         this.localPaymentApi = localPaymentApi;
-        if (activity != null && lifecycle != null) {
-            LocalPaymentLifecycleObserver observer = new LocalPaymentLifecycleObserver(this);
-            lifecycle.addObserver(observer);
-        }
     }
 
     /**
