@@ -83,6 +83,7 @@ public class LocalPaymentClient {
 
                     localPaymentApi.createPaymentMethod(request,
                             (localPaymentResult, error1) -> {
+                        // TODO: unit test
                                 if (localPaymentResult != null) {
                                     approvePayment(localPaymentResult, callback);
                                     sendAnalyticsEvent(request.getPaymentType(),
