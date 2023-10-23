@@ -8,7 +8,8 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 1. [Data Collector](#data-collector)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
-1. [Google Pay] (#google-pay)
+1. [Google Pay](#google-pay)
+1. [3DS](#3ds)
 
 ## Android API
 
@@ -145,6 +146,67 @@ class MyActivity : FragmentActivity() {
 -   }
       
 -   override fun onGooglePayFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
+```
+
+## 3DS
+
+The ThreeDSecure integration has been updated to allow for more flexibility with app switching and
+activity result handling.
+
+`ThreeDSecureLauncher` has been added to handle the app switching portion of the 3DS flow for user
+authentication. This class uses the Android Activity Result API and therefore must be instantiated 
+in the `OnCreate` method of your Activity or `onCreateView` method of your Fragment.
+
+`BraintreeClient` and `ThreeDSecureClient` no longer require references to Fragment or Activity and 
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+    
++   private lateinit var threeDSecureLauncher: ThreeDSecureLauncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var threeDSecureClient: VenmoClient
+    
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       threeDSecureLauncher = ThreeDSecureLauncher(this) { cardinalResult ->
++            threeDSecureClient.onCardinalResult(cardinalResult) { threeDSecureResult, error ->
++                error?.let { /* handle error */ }
++                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
++            }
++       }
+    }
+    
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       threeDSecureClient = ThreeDSecureClient(this, braintreeClient)
++       threeDSecureClient = ThreeDSeucreClient(braintreeClient)
+-       threeDSecureClient.setListener(this)
+    }
+    
+    fun onCardTokenization() {
+-       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
++       threeDSecureClient.performVerification(requireContext(), threeDSecureRequest) { 
+          threeDSecureResult, error ->
+             error?.let { /* handle error */ }
+             threeDSecureResult?.let {
+                if (it.lookup.requiresAuthentication) {
+-                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
++                   threeDSecureLauncher.launch(it) 
+                else { /* no additional user authentication needed, handle threeDSecureResult */ }
+             }
+        }
+    }
+    
+-   override fun onThreeDSecureSuccess(threeDSecureResult: ThreeDSecureResult) {
+-        // handle threeDSecureResult.tokenizedCard
+-   }
+      
+-   override fun onThreeDSecureFailure(error: java.lang.Exception) {
 -        // handle error
 -   }
 }

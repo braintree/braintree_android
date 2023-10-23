@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,8 +106,7 @@ public class ThreeDSecureLookup implements Parcelable {
     /**
      * @return {@code boolean} When `true`, the user will be presented with a 3D Secure challenge
      * when calling
-     * {@link ThreeDSecureClient#continuePerformVerification(FragmentActivity, ThreeDSecureRequest,
-     * ThreeDSecureResult, ThreeDSecureResultCallback)}
+     * {@link ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult, ThreeDSecureResultCallback)}
      */
     public boolean requiresUserAuthentication() {
         return acsUrl != null;
