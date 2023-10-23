@@ -23,7 +23,6 @@ public class LocalPaymentClient {
     private final BraintreeClient braintreeClient;
     private final DataCollector dataCollector;
     private final LocalPaymentApi localPaymentApi;
-    private LocalPaymentListener listener;
 
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
@@ -110,7 +109,7 @@ public class LocalPaymentClient {
     }
 
     void approvePayment(@NonNull LocalPaymentResult localPaymentResult,
-                               @NonNull LocalPaymentStartCallback callback) {
+                        @NonNull LocalPaymentStartCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -121,7 +120,8 @@ public class LocalPaymentClient {
 
         try {
             browserSwitchOptions.metadata(new JSONObject()
-                    .put("merchant-account-id", localPaymentResult.getRequest().getMerchantAccountId())
+                    .put("merchant-account-id",
+                            localPaymentResult.getRequest().getMerchantAccountId())
                     .put("payment-type", localPaymentResult.getRequest().getPaymentType()));
         } catch (JSONException e) {
             callback.onResult(null, new BraintreeException("Error parsing local payment request"));
@@ -135,18 +135,30 @@ public class LocalPaymentClient {
     /**
      * Use this method with the manual browser switch integration pattern.
      *
-     * @param context             Android Context
-     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
-     * @param callback            {@link LocalPaymentBrowserSwitchResultCallback}
+     * @param context                         Android Context
+     * @param localPaymentBrowserSwitchResult a {@link BrowserSwitchResult} with a
+     *                                        {@link BrowserSwitchStatus}
+     * @param callback                        {@link LocalPaymentBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(@NonNull final Context context,
-                                      @NonNull BrowserSwitchResult browserSwitchResult, @NonNull
+                                      @Nullable
+                                      LocalPaymentBrowserSwitchResult localPaymentBrowserSwitchResult,
+                                      @NonNull
                                       final LocalPaymentBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
-        if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("BrowserSwitchResult cannot be null"));
+        if (localPaymentBrowserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("LocalPaymentBrowserSwitchResult " +
+                    "cannot be null"));
             return;
         }
+
+        BrowserSwitchResult browserSwitchResult =
+                localPaymentBrowserSwitchResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && localPaymentBrowserSwitchResult.getError() != null) {
+            callback.onResult(null, localPaymentBrowserSwitchResult.getError());
+            return;
+        }
+
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
 
         final String paymentType = Json.optString(metadata, "payment-type", null);
@@ -179,20 +191,15 @@ public class LocalPaymentClient {
                     if (configuration != null) {
                         localPaymentApi.tokenize(merchantAccountId, responseString,
                                 dataCollector.getClientMetadataId(context, configuration),
-                                new LocalPaymentBrowserSwitchResultCallback() {
-                                    @Override
-                                    public void onResult(
-                                            @Nullable LocalPaymentNonce localPaymentNonce,
-                                            @Nullable Exception error) {
-                                        if (localPaymentNonce != null) {
-                                            sendAnalyticsEvent(paymentType,
-                                                    "local-payment.tokenize.succeeded");
-                                        } else if (error != null) {
-                                            sendAnalyticsEvent(paymentType,
-                                                    "local-payment.tokenize.failed");
-                                        }
-                                        callback.onResult(localPaymentNonce, error);
+                                (localPaymentNonce, error1) -> {
+                                    if (localPaymentNonce != null) {
+                                        sendAnalyticsEvent(paymentType,
+                                                "local-payment.tokenize.succeeded");
+                                    } else if (error1 != null) {
+                                        sendAnalyticsEvent(paymentType,
+                                                "local-payment.tokenize.failed");
                                     }
+                                    callback.onResult(localPaymentNonce, error1);
                                 });
                     } else if (error != null) {
                         callback.onResult(null, error);
