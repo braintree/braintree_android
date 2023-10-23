@@ -34,6 +34,7 @@ public class GooglePayRequestUnitTest {
                 .build();
 
         GooglePayRequest request = new GooglePayRequest();
+        request.setTotalPriceLabel("test");
         request.setAllowPrepaidCards(true);
         request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
         request.setBillingAddressRequired(true);
@@ -57,6 +58,7 @@ public class GooglePayRequestUnitTest {
         assertEquals("PRODUCTION", request.getEnvironment());
         assertEquals("google-merchant-id", request.getGoogleMerchantId());
         assertEquals("google-merchant-name", request.getGoogleMerchantName());
+        assertEquals("test", request.getTotalPriceLabel());
     }
 
     @Test
@@ -89,6 +91,7 @@ public class GooglePayRequestUnitTest {
                 .build();
 
         request.setTransactionInfo(info);
+        request.setTotalPriceLabel("test");
         request.setEmailRequired(true);
         request.setPhoneNumberRequired(true);
         request.setShippingAddressRequired(true);
@@ -112,6 +115,7 @@ public class GooglePayRequestUnitTest {
         assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
         assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
         assertEquals(WalletConstants.TOTAL_PRICE_STATUS_FINAL, parceled.getTransactionInfo().getTotalPriceStatus());
+        assertEquals("test", parceled.getTotalPriceLabel());
         assertTrue(parceled.isEmailRequired());
         assertTrue(parceled.isPhoneNumberRequired());
         assertTrue(parceled.isShippingAddressRequired());
@@ -160,6 +164,7 @@ public class GooglePayRequestUnitTest {
         assertNull(parceled.getEnvironment());
         assertNull(parceled.getGoogleMerchantId());
         assertNull(parceled.getGoogleMerchantName());
+        assertNull(parceled.getTotalPriceLabel());
     }
 
     @Test
@@ -220,6 +225,7 @@ public class GooglePayRequestUnitTest {
         request.setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams);
         request.setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams);
         request.setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
+        request.setTotalPriceLabel("Test Label");
 
         request.setEnvironment("production");
         request.setGoogleMerchantId("GOOGLE_MERCHANT_ID");
