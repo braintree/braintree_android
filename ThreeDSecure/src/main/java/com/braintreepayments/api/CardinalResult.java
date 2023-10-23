@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
-class CardinalResult {
+public class CardinalResult {
 
     private final String jwt;
     private final ValidateResponse validateResponse;
