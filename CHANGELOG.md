@@ -37,6 +37,12 @@
     * Add `ThreeDSecureClient#onCardinalResult`
     * Remove `versionRequested` from `ThreeDSecureRequest`
 
+## unreleased 
+
+* GooglePay
+  * Bump `play-services-wallet` version to `19.2.1`
+  * Add `totalPriceLabel` to `GooglePayRequest`
+
 ## 4.39.0 (2023-10-16)
 
 * BraintreeCore

@@ -104,6 +104,7 @@ public class GooglePayFragment extends BaseFragment {
                 .setTotalPrice("1.00")
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build());
+        googlePayRequest.setTotalPriceLabel("Braintree Demo Payment");
         googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
         googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
         googlePayRequest.setBillingAddressRequired(
