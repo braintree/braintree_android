@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_1;
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -77,7 +76,6 @@ public class ThreeDSecureRequestUnitTest {
         expected.setMobilePhoneNumber("5151234321");
         expected.setEmail("tester@example.com");
         expected.setShippingMethod(ThreeDSecureShippingMethod.PRIORITY);
-        expected.setVersionRequested(VERSION_2);
         expected.setBillingAddress(billingAddress);
         expected.setAdditionalInformation(additionalInformation);
         expected.setChallengeRequested(true);
@@ -183,7 +181,6 @@ public class ThreeDSecureRequestUnitTest {
         billingAddress.setPhoneNumber("billing-phone-number");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
-        request.setVersionRequested(VERSION_2);
         request.setAmount("amount");
         request.setMobilePhoneNumber("mobile-phone-number");
         request.setEmail("email");
@@ -242,18 +239,8 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
+    public void build_containsDfReferenceId() throws JSONException {
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
-        threeDSecureRequest.setVersionRequested(VERSION_1);
-        JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
-
-        assertFalse(json.has("df_reference_id"));
-    }
-
-    @Test
-    public void build_withVersion2_containsDfReferenceId() throws JSONException {
-        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
-        threeDSecureRequest.setVersionRequested(VERSION_2);
         JSONObject json = new JSONObject(threeDSecureRequest.build("df-reference-id"));
 
         assertEquals("df-reference-id", json.getString("df_reference_id"));

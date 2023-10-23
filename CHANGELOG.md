@@ -29,6 +29,13 @@
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
     * Change `GooglePayClient#requestPayment` parameters
     * Add `GooglePayClient#tokenize` 
+  * ThreeDSecure
+    * Remove `ThreeDSecureListener`
+    * Add `ThreeDSecureLauncher`, `CardinalResult`, and `CardinalResultCallback`
+    * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
+    * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+    * Add `ThreeDSecureClient#onCardinalResult`
+    * Remove `versionRequested` from `ThreeDSecureRequest`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher` and `PayPalResponse`
