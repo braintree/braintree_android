@@ -98,16 +98,15 @@ public class Settings {
     public static String getTokenizationKey(Context context) {
         String environment = getEnvironment(context);
 
-        return LOCAL_PAYMENTS_TOKENIZATION_KEY;
-//        if (SANDBOX_ENV_NAME.equals(environment)) {
-//            return SANDBOX_TOKENIZATION_KEY;
-//        } else if (MOCKED_PAY_PAL_ENV_NAME.equals(environment)) {
-//            return MOCKED_PAY_PAL_SANDBOX_TOKENIZATION_KEY;
-//        } else if (PRODUCTION_ENV_NAME.equals(environment)) {
-//            return PRODUCTION_TOKENIZATION_KEY;
-//        } else {
-//            return null;
-//        }
+        if (SANDBOX_ENV_NAME.equals(environment)) {
+            return SANDBOX_TOKENIZATION_KEY;
+        } else if (MOCKED_PAY_PAL_ENV_NAME.equals(environment)) {
+            return MOCKED_PAY_PAL_SANDBOX_TOKENIZATION_KEY;
+        } else if (PRODUCTION_ENV_NAME.equals(environment)) {
+            return PRODUCTION_TOKENIZATION_KEY;
+        } else {
+            return null;
+        }
     }
 
     public static String getLocalPaymentsTokenizationKey(Context context) {

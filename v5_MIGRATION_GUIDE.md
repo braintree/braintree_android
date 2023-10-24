@@ -1,6 +1,7 @@
 # Braintree Android v5 Migration Guide
 
-See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the basics for updating your Braintree integration from v4 to v5.
+See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migration guide outlines the
+basics for updating your Braintree integration from v4 to v5.
 
 ## Table of Contents
 
@@ -18,25 +19,27 @@ The minimum supported Android API level for v5 of this SDK has increased to 23.
 
 ## Data Collector
 
-The `paypal-data-collector` module has been removed and replaced by the `data-collector` module. 
-The `DataCollector` class within the `data-collector` module has the same 
+The `paypal-data-collector` module has been removed and replaced by the `data-collector` module.
+The `DataCollector` class within the `data-collector` module has the same
 `collectDeviceData` methods, so if you were previously using the `paypal-data-collector` library,
 no code changes are required aside from updating your dependency.
 
-If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context, 
-merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId, 
+If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context,
+merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId,
 callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(braintreeClient)
-dataCollector.collectDeviceData(context) { deviceData, error -> 
+dataCollector.collectDeviceData(context) { deviceData, error ->
     // send deviceData to your server
 }
 ```
 
 ## Union Pay
 
-The `union-pay` module, and all containing classes, was removed in v5. UnionPay cards can now be processed as regular cards, through the `card` module. You no longer need to manage card enrollment via SMS authorization.
+The `union-pay` module, and all containing classes, was removed in v5. UnionPay cards can now be
+processed as regular cards, through the `card` module. You no longer need to manage card enrollment
+via SMS authorization.
 
 Now, you can tokenize with just the card details:
 
@@ -44,14 +47,14 @@ Now, you can tokenize with just the card details:
 
 ## Venmo
 
-The Venmo integration has been updated to allow for more flexibility with app switching and 
-activity result handling. 
+The Venmo integration has been updated to allow for more flexibility with app switching and
+activity result handling.
 
-`VenmoLauncher` has been added to handle the app switching portion of the Venmo flow for user 
-authentication via the Venmo app. This class uses the Android Activity Result API and therefore 
+`VenmoLauncher` has been added to handle the app switching portion of the Venmo flow for user
+authentication via the Venmo app. This class uses the Android Activity Result API and therefore
 must be instantiated in the `OnCreate` method of your Activity or Fragment.
 
-`BraintreeClient` and `VenmoClient` no longer require references to Fragment or Activity and do not 
+`BraintreeClient` and `VenmoClient` no longer require references to Fragment or Activity and do not
 need to be instantiated in `OnCreate`.
 
 ```diff
@@ -102,11 +105,11 @@ class MyActivity : FragmentActivity() {
 The Google Pay integration has been updated to allow for more flexibility with app switching and
 activity result handling.
 
-`GooglePayLauncher` has been added to handle the app switching portion of the Google Pay flow for 
-payment authorization via the Google Pay payment sheet. This class uses the Android Activity Result 
+`GooglePayLauncher` has been added to handle the app switching portion of the Google Pay flow for
+payment authorization via the Google Pay payment sheet. This class uses the Android Activity Result
 API and therefore must be instantiated in the `OnCreate` method of your Activity or Fragment.
 
-`BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and 
+`BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
 ```diff
@@ -158,10 +161,10 @@ The ThreeDSecure integration has been updated to allow for more flexibility with
 activity result handling.
 
 `ThreeDSecureLauncher` has been added to handle the app switching portion of the 3DS flow for user
-authentication. This class uses the Android Activity Result API and therefore must be instantiated 
+authentication. This class uses the Android Activity Result API and therefore must be instantiated
 in the `OnCreate` method of your Activity or `onCreateView` method of your Fragment.
 
-`BraintreeClient` and `ThreeDSecureClient` no longer require references to Fragment or Activity and 
+`BraintreeClient` and `ThreeDSecureClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
 ```diff
@@ -215,13 +218,13 @@ class MyActivity : FragmentActivity() {
 
 ## Local Payment
 
-The Local Payment integration has been updated to allow for more flexibility with browser 
+The Local Payment integration has been updated to allow for more flexibility with browser
 switching and result handling.
 
-`LocalPaymentLauncher` has been added to handle the browser switching portion of the local payment 
-flow for payment authorization via bank login. This class is used to handle browser switch
-results upon returning to your app from the web flow, therefore must be instantiated in or
-before the `OnResume` method of your Activity or Fragment.
+`LocalPaymentLauncher` has been added to handle the browser switching portion of the local payment
+flow for payment authorization via bank login. This class is used to handle browser switch results
+upon returning to your app from the web flow, therefore must be instantiated in or before
+the `OnResume` method of your Activity or Fragment.
 
 `BraintreeClient` and `LocalPaymentClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
@@ -246,7 +249,6 @@ class MyActivity : FragmentActivity() {
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     @override fun onNewIntent(intent: Intent) {
-        setIntent(intent)
 +       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
 
