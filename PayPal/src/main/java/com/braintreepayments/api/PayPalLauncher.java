@@ -65,8 +65,7 @@ public class PayPalLauncher {
      * This method will deliver a {@link PayPalBrowserSwitchResult} to the
      * {@link PayPalLauncherCallback} used to instantiate this class. The
      * {@link PayPalBrowserSwitchResult} should be passed to
-     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
-     * PayPalFlowStartedCallback)}
+     * {@link PayPalClient#onBrowserSwitchResult(PayPalBrowserSwitchResult, PayPalBrowserSwitchResultCallback)} 
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
