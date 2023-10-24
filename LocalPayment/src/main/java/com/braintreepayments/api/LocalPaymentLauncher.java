@@ -9,16 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
+/**
+ * Responsible for launching local payment user authentication in a web browser
+ */
 public class LocalPaymentLauncher {
 
     private final BrowserSwitchClient browserSwitchClient;
     private final LocalPaymentLauncherCallback callback;
 
     /**
-     * Used to launch the PayPal flow in a web browser and deliver results to your Activity
+     * Used to launch the local payment flow in a web browser and deliver results to your Activity
      *
      * @param callback a {@link LocalPaymentLauncherCallback} to handle the result of
-     * {@link LocalPaymentLauncher#launch(FragmentActivity, PayPalResponse)}
+     *                 {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}
      */
     public LocalPaymentLauncher(@NonNull LocalPaymentLauncherCallback callback) {
         this(new BrowserSwitchClient(), callback);
@@ -26,22 +29,24 @@ public class LocalPaymentLauncher {
 
     @VisibleForTesting
     LocalPaymentLauncher(@NonNull BrowserSwitchClient browserSwitchClient,
-                   LocalPaymentLauncherCallback callback) {
+                         LocalPaymentLauncherCallback callback) {
         this.browserSwitchClient = browserSwitchClient;
         this.callback = callback;
     }
 
     /**
-     * Launches the Local Payment flow by switching to a web browser for user authentication and
+     * Launches the local payment flow by switching to a web browser for user authentication and
      * delivers results to the {@link LocalPaymentLauncherCallback} passed into
      * {@link LocalPaymentLauncher#LocalPaymentLauncher(LocalPaymentLauncherCallback)}
      *
-     * @param activity       an Android {@link FragmentActivity}
-     * @param localPaymentResult the result of the Local Payment web authentication flow received
-     *                         from invoking
-     *                           {@link LocalPaymentClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)}
+     * @param activity           an Android {@link FragmentActivity}
+     * @param localPaymentResult the result of the local payment web authentication flow received
+     *                           from invoking
+     *                           {@link LocalPaymentClient#startPayment(LocalPaymentRequest,
+     *                           LocalPaymentStartCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull LocalPaymentResult localPaymentResult) {
+    public void launch(@NonNull FragmentActivity activity,
+                       @NonNull LocalPaymentResult localPaymentResult) {
         try {
             browserSwitchClient.start(activity, localPaymentResult.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
@@ -50,24 +55,23 @@ public class LocalPaymentLauncher {
     }
 
     /**
-     * Captures and delivers the result of a the browser-based PayPal authentication flow.
+     * Captures and delivers the result of a the browser-based local payment authentication flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
+     * used to invoke {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}.
      * <p>
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity, after invoking setIntent(intent).
      * <p>
-     * This method will deliver a {@link PayPalBrowserSwitchResult} to the
-     * {@link PayPalLauncherCallback} used to instantiate this class. The
-     * {@link PayPalBrowserSwitchResult} should be passed to
-     * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest,
-     * PayPalFlowStartedCallback)}
+     * This method will deliver a {@link LocalPaymentBrowserSwitchResult} to the
+     * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
+     * {@link LocalPaymentBrowserSwitchResult} should be passed to
+     * {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
-     *                the PayPal browser flow
+     *                the local payment browser flow
      */
     public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, LOCAL_PAYMENT,

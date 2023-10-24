@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -42,7 +43,9 @@ public class LocalPaymentClient {
     }
 
     /**
-     * Prepares the payment flow for a specific type of local payment.
+     * Starts the payment flow for a {@link LocalPaymentRequest} and calls back a
+     * {@link LocalPaymentResult} on success that should be used to launch the user
+     * authentication flow.
      *
      * @param request  {@link LocalPaymentRequest} with the payment details.
      * @param callback {@link LocalPaymentStartCallback}
@@ -123,11 +126,14 @@ public class LocalPaymentClient {
     }
 
     /**
-     * Use this method with the manual browser switch integration pattern.
+     * After receiving a result from the PayPal web authentication flow via
+     * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link LocalPaymentBrowserSwitchResult} returned to this method to tokenize the local
+     * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentBrowserSwitchResult a {@link BrowserSwitchResult} with a
-     *                                        {@link BrowserSwitchStatus}
+     * @param localPaymentBrowserSwitchResult a {@link LocalPaymentBrowserSwitchResult} received
+     *                                        in the callback of {@link LocalPaymentLauncher}
      * @param callback                        {@link LocalPaymentBrowserSwitchResultCallback}
      */
     public void onBrowserSwitchResult(@NonNull final Context context,
