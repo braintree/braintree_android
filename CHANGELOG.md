@@ -36,6 +36,13 @@
     * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
     * Add `ThreeDSecureClient#onCardinalResult`
     * Remove `versionRequested` from `ThreeDSecureRequest`
+  * LocalPayment
+    * Remove `LocalPaymentListener`
+    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 
+      `LocalPaymentBrowserSwitchResult`
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult` and
+      `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
+      `LocalPaymentClient`
 
 ## unreleased 
 
