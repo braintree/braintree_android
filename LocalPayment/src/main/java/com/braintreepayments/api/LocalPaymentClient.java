@@ -187,7 +187,7 @@ public class LocalPaymentClient {
                     if (configuration != null) {
                         localPaymentApi.tokenize(merchantAccountId, responseString,
                                 dataCollector.getClientMetadataId(context, configuration),
-                                (localPaymentNonce, error1) -> {
+                                (localPaymentNonce, localPaymentError) -> {
                                     if (localPaymentNonce != null) {
                                         sendAnalyticsEvent(paymentType,
                                                 "local-payment.tokenize.succeeded");
