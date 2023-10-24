@@ -44,7 +44,6 @@
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
       `PayPalClient`
     * Change `PayPalClient#tokenizePayPalAccount` parameters
-    * Add `PayPalClient#handleReturnToAppFromBrowser`
 
 ## unreleased 
 
