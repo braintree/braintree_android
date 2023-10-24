@@ -1,5 +1,11 @@
 package com.braintreepayments.api;
 
+/**
+ * Result received from the PayPal web flow through {@link PayPalBrowserSwitchResultCallback}.
+ * This result should be passed to
+ * {@link PayPalClient#onBrowserSwitchResult(PayPalBrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
+ * to complete the PayPal payment flow.
+ */
 public class PayPalBrowserSwitchResult {
 
     private BrowserSwitchResult browserSwitchResult;
