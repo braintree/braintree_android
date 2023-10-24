@@ -67,7 +67,7 @@ public class LocalPaymentLauncher {
      * This method will deliver a {@link LocalPaymentBrowserSwitchResult} to the
      * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
      * {@link LocalPaymentBrowserSwitchResult} should be passed to
-     * {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}
+     * {@link LocalPaymentClient#onBrowserSwitchResult(Context, LocalPaymentBrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)} 
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
