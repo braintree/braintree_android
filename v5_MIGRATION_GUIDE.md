@@ -10,6 +10,7 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 1. [Venmo](#venmo)
 1. [Google Pay](#google-pay)
 1. [3DS](#3ds)
+1. [Local Payment](#local-payment)
 
 ## Android API
 
@@ -211,4 +212,74 @@ class MyActivity : FragmentActivity() {
 -   }
 }
 ```
+
+## Local Payment
+
+The Local Payment integration has been updated to allow for more flexibility with browser 
+switching and result handling.
+
+`LocalPaymentLauncher` has been added to handle the browser switching portion of the local payment 
+flow for payment authorization via bank login. This class is used to handle browser switch
+results upon returning to your app from the web flow, therefore must be instantiated in or
+before the `OnResume` method of your Activity or Fragment.
+
+`BraintreeClient` and `LocalPaymentClient` no longer require references to Fragment or Activity and
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+
++   private lateinit var localPaymentLauncher: localPaymentLauncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var localPaymentClient: LocalPaymentClient
+
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       localPaymentLauncher = LocalPaymentLauncher() { localPaymentBrowserSwitchResult ->
++           localPaymentClient.onBrowserSwitchResult(localPaymentBrowserSwitchResult) { 
++               localPaymentNonce, error ->
++                   // handle local payment nonce or error
++           }
++       }
+    }
+
+    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    @override fun onNewIntent(intent: Intent) {
+        setIntent(intent)
++       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
+    }
+
+    // ALL OTHER ACTIVITY LAUNCH MODES 
+    @override fun onResume() {
++       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
++           intent)
+    }
+
+
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       localPaymentClient = LocalPaymentClient(this, braintreeClient)
++       localPaymentClient = LocalPaymentClient(braintreeClient)
+-       localPaymentClient.setListener(this)
+    }
+
+    fun onPaymentButtonClick() {
+-       localPaymentClient.startPayment(activity, request)
++       localPaymentClient.startPayment(this, request) { localPaymentResult, error ->
++            error?.let { /* handle error */ }
++            localPaymentResult?.let { 
++                localPaymentLauncher.launch(requireActivity(), it) 
++           }
++       }
+    }
+
+-   override fun onLocalPaymentSuccess(localPaymentNonce: LocalPaymentNonce) {
+-        // handle local payment nonce
+-   }
+
+-   override fun onLocalPaymentFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
 
