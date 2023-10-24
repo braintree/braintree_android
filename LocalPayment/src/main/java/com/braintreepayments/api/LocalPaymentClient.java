@@ -191,11 +191,11 @@ public class LocalPaymentClient {
                                     if (localPaymentNonce != null) {
                                         sendAnalyticsEvent(paymentType,
                                                 "local-payment.tokenize.succeeded");
-                                    } else if (error1 != null) {
+                                    } else if (localPaymentError != null) {
                                         sendAnalyticsEvent(paymentType,
                                                 "local-payment.tokenize.failed");
                                     }
-                                    callback.onResult(localPaymentNonce, error1);
+                                    callback.onResult(localPaymentNonce, localPaymentError);
                                 });
                     } else if (error != null) {
                         callback.onResult(null, error);
