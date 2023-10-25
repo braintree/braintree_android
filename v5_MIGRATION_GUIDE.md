@@ -10,6 +10,7 @@ See the [CHANGELOG](/CHANGELOG.md) for a complete list of changes. This migratio
 1. [Venmo](#venmo)
 1. [Google Pay](#google-pay)
 1. [3DS](#3ds)
+1. [PayPal](#paypal)
 
 ## Android API
 
@@ -48,7 +49,7 @@ activity result handling.
 
 `VenmoLauncher` has been added to handle the app switching portion of the Venmo flow for user 
 authentication via the Venmo app. This class uses the Android Activity Result API and therefore 
-must be instantiated in the `OnCreate` method of your Activity or Fragment.
+must be instantiated in the `OnCreate` method of your Activity or `OnCreateView` of your Fragment.
 
 `BraintreeClient` and `VenmoClient` no longer require references to Fragment or Activity and do not 
 need to be instantiated in `OnCreate`.
@@ -103,7 +104,8 @@ activity result handling.
 
 `GooglePayLauncher` has been added to handle the app switching portion of the Google Pay flow for 
 payment authorization via the Google Pay payment sheet. This class uses the Android Activity Result 
-API and therefore must be instantiated in the `OnCreate` method of your Activity or Fragment.
+API and therefore must be instantiated in the `OnCreate` method of your Activity or `OnCreateView` 
+of your Fragment.
 
 `BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and 
 do not need to be instantiated in `OnCreate`.
@@ -210,5 +212,71 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
-```
 
+## PayPal
+
+The PayPal integration has been updated to allow for more flexibility with browser switching and
+result handling.
+
+`PayPalLauncher` has been added to handle the browser switching portion of the PayPal flow for
+payment authorization via PayPal login. This class is used to handle browser switch 
+results upon returning to your app from the web flow, therefore must be instantiated in or 
+before the `OnResume` method of your Activity or Fragment.
+
+`BraintreeClient` and `PayPalClient` no longer require references to Fragment or Activity and
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+    
++   private lateinit var payPalLauncher: payPalLauncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var payPalClient: PayPalClient
+    
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       payPalLauncher = PayPalLauncher() { payPalBrowserSwitchResult ->
++           payPalClient.onBrowserSwitchResult(payPalBrowserSwitchResult) { payPalAccountNonce, error ->
++               // handle paypal account nonce or error
++           }
++       }
+    }
+    
+    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    @override fun onNewIntent(intent: Intent) {
+        setIntent(intent)
++       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
+    }
+    
+    // ALL OTHER ACTIVITY LAUNCH MODES 
+    @override fun onResume() {
++       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().intent)
+    }
+    
+    
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       payPalClient = PayPalClient(this, braintreeClient)
++       payPalClient = PayPalClient(braintreeClient)
+-       payPalClient.setListener(this)
+    }
+    
+    fun onPayPalButtonClick() {
+-       payPalClient.tokenizePayPalAccount(activity, request)
++       payPalClient.tokenizePayPalAccount(this, request) { payPalResponse, error ->
++            error?.let { /* handle error */ }
++            payPalResponse?.let { 
++                payPalLauncher.launch(requireActivity(), it) 
++           }
++       }
+    }
+    
+-   override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
+-        // handle paypal account nonce
+-   }
+      
+-   override fun onPayPalFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
