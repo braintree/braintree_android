@@ -36,6 +36,14 @@
     * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
     * Add `ThreeDSecureClient#onCardinalResult`
     * Remove `versionRequested` from `ThreeDSecureRequest`
+  * PayPal
+    * Remove `PayPalListener`
+    * Add `PayPalLauncher` and `PayPalResponse`
+    * Add parameter to `PayPalFlowStartedCallback`
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
+      `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
+      `PayPalClient`
+    * Change `PayPalClient#tokenizePayPalAccount` parameters
   * LocalPayment
     * Remove `LocalPaymentListener`
     * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 
