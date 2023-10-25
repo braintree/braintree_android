@@ -68,7 +68,36 @@ threeDSecureLauncher = ThreeDSecureLauncher() { authenticationResult ->
   threeDSecureClient.continuePerformVerification(authenticationResult) 
 }
 threeDSecureClient.performVerification(context, request) { threeDSecureResult, error ->
-  payPalLauncher.launch(threeDSecureResult) 
+  threeDSecureLauncher.launch(threeDSecureResult) 
+}
+```
+
+</td>
+
+</tr>
+
+<tr>
+<th>v4 Venmo</th>
+<th>v5 Venmo</th>
+</tr>
+<tr>
+
+<td>
+
+```kotlin 
+venmoClientClient.tokenizeVenmoAccount(activity, request)
+```
+
+</td>
+
+<td>
+
+```kotlin
+venmoLauncher = VenmoLauncher(activity) { authChallengeResult ->
+  venmoClient.tokenizeVenmoAccount(authChallengeResult) 
+}
+venmoClient.requestAuthChallenge(context, request) { authChallenge, error ->
+  venmoLauncher.launch(authChallenge) 
 }
 ```
 
