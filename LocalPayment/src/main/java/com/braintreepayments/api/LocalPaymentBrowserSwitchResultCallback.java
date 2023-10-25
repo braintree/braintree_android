@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link LocalPaymentClient#onBrowserSwitchResult(Context, BrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)}.
+ * {@link LocalPaymentClient#onBrowserSwitchResult(Context, LocalPaymentBrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)}.
  */
 public interface LocalPaymentBrowserSwitchResultCallback {
 

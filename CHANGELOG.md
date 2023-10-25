@@ -44,6 +44,13 @@
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
       `PayPalClient`
     * Change `PayPalClient#tokenizePayPalAccount` parameters
+  * LocalPayment
+    * Remove `LocalPaymentListener`
+    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 
+      `LocalPaymentBrowserSwitchResult`
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
+      `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
+      `LocalPaymentClient`
 
 ## unreleased 
 

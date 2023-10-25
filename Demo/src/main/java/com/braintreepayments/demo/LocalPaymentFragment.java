@@ -1,7 +1,5 @@
 package com.braintreepayments.demo;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,54 +11,40 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.LocalPaymentClient;
-import com.braintreepayments.api.LocalPaymentListener;
+import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.PostalAddress;
 
-public class LocalPaymentFragment extends BaseFragment implements LocalPaymentListener {
+public class LocalPaymentFragment extends BaseFragment {
 
     private LocalPaymentClient localPaymentClient;
+    private LocalPaymentLauncher localPaymentLauncher;
 
-    private boolean useManualBrowserSwitch;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_local_payment, container, false);
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
-        if (useManualBrowserSwitch) {
-            localPaymentClient = new LocalPaymentClient(braintreeClient);
-        } else {
-            localPaymentClient = new LocalPaymentClient(this, braintreeClient);
-            localPaymentClient.setListener(this);
-        }
+        localPaymentClient = new LocalPaymentClient(braintreeClient);
+        localPaymentLauncher = new LocalPaymentLauncher(
+                localPaymentResult -> localPaymentClient.onBrowserSwitchResult(requireContext(),
+                        localPaymentResult,
+                        this::handleLocalPaymentResult));
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (useManualBrowserSwitch) {
-            Activity activity = requireActivity();
-            BrowserSwitchResult browserSwitchResult =
-                    localPaymentClient.parseBrowserSwitchResult(activity, activity.getIntent());
-            if (browserSwitchResult != null) {
-                handleManualBrowserSwitchResult(browserSwitchResult);
-            }
-        }
-    }
-
-    private void handleManualBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
-        Context context = requireContext();
-        localPaymentClient.onBrowserSwitchResult(context, browserSwitchResult, this::handleLocalPaymentResult);
-        localPaymentClient.clearActiveBrowserSwitchRequests(context);
+        localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(),
+                requireActivity().getIntent());
     }
 
     public void launchIdeal(View v) {
@@ -87,12 +71,10 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
 
-        localPaymentClient.startPayment(request, (transaction, error) -> {
-            if (transaction != null) {
-                localPaymentClient.approveLocalPayment(requireActivity(), transaction);
-            }
-
-            if (error != null) {
+        localPaymentClient.startPayment(request, (localPaymentResult, error) -> {
+            if (localPaymentResult != null) {
+                localPaymentLauncher.launch(requireActivity(), localPaymentResult);
+            } else {
                 handleError(error);
             }
         });
@@ -107,17 +89,8 @@ public class LocalPaymentFragment extends BaseFragment implements LocalPaymentLi
         }
 
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
-                LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(localPaymentNonce);
+                LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(
+                        localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
-    }
-
-    @Override
-    public void onLocalPaymentSuccess(@NonNull LocalPaymentNonce localPaymentNonce) {
-        handleLocalPaymentResult(localPaymentNonce, null);
-    }
-
-    @Override
-    public void onLocalPaymentFailure(@NonNull Exception error) {
-        handleLocalPaymentResult(null, error);
     }
 }
