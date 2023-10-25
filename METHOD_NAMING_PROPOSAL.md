@@ -244,15 +244,15 @@ payPalClient.tokenizePayPalAccount(activity, request)
 <td>
 
 ```kotlin
-payPalLauncher = PayPalLauncher() { payPalBrowserSwitchResult ->
+payPalLauncher = PayPalLauncher() { payPalPaymentAuthResult ->
   // Parse the result from the PayPal browser flow and return a nonce
-  payPalClient.onBrowserSwitchResult(payPalBrowserSwitchResult) 
+  payPalClient.tokenize(payPalPaymentAuthResult) 
 }
 
 // Retrieve data required to launch the PayPal flow in a browser
-payPalClient.tokenizePayPalAccount(context, request) { payPalResponse, error ->
+payPalClient.createPaymentAuthRequest(context, request) { payPalPaymentAuthRequest, error ->
   // Launch the PayPal in a browser
-  payPalLauncher.launch(activity, payPalResponse) 
+  payPalLauncher.launch(activity, payPalPaymentAuthRequest) 
 }
 ```
 
@@ -282,15 +282,15 @@ localPaymentClient.startPayment(activity, request) { localPaymentResult, error -
 <td>
 
 ```kotlin
-localPaymentLauncher = LocalPaymentLauncher() { localPaymentBrowserSwitchResult ->
+localPaymentLauncher = LocalPaymentLauncher() { localPaymentAuthResult ->
   // Parse the result from the local payment browser flow and return a nonce
-  localPaymentClient.approveLocalPayment(localPaymentBrowserSwitchResult) 
+  localPaymentClient.tokenize(localPaymentAuthResult) 
 }
 
 // Retrieve data required to launch the local payment flow in a browser
-localPaymentClient.startPayment(context, request) { localPaymentResult, error ->
+localPaymentClient.createPaymentAuthRequest(context, request) { localPaymentAuthRequest, error ->
   // Launch the local payment in a browser
-  localPaymentLauncher.launch(activity, localPaymentResult) 
+  localPaymentLauncher.launch(activity, localPaymentAuthRequest) 
 }
 ```
 
@@ -320,16 +320,16 @@ threeDSecureClient.performVerification(activity, request) { threeDSecureResult, 
 <td>
 
 ```kotlin
-threeDSecureLauncher = ThreeDSecureLauncher() { authenticationResult ->
+threeDSecureLauncher = ThreeDSecureLauncher() { threeDSecurePaymentAuthResult ->
   // Parse the result from the 3DS auth flow and return a nonce
-  threeDSecureClient.continuePerformVerification(authenticationResult) 
+  threeDSecureClient.tokenize(threeDSecurePaymentAuthResult) 
 }
 
 // Retrieve data required to launch the 3DS flow
 // Instantiate Cardinal SDK
-threeDSecureClient.performVerification(context, request) { threeDSecureResult, error ->
+threeDSecureClient.createPaymentAuthRequest(context, request) { threeDSecurePaymentAuthRequest, error ->
   // Launch 3DS flow in Cardinal SDK 
-  threeDSecureLauncher.launch(threeDSecureResult) 
+  threeDSecureLauncher.launch(threeDSecurePaymentAuthRequest) 
 }
 ```
 
@@ -357,16 +357,16 @@ venmoClient.tokenizeVenmoAccount(activity, request)
 <td>
 
 ```kotlin
-venmoLauncher = VenmoLauncher(activity) { authChallengeResult ->
+venmoLauncher = VenmoLauncher(activity) { venmoPaymentAuthResult ->
   // Create nonce from payment context app switch result and vault if required
-  venmoClient.tokenizeVenmoAccount(authChallengeResult) 
+  venmoClient.tokenize(venmoPaymentAuthResult) 
 }
 
 
   // Create Venmo payment context
-venmoClient.requestAuthChallenge(context, request) { authChallenge, error ->
+venmoClient.createPaymentAuthRequest(context, request) { venmoPaymentAuthRequest, error ->
   // Launch Venmo app
-  venmoLauncher.launch(authChallenge) 
+  venmoLauncher.launch(venmoPaymentAuthRequest) 
 }
 ```
 
@@ -394,15 +394,15 @@ googlePayClient.requestPayment(activity, request)
 <td>
 
 ```kotlin
-googlePayLauncher = GooglePayLauncher(activity) { googlePayResult ->
+googlePayLauncher = GooglePayLauncher(activity) { googlePayPaymentAuthResult ->
   // Parse Google Pay result and return a nonce
-  googlePayClient.tokenize(googlePayResult) 
+  googlePayClient.tokenize(googlePayPaymentAuthResult) 
 }
 
 // Create PaymentDataRequest for Google Pay SDK
-googlePayClient.requestPayment(context, request) { googlePayIntentData, error ->
+googlePayClient.createPaymentAuthRequest(context, request) { googlePayPaymentAuthRequest, error ->
   // Launch Google Pay payment sheet
-  googlePayLauncher.launch(googlePayIntentData) 
+  googlePayLauncher.launch(googlePayPaymentAuthRequest) 
 }
 ```
 
