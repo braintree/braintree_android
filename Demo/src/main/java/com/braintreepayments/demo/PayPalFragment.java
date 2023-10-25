@@ -16,13 +16,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.Failure;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.Success;
-import com.braintreepayments.api.Cancel;
+import com.braintreepayments.api.PaymentResult;
 import com.braintreepayments.api.UserCanceledException;
 
 public class PayPalFragment extends BaseFragment {
@@ -52,11 +50,11 @@ public class PayPalFragment extends BaseFragment {
         payPalLauncher = new PayPalLauncher(
                 payPalBrowserSwitchResult -> payPalClient.onBrowserSwitchResult(
                         payPalBrowserSwitchResult, (payPalResult) -> {
-                            if (payPalResult instanceof Success) {
-                                handlePayPalResult(((Success) payPalResult).getNonce());
-                            } else if (payPalResult instanceof Failure) {
-                                handleError(((Failure) payPalResult).getError());
-                            } else if (payPalResult instanceof Cancel) {
+                            if (payPalResult instanceof PaymentResult.Success) {
+                                handlePayPalResult(((PaymentResult.Success) payPalResult).getNonce());
+                            } else if (payPalResult instanceof PaymentResult.Failure) {
+                                handleError(((PaymentResult.Failure) payPalResult).getError());
+                            } else if (payPalResult instanceof PaymentResult.Cancel) {
                                 handleError(new UserCanceledException("user cancelled"));
                             }
                         }));

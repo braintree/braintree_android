@@ -13,5 +13,5 @@ public interface PayPalBrowserSwitchResultCallback {
      * @param payPalAccountNonce {@link PayPalAccountNonce}
      * @param error              an exception that occurred while processing a PayPal result
      */
-    void onResult(@NonNull PayPalResult result);
+    void onResult(@NonNull PaymentResult result);
 }

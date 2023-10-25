@@ -205,18 +205,18 @@ public class PayPalClient {
                                       @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (payPalBrowserSwitchResult == null) {
-            callback.onResult(new Failure(
+            callback.onResult(new PaymentResult.Failure(
                     new BraintreeException("PayPalBrowserSwitchResult cannot be null")));
             return;
         }
         BrowserSwitchResult browserSwitchResult =
                 payPalBrowserSwitchResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && payPalBrowserSwitchResult.getError() != null) {
-            callback.onResult(new Failure(payPalBrowserSwitchResult.getError()));
+            callback.onResult(new PaymentResult.Failure(payPalBrowserSwitchResult.getError()));
             return;
         }
         if (browserSwitchResult == null) {
-            callback.onResult(new Failure(new BraintreeException("An unexpected error occurred")));
+            callback.onResult(new PaymentResult.Failure(new BraintreeException("An unexpected error occurred")));
             return;
         }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
@@ -235,7 +235,7 @@ public class PayPalClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(new Cancel());
+                callback.onResult(new PaymentResult.Cancel());
                 braintreeClient.sendAnalyticsEvent(
                         String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
@@ -263,10 +263,13 @@ public class PayPalClient {
 
                         internalPayPalClient.tokenize(payPalAccount,
                                 (payPalResult) -> {
-                                    if (payPalResult instanceof Success &&
-                                            ((Success) payPalResult).getNonce().getCreditFinancing() != null) {
-                                        braintreeClient.sendAnalyticsEvent(
-                                                "paypal.credit.accepted");
+                                    if (payPalResult instanceof PaymentResult.Success) {
+                                        PaymentResult.Success successResult = (PaymentResult.Success) payPalResult;
+                                        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) successResult.getNonce();
+                                        if (payPalAccountNonce.getCreditFinancing() != null) {
+                                            braintreeClient.sendAnalyticsEvent(
+                                                    "paypal.credit.accepted");
+                                        }
                                     }
                                     callback.onResult(payPalResult);
                                 });
@@ -274,14 +277,14 @@ public class PayPalClient {
                         braintreeClient.sendAnalyticsEvent(
                                 String.format("%s.browser-switch.succeeded", analyticsPrefix));
                     } else {
-                        callback.onResult(new Failure(new BraintreeException("Unknown error")));
+                        callback.onResult(new PaymentResult.Failure(new BraintreeException("Unknown error")));
                     }
                 } catch (UserCanceledException e) {
-                    callback.onResult(new Cancel());
+                    callback.onResult(new PaymentResult.Cancel());
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.canceled", analyticsPrefix));
                 } catch (JSONException | PayPalBrowserSwitchException e) {
-                    callback.onResult(new Failure(e));
+                    callback.onResult(new PaymentResult.Failure(e));
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
