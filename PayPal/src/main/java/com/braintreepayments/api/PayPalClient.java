@@ -205,18 +205,18 @@ public class PayPalClient {
                                       @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (payPalBrowserSwitchResult == null) {
-            callback.onResult(null,
-                    new BraintreeException("PayPalBrowserSwitchResult cannot be null"));
+            callback.onResult(new Failure(
+                    new BraintreeException("PayPalBrowserSwitchResult cannot be null")));
             return;
         }
         BrowserSwitchResult browserSwitchResult =
                 payPalBrowserSwitchResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && payPalBrowserSwitchResult.getError() != null) {
-            callback.onResult(null, payPalBrowserSwitchResult.getError());
+            callback.onResult(new Failure(payPalBrowserSwitchResult.getError()));
             return;
         }
         if (browserSwitchResult == null) {
-            callback.onResult(null, new BraintreeException("An unexpected error occurred"));
+            callback.onResult(new Failure(new BraintreeException("An unexpected error occurred")));
             return;
         }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
@@ -235,7 +235,7 @@ public class PayPalClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onResult(null, new UserCanceledException("User canceled PayPal."));
+                callback.onResult(new Cancel());
                 braintreeClient.sendAnalyticsEvent(
                         String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
@@ -262,26 +262,26 @@ public class PayPalClient {
                         }
 
                         internalPayPalClient.tokenize(payPalAccount,
-                                (payPalAccountNonce, error) -> {
-                                    if (payPalAccountNonce != null &&
-                                            payPalAccountNonce.getCreditFinancing() != null) {
+                                (payPalResult) -> {
+                                    if (payPalResult instanceof Success &&
+                                            ((Success) payPalResult).getNonce().getCreditFinancing() != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "paypal.credit.accepted");
                                     }
-                                    callback.onResult(payPalAccountNonce, error);
+                                    callback.onResult(payPalResult);
                                 });
 
                         braintreeClient.sendAnalyticsEvent(
                                 String.format("%s.browser-switch.succeeded", analyticsPrefix));
                     } else {
-                        callback.onResult(null, new BraintreeException("Unknown error"));
+                        callback.onResult(new Failure(new BraintreeException("Unknown error")));
                     }
                 } catch (UserCanceledException e) {
-                    callback.onResult(null, e);
+                    callback.onResult(new Cancel());
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.canceled", analyticsPrefix));
                 } catch (JSONException | PayPalBrowserSwitchException e) {
-                    callback.onResult(null, e);
+                    callback.onResult(new Failure(e));
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.failed", analyticsPrefix));
                 }

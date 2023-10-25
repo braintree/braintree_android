@@ -120,13 +120,13 @@ class PayPalInternalClient {
                 try {
                     PayPalAccountNonce payPalAccountNonce =
                             PayPalAccountNonce.fromJSON(tokenizationResponse);
-                    callback.onResult(payPalAccountNonce, null);
+                    callback.onResult(new Success(payPalAccountNonce));
 
                 } catch (JSONException e) {
-                    callback.onResult(null, e);
+                    callback.onResult(new Failure(e));
                 }
             } else {
-                callback.onResult(null, exception);
+                callback.onResult(new Failure(exception));
             }
         });
     }
