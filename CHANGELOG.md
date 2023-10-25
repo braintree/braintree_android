@@ -40,7 +40,7 @@
     * Remove `PayPalListener`
     * Add `PayPalLauncher` and `PayPalResponse`
     * Add parameter to `PayPalFlowStartedCallback`
-    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult` 
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
       `PayPalClient`
     * Change `PayPalClient#tokenizePayPalAccount` parameters
