@@ -40,7 +40,7 @@
     * Remove `LocalPaymentListener`
     * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 
       `LocalPaymentBrowserSwitchResult`
-    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult` and
+    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
 
