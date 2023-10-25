@@ -13,7 +13,13 @@ patterns across payment methods.
 This document provides alternative naming options in comparison to the v4 integration to 
 determine the best pattern for v5. 
 
+In v4, most payment flows require one method call (ex: `tokenize`), and the browser/app switch is handled under the hood by the SDK, before returning a `PaymentMethodNonce` to the merchant's listener. Some payment methods require two method calls (ex: 3DS `performVerification` -> `continuePerformVerification`).
+
+In v5, all app/broswer switching payment methods require starting the payment flow by invoking a method on the `Client` to retrieve data to be passed to the `Launcher`. With that data, the `Launcher` presents the payment sheet, launches the browser, or launches the exteral app for some user interaction/authentication/payment authorization. The `Launcher` will be instantiated with a callback that will be invoked upon return to the merchant app from the browser/external app/payment sheet. Within the callback, another method on the `Client` will be invoked to handle data from the app/browser switch result and return a `PaymentMethodNonce`. 
+
 ### Minimal Change
+
+With this implementation, the method names from v4 are maintained where possible. The comments above each method show what the method actually does, as the naming doesn't entirely align with this approach.
 
 <table>
 <tr>
@@ -25,6 +31,9 @@ determine the best pattern for v5.
 <td>
 
 ```kotlin 
+// Retrieve data required to launch browser
+// Launch browser flow, parse browser result
+// Return nonce to listener
 payPalClient.tokenizePayPalAccount(activity, request)
 ```
 
@@ -34,9 +43,13 @@ payPalClient.tokenizePayPalAccount(activity, request)
 
 ```kotlin
 payPalLauncher = PayPalLauncher() { payPalBrowserSwitchResult ->
+  // Parse the result from the PayPal browser flow and return a nonce
   payPalClient.onBrowserSwitchResult(payPalBrowserSwitchResult) 
 }
+
+// Retrieve data required to launch the PayPal flow in a browser
 payPalClient.tokenizePayPalAccount(context, request) { payPalResponse, error ->
+  // Launch the PayPal in a browser
   payPalLauncher.launch(activity, payPalResponse) 
 }
 ```
@@ -46,6 +59,43 @@ payPalClient.tokenizePayPalAccount(context, request) { payPalResponse, error ->
 </tr>
 
 <tr>
+<th>v4 Local Payment</th>
+<th>v5 Local Payment</th>
+</tr>
+<tr>
+
+<td>
+
+```kotlin 
+// Retrieve data required to start local payment authorization
+// Or return result if no additional auth required
+localPaymentClient.startPayment(activity, request) { localPaymentResult, error ->
+  // Initiate browser flow and return nonce to listener
+  localPaymentClient.approveLocalPayment(activity, localPaymentResult)
+}
+```
+
+</td>
+
+<td>
+
+```kotlin
+localPaymentLauncher = LocalPaymentLauncher() { localPaymentBrowserSwitchResult ->
+  // Parse the result from the local payment browser flow and return a nonce
+  localPaymentClient.approveLocalPayment(localPaymentBrowserSwitchResult) 
+}
+
+// Retrieve data required to launch the local payment flow in a browser
+localPaymentClient.startPayment(context, request) { localPaymentResult, error ->
+  // Launch the local payment in a browser
+  localPaymentLauncher.launch(activity, localPaymentResult) 
+}
+```
+
+</td>
+
+</tr>
+<tr>
 <th>v4 3DS</th>
 <th>v5 3DS</th>
 </tr>
@@ -54,7 +104,11 @@ payPalClient.tokenizePayPalAccount(context, request) { payPalResponse, error ->
 <td>
 
 ```kotlin 
+// Retrieve data required to start 3DS authentication
+// Or return result if no additional auth required
 threeDSecureClient.performVerification(activity, request) { threeDSecureResult, error ->
+  // Launch 3DS flow in Cardinal SDK 
+  // Return nonce to listener
   threeDSecureClient.continuePerformVerification(activity, request, threeDSecureResult)
 }
 ```
@@ -65,9 +119,14 @@ threeDSecureClient.performVerification(activity, request) { threeDSecureResult, 
 
 ```kotlin
 threeDSecureLauncher = ThreeDSecureLauncher() { authenticationResult ->
+  // Parse the result from the 3DS auth flow and return a nonce
   threeDSecureClient.continuePerformVerification(authenticationResult) 
 }
+
+// Retrieve data required to launch the 3DS flow
+// Instantiate Cardinal SDK
 threeDSecureClient.performVerification(context, request) { threeDSecureResult, error ->
+  // Launch 3DS flow in Cardinal SDK 
   threeDSecureLauncher.launch(threeDSecureResult) 
 }
 ```
@@ -85,7 +144,10 @@ threeDSecureClient.performVerification(context, request) { threeDSecureResult, e
 <td>
 
 ```kotlin 
-venmoClientClient.tokenizeVenmoAccount(activity, request)
+// Create Venmo payment context
+// Launch Venmo app and create nonce from payment context app switch result
+// Return nonce to listener
+venmoClient.tokenizeVenmoAccount(activity, request)
 ```
 
 </td>
@@ -94,10 +156,51 @@ venmoClientClient.tokenizeVenmoAccount(activity, request)
 
 ```kotlin
 venmoLauncher = VenmoLauncher(activity) { authChallengeResult ->
+  // Create nonce from payment context app switch result and vault if required
   venmoClient.tokenizeVenmoAccount(authChallengeResult) 
 }
+
+
+  // Create Venmo payment context
 venmoClient.requestAuthChallenge(context, request) { authChallenge, error ->
+  // Launch Venmo app
   venmoLauncher.launch(authChallenge) 
+}
+```
+
+</td>
+
+</tr>
+
+<tr>
+<th>v4 Google Pay</th>
+<th>v5 Google Pay</th>
+</tr>
+<tr>
+
+<td>
+
+```kotlin 
+// Create PaymentDataRequest for Google Pay SDK
+// Launch Google Pay payment sheet
+// Parse Google Pay result an return a nonce
+googlePayClient.requestPayment(activity, request)
+```
+
+</td>
+
+<td>
+
+```kotlin
+googlePayLauncher = GooglePayLauncher(activity) { googlePayResult ->
+  // Parse Google Pay result and return a nonce
+  googlePayClient.tokenize(googlePayResult) 
+}
+
+// Create PaymentDataRequest for Google Pay SDK
+googlePayClient.requestPayment(context, request) { googlePayIntentData, error ->
+  // Launch Google Pay payment sheet
+  googlePayLauncher.launch(googlePayIntentData) 
 }
 ```
 
