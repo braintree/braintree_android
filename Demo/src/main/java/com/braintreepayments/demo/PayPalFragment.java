@@ -19,6 +19,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PaymentAuthRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PaymentResult;
 import com.braintreepayments.api.UserCanceledException;
@@ -106,11 +107,12 @@ public class PayPalFragment extends BaseFragment {
             payPalRequest = createPayPalCheckoutRequest(activity, amount);
         }
         payPalClient.tokenizePayPalAccount(activity, payPalRequest,
-                (payPalResponse, error) -> {
-                    if (error != null) {
-                        handleError(error);
-                    } else {
-                        payPalLauncher.launch(requireActivity(), payPalResponse);
+                (paymentAuthRequest) -> {
+                    if (paymentAuthRequest instanceof PaymentAuthRequest.Ready) {
+                        payPalLauncher.launch(requireActivity(), ((PaymentAuthRequest.Ready) paymentAuthRequest).getLaunchRequest());
+                    }
+                    if (paymentAuthRequest instanceof PaymentAuthRequest.Failure) {
+                        handleError(((PaymentAuthRequest.Failure) paymentAuthRequest).getError());
                     }
                 });
     }

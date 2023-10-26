@@ -44,11 +44,16 @@ public class PayPalLauncher {
      *                       {@link PayPalClient#tokenizePayPalAccount(FragmentActivity,
      *                       PayPalRequest, PayPalFlowStartedCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse) {
-        try {
-            browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
-        } catch (BrowserSwitchException e) {
-            callback.onResult(new PayPalBrowserSwitchResult(e));
+    public void launch(@NonNull FragmentActivity activity, @NonNull LaunchRequest launchRequest) {
+        if (!(launchRequest instanceof PayPalResponse)) {
+            callback.onResult(new PayPalBrowserSwitchResult(new Exception("error")));
+        } else {
+            try {
+                PayPalResponse response = (PayPalResponse) launchRequest;
+                browserSwitchClient.start(activity, response.getBrowserSwitchOptions());
+            } catch (BrowserSwitchException e) {
+                callback.onResult(new PayPalBrowserSwitchResult(e));
+            }
         }
     }
 

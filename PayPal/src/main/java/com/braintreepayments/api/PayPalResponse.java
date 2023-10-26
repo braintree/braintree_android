@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public class PayPalResponse {
+public class PayPalResponse extends LaunchRequest {
 
     private String approvalUrl;
     private String clientMetadataId;

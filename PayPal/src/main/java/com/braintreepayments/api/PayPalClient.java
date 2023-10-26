@@ -71,7 +71,7 @@ public class PayPalClient {
      */
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
                                       @NonNull final PayPalRequest payPalRequest,
-                                      @NonNull final PayPalFlowStartedCallback callback) {
+                                      @NonNull final PaymentAuthRequestCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -81,7 +81,7 @@ public class PayPalClient {
 
     private void sendCheckoutRequest(final FragmentActivity activity,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
-                                     final PayPalFlowStartedCallback callback) {
+                                     final PaymentAuthRequestCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
@@ -90,7 +90,7 @@ public class PayPalClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onResult(null, configInvalidError);
+                callback.onPaymentAuthRequest(new PaymentAuthRequest.Failure(configInvalidError));
                 return;
             }
 
