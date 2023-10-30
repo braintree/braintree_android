@@ -56,16 +56,9 @@ public class SEPADirectDebitClient {
                         if (URLUtil.isValidUrl(result.getApprovalUrl())) {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
-                            try {
-                                startBrowserSwitch(activity, result);
-                                // TODO: - replace this startBrowserSwitch call w/ notification of tokenize() method w/ SEPAResult to continue to call sepaLauncher.launch()
-                                SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(); // Does this need any data on it?
-                                callback.onResult(sepaDirectDebitResponse, null);
-                            } catch (JSONException | BrowserSwitchException exception) {
-                                braintreeClient.sendAnalyticsEvent(
-                                        "sepa-direct-debit.browser-switch.failure");
-                                callback.onResult(null, exception);
-                            }
+                            SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(); // Does this need any data on it?
+                            // TODO: - Need to provide browser switch options to avoid crash
+                            callback.onResult(sepaDirectDebitResponse, null);
                         // TODO: - For the cases where we don't need a web-flow mandate, when do we want to notify the merchant of success
                         } else if (result.getApprovalUrl().equals("null")) {
                             braintreeClient.sendAnalyticsEvent(
@@ -101,8 +94,8 @@ public class SEPADirectDebitClient {
                 });
     }
 
-    void onBrowserSwitchResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult,
-                               @NonNull final SEPADirectDebitBrowserSwitchResultCallback callback) {
+    public void onBrowserSwitchResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult,
+                                      @NonNull final SEPADirectDebitBrowserSwitchResultCallback callback) {
         BrowserSwitchResult browserSwitchResult =
                 sepaDirectDebitBrowserSwitchResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && sepaDirectDebitBrowserSwitchResult.getError() != null) {
