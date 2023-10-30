@@ -25,53 +25,15 @@ public class SEPADirectDebitClient {
 
     private final SEPADirectDebitApi sepaDirectDebitApi;
     private final BraintreeClient braintreeClient;
-    private SEPADirectDebitListener listener;
 
-    /**
-     * Create a new instance of {@link SEPADirectDebitClient} from within an Activity using a
-     * {@link BraintreeClient}.
-     *
-     * @param activity        an Android FragmentActivity
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public SEPADirectDebitClient(@NonNull FragmentActivity activity,
-                                 @NonNull BraintreeClient braintreeClient) {
-        this(activity, activity.getLifecycle(), braintreeClient,
-                new SEPADirectDebitApi(braintreeClient));
-    }
-
-    /**
-     * Create a new instance of {@link SEPADirectDebitClient} from within a Fragment using a
-     * {@link BraintreeClient}.
-     *
-     * @param fragment        an Android Fragment
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public SEPADirectDebitClient(@NonNull Fragment fragment,
-                                 @NonNull BraintreeClient braintreeClient) {
-        this(fragment.getActivity(), fragment.getLifecycle(), braintreeClient,
-                new SEPADirectDebitApi(braintreeClient));
+    public SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
+        this(braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
 
     @VisibleForTesting
-    SEPADirectDebitClient(FragmentActivity activity, Lifecycle lifecycle,
-                          BraintreeClient braintreeClient, SEPADirectDebitApi sepaDirectDebitApi) {
-        this.sepaDirectDebitApi = sepaDirectDebitApi;
+    SEPADirectDebitClient(BraintreeClient braintreeClient, SEPADirectDebitApi sepaDirectDebitApi) {
         this.braintreeClient = braintreeClient;
-        if (activity != null && lifecycle != null) {
-            SEPADirectDebitLifecycleObserver observer = new SEPADirectDebitLifecycleObserver(this);
-            lifecycle.addObserver(observer);
-        }
-    }
-
-    /**
-     * Add a {@link SEPADirectDebitListener} to your client to receive results or errors from the
-     * SEPA Direct Debit flow.
-     *
-     * @param listener a {@link SEPADirectDebitListener}
-     */
-    public void setListener(SEPADirectDebitListener listener) {
-        this.listener = listener;
+        this.sepaDirectDebitApi = sepaDirectDebitApi;
     }
 
     /**
@@ -82,8 +44,9 @@ public class SEPADirectDebitClient {
      * @param activity               an Android FragmentActivity
      * @param sepaDirectDebitRequest the {@link SEPADirectDebitRequest}.
      */
-    public void tokenize(final FragmentActivity activity,
-                         final SEPADirectDebitRequest sepaDirectDebitRequest) {
+    public void tokenize(@NonNull final FragmentActivity activity,
+                         @NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
+                         @NonNull final SEPADirectDebitFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.selected.started");
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
         sepaDirectDebitApi.createMandate(sepaDirectDebitRequest,
@@ -95,11 +58,15 @@ public class SEPADirectDebitClient {
                                     "sepa-direct-debit.create-mandate.success");
                             try {
                                 startBrowserSwitch(activity, result);
+                                // TODO: - replace this startBrowserSwitch call w/ notification of tokenize() method w/ SEPAResult to continue to call sepaLauncher.launch()
+                                SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(); // Does this need any data on it?
+                                callback.onResult(sepaDirectDebitResponse, null);
                             } catch (JSONException | BrowserSwitchException exception) {
                                 braintreeClient.sendAnalyticsEvent(
                                         "sepa-direct-debit.browser-switch.failure");
-                                listener.onSEPADirectDebitFailure(exception);
+                                callback.onResult(null, exception);
                             }
+                        // TODO: - For the cases where we don't need a web-flow mandate, when do we want to notify the merchant of success
                         } else if (result.getApprovalUrl().equals("null")) {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
@@ -113,37 +80,45 @@ public class SEPADirectDebitClient {
                                         if (sepaDirectDebitNonce != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.success");
-                                            listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                            // listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
                                         } else if (tokenizeError != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.failure");
-                                            listener.onSEPADirectDebitFailure(tokenizeError);
+                                            // listener.onSEPADirectDebitFailure(tokenizeError);
                                         }
                                     });
                         } else {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.failure");
-                            listener.onSEPADirectDebitFailure(
-                                    new BraintreeException("An unexpected error occurred."));
+                            // listener.onSEPADirectDebitFailure(
+                                    new BraintreeException("An unexpected error occurred.");
                         }
                     } else if (createMandateError != null) {
                         braintreeClient.sendAnalyticsEvent(
                                 "sepa-direct-debit.create-mandate.failure");
-                        listener.onSEPADirectDebitFailure(createMandateError);
+                        // listener.onSEPADirectDebitFailure(createMandateError);
                     }
                 });
     }
 
-    void onBrowserSwitchResult(FragmentActivity activity) {
+    void onBrowserSwitchResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult,
+                               @NonNull final SEPADirectDebitBrowserSwitchResultCallback callback) {
         BrowserSwitchResult browserSwitchResult =
-                braintreeClient.deliverBrowserSwitchResult(activity);
+                sepaDirectDebitBrowserSwitchResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && sepaDirectDebitBrowserSwitchResult.getError() != null) {
+            callback.onResult(null, sepaDirectDebitBrowserSwitchResult.getError());
+            return;
+        }
+
+        if (browserSwitchResult == null) {
+            callback.onResult(null, new BraintreeException("An unexpected error occurred."));
+        }
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
                 braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.canceled");
-                listener.onSEPADirectDebitFailure(
-                        new UserCanceledException("User canceled SEPA Debit."));
+                callback.onResult(null, new UserCanceledException("User canceled SEPA Debit."));
                 break;
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
@@ -165,22 +140,21 @@ public class SEPADirectDebitClient {
                                     if (sepaDirectDebitNonce != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "sepa-direct-debit.tokenize.success");
-                                        listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                        callback.onResult(sepaDirectDebitNonce, null);
                                     } else if (error != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "sepa-direct-debit.tokenize.failure");
-                                        listener.onSEPADirectDebitFailure(error);
+                                        callback.onResult(null, error);
                                     }
                                 });
                     } else if (deepLinkUri.getPath().contains("cancel")) {
                         braintreeClient.sendAnalyticsEvent(
                                 "sepa-direct-debit.browser-switch.failure");
-                        listener.onSEPADirectDebitFailure(
-                                new BraintreeException("An unexpected error occurred."));
+                        callback.onResult(null, new BraintreeException("An unexpected error occurred."));
                     }
                 } else {
                     braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
-                    listener.onSEPADirectDebitFailure(new BraintreeException("Unknown error"));
+                    callback.onResult(null, new BraintreeException("Unknown error"));
                 }
                 break;
         }
