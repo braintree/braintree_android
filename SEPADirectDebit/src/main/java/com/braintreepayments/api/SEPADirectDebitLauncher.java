@@ -1,5 +1,10 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.BraintreeRequestCodes.SEPA_DEBIT;
+
+import android.content.Context;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -20,11 +25,21 @@ public class SEPADirectDebitLauncher {
         this.callback = callback;
     }
 
+    // TODO: - Launch SEPA flow in web browser & deliver results to SEPADirectDebitLauncherCallback passed into SEPADirectDebitLauncher init
     public void launch(@NonNull FragmentActivity activity, @NonNull SEPADirectDebitResponse sepaDirectDebitResponse) {
         try {
             browserSwitchClient.start(activity, sepaDirectDebitResponse.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
             callback.onResult(new SEPADirectDebitBrowserSwitchResult(e));
+        }
+    }
+
+    // TODO: - Capture & deliver result of browser-based SEPA flow. Invoke in onResume.
+    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
+        BrowserSwitchResult result = browserSwitchClient.parseResult(context, SEPA_DEBIT, intent);
+        if (result != null) {
+            callback.onResult(new SEPADirectDebitBrowserSwitchResult(result));
+            browserSwitchClient.clearActiveRequests(context);
         }
     }
 }
