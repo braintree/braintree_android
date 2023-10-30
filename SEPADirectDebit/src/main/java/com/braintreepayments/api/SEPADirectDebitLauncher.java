@@ -20,11 +20,11 @@ public class SEPADirectDebitLauncher {
         this.callback = callback;
     }
 
-//    public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse) {
-//        try {
-//            browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
-//        } catch (BrowserSwitchException e) {
-//            callback.onResult(new SEPADirectDebitBrowserSwitchResult(e));
-//        }
-//    }
+    public void launch(@NonNull FragmentActivity activity, @NonNull SEPADirectDebitResponse sepaDirectDebitResponse) {
+        try {
+            browserSwitchClient.start(activity, sepaDirectDebitResponse.getBrowserSwitchOptions());
+        } catch (BrowserSwitchException e) {
+            callback.onResult(new SEPADirectDebitBrowserSwitchResult(e));
+        }
+    }
 }
