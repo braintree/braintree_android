@@ -157,14 +157,14 @@ public void onError(Exception error) {
 ```
 ## Single Result Object With Types
 
-This approach is the most Kotlin-first pattern since the return type handling and casting can be
-done in the least lines of code. It also resolves the nullability issues. However, the Java
-integration becomes somewhat complex with casting. This approach aligns with how other payment
-SDKs handle results.
+This approach is the most Kotlin-first pattern. It also resolves the nullability issues. However, 
+the Java integration becomes somewhat complex with casting. This approach aligns with how other 
+payment SDKs handle results.
 
 This approach relies on the Kotlin sealed class, so requires the `PaymentAuthResult` and
-`PaymentResult` objects to live in `BraintreeCore`. This reduces code duplication in our SDK, but
-requires casting by the merchants (ex: PaymentMethodNonce is returned instead of
+`PaymentResult` objects to live in `BraintreeCore`. It also requires the launchable result 
+objects to all extend a single class (ex: `LaunchableRequest`). This reduces code duplication in 
+our SDK, but requires casting by the merchants (ex: PaymentMethodNonce is returned instead of
 module-specific PayPalAccountNonce). Once the SDK is fully converted to Kotlin, these could be
 moved into payment module specific sealed classes (ex: `PayPalPaymentAuthResult`).
 
