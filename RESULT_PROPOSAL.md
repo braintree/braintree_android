@@ -1,4 +1,26 @@
+# Result Handling Android v5
 
+This document proposes alternative patterns for result handling in Braintree Android v5. In 
+Braintree Android v4, there are two different patterns for delivering results: a listener with 
+two methods (`onSuccess`/`onFailure`) or a callback with one method and two nullable parameters 
+(`onResult(@Nullable nonce, @Nullable error)`). A merchant brought to our attention [some issues](https://github.com/braintree/braintree_android/issues/491) 
+with the nullable callback pattern. This pattern assumes that one of the nullable parameters 
+will be non-null, but there is no code guarantee of that from the merchant perspective, so 
+merchants have to handle each of the null/non-null scenarios.
+
+This proposal documents three result handling scenarios in both Kotlin and Java. The first shows 
+the v5 integration if we keep the two parameter callback pattern from v4. The second shows a 
+single method and result object callback. The third shows a callback with multiple non-null 
+result methods.
+
+## Two Object Callback
+
+This integration aligns most closely with the v4 integration pattern, but requires merchants to 
+explicitly handle each null/non-null scenario, and results in an "unexpected error" scenario if 
+both result and error are null. This should never happen based on our SDK code, but merchant 
+code can't assume that, so their code would need to handle that unexpected case. 
+
+### Kotlin
 
 ```kotlin
 payPalLauncher = PayPalLauncher { paymentAuthResult ->
@@ -32,62 +54,7 @@ payPalClient.createPaymentAuthRequest(activity, request) { paymentAuthRequest, e
 }
 ```
 
-```kotlin
-payPalLauncher = PayPalLauncher { paymentAuthResult ->
-    payPalClient.tokenize(paymentAuthResult) { paymentResult ->
-        when(paymentResult) {
-            is PaymentResult.Success -> {
-                // send nonce to server
-                val payPalAccountNonce = paymentResult.nonce as PayPalAccountNonce
-            }
-            is PaymentResult.Cancel -> {
-                // handle user canceled payment flow
-            }
-            is PaymentResult.Failure -> {
-                val error = paymentResult.error
-            }
-        }
-    }
-}
-
-payPalClient.createPaymentAuthRequest(activity, request) { paymentAuthRequest ->
-    when(paymentAuthRequest) {
-        is PaymentAuthRequest.Ready -> {
-            payPalLauncher.launch(activity, paymentAuthRequest.launchRequest)
-        }
-        is PaymentAuthRequest.Failure -> {
-            val error = paymentAuthRequest.error
-        }
-    }
-}
-```
-
-```kotlin
-payPalLauncher = PayPalLauncher { paymentAuthResult ->
-    payPalClient.tokenize(paymentAuthResult, object : PayPalResultCallback {
-        override fun onResult(nonce: PayPalAccountNonce) {
-            // send nonce to server
-        }
-
-        override fun onError(error: Exception) {
-            // handle error
-        }
-
-        override fun onCancel() {
-            // handle cancel
-        }
-    })
-}
-
-payPalClient.createPaymentAuthRequest(activity, request, object : PaymentAuthRequestCallback {
-    override fun onRequest(request: PaymentAuthRequest) {
-        payPalLauncher.launch(activity, request)
-    }
-    override fun onError(error: Exception) {
-        // handle error
-    }
-})
-```
+### Java
 
 ```java
 PayPalLauncher payPalLauncher = new PayPalLauncher(paymentAuthResult ->
@@ -120,6 +87,53 @@ payPalClient.createPaymentAuthRequest(activity, request, (paymentAuthRequest, er
 });
 ```
 
+## Single Result Object With Types
+
+This approach is the most Kotlin-first pattern since the return type handling and casting can be 
+done in the least lines of code. It also resolves the nullability issues. However, the Java 
+integration becomes somewhat complex with casting. This approach aligns with how other payment 
+SDKs handle results. 
+
+This approach relies on the Kotlin sealed class, so requires the `PaymentAuthResult` and 
+`PaymentResult` objects to live in `BraintreeCore`. This reduces code duplication in our SDK, but 
+requires casting by the merchants (ex: PaymentMethodNonce is returned instead of 
+module-specific PayPalAccountNonce). Once the SDK is fully converted to Kotlin, these could be 
+moved into payment module specific sealed classes (ex: `PayPalPaymentAuthResult`).
+
+### Kotlin
+
+```kotlin
+payPalLauncher = PayPalLauncher { paymentAuthResult ->
+    payPalClient.tokenize(paymentAuthResult) { paymentResult ->
+        when(paymentResult) {
+            is PaymentResult.Success -> {
+                // send nonce to server
+                val payPalAccountNonce = paymentResult.nonce as PayPalAccountNonce
+            }
+            is PaymentResult.Cancel -> {
+                // handle user canceled payment flow
+            }
+            is PaymentResult.Failure -> {
+                val error = paymentResult.error
+            }
+        }
+    }
+}
+
+payPalClient.createPaymentAuthRequest(activity, request) { paymentAuthRequest ->
+    when(paymentAuthRequest) {
+        is PaymentAuthRequest.Ready -> {
+            payPalLauncher.launch(activity, paymentAuthRequest.launchRequest)
+        }
+        is PaymentAuthRequest.Failure -> {
+            val error = paymentAuthRequest.error
+        }
+    }
+}
+```
+
+### Java
+
 ```java
 PayPalLauncher payPalLauncher = new PayPalLauncher(paymentAuthResult -> 
     payPalClient.tokenize(paymentAuthResult, (paymentResult) -> {
@@ -142,6 +156,43 @@ payPalClient.createPaymentAuthRequest(activity, request, (paymentAuthRequest) ->
     }
 });
 ```
+
+## Overloaded Callback
+
+This approach solves the nullability issue for merchants, since each callback method would only be 
+invoked with a non-null parameter. It also does not require casting of returned objects. However,
+it is not a very Kotlin-forward approach and requires merchant Kotlin code to be overly verbose.
+
+### Kotlin
+
+```kotlin
+payPalLauncher = PayPalLauncher { paymentAuthResult ->
+    payPalClient.tokenize(paymentAuthResult, object : PayPalResultCallback {
+        override fun onResult(nonce: PayPalAccountNonce) {
+            // send nonce to server
+        }
+
+        override fun onError(error: Exception) {
+            // handle error
+        }
+
+        override fun onCancel() {
+            // handle cancel
+        }
+    })
+}
+
+payPalClient.createPaymentAuthRequest(activity, request, object : PaymentAuthRequestCallback {
+    override fun onRequest(request: PaymentAuthRequest) {
+        payPalLauncher.launch(activity, request)
+    }
+    override fun onError(error: Exception) {
+        // handle error
+    }
+})
+```
+
+### Java
 
 ```java
 PayPalLauncher payPalLauncher = new PayPalLauncher(paymentAuthResult ->
