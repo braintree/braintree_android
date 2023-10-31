@@ -84,7 +84,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
                 handleError(error);
             } else if (sepaDirectDebitResponse.getNonce() != null) { // web-flow mandate not required
                 handleSEPANonce(sepaDirectDebitResponse.getNonce());
-            } else {
+            } else {                                                 // web-flow mandate required
                 sepaDirectDebitLauncher.launch(requireActivity(), sepaDirectDebitResponse);
             }
         });
