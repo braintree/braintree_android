@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.webkit.URLUtil;
 
@@ -26,6 +28,11 @@ public class SEPADirectDebitClient {
     private final SEPADirectDebitApi sepaDirectDebitApi;
     private final BraintreeClient braintreeClient;
 
+    /**
+     * Create a new instance of {@link SEPADirectDebitClient} using a {@link BraintreeClient}.
+     *
+     * @param braintreeClient a {@link BraintreeClient}
+     */
     public SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
@@ -37,12 +44,13 @@ public class SEPADirectDebitClient {
     }
 
     /**
-     * Initiates a browser switch to display a mandate to the user. Upon successful mandate
-     * creation, tokenizes the payment method and returns a result to the
-     * {@link SEPADirectDebitListener}.
+     * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitResponse} to be used
+     * to launch the SEPA mandate flow in
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitResponse)}
      *
-     * @param activity               an Android FragmentActivity
-     * @param sepaDirectDebitRequest the {@link SEPADirectDebitRequest}.
+     * @param activity Android FragmentActivity
+     * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
+     * @param callback {@link SEPADirectDebitFlowStartedCallback}
      */
     public void tokenize(@NonNull final FragmentActivity activity,
                          @NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
@@ -100,6 +108,17 @@ public class SEPADirectDebitClient {
                 });
     }
 
+    // TODO: - The wording in this docstring is confusing to me. Let's improve & align across all clients.
+    /**
+     * After receiving a result from the SEPA mandate web flow via
+     * {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link SEPADirectDebitBrowserSwitchResult} returned to this method to tokenize the SEPA
+     * account and receive a {@link SEPADirectDebitNonce} on success.
+     *
+     * @param sepaDirectDebitBrowserSwitchResult a {@link SEPADirectDebitBrowserSwitchResult} received
+     *                                           in the callback of {@link SEPADirectDebitLauncher}
+     * @param callback {@link SEPADirectDebitBrowserSwitchResultCallback}
+     */
     public void onBrowserSwitchResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult,
                                       @NonNull final SEPADirectDebitBrowserSwitchResultCallback callback) {
         BrowserSwitchResult browserSwitchResult =
