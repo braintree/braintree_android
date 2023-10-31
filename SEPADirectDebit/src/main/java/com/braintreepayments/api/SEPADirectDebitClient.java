@@ -73,7 +73,6 @@ public class SEPADirectDebitClient {
                                         "sepa-direct-debit.browser-switch.failure");
                                 callback.onResult(null, exception);
                             }
-                        // TODO: - For the cases where we don't need a web-flow mandate, when do we want to notify the merchant of success
                         } else if (result.getApprovalUrl().equals("null")) {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
@@ -87,23 +86,24 @@ public class SEPADirectDebitClient {
                                         if (sepaDirectDebitNonce != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.success");
-                                            // listener.onSEPADirectDebitSuccess(sepaDirectDebitNonce);
+                                            SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse();
+                                            sepaDirectDebitResponse.setNonce(sepaDirectDebitNonce);
+                                            callback.onResult(sepaDirectDebitResponse, null);
                                         } else if (tokenizeError != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.failure");
-                                            // listener.onSEPADirectDebitFailure(tokenizeError);
+                                            callback.onResult(null, tokenizeError);
                                         }
                                     });
                         } else {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.failure");
-                            // listener.onSEPADirectDebitFailure(
-                                    new BraintreeException("An unexpected error occurred.");
+                            callback.onResult(null, new BraintreeException("An unexpected error occurred."));
                         }
                     } else if (createMandateError != null) {
                         braintreeClient.sendAnalyticsEvent(
                                 "sepa-direct-debit.create-mandate.failure");
-                        // listener.onSEPADirectDebitFailure(createMandateError);
+                        callback.onResult(null, createMandateError);
                     }
                 });
     }

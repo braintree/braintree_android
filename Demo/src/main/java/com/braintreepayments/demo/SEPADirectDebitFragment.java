@@ -43,14 +43,11 @@ public class SEPADirectDebitFragment extends BaseFragment {
         sepaDirectDebitLauncher = new SEPADirectDebitLauncher(new SEPADirectDebitLauncherCallback() {
             @Override
             public void onResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult) {
-                sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult, new SEPADirectDebitBrowserSwitchResultCallback() {
-                    @Override
-                    public void onResult(@Nullable SEPADirectDebitNonce sepaDirectDebitNonce, @Nullable Exception error) {
-                        if (error != null) {
-                            handleError(error);
-                        } else {
-                            handleSEPANonce(sepaDirectDebitNonce);
-                        }
+                sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
+                    if (error != null) {
+                        handleError(error);
+                    } else {
+                        handleSEPANonce(sepaDirectDebitNonce);
                     }
                 });
             }
@@ -82,14 +79,13 @@ public class SEPADirectDebitFragment extends BaseFragment {
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("EUR-sepa-direct-debit");
 
-        sepaDirectDebitClient.tokenize(requireActivity(), request, new SEPADirectDebitFlowStartedCallback() {
-            @Override
-            public void onResult(SEPADirectDebitResponse sepaDirectDebitResponse, @Nullable Exception error) {
-                if (error != null) {
-                    handleError(error);
-                } else {
-                    sepaDirectDebitLauncher.launch(requireActivity(), sepaDirectDebitResponse);
-                }
+        sepaDirectDebitClient.tokenize(requireActivity(), request, (sepaDirectDebitResponse, error) -> {
+            if (error != null) {
+                handleError(error);
+            } else if (sepaDirectDebitResponse.getNonce() != null) { // web-flow mandate not required
+                handleSEPANonce(sepaDirectDebitResponse.getNonce());
+            } else {
+                sepaDirectDebitLauncher.launch(requireActivity(), sepaDirectDebitResponse);
             }
         });
     }
