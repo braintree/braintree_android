@@ -159,29 +159,6 @@ public class SEPADirectDebitClient {
         }
     }
 
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    private void startBrowserSwitch(FragmentActivity activity,
-                                    CreateMandateResult createMandateResult)
-            throws JSONException, BrowserSwitchException {
-        JSONObject metadata = new JSONObject()
-                .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
-                .put(CUSTOMER_ID_KEY, createMandateResult.getCustomerId())
-                .put(BANK_REFERENCE_TOKEN_KEY, createMandateResult.getBankReferenceToken())
-                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
-
-        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.SEPA_DEBIT)
-                .url(Uri.parse(createMandateResult.getApprovalUrl()))
-                .metadata(metadata)
-                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
-
-        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
-        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.started");
-    }
-
     private BrowserSwitchOptions buildBrowserSwitchOptions(CreateMandateResult createMandateResult) throws JSONException {
         JSONObject metadata = new JSONObject()
                 .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
