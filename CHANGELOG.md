@@ -51,6 +51,12 @@
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
+  * SEPA Direct Debit
+    * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
+    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, `SEPADirectDebitFlowStartedCallback`,
+      `SEPADirectDebitResponse`, `SEPADirectDebitBrowserSwitchResult`, and `SEPADirectDebitBrowserSwitchResultCallback`
+    * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
+    * Add additional callback param to `SEPADirectDebitClient#tokenize`
 
 ## unreleased 
 
