@@ -65,8 +65,7 @@ public class SEPADirectDebitClient {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
                             try {
-                                SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse();
-                                sepaDirectDebitResponse.setBrowserSwitchOptions(buildBrowserSwitchOptions(result));
+                                SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(buildBrowserSwitchOptions(result), null);
                                 callback.onResult(sepaDirectDebitResponse, null);
                             } catch (JSONException exception) {
                                 braintreeClient.sendAnalyticsEvent(
@@ -86,8 +85,7 @@ public class SEPADirectDebitClient {
                                         if (sepaDirectDebitNonce != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.success");
-                                            SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse();
-                                            sepaDirectDebitResponse.setNonce(sepaDirectDebitNonce);
+                                            SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(null, sepaDirectDebitNonce);
                                             callback.onResult(sepaDirectDebitResponse, null);
                                         } else if (tokenizeError != null) {
                                             braintreeClient.sendAnalyticsEvent(
