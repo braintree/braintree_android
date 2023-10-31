@@ -3,7 +3,6 @@ package com.braintreepayments.api
 import android.net.Uri
 import org.json.JSONObject
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 
 class KotlinTest {
@@ -72,6 +71,21 @@ class KotlinTest {
             }
         }
 
+
+
+        sut.test("test", object : TestCallback {
+            override fun onResult(nonce: PayPalAccountNonce) {
+                // handle result
+            }
+
+            override fun onError(error: Exception) {
+                // handle error
+            }
+
+            override fun onCancel() {
+                // handle cancel
+            }
+        })
 
     }
 

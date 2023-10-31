@@ -16,12 +16,14 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PaymentAuthRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PaymentResult;
+import com.braintreepayments.api.TestCallback;
 import com.braintreepayments.api.UserCanceledException;
 
 public class PayPalFragment extends BaseFragment {
@@ -68,6 +70,23 @@ public class PayPalFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().getIntent());
+
+        payPalClient.test("test", new TestCallback() {
+            @Override
+            public void onResult(PayPalAccountNonce nonce) {
+                // handle result
+            }
+
+            @Override
+            public void onError(Exception error) {
+                // handle error
+            }
+
+            @Override
+            public void onCancel() {
+                // handle cancel
+            }
+        });
     }
 
     public void launchSinglePayment(View v) {

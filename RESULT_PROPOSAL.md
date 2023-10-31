@@ -62,6 +62,33 @@ payPalClient.createPaymentAuthRequest(activity, request) { paymentAuthRequest ->
 }
 ```
 
+```kotlin
+payPalLauncher = PayPalLauncher { paymentAuthResult ->
+    payPalClient.tokenize(paymentAuthResult, object : PayPalResultCallback {
+        override fun onResult(nonce: PayPalAccountNonce) {
+            // send nonce to server
+        }
+
+        override fun onError(error: Exception) {
+            // handle error
+        }
+
+        override fun onCancel() {
+            // handle cancel
+        }
+    })
+}
+
+payPalClient.createPaymentAuthRequest(activity, request, object : PaymentAuthRequestCallback {
+    override fun onRequest(request: PaymentAuthRequest) {
+        payPalLauncher.launch(activity, request)
+    }
+    override fun onError(error: Exception) {
+        // handle error
+    }
+})
+```
+
 ```java
 PayPalLauncher payPalLauncher = new PayPalLauncher(paymentAuthResult ->
         payPalClient.tokenize(paymentAuthResult, (paymentMethodNonce, error) -> {
@@ -112,6 +139,38 @@ payPalClient.createPaymentAuthRequest(activity, request, (paymentAuthRequest) ->
                 getLaunchRequest());
     } else if (paymentAuthRequest instanceof PaymentAuthRequest.Failure) {
         Exception error = ((PaymentAuthRequest.Failure) paymentAuthRequest).getError();
+    }
+});
+```
+
+```java
+PayPalLauncher payPalLauncher = new PayPalLauncher(paymentAuthResult ->
+        payPalClient.tokenize(paymentAuthResult, new PayPalResultCallback() {
+    @Override
+    public void onResult(PayPalAccountNonce nonce) {
+        // handle result
+    }
+
+    @Override
+    public void onError(Exception error) {
+        // handle error
+    }
+
+    @Override
+    public void onCancel() {
+        // handle cancel
+    }
+});
+    
+payPalClient.createPaymentAuthRequest(activity, request, new PaymentAuthRequestCallback() {
+    @Override
+    public void onRequest(PaymentAuthRequest request) {
+        payPalLauncher.launch(activity, paymentAuthRequest);
+    }
+
+    @Override
+    public void onError(Exception error) {
+        // handle error
     }
 });
 ```
