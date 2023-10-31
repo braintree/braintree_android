@@ -59,6 +59,12 @@ public class SEPADirectDebitFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().getIntent());
+    }
+
     public void launchSEPADirectDebit(View view) {
         PostalAddress billingAddress = new PostalAddress();
         billingAddress.setStreetAddress("Kantstraße 70");

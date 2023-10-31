@@ -56,9 +56,15 @@ public class SEPADirectDebitClient {
                         if (URLUtil.isValidUrl(result.getApprovalUrl())) {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
-                            SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse(); // Does this need any data on it?
-                            // TODO: - Need to provide browser switch options to avoid crash
-                            callback.onResult(sepaDirectDebitResponse, null);
+                            try {
+                                SEPADirectDebitResponse sepaDirectDebitResponse = new SEPADirectDebitResponse();
+                                sepaDirectDebitResponse.setBrowserSwitchOptions(buildBrowserSwitchOptions(result));
+                                callback.onResult(sepaDirectDebitResponse, null);
+                            } catch (JSONException exception) {
+                                braintreeClient.sendAnalyticsEvent(
+                                        "sepa-direct-debit.browser-switch.failure");
+                                callback.onResult(null, exception);
+                            }
                         // TODO: - For the cases where we don't need a web-flow mandate, when do we want to notify the merchant of success
                         } else if (result.getApprovalUrl().equals("null")) {
                             braintreeClient.sendAnalyticsEvent(
@@ -174,5 +180,21 @@ public class SEPADirectDebitClient {
 
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.started");
+    }
+
+    private BrowserSwitchOptions buildBrowserSwitchOptions(CreateMandateResult createMandateResult) throws JSONException {
+        JSONObject metadata = new JSONObject()
+                .put(IBAN_LAST_FOUR_KEY, createMandateResult.getIbanLastFour())
+                .put(CUSTOMER_ID_KEY, createMandateResult.getCustomerId())
+                .put(BANK_REFERENCE_TOKEN_KEY, createMandateResult.getBankReferenceToken())
+                .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.SEPA_DEBIT)
+                .url(Uri.parse(createMandateResult.getApprovalUrl()))
+                .metadata(metadata)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+
+        return browserSwitchOptions;
     }
 }
