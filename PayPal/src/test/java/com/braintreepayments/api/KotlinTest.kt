@@ -73,7 +73,7 @@ class KotlinTest {
 
 
 
-        sut.test("test", object : TestCallback {
+        sut.test("test", object {
             override fun onResult(nonce: PayPalAccountNonce) {
                 // handle result
             }

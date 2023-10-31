@@ -79,10 +79,6 @@ public class PayPalClient {
         }
     }
 
-    public void test(String request, TestCallback callback) {
-
-    }
-
     private void sendCheckoutRequest(final FragmentActivity activity,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
                                      final PaymentAuthRequestCallback callback) {

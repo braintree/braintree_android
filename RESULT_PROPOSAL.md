@@ -9,9 +9,9 @@ will be non-null, but there is no code guarantee of that from the merchant persp
 merchants have to handle each of the null/non-null scenarios.
 
 This proposal documents three result handling scenarios in both Kotlin and Java. The first shows 
-the v5 integration if we keep the two parameter callback pattern from v4. The second shows a 
-single method and result object callback. The third shows a callback with multiple non-null 
-result methods.
+the v5 integration if we keep the two parameter callback pattern from v4. The second shows the 
+v5 integration if we keep the listener pattern from v4. The third shows a single method and result 
+object callback. The fourth shows a callback with multiple non-null result methods.
 
 ## Two Object Callback
 
