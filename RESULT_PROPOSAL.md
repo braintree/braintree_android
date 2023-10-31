@@ -15,10 +15,10 @@ result methods.
 
 ## Two Object Callback
 
-This integration aligns most closely with the v4 integration pattern, but requires merchants to 
-explicitly handle each null/non-null scenario, and results in an "unexpected error" scenario if 
-both result and error are null. This should never happen based on our SDK code, but merchant 
-code can't assume that, so their code would need to handle that unexpected case. 
+This integration aligns most closely with the v4 integration callback pattern, but requires 
+merchants to explicitly handle each null/non-null scenario, and results in an "unexpected error" 
+scenario if both result and error are null. This should never happen based on our SDK code, but 
+merchant code can't assume that, so their code would need to handle that unexpected case. 
 
 ### Kotlin
 
@@ -87,6 +87,74 @@ payPalClient.createPaymentAuthRequest(activity, request, (paymentAuthRequest, er
 });
 ```
 
+## Listener 
+
+This integration aligns most closely with the v4 integration listener pattern, but either 
+requires two separate listeners (for launcher and client), or couples the launcher and the 
+client because both need to be invoked in different listener methods. The benefit of a single 
+listener is that errors throughout the entire flow can be handled in one method (rather than two 
+separate error handling points with the callback patterns). 
+
+### Kotlin
+
+```kotlin
+payPalLauncher = PayPalLauncher(listener) 
+payPalClient = PayPalClient(listener)
+payPalClient.createPaymentAuthRequest(activity, request)
+
+override fun onPaymentAuthRequest(paymentAuthRequest: PaymentAuthRequest) {
+    payPalLauncher.launch(paymentAuthRequest)
+}
+
+override fun onPaymentAuthResult(paymentAuthResult: PaymentAuthResult) {
+    payPalClient.tokenize(paymentAuthResult)
+}
+
+override fun onSuccess(payPalAccountNonce: PayPalAccountNonce) {
+    // send nonce to server
+}
+
+override fun onCancel() {
+    // handle cancel
+}
+
+override fun onError(error: Exception) {
+    // handle error
+}
+```
+
+### Java
+
+```java
+PayPalLauncher payPalLauncher = new PayPalLauncher(listener);
+PayPalClient payPalClient = new PayPalClient(listener);
+payPalClient.createPaymentAuthRequest(activity, request);
+
+@Override
+public void onPaymentAuthRequest(PaymentAuthRequest paymentAuthRequest) {
+    payPalLauncher.launch(paymentAuthRequest)
+}
+
+@Override
+public void onPaymentAuthResult(PaymentAuthResult paymentAuthResult) {
+    payPalClient.tokenize(paymentAuthResult)
+}
+
+@Override
+public void onSuccess(PayPalAccountNonce payPalAccountNonce) {
+    // send nonce to server
+}
+
+@Override
+public void onCancel() {
+    // handle cancel
+}
+
+@Ovrride
+public void onError(Exception error) {
+    // handle error
+}
+```
 ## Single Result Object With Types
 
 This approach is the most Kotlin-first pattern since the return type handling and casting can be 
