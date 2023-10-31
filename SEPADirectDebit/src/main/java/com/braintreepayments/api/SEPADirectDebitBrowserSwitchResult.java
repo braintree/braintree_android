@@ -1,6 +1,11 @@
 package com.braintreepayments.api;
 
-// TODO: - Docstring
+/**
+ * Result received from the SEPA mandate web flow through {@link SEPADirectDebitBrowserSwitchResultCallback}.
+ * This result should be passed to
+ * {@link SEPADirectDebitClient#onBrowserSwitchResult(SEPADirectDebitBrowserSwitchResult, SEPADirectDebitBrowserSwitchResultCallback)} )}
+ * to complete the SEPA mandate flow.
+ */
 public class SEPADirectDebitBrowserSwitchResult {
 
     private BrowserSwitchResult browserSwitchResult;

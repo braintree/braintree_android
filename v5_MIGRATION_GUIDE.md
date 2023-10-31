@@ -397,7 +397,6 @@ class MyActivity : FragmentActivity() {
 +           intent)
     }
 
-
     fun initializeClients() {
         braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient = SEPADirectDebitClient(this, braintreeClient)

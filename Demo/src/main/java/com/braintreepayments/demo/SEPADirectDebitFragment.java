@@ -7,22 +7,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.SEPADirectDebitBrowserSwitchResult;
-import com.braintreepayments.api.SEPADirectDebitBrowserSwitchResultCallback;
 import com.braintreepayments.api.SEPADirectDebitClient;
-import com.braintreepayments.api.SEPADirectDebitFlowStartedCallback;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
 import com.braintreepayments.api.SEPADirectDebitLauncherCallback;
-import com.braintreepayments.api.SEPADirectDebitListener;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitRequest;
-import com.braintreepayments.api.SEPADirectDebitResponse;
 
 import java.util.UUID;
 
