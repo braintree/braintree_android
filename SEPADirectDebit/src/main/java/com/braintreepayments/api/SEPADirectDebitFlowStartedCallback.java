@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link SEPADirectDebitClient#tokenize(FragmentActivity, SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}.
+ * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}.
  */
 public interface SEPADirectDebitFlowStartedCallback {
 

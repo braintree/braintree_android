@@ -41,7 +41,7 @@ public class SEPADirectDebitLauncher {
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param sepaDirectDebitResponse the result of the SEPA mandate received from invoking
-     *                       {@link SEPADirectDebitClient#tokenize(FragmentActivity, SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}
+     *                       {@link SEPADirectDebitClient#tokenize(SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}
      */
     public void launch(@NonNull FragmentActivity activity, @NonNull SEPADirectDebitResponse sepaDirectDebitResponse) {
         try {
@@ -69,7 +69,8 @@ public class SEPADirectDebitLauncher {
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
      *                the SEPA mandate flow
-     */    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
+     */
+    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, SEPA_DEBIT, intent);
         if (result != null) {
             callback.onResult(new SEPADirectDebitBrowserSwitchResult(result));

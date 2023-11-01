@@ -4,7 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Returned via the {@link SEPADirectDebitFlowStartedCallback} after calling 
- * {@link SEPADirectDebitClient#tokenize(FragmentActivity, SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}.
+ * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitRequest, SEPADirectDebitFlowStartedCallback)}.
  *
  * Inspect the {@link SEPADirectDebitNonce} property to determine if tokenization is complete, or
  * if you must continue the SEPA mandate web flow via

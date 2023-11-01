@@ -48,12 +48,10 @@ public class SEPADirectDebitClient {
      * to launch the SEPA mandate flow in
      * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitResponse)}
      *
-     * @param activity Android FragmentActivity
      * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
      * @param callback {@link SEPADirectDebitFlowStartedCallback}
      */
-    public void tokenize(@NonNull final FragmentActivity activity,
-                         @NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
+    public void tokenize(@NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
                          @NonNull final SEPADirectDebitFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.selected.started");
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");

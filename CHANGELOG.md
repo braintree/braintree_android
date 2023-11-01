@@ -56,7 +56,7 @@
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, `SEPADirectDebitFlowStartedCallback`,
       `SEPADirectDebitResponse`, `SEPADirectDebitBrowserSwitchResult`, and `SEPADirectDebitBrowserSwitchResultCallback`
     * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
-    * Add additional callback param to `SEPADirectDebitClient#tokenize`
+    * Modify `SEPADirectDebitClient#tokenize` parameters
 
 ## unreleased 
 
