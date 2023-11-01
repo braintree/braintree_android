@@ -23,7 +23,6 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class SEPADirectDebitLauncherUnitTest {
 
-
     private BrowserSwitchClient browserSwitchClient;
     private FragmentActivity activity;
     private Intent intent;
