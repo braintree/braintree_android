@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -208,6 +209,45 @@ public class SEPADirectDebitClientUnitTest {
             assertEquals(actualError, error);
             verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
         });
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenErrorNotNull_callsBackError() {
+        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
+
+        braintreeClient = new MockBraintreeClientBuilder().build();
+
+        SEPADirectDebitClient sut =
+                new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
+
+        Exception expectedError = new Exception("error");
+        SEPADirectDebitBrowserSwitchResult payPalBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(expectedError);
+        sut.onBrowserSwitchResult(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+
+        assertNotNull(captor.getValue());
+        assertEquals(expectedError, captor.getValue());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenResultAndErrorNull_callsBackUnexpectedError() {
+        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
+
+        braintreeClient = new MockBraintreeClientBuilder().build();
+
+        SEPADirectDebitClient sut =
+                new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
+
+        SEPADirectDebitBrowserSwitchResult payPalBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult((BrowserSwitchResult) null);
+        sut.onBrowserSwitchResult(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+
+        assertNotNull(captor.getValue());
+        assertEquals("An unexpected error occurred.", captor.getValue().getMessage());
     }
 
     @Test

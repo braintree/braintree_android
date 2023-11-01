@@ -128,6 +128,7 @@ public class SEPADirectDebitClient {
 
         if (browserSwitchResult == null) {
             callback.onResult(null, new BraintreeException("An unexpected error occurred."));
+            return;
         }
 
         int result = browserSwitchResult.getStatus();
