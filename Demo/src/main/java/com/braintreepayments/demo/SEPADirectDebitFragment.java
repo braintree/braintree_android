@@ -35,18 +35,15 @@ public class SEPADirectDebitFragment extends BaseFragment {
         BraintreeClient braintreeClient = getBraintreeClient();
         sepaDirectDebitClient = new SEPADirectDebitClient(braintreeClient);
 
-        sepaDirectDebitLauncher = new SEPADirectDebitLauncher(new SEPADirectDebitLauncherCallback() {
-            @Override
-            public void onResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult) {
-                sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
-                    if (error != null) {
-                        handleError(error);
-                    } else {
-                        handleSEPANonce(sepaDirectDebitNonce);
-                    }
-                });
-            }
-        });
+        sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
+            sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
+                if (error != null) {
+                    handleError(error);
+                } else {
+                    handleSEPANonce(sepaDirectDebitNonce);
+                }
+            })
+        );
 
         return view;
     }
