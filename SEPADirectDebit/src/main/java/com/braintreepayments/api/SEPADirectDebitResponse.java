@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -31,7 +32,7 @@ public class SEPADirectDebitResponse {
      *
      * @return {@link SEPADirectDebitNonce}
      */
-    public SEPADirectDebitNonce getNonce() {
+    public @Nullable SEPADirectDebitNonce getNonce() {
         return this.sepaDirectDebitNonce;
     }
 }

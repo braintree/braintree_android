@@ -16,5 +16,5 @@ public interface SEPADirectDebitFlowStartedCallback {
      *                                {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitResponse)}
      * @param error                   an exception that occurred while initiating the SEPA transaction
      */
-    void onResult(SEPADirectDebitResponse sepaDirectDebitResponse, @Nullable Exception error);
+    void onResult(@Nullable SEPADirectDebitResponse sepaDirectDebitResponse, @Nullable Exception error);
 }
