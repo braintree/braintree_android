@@ -134,11 +134,9 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, (sepaDirectDebitResponse, error) -> {
-            assertEquals(error, exception);
-            assertNull(sepaDirectDebitResponse);
-            verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
-        });
+        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        verify(sepaFlowStartedCallback).onResult(isNull(), eq(exception));
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
     }
 
     @Test
@@ -204,11 +202,9 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, (SEPADirectDebitFlowStartedCallback) (sepaDirectDebitResponse, actualError) -> {
-            assertNull(sepaDirectDebitResponse);
-            assertEquals(actualError, error);
-            verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
-        });
+        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        verify(sepaFlowStartedCallback).onResult(isNull(), eq(error));
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
     }
 
     @Test
