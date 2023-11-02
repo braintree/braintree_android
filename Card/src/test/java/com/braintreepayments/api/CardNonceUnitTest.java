@@ -40,9 +40,6 @@ public class CardNonceUnitTest {
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
-        assertNotNull(cardNonce.getThreeDSecureInfo());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
         assertEquals(YES, cardNonce.getBinData().getHealthcare());
@@ -68,9 +65,6 @@ public class CardNonceUnitTest {
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
-        assertNotNull(cardNonce.getThreeDSecureInfo());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(YES, cardNonce.getBinData().getPrepaid());
         assertEquals(YES, cardNonce.getBinData().getHealthcare());
@@ -95,7 +89,6 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getLastFour());
         assertEquals("", cardNonce.getLastTwo());
         assertEquals("Unknown", cardNonce.getCardType());
-        assertNotNull(cardNonce.getThreeDSecureInfo());
         assertEquals("", cardNonce.getBin());
         assertNotNull(cardNonce.getBinData());
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
@@ -117,9 +110,6 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getExpirationMonth());
         assertEquals("", cardNonce.getExpirationYear());
         assertEquals("", cardNonce.getCardholderName());
-        assertNotNull(cardNonce.getThreeDSecureInfo());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
         assertEquals(UNKNOWN, cardNonce.getBinData().getHealthcare());

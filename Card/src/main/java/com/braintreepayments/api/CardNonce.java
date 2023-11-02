@@ -15,7 +15,7 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class CardNonce extends PaymentMethodNonce {
 
-    private static final String API_RESOURCE_KEY = "creditCards";
+    static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";

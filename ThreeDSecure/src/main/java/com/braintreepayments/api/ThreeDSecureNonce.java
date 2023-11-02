@@ -31,7 +31,11 @@ public class ThreeDSecureNonce extends CardNonce {
     @NonNull
     static ThreeDSecureNonce fromJSON(JSONObject inputJson) throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(inputJson);
-        ThreeDSecureInfo threeDSecureInfo = ThreeDSecureInfo.fromJson(inputJson.optJSONObject(THREE_D_SECURE_INFO_KEY));
+        ThreeDSecureInfo threeDSecureInfo = ThreeDSecureInfo.fromJson(null);
+        if (inputJson.has(API_RESOURCE_KEY)) {
+            JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
+            threeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+        }
         return new ThreeDSecureNonce(cardNonce, threeDSecureInfo);
     }
 
