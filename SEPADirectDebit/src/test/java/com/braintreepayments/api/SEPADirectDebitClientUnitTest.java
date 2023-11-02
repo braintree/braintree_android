@@ -1,10 +1,12 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -107,11 +109,12 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, (sepaDirectDebitResponse, error) -> {
-            assertEquals(sepaDirectDebitResponse.getNonce(), nonce);
-            assertNull(error);
-            verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
-        });
+        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+
+        ArgumentCaptor<SEPADirectDebitResponse> captor = ArgumentCaptor.forClass(SEPADirectDebitResponse.class);
+        verify(sepaFlowStartedCallback).onResult(captor.capture(), isNull());
+        assertEquals(captor.getValue().getNonce(), nonce);
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
     }
 
     @Test
@@ -156,12 +159,13 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, (response, error) -> {
-            assertNull(response);
-            assertTrue(error instanceof BraintreeException);
-            assertEquals("An unexpected error occurred.", error.getMessage());
-            verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
-        });
+        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(sepaFlowStartedCallback).onResult(isNull(), captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+        assertEquals("An unexpected error occurred.", captor.getValue().getMessage());
+        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
     }
 
     @Test
