@@ -19,7 +19,7 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String LOOKUP_KEY = "lookup";
 
-    private CardNonce tokenizedCard;
+    private ThreeDSecureNonce tokenizedCard;
     private String errorMessage;
 
     private ThreeDSecureLookup lookup;
@@ -37,7 +37,7 @@ public class ThreeDSecureResult implements Parcelable {
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
         if (cardJson != null) {
-            result.tokenizedCard = CardNonce.fromJSON(cardJson);
+            result.tokenizedCard = ThreeDSecureNonce.fromJSON(cardJson);
         }
 
         if (json.has(ERRORS_KEY)) {
@@ -59,14 +59,14 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @return The {@link CardNonce} associated with the 3D Secure authentication
+     * @return The {@link ThreeDSecureNonce} associated with the 3D Secure authentication
      */
     @Nullable
-    public CardNonce getTokenizedCard() {
+    public ThreeDSecureNonce getTokenizedCard() {
         return tokenizedCard;
     }
 
-    void setTokenizedCard(CardNonce cardNonce) {
+    void setTokenizedCard(@Nullable ThreeDSecureNonce cardNonce) {
         tokenizedCard = cardNonce;
     }
 
@@ -110,14 +110,13 @@ public class ThreeDSecureResult implements Parcelable {
         lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
-    public static final Creator<ThreeDSecureResult> CREATOR =
-            new Creator<ThreeDSecureResult>() {
-                public ThreeDSecureResult createFromParcel(Parcel source) {
-                    return new ThreeDSecureResult(source);
-                }
+    public static final Creator<ThreeDSecureResult> CREATOR = new Creator<>() {
+        public ThreeDSecureResult createFromParcel(Parcel source) {
+            return new ThreeDSecureResult(source);
+        }
 
-                public ThreeDSecureResult[] newArray(int size) {
-                    return new ThreeDSecureResult[size];
-                }
-            };
+        public ThreeDSecureResult[] newArray(int size) {
+            return new ThreeDSecureResult[size];
+        }
+    };
 }

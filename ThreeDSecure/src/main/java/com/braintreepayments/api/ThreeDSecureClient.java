@@ -238,8 +238,8 @@ public class ThreeDSecureClient {
                         threeDSecureVersion));
 
         if (!showChallenge) {
-            CardNonce cardNonce = result.getTokenizedCard();
-            ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
+            ThreeDSecureNonce threeDSecureNonce = result.getTokenizedCard();
+            ThreeDSecureInfo info = threeDSecureNonce.getThreeDSecureInfo();
 
             braintreeClient.sendAnalyticsEvent(
                     String.format("three-d-secure.verification-flow.liability-shifted.%b",
