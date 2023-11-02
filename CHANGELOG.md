@@ -55,6 +55,7 @@
       `LocalPaymentClient`
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
+    * Move `ThreeDSecureInfo` to `three-d-secure` module
 
 ## unreleased 
 
