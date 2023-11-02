@@ -26,6 +26,7 @@ import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
+import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -210,7 +211,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
-            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
+            ThreeDSecureNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
