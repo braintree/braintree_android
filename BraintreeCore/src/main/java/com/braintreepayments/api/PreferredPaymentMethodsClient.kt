@@ -77,3 +77,17 @@ open class PreferredPaymentMethodsClient @VisibleForTesting internal constructor
         })
     }
 }
+
+class BTPaymentReadyClient constructor(context: Context) {
+
+    val deviceInspector = DeviceInspector()
+    val applicationContext = context.applicationContext
+
+    fun isPayPalPaymentReady(): Boolean {
+        return deviceInspector.isPayPalInstalled(applicationContext)
+    }
+
+    fun isVenmoPaymentReady(): Boolean {
+        return deviceInspector.isVenmoInstalled(applicationContext)
+    }
+}
