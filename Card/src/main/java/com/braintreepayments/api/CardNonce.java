@@ -20,7 +20,7 @@ public class CardNonce extends PaymentMethodNonce {
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
-    private static final String DATA_KEY = "data";
+    static final String DATA_KEY = "data";
     private static final String TOKEN_KEY = "token";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";

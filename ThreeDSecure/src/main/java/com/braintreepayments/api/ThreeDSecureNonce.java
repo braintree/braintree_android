@@ -13,17 +13,26 @@ public class ThreeDSecureNonce extends CardNonce {
     private final ThreeDSecureInfo threeDSecureInfo;
 
     private ThreeDSecureNonce(CardNonce cardNonce, ThreeDSecureInfo threeDSecureInfo) {
-        this(threeDSecureInfo, cardNonce.getCardType(), cardNonce.getLastTwo(), cardNonce.getLastFour(), cardNonce.getBin(), cardNonce.getBinData(), cardNonce.getAuthenticationInsight(), cardNonce.getExpirationMonth(),
-                cardNonce.getExpirationYear(), cardNonce.getCardholderName(), cardNonce.getString(), cardNonce.isDefault());
+        this(threeDSecureInfo, cardNonce.getCardType(), cardNonce.getLastTwo(),
+                cardNonce.getLastFour(), cardNonce.getBin(), cardNonce.getBinData(),
+                cardNonce.getAuthenticationInsight(), cardNonce.getExpirationMonth(),
+                cardNonce.getExpirationYear(), cardNonce.getCardholderName(), cardNonce.getString(),
+                cardNonce.isDefault());
     }
 
-    private ThreeDSecureNonce(ThreeDSecureInfo threeDSecureInfo, String cardType, String lastTwo, String lastFour, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
-        super(cardType, lastTwo, lastFour, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
+    private ThreeDSecureNonce(ThreeDSecureInfo threeDSecureInfo, String cardType, String lastTwo,
+                              String lastFour, String bin, BinData binData,
+                              AuthenticationInsight authenticationInsight, String expirationMonth,
+                              String expirationYear, String cardholderName, String nonce,
+                              boolean isDefault) {
+        super(cardType, lastTwo, lastFour, bin, binData, authenticationInsight, expirationMonth,
+                expirationYear, cardholderName, nonce, isDefault);
         this.threeDSecureInfo = threeDSecureInfo;
     }
 
     /**
      * Parse card nonce from plain JSON object.
+     *
      * @param inputJson plain JSON object
      * @return {@link CardNonce}
      * @throws JSONException if nonce could not be parsed successfully
@@ -31,17 +40,22 @@ public class ThreeDSecureNonce extends CardNonce {
     @NonNull
     static ThreeDSecureNonce fromJSON(JSONObject inputJson) throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(inputJson);
-        ThreeDSecureInfo threeDSecureInfo = ThreeDSecureInfo.fromJson(null);
-        if (inputJson.has(API_RESOURCE_KEY)) {
+        ThreeDSecureInfo threeDSecureInfo;
+        if (inputJson.has(DATA_KEY)) { // graphQL
+           threeDSecureInfo = ThreeDSecureInfo.fromJson(null);
+        } else if (inputJson.has(API_RESOURCE_KEY)) { // REST
             JSONObject json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0);
-            threeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+            threeDSecureInfo =
+                    ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+        } else { // plain JSON
+            threeDSecureInfo =
+                    ThreeDSecureInfo.fromJson(inputJson.optJSONObject(THREE_D_SECURE_INFO_KEY));
         }
         return new ThreeDSecureNonce(cardNonce, threeDSecureInfo);
     }
 
     /**
-     * @return The 3D Secure info for the current {@link CardNonce} or
-     * {@code null}
+     * @return The 3D Secure info for the current {@link CardNonce} or {@code null}
      */
     @NonNull
     public ThreeDSecureInfo getThreeDSecureInfo() {
