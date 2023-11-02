@@ -36,6 +36,8 @@
     * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
     * Add `ThreeDSecureClient#onCardinalResult`
     * Remove `versionRequested` from `ThreeDSecureRequest`
+    * Add `ThreeDSecureNonce` class
+    * Rename `ThreeSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher` and `PayPalResponse`
@@ -51,6 +53,8 @@
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
+  * Card
+    * Remove `threeDSecureInfo` from `CardNonce`
 
 ## unreleased 
 
