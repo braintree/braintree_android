@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * {@link PaymentMethodNonce} representing a {@link CardNonce} that includes {@link ThreeDSecureInfo}
+ */
 public class ThreeDSecureNonce extends CardNonce {
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
     private final ThreeDSecureInfo threeDSecureInfo;
@@ -30,13 +33,6 @@ public class ThreeDSecureNonce extends CardNonce {
         this.threeDSecureInfo = threeDSecureInfo;
     }
 
-    /**
-     * Parse card nonce from plain JSON object.
-     *
-     * @param inputJson plain JSON object
-     * @return {@link CardNonce}
-     * @throws JSONException if nonce could not be parsed successfully
-     */
     @NonNull
     static ThreeDSecureNonce fromJSON(JSONObject inputJson) throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(inputJson);
@@ -55,7 +51,7 @@ public class ThreeDSecureNonce extends CardNonce {
     }
 
     /**
-     * @return The 3D Secure info for the current {@link CardNonce} or {@code null}
+     * @return The 3D Secure info for the current {@link ThreeDSecureNonce} or {@code null}
      */
     @NonNull
     public ThreeDSecureInfo getThreeDSecureInfo() {
