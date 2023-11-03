@@ -477,18 +477,3 @@ public class SEPADirectDebitClientUnitTest {
         assertEquals("Unknown error", exception.getMessage());
     }
 }
-
-// Save for SEPABrowserSwitchResult_Tests
-
-//    @Test
-//    public void getBrowserSwitchResult_getBrowserSwitchResultFromBraintreeClient() {
-//        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
-//
-//        braintreeClient = new MockBraintreeClientBuilder()
-//                .build();
-//
-//        SEPADirectDebitClient sut =
-//                new SEPADirectDebitClient(activity, lifecycle, braintreeClient, sepaDirectDebitApi);
-//        sut.getBrowserSwitchResult(activity);
-//        verify(braintreeClient).getBrowserSwitchResult(activity);
-//    }
