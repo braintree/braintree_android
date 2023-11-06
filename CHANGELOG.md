@@ -56,6 +56,12 @@
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module
+  * SEPA Direct Debit
+    * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
+    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, `SEPADirectDebitFlowStartedCallback`,
+      `SEPADirectDebitResponse`, `SEPADirectDebitBrowserSwitchResult`, and `SEPADirectDebitBrowserSwitchResultCallback`
+    * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
+    * Modify `SEPADirectDebitClient#tokenize` parameters
 
 ## unreleased 
 

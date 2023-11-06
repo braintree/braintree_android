@@ -13,6 +13,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [3DS](#3ds)
 1. [PayPal](#paypal)
 1. [Local Payment](#local-payment)
+1. [SEPA Direct Debit](#sepa-direct-debit)
 
 ## Android API
 
@@ -354,3 +355,73 @@ class MyActivity : FragmentActivity() {
 -   }
 }
 
+## SEPA Direct Debit
+
+The SEPA Direct Debit integration has been updated to allow for more flexibility with browser
+switching and result handling.
+
+`SEPADirectDebitLauncher` has been added to handle the browser switching portion of the SEPA
+flow for payment authorization via bank mandate. This class is used to handle browser switch results
+upon returning to your app from the web flow, therefore must be instantiated in or before
+the `OnResume` method of your Activity or Fragment.
+
+`BraintreeClient` and `SEPADirectDebitClient` no longer require references to Fragment or Activity and
+do not need to be instantiated in `OnCreate`.
+
+```diff
+class MyActivity : FragmentActivity() {
+
++   private lateinit var sepaDirectDebitLauncher: SEPADirectDebitLAuncher
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
+
+    @override fun onCreate(savedInstanceState: Bundle?) {
++       // can initialize clients outside of onCreate if desired
+-       initializeClients()
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { sepaDirectDebitBrowserSwitchResult ->
++           sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult) { 
++               sepaDirectDebitNonce, error ->
++                   // handle nonce or error
++           }
++       }
+    }
+
+    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    @override fun onNewIntent(intent: Intent) {
++       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
+    }
+
+    // ALL OTHER ACTIVITY LAUNCH MODES 
+    @override fun onResume() {
++       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
++           intent)
+    }
+
+    fun initializeClients() {
+        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       sepaDirectDebitClient = SEPADirectDebitClient(this, braintreeClient)
++       sepaDirectDebitClient = SEPADirectDebitClient(braintreeClient)
+-       sepaDirectDebitClient.setListener(this)
+    }
+
+    fun onPaymentButtonClick() {
+-       sepaDirectDebitClient.tokenize(activity, request)
++       sepaDirectDebitClient.tokenize(activity, request) { sepaDirectDebitResponse, error ->
++           if (error != null) {
++               // handle error
++           } else if (sepaDirectDebitResponse.nonce != null) {      // web-flow mandate not required
++               // handle nonce
++           } else {                                                 // web-flow mandate required
++               sepaDirectDebitLauncher.launch(activity, sepaDirectDebitResponse)
++           }
++       }
+    }
+
+-   override fun onSEPADirectDebitSuccess(sepaDirectDebitNonce: SEPADirectDebitNonce) {
+-        // handle SEPA nonce
+-   }
+
+-   override fun onSEPADirectDebitFailure(error: java.lang.Exception) {
+-        // handle error
+-   }
+}
