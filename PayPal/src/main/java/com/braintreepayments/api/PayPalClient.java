@@ -61,9 +61,9 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the PayPal tokenization process by creating a {@link PayPalResponse} to be used to
+     * Starts the PayPal tokenization process by creating a {@link PayPalPaymentAuthRequest} to be used to
      * launch the PayPal web authentication flow in
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
@@ -160,24 +160,25 @@ public class PayPalClient {
                 });
     }
 
-    private BrowserSwitchOptions buildBrowserSwitchOptions(PayPalResponse payPalResponse)
+    private BrowserSwitchOptions buildBrowserSwitchOptions(
+            PayPalPaymentAuthRequest payPalPaymentAuthRequest)
             throws JSONException {
         JSONObject metadata = new JSONObject();
-        metadata.put("approval-url", payPalResponse.getApprovalUrl());
-        metadata.put("success-url", payPalResponse.getSuccessUrl());
+        metadata.put("approval-url", payPalPaymentAuthRequest.getApprovalUrl());
+        metadata.put("success-url", payPalPaymentAuthRequest.getSuccessUrl());
 
-        String paymentType = payPalResponse.isBillingAgreement()
+        String paymentType = payPalPaymentAuthRequest.isBillingAgreement()
                 ? "billing-agreement" : "single-payment";
 
         metadata.put("payment-type", paymentType);
-        metadata.put("client-metadata-id", payPalResponse.getClientMetadataId());
-        metadata.put("merchant-account-id", payPalResponse.getMerchantAccountId());
+        metadata.put("client-metadata-id", payPalPaymentAuthRequest.getClientMetadataId());
+        metadata.put("merchant-account-id", payPalPaymentAuthRequest.getMerchantAccountId());
         metadata.put("source", "paypal-browser");
-        metadata.put("intent", payPalResponse.getIntent());
+        metadata.put("intent", payPalPaymentAuthRequest.getIntent());
 
         return new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.PAYPAL)
-                .url(Uri.parse(payPalResponse.getApprovalUrl()))
+                .url(Uri.parse(payPalPaymentAuthRequest.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
@@ -194,25 +195,25 @@ public class PayPalClient {
      * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
      * receive a {@link PayPalAccountNonce} on success.
      *
-     * @param payPalBrowserSwitchResult a {@link PayPalBrowserSwitchResult} received in the callback
+     * @param payPalPaymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback
      *                                  of
      *                                  {@link
      *                                  PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *                                  PayPalLauncher}
      * @param callback                  {@link PayPalTokenizeCallback}
      */
-    public void tokenize(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
+    public void tokenize(@NonNull PayPalPaymentAuthResult payPalPaymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
         //noinspection ConstantConditions
-        if (payPalBrowserSwitchResult == null) {
+        if (payPalPaymentAuthResult == null) {
             callback.onResult(null,
                     new BraintreeException("PayPalBrowserSwitchResult cannot be null"));
             return;
         }
         BrowserSwitchResult browserSwitchResult =
-                payPalBrowserSwitchResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && payPalBrowserSwitchResult.getError() != null) {
-            callback.onResult(null, payPalBrowserSwitchResult.getError());
+                payPalPaymentAuthResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && payPalPaymentAuthResult.getError() != null) {
+            callback.onResult(null, payPalPaymentAuthResult.getError());
             return;
         }
         if (browserSwitchResult == null) {

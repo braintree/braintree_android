@@ -443,11 +443,12 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequest.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), isNull());
 
-        PayPalResponse payPalResponse = captor.getValue();
-        assertEquals("risk-correlation-id", payPalResponse.getClientMetadataId());
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = captor.getValue();
+        assertEquals("risk-correlation-id", payPalPaymentAuthRequest.getClientMetadataId());
     }
 
     @Test
@@ -466,12 +467,13 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequest.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        PayPalResponse payPalResponse = captor.getValue();
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = captor.getValue();
         assertNull(payPalRequest.getRiskCorrelationId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
+        assertEquals("sample-client-metadata-id", payPalPaymentAuthRequest.getClientMetadataId());
     }
 
     @Test
@@ -518,18 +520,19 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequest.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&ba_token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
-        PayPalResponse payPalResponse = captor.getValue();
-        assertTrue(payPalResponse.isBillingAgreement());
-        assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = captor.getValue();
+        assertTrue(payPalPaymentAuthRequest.isBillingAgreement());
+        assertEquals("sample-merchant-account-id", payPalPaymentAuthRequest.getMerchantAccountId());
+        assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequest.getSuccessUrl());
+        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalPaymentAuthRequest.getPairingId());
+        assertEquals("sample-client-metadata-id", payPalPaymentAuthRequest.getClientMetadataId());
+        assertEquals(expectedUrl, payPalPaymentAuthRequest.getApprovalUrl());
     }
 
     @Test
@@ -552,19 +555,20 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequest.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
-        PayPalResponse payPalResponse = captor.getValue();
-        assertFalse(payPalResponse.isBillingAgreement());
-        assertEquals("authorize", payPalResponse.getIntent());
-        assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
-        assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = captor.getValue();
+        assertFalse(payPalPaymentAuthRequest.isBillingAgreement());
+        assertEquals("authorize", payPalPaymentAuthRequest.getIntent());
+        assertEquals("sample-merchant-account-id", payPalPaymentAuthRequest.getMerchantAccountId());
+        assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequest.getSuccessUrl());
+        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalPaymentAuthRequest.getPairingId());
+        assertEquals("sample-client-metadata-id", payPalPaymentAuthRequest.getClientMetadataId());
+        assertEquals(expectedUrl, payPalPaymentAuthRequest.getApprovalUrl());
     }
 
     @Test
@@ -597,7 +601,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(payPalInternalClientCallback).onResult((PayPalResponse) isNull(),
+        verify(payPalInternalClientCallback).onResult((PayPalPaymentAuthRequest) isNull(),
                 any(JSONException.class));
     }
 

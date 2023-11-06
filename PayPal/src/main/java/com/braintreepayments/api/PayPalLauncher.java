@@ -21,7 +21,7 @@ public class PayPalLauncher {
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      *
      * @param callback a {@link PayPalLauncherCallback} to handle the result of
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}
      */
     public PayPalLauncher(@NonNull PayPalLauncherCallback callback) {
         this(new BrowserSwitchClient(), callback);
@@ -40,15 +40,16 @@ public class PayPalLauncher {
      * {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *
      * @param activity       an Android {@link FragmentActivity}
-     * @param payPalResponse the result of the PayPal web authentication flow received from invoking
+     * @param payPalPaymentAuthRequest the result of the PayPal web authentication flow received from invoking
      *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
      *                       PayPalRequest, PayPalPaymentAuthCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse) {
+    public void launch(@NonNull FragmentActivity activity, @NonNull
+    PayPalPaymentAuthRequest payPalPaymentAuthRequest) {
         try {
-            browserSwitchClient.start(activity, payPalResponse.getBrowserSwitchOptions());
+            browserSwitchClient.start(activity, payPalPaymentAuthRequest.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
-            callback.onResult(new PayPalBrowserSwitchResult(e));
+            callback.onResult(new PayPalPaymentAuthResult(e));
         }
     }
 
@@ -56,16 +57,16 @@ public class PayPalLauncher {
      * Captures and delivers the result of a the browser-based PayPal authentication flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
+     * used to invoke {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}.
      * <p>
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity, after invoking setIntent(intent).
      * <p>
-     * This method will deliver a {@link PayPalBrowserSwitchResult} to the
+     * This method will deliver a {@link PayPalPaymentAuthResult} to the
      * {@link PayPalLauncherCallback} used to instantiate this class. The
-     * {@link PayPalBrowserSwitchResult} should be passed to
-     * {@link PayPalClient#tokenize(PayPalBrowserSwitchResult, PayPalTokenizeCallback)}
+     * {@link PayPalPaymentAuthResult} should be passed to
+     * {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
@@ -74,7 +75,7 @@ public class PayPalLauncher {
     public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, PAYPAL, intent);
         if (result != null) {
-           callback.onResult(new PayPalBrowserSwitchResult(result));
+           callback.onResult(new PayPalPaymentAuthResult(result));
            browserSwitchClient.clearActiveRequests(context);
         }
     }

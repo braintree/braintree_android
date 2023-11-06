@@ -46,8 +46,8 @@ public class PayPalFragment extends BaseFragment {
         braintreeClient = getBraintreeClient();
         payPalClient = new PayPalClient(braintreeClient);
         payPalLauncher = new PayPalLauncher(
-                payPalBrowserSwitchResult -> payPalClient.tokenize(
-                        payPalBrowserSwitchResult, (payPalAccountNonce, error) -> {
+                payPalPaymentAuthResult -> payPalClient.tokenize(
+                        payPalPaymentAuthResult, (payPalAccountNonce, error) -> {
                             if (error != null) {
                                 handleError(error);
                             } else if (payPalAccountNonce != null) {
@@ -102,11 +102,11 @@ public class PayPalFragment extends BaseFragment {
             payPalRequest = createPayPalCheckoutRequest(activity, amount);
         }
         payPalClient.createPaymentAuthRequest(activity, payPalRequest,
-                (payPalResponse, error) -> {
+                (payPalPaymentAuthRequest, error) -> {
                     if (error != null) {
                         handleError(error);
                     } else {
-                        payPalLauncher.launch(requireActivity(), payPalResponse);
+                        payPalLauncher.launch(requireActivity(), payPalPaymentAuthRequest);
                     }
                 });
     }

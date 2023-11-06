@@ -61,8 +61,8 @@ class PayPalInternalClient {
                                 (responseBody, httpError) -> {
                                     if (responseBody != null) {
                                         try {
-                                            PayPalResponse payPalResponse =
-                                                    new PayPalResponse(payPalRequest)
+                                            PayPalPaymentAuthRequest payPalPaymentAuthRequest =
+                                                    new PayPalPaymentAuthRequest(payPalRequest)
                                                             .successUrl(successUrl);
 
                                             PayPalPaymentResource paypalPaymentResource =
@@ -85,15 +85,15 @@ class PayPalInternalClient {
                                                                         context, configuration);
 
                                                 if (pairingId != null) {
-                                                    payPalResponse
+                                                    payPalPaymentAuthRequest
                                                             .pairingId(pairingId)
                                                             .clientMetadataId(clientMetadataId);
                                                 }
 
-                                                payPalResponse.approvalUrl(
+                                                payPalPaymentAuthRequest.approvalUrl(
                                                         parsedRedirectUri.toString());
                                             }
-                                            callback.onResult(payPalResponse, null);
+                                            callback.onResult(payPalPaymentAuthRequest, null);
 
                                         } catch (JSONException exception) {
                                             callback.onResult(null, exception);

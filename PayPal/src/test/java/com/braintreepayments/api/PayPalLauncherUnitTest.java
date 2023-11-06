@@ -40,29 +40,29 @@ public class PayPalLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        PayPalResponse payPalResponse = mock(PayPalResponse.class);
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = mock(PayPalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(payPalResponse.getBrowserSwitchOptions()).thenReturn(options);
+        when(payPalPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
 
-        sut.launch(activity, payPalResponse);
+        sut.launch(activity, payPalPaymentAuthRequest);
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        PayPalResponse payPalResponse = mock(PayPalResponse.class);
+        PayPalPaymentAuthRequest payPalPaymentAuthRequest = mock(PayPalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(payPalResponse.getBrowserSwitchOptions()).thenReturn(options);
+        when(payPalPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
 
-        sut.launch(activity, payPalResponse);
+        sut.launch(activity, payPalPaymentAuthRequest);
 
-        ArgumentCaptor<PayPalBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(PayPalBrowserSwitchResult.class);
+        ArgumentCaptor<PayPalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
         verify(payPalLauncherCallback).onResult(captor.capture());
         assertSame(exception, captor.getValue().getError());
         assertNull(captor.getValue().getBrowserSwitchResult());
@@ -77,8 +77,8 @@ public class PayPalLauncherUnitTest {
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 
-        ArgumentCaptor<PayPalBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(PayPalBrowserSwitchResult.class);
+        ArgumentCaptor<PayPalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
         verify(payPalLauncherCallback).onResult(captor.capture());
         assertSame(result, captor.getValue().getBrowserSwitchResult());
         assertNull(captor.getValue().getError());
