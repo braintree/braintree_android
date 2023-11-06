@@ -3,10 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -238,8 +235,8 @@ public class ThreeDSecureClient {
                         threeDSecureVersion));
 
         if (!showChallenge) {
-            CardNonce cardNonce = result.getTokenizedCard();
-            ThreeDSecureInfo info = cardNonce.getThreeDSecureInfo();
+            ThreeDSecureNonce threeDSecureNonce = result.getThreeDSecureNonce();
+            ThreeDSecureInfo info = threeDSecureNonce.getThreeDSecureInfo();
 
             braintreeClient.sendAnalyticsEvent(
                     String.format("three-d-secure.verification-flow.liability-shifted.%b",
@@ -329,7 +326,7 @@ public class ThreeDSecureClient {
     }
 
     private void sendLiabilityShiftedAnalytics(ThreeDSecureResult threeDSecureResult) {
-        ThreeDSecureInfo info = threeDSecureResult.getTokenizedCard().getThreeDSecureInfo();
+        ThreeDSecureInfo info = threeDSecureResult.getThreeDSecureNonce().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(
                 String.format("three-d-secure.verification-flow.liability-shifted.%b",

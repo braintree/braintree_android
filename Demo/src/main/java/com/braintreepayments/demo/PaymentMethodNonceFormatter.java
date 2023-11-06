@@ -8,6 +8,7 @@ import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PostalAddress;
+import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VisaCheckoutAddress;
 import com.braintreepayments.api.VisaCheckoutNonce;
@@ -18,7 +19,9 @@ import java.util.List;
 public class PaymentMethodNonceFormatter {
 
     public static String convertToString(PaymentMethodNonce nonce) {
-        if (nonce instanceof CardNonce) {
+        if (nonce instanceof ThreeDSecureNonce) {
+            return convertThreeDSecureNonceToString((ThreeDSecureNonce) nonce);
+        } else if (nonce instanceof CardNonce) {
             return convertCardNonceToString((CardNonce) nonce);
         } else if (nonce instanceof PayPalAccountNonce) {
             return convertPayPalNonceToString((PayPalAccountNonce) nonce);
@@ -37,6 +40,11 @@ public class PaymentMethodNonceFormatter {
     }
 
     private static String convertCardNonceToString(CardNonce nonce) {
+        return "Card Last Two: " + nonce.getLastTwo() + "\n" +
+                convertBinDataToString(nonce.getBinData());
+    }
+
+    private static String convertThreeDSecureNonceToString(ThreeDSecureNonce nonce) {
         return "Card Last Two: " + nonce.getLastTwo() + "\n" +
                 convertBinDataToString(nonce.getBinData()) + "\n" +
                 "3DS: \n" +

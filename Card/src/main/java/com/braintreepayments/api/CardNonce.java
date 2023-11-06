@@ -15,19 +15,18 @@ import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
  */
 public class CardNonce extends PaymentMethodNonce {
 
-    private static final String API_RESOURCE_KEY = "creditCards";
+    static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
-    private static final String DATA_KEY = "data";
+    static final String DATA_KEY = "data";
     private static final String TOKEN_KEY = "token";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
     private static final String GRAPHQL_BRAND_KEY = "brand";
     private static final String GRAPHQL_LAST_FOUR_KEY = "last4";
-    private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
@@ -41,7 +40,6 @@ public class CardNonce extends PaymentMethodNonce {
     private final String cardType;
     private final String lastTwo;
     private final String lastFour;
-    private final ThreeDSecureInfo threeDSecureInfo;
     private final String bin;
     private final BinData binData;
     private final AuthenticationInsight authenticationInsight;
@@ -101,7 +99,6 @@ public class CardNonce extends PaymentMethodNonce {
         String lastTwo = details.getString(LAST_TWO_KEY);
         String lastFour = details.getString(LAST_FOUR_KEY);
         String cardType = details.getString(CARD_TYPE_KEY);
-        ThreeDSecureInfo threeDSecureInfo = ThreeDSecureInfo.fromJson(inputJson.optJSONObject(THREE_D_SECURE_INFO_KEY));
         String bin = Json.optString(details, BIN_KEY, "");
         BinData binData = BinData.fromJson(inputJson.optJSONObject(BIN_DATA_KEY));
         AuthenticationInsight authenticationInsight = AuthenticationInsight.fromJson(inputJson.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
@@ -109,7 +106,7 @@ public class CardNonce extends PaymentMethodNonce {
         String expirationYear = Json.optString(details, EXPIRATION_YEAR_KEY, "");
         String cardholderName = Json.optString(details, CARDHOLDER_NAME_KEY, "");
 
-        return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
+        return new CardNonce(cardType, lastTwo, lastFour, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, isDefault);
     }
 
     /**
@@ -129,7 +126,6 @@ public class CardNonce extends PaymentMethodNonce {
             String lastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
             String lastTwo = lastFour.length() < 4 ? "" : lastFour.substring(2);
             String cardType = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
-            ThreeDSecureInfo threeDSecureInfo = ThreeDSecureInfo.fromJson(null);
             String bin = Json.optString(creditCard, "bin", "");
             BinData binData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             String nonce = payload.getString(TOKEN_KEY);
@@ -138,19 +134,20 @@ public class CardNonce extends PaymentMethodNonce {
             String expirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
             String cardholderName = Json.optString(creditCard, CARDHOLDER_NAME_KEY, "");
 
-            return new CardNonce(cardType, lastTwo, lastFour, threeDSecureInfo, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false);
+            return new CardNonce(cardType, lastTwo, lastFour, bin, binData, authenticationInsight, expirationMonth, expirationYear, cardholderName, nonce, false);
 
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
     }
 
-    private CardNonce(String cardType, String lastTwo, String lastFour, ThreeDSecureInfo threeDSecureInfo, String bin, BinData binData, AuthenticationInsight authenticationInsight, String expirationMonth, String expirationYear, String cardholderName, String nonce, boolean isDefault) {
+    CardNonce(String cardType, String lastTwo, String lastFour, String bin, BinData binData,
+              AuthenticationInsight authenticationInsight, String expirationMonth,
+              String expirationYear, String cardholderName, String nonce, boolean isDefault) {
         super(nonce, isDefault);
         this.cardType = cardType;
         this.lastTwo = lastTwo;
         this.lastFour = lastFour;
-        this.threeDSecureInfo = threeDSecureInfo;
         this.bin = bin;
         this.binData = binData;
         this.authenticationInsight = authenticationInsight;
@@ -207,14 +204,6 @@ public class CardNonce extends PaymentMethodNonce {
         return cardholderName;
     }
 
-    /**
-     * @return The 3D Secure info for the current {@link CardNonce} or
-     * {@code null}
-     */
-    @NonNull
-    public ThreeDSecureInfo getThreeDSecureInfo() {
-        return threeDSecureInfo;
-    }
 
     /**
      * @return BIN of the card.
@@ -251,7 +240,6 @@ public class CardNonce extends PaymentMethodNonce {
         dest.writeString(lastFour);
         dest.writeString(bin);
         dest.writeParcelable(binData, flags);
-        dest.writeParcelable(threeDSecureInfo, flags);
         dest.writeParcelable(authenticationInsight, flags);
         dest.writeString(expirationMonth);
         dest.writeString(expirationYear);
@@ -265,7 +253,6 @@ public class CardNonce extends PaymentMethodNonce {
         lastFour = in.readString();
         bin = in.readString();
         binData = in.readParcelable(BinData.class.getClassLoader());
-        threeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         authenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
         expirationMonth = in.readString();
         expirationYear = in.readString();
