@@ -40,7 +40,7 @@ public class PayPalLauncher {
      * {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *
      * @param activity       an Android {@link FragmentActivity}
-     * @param payPalPaymentAuthRequest the result of the PayPal web authentication flow received from invoking
+     * @param payPalPaymentAuthRequest a request to launch the PayPal web flow created in
      *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
      *                       PayPalRequest, PayPalPaymentAuthCallback)}
      */

@@ -61,7 +61,7 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the PayPal tokenization process by creating a {@link PayPalPaymentAuthRequest} to be used to
+     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequest} to be used to
      * launch the PayPal web authentication flow in
      * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}.
      *
@@ -192,14 +192,11 @@ public class PayPalClient {
     /**
      * After receiving a result from the PayPal web authentication flow via
      * {@link PayPalLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
-     * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
+     * {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal account and
      * receive a {@link PayPalAccountNonce} on success.
      *
      * @param payPalPaymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback
-     *                                  of
-     *                                  {@link
-     *                                  PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
-     *                                  PayPalLauncher}
+     *                                  of {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      * @param callback                  {@link PayPalTokenizeCallback}
      */
     public void tokenize(@NonNull PayPalPaymentAuthResult payPalPaymentAuthResult,
