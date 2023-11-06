@@ -42,7 +42,7 @@ public class PayPalLauncher {
      * @param activity       an Android {@link FragmentActivity}
      * @param payPalResponse the result of the PayPal web authentication flow received from invoking
      *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
-     *                       PayPalRequest, PayPalFlowStartedCallback)}
+     *                       PayPalRequest, PayPalPaymentAuthCallback)}
      */
     public void launch(@NonNull FragmentActivity activity, @NonNull PayPalResponse payPalResponse) {
         try {
@@ -65,7 +65,7 @@ public class PayPalLauncher {
      * This method will deliver a {@link PayPalBrowserSwitchResult} to the
      * {@link PayPalLauncherCallback} used to instantiate this class. The
      * {@link PayPalBrowserSwitchResult} should be passed to
-     * {@link PayPalClient#tokenize(PayPalBrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
+     * {@link PayPalClient#tokenize(PayPalBrowserSwitchResult, PayPalTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from

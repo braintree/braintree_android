@@ -5,9 +5,9 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#createPaymentAuthRequest(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)}.
+ * {@link PayPalClient#createPaymentAuthRequest(FragmentActivity, PayPalRequest, PayPalPaymentAuthCallback)}.
  */
-public interface PayPalFlowStartedCallback {
+public interface PayPalPaymentAuthCallback {
 
     /**
      * @param payPalResponse the result of the PayPal web authentication flow

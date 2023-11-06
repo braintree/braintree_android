@@ -51,13 +51,13 @@ public class MockPayPalInternalClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalBrowserSwitchResultCallback callback =
-                        (PayPalBrowserSwitchResultCallback) invocation.getArguments()[1];
+                PayPalTokenizeCallback callback =
+                        (PayPalTokenizeCallback) invocation.getArguments()[1];
                 callback.onResult(tokenizeSuccess, null);
                 return null;
             }
         }).when(payPalInternalClient)
-                .tokenize(any(PayPalAccount.class), any(PayPalBrowserSwitchResultCallback.class));
+                .tokenize(any(PayPalAccount.class), any(PayPalTokenizeCallback.class));
 
         return payPalInternalClient;
     }

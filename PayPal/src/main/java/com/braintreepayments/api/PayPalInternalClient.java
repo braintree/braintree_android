@@ -3,11 +3,9 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 class PayPalInternalClient {
 
@@ -114,7 +112,7 @@ class PayPalInternalClient {
         });
     }
 
-    void tokenize(PayPalAccount payPalAccount, final PayPalBrowserSwitchResultCallback callback) {
+    void tokenize(PayPalAccount payPalAccount, final PayPalTokenizeCallback callback) {
         apiClient.tokenizeREST(payPalAccount, (tokenizationResponse, exception) -> {
             if (tokenizationResponse != null) {
                 try {

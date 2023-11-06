@@ -636,7 +636,7 @@ public class PayPalInternalClientUnitTest {
     public void tokenize_tokenizesWithApiClient() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalAccount payPalAccount = mock(PayPalAccount.class);
-        PayPalBrowserSwitchResultCallback callback = mock(PayPalBrowserSwitchResultCallback.class);
+        PayPalTokenizeCallback callback = mock(PayPalTokenizeCallback.class);
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
@@ -653,7 +653,7 @@ public class PayPalInternalClientUnitTest {
                         new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
                 .build();
         PayPalAccount payPalAccount = mock(PayPalAccount.class);
-        PayPalBrowserSwitchResultCallback callback = mock(PayPalBrowserSwitchResultCallback.class);
+        PayPalTokenizeCallback callback = mock(PayPalTokenizeCallback.class);
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
@@ -677,7 +677,7 @@ public class PayPalInternalClientUnitTest {
                 .tokenizeRESTError(error)
                 .build();
         PayPalAccount payPalAccount = mock(PayPalAccount.class);
-        PayPalBrowserSwitchResultCallback callback = mock(PayPalBrowserSwitchResultCallback.class);
+        PayPalTokenizeCallback callback = mock(PayPalTokenizeCallback.class);
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 

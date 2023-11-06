@@ -1,9 +1,9 @@
 package com.braintreepayments.api;
 
 /**
- * Result received from the PayPal web flow through {@link PayPalBrowserSwitchResultCallback}.
+ * Result received from the PayPal web flow through {@link PayPalTokenizeCallback}.
  * This result should be passed to
- * {@link PayPalClient#tokenize(PayPalBrowserSwitchResult, PayPalBrowserSwitchResultCallback)}
+ * {@link PayPalClient#tokenize(PayPalBrowserSwitchResult, PayPalTokenizeCallback)}
  * to complete the PayPal payment flow.
  */
 public class PayPalBrowserSwitchResult {

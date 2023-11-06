@@ -33,8 +33,8 @@ public class PayPalClientUnitTest {
     private Configuration payPalEnabledConfig;
     private Configuration payPalDisabledConfig;
 
-    private PayPalBrowserSwitchResultCallback payPalBrowserSwitchResultCallback;
-    private PayPalFlowStartedCallback payPalFlowStartedCallback;
+    private PayPalTokenizeCallback payPalTokenizeCallback;
+    private PayPalPaymentAuthCallback paymentAuthCallback;
 
     @Before
     public void beforeEach() throws JSONException {
@@ -43,8 +43,8 @@ public class PayPalClientUnitTest {
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
 
-        payPalBrowserSwitchResultCallback = mock(PayPalBrowserSwitchResultCallback.class);
-        payPalFlowStartedCallback = mock(PayPalFlowStartedCallback.class);
+        payPalTokenizeCallback = mock(PayPalTokenizeCallback.class);
+        paymentAuthCallback = mock(PayPalPaymentAuthCallback.class);
     }
 
     @Test
@@ -66,11 +66,11 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalVaultRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalResponse> captor =
                 ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalFlowStartedCallback).onResult(captor.capture(), isNull());
+        verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
         PayPalResponse payPalResponseResult = captor.getValue();
 
@@ -109,11 +109,11 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalVaultRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalResponse> captor =
                 ArgumentCaptor.forClass(PayPalResponse.class);
-        verify(payPalFlowStartedCallback).onResult(captor.capture(), isNull());
+        verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
         PayPalResponse payPalResponseResult = captor.getValue();
         assertTrue(payPalResponseResult.getBrowserSwitchOptions().isLaunchAsNewTask());
@@ -138,7 +138,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalVaultRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected");
         verify(braintreeClient).sendAnalyticsEvent(
@@ -156,10 +156,10 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"),
-                payPalFlowStartedCallback);
+                paymentAuthCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalFlowStartedCallback).onResult(isNull(), errorCaptor.capture());
+        verify(paymentAuthCallback).onResult(isNull(), errorCaptor.capture());
         assertTrue(errorCaptor.getValue() instanceof BraintreeException);
         assertEquals("PayPal is not enabled. " +
                 "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
@@ -178,10 +178,10 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"),
-                payPalFlowStartedCallback);
+                paymentAuthCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalFlowStartedCallback).onResult(isNull(), errorCaptor.capture());
+        verify(paymentAuthCallback).onResult(isNull(), errorCaptor.capture());
         assertTrue(errorCaptor.getValue() instanceof BraintreeException);
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                         "defines the same browser switch url as this app. See " +
@@ -211,7 +211,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");
@@ -226,7 +226,7 @@ public class PayPalClientUnitTest {
                 new PayPalClient(braintreeClient, payPalInternalClient);
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
         request.setShouldOfferPayLater(true);
-        sut.createPaymentAuthRequest(activity, request, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, request, paymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
     }
@@ -243,7 +243,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
                 any(PayPalInternalClientCallback.class));
@@ -261,7 +261,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
                 any(PayPalInternalClientCallback.class));
@@ -277,7 +277,7 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, payPalRequest, payPalFlowStartedCallback);
+        sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
     }
@@ -290,10 +290,10 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(null, payPalBrowserSwitchResultCallback);
+        sut.tokenize(null, payPalTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+        verify(payPalTokenizeCallback).onResult(isNull(), captor.capture());
 
         assertNotNull(captor.getValue());
         assertEquals("PayPalBrowserSwitchResult cannot be null", captor.getValue().getMessage());
@@ -310,10 +310,10 @@ public class PayPalClientUnitTest {
         Exception expectedError = new Exception("error");
         PayPalBrowserSwitchResult payPalBrowserSwitchResult =
                 new PayPalBrowserSwitchResult(expectedError);
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+        verify(payPalTokenizeCallback).onResult(isNull(), captor.capture());
 
         assertNotNull(captor.getValue());
         assertSame(expectedError, captor.getValue());
@@ -329,10 +329,10 @@ public class PayPalClientUnitTest {
 
         PayPalBrowserSwitchResult payPalBrowserSwitchResult = new PayPalBrowserSwitchResult(
                 (BrowserSwitchResult) null);
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+        verify(payPalTokenizeCallback).onResult(isNull(), captor.capture());
 
         assertNotNull(captor.getValue());
         assertEquals("An unexpected error occurred", captor.getValue().getMessage());
@@ -368,11 +368,11 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalBrowserSwitchResultCallback.class));
+                any(PayPalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();
@@ -419,11 +419,11 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalBrowserSwitchResultCallback.class));
+                any(PayPalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();
@@ -473,7 +473,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.browser-switch.succeeded");
@@ -507,7 +507,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.succeeded");
@@ -545,7 +545,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.credit.accepted");
     }
@@ -578,10 +578,10 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+        verify(payPalTokenizeCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
@@ -606,10 +606,10 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(payPalBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
+        verify(payPalTokenizeCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
@@ -652,7 +652,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut =
                 new PayPalClient(braintreeClient, payPalInternalClient);
 
-        sut.tokenize(payPalBrowserSwitchResult, payPalBrowserSwitchResultCallback);
-        verify(payPalBrowserSwitchResultCallback).onResult(same(payPalAccountNonce), isNull());
+        sut.tokenize(payPalBrowserSwitchResult, payPalTokenizeCallback);
+        verify(payPalTokenizeCallback).onResult(same(payPalAccountNonce), isNull());
     }
 }

@@ -67,11 +67,11 @@ public class PayPalClient {
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     * @param callback      {@link PayPalFlowStartedCallback}
+     * @param callback      {@link PayPalPaymentAuthCallback}
      */
     public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
                                          @NonNull final PayPalRequest payPalRequest,
-                                         @NonNull final PayPalFlowStartedCallback callback) {
+                                         @NonNull final PayPalPaymentAuthCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -81,7 +81,7 @@ public class PayPalClient {
 
     private void sendCheckoutRequest(final FragmentActivity activity,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
-                                     final PayPalFlowStartedCallback callback) {
+                                     final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
@@ -110,7 +110,7 @@ public class PayPalClient {
 
     private void sendVaultRequest(final FragmentActivity activity,
                                   final PayPalVaultRequest payPalVaultRequest,
-                                  final PayPalFlowStartedCallback callback) {
+                                  final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
         if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
@@ -138,7 +138,7 @@ public class PayPalClient {
 
     private void sendPayPalRequest(final FragmentActivity activity,
                                    final PayPalRequest payPalRequest,
-                                   final PayPalFlowStartedCallback callback) {
+                                   final PayPalPaymentAuthCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest,
                 (payPalResponse, error) -> {
                     if (payPalResponse != null) {
@@ -199,10 +199,10 @@ public class PayPalClient {
      *                                  {@link
      *                                  PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *                                  PayPalLauncher}
-     * @param callback                  {@link PayPalBrowserSwitchResultCallback}
+     * @param callback                  {@link PayPalTokenizeCallback}
      */
     public void tokenize(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
-                         @NonNull final PayPalBrowserSwitchResultCallback callback) {
+                         @NonNull final PayPalTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (payPalBrowserSwitchResult == null) {
             callback.onResult(null,
