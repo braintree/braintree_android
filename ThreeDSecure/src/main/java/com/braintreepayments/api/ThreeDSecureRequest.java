@@ -18,12 +18,6 @@ import java.util.List;
  * A class to contain 3D Secure request information used for authentication
  */
 public class ThreeDSecureRequest implements Parcelable {
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({VERSION_2})
-    @interface ThreeDSecureVersion {
-    }
-
-    public static final String VERSION_2 = "2";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({CREDIT, DEBIT})
@@ -69,7 +63,6 @@ public class ThreeDSecureRequest implements Parcelable {
     private String email;
     private @ThreeDSecureShippingMethod int shippingMethod;
     private ThreeDSecurePostalAddress billingAddress;
-    private @ThreeDSecureVersion String versionRequested = VERSION_2;
     private @ThreeDSecureAccountType String accountType;
     private ThreeDSecureAdditionalInformation additionalInformation;
     private boolean challengeRequested = false;
@@ -78,7 +71,6 @@ public class ThreeDSecureRequest implements Parcelable {
     private @ThreeDSecureRequestedExemptionType String requestedExemptionType;
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
-    private ThreeDSecureV1UiCustomization v1UiCustomization;
     private @ThreeDSecureUiType int uiType;
     private List<Integer> renderTypes;
 
@@ -227,15 +219,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional UI Customization for the 3DS1 challenge views.
-     *
-     * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
-     */
-    public void setV1UiCustomization(@Nullable ThreeDSecureV1UiCustomization v1UiCustomization) {
-        this.v1UiCustomization = v1UiCustomization;
-    }
-
-    /**
      * Optional. Sets all UI types that the device supports for displaying specific challenge user
      * interfaces in the 3D Secure challenge. Possible Values: 01 BOTH 02 Native 03 HTML
      * <p>
@@ -311,14 +294,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return The requested ThreeDSecure version
-     */
-    @Nullable
-    public @ThreeDSecureVersion String getVersionRequested() {
-        return versionRequested;
-    }
-
-    /**
      * @return The account type
      */
     @Nullable
@@ -328,8 +303,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * @return The additional information used for verification
-     * {@link ThreeDSecureAdditionalInformation} is only used for
-     * {@link ThreeDSecureRequest#VERSION_2} requests.
+     * {@link ThreeDSecureAdditionalInformation}.
      */
     @Nullable
     public ThreeDSecureAdditionalInformation getAdditionalInformation() {
@@ -380,14 +354,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return The UI customization for 3DS1 challenge views.
-     */
-    @Nullable
-    public ThreeDSecureV1UiCustomization getV1UiCustomization() {
-        return v1UiCustomization;
-    }
-
-    /**
      * @return The UI type.
      */
     public @ThreeDSecureUiType int getUiType() {
@@ -417,7 +383,6 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(email);
         dest.writeInt(shippingMethod);
         dest.writeParcelable(billingAddress, flags);
-        dest.writeString(versionRequested);
         dest.writeParcelable(additionalInformation, flags);
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
         dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
@@ -425,7 +390,6 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(requestedExemptionType);
         dest.writeSerializable(cardAddChallengeRequested);
         dest.writeParcelable(v2UiCustomization, flags);
-        dest.writeParcelable(v1UiCustomization, flags);
         dest.writeString(accountType);
     }
 
@@ -436,7 +400,6 @@ public class ThreeDSecureRequest implements Parcelable {
         email = in.readString();
         shippingMethod = in.readInt();
         billingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
-        versionRequested = in.readString();
         additionalInformation =
                 in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         challengeRequested = in.readByte() > 0;
@@ -445,7 +408,6 @@ public class ThreeDSecureRequest implements Parcelable {
         requestedExemptionType = in.readString();
         cardAddChallengeRequested = (Boolean) in.readSerializable();
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
-        v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         accountType = in.readString();
     }
 
@@ -499,10 +461,7 @@ public class ThreeDSecureRequest implements Parcelable {
                 additionalInfo.putOpt("billing_phone_number", billing.getPhoneNumber());
             }
 
-            if (VERSION_2.equals(getVersionRequested())) {
-                base.putOpt("df_reference_id", dfReferenceId);
-            }
-
+            base.putOpt("df_reference_id", dfReferenceId);
             base.put("challenge_requested", challengeRequested);
             base.put("data_only_requested", dataOnlyRequested);
             base.put("exemption_requested", exemptionRequested);
