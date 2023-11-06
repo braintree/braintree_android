@@ -170,6 +170,9 @@ in the `OnCreate` method of your Activity or `onCreateView` method of your Fragm
 `BraintreeClient` and `ThreeDSecureClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+3DS V1 is no longer supported, so `versionRequested` has been removed from `ThreeDSecureRequest` 
+and `ThreeDSecureV1UICustomization` has been removed.
+
 ```diff
 class MyActivity : FragmentActivity() {
     
