@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentActivity;
 public interface PayPalPaymentAuthCallback {
 
     /**
-     * @param payPalPaymentAuthRequest a request used to launch the PayPal web authentication flow
+     * @param paymentAuthRequest a request used to launch the PayPal web authentication flow
      * @param error          an exception that occurred while initiating a PayPal transaction
      */
-    void onResult(PayPalPaymentAuthRequest payPalPaymentAuthRequest, @Nullable Exception error);
+    void onResult(PayPalPaymentAuthRequest paymentAuthRequest, @Nullable Exception error);
 }

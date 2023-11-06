@@ -40,14 +40,14 @@ public class PayPalLauncher {
      * {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
      *
      * @param activity       an Android {@link FragmentActivity}
-     * @param payPalPaymentAuthRequest a request to launch the PayPal web flow created in
+     * @param paymentAuthRequest a request to launch the PayPal web flow created in
      *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
      *                       PayPalRequest, PayPalPaymentAuthCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull
-    PayPalPaymentAuthRequest payPalPaymentAuthRequest) {
+    public void launch(@NonNull FragmentActivity activity,
+                       @NonNull PayPalPaymentAuthRequest paymentAuthRequest) {
         try {
-            browserSwitchClient.start(activity, payPalPaymentAuthRequest.getBrowserSwitchOptions());
+            browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
             callback.onResult(new PayPalPaymentAuthResult(e));
         }

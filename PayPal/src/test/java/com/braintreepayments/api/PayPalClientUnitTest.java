@@ -52,12 +52,12 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
-                .sendRequestSuccess(payPalPaymentAuthRequest)
+                .sendRequestSuccess(paymentAuthRequest)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -72,9 +72,9 @@ public class PayPalClientUnitTest {
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequestResult = captor.getValue();
+        PayPalPaymentAuthRequest paymentAuthRequestCaptured = captor.getValue();
 
-        BrowserSwitchOptions browserSwitchOptions = payPalPaymentAuthRequestResult.getBrowserSwitchOptions();
+        BrowserSwitchOptions browserSwitchOptions = paymentAuthRequestCaptured.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
@@ -94,12 +94,12 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
-                .sendRequestSuccess(payPalPaymentAuthRequest)
+                .sendRequestSuccess(paymentAuthRequest)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -115,8 +115,8 @@ public class PayPalClientUnitTest {
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequestResult = captor.getValue();
-        assertTrue(payPalPaymentAuthRequestResult.getBrowserSwitchOptions().isLaunchAsNewTask());
+        PayPalPaymentAuthRequest paymentAuthRequestCaptured = captor.getValue();
+        assertTrue(paymentAuthRequestCaptured.getBrowserSwitchOptions().isLaunchAsNewTask());
     }
 
     @Test
@@ -124,12 +124,12 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
-                .sendRequestSuccess(payPalPaymentAuthRequest)
+                .sendRequestSuccess(paymentAuthRequest)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -197,12 +197,12 @@ public class PayPalClientUnitTest {
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest payPalPaymentAuthRequest = new PayPalPaymentAuthRequest(payPalCheckoutRequest)
+        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
-                .sendRequestSuccess(payPalPaymentAuthRequest)
+                .sendRequestSuccess(paymentAuthRequest)
                 .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
