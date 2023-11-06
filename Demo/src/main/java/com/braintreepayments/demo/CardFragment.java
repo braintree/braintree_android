@@ -21,17 +21,15 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
-import com.braintreepayments.api.CardinalResult;
-import com.braintreepayments.api.CardinalResultCallback;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
+import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
-import com.braintreepayments.api.ThreeDSecureResultCallback;
 import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
@@ -213,7 +211,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
         safelyCloseLoadingView();
         if (threeDSecureResult != null) {
-            PaymentMethodNonce paymentMethodNonce = threeDSecureResult.getTokenizedCard();
+            ThreeDSecureNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);

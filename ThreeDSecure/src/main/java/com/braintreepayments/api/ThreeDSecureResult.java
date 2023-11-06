@@ -19,7 +19,7 @@ public class ThreeDSecureResult implements Parcelable {
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String LOOKUP_KEY = "lookup";
 
-    private CardNonce tokenizedCard;
+    private ThreeDSecureNonce threeDSecureNonce;
     private String errorMessage;
 
     private ThreeDSecureLookup lookup;
@@ -37,7 +37,7 @@ public class ThreeDSecureResult implements Parcelable {
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
         if (cardJson != null) {
-            result.tokenizedCard = CardNonce.fromJSON(cardJson);
+            result.threeDSecureNonce = ThreeDSecureNonce.fromJSON(cardJson);
         }
 
         if (json.has(ERRORS_KEY)) {
@@ -59,15 +59,15 @@ public class ThreeDSecureResult implements Parcelable {
     }
 
     /**
-     * @return The {@link CardNonce} associated with the 3D Secure authentication
+     * @return The {@link ThreeDSecureNonce} associated with the 3D Secure authentication
      */
     @Nullable
-    public CardNonce getTokenizedCard() {
-        return tokenizedCard;
+    public ThreeDSecureNonce getThreeDSecureNonce() {
+        return threeDSecureNonce;
     }
 
-    void setTokenizedCard(CardNonce cardNonce) {
-        tokenizedCard = cardNonce;
+    void setThreeDSecureNonce(@Nullable ThreeDSecureNonce cardNonce) {
+        threeDSecureNonce = cardNonce;
     }
 
     /**
@@ -99,25 +99,24 @@ public class ThreeDSecureResult implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(tokenizedCard, flags);
+        dest.writeParcelable(threeDSecureNonce, flags);
         dest.writeString(errorMessage);
         dest.writeParcelable(lookup, flags);
     }
 
     private ThreeDSecureResult(Parcel in) {
-        tokenizedCard = in.readParcelable(CardNonce.class.getClassLoader());
+        threeDSecureNonce = in.readParcelable(CardNonce.class.getClassLoader());
         errorMessage = in.readString();
         lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
-    public static final Creator<ThreeDSecureResult> CREATOR =
-            new Creator<ThreeDSecureResult>() {
-                public ThreeDSecureResult createFromParcel(Parcel source) {
-                    return new ThreeDSecureResult(source);
-                }
+    public static final Creator<ThreeDSecureResult> CREATOR = new Creator<>() {
+        public ThreeDSecureResult createFromParcel(Parcel source) {
+            return new ThreeDSecureResult(source);
+        }
 
-                public ThreeDSecureResult[] newArray(int size) {
-                    return new ThreeDSecureResult[size];
-                }
-            };
+        public ThreeDSecureResult[] newArray(int size) {
+            return new ThreeDSecureResult[size];
+        }
+    };
 }
