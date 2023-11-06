@@ -37,8 +37,8 @@
     * Add `ThreeDSecureClient#onCardinalResult`
     * Remove `versionRequested` from `ThreeDSecureRequest`
     * Add `ThreeDSecureNonce` class
-    * Rename `ThreeSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
-    * Remove `ThreeSSecureV1UICustomization`
+    * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
+    * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
   * PayPal
     * Remove `PayPalListener`
