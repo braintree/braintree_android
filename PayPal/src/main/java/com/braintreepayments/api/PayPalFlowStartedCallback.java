@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#tokenizePayPalAccount(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)}.
+ * {@link PayPalClient#createPaymentAuthRequest(FragmentActivity, PayPalRequest, PayPalFlowStartedCallback)}.
  */
 public interface PayPalFlowStartedCallback {
 

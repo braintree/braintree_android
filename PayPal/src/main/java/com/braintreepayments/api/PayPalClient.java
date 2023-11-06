@@ -69,9 +69,9 @@ public class PayPalClient {
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback      {@link PayPalFlowStartedCallback}
      */
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
-                                      @NonNull final PayPalRequest payPalRequest,
-                                      @NonNull final PayPalFlowStartedCallback callback) {
+    public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
+                                         @NonNull final PayPalRequest payPalRequest,
+                                         @NonNull final PayPalFlowStartedCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -201,8 +201,8 @@ public class PayPalClient {
      *                                  PayPalLauncher}
      * @param callback                  {@link PayPalBrowserSwitchResultCallback}
      */
-    public void onBrowserSwitchResult(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
-                                      @NonNull final PayPalBrowserSwitchResultCallback callback) {
+    public void tokenize(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
+                         @NonNull final PayPalBrowserSwitchResultCallback callback) {
         //noinspection ConstantConditions
         if (payPalBrowserSwitchResult == null) {
             callback.onResult(null,
