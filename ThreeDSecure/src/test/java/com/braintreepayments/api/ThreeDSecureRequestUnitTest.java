@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -16,13 +15,6 @@ import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
-
-    @Test
-    public void constructor_noVersionRequested_defaultsToVersion2() {
-        ThreeDSecureRequest request = new ThreeDSecureRequest();
-
-        assertEquals(VERSION_2, request.getVersionRequested());
-    }
 
     @Test
     public void writeToParcel() {
@@ -66,10 +58,6 @@ public class ThreeDSecureRequestUnitTest {
                 ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
-        v1UiCustomization.setRedirectButtonText("return-button-text");
-        v1UiCustomization.setRedirectDescription("return-label-text");
-
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setNonce("a-nonce");
         expected.setAmount("1.00");
@@ -84,7 +72,6 @@ public class ThreeDSecureRequestUnitTest {
         expected.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
         expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
-        expected.setV1UiCustomization(v1UiCustomization);
         expected.setAccountType(ThreeDSecureRequest.CREDIT);
 
         Parcel parcel = Parcel.obtain();
@@ -99,7 +86,6 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getMobilePhoneNumber(), actual.getMobilePhoneNumber());
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
-        assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
         assertEquals(expected.getBillingAddress().getGivenName(),
                 actual.getBillingAddress().getGivenName());
         assertEquals(expected.getBillingAddress().getSurname(),
@@ -141,12 +127,6 @@ public class ThreeDSecureRequestUnitTest {
                 actual.getV2UiCustomization().getToolbarCustomization().getTextColor());
         assertEquals(expected.getV2UiCustomization().getToolbarCustomization().getButtonText(),
                 actual.getV2UiCustomization().getToolbarCustomization().getButtonText());
-
-        assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
-                actual.getV1UiCustomization().getRedirectButtonText());
-
-        assertEquals(expected.getV1UiCustomization().getRedirectDescription(),
-                actual.getV1UiCustomization().getRedirectDescription());
     }
 
     @Test

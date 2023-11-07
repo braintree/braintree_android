@@ -30,7 +30,6 @@ import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
-import com.braintreepayments.api.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
@@ -323,11 +322,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         v2UiCustomization.setButtonCustomization(submitButtonCustomization,
                 ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
 
-        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization();
-        v1UiCustomization.setRedirectButtonText("Return to Demo App");
-        v1UiCustomization.setRedirectDescription(
-                "Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
-
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
         threeDSecureRequest.setAmount("10");
         threeDSecureRequest.setEmail("test@email.com");
@@ -336,7 +330,6 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
-        threeDSecureRequest.setV1UiCustomization(v1UiCustomization);
 
         threeDSecureRequest.setUiType(ThreeDSecureRequest.BOTH);
 
