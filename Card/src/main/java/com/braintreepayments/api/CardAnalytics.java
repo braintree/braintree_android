@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 enum CardAnalytics {
 
+    // Tokenize Events
     CARD_TOKENIZE_STARTED("card:tokenize:started"),
     CARD_TOKENIZE_FAILED("card:tokenize:failed"),
     CARD_TOKENIZE_SUCCEEDED("card:tokenize:succeeded"),
