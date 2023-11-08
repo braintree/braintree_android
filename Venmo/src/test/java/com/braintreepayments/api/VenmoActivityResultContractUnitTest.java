@@ -2,11 +2,11 @@ package com.braintreepayments.api;
 
 import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_PAYMENT_METHOD_NONCE;
 import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_USERNAME;
-import static com.braintreepayments.api.VenmoClient.EXTRA_ACCESS_TOKEN;
-import static com.braintreepayments.api.VenmoClient.EXTRA_BRAINTREE_DATA;
-import static com.braintreepayments.api.VenmoClient.EXTRA_ENVIRONMENT;
-import static com.braintreepayments.api.VenmoClient.EXTRA_MERCHANT_ID;
-import static com.braintreepayments.api.VenmoClient.EXTRA_RESOURCE_ID;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_ACCESS_TOKEN;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_BRAINTREE_DATA;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_MERCHANT_ID;
+import static com.braintreepayments.api.VenmoActivityResultContract.EXTRA_RESOURCE_ID;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;

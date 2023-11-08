@@ -56,7 +56,7 @@ public class VenmoLauncher {
      * Launches the Venmo authentication flow by switching to the Venmo app.
      *
      * @param venmoAuthChallenge the result of
-     *                           {@link VenmoClient#requestAuthChallenge(FragmentActivity,
+     *                           {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
      *                           VenmoRequest, VenmoAuthChallengeCallback)}
      */
     public void launch(VenmoAuthChallenge venmoAuthChallenge) {
