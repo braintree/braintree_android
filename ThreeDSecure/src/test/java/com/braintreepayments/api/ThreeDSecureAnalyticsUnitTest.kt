@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ThreeDSecureAnalyticsUnitTest {
+
     @Test
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals("3ds:verify:started", ThreeDSecureAnalytics.VERIFY_STARTED.event)

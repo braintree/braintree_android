@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 internal enum class VenmoAnalytics(@JvmField val event: String) {
+
     // Conversion Events
     TOKENIZE_STARTED("venmo:tokenize:started"),
     TOKENIZE_FAILED("venmo:tokenize:failed"),

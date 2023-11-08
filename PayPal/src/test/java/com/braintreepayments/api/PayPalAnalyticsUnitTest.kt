@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PayPalAnalyticsUnitTest {
+
     @Test
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals("paypal:tokenize:started", PayPalAnalytics.TOKENIZATION_STARTED.event)

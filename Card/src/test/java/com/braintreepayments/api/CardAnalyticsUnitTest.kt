@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class CardAnalyticsUnitTest {
+
     @Test
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals("card:tokenize:started", CardAnalytics.CARD_TOKENIZE_STARTED.event)

@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class GooglePayAnalyticsUnitTest {
+
     @Test
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals(

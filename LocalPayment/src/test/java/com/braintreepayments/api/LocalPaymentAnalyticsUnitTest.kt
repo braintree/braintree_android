@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class LocalPaymentAnalyticsUnitTest {
+
     @Test
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals(
