@@ -160,11 +160,11 @@ public class VenmoClient {
      * {@link VenmoAccountNonce}.
      * 
      * @param venmoPaymentAuthResult the result of {@link VenmoLauncher#launch(VenmoPaymentAuthRequest)}
-     * @param callback a {@link VenmoResultCallback} to receive a {@link VenmoAccountNonce} or 
+     * @param callback a {@link VenmoTokenizeCallback} to receive a {@link VenmoAccountNonce} or
      *                 error from Venmo tokenization
      */
     public void tokenize(@NonNull final VenmoPaymentAuthResult venmoPaymentAuthResult,
-                         @NonNull VenmoResultCallback callback) {
+                         @NonNull VenmoTokenizeCallback callback) {
         if (venmoPaymentAuthResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
 
@@ -236,7 +236,7 @@ public class VenmoClient {
         }
     }
 
-    private void vaultVenmoAccountNonce(String nonce, final VenmoResultCallback callback) {
+    private void vaultVenmoAccountNonce(String nonce, final VenmoTokenizeCallback callback) {
         venmoApi.vaultVenmoAccountNonce(nonce, (venmoAccountNonce, error) -> {
             if (venmoAccountNonce != null) {
                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");

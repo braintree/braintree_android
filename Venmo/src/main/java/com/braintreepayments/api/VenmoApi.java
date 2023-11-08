@@ -84,7 +84,7 @@ class VenmoApi {
     }
 
     void createNonceFromPaymentContext(String paymentContextId,
-                                       final VenmoResultCallback callback) {
+                                       final VenmoTokenizeCallback callback) {
         JSONObject params = new JSONObject();
         try {
             params.put("query",
@@ -115,7 +115,7 @@ class VenmoApi {
         }
     }
 
-    void vaultVenmoAccountNonce(String nonce, final VenmoResultCallback callback) {
+    void vaultVenmoAccountNonce(String nonce, final VenmoTokenizeCallback callback) {
         VenmoAccount venmoAccount = new VenmoAccount();
         venmoAccount.setNonce(nonce);
 

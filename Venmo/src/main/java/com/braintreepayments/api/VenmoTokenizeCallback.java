@@ -7,9 +7,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link VenmoClient#onActivityResult(Context, int, Intent, VenmoResultCallback)}.
+ * {@link VenmoClient#tokenize(VenmoPaymentAuthResult, VenmoTokenizeCallback)}.
  */
-public interface VenmoResultCallback {
+public interface VenmoTokenizeCallback {
 
     /**
      * @param venmoAccountNonce {@link VenmoAccountNonce}
