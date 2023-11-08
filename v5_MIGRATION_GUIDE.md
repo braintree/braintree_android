@@ -241,8 +241,8 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       payPalLauncher = PayPalLauncher() { payPalPaymentAuthResult ->
-+           payPalClient.tokenize(payPalPaymentAuthResult) { payPalAccountNonce, error ->
++       payPalLauncher = PayPalLauncher() { paymentAuthResult ->
++           payPalClient.tokenize(paymentAuthResult) { payPalAccountNonce, error ->
 +               // handle paypal account nonce or error
 +           }
 +       }
@@ -269,10 +269,10 @@ class MyActivity : FragmentActivity() {
     
     fun onPayPalButtonClick() {
 -       payPalClient.tokenizePayPalAccount(activity, request)
-+       payPalClient.createPaymentAuthRequest(this, request) { payPalPaymentAuthRequest, error ->
++       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest, error ->
 +            error?.let { /* handle error */ }
-+            payPalPaymentAuthRequest?.let { 
-+                payPalLauncher.launch(requireActivity(), it) 
++            paymentAuthRequest?.let { 
++                payPalLauncher.launch(requireActivity(), paymentAuthRequest) 
 +           }
 +       }
     }
