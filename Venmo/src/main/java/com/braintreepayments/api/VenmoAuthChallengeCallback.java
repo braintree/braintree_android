@@ -4,10 +4,10 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback to handle result from
- * {@link VenmoClient#tokenize(VenmoAuthChallengeResult, VenmoResultCallback)}
+ * {@link VenmoClient#tokenize(VenmoPaymentAuthResult, VenmoResultCallback)}
  */
 public interface VenmoAuthChallengeCallback {
-    void onVenmoAuthChallenge(@Nullable VenmoAuthChallenge venmoAuthChallenge,
+    void onVenmoAuthChallenge(@Nullable VenmoPaymentAuthRequest venmoPaymentAuthRequest,
                               @Nullable Exception error);
 
 }

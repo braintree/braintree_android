@@ -69,8 +69,8 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       venmoLauncher = VenmoLauncher(this) { authChallengeResult ->
-+            venmoClient.tokenizeVenmoAccount(authChallengeResult) { venmoAccountNonce, error ->
++       venmoLauncher = VenmoLauncher(this) { paymentAuthResult ->
++            venmoClient.tokenize(paymentAuthResult) { venmoAccountNonce, error ->
 +                error?.let { /* handle error */ }
 +                venmoAccountNonce?.let { /* handle Venmo account nonce */ }
 +            }
@@ -86,9 +86,9 @@ class MyActivity : FragmentActivity() {
     
     fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
-+       venmoClient.requestAuthChallenge(this, venmoRequest) { authChallenge, error ->
++       venmoClient.requestAuthChallenge(this, venmoRequest) { paymentAuthRequest, error ->
 +            error?.let { /* handle error */ }
-+            authChallenge?.let { venmoLauncher.launch(it) }
++            paymentAuthRequest?.let { venmoLauncher.launch(paymentAuthRequest) }
 +       }
     }
     

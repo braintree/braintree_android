@@ -23,7 +23,7 @@ import org.robolectric.RobolectricTestRunner;
 public class VenmoLauncherUnitTest {
 
     @Mock
-    ActivityResultLauncher<VenmoAuthChallenge> activityResultLauncher;
+    ActivityResultLauncher<VenmoPaymentAuthRequest> activityResultLauncher;
     private VenmoAuthChallengeResultCallback callback;
 
     @Before
@@ -41,14 +41,14 @@ public class VenmoLauncherUnitTest {
         VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<VenmoAuthChallenge, VenmoAuthChallengeResult>>any(),
+                Mockito.<ActivityResultContract<VenmoPaymentAuthRequest, VenmoPaymentAuthResult>>any(),
                 Mockito.any());
     }
 
     @Test
     public void launch_launchesAuthChallenge() throws JSONException {
-        VenmoAuthChallenge authChallenge =
-                new VenmoAuthChallenge(
+        VenmoPaymentAuthRequest authChallenge =
+                new VenmoPaymentAuthRequest(
                         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO),
                         "profile-id", "payment-context-id", "session-id", "custom");
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);

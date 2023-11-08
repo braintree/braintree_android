@@ -2,5 +2,5 @@ package com.braintreepayments.api;
 
 public interface VenmoAuthChallengeResultCallback {
 
-    void onVenmoResult(VenmoAuthChallengeResult venmoAuthChallengeResult);
+    void onVenmoResult(VenmoPaymentAuthResult venmoPaymentAuthResult);
 }
