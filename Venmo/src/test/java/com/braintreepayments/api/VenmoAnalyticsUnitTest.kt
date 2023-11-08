@@ -22,9 +22,5 @@ class VenmoAnalyticsUnitTest {
         assertEquals("venmo:tokenize:failed", VenmoAnalytics.TOKENIZE_FAILED.event)
         assertEquals("venmo:tokenize:started", VenmoAnalytics.TOKENIZE_STARTED.event)
         assertEquals("venmo:tokenize:succeeded", VenmoAnalytics.TOKENIZE_SUCCEEDED.event)
-        assertEquals(
-            "venmo:tokenize:network-connection:failed",
-            VenmoAnalytics.TOKENIZE_NETWORK_CONNECTION_LOST.event
-        )
     }
 }
