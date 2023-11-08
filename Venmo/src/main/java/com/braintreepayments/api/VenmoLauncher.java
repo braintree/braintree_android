@@ -23,11 +23,11 @@ public class VenmoLauncher {
      * instantiated in the OnCreate method of your Fragment.
      *
      * @param fragment an Android Fragment from which you will launch the Venmo app
-     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the Venmo
+     * @param callback a {@link VenmoLauncherCallback} to receive the result of the Venmo
      *                 app switch authentication flow
      */
     public VenmoLauncher(@NonNull Fragment fragment,
-                         @NonNull VenmoAuthChallengeResultCallback callback) {
+                         @NonNull VenmoLauncherCallback callback) {
         this(fragment.getActivity().getActivityResultRegistry(), fragment.getViewLifecycleOwner(),
                 callback);
     }
@@ -37,17 +37,17 @@ public class VenmoLauncher {
      * instantiated in the OnCreate method of your Activity.
      *
      * @param activity an Android Activity from which you will launch the Venmo app
-     * @param callback a {@link VenmoAuthChallengeResultCallback} to receive the result of the Venmo
+     * @param callback a {@link VenmoLauncherCallback} to receive the result of the Venmo
      *                 app switch authentication flow
      */
     public VenmoLauncher(@NonNull FragmentActivity activity,
-                         @NonNull VenmoAuthChallengeResultCallback callback) {
+                         @NonNull VenmoLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
 
     @VisibleForTesting
     VenmoLauncher(ActivityResultRegistry registry, LifecycleOwner lifecycleOwner,
-                  VenmoAuthChallengeResultCallback callback) {
+                  VenmoLauncherCallback callback) {
         activityLauncher = registry.register(VENMO_SECURE_RESULT, lifecycleOwner,
                 new VenmoActivityResultContract(), callback::onVenmoResult);
     }
@@ -57,7 +57,7 @@ public class VenmoLauncher {
      *
      * @param venmoPaymentAuthRequest the result of
      *                           {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
-     *                           VenmoRequest, VenmoAuthChallengeCallback)}
+     *                           VenmoRequest, VenmoCreatePaymentAuthRequestCallback)}
      */
     public void launch(VenmoPaymentAuthRequest venmoPaymentAuthRequest) {
         activityLauncher.launch(venmoPaymentAuthRequest);

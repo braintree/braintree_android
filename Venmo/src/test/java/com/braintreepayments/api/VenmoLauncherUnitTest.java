@@ -24,12 +24,12 @@ public class VenmoLauncherUnitTest {
 
     @Mock
     ActivityResultLauncher<VenmoPaymentAuthRequest> activityResultLauncher;
-    private VenmoAuthChallengeResultCallback callback;
+    private VenmoLauncherCallback callback;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        callback = mock(VenmoAuthChallengeResultCallback.class);
+        callback = mock(VenmoLauncherCallback.class);
     }
 
     @Test
