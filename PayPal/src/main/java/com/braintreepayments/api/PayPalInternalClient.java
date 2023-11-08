@@ -3,11 +3,9 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 class PayPalInternalClient {
 
@@ -63,8 +61,8 @@ class PayPalInternalClient {
                                 (responseBody, httpError) -> {
                                     if (responseBody != null) {
                                         try {
-                                            PayPalResponse payPalResponse =
-                                                    new PayPalResponse(payPalRequest)
+                                            PayPalPaymentAuthRequest paymentAuthRequest =
+                                                    new PayPalPaymentAuthRequest(payPalRequest)
                                                             .successUrl(successUrl);
 
                                             PayPalPaymentResource paypalPaymentResource =
@@ -87,15 +85,15 @@ class PayPalInternalClient {
                                                                         context, configuration);
 
                                                 if (pairingId != null) {
-                                                    payPalResponse
+                                                    paymentAuthRequest
                                                             .pairingId(pairingId)
                                                             .clientMetadataId(clientMetadataId);
                                                 }
 
-                                                payPalResponse.approvalUrl(
+                                                paymentAuthRequest.approvalUrl(
                                                         parsedRedirectUri.toString());
                                             }
-                                            callback.onResult(payPalResponse, null);
+                                            callback.onResult(paymentAuthRequest, null);
 
                                         } catch (JSONException exception) {
                                             callback.onResult(null, exception);
@@ -114,7 +112,7 @@ class PayPalInternalClient {
         });
     }
 
-    void tokenize(PayPalAccount payPalAccount, final PayPalBrowserSwitchResultCallback callback) {
+    void tokenize(PayPalAccount payPalAccount, final PayPalTokenizeCallback callback) {
         apiClient.tokenizeREST(payPalAccount, (tokenizationResponse, exception) -> {
             if (tokenizationResponse != null) {
                 try {

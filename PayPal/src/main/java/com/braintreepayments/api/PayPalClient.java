@@ -61,17 +61,17 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the PayPal tokenization process by creating a {@link PayPalResponse} to be used to
+     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequest} to be used to
      * launch the PayPal web authentication flow in
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalResponse)}.
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
-     * @param callback      {@link PayPalFlowStartedCallback}
+     * @param callback      {@link PayPalPaymentAuthCallback}
      */
-    public void tokenizePayPalAccount(@NonNull final FragmentActivity activity,
-                                      @NonNull final PayPalRequest payPalRequest,
-                                      @NonNull final PayPalFlowStartedCallback callback) {
+    public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
+                                         @NonNull final PayPalRequest payPalRequest,
+                                         @NonNull final PayPalPaymentAuthCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -81,7 +81,7 @@ public class PayPalClient {
 
     private void sendCheckoutRequest(final FragmentActivity activity,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
-                                     final PayPalFlowStartedCallback callback) {
+                                     final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
@@ -110,7 +110,7 @@ public class PayPalClient {
 
     private void sendVaultRequest(final FragmentActivity activity,
                                   final PayPalVaultRequest payPalVaultRequest,
-                                  final PayPalFlowStartedCallback callback) {
+                                  final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
         if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
@@ -138,7 +138,7 @@ public class PayPalClient {
 
     private void sendPayPalRequest(final FragmentActivity activity,
                                    final PayPalRequest payPalRequest,
-                                   final PayPalFlowStartedCallback callback) {
+                                   final PayPalPaymentAuthCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest,
                 (payPalResponse, error) -> {
                     if (payPalResponse != null) {
@@ -160,24 +160,25 @@ public class PayPalClient {
                 });
     }
 
-    private BrowserSwitchOptions buildBrowserSwitchOptions(PayPalResponse payPalResponse)
+    private BrowserSwitchOptions buildBrowserSwitchOptions(
+            PayPalPaymentAuthRequest paymentAuthRequest)
             throws JSONException {
         JSONObject metadata = new JSONObject();
-        metadata.put("approval-url", payPalResponse.getApprovalUrl());
-        metadata.put("success-url", payPalResponse.getSuccessUrl());
+        metadata.put("approval-url", paymentAuthRequest.getApprovalUrl());
+        metadata.put("success-url", paymentAuthRequest.getSuccessUrl());
 
-        String paymentType = payPalResponse.isBillingAgreement()
+        String paymentType = paymentAuthRequest.isBillingAgreement()
                 ? "billing-agreement" : "single-payment";
 
         metadata.put("payment-type", paymentType);
-        metadata.put("client-metadata-id", payPalResponse.getClientMetadataId());
-        metadata.put("merchant-account-id", payPalResponse.getMerchantAccountId());
+        metadata.put("client-metadata-id", paymentAuthRequest.getClientMetadataId());
+        metadata.put("merchant-account-id", paymentAuthRequest.getMerchantAccountId());
         metadata.put("source", "paypal-browser");
-        metadata.put("intent", payPalResponse.getIntent());
+        metadata.put("intent", paymentAuthRequest.getIntent());
 
         return new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.PAYPAL)
-                .url(Uri.parse(payPalResponse.getApprovalUrl()))
+                .url(Uri.parse(paymentAuthRequest.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
@@ -191,28 +192,25 @@ public class PayPalClient {
     /**
      * After receiving a result from the PayPal web authentication flow via
      * {@link PayPalLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
-     * {@link BrowserSwitchResult} returned to this method to tokenize the PayPal account and
+     * {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal account and
      * receive a {@link PayPalAccountNonce} on success.
      *
-     * @param payPalBrowserSwitchResult a {@link PayPalBrowserSwitchResult} received in the callback
-     *                                  of
-     *                                  {@link
-     *                                  PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
-     *                                  PayPalLauncher}
-     * @param callback                  {@link PayPalBrowserSwitchResultCallback}
+     * @param paymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback
+     *                                  of {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
+     * @param callback                  {@link PayPalTokenizeCallback}
      */
-    public void onBrowserSwitchResult(@NonNull PayPalBrowserSwitchResult payPalBrowserSwitchResult,
-                                      @NonNull final PayPalBrowserSwitchResultCallback callback) {
+    public void tokenize(@NonNull PayPalPaymentAuthResult paymentAuthResult,
+                         @NonNull final PayPalTokenizeCallback callback) {
         //noinspection ConstantConditions
-        if (payPalBrowserSwitchResult == null) {
+        if (paymentAuthResult == null) {
             callback.onResult(null,
                     new BraintreeException("PayPalBrowserSwitchResult cannot be null"));
             return;
         }
         BrowserSwitchResult browserSwitchResult =
-                payPalBrowserSwitchResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && payPalBrowserSwitchResult.getError() != null) {
-            callback.onResult(null, payPalBrowserSwitchResult.getError());
+                paymentAuthResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
+            callback.onResult(null, paymentAuthResult.getError());
             return;
         }
         if (browserSwitchResult == null) {

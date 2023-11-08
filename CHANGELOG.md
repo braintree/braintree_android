@@ -42,12 +42,15 @@
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
   * PayPal
     * Remove `PayPalListener`
-    * Add `PayPalLauncher` and `PayPalResponse`
-    * Add parameter to `PayPalFlowStartedCallback`
+    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
+      `PayPalPaymentAuthCallback`, and `PayPalTokenizeCallback`
+    * Remove`PayPalFlowStartedCallback`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
       `PayPalClient`
-    * Change `PayPalClient#tokenizePayPalAccount` parameters
+    * Rename `PayPalClient#tokenizePayPalAccount` to `PayPalClient#createPaymentAuthRequest` and 
+      change parameters
+    * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
   * LocalPayment
     * Remove `LocalPaymentListener`
     * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 

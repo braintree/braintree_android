@@ -4,9 +4,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalBrowserSwitchResultCallback)}.
+ * {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalTokenizeCallback)}.
  */
-public interface PayPalBrowserSwitchResultCallback {
+public interface PayPalTokenizeCallback {
 
     /**
      * @param payPalAccountNonce {@link PayPalAccountNonce}
