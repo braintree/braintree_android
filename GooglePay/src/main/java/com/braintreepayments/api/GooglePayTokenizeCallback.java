@@ -5,9 +5,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link GooglePayClient#tokenize(GooglePayResult, GooglePayOnActivityResultCallback)}.
+ * {@link GooglePayClient#tokenize(GooglePayPaymentAuthResult, GooglePayTokenizeCallback)}.
  */
-public interface GooglePayOnActivityResultCallback {
+public interface GooglePayTokenizeCallback {
 
     /**
      * @param paymentMethodNonce {@link PaymentMethodNonce}

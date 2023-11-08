@@ -125,8 +125,8 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       googlePayLauncher = GooglePayLauncher(this) { googlePayResult ->
-+            googlePayClient.tokenize(googlePayResult) { paymentMethodNonce, error ->
++       googlePayLauncher = GooglePayLauncher(this) { googlePayPaymentAuthResult ->
++            googlePayClient.tokenize(googlePayPaymentAuthResult) { paymentMethodNonce, error ->
 +                error?.let { /* handle error */ }
 +                paymentMethodNonce?.let { /* handle nonce */ }
 +            }
@@ -142,9 +142,9 @@ class MyActivity : FragmentActivity() {
     
     fun onGooglePayButtonClick() {
 -       googlePayClient.requestPayment(activity, request)
-+       googlePayClient.requestPayment(this, request) { googlePayIntentData, error ->
++       googlePayClient.requestPayment(this, request) { googlePayPaymentAuthRequest, error ->
 +            error?.let { /* handle error */ }
-+            googlePayIntentData?.let { googlePayLauncher.launch(it) }
++            googlePayPaymentAuthRequest?.let { googlePayLauncher.launch(it) }
 +       }
     }
     

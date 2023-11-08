@@ -117,7 +117,7 @@ public class GooglePayFragment extends BaseFragment {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.requestPayment(googlePayRequest,
+        googlePayClient.createPaymentAuthRequest(googlePayRequest,
                 (googlePayIntentData, error) -> googlePayLauncher.launch(googlePayIntentData));
     }
 

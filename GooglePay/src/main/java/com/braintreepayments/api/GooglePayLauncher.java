@@ -14,7 +14,7 @@ import androidx.lifecycle.LifecycleOwner;
 public class GooglePayLauncher {
 
     @VisibleForTesting
-    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
+    ActivityResultLauncher<GooglePayPaymentAuthRequest> activityLauncher;
 
     private static final String GOOGLE_PAY_RESULT = "com.braintreepayments.api.GooglePay.RESULT";
 
@@ -36,7 +36,7 @@ public class GooglePayLauncher {
                 new GooglePayActivityResultContract(), callback::onGooglePayResult);
     }
 
-    public void launch(GooglePayIntentData googlePayIntentData) {
-        activityLauncher.launch(googlePayIntentData);
+    public void launch(GooglePayPaymentAuthRequest googlePayPaymentAuthRequest) {
+        activityLauncher.launch(googlePayPaymentAuthRequest);
     }
 }

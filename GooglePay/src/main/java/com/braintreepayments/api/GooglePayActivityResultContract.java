@@ -16,31 +16,31 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.PaymentData;
 
-class GooglePayActivityResultContract extends ActivityResultContract<GooglePayIntentData, GooglePayResult> {
+class GooglePayActivityResultContract extends ActivityResultContract<GooglePayPaymentAuthRequest, GooglePayPaymentAuthResult> {
 
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, GooglePayIntentData input) {
+    public Intent createIntent(@NonNull Context context, GooglePayPaymentAuthRequest input) {
         return new Intent(context, GooglePayActivity.class)
                 .putExtra(EXTRA_ENVIRONMENT, input.getGooglePayEnvironment())
                 .putExtra(EXTRA_PAYMENT_DATA_REQUEST, input.getPaymentDataRequest());
     }
 
     @Override
-    public GooglePayResult parseResult(int resultCode, @Nullable Intent intent) {
+    public GooglePayPaymentAuthResult parseResult(int resultCode, @Nullable Intent intent) {
         if (resultCode == RESULT_OK) {
             if (intent != null) {
-                return new GooglePayResult(PaymentData.getFromIntent(intent), null);
+                return new GooglePayPaymentAuthResult(PaymentData.getFromIntent(intent), null);
             }
         } else if (resultCode == RESULT_CANCELED) {
-            return new GooglePayResult(null, new UserCanceledException("User canceled Google Pay.", true));
+            return new GooglePayPaymentAuthResult(null, new UserCanceledException("User canceled Google Pay.", true));
         } else if (resultCode == RESULT_ERROR) {
             if (intent != null) {
-                return new GooglePayResult(null, new GooglePayException("An error was encountered during the Google Pay " +
+                return new GooglePayPaymentAuthResult(null, new GooglePayException("An error was encountered during the Google Pay " +
                         "flow. See the status object in this exception for more details.",
                         AutoResolveHelper.getStatusFromIntent(intent)));
             }
         }
-        return new GooglePayResult(null, new BraintreeException("An unexpected error occurred."));
+        return new GooglePayPaymentAuthResult(null, new BraintreeException("An unexpected error occurred."));
     }
 }
