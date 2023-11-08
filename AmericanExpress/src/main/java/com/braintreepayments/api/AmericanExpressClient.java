@@ -36,6 +36,7 @@ public class AmericanExpressClient {
                 .appendQueryParameter("currencyIsoCode", currencyIsoCode)
                 .build()
                 .toString();
+        String analytis = AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED.event;
 
         braintreeClient.sendAnalyticsEvent("amex.rewards-balance.start");
         braintreeClient.sendGET(getRewardsBalanceUrl, (responseBody, httpError) -> {

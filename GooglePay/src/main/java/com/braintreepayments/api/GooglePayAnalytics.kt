@@ -1,6 +1,6 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api
 
-enum GooglePayAnalytics {
+internal enum class GooglePayAnalytics(@JvmField val event: String) {
 
     // Payment Data Request Events
     PAYMENT_REQUEST_STARTED("google-pay:payment-request:started"),
@@ -10,16 +10,5 @@ enum GooglePayAnalytics {
     // Tokenize Events
     TOKENIZE_STARTED("google-pay:tokenize:started"),
     TOKENIZE_FAILED("google-pay:tokenize:failed"),
-    TOKENIZE_NETWORK_CONNECTION_LOST("google-pay:tokenize:network-connection:failed"),
-    TOKENIZE_SUCCEEDED("google-pay:tokenize:succeeded");
-
-    private final String event;
-
-    GooglePayAnalytics(String event) {
-        this.event = event;
-    }
-
-    String getEvent() {
-        return event;
-    }
+    TOKENIZE_SUCCEEDED("google-pay:tokenize:succeeded")
 }
