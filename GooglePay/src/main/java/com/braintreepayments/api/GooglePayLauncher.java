@@ -19,21 +19,21 @@ public class GooglePayLauncher {
     private static final String GOOGLE_PAY_RESULT = "com.braintreepayments.api.GooglePay.RESULT";
 
     public GooglePayLauncher(@NonNull Fragment fragment,
-                             @NonNull GooglePayResultCallback callback) {
+                             @NonNull GooglePayLauncherCallback callback) {
         this(fragment.getActivity().getActivityResultRegistry(), fragment.getViewLifecycleOwner(),
                 callback);
     }
 
     public GooglePayLauncher(@NonNull FragmentActivity activity,
-                             @NonNull GooglePayResultCallback callback) {
+                             @NonNull GooglePayLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
 
     @VisibleForTesting
     GooglePayLauncher(ActivityResultRegistry registry, LifecycleOwner lifecycleOwner,
-                      GooglePayResultCallback callback) {
+                      GooglePayLauncherCallback callback) {
         activityLauncher = registry.register(GOOGLE_PAY_RESULT, lifecycleOwner,
-                new GooglePayActivityResultContract(), callback::onGooglePayResult);
+                new GooglePayActivityResultContract(), callback::onResult);
     }
 
     public void launch(GooglePayPaymentAuthRequest googlePayPaymentAuthRequest) {

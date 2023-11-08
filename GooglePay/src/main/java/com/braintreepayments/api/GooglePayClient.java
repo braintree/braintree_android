@@ -180,7 +180,7 @@ public class GooglePayClient {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
-            callback.onGooglePayIntentData(null, new BraintreeException(
+            callback.onResult(null, new BraintreeException(
                     "GooglePayActivity was " + "not found in the " + "Android " +
                             "manifest, or did not have a theme of R.style.bt_transparent_activity"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -189,14 +189,14 @@ public class GooglePayClient {
 
         //noinspection ConstantConditions
         if (request == null) {
-            callback.onGooglePayIntentData(null, new BraintreeException(
+            callback.onResult(null, new BraintreeException(
                     "Cannot pass null " + "GooglePayRequest to " + "requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         if (request.getTransactionInfo() == null) {
-            callback.onGooglePayIntentData(null, new BraintreeException(
+            callback.onResult(null, new BraintreeException(
                     "Cannot pass null " + "TransactionInfo to" + " requestPayment"));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
@@ -206,12 +206,12 @@ public class GooglePayClient {
             if (authorization != null) {
                 braintreeClient.getConfiguration((configuration, configError) -> {
                     if (configuration == null) {
-                        callback.onGooglePayIntentData(null, configError);
+                        callback.onResult(null, configError);
                         return;
                     }
 
                     if (!configuration.isGooglePayEnabled()) {
-                        callback.onGooglePayIntentData(null, new BraintreeException(
+                        callback.onResult(null, new BraintreeException(
                                 "Google Pay " +
                                         "is not enabled for your Braintree account," +
                                         " or Google Play Services are not configured correctly."));
@@ -227,12 +227,12 @@ public class GooglePayClient {
                     GooglePayPaymentAuthRequest intent =
                             new GooglePayPaymentAuthRequest(getGooglePayEnvironment(configuration),
                                     paymentDataRequest);
-                    callback.onGooglePayIntentData(intent, null);
+                    callback.onResult(intent, null);
 
                 });
 
             } else {
-                callback.onGooglePayIntentData(null, authError);
+                callback.onResult(null, authError);
             }
         });
     }

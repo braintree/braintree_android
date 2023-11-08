@@ -28,12 +28,12 @@ public class GooglePayLauncherUnitTest {
     @Mock
     ActivityResultLauncher<GooglePayPaymentAuthRequest> activityLauncher;
 
-    private GooglePayResultCallback callback;
+    private GooglePayLauncherCallback callback;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
-        callback = mock(GooglePayResultCallback.class);
+        callback = mock(GooglePayLauncherCallback.class);
     }
 
     @Test

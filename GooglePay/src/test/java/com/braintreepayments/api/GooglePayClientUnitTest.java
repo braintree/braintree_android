@@ -184,10 +184,10 @@ public class GooglePayClientUnitTest {
 
     // endregion
 
-    // region requestPayment
+    // region createPaymentAuthRequest
 
     @Test
-    public void requestPayment_callsBackIntentData() throws JSONException {
+    public void createPaymentAuthRequest_callsBackIntentData() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -227,7 +227,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
 
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
@@ -318,7 +318,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_includesATokenizationKeyWhenPresent() throws JSONException {
+    public void createPaymentAuthRequest_includesATokenizationKeyWhenPresent() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -349,7 +349,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -366,7 +366,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_doesNotIncludeATokenizationKeyWhenNotPresent() throws JSONException {
+    public void createPaymentAuthRequest_doesNotIncludeATokenizationKeyWhenNotPresent() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -397,7 +397,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -413,7 +413,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_sendsAnalyticsEvent() {
+    public void createPaymentAuthRequest_sendsAnalyticsEvent() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -449,7 +449,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_postsExceptionWhenTransactionInfoIsNull() {
+    public void createPaymentAuthRequest_postsExceptionWhenTransactionInfoIsNull() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -479,7 +479,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenMerchantNotConfigured_returnsExceptionToFragment() {
+    public void createPaymentAuthRequest_whenMerchantNotConfigured_returnsExceptionToFragment() {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -496,7 +496,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
                 Exception.class);
-        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
+        verify(intentDataCallback).onResult(isNull(), captor.capture());
 
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals(
@@ -505,7 +505,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenSandbox_setsTestEnvironment() throws JSONException {
+    public void createPaymentAuthRequest_whenSandbox_setsTestEnvironment() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -530,7 +530,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -541,7 +541,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenProduction_setsProductionEnvironment() throws JSONException {
+    public void createPaymentAuthRequest_whenProduction_setsProductionEnvironment() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("production")
@@ -566,7 +566,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -577,7 +577,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_withGoogleMerchantId_sendGoogleMerchantId() throws JSONException {
+    public void createPaymentAuthRequest_withGoogleMerchantId_sendGoogleMerchantId() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -604,7 +604,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -616,7 +616,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_withGoogleMerchantName_sendGoogleMerchantName()
+    public void createPaymentAuthRequest_withGoogleMerchantName_sendGoogleMerchantName()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -644,7 +644,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -656,7 +656,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal()
+    public void createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -685,7 +685,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -701,7 +701,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal()
+    public void createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -731,7 +731,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -746,7 +746,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal()
+    public void createPaymentAuthRequest_whenPayPalDisabledInConfigurationAndGooglePayHasPayPalClientId_tokenizationPropertiesContainPayPal()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -777,7 +777,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -794,7 +794,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_usesGooglePayConfigurationClientId() throws JSONException {
+    public void createPaymentAuthRequest_usesGooglePayConfigurationClientId() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -824,7 +824,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -850,7 +850,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal()
+    public void createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -878,7 +878,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -896,7 +896,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods()
+    public void createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -924,7 +924,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayIntentData(captor.capture(), isNull());
+        verify(intentDataCallback).onResult(captor.capture(), isNull());
         GooglePayPaymentAuthRequest intent = captor.getValue();
 
         PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
@@ -942,7 +942,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenRequestIsNull_forwardsExceptionToListener() {
+    public void createPaymentAuthRequest_whenRequestIsNull_forwardsExceptionToListener() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -967,7 +967,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
                 Exception.class);
-        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
+        verify(intentDataCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
@@ -975,7 +975,7 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void requestPayment_whenManifestInvalid_forwardsExceptionToListener() {
+    public void createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
                         .environment("sandbox")
@@ -1000,7 +1000,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(
                 Exception.class);
-        verify(intentDataCallback).onGooglePayIntentData(isNull(), captor.capture());
+        verify(intentDataCallback).onResult(isNull(), captor.capture());
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof BraintreeException);
