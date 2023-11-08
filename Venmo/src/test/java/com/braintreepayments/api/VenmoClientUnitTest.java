@@ -36,7 +36,7 @@ public class VenmoClientUnitTest {
     private Configuration venmoEnabledConfiguration;
     private Configuration venmoDisabledConfiguration;
     private VenmoResultCallback venmoResultCallback;
-    private VenmoCreatePaymentAuthRequestCallback venmoCreatePaymentAuthRequestCallback;
+    private VenmoPaymentAuthRequestCallback venmoPaymentAuthRequestCallback;
     private VenmoSharedPrefsWriter sharedPrefsWriter;
     private DeviceInspector deviceInspector;
 
@@ -56,7 +56,7 @@ public class VenmoClientUnitTest {
         venmoDisabledConfiguration =
                 Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         venmoResultCallback = mock(VenmoResultCallback.class);
-        venmoCreatePaymentAuthRequestCallback = mock(VenmoCreatePaymentAuthRequestCallback.class);
+        venmoPaymentAuthRequestCallback = mock(VenmoPaymentAuthRequestCallback.class);
         sharedPrefsWriter = mock(VenmoSharedPrefsWriter.class);
 
         clientToken = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
@@ -114,9 +114,9 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
         assertEquals(
                 "Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data.",
@@ -144,13 +144,13 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
-        InOrder inOrder = Mockito.inOrder(venmoCreatePaymentAuthRequestCallback, braintreeClient);
+        InOrder inOrder = Mockito.inOrder(venmoPaymentAuthRequestCallback, braintreeClient);
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
-        inOrder.verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
+        inOrder.verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
 
         inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
 
@@ -174,11 +174,11 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor =
                 ArgumentCaptor.forClass(Exception.class);
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
         assertEquals("Configuration fetching error", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
@@ -195,11 +195,11 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
         assertEquals("Venmo is not enabled", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
@@ -218,13 +218,13 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(deviceInspector).isVenmoAppSwitchAvailable(same(activity));
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
@@ -250,11 +250,11 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
         assertEquals("merchant-id", captor.getValue().getProfileId());
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());
         assertEquals("session-id", captor.getValue().getSessionId());
@@ -282,11 +282,11 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
         assertEquals("second-pwv-profile-id", captor.getValue().getProfileId());
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());
         assertEquals("session-id", captor.getValue().getSessionId());
@@ -305,7 +305,7 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected");
     }
@@ -329,7 +329,7 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected");
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
@@ -354,7 +354,7 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(sharedPrefsWriter).persistVenmoVaultOption(activity, true);
     }
@@ -378,7 +378,7 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(sharedPrefsWriter).persistVenmoVaultOption(activity, false);
     }
@@ -403,7 +403,7 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         verify(sharedPrefsWriter).persistVenmoVaultOption(activity, false);
     }
@@ -426,13 +426,13 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
         InOrder order = inOrder(braintreeClient);
 
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(isNull(), captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
 
         order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected");
@@ -456,9 +456,9 @@ public class VenmoClientUnitTest {
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoCreatePaymentAuthRequestCallback);
+        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
-        verify(venmoCreatePaymentAuthRequestCallback).onPaymentAuthRequest(null, graphQLError);
+        verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(null, graphQLError);
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
     }
 

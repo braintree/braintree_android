@@ -16,9 +16,9 @@
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
     * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`
-    * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoAuthChallengeCallback`, 
+    * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`, 
       `VenmoPaymentAuthResult`, `VenmoResult`, and 
-      `VenmoAuthChallengeResultCallback`
+      `VenmoLauncherCallback`
     * Rename `VenmoOnActivityResultCallback` to `VenmoResultCallback`
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to 

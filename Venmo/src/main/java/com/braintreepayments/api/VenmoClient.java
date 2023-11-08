@@ -65,15 +65,15 @@ public class VenmoClient {
      * VenmoLauncher#launch(VenmoPaymentAuthRequest)}
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link VenmoCreatePaymentAuthRequestCallback#onPaymentAuthRequest(VenmoPaymentAuthRequest, Exception)}
+     * {@link VenmoPaymentAuthRequestCallback#onPaymentAuthRequest(VenmoPaymentAuthRequest, Exception)}
      *
      * @param activity Android FragmentActivity
      * @param request  {@link VenmoRequest}
-     * @param callback {@link VenmoCreatePaymentAuthRequestCallback}
+     * @param callback {@link VenmoPaymentAuthRequestCallback}
      */
     public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
                                          @NonNull final VenmoRequest request,
-                                         @NonNull VenmoCreatePaymentAuthRequestCallback callback) {
+                                         @NonNull VenmoPaymentAuthRequestCallback callback) {
         braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration((configuration, error) -> {
             if (configuration == null) {
@@ -141,7 +141,7 @@ public class VenmoClient {
             Authorization authorization,
             final String venmoProfileId,
             @Nullable final String paymentContextId,
-            VenmoCreatePaymentAuthRequestCallback callback
+            VenmoPaymentAuthRequestCallback callback
     ) {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
@@ -155,7 +155,7 @@ public class VenmoClient {
 
     /**
      * After successfully authenticating a Venmo user account via {@link 
-     * VenmoClient#createPaymentAuthRequest(FragmentActivity, VenmoRequest, VenmoCreatePaymentAuthRequestCallback)},
+     * VenmoClient#createPaymentAuthRequest(FragmentActivity, VenmoRequest, VenmoPaymentAuthRequestCallback)},
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
      * 

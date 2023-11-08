@@ -57,7 +57,7 @@ public class VenmoLauncher {
      *
      * @param venmoPaymentAuthRequest the result of
      *                           {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
-     *                           VenmoRequest, VenmoCreatePaymentAuthRequestCallback)}
+     *                           VenmoRequest, VenmoPaymentAuthRequestCallback)}
      */
     public void launch(VenmoPaymentAuthRequest venmoPaymentAuthRequest) {
         activityLauncher.launch(venmoPaymentAuthRequest);
