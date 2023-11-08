@@ -11,5 +11,4 @@ internal enum class PayPalAnalytics(@JvmField val event: String) {
     // Browser Presentation Events
     BROWSER_SWITCH_SUCCEEDED("paypal:tokenize:browser-presentation:succeeded"),
     BROWSER_SWITCH_FAILED("paypal:tokenize:browser-presentation:failed")
-
 }

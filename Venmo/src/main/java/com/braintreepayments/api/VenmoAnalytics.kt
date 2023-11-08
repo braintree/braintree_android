@@ -11,5 +11,4 @@ internal enum class VenmoAnalytics(@JvmField val event: String) {
     TOKENIZE_NETWORK_CONNECTION_LOST("venmo:tokenize:network-connection:failed"),
     APP_SWITCH_SUCCEEDED("venmo:tokenize:app-switch:succeeded"),
     APP_SWITCH_FAILED("venmo:tokenize:app-switch:failed")
-
 }
