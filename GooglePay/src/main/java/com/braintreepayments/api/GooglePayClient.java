@@ -263,21 +263,21 @@ public class GooglePayClient {
      * method should be invoked to tokenize the payment method to retrieve a
      * {@link PaymentMethodNonce}
      *
-     * @param googlePayPaymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
+     * @param paymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
      * @param callback        {@link GooglePayTokenizeCallback}
      */
-    public void tokenize(GooglePayPaymentAuthResult googlePayPaymentAuthResult,
+    public void tokenize(GooglePayPaymentAuthResult paymentAuthResult,
                          GooglePayTokenizeCallback callback) {
-        if (googlePayPaymentAuthResult.getPaymentData() != null) {
+        if (paymentAuthResult.getPaymentData() != null) {
             braintreeClient.sendAnalyticsEvent("google-payment.authorized");
-            tokenize(googlePayPaymentAuthResult.getPaymentData(), callback);
-        } else if (googlePayPaymentAuthResult.getError() != null) {
-            if (googlePayPaymentAuthResult.getError() instanceof UserCanceledException) {
+            tokenize(paymentAuthResult.getPaymentData(), callback);
+        } else if (paymentAuthResult.getError() != null) {
+            if (paymentAuthResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent("google-payment.canceled");
             } else {
                 braintreeClient.sendAnalyticsEvent("google-payment.failed");
             }
-            callback.onResult(null, googlePayPaymentAuthResult.getError());
+            callback.onResult(null, paymentAuthResult.getError());
         }
     }
 
