@@ -12,7 +12,7 @@ class ThreeDSecureAPI {
     }
 
     void performLookup(final ThreeDSecureRequest request, String cardinalConsumerSessionId,
-                       final ThreeDSecurePaymentAuthRequestCallback callback) {
+                       final ThreeDSecureResultCallback callback) {
         String url = ApiClient.versionedPath(
                 ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
                         "/three_d_secure/lookup");
@@ -33,7 +33,7 @@ class ThreeDSecureAPI {
     }
 
     void authenticateCardinalJWT(ThreeDSecureResult paymentAuthRequest, String cardinalJWT,
-                                 final ThreeDSecurePaymentAuthRequestCallback callback) {
+                                 final ThreeDSecureResultCallback callback) {
         final ThreeDSecureNonce lookupCardNonce = paymentAuthRequest.getThreeDSecureNonce();
 
         braintreeClient.sendAnalyticsEvent(

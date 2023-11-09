@@ -59,11 +59,11 @@ public class ThreeDSecureClient {
      *
      * @param context  Android context
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
-     * @param callback {@link ThreeDSecurePaymentAuthRequestCallback}
+     * @param callback {@link ThreeDSecureResultCallback}
      */
     public void createPaymentAuthRequest(@NonNull final Context context,
                                          @NonNull final ThreeDSecureRequest request,
-                                         @NonNull final ThreeDSecurePaymentAuthRequestCallback callback) {
+                                         @NonNull final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
             callback.onResult(null, new InvalidArgumentException(
                     "The ThreeDSecureRequest nonce and amount cannot be null"));
@@ -91,7 +91,7 @@ public class ThreeDSecureClient {
             }
             braintreeClient.sendAnalyticsEvent("three-d-secure.initialized");
 
-            ThreeDSecurePaymentAuthRequestCallback internalResultCallback =
+            ThreeDSecureResultCallback internalResultCallback =
                     (threeDSecureResult, performLookupError) -> {
                 if (threeDSecureResult != null) {
                     continuePerformVerification(threeDSecureResult, callback);
@@ -194,7 +194,7 @@ public class ThreeDSecureClient {
     }
 
     void continuePerformVerification(@NonNull final ThreeDSecureResult result,
-                                            @NonNull final ThreeDSecurePaymentAuthRequestCallback callback) {
+                                            @NonNull final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration(
                 (configuration, error) -> startVerificationFlow(
                         result, callback));
@@ -205,10 +205,10 @@ public class ThreeDSecureClient {
      *
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
      *                       information.
-     * @param callback       {@link ThreeDSecurePaymentAuthRequestCallback}
+     * @param callback       {@link ThreeDSecureResultCallback}
      */
     public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
-    final ThreeDSecurePaymentAuthRequestCallback callback) {
+    final ThreeDSecureResultCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
             ThreeDSecureResult result;
             try {
@@ -221,7 +221,7 @@ public class ThreeDSecureClient {
     }
 
     private void startVerificationFlow(ThreeDSecureResult result,
-                                       ThreeDSecurePaymentAuthRequestCallback callback) {
+                                       ThreeDSecureResultCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
         boolean showChallenge = lookup.getAcsUrl() != null;
@@ -268,10 +268,10 @@ public class ThreeDSecureClient {
      * {@link ThreeDSecureLauncher} used to launch the 3DS authentication challenge.
      *
      * @param paymentAuthResult a {@link ThreeDSecurePaymentAuthResult} received in {@link ThreeDSecureLauncherCallback}
-     * @param callback       a {@link ThreeDSecurePaymentAuthRequestCallback}
+     * @param callback       a {@link ThreeDSecureResultCallback}
      */
     public void tokenize(ThreeDSecurePaymentAuthResult paymentAuthResult,
-                         ThreeDSecurePaymentAuthRequestCallback callback) {
+                         ThreeDSecureResultCallback callback) {
         Exception threeDSecureError = paymentAuthResult.getError();
         if (threeDSecureError != null) {
             callback.onResult(null, threeDSecureError);

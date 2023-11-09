@@ -184,9 +184,9 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
-+            threeDSecureClient.onCardinalResult(paymentAuthResult) { paymentAuthRequest, error ->
++            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureNonce, error ->
 +                error?.let { /* handle error */ }
-+                paymentAuthRequest?.let { /* handle paymentAuthRequest.tokenizedCard */ }
++                threeDSecureNonce?.let { /* handle threeDSecureNonce  */ }
 +            }
 +       }
     }
@@ -200,7 +200,7 @@ class MyActivity : FragmentActivity() {
     
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
-+       threeDSecureClient.performVerification(requireContext(), threeDSecureRequest) { 
++       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
           paymentAuthRequest, error ->
              error?.let { /* handle error */ }
              paymentAuthRequest?.let {
