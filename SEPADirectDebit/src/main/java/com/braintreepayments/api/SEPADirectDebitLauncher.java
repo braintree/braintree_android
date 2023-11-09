@@ -65,7 +65,7 @@ public class SEPADirectDebitLauncher {
      * This method will deliver a {@link SEPADirectDebitPaymentAuthResult} to the
      * {@link SEPADirectDebitLauncherCallback} used to instantiate this class. The
      * {@link SEPADirectDebitPaymentAuthResult} should be passed to
-     * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitBrowserSwitchResultCallback)}
+     * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
