@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class VenmoActivityResultContract
-        extends ActivityResultContract<VenmoAuthChallenge, VenmoAuthChallengeResult> {
+        extends ActivityResultContract<VenmoPaymentAuthRequest, VenmoPaymentAuthResult> {
 
     static final String VENMO_PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
@@ -33,7 +33,7 @@ class VenmoActivityResultContract
 
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, VenmoAuthChallenge input) {
+    public Intent createIntent(@NonNull Context context, VenmoPaymentAuthRequest input) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, input.getProfileId())
                 .putExtra(EXTRA_ACCESS_TOKEN, input.getConfiguration().getVenmoAccessToken())
@@ -62,18 +62,18 @@ class VenmoActivityResultContract
     }
 
     @Override
-    public VenmoAuthChallengeResult parseResult(int resultCode, @Nullable Intent intent) {
+    public VenmoPaymentAuthResult parseResult(int resultCode, @Nullable Intent intent) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (intent == null) {
-                return new VenmoAuthChallengeResult(null, null, null, new BraintreeException(
+                return new VenmoPaymentAuthResult(null, null, null, new BraintreeException(
                         "An unknown Android error occurred with the activity result API."));
             }
             String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
             String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
-            return new VenmoAuthChallengeResult(paymentContextId, nonce, venmoUsername, null);
+            return new VenmoPaymentAuthResult(paymentContextId, nonce, venmoUsername, null);
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            return new VenmoAuthChallengeResult(null, null, null,
+            return new VenmoPaymentAuthResult(null, null, null,
                     new UserCanceledException("User canceled Venmo."));
         }
         return null;

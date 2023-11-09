@@ -179,7 +179,7 @@ public class VenmoApiUnitTest {
     @Test
     public void createNonceFromPaymentContext_queriesGraphQLPaymentContext() throws JSONException {
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
-        sut.createNonceFromPaymentContext("payment-context-id", mock(VenmoResultCallback.class));
+        sut.createNonceFromPaymentContext("payment-context-id", mock(VenmoTokenizeCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
@@ -202,7 +202,7 @@ public class VenmoApiUnitTest {
 
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
-        VenmoResultCallback callback = mock(VenmoResultCallback.class);
+        VenmoTokenizeCallback callback = mock(VenmoTokenizeCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
@@ -218,7 +218,7 @@ public class VenmoApiUnitTest {
 
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
-        VenmoResultCallback callback = mock(VenmoResultCallback.class);
+        VenmoTokenizeCallback callback = mock(VenmoTokenizeCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -235,7 +235,7 @@ public class VenmoApiUnitTest {
 
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
-        VenmoResultCallback callback = mock(VenmoResultCallback.class);
+        VenmoTokenizeCallback callback = mock(VenmoTokenizeCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
 
         verify(callback).onResult(isNull(), same(error));
@@ -244,7 +244,7 @@ public class VenmoApiUnitTest {
     @Test
     public void vaultVenmoAccountNonce_performsVaultRequest() throws JSONException {
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
-        sut.vaultVenmoAccountNonce("nonce", mock(VenmoResultCallback.class));
+        sut.vaultVenmoAccountNonce("nonce", mock(VenmoTokenizeCallback.class));
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor =
                 ArgumentCaptor.forClass(VenmoAccount.class);
@@ -263,7 +263,7 @@ public class VenmoApiUnitTest {
                 .build();
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
-        VenmoResultCallback callback = mock(VenmoResultCallback.class);
+        VenmoTokenizeCallback callback = mock(VenmoTokenizeCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
@@ -281,7 +281,7 @@ public class VenmoApiUnitTest {
                 .build();
         VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
 
-        VenmoResultCallback callback = mock(VenmoResultCallback.class);
+        VenmoTokenizeCallback callback = mock(VenmoTokenizeCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
 
         verify(callback).onResult(isNull(), same(error));

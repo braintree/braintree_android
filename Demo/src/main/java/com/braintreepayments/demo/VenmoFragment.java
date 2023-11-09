@@ -38,7 +38,7 @@ public class VenmoFragment extends BaseFragment {
         venmoButton.setOnClickListener(this::launchVenmo);
 
         venmoLauncher = new VenmoLauncher(this, venmoAuthChallengeResult ->
-                venmoClient.tokenizeVenmoAccount(venmoAuthChallengeResult, this::handleVenmoResult));
+                venmoClient.tokenize(venmoAuthChallengeResult, this::handleVenmoResult));
 
         return view;
     }
@@ -86,7 +86,7 @@ public class VenmoFragment extends BaseFragment {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.requestAuthChallenge(requireActivity(), venmoRequest, (venmoAuthChallenge, authError) -> {
+                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (venmoAuthChallenge, authError) -> {
                     if (authError != null) {
                         handleError(authError);
                         return;
