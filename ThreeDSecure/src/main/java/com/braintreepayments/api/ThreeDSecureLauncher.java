@@ -19,7 +19,7 @@ public class ThreeDSecureLauncher {
     private static final String THREE_D_SECURE_RESULT =
             "com.braintreepayments.api.ThreeDSecure.RESULT";
     @VisibleForTesting
-    ActivityResultLauncher<ThreeDSecurePaymentAuthRequest> activityLauncher;
+    ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
     private final ThreeDSecureLauncherCallback callback;
 
     /**
@@ -68,10 +68,10 @@ public class ThreeDSecureLauncher {
      *
      * @param paymentAuthRequest the result of
      *                           {@link
-     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecurePaymentAuthRequest,
+     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult,
      *                           ThreeDSecurePaymentAuthRequestCallback)}
      */
-    public void launch(ThreeDSecurePaymentAuthRequest paymentAuthRequest) {
+    public void launch(ThreeDSecureResult paymentAuthRequest) {
         try {
             activityLauncher.launch(paymentAuthRequest);
         } catch (RuntimeException runtimeException) {

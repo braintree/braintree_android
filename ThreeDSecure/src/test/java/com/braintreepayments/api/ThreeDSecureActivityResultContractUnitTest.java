@@ -26,14 +26,14 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureActivityResultContractUnitTest {
 
     private Context context;
-    private ThreeDSecurePaymentAuthRequest paymentAuthRequest;
+    private ThreeDSecureResult paymentAuthRequest;
 
     private ThreeDSecureActivityResultContract sut;
 
     @Before
     public void beforeEach() throws JSONException {
         context = ApplicationProvider.getApplicationContext();
-        paymentAuthRequest = ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        paymentAuthRequest = ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ThreeDSecureActivityResultContractUnitTest {
         sut = new ThreeDSecureActivityResultContract();
         Intent result = sut.createIntent(context, this.paymentAuthRequest);
 
-        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+        ThreeDSecureResult paymentAuthRequest =
             result.getParcelableExtra(EXTRA_THREE_D_SECURE_RESULT);
         assertSame(this.paymentAuthRequest, paymentAuthRequest);
     }

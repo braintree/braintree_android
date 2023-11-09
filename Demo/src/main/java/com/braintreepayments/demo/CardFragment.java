@@ -27,7 +27,7 @@ import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecureNonce;
-import com.braintreepayments.api.ThreeDSecurePaymentAuthRequest;
+import com.braintreepayments.api.ThreeDSecureResult;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
@@ -90,7 +90,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.tokenize(cardinalResult,
+                paymentAuthResult -> threeDSecureClient.tokenize(paymentAuthResult,
                         this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);
@@ -207,7 +207,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillPostalCode("12345");
     }
 
-    private void handleThreeDSecureResult(ThreeDSecurePaymentAuthRequest paymentAuthRequest, Exception error) {
+    private void handleThreeDSecureResult(ThreeDSecureResult paymentAuthRequest, Exception error) {
         safelyCloseLoadingView();
         if (paymentAuthRequest != null) {
             ThreeDSecureNonce paymentMethodNonce = paymentAuthRequest.getThreeDSecureNonce();
@@ -229,12 +229,12 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
-                    (threeDSecureResult, error) -> {
-                        if (threeDSecureResult != null &&
-                                threeDSecureResult.getLookup().requiresUserAuthentication()) {
-                            threeDSecureLauncher.launch(threeDSecureResult);
+                    (paymentAuthRequest, error) -> {
+                        if (paymentAuthRequest != null &&
+                                paymentAuthRequest.getLookup().requiresUserAuthentication()) {
+                            threeDSecureLauncher.launch(paymentAuthRequest);
                         } else {
-                            handleThreeDSecureResult(threeDSecureResult, error);
+                            handleThreeDSecureResult(paymentAuthRequest, error);
                         }
                         safelyCloseLoadingView();
                     });

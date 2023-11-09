@@ -50,7 +50,7 @@ class CardinalClient {
         }
     }
 
-    void continueLookup(ThreeDSecurePaymentAuthRequest paymentAuthRequest,
+    void continueLookup(ThreeDSecureResult paymentAuthRequest,
                         CardinalChallengeObserver challengeObserver) throws BraintreeException {
         ThreeDSecureLookup lookup = paymentAuthRequest.getLookup();
         String transactionId = lookup.getTransactionId();

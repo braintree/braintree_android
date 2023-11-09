@@ -30,7 +30,7 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureLauncherUnitTest {
 
     @Mock
-    ActivityResultLauncher<ThreeDSecurePaymentAuthRequest> activityResultLauncher;
+    ActivityResultLauncher<ThreeDSecureResult> activityResultLauncher;
     private ThreeDSecureLauncherCallback callback;
 
     @Before
@@ -49,7 +49,7 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<ThreeDSecurePaymentAuthRequest, ThreeDSecurePaymentAuthResult>>any(),
+                Mockito.<ActivityResultContract<ThreeDSecureResult, ThreeDSecurePaymentAuthResult>>any(),
                 Mockito.any());
     }
 
@@ -61,7 +61,7 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
         sut.activityLauncher = activityResultLauncher;
 
-        ThreeDSecurePaymentAuthRequest paymentAuthRequest = new ThreeDSecurePaymentAuthRequest();
+        ThreeDSecureResult paymentAuthRequest = new ThreeDSecureResult();
 
         sut.launch(paymentAuthRequest);
         verify(activityResultLauncher).launch(paymentAuthRequest);
@@ -76,8 +76,8 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
         sut.activityLauncher = activityResultLauncher;
 
-        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
-                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureResult paymentAuthRequest =
+                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         TransactionTooLargeException transactionTooLargeException =
                 new TransactionTooLargeException();
@@ -85,7 +85,7 @@ public class ThreeDSecureLauncherUnitTest {
                 "runtime exception caused by transaction too large", transactionTooLargeException);
 
         doThrow(runtimeException)
-                .when(activityResultLauncher).launch(any(ThreeDSecurePaymentAuthRequest.class));
+                .when(activityResultLauncher).launch(any(ThreeDSecureResult.class));
 
         sut.launch(paymentAuthRequest);
 

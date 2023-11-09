@@ -65,7 +65,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
             extras = new Bundle();
         }
 
-        ThreeDSecurePaymentAuthRequest paymentAuthRequest = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
+        ThreeDSecureResult paymentAuthRequest = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
         if (paymentAuthRequest != null) {
             try {
                 cardinalClient.continueLookup(paymentAuthRequest, challengeObserver);
@@ -93,7 +93,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     private void handleValidated(ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
-        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecurePaymentAuthRequest) getIntent().getExtras()
+        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
                 .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 

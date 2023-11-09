@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 public interface ThreeDSecurePaymentAuthRequestCallback {
 
     /**
-     * @param paymentAuthRequest {@link ThreeDSecurePaymentAuthRequest}
+     * @param paymentAuthRequest {@link ThreeDSecureResult}
      * @param error              an exception that occurred while processing a 3D Secure result
      */
-    void onResult(@Nullable ThreeDSecurePaymentAuthRequest paymentAuthRequest, @Nullable Exception error);
+    void onResult(@Nullable ThreeDSecureResult paymentAuthRequest, @Nullable Exception error);
 }

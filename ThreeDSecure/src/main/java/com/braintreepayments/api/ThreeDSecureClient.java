@@ -193,7 +193,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    void continuePerformVerification(@NonNull final ThreeDSecurePaymentAuthRequest result,
+    void continuePerformVerification(@NonNull final ThreeDSecureResult result,
                                             @NonNull final ThreeDSecurePaymentAuthRequestCallback callback) {
         braintreeClient.getConfiguration(
                 (configuration, error) -> startVerificationFlow(
@@ -210,9 +210,9 @@ public class ThreeDSecureClient {
     public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
     final ThreeDSecurePaymentAuthRequestCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
-            ThreeDSecurePaymentAuthRequest result;
+            ThreeDSecureResult result;
             try {
-                result = ThreeDSecurePaymentAuthRequest.fromJson(lookupResponse);
+                result = ThreeDSecureResult.fromJson(lookupResponse);
                 startVerificationFlow(result, callback);
             } catch (JSONException e) {
                 callback.onResult(null, e);
@@ -220,7 +220,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    private void startVerificationFlow(ThreeDSecurePaymentAuthRequest result,
+    private void startVerificationFlow(ThreeDSecureResult result,
                                        ThreeDSecurePaymentAuthRequestCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
@@ -276,7 +276,7 @@ public class ThreeDSecureClient {
         if (threeDSecureError != null) {
             callback.onResult(null, threeDSecureError);
         } else {
-            ThreeDSecurePaymentAuthRequest paymentAuthRequest = paymentAuthResult.getThreeSecureResult();
+            ThreeDSecureResult paymentAuthRequest = paymentAuthResult.getThreeSecureResult();
             ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
             String jwt = paymentAuthResult.getJWT();
 
@@ -325,7 +325,7 @@ public class ThreeDSecureClient {
         }
     }
 
-    private void sendLiabilityShiftedAnalytics(ThreeDSecurePaymentAuthRequest paymentAuthRequest) {
+    private void sendLiabilityShiftedAnalytics(ThreeDSecureResult paymentAuthRequest) {
         ThreeDSecureInfo info = paymentAuthRequest.getThreeDSecureNonce().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(

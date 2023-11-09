@@ -232,7 +232,7 @@ class CardinalClientUnitTest {
         every { threeDSecureLookup.transactionId } returns "sample-transaction-id"
         every { threeDSecureLookup.pareq } returns "sample-payer-authentication-request"
 
-        val paymentAuthRequest = mockk<ThreeDSecurePaymentAuthRequest>(relaxed = true)
+        val paymentAuthRequest = mockk<ThreeDSecureResult>(relaxed = true)
         every { paymentAuthRequest.lookup } returns threeDSecureLookup
 
         sut.continueLookup(paymentAuthRequest, cardinalChallengeObserver)
@@ -257,7 +257,7 @@ class CardinalClientUnitTest {
         every { threeDSecureLookup.transactionId } returns "sample-transaction-id"
         every { threeDSecureLookup.pareq } returns "sample-payer-authentication-request"
 
-        val paymentAuthRequest = mockk<ThreeDSecurePaymentAuthRequest>(relaxed = true)
+        val paymentAuthRequest = mockk<ThreeDSecureResult>(relaxed = true)
         every { paymentAuthRequest.lookup } returns threeDSecureLookup
 
         try {

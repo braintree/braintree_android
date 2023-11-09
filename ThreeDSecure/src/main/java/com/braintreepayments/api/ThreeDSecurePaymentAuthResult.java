@@ -6,11 +6,11 @@ public class ThreeDSecurePaymentAuthResult {
 
     private final String jwt;
     private final ValidateResponse validateResponse;
-    private final ThreeDSecurePaymentAuthRequest paymentAuthRequest;
+    private final ThreeDSecureResult paymentAuthRequest;
 
     private final Exception error;
 
-    ThreeDSecurePaymentAuthResult(ThreeDSecurePaymentAuthRequest paymentAuthRequest, String jwt,
+    ThreeDSecurePaymentAuthResult(ThreeDSecureResult paymentAuthRequest, String jwt,
                                   ValidateResponse validateResponse) {
         this.jwt = jwt;
         this.validateResponse = validateResponse;
@@ -29,7 +29,7 @@ public class ThreeDSecurePaymentAuthResult {
         return error;
     }
 
-    ThreeDSecurePaymentAuthRequest getThreeSecureResult() {
+    ThreeDSecureResult getThreeSecureResult() {
         return paymentAuthRequest;
     }
 
