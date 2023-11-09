@@ -64,8 +64,9 @@
     * Move `ThreeDSecureInfo` to `three-d-secure` module
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
-    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, `SEPADirectDebitFlowStartedCallback`,
-      `SEPADirectDebitResponse`, `SEPADirectDebitBrowserSwitchResult`, and `SEPADirectDebitBrowserSwitchResultCallback`
+    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, 
+      `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
+      `SEPADirectDebitPaymentAuthResult`, and `SEPADirectDebitTokenizeCallback`
     * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
     * Modify `SEPADirectDebitClient#tokenize` parameters
 

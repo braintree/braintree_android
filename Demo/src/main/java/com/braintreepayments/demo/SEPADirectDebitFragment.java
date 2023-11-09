@@ -11,10 +11,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PostalAddress;
-import com.braintreepayments.api.SEPADirectDebitBrowserSwitchResult;
 import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
-import com.braintreepayments.api.SEPADirectDebitLauncherCallback;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitRequest;
@@ -36,7 +34,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         sepaDirectDebitClient = new SEPADirectDebitClient(braintreeClient);
 
         sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
-            sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
+            sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
                 if (error != null) {
                     handleError(error);
                 } else {
@@ -71,7 +69,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("EUR-sepa-direct-debit");
 
-        sepaDirectDebitClient.tokenize(request, (sepaDirectDebitResponse, error) -> {
+        sepaDirectDebitClient.createPaymentAuthRequest(request, (sepaDirectDebitResponse, error) -> {
             if (error != null) {
                 handleError(error);
             } else if (sepaDirectDebitResponse.getNonce() != null) { // web-flow mandate not required

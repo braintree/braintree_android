@@ -38,7 +38,7 @@ public class SEPADirectDebitLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        SEPADirectDebitResponse sepaResponse = mock(SEPADirectDebitResponse.class);
+        SEPADirectDebitPaymentAuthRequest sepaResponse = mock(SEPADirectDebitPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient, sepaLauncherCallback);
@@ -50,7 +50,7 @@ public class SEPADirectDebitLauncherUnitTest {
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        SEPADirectDebitResponse sepaResponse = mock(SEPADirectDebitResponse.class);
+        SEPADirectDebitPaymentAuthRequest sepaResponse = mock(SEPADirectDebitPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
@@ -59,8 +59,8 @@ public class SEPADirectDebitLauncherUnitTest {
 
         sut.launch(activity, sepaResponse);
 
-        ArgumentCaptor<SEPADirectDebitBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(SEPADirectDebitBrowserSwitchResult.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthResult.class);
         verify(sepaLauncherCallback).onResult(captor.capture());
         assertSame(exception, captor.getValue().getError());
         assertNull(captor.getValue().getBrowserSwitchResult());
@@ -75,8 +75,8 @@ public class SEPADirectDebitLauncherUnitTest {
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 
-        ArgumentCaptor<SEPADirectDebitBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(SEPADirectDebitBrowserSwitchResult.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthResult.class);
         verify(sepaLauncherCallback).onResult(captor.capture());
         assertSame(result, captor.getValue().getBrowserSwitchResult());
         assertNull(captor.getValue().getError());

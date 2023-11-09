@@ -6,11 +6,8 @@ import android.net.Uri;
 import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,15 +41,15 @@ public class SEPADirectDebitClient {
     }
 
     /**
-     * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitResponse} to be used
+     * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitPaymentAuthRequest} to be used
      * to launch the SEPA mandate flow in
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitResponse)}
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}
      *
      * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
-     * @param callback {@link SEPADirectDebitFlowStartedCallback}
+     * @param callback {@link SEPADirectDebitPaymentAuthRequestCallback}
      */
-    public void tokenize(@NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
-                         @NonNull final SEPADirectDebitFlowStartedCallback callback) {
+    public void createPaymentAuthRequest(@NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
+                                         @NonNull final SEPADirectDebitPaymentAuthRequestCallback callback) {
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.selected.started");
         braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
         sepaDirectDebitApi.createMandate(sepaDirectDebitRequest,
@@ -63,9 +60,9 @@ public class SEPADirectDebitClient {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
                             try {
-                                SEPADirectDebitResponse sepaDirectDebitResponse =
-                                        new SEPADirectDebitResponse(buildBrowserSwitchOptions(result), null);
-                                callback.onResult(sepaDirectDebitResponse, null);
+                                SEPADirectDebitPaymentAuthRequest paymentAuthRequest =
+                                        new SEPADirectDebitPaymentAuthRequest(buildBrowserSwitchOptions(result), null);
+                                callback.onResult(paymentAuthRequest, null);
                             } catch (JSONException exception) {
                                 braintreeClient.sendAnalyticsEvent(
                                         "sepa-direct-debit.browser-switch.failure");
@@ -84,9 +81,9 @@ public class SEPADirectDebitClient {
                                         if (sepaDirectDebitNonce != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.success");
-                                            SEPADirectDebitResponse sepaDirectDebitResponse =
-                                                    new SEPADirectDebitResponse(null, sepaDirectDebitNonce);
-                                            callback.onResult(sepaDirectDebitResponse, null);
+                                            SEPADirectDebitPaymentAuthRequest paymentAuthRequest =
+                                                    new SEPADirectDebitPaymentAuthRequest(null, sepaDirectDebitNonce);
+                                            callback.onResult(paymentAuthRequest, null);
                                         } else if (tokenizeError != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.failure");
@@ -110,19 +107,19 @@ public class SEPADirectDebitClient {
     /**
      * After receiving a result from the SEPA mandate web flow via
      * {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
-     * {@link SEPADirectDebitBrowserSwitchResult} returned to this method to tokenize the SEPA
+     * {@link SEPADirectDebitPaymentAuthResult} returned to this method to tokenize the SEPA
      * account and receive a {@link SEPADirectDebitNonce} on success.
      *
-     * @param sepaDirectDebitBrowserSwitchResult a {@link SEPADirectDebitBrowserSwitchResult} received
+     * @param paymentAuthResult a {@link SEPADirectDebitPaymentAuthResult} received
      *                                           in the callback of {@link SEPADirectDebitLauncher}
-     * @param callback {@link SEPADirectDebitBrowserSwitchResultCallback}
+     * @param callback {@link SEPADirectDebitTokenizeCallback}
      */
-    public void onBrowserSwitchResult(@NonNull SEPADirectDebitBrowserSwitchResult sepaDirectDebitBrowserSwitchResult,
-                                      @NonNull final SEPADirectDebitBrowserSwitchResultCallback callback) {
+    public void tokenize(@NonNull SEPADirectDebitPaymentAuthResult paymentAuthResult,
+                         @NonNull final SEPADirectDebitTokenizeCallback callback) {
         BrowserSwitchResult browserSwitchResult =
-                sepaDirectDebitBrowserSwitchResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && sepaDirectDebitBrowserSwitchResult.getError() != null) {
-            callback.onResult(null, sepaDirectDebitBrowserSwitchResult.getError());
+                paymentAuthResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
+            callback.onResult(null, paymentAuthResult.getError());
             return;
         }
 

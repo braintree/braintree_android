@@ -381,8 +381,8 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { sepaDirectDebitBrowserSwitchResult ->
-+           sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult) { 
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
++           sepaDirectDebitClient.onBrowserSwitchResult(paymentAuthResult) { 
 +               sepaDirectDebitNonce, error ->
 +                   // handle nonce or error
 +           }
@@ -409,13 +409,13 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       sepaDirectDebitClient.tokenize(activity, request)
-+       sepaDirectDebitClient.tokenize(activity, request) { sepaDirectDebitResponse, error ->
++       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest, error ->
 +           if (error != null) {
 +               // handle error
-+           } else if (sepaDirectDebitResponse.nonce != null) {      // web-flow mandate not required
++           } else if (paymentAuthRequest.nonce != null) {      // web-flow mandate not required
 +               // handle nonce
 +           } else {                                                 // web-flow mandate required
-+               sepaDirectDebitLauncher.launch(activity, sepaDirectDebitResponse)
++               sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
 +           }
 +       }
     }

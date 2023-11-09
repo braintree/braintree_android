@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -33,7 +32,7 @@ public class SEPADirectDebitClientUnitTest {
     private CreateMandateResult createMandateResult;
     private SEPADirectDebitRequest sepaDirectDebitRequest;
     private SEPADirectDebitBrowserSwitchResultCallback sepaBrowserSwitchResultCallback;
-    private SEPADirectDebitFlowStartedCallback sepaFlowStartedCallback;
+    private SEPADirectDebitPaymentAuthRequestCallback sepaFlowStartedCallback;
 
     @Before
     public void beforeEach() {
@@ -51,7 +50,7 @@ public class SEPADirectDebitClientUnitTest {
         sepaDirectDebitRequest = new SEPADirectDebitRequest();
 
         sepaBrowserSwitchResultCallback = mock(SEPADirectDebitBrowserSwitchResultCallback.class);
-        sepaFlowStartedCallback = mock(SEPADirectDebitFlowStartedCallback.class);
+        sepaFlowStartedCallback = mock(SEPADirectDebitPaymentAuthRequestCallback.class);
     }
 
     @Test
@@ -64,14 +63,14 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
 
-        ArgumentCaptor<SEPADirectDebitResponse> captor =
-                ArgumentCaptor.forClass(SEPADirectDebitResponse.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture(), isNull());
 
-        SEPADirectDebitResponse sepaResponseResult = captor.getValue();
+        SEPADirectDebitPaymentAuthRequest sepaResponseResult = captor.getValue();
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
@@ -109,9 +108,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
 
-        ArgumentCaptor<SEPADirectDebitResponse> captor = ArgumentCaptor.forClass(SEPADirectDebitResponse.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                SEPADirectDebitPaymentAuthRequest.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture(), isNull());
         assertEquals(captor.getValue().getNonce(), nonce);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
@@ -137,7 +137,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(sepaFlowStartedCallback).onResult(isNull(), eq(exception));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
     }
@@ -159,7 +159,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaFlowStartedCallback).onResult(isNull(), captor.capture());
@@ -186,7 +186,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(braintreeClient, never()).startBrowserSwitch(any(FragmentActivity.class),
                 any(BrowserSwitchOptions.class));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
@@ -206,7 +206,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        sut.tokenize(sepaDirectDebitRequest, sepaFlowStartedCallback);
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(sepaFlowStartedCallback).onResult(isNull(), eq(error));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
     }
@@ -221,8 +221,9 @@ public class SEPADirectDebitClientUnitTest {
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         Exception expectedError = new Exception("error");
-        SEPADirectDebitBrowserSwitchResult payPalBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(expectedError);
-        sut.onBrowserSwitchResult(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        SEPADirectDebitPaymentAuthResult
+                payPalBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(expectedError);
+        sut.tokenize(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
@@ -240,8 +241,9 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult payPalBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult((BrowserSwitchResult) null);
-        sut.onBrowserSwitchResult(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        SEPADirectDebitPaymentAuthResult
+                payPalBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult((BrowserSwitchResult) null);
+        sut.tokenize(payPalBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
@@ -263,9 +265,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
@@ -300,9 +303,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.browser-switch.success");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
@@ -339,9 +343,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         verify(sepaBrowserSwitchResultCallback).onResult(eq(nonce), isNull());
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
@@ -374,9 +379,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), eq(exception));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
@@ -413,9 +419,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         verify(sepaBrowserSwitchResultCallback).onResult(eq(nonce), isNull());
     }
@@ -436,9 +443,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
@@ -464,9 +472,10 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitClient sut =
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
-        SEPADirectDebitBrowserSwitchResult sepaBrowserSwitchResult = new SEPADirectDebitBrowserSwitchResult(browserSwitchResult);
+        SEPADirectDebitPaymentAuthResult
+                sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult(browserSwitchResult);
 
-        sut.onBrowserSwitchResult(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
+        sut.tokenize(sepaBrowserSwitchResult, sepaBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(sepaBrowserSwitchResultCallback).onResult(isNull(), captor.capture());
