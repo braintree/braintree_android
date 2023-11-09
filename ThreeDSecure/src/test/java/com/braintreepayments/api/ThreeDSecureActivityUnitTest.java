@@ -32,11 +32,11 @@ public class ThreeDSecureActivityUnitTest {
     @Test
     public void onCreate_withExtras_invokesCardinalWithLookupData()
             throws JSONException, BraintreeException {
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, paymentAuthRequest);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -47,11 +47,11 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        ArgumentCaptor<ThreeDSecureResult> captor =
-                ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        ArgumentCaptor<ThreeDSecurePaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(ThreeDSecurePaymentAuthRequest.class);
         verify(cardinalClient).continueLookup(captor.capture(), any());
 
-        ThreeDSecureResult actualResult = captor.getValue();
+        ThreeDSecurePaymentAuthRequest actualResult = captor.getValue();
         ThreeDSecureLookup actualLookup = actualResult.getLookup();
         assertEquals("sample-transaction-id", actualLookup.getTransactionId());
         assertEquals("sample-pareq", actualLookup.getPareq());
@@ -60,11 +60,11 @@ public class ThreeDSecureActivityUnitTest {
     @Test
     public void onCreate_withExtrasAndCardinalError_finishesWithError()
             throws JSONException, BraintreeException {
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, paymentAuthRequest);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -76,7 +76,7 @@ public class ThreeDSecureActivityUnitTest {
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
         doThrow(cardinalError).when(cardinalClient)
-                .continueLookup(any(ThreeDSecureResult.class), any());
+                .continueLookup(any(ThreeDSecurePaymentAuthRequest.class), any());
 
         sut.launchCardinalAuthChallenge(cardinalClient);
         verify(sut).finish();
@@ -98,7 +98,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class),
+        verify(cardinalClient, never()).continueLookup(any(ThreeDSecurePaymentAuthRequest.class),
                 any(CardinalChallengeObserver.class));
         verify(sut).finish();
 
@@ -112,11 +112,11 @@ public class ThreeDSecureActivityUnitTest {
 
     @Test
     public void onValidated_returnsValidationResults() throws JSONException {
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, paymentAuthRequest);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -137,7 +137,7 @@ public class ThreeDSecureActivityUnitTest {
                 ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
 
         assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT));
-        assertEquals(threeDSecureResult, intentForResult.getParcelableExtra(
+        assertEquals(paymentAuthRequest, intentForResult.getParcelableExtra(
                 ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
         assertNotNull(activityResult);
         assertEquals("SUCCESS", activityResult.getActionCode().getString());

@@ -11,7 +11,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
-public class ThreeDSecureResult implements Parcelable {
+public class ThreeDSecurePaymentAuthRequest implements Parcelable {
 
     private static final String ERRORS_KEY = "errors";
     private static final String ERROR_KEY = "error";
@@ -29,10 +29,10 @@ public class ThreeDSecureResult implements Parcelable {
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication
      *                   route.
-     * @return The {@link ThreeDSecureResult} to use when performing 3D Secure authentication.
+     * @return The {@link ThreeDSecurePaymentAuthRequest} to use when performing 3D Secure authentication.
      */
-    static ThreeDSecureResult fromJson(String jsonString) throws JSONException {
-        ThreeDSecureResult result = new ThreeDSecureResult();
+    static ThreeDSecurePaymentAuthRequest fromJson(String jsonString) throws JSONException {
+        ThreeDSecurePaymentAuthRequest result = new ThreeDSecurePaymentAuthRequest();
         JSONObject json = new JSONObject(jsonString);
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
@@ -89,7 +89,7 @@ public class ThreeDSecureResult implements Parcelable {
         return lookup;
     }
 
-    ThreeDSecureResult() {
+    ThreeDSecurePaymentAuthRequest() {
     }
 
     @Override
@@ -104,19 +104,19 @@ public class ThreeDSecureResult implements Parcelable {
         dest.writeParcelable(lookup, flags);
     }
 
-    private ThreeDSecureResult(Parcel in) {
+    private ThreeDSecurePaymentAuthRequest(Parcel in) {
         threeDSecureNonce = in.readParcelable(CardNonce.class.getClassLoader());
         errorMessage = in.readString();
         lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
-    public static final Creator<ThreeDSecureResult> CREATOR = new Creator<>() {
-        public ThreeDSecureResult createFromParcel(Parcel source) {
-            return new ThreeDSecureResult(source);
+    public static final Creator<ThreeDSecurePaymentAuthRequest> CREATOR = new Creator<>() {
+        public ThreeDSecurePaymentAuthRequest createFromParcel(Parcel source) {
+            return new ThreeDSecurePaymentAuthRequest(source);
         }
 
-        public ThreeDSecureResult[] newArray(int size) {
-            return new ThreeDSecureResult[size];
+        public ThreeDSecurePaymentAuthRequest[] newArray(int size) {
+            return new ThreeDSecurePaymentAuthRequest[size];
         }
     };
 }

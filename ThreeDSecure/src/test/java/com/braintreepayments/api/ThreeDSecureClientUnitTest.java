@@ -36,17 +36,17 @@ public class ThreeDSecureClientUnitTest {
     private FragmentActivity activity;
     private ThreeDSecureAPI threeDSecureAPI;
 
-    private ThreeDSecureResultCallback threeDSecureResultCallback;
+    private ThreeDSecurePaymentAuthRequestCallback threeDSecurePaymentAuthRequestCallback;
 
     private Configuration threeDSecureEnabledConfig;
 
     ThreeDSecureRequest basicRequest;
-    ThreeDSecureResult threeDSecureResult;
+    ThreeDSecurePaymentAuthRequest paymentAuthRequest;
 
     @Before
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
-        threeDSecureResultCallback = mock(ThreeDSecureResultCallback.class);
+        threeDSecurePaymentAuthRequestCallback = mock(ThreeDSecurePaymentAuthRequestCallback.class);
         threeDSecureAPI = mock(ThreeDSecureAPI.class);
 
         threeDSecureEnabledConfig = new TestConfigurationBuilder()
@@ -62,8 +62,8 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         basicRequest.setBillingAddress(billingAddress);
 
-        threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
     }
 
     // region prepareLookup
@@ -233,7 +233,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
-        sut.performVerification(activity, basicRequest, threeDSecureResultCallback);
+        sut.createPaymentAuthRequest(activity, basicRequest, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.initialized");
     }
@@ -261,7 +261,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.createPaymentAuthRequest(activity, request, threeDSecurePaymentAuthRequestCallback);
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -298,7 +298,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.createPaymentAuthRequest(activity, request, threeDSecurePaymentAuthRequestCallback);
 
         ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -341,9 +341,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.createPaymentAuthRequest(activity, request, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureResult.class),
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(any(ThreeDSecurePaymentAuthRequest.class),
                 isNull());
     }
 
@@ -359,10 +359,10 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setAmount("5");
-        sut.performVerification(activity, request, threeDSecureResultCallback);
+        sut.createPaymentAuthRequest(activity, request, threeDSecurePaymentAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(isNull(), captor.capture());
         assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
                 captor.getValue().getMessage());
     }
@@ -381,7 +381,8 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.createPaymentAuthRequest(activity, basicRequest, mock(
+                ThreeDSecurePaymentAuthRequestCallback.class));
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig),
                 same(basicRequest), any(CardinalInitializeCallback.class));
@@ -404,8 +405,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.performVerification(activity, basicRequest, callback);
+        ThreeDSecurePaymentAuthRequestCallback
+                callback = mock(ThreeDSecurePaymentAuthRequestCallback.class);
+        sut.createPaymentAuthRequest(activity, basicRequest, callback);
 
         verify(callback).onResult(null, initializeRuntimeError);
     }
@@ -425,7 +427,8 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.createPaymentAuthRequest(activity, basicRequest, mock(
+                ThreeDSecurePaymentAuthRequestCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.cardinal-sdk.init.setup-completed");
@@ -446,7 +449,8 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        sut.performVerification(activity, basicRequest, mock(ThreeDSecureResultCallback.class));
+        sut.createPaymentAuthRequest(activity, basicRequest, mock(
+                ThreeDSecurePaymentAuthRequestCallback.class));
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
     }
@@ -468,8 +472,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.performVerification(activity, basicRequest, callback);
+        ThreeDSecurePaymentAuthRequestCallback
+                callback = mock(ThreeDSecurePaymentAuthRequestCallback.class);
+        sut.createPaymentAuthRequest(activity, basicRequest, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(callback).onResult(isNull(), captor.capture());
@@ -498,9 +503,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
@@ -522,9 +527,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.true");
@@ -546,9 +551,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.false");
@@ -570,11 +575,11 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(paymentAuthRequest, null);
     }
 
     @Test
@@ -593,9 +598,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.3ds-version.2.1.0");
@@ -616,13 +621,12 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         new ThreeDSecureAPI(braintreeClient));
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        sut.continuePerformVerification(threeDSecureResult,
-                threeDSecureResultCallback);
+        sut.continuePerformVerification(paymentAuthRequest, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(paymentAuthRequest, null);
     }
 
     // endregion
@@ -639,11 +643,11 @@ public class ThreeDSecureClientUnitTest {
                         threeDSecureAPI);
 
         Exception threeDSecureError = new Exception("3DS error.");
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureError);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult = new ThreeDSecurePaymentAuthResult(threeDSecureError);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(isNull(), captor.capture());
     }
 
     @Test
@@ -658,9 +662,9 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.cardinal-sdk.action-code.success");
@@ -680,12 +684,12 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(isNull(), captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("Error", captor.getValue().getMessage());
 
@@ -705,12 +709,12 @@ public class ThreeDSecureClientUnitTest {
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(threeDSecureResultCallback).onResult(isNull(), captor.capture());
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(isNull(), captor.capture());
         Exception exception = captor.getValue();
         assertTrue(exception instanceof UserCanceledException);
         assertEquals("User canceled 3DS.", exception.getMessage());
@@ -729,22 +733,22 @@ public class ThreeDSecureClientUnitTest {
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
 
         doAnswer((Answer<Void>) invocation -> {
-            ThreeDSecureResultCallback callback =
-                    (ThreeDSecureResultCallback) invocation.getArguments()[2];
-            callback.onResult(threeDSecureResult, null);
+            ThreeDSecurePaymentAuthRequestCallback callback =
+                    (ThreeDSecurePaymentAuthRequestCallback) invocation.getArguments()[2];
+            callback.onResult(paymentAuthRequest, null);
             return null;
-        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(),
-                any(ThreeDSecureResultCallback.class));
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecurePaymentAuthRequest.class), anyString(),
+                any(ThreeDSecurePaymentAuthRequestCallback.class));
 
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(paymentAuthRequest, null);
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
         verify(braintreeClient).sendAnalyticsEvent(
@@ -763,26 +767,27 @@ public class ThreeDSecureClientUnitTest {
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
 
-        final ThreeDSecureResult threeDSecureResult = mock(ThreeDSecureResult.class);
-        when(threeDSecureResult.hasError()).thenReturn(true);
+        final ThreeDSecurePaymentAuthRequest
+                paymentAuthRequest = mock(ThreeDSecurePaymentAuthRequest.class);
+        when(paymentAuthRequest.hasError()).thenReturn(true);
 
         doAnswer((Answer<Void>) invocation -> {
-            ThreeDSecureResultCallback callback =
-                    (ThreeDSecureResultCallback) invocation.getArguments()[2];
-            callback.onResult(threeDSecureResult, null);
+            ThreeDSecurePaymentAuthRequestCallback callback =
+                    (ThreeDSecurePaymentAuthRequestCallback) invocation.getArguments()[2];
+            callback.onResult(paymentAuthRequest, null);
             return null;
-        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(),
-                any(ThreeDSecureResultCallback.class));
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecurePaymentAuthRequest.class), anyString(),
+                any(ThreeDSecurePaymentAuthRequestCallback.class));
 
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(paymentAuthRequest, null);
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
@@ -800,22 +805,22 @@ public class ThreeDSecureClientUnitTest {
         final Exception exception = new Exception("error");
 
         doAnswer((Answer<Void>) invocation -> {
-            ThreeDSecureResultCallback callback =
-                    (ThreeDSecureResultCallback) invocation.getArguments()[2];
+            ThreeDSecurePaymentAuthRequestCallback callback =
+                    (ThreeDSecurePaymentAuthRequestCallback) invocation.getArguments()[2];
             callback.onResult(null, exception);
             return null;
-        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureResult.class), anyString(),
-                any(ThreeDSecureResultCallback.class));
+        }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecurePaymentAuthRequest.class), anyString(),
+                any(ThreeDSecurePaymentAuthRequestCallback.class));
 
         ThreeDSecureClient sut =
                 new ThreeDSecureClient(braintreeClient, cardinalClient,
                         threeDSecureAPI);
 
-        CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "jwt", validateResponse);
-        sut.onCardinalResult(cardinalResult, threeDSecureResultCallback);
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
+                new ThreeDSecurePaymentAuthResult(paymentAuthRequest, "jwt", validateResponse);
+        sut.tokenize(paymentAuthResult, threeDSecurePaymentAuthRequestCallback);
 
-        verify(threeDSecureResultCallback).onResult(null, exception);
+        verify(threeDSecurePaymentAuthRequestCallback).onResult(null, exception);
         braintreeClient.sendAnalyticsEvent(
                 "three-d-secure.verification-flow.upgrade-payment-method.errored");
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");

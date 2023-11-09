@@ -30,13 +30,13 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureLauncherUnitTest {
 
     @Mock
-    ActivityResultLauncher<ThreeDSecureResult> activityResultLauncher;
-    private CardinalResultCallback callback;
+    ActivityResultLauncher<ThreeDSecurePaymentAuthRequest> activityResultLauncher;
+    private ThreeDSecureLauncherCallback callback;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        callback = mock(CardinalResultCallback.class);
+        callback = mock(ThreeDSecureLauncherCallback.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<ThreeDSecureResult, CardinalResult>>any(),
+                Mockito.<ActivityResultContract<ThreeDSecurePaymentAuthRequest, ThreeDSecurePaymentAuthResult>>any(),
                 Mockito.any());
     }
 
@@ -61,10 +61,10 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
         sut.activityLauncher = activityResultLauncher;
 
-        ThreeDSecureResult threeDSecureResult = new ThreeDSecureResult();
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest = new ThreeDSecurePaymentAuthRequest();
 
-        sut.launch(threeDSecureResult);
-        verify(activityResultLauncher).launch(threeDSecureResult);
+        sut.launch(paymentAuthRequest);
+        verify(activityResultLauncher).launch(paymentAuthRequest);
 
     }
 
@@ -76,8 +76,8 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
         sut.activityLauncher = activityResultLauncher;
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest paymentAuthRequest =
+                ThreeDSecurePaymentAuthRequest.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         TransactionTooLargeException transactionTooLargeException =
                 new TransactionTooLargeException();
@@ -85,13 +85,13 @@ public class ThreeDSecureLauncherUnitTest {
                 "runtime exception caused by transaction too large", transactionTooLargeException);
 
         doThrow(runtimeException)
-                .when(activityResultLauncher).launch(any(ThreeDSecureResult.class));
+                .when(activityResultLauncher).launch(any(ThreeDSecurePaymentAuthRequest.class));
 
-        sut.launch(threeDSecureResult);
+        sut.launch(paymentAuthRequest);
 
-        ArgumentCaptor<CardinalResult> captor =
-                ArgumentCaptor.forClass(CardinalResult.class);
-        verify(callback).onCardinalResult(captor.capture());
+        ArgumentCaptor<ThreeDSecurePaymentAuthResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecurePaymentAuthResult.class);
+        verify(callback).onResult(captor.capture());
 
         Exception exception = captor.getValue().getError();
         assertTrue(exception instanceof BraintreeException);

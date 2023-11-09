@@ -12,7 +12,7 @@ class ThreeDSecureAPI {
     }
 
     void performLookup(final ThreeDSecureRequest request, String cardinalConsumerSessionId,
-                       final ThreeDSecureResultCallback callback) {
+                       final ThreeDSecurePaymentAuthRequestCallback callback) {
         String url = ApiClient.versionedPath(
                 ApiClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
                         "/three_d_secure/lookup");
@@ -21,7 +21,7 @@ class ThreeDSecureAPI {
         braintreeClient.sendPOST(url, data, (responseBody, httpError) -> {
             if (responseBody != null) {
                 try {
-                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                    ThreeDSecurePaymentAuthRequest result = ThreeDSecurePaymentAuthRequest.fromJson(responseBody);
                     callback.onResult(result, null);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
@@ -32,9 +32,9 @@ class ThreeDSecureAPI {
         });
     }
 
-    void authenticateCardinalJWT(ThreeDSecureResult threeDSecureResult, String cardinalJWT,
-                                 final ThreeDSecureResultCallback callback) {
-        final ThreeDSecureNonce lookupCardNonce = threeDSecureResult.getThreeDSecureNonce();
+    void authenticateCardinalJWT(ThreeDSecurePaymentAuthRequest paymentAuthRequest, String cardinalJWT,
+                                 final ThreeDSecurePaymentAuthRequestCallback callback) {
+        final ThreeDSecureNonce lookupCardNonce = paymentAuthRequest.getThreeDSecureNonce();
 
         braintreeClient.sendAnalyticsEvent(
                 "three-d-secure.verification-flow.upgrade-payment-method.started");
@@ -55,7 +55,7 @@ class ThreeDSecureAPI {
         braintreeClient.sendPOST(url, data, (responseBody, httpError) -> {
             if (responseBody != null) {
                 try {
-                    ThreeDSecureResult result = ThreeDSecureResult.fromJson(responseBody);
+                    ThreeDSecurePaymentAuthRequest result = ThreeDSecurePaymentAuthRequest.fromJson(responseBody);
                     if (result.hasError()) {
                         result.setThreeDSecureNonce(lookupCardNonce);
                     }

@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType;
@@ -12,7 +10,6 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 import org.json.JSONArray;
 
@@ -53,9 +50,9 @@ class CardinalClient {
         }
     }
 
-    void continueLookup(ThreeDSecureResult threeDSecureResult,
+    void continueLookup(ThreeDSecurePaymentAuthRequest paymentAuthRequest,
                         CardinalChallengeObserver challengeObserver) throws BraintreeException {
-        ThreeDSecureLookup lookup = threeDSecureResult.getLookup();
+        ThreeDSecureLookup lookup = paymentAuthRequest.getLookup();
         String transactionId = lookup.getTransactionId();
         String paReq = lookup.getPareq();
         try {

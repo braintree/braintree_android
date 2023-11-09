@@ -27,9 +27,9 @@ import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecureNonce;
+import com.braintreepayments.api.ThreeDSecurePaymentAuthRequest;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
-import com.braintreepayments.api.ThreeDSecureResult;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
@@ -90,7 +90,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                cardinalResult -> threeDSecureClient.tokenize(cardinalResult,
                         this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);
@@ -207,10 +207,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillPostalCode("12345");
     }
 
-    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+    private void handleThreeDSecureResult(ThreeDSecurePaymentAuthRequest paymentAuthRequest, Exception error) {
         safelyCloseLoadingView();
-        if (threeDSecureResult != null) {
-            ThreeDSecureNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
+        if (paymentAuthRequest != null) {
+            ThreeDSecureNonce paymentMethodNonce = paymentAuthRequest.getThreeDSecureNonce();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);
@@ -228,7 +228,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
-            threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
+            threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
                     (threeDSecureResult, error) -> {
                         if (threeDSecureResult != null &&
                                 threeDSecureResult.getLookup().requiresUserAuthentication()) {

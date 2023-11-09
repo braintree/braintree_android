@@ -183,10 +183,10 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       threeDSecureLauncher = ThreeDSecureLauncher(this) { cardinalResult ->
-+            threeDSecureClient.onCardinalResult(cardinalResult) { threeDSecureResult, error ->
++       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
++            threeDSecureClient.onCardinalResult(paymentAuthResult) { paymentAuthRequest, error ->
 +                error?.let { /* handle error */ }
-+                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
++                paymentAuthRequest?.let { /* handle paymentAuthRequest.tokenizedCard */ }
 +            }
 +       }
     }
@@ -201,19 +201,19 @@ class MyActivity : FragmentActivity() {
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
 +       threeDSecureClient.performVerification(requireContext(), threeDSecureRequest) { 
-          threeDSecureResult, error ->
+          paymentAuthRequest, error ->
              error?.let { /* handle error */ }
-             threeDSecureResult?.let {
+             paymentAuthRequest?.let {
                 if (it.lookup.requiresAuthentication) {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
 +                   threeDSecureLauncher.launch(it) 
-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
+                else { /* no additional user authentication needed, handle paymentAuthRequest */ }
              }
         }
     }
     
--   override fun onThreeDSecureSuccess(threeDSecureResult: ThreeDSecureResult) {
--        // handle threeDSecureResult.tokenizedCard
+-   override fun onThreeDSecureSuccess(paymentAuthRequest: ThreeDSecureResult) {
+-        // handle paymentAuthRequest.tokenizedCard
 -   }
       
 -   override fun onThreeDSecureFailure(error: java.lang.Exception) {
