@@ -41,7 +41,7 @@ public class GooglePayFragment extends BaseFragment {
         braintreeClient = getBraintreeClient();
         googlePayClient = new GooglePayClient(braintreeClient);
         googlePayLauncher = new GooglePayLauncher(this,
-                googlePayResult -> googlePayClient.tokenize(googlePayResult,
+                paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
                         (paymentMethodNonce, error) -> {
                             if (error != null) {
                                 handleError(error);
@@ -118,7 +118,7 @@ public class GooglePayFragment extends BaseFragment {
                 .build());
 
         googlePayClient.createPaymentAuthRequest(googlePayRequest,
-                (googlePayIntentData, error) -> googlePayLauncher.launch(googlePayIntentData));
+                (paymentAuthRequest, error) -> googlePayLauncher.launch(paymentAuthRequest));
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
