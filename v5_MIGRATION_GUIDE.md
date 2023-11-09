@@ -88,7 +88,7 @@ class MyActivity : FragmentActivity() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
 +       venmoClient.requestAuthChallenge(this, venmoRequest) { paymentAuthRequest, error ->
 +            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { venmoLauncher.launch(paymentAuthRequest) }
++            paymentAuthRequest?.let { venmoLauncher.launch(it) }
 +       }
     }
     
