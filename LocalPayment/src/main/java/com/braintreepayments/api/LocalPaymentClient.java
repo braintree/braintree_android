@@ -44,14 +44,14 @@ public class LocalPaymentClient {
 
     /**
      * Starts the payment flow for a {@link LocalPaymentRequest} and calls back a
-     * {@link LocalPaymentResult} on success that should be used to launch the user
+     * {@link LocalPaymentAuthRequest} on success that should be used to launch the user
      * authentication flow.
      *
      * @param request  {@link LocalPaymentRequest} with the payment details.
-     * @param callback {@link LocalPaymentStartCallback}
+     * @param callback {@link LocalPaymentAuthRequestCallback}
      */
-    public void startPayment(@NonNull final LocalPaymentRequest request,
-                             @NonNull final LocalPaymentStartCallback callback) {
+    public void createPaymentAuthRequest(@NonNull final LocalPaymentRequest request,
+                                         @NonNull final LocalPaymentAuthRequestCallback callback) {
         Exception exception = null;
 
         //noinspection ConstantConditions
@@ -84,7 +84,7 @@ public class LocalPaymentClient {
                     localPaymentApi.createPaymentMethod(request,
                             (localPaymentResult, createPaymentMethodError) -> {
                                 if (localPaymentResult != null) {
-                                    approvePayment(localPaymentResult, callback);
+                                    buildBrowserSwitchOptions(localPaymentResult, callback);
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.create.succeeded");
                                 } else if (createPaymentMethodError != null) {
@@ -101,32 +101,32 @@ public class LocalPaymentClient {
         }
     }
 
-    void approvePayment(@NonNull LocalPaymentResult localPaymentResult,
-                        @NonNull LocalPaymentStartCallback callback) {
+    void buildBrowserSwitchOptions(@NonNull LocalPaymentAuthRequest localPaymentAuthRequest,
+                                   @NonNull LocalPaymentAuthRequestCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
-                .url(Uri.parse(localPaymentResult.getApprovalUrl()));
+                .url(Uri.parse(localPaymentAuthRequest.getApprovalUrl()));
 
-        String paymentType = localPaymentResult.getRequest().getPaymentType();
+        String paymentType = localPaymentAuthRequest.getRequest().getPaymentType();
 
         try {
             browserSwitchOptions.metadata(new JSONObject()
                     .put("merchant-account-id",
-                            localPaymentResult.getRequest().getMerchantAccountId())
-                    .put("payment-type", localPaymentResult.getRequest().getPaymentType()));
+                            localPaymentAuthRequest.getRequest().getMerchantAccountId())
+                    .put("payment-type", localPaymentAuthRequest.getRequest().getPaymentType()));
         } catch (JSONException e) {
             callback.onResult(null, new BraintreeException("Error parsing local payment request"));
         }
 
-        localPaymentResult.setBrowserSwitchOptions(browserSwitchOptions);
-        callback.onResult(localPaymentResult, null);
+        localPaymentAuthRequest.setBrowserSwitchOptions(browserSwitchOptions);
+        callback.onResult(localPaymentAuthRequest, null);
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 
     /**
-     * After receiving a result from the PayPal web authentication flow via
+     * After receiving a result from the web authentication flow via
      * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
      * {@link LocalPaymentAuthResult} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.

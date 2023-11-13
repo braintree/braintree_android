@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 /**
  * Local payment result information.
  */
-public class LocalPaymentResult {
+public class LocalPaymentAuthRequest {
 
     private final LocalPaymentRequest request;
     private final String approvalUrl;
@@ -13,7 +13,7 @@ public class LocalPaymentResult {
 
     private BrowserSwitchOptions browserSwitchOptions;
 
-    LocalPaymentResult(LocalPaymentRequest request, String approvalUrl, String paymentId) {
+    LocalPaymentAuthRequest(LocalPaymentRequest request, String approvalUrl, String paymentId) {
         this.request = request;
         this.approvalUrl = approvalUrl;
         this.paymentId = paymentId;

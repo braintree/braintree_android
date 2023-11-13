@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertNotNull;
 
-import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
@@ -44,7 +43,7 @@ public class LocalPaymentClientTest {
         request.setCurrencyCode("EUR");
 
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient);
-        sut.startPayment(request, (localPaymentResult, error) -> {
+        sut.createPaymentAuthRequest(request, (localPaymentResult, error) -> {
             assertNotNull(localPaymentResult.getApprovalUrl());
             assertNotNull(localPaymentResult.getPaymentId());
             countDownLatch.countDown();

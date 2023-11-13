@@ -220,6 +220,7 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
 
 ## PayPal
 
@@ -288,6 +289,7 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
 
 ## Local Payment
 
@@ -341,9 +343,9 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       localPaymentClient.startPayment(activity, request)
-+       localPaymentClient.startPayment(this, request) { localPaymentResult, error ->
++       localPaymentClient.startPayment(this, request) { localPaymentAuthRequest, error ->
 +            error?.let { /* handle error */ }
-+            localPaymentResult?.let { 
++            localPaymentAuthRequest?.let { 
 +                localPaymentLauncher.launch(requireActivity(), it) 
 +           }
 +       }

@@ -71,7 +71,7 @@ public class LocalPaymentFragment extends BaseFragment {
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
 
-        localPaymentClient.startPayment(request, (localPaymentResult, error) -> {
+        localPaymentClient.createPaymentAuthRequest(request, (localPaymentResult, error) -> {
             if (localPaymentResult != null) {
                 localPaymentLauncher.launch(requireActivity(), localPaymentResult);
             } else {

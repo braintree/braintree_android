@@ -40,28 +40,28 @@ public class LocalPaymentLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(localPaymentResult.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentResult);
+        sut.launch(activity, localPaymentAuthRequest);
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
-        when(localPaymentResult.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentResult);
+        sut.launch(activity, localPaymentAuthRequest);
 
         ArgumentCaptor<LocalPaymentAuthResult> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
