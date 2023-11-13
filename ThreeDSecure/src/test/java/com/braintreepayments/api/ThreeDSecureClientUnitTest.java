@@ -627,9 +627,9 @@ public class ThreeDSecureClientUnitTest {
 
     // endregion
 
-    // region onCardinalResult
+    // region tokenize
     @Test
-    public void onCardinalResult_whenErrorExists_forwardsErrorToCallback_andSendsAnalytics()
+    public void tokenize_whenErrorExists_forwardsErrorToCallback_andSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -647,7 +647,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_onSuccess_sendsAnalyticsEvent() throws BraintreeException {
+    public void tokenize_onSuccess_sendsAnalyticsEvent() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
@@ -667,7 +667,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseTimeout_returnsErrorAndSendsAnalytics()
+    public void tokenize_whenValidateResponseTimeout_returnsErrorAndSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -693,7 +693,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseCancel_returnsUserCanceledErrorAndSendsAnalytics()
+    public void tokenize_whenValidateResponseCancel_returnsUserCanceledErrorAndSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -720,7 +720,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResult_returnsResultAndSendsAnalytics()
+    public void tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTResult_returnsResultAndSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -755,7 +755,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics()
+    public void tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
@@ -789,7 +789,7 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void onCardinalResult_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics()
+    public void tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics()
             throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
