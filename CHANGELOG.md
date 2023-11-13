@@ -68,7 +68,7 @@
       `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
       `SEPADirectDebitPaymentAuthResult`, and `SEPADirectDebitTokenizeCallback`
     * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
-    * Replace `SEPADirectDebitClient#onBrowserSwitchResult` with`SEPADirectDebitClient#tokenize` and 
+    * Replace `SEPADirectDebitClient#onBrowserSwitchResult` with `SEPADirectDebitClient#tokenize` and 
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
