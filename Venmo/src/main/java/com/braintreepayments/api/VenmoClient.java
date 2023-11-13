@@ -269,12 +269,12 @@ public class VenmoClient {
                 boolean isReadyToPay =
                         configuration.isVenmoEnabled() && isVenmoAppSwitchAvailable(context);
                 if (isReadyToPay) {
-                    callback.onVenmoResult(VenmoReadinessResult.ReadyToPay.INSTANCE);
+                    callback.onVenmoReadinessResult(VenmoReadinessResult.ReadyToPay.INSTANCE);
                 } else {
-                   callback.onVenmoResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
+                   callback.onVenmoReadinessResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
                 }
             } else if (configError != null) {
-                callback.onVenmoResult(new VenmoReadinessResult.Failure(configError));
+                callback.onVenmoReadinessResult(new VenmoReadinessResult.Failure(configError));
             }
         });
     }

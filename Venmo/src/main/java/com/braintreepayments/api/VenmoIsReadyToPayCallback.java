@@ -13,5 +13,5 @@ public interface VenmoIsReadyToPayCallback {
     /**
      * @param venmoReadinessResult true if Venmo is ready; false otherwise.
      */
-    void onVenmoResult(@NonNull VenmoReadinessResult venmoReadinessResult);
+    void onVenmoReadinessResult(@NonNull VenmoReadinessResult venmoReadinessResult);
 }
