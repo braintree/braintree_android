@@ -21,7 +21,7 @@ public class LocalPaymentLauncher {
      * Used to launch the local payment flow in a web browser and deliver results to your Activity
      *
      * @param callback a {@link LocalPaymentLauncherCallback} to handle the result of
-     *                 {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}
+     *                 {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentAuthRequest)}
      */
     public LocalPaymentLauncher(@NonNull LocalPaymentLauncherCallback callback) {
         this(new BrowserSwitchClient(), callback);
@@ -40,17 +40,16 @@ public class LocalPaymentLauncher {
      * {@link LocalPaymentLauncher#LocalPaymentLauncher(LocalPaymentLauncherCallback)}
      *
      * @param activity           an Android {@link FragmentActivity}
-     * @param localPaymentResult the result of the local payment web authentication flow received
-     *                           from invoking
-     *                           {@link LocalPaymentClient#startPayment(LocalPaymentRequest,
-     *                           LocalPaymentStartCallback)}
+     * @param localPaymentAuthRequest the payment auth request created in
+     *                           {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest,
+     *                           LocalPaymentAuthRequestCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
-                       @NonNull LocalPaymentResult localPaymentResult) {
+                       @NonNull LocalPaymentAuthRequest localPaymentAuthRequest) {
         try {
-            browserSwitchClient.start(activity, localPaymentResult.getBrowserSwitchOptions());
+            browserSwitchClient.start(activity, localPaymentAuthRequest.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
-            callback.onResult(new LocalPaymentBrowserSwitchResult(e));
+            callback.onResult(new LocalPaymentAuthResult(e));
         }
     }
 
@@ -58,16 +57,16 @@ public class LocalPaymentLauncher {
      * Captures and delivers the result of a the browser-based local payment authentication flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentResult)}.
+     * used to invoke {@link LocalPaymentLauncher#launch(FragmentActivity, LocalPaymentAuthRequest)}.
      * <p>
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity, after invoking setIntent(intent).
      * <p>
-     * This method will deliver a {@link LocalPaymentBrowserSwitchResult} to the
+     * This method will deliver a {@link LocalPaymentAuthResult} to the
      * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
-     * {@link LocalPaymentBrowserSwitchResult} should be passed to
-     * {@link LocalPaymentClient#onBrowserSwitchResult(Context, LocalPaymentBrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)} 
+     * {@link LocalPaymentAuthResult} should be passed to
+     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
@@ -77,7 +76,7 @@ public class LocalPaymentLauncher {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, LOCAL_PAYMENT,
                 intent);
         if (result != null) {
-            callback.onResult(new LocalPaymentBrowserSwitchResult(result));
+            callback.onResult(new LocalPaymentAuthResult(result));
             browserSwitchClient.clearActiveRequests(context);
         }
     }

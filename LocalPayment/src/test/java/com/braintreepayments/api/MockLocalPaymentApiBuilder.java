@@ -5,14 +5,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class MockLocalPaymentApiBuilder {
 
     private LocalPaymentNonce tokenizeSuccess;
     private Exception tokenizeError;
-    private LocalPaymentResult createPaymentMethodSuccess;
+    private LocalPaymentAuthRequest createPaymentMethodSuccess;
     private Exception createPaymentMethodError;
 
     public MockLocalPaymentApiBuilder tokenizeSuccess(LocalPaymentNonce tokenizeSuccess) {
@@ -26,7 +25,7 @@ public class MockLocalPaymentApiBuilder {
     }
 
     public MockLocalPaymentApiBuilder createPaymentMethodSuccess(
-            LocalPaymentResult createPaymentMethodSuccess) {
+            LocalPaymentAuthRequest createPaymentMethodSuccess) {
         this.createPaymentMethodSuccess = createPaymentMethodSuccess;
         return this;
     }
@@ -40,8 +39,8 @@ public class MockLocalPaymentApiBuilder {
         LocalPaymentApi localPaymentAPI = mock(LocalPaymentApi.class);
 
         doAnswer((Answer<Void>) invocation -> {
-            LocalPaymentBrowserSwitchResultCallback callback =
-                    (LocalPaymentBrowserSwitchResultCallback) invocation.getArguments()[3];
+            LocalPaymentTokenizeCallback callback =
+                    (LocalPaymentTokenizeCallback) invocation.getArguments()[3];
             if (tokenizeSuccess != null) {
                 callback.onResult(tokenizeSuccess, null);
             } else if (tokenizeError != null) {
@@ -49,11 +48,11 @@ public class MockLocalPaymentApiBuilder {
             }
             return null;
         }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(),
-                any(LocalPaymentBrowserSwitchResultCallback.class));
+                any(LocalPaymentTokenizeCallback.class));
 
         doAnswer((Answer<Void>) invocation -> {
-            LocalPaymentStartCallback callback =
-                    (LocalPaymentStartCallback) invocation.getArguments()[1];
+            LocalPaymentAuthRequestCallback callback =
+                    (LocalPaymentAuthRequestCallback) invocation.getArguments()[1];
             if (createPaymentMethodSuccess != null) {
                 callback.onResult(createPaymentMethodSuccess, null);
             } else if (createPaymentMethodError != null) {
@@ -61,7 +60,7 @@ public class MockLocalPaymentApiBuilder {
             }
             return null;
         }).when(localPaymentAPI).createPaymentMethod(any(LocalPaymentRequest.class),
-                any(LocalPaymentStartCallback.class));
+                any(LocalPaymentAuthRequestCallback.class));
 
         return localPaymentAPI;
     }

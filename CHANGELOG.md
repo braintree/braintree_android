@@ -57,11 +57,16 @@
     * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
   * LocalPayment
     * Remove `LocalPaymentListener`
-    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, and 
-      `LocalPaymentBrowserSwitchResult`
+    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, `LocalPaymentTokenizeCallback`,
+      and `LocalPaymentAuthRequest`
+    * Rename `LocalPaymentResult` to `LocalPaymentAuthResult`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
+    * Rename `LocalPaymentClient#startPayment` to `LocalPaymentClient#creatPaymentAuthRequest` 
+      and change parameters
+    * Rename `LocalPaymentClient#onBrowserSwithResult` to `LocalPaymentClient#tokenize` and 
+      change parameters
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module

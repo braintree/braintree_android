@@ -34,7 +34,7 @@ public class LocalPaymentFragment extends BaseFragment {
         BraintreeClient braintreeClient = getBraintreeClient();
         localPaymentClient = new LocalPaymentClient(braintreeClient);
         localPaymentLauncher = new LocalPaymentLauncher(
-                localPaymentResult -> localPaymentClient.onBrowserSwitchResult(requireContext(),
+                localPaymentResult -> localPaymentClient.tokenize(requireContext(),
                         localPaymentResult,
                         this::handleLocalPaymentResult));
         return view;
@@ -71,7 +71,7 @@ public class LocalPaymentFragment extends BaseFragment {
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
 
-        localPaymentClient.startPayment(request, (localPaymentResult, error) -> {
+        localPaymentClient.createPaymentAuthRequest(request, (localPaymentResult, error) -> {
             if (localPaymentResult != null) {
                 localPaymentLauncher.launch(requireActivity(), localPaymentResult);
             } else {

@@ -7,5 +7,5 @@ import androidx.annotation.Nullable;
  */
 public interface LocalPaymentLauncherCallback {
 
-    void onResult(@Nullable LocalPaymentBrowserSwitchResult localPaymentResult);
+    void onResult(@Nullable LocalPaymentAuthResult localPaymentResult);
 }

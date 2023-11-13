@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,31 +40,31 @@ public class LocalPaymentLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(localPaymentResult.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentResult);
+        sut.launch(activity, localPaymentAuthRequest);
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
-        when(localPaymentResult.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentResult);
+        sut.launch(activity, localPaymentAuthRequest);
 
-        ArgumentCaptor<LocalPaymentBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(LocalPaymentBrowserSwitchResult.class);
+        ArgumentCaptor<LocalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
         verify(localPaymentLauncherCallback).onResult(captor.capture());
         assertSame(exception, captor.getValue().getError());
         assertNull(captor.getValue().getBrowserSwitchResult());
@@ -82,8 +81,8 @@ public class LocalPaymentLauncherUnitTest {
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 
-        ArgumentCaptor<LocalPaymentBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(LocalPaymentBrowserSwitchResult.class);
+        ArgumentCaptor<LocalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
         verify(localPaymentLauncherCallback).onResult(captor.capture());
         assertSame(result, captor.getValue().getBrowserSwitchResult());
         assertNull(captor.getValue().getError());
