@@ -257,10 +257,10 @@ public class ThreeDSecureClient {
     }
 
     /**
-     * Call this method from the {@link CardinalResultCallback} passed to the
+     * Call this method from the {@link ThreeDSecureLauncherCallback} passed to the
      * {@link ThreeDSecureLauncher} used to launch the 3DS authentication challenge.
      *
-     * @param paymentAuthResult a {@link ThreeDSecurePaymentAuthResult} received in {@link CardinalResultCallback}
+     * @param paymentAuthResult a {@link ThreeDSecurePaymentAuthResult} received in {@link ThreeDSecureLauncherCallback}
      * @param callback       a {@link ThreeDSecureResultCallback}
      */
     public void tokenize(ThreeDSecurePaymentAuthResult paymentAuthResult,

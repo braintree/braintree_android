@@ -20,18 +20,18 @@ public class ThreeDSecureLauncher {
             "com.braintreepayments.api.ThreeDSecure.RESULT";
     @VisibleForTesting
     ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
-    private final CardinalResultCallback callback;
+    private final ThreeDSecureLauncherCallback callback;
 
     /**
      * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must be
      * instantiated in the onCreateView method of your Fragment
      *
      * @param fragment an Android Fragment from which you will launch the 3DS flow
-     * @param callback a {@link CardinalResultCallback} to received the result of the 3DS
+     * @param callback a {@link ThreeDSecureLauncherCallback} to received the result of the 3DS
      *                 authentication flow
      */
     public ThreeDSecureLauncher(@NonNull Fragment fragment,
-                                @NonNull CardinalResultCallback callback) {
+                                @NonNull ThreeDSecureLauncherCallback callback) {
         this(fragment.getActivity().getActivityResultRegistry(), fragment.getViewLifecycleOwner(),
                 callback);
     }
@@ -41,22 +41,22 @@ public class ThreeDSecureLauncher {
      * instantiated in the onCreate method of your FragmentActivity
      *
      * @param activity an Android Activity from which you will launch the 3DS flow
-     * @param callback a {@link CardinalResultCallback} to received the result of the 3DS
+     * @param callback a {@link ThreeDSecureLauncherCallback} to received the result of the 3DS
      *                 authentication flow
      */
     public ThreeDSecureLauncher(@NonNull FragmentActivity activity,
-                                @NonNull CardinalResultCallback callback) {
+                                @NonNull ThreeDSecureLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
 
     @VisibleForTesting
     ThreeDSecureLauncher(ActivityResultRegistry registry, LifecycleOwner lifecycleOwner,
-                         CardinalResultCallback callback) {
+                         ThreeDSecureLauncherCallback callback) {
         this.callback = callback;
         activityLauncher =
                 registry.register(THREE_D_SECURE_RESULT, lifecycleOwner,
                         new ThreeDSecureActivityResultContract(),
-                        callback::onCardinalResult);
+                        callback::onThreeDSecurePaymentAuthResult);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ThreeDSecureLauncher {
                         + "Please contact Braintree Support for assistance.";
                 BraintreeException threeDSecureResponseTooLargeError =
                         new BraintreeException(errorMessage, runtimeException);
-                callback.onCardinalResult(new ThreeDSecurePaymentAuthResult(threeDSecureResponseTooLargeError));
+                callback.onThreeDSecurePaymentAuthResult(new ThreeDSecurePaymentAuthResult(threeDSecureResponseTooLargeError));
             } else {
                 throw runtimeException;
             }

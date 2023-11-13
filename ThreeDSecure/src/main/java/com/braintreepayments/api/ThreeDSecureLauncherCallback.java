@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 /**
  * Callback for receiving the results via {@link ThreeDSecureLauncher}
  */
-public interface CardinalResultCallback {
+public interface ThreeDSecureLauncherCallback {
 
-    void onCardinalResult(@NonNull ThreeDSecurePaymentAuthResult paymentAuthResult);
+    void onThreeDSecurePaymentAuthResult(@NonNull ThreeDSecurePaymentAuthResult paymentAuthResult);
 }

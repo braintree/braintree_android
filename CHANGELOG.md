@@ -35,10 +35,12 @@
     * Add `GooglePayClient#tokenize` 
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
-    * Add `ThreeDSecureLauncher`, `CardinalResult`, and `CardinalResultCallback`
+    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
     * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
-    * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
-    * Add `ThreeDSecureClient#onCardinalResult`
+    * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+    * Add `ThreeDSecureClient#tokenize`
+    * Rename `ThreeDSecureClient#performVerification` to 
+      `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
     * Remove `versionRequested` from `ThreeDSecureRequest`
     * Add `ThreeDSecureNonce` class
     * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
