@@ -481,9 +481,9 @@ public class ThreeDSecureClientUnitTest {
 
     // endregion
 
-    // region continuePerformVerification
+    // region sendAnalyticsAndCallbackResult
     @Test
-    public void continuePerformVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent()
+    public void sendAnalyticsAndCallbackResult_whenAuthenticatingWithCardinal_sendsAnalyticsEvent()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -500,13 +500,13 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsPresented_sendsAnalyticsEvent()
+    public void sendAnalyticsAndCallbackResult_whenChallengeIsPresented_sendsAnalyticsEvent()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -524,14 +524,14 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.true");
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent()
+    public void sendAnalyticsAndCallbackResult_whenChallengeIsNotPresented_sendsAnalyticsEvent()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -548,14 +548,14 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.challenge-presented.false");
     }
 
     @Test
-    public void continuePerformVerification_whenChallengeIsNotPresented_returnsResult()
+    public void sendAnalyticsAndCallbackResult_whenChallengeIsNotPresented_returnsResult()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -572,13 +572,13 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult, threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);
     }
 
     @Test
-    public void continuePerformVerification_sendsAnalyticsEvent()
+    public void sendAnalyticsAndCallbackResult_sendsAnalyticsEvent()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -595,14 +595,14 @@ public class ThreeDSecureClientUnitTest {
 
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
-        sut.continuePerformVerification(threeDSecureResult, threeDSecureResultCallback);
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult, threeDSecureResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "three-d-secure.verification-flow.3ds-version.2.1.0");
     }
 
     @Test
-    public void continuePerformVerification_callsBackThreeDSecureResultForLaunch()
+    public void sendAnalyticsAndCallbackResult_callsBackThreeDSecureResultForLaunch()
             throws JSONException, BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
                 .successReferenceId("reference-id")
@@ -619,7 +619,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        sut.continuePerformVerification(threeDSecureResult,
+        sut.sendAnalyticsAndCallbackResult(threeDSecureResult,
                 threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onResult(threeDSecureResult, null);

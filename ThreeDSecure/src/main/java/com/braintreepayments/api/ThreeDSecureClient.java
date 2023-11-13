@@ -94,7 +94,7 @@ public class ThreeDSecureClient {
             ThreeDSecureResultCallback internalResultCallback =
                     (threeDSecureResult, performLookupError) -> {
                 if (threeDSecureResult != null) {
-                    continuePerformVerification(threeDSecureResult, callback);
+                    sendAnalyticsAndCallbackResult(threeDSecureResult, callback);
                 } else {
                     callback.onResult(null, performLookupError);
                 }
@@ -193,13 +193,6 @@ public class ThreeDSecureClient {
         });
     }
 
-    void continuePerformVerification(@NonNull final ThreeDSecureResult result,
-                                            @NonNull final ThreeDSecureResultCallback callback) {
-        braintreeClient.getConfiguration(
-                (configuration, error) -> startVerificationFlow(
-                        result, callback));
-    }
-
     /**
      * Initialize a challenge from a server side lookup call.
      *
@@ -213,15 +206,16 @@ public class ThreeDSecureClient {
             ThreeDSecureResult result;
             try {
                 result = ThreeDSecureResult.fromJson(lookupResponse);
-                startVerificationFlow(result, callback);
+                sendAnalyticsAndCallbackResult(result, callback);
             } catch (JSONException e) {
                 callback.onResult(null, e);
             }
         });
     }
 
-    private void startVerificationFlow(ThreeDSecureResult result,
-                                       ThreeDSecureResultCallback callback) {
+    // TODO: Consolidate this method with createPaymentAuthRequest when analytics refactor is complete
+    void sendAnalyticsAndCallbackResult(ThreeDSecureResult result,
+                                        ThreeDSecureResultCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
         boolean showChallenge = lookup.getAcsUrl() != null;
@@ -258,7 +252,6 @@ public class ThreeDSecureClient {
             return;
         }
 
-        // perform cardinal authentication
         braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
         callback.onResult(result, null);
     }
