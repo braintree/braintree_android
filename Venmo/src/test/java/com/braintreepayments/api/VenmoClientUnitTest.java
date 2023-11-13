@@ -498,7 +498,7 @@ public class VenmoClientUnitTest {
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
 
-        verify(callback).onVenmoReadinessResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
+        verify(callback).onVenmoReadinessResult(any(VenmoReadinessResult.Failure.class));
     }
 
     @Test

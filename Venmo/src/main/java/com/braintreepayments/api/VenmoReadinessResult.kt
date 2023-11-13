@@ -20,6 +20,4 @@ sealed class VenmoReadinessResult {
      * An [error] occurred when determining if the user is ready to pay with Venmo.
      */
     class Failure(val error: Exception) : VenmoReadinessResult()
-
 }
-
