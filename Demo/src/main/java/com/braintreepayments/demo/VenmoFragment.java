@@ -21,7 +21,7 @@ import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.VenmoPaymentResult;
+import com.braintreepayments.api.VenmoResult;
 import com.braintreepayments.api.VenmoRequest;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ public class VenmoFragment extends BaseFragment {
         return view;
     }
 
-    private void handleVenmoResult(VenmoPaymentResult result) {
-        if (result instanceof VenmoPaymentResult.Success) {
-            handleVenmoAccountNonce(((VenmoPaymentResult.Success) result).getNonce());
-        } else if (result instanceof VenmoPaymentResult.Failure) {
-            handleError(((VenmoPaymentResult.Failure) result).getError());
-        } else if (result instanceof VenmoPaymentResult.Cancel) {
+    private void handleVenmoResult(VenmoResult result) {
+        if (result instanceof VenmoResult.Success) {
+            handleVenmoAccountNonce(((VenmoResult.Success) result).getNonce());
+        } else if (result instanceof VenmoResult.Failure) {
+            handleError(((VenmoResult.Failure) result).getError());
+        } else if (result instanceof VenmoResult.Cancel) {
             handleError(new UserCanceledException("User canceled Venmo"));
         }
     }

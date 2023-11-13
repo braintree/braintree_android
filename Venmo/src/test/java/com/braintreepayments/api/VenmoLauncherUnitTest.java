@@ -47,7 +47,7 @@ public class VenmoLauncherUnitTest {
 
     @Test
     public void launch_launchesAuthChallenge() throws JSONException {
-        VenmoPaymentAuthRequestParams authChallenge =
+        VenmoPaymentAuthRequestParams params =
                 new VenmoPaymentAuthRequestParams(
                         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO),
                         "profile-id", "payment-context-id", "session-id", "custom");
@@ -56,8 +56,8 @@ public class VenmoLauncherUnitTest {
         VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);
         sut.activityLauncher = activityResultLauncher;
 
-        sut.launch(authChallenge);
-        verify(activityResultLauncher).launch(authChallenge);
+        sut.launch(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
+        verify(activityResultLauncher).launch(params);
 
     }
 }

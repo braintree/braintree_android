@@ -184,20 +184,20 @@ public class VenmoClient {
                                             vaultVenmoAccountNonce(nonce.getString(),
                                                     (venmoAccountNonce, vaultError) -> {
                                                         if (venmoAccountNonce != null) {
-                                                            callback.onVenmoResult(new VenmoPaymentResult.Success(venmoAccountNonce));
+                                                            callback.onVenmoResult(new VenmoResult.Success(venmoAccountNonce));
                                                         } else if (vaultError != null) {
-                                                            callback.onVenmoResult(new VenmoPaymentResult.Failure(vaultError));
+                                                            callback.onVenmoResult(new VenmoResult.Failure(vaultError));
                                                         }
                                                     });
                                         } else {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "pay-with-venmo.app-switch.failure");
-                                            callback.onVenmoResult(new VenmoPaymentResult.Success(nonce));
+                                            callback.onVenmoResult(new VenmoResult.Success(nonce));
                                         }
                                     } else if (error != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "pay-with-venmo.app-switch.failure");
-                                        callback.onVenmoResult(new VenmoPaymentResult.Failure(error));
+                                        callback.onVenmoResult(new VenmoResult.Failure(error));
                                     }
                                 });
                     } else {
@@ -208,21 +208,21 @@ public class VenmoClient {
                         if (shouldVault && isClientTokenAuth) {
                             vaultVenmoAccountNonce(nonce, (venmoAccountNonce, error) -> {
                                 if (venmoAccountNonce != null) {
-                                    callback.onVenmoResult(new VenmoPaymentResult.Success(venmoAccountNonce));
+                                    callback.onVenmoResult(new VenmoResult.Success(venmoAccountNonce));
                                 } else if (error != null) {
-                                    callback.onVenmoResult(new VenmoPaymentResult.Failure(error));
+                                    callback.onVenmoResult(new VenmoResult.Failure(error));
                                 }
                             });
                         } else {
                             String venmoUsername = venmoPaymentAuthResult.getVenmoUsername();
                             VenmoAccountNonce venmoAccountNonce =
                                     new VenmoAccountNonce(nonce, venmoUsername, false);
-                            callback.onVenmoResult(new VenmoPaymentResult.Success(venmoAccountNonce));
+                            callback.onVenmoResult(new VenmoResult.Success(venmoAccountNonce));
                         }
 
                     }
                 } else if (authError != null) {
-                    callback.onVenmoResult(new VenmoPaymentResult.Failure(authError));
+                    callback.onVenmoResult(new VenmoResult.Failure(authError));
                 }
             });
 
@@ -230,7 +230,7 @@ public class VenmoClient {
             if (venmoPaymentAuthResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
             }
-            callback.onVenmoResult(VenmoPaymentResult.Cancel.INSTANCE);
+            callback.onVenmoResult(VenmoResult.Cancel.INSTANCE);
         }
     }
 

@@ -49,7 +49,7 @@ public class VenmoLauncher {
     VenmoLauncher(ActivityResultRegistry registry, LifecycleOwner lifecycleOwner,
                   VenmoLauncherCallback callback) {
         activityLauncher = registry.register(VENMO_SECURE_RESULT, lifecycleOwner,
-                new VenmoActivityResultContract(), callback::onVenmoResult);
+                new VenmoActivityResultContract(), callback::onVenmoPaymentAuthResult);
     }
 
     /**

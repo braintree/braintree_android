@@ -568,12 +568,12 @@ public class VenmoClientUnitTest {
                         null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Success);
-        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Success);
+        VenmoAccountNonce nonce = ((VenmoResult.Success) result).getNonce();
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
@@ -601,12 +601,12 @@ public class VenmoClientUnitTest {
                         null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Failure);
-        assertEquals(graphQLError, ((VenmoPaymentResult.Failure) result).getError());
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Failure);
+        assertEquals(graphQLError, ((VenmoResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
     }
 
@@ -699,11 +699,11 @@ public class VenmoClientUnitTest {
                 new VenmoPaymentAuthResult("payment-context-id", null, null, error);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Cancel);
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Cancel);
     }
 
     @Test
@@ -785,12 +785,12 @@ public class VenmoClientUnitTest {
                 new VenmoPaymentAuthResult(null, "sample-nonce", "venmo-username", null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Success);
-        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Success);
+        VenmoAccountNonce nonce = ((VenmoResult.Success) result).getNonce();
         assertEquals(venmoAccountNonce, nonce);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
@@ -825,12 +825,12 @@ public class VenmoClientUnitTest {
                         null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Success);
-        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Success);
+        VenmoAccountNonce nonce = ((VenmoResult.Success) result).getNonce();
         assertEquals(venmoAccountNonce, nonce);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
@@ -859,12 +859,12 @@ public class VenmoClientUnitTest {
                 new VenmoPaymentAuthResult(null, "sample-nonce", "venmo-username", null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Failure);
-        assertEquals(error, ((VenmoPaymentResult.Failure) result).getError());
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Failure);
+        assertEquals(error, ((VenmoResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
 
@@ -899,12 +899,12 @@ public class VenmoClientUnitTest {
                         null);
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
         verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoPaymentResult result = captor.getValue();
-        assertTrue(result instanceof VenmoPaymentResult.Failure);
-        assertEquals(error, ((VenmoPaymentResult.Failure) result).getError());
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Failure);
+        assertEquals(error, ((VenmoResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
 }
