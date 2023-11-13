@@ -149,13 +149,13 @@ public class VenmoClientUnitTest {
 
         InOrder inOrder = Mockito.inOrder(venmoPaymentAuthRequestCallback, braintreeClient);
 
-        ArgumentCaptor<VenmoPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
+        ArgumentCaptor<VenmoPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(VenmoPaymentAuthRequestParams.class);
         inOrder.verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
 
         inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
 
-        VenmoPaymentAuthRequest authChallenge = captor.getValue();
+        VenmoPaymentAuthRequestParams authChallenge = captor.getValue();
         assertEquals("sample-venmo-merchant", authChallenge.getProfileId());
         assertEquals("venmo-payment-context-id", authChallenge.getPaymentContextId());
         assertEquals("session-id", authChallenge.getSessionId());
@@ -253,8 +253,8 @@ public class VenmoClientUnitTest {
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
-        ArgumentCaptor<VenmoPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
+        ArgumentCaptor<VenmoPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(VenmoPaymentAuthRequestParams.class);
         verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
         assertEquals("merchant-id", captor.getValue().getProfileId());
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());
@@ -285,8 +285,8 @@ public class VenmoClientUnitTest {
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
 
-        ArgumentCaptor<VenmoPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
+        ArgumentCaptor<VenmoPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(VenmoPaymentAuthRequestParams.class);
         verify(venmoPaymentAuthRequestCallback).onPaymentAuthRequest(captor.capture(), isNull());
         assertEquals("second-pwv-profile-id", captor.getValue().getProfileId());
         assertEquals("venmo-payment-context-id", captor.getValue().getPaymentContextId());

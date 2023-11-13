@@ -15,7 +15,7 @@ import androidx.lifecycle.LifecycleOwner;
 public class VenmoLauncher {
 
     @VisibleForTesting
-    ActivityResultLauncher<VenmoPaymentAuthRequest> activityLauncher;
+    ActivityResultLauncher<VenmoPaymentAuthRequestParams> activityLauncher;
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
 
     /**
@@ -56,10 +56,10 @@ public class VenmoLauncher {
      * Launches the Venmo authentication flow by switching to the Venmo app.
      *
      * @param venmoPaymentAuthRequest the result of
-     *                           {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
-     *                           VenmoRequest, VenmoPaymentAuthRequestCallback)}
+     *                                {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
+     *                                VenmoRequest, VenmoPaymentAuthRequestCallback)}
      */
-    public void launch(VenmoPaymentAuthRequest venmoPaymentAuthRequest) {
-        activityLauncher.launch(venmoPaymentAuthRequest);
+    public void launch(VenmoPaymentAuthRequest.ReadyToLaunch venmoPaymentAuthRequest) {
+        activityLauncher.launch(venmoPaymentAuthRequest.getRequestParams());
     }
 }

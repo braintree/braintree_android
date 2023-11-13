@@ -70,9 +70,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       venmoLauncher = VenmoLauncher(this) { paymentAuthResult ->
-+            venmoClient.tokenize(paymentAuthResult) { venmoAccountNonce, error ->
-+                error?.let { /* handle error */ }
-+                venmoAccountNonce?.let { /* handle Venmo account nonce */ }
++            venmoClient.tokenize(paymentAuthResult) { paymentResult ->
++               when(paymentResult) {
++                   is VenmoPaymentResult.Success -> { /* handle paymentResult.nonce */ }
++                   is VenmoPaymentResult.Failure -> { /* handle paymentResult.error */ }
++                   is VenmoPaymentResult.Cancel -> { /* handle user canceled */ }
++               }
 +            }
 +       }
     }
@@ -86,9 +89,13 @@ class MyActivity : FragmentActivity() {
     
     fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
-+       venmoClient.requestAuthChallenge(this, venmoRequest) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { venmoLauncher.launch(it) }
++       venmoClient.requestAuthChallenge(this, venmoRequest) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is VenmoPaymentAuthRequest.ReadyToLaunch -> {
++                   venmoLauncher.launch(paymentAuthRequet)
++               }
++               is VenmoPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++           }
 +       }
     }
     

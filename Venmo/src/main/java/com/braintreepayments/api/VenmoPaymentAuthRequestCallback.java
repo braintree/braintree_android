@@ -1,13 +1,12 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 /**
  * Callback to handle result from
  * {@link VenmoClient#tokenize(VenmoPaymentAuthResult, VenmoTokenizeCallback)}
  */
 public interface VenmoPaymentAuthRequestCallback {
-    void onPaymentAuthRequest(@Nullable VenmoPaymentAuthRequest venmoPaymentAuthRequest,
-                              @Nullable Exception error);
+    void onVenmoPaymentAuthRequest(@NonNull VenmoPaymentAuthRequest venmoPaymentAuthRequest);
 
 }

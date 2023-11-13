@@ -19,6 +19,7 @@ import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
+import com.braintreepayments.api.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoPaymentResult;
 import com.braintreepayments.api.VenmoRequest;
@@ -90,12 +91,12 @@ public class VenmoFragment extends BaseFragment {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (venmoAuthChallenge, authError) -> {
-                    if (authError != null) {
-                        handleError(authError);
-                        return;
+                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
+                    if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
+                        handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+                    } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
+                        venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
                     }
-                    venmoLauncher.launch(venmoAuthChallenge);
                 });
             } else if (configuration.isVenmoEnabled()) {
                 showDialog("Please install the Venmo app first.");

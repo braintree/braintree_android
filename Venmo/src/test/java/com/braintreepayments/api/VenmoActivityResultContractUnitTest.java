@@ -41,8 +41,8 @@ public class VenmoActivityResultContractUnitTest {
     public void createIntent_returnsIntentWithExtras() throws JSONException {
         Configuration configuration =
                 Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
-        VenmoPaymentAuthRequest
-                input = new VenmoPaymentAuthRequest(configuration, "sample-venmo-merchant",
+        VenmoPaymentAuthRequestParams
+                input = new VenmoPaymentAuthRequestParams(configuration, "sample-venmo-merchant",
                 "venmo-payment-context-id", "session-id", "custom");
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
