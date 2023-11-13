@@ -56,7 +56,7 @@ public class LocalPaymentClient {
 
         //noinspection ConstantConditions
         if (callback == null) {
-            throw new RuntimeException("A LocalPaymentCallback is required.");
+            throw new RuntimeException("A LocalPaymentAuthRequestCallback is required.");
         }
 
         //noinspection ConstantConditions
@@ -141,7 +141,7 @@ public class LocalPaymentClient {
                          @NonNull final LocalPaymentTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (localPaymentAuthResult == null) {
-            callback.onResult(null, new BraintreeException("LocalPaymentBrowserSwitchResult " +
+            callback.onResult(null, new BraintreeException("LocalPaymentAuthResult " +
                     "cannot be null"));
             return;
         }

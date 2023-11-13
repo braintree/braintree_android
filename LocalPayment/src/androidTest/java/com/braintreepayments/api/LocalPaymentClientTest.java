@@ -24,7 +24,7 @@ public class LocalPaymentClientTest {
     }
 
     @Test(timeout = 10000)
-    public void startPayment_callsListener_withApprovalUrl_andPaymentId() throws InterruptedException {
+    public void createPaymentAuthRequest_callsBack_withApprovalUrl_andPaymentId() throws InterruptedException {
         PostalAddress address = new PostalAddress();
         address.setStreetAddress("836486 of 22321 Park Lake");
         address.setCountryCodeAlpha2("NL");
