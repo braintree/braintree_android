@@ -11,6 +11,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
+// TODO: Split into separate result objects for createPaymentAuthRequest and tokenize methods
 public class ThreeDSecureResult implements Parcelable {
 
     private static final String ERRORS_KEY = "errors";

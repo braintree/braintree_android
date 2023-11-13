@@ -62,7 +62,7 @@ public class ThreeDSecureLauncher {
     /**
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
      * callback of
-     * {@link ThreeDSecureClient#performVerification(Context, ThreeDSecureRequest,
+     * {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest,
      * ThreeDSecureResultCallback)} if user authentication is required
      * {@link ThreeDSecureLookup#requiresUserAuthentication()}
      *

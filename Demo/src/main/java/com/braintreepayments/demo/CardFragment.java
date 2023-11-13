@@ -228,7 +228,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
-            threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
+            threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
                     (threeDSecureResult, error) -> {
                         if (threeDSecureResult != null &&
                                 threeDSecureResult.getLookup().requiresUserAuthentication()) {

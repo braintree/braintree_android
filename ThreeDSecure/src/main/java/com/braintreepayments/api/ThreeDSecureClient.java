@@ -61,9 +61,9 @@ public class ThreeDSecureClient {
      * @param request  the {@link ThreeDSecureRequest} with information used for authentication.
      * @param callback {@link ThreeDSecureResultCallback}
      */
-    public void performVerification(@NonNull final Context context,
-                                    @NonNull final ThreeDSecureRequest request,
-                                    @NonNull final ThreeDSecureResultCallback callback) {
+    public void createPaymentAuthRequest(@NonNull final Context context,
+                                         @NonNull final ThreeDSecureRequest request,
+                                         @NonNull final ThreeDSecureResultCallback callback) {
         if (request.getAmount() == null || request.getNonce() == null) {
             callback.onResult(null, new InvalidArgumentException(
                     "The ThreeDSecureRequest nonce and amount cannot be null"));
