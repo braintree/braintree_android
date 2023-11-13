@@ -267,18 +267,18 @@ public class ThreeDSecureClient {
      * Call this method from the {@link CardinalResultCallback} passed to the
      * {@link ThreeDSecureLauncher} used to launch the 3DS authentication challenge.
      *
-     * @param cardinalResult a {@link CardinalResult} received in {@link CardinalResultCallback}
+     * @param paymentAuthResult a {@link ThreeDSecurePaymentAuthResult} received in {@link CardinalResultCallback}
      * @param callback       a {@link ThreeDSecureResultCallback}
      */
-    public void onCardinalResult(CardinalResult cardinalResult,
-                                 ThreeDSecureResultCallback callback) {
-        Exception threeDSecureError = cardinalResult.getError();
+    public void tokenize(ThreeDSecurePaymentAuthResult paymentAuthResult,
+                         ThreeDSecureResultCallback callback) {
+        Exception threeDSecureError = paymentAuthResult.getError();
         if (threeDSecureError != null) {
             callback.onResult(null, threeDSecureError);
         } else {
-            ThreeDSecureResult threeDSecureResult = cardinalResult.getThreeSecureResult();
-            ValidateResponse validateResponse = cardinalResult.getValidateResponse();
-            String jwt = cardinalResult.getJWT();
+            ThreeDSecureResult threeDSecureResult = paymentAuthResult.getThreeSecureResult();
+            ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
+            String jwt = paymentAuthResult.getJWT();
 
             braintreeClient.sendAnalyticsEvent(
                     String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s",

@@ -81,7 +81,7 @@ public class ThreeDSecureLauncher {
                         + "Please contact Braintree Support for assistance.";
                 BraintreeException threeDSecureResponseTooLargeError =
                         new BraintreeException(errorMessage, runtimeException);
-                callback.onCardinalResult(new CardinalResult(threeDSecureResponseTooLargeError));
+                callback.onCardinalResult(new ThreeDSecurePaymentAuthResult(threeDSecureResponseTooLargeError));
             } else {
                 throw runtimeException;
             }

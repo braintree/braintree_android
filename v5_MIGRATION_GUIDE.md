@@ -183,8 +183,8 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       threeDSecureLauncher = ThreeDSecureLauncher(this) { cardinalResult ->
-+            threeDSecureClient.onCardinalResult(cardinalResult) { threeDSecureResult, error ->
++       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
++            threeDSecureClient.onCardinalResult(paymentAuthResult) { threeDSecureResult, error ->
 +                error?.let { /* handle error */ }
 +                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
 +            }

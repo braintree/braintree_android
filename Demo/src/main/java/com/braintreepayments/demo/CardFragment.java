@@ -90,7 +90,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                cardinalResult -> threeDSecureClient.tokenize(cardinalResult,
                         this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);

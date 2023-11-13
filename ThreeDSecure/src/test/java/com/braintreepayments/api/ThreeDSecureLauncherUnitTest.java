@@ -49,7 +49,7 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<ThreeDSecureResult, CardinalResult>>any(),
+                Mockito.<ActivityResultContract<ThreeDSecureResult, ThreeDSecurePaymentAuthResult>>any(),
                 Mockito.any());
     }
 
@@ -89,8 +89,8 @@ public class ThreeDSecureLauncherUnitTest {
 
         sut.launch(threeDSecureResult);
 
-        ArgumentCaptor<CardinalResult> captor =
-                ArgumentCaptor.forClass(CardinalResult.class);
+        ArgumentCaptor<ThreeDSecurePaymentAuthResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecurePaymentAuthResult.class);
         verify(callback).onCardinalResult(captor.capture());
 
         Exception exception = captor.getValue().getError();
