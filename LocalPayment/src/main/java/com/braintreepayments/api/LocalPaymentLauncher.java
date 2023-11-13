@@ -50,7 +50,7 @@ public class LocalPaymentLauncher {
         try {
             browserSwitchClient.start(activity, localPaymentResult.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
-            callback.onResult(new LocalPaymentBrowserSwitchResult(e));
+            callback.onResult(new LocalPaymentAuthResult(e));
         }
     }
 
@@ -64,10 +64,10 @@ public class LocalPaymentLauncher {
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity, after invoking setIntent(intent).
      * <p>
-     * This method will deliver a {@link LocalPaymentBrowserSwitchResult} to the
+     * This method will deliver a {@link LocalPaymentAuthResult} to the
      * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
-     * {@link LocalPaymentBrowserSwitchResult} should be passed to
-     * {@link LocalPaymentClient#onBrowserSwitchResult(Context, LocalPaymentBrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)} 
+     * {@link LocalPaymentAuthResult} should be passed to
+     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from
@@ -77,7 +77,7 @@ public class LocalPaymentLauncher {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, LOCAL_PAYMENT,
                 intent);
         if (result != null) {
-            callback.onResult(new LocalPaymentBrowserSwitchResult(result));
+            callback.onResult(new LocalPaymentAuthResult(result));
             browserSwitchClient.clearActiveRequests(context);
         }
     }

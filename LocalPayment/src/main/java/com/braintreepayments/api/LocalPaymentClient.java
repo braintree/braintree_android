@@ -128,30 +128,28 @@ public class LocalPaymentClient {
     /**
      * After receiving a result from the PayPal web authentication flow via
      * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
-     * {@link LocalPaymentBrowserSwitchResult} returned to this method to tokenize the local
+     * {@link LocalPaymentAuthResult} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentBrowserSwitchResult a {@link LocalPaymentBrowserSwitchResult} received
+     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received
      *                                        in the callback of {@link LocalPaymentLauncher}
-     * @param callback                        {@link LocalPaymentBrowserSwitchResultCallback}
+     * @param callback                        {@link LocalPaymentTokenizeCallback}
      */
-    public void onBrowserSwitchResult(@NonNull final Context context,
-                                      @Nullable
-                                      LocalPaymentBrowserSwitchResult localPaymentBrowserSwitchResult,
-                                      @NonNull
-                                      final LocalPaymentBrowserSwitchResultCallback callback) {
+    public void tokenize(@NonNull final Context context,
+                         @Nullable LocalPaymentAuthResult localPaymentAuthResult,
+                         @NonNull final LocalPaymentTokenizeCallback callback) {
         //noinspection ConstantConditions
-        if (localPaymentBrowserSwitchResult == null) {
+        if (localPaymentAuthResult == null) {
             callback.onResult(null, new BraintreeException("LocalPaymentBrowserSwitchResult " +
                     "cannot be null"));
             return;
         }
 
         BrowserSwitchResult browserSwitchResult =
-                localPaymentBrowserSwitchResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && localPaymentBrowserSwitchResult.getError() != null) {
-            callback.onResult(null, localPaymentBrowserSwitchResult.getError());
+                localPaymentAuthResult.getBrowserSwitchResult();
+        if (browserSwitchResult == null && localPaymentAuthResult.getError() != null) {
+            callback.onResult(null, localPaymentAuthResult.getError());
             return;
         }
 

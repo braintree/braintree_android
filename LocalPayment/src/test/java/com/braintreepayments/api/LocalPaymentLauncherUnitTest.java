@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,8 +63,8 @@ public class LocalPaymentLauncherUnitTest {
 
         sut.launch(activity, localPaymentResult);
 
-        ArgumentCaptor<LocalPaymentBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(LocalPaymentBrowserSwitchResult.class);
+        ArgumentCaptor<LocalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
         verify(localPaymentLauncherCallback).onResult(captor.capture());
         assertSame(exception, captor.getValue().getError());
         assertNull(captor.getValue().getBrowserSwitchResult());
@@ -82,8 +81,8 @@ public class LocalPaymentLauncherUnitTest {
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 
-        ArgumentCaptor<LocalPaymentBrowserSwitchResult> captor =
-                ArgumentCaptor.forClass(LocalPaymentBrowserSwitchResult.class);
+        ArgumentCaptor<LocalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
         verify(localPaymentLauncherCallback).onResult(captor.capture());
         assertSame(result, captor.getValue().getBrowserSwitchResult());
         assertNull(captor.getValue().getError());

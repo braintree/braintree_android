@@ -4,20 +4,20 @@ import android.content.Context;
 
 /**
  * Result received from the local payment web flow through
- * {@link LocalPaymentBrowserSwitchResultCallback}. This result should be passed to
- * {@link LocalPaymentClient#onBrowserSwitchResult(Context, LocalPaymentBrowserSwitchResult, LocalPaymentBrowserSwitchResultCallback)}
+ * {@link LocalPaymentTokenizeCallback}. This result should be passed to
+ * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}
  * to complete the local payment flow.
  */
-public class LocalPaymentBrowserSwitchResult {
+public class LocalPaymentAuthResult {
 
     private BrowserSwitchResult browserSwitchResult;
     private Exception error;
 
-    LocalPaymentBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+    LocalPaymentAuthResult(BrowserSwitchResult browserSwitchResult) {
         this.browserSwitchResult = browserSwitchResult;
     }
 
-    LocalPaymentBrowserSwitchResult(Exception error) {
+    LocalPaymentAuthResult(Exception error) {
         this.error = error;
     }
 

@@ -312,8 +312,8 @@ class MyActivity : FragmentActivity() {
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       localPaymentLauncher = LocalPaymentLauncher() { localPaymentBrowserSwitchResult ->
-+           localPaymentClient.onBrowserSwitchResult(localPaymentBrowserSwitchResult) { 
++       localPaymentLauncher = LocalPaymentLauncher() { localPaymentAuthResult ->
++           localPaymentClient.onBrowserSwitchResult(localPaymentAuthResult) { 
 +               localPaymentNonce, error ->
 +                   // handle local payment nonce or error
 +           }

@@ -34,7 +34,7 @@ public class LocalPaymentFragment extends BaseFragment {
         BraintreeClient braintreeClient = getBraintreeClient();
         localPaymentClient = new LocalPaymentClient(braintreeClient);
         localPaymentLauncher = new LocalPaymentLauncher(
-                localPaymentResult -> localPaymentClient.onBrowserSwitchResult(requireContext(),
+                localPaymentResult -> localPaymentClient.tokenize(requireContext(),
                         localPaymentResult,
                         this::handleLocalPaymentResult));
         return view;
