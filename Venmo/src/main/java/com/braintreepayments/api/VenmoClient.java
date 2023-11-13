@@ -266,11 +266,15 @@ public class VenmoClient {
     public void isReadyToPay(final Context context, final VenmoIsReadyToPayCallback callback) {
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
-                boolean result =
+                boolean isReadyToPay =
                         configuration.isVenmoEnabled() && isVenmoAppSwitchAvailable(context);
-                callback.onResult(result, null);
-            } else {
-                callback.onResult(false, configError);
+                if (isReadyToPay) {
+                    callback.onVenmoResult(VenmoReadinessResult.ReadyToPay.INSTANCE);
+                } else {
+                   callback.onVenmoResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
+                }
+            } else if (configError != null) {
+                callback.onVenmoResult(new VenmoReadinessResult.Failure(configError));
             }
         });
     }

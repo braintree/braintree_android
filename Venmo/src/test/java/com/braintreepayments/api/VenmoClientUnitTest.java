@@ -498,7 +498,7 @@ public class VenmoClientUnitTest {
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
 
-        verify(callback).onResult(false, configError);
+        verify(callback).onVenmoResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
     }
 
     @Test
@@ -513,7 +513,7 @@ public class VenmoClientUnitTest {
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
 
-        verify(callback).onResult(false, null);
+        verify(callback).onVenmoResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
     }
 
     @Test
@@ -530,7 +530,7 @@ public class VenmoClientUnitTest {
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
 
-        verify(callback).onResult(false, null);
+        verify(callback).onVenmoResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
     }
 
     @Test
@@ -547,7 +547,7 @@ public class VenmoClientUnitTest {
         VenmoIsReadyToPayCallback callback = mock(VenmoIsReadyToPayCallback.class);
         sut.isReadyToPay(activity, callback);
 
-        verify(callback).onResult(true, null);
+        verify(callback).onVenmoResult(VenmoReadinessResult.ReadyToPay.INSTANCE);
     }
 
     @Test
