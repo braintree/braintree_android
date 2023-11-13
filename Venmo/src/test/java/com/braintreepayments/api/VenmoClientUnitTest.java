@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -35,7 +36,7 @@ public class VenmoClientUnitTest {
 
     private Configuration venmoEnabledConfiguration;
     private Configuration venmoDisabledConfiguration;
-    private VenmoInternalCallback venmoInternalCallback;
+    private VenmoTokenizeCallback venmoTokenizeCallback;
     private VenmoPaymentAuthRequestCallback venmoPaymentAuthRequestCallback;
     private VenmoSharedPrefsWriter sharedPrefsWriter;
     private DeviceInspector deviceInspector;
@@ -55,7 +56,7 @@ public class VenmoClientUnitTest {
                 Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
         venmoDisabledConfiguration =
                 Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
-        venmoInternalCallback = mock(VenmoInternalCallback.class);
+        venmoTokenizeCallback = mock(VenmoTokenizeCallback.class);
         venmoPaymentAuthRequestCallback = mock(VenmoPaymentAuthRequestCallback.class);
         sharedPrefsWriter = mock(VenmoSharedPrefsWriter.class);
 
@@ -540,7 +541,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "payment-context-id",
                         "venmo-username", null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),
                 any(VenmoInternalCallback.class));
@@ -565,12 +566,14 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "venmo-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
-        verify(venmoInternalCallback).onResult(captor.capture(), isNull());
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
 
-        VenmoAccountNonce nonce = captor.getValue();
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Success);
+        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
@@ -596,9 +599,14 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "venmo-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(null, graphQLError);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Failure);
+        assertEquals(graphQLError, ((VenmoPaymentResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
     }
 
@@ -631,7 +639,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "some-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(venmoApi).vaultVenmoAccountNonce(eq("some-nonce"), any(VenmoInternalCallback.class));
     }
@@ -648,7 +656,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "payment-context-id",
                         "venmo-username", null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),
                 any(VenmoInternalCallback.class));
@@ -662,7 +670,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "some-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success");
     }
@@ -675,7 +683,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", null, null,
                         new UserCanceledException("User canceled Venmo."));
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
     }
@@ -689,9 +697,13 @@ public class VenmoClientUnitTest {
 
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", null, null, error);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(null, error);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Cancel);
     }
 
     @Test
@@ -721,7 +733,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "sample-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(venmoApi).vaultVenmoAccountNonce(eq("fake-venmo-nonce"),
                 any(VenmoInternalCallback.class));
@@ -743,7 +755,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "sample-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(venmoApi, never()).vaultVenmoAccountNonce(anyString(),
                 any(VenmoInternalCallback.class));
@@ -771,9 +783,15 @@ public class VenmoClientUnitTest {
 
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult(null, "sample-nonce", "venmo-username", null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(venmoAccountNonce, null);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Success);
+        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
+        assertEquals(venmoAccountNonce, nonce);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
 
@@ -805,9 +823,15 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "sample-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(venmoAccountNonce, null);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Success);
+        VenmoAccountNonce nonce = ((VenmoPaymentResult.Success) result).getNonce();
+        assertEquals(venmoAccountNonce, nonce);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
 
@@ -833,9 +857,14 @@ public class VenmoClientUnitTest {
 
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult(null, "sample-nonce", "venmo-username", null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(null, error);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Failure);
+        assertEquals(error, ((VenmoPaymentResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
 
@@ -868,9 +897,14 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthResult venmoPaymentAuthResult =
                 new VenmoPaymentAuthResult("payment-context-id", "sample-nonce", "venmo-username",
                         null);
-        sut.tokenize(venmoPaymentAuthResult, venmoInternalCallback);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
-        verify(venmoInternalCallback).onResult(null, error);
+        ArgumentCaptor<VenmoPaymentResult> captor = ArgumentCaptor.forClass(VenmoPaymentResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoPaymentResult result = captor.getValue();
+        assertTrue(result instanceof VenmoPaymentResult.Failure);
+        assertEquals(error, ((VenmoPaymentResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
 }
