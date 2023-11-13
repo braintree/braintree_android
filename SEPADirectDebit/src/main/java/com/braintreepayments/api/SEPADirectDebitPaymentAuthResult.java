@@ -1,21 +1,21 @@
 package com.braintreepayments.api;
 
 /**
- * Result received from the SEPA mandate web flow through {@link SEPADirectDebitBrowserSwitchResultCallback}.
+ * Result received from the SEPA mandate web flow through {@link SEPADirectDebitTokenizeCallback}.
  * This result should be passed to
- * {@link SEPADirectDebitClient#onBrowserSwitchResult(SEPADirectDebitBrowserSwitchResult, SEPADirectDebitBrowserSwitchResultCallback)} )}
+ * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)} )}
  * to complete the SEPA mandate flow.
  */
-public class SEPADirectDebitBrowserSwitchResult {
+public class SEPADirectDebitPaymentAuthResult {
 
     private BrowserSwitchResult browserSwitchResult;
     private Exception error;
 
-    SEPADirectDebitBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+    SEPADirectDebitPaymentAuthResult(BrowserSwitchResult browserSwitchResult) {
         this.browserSwitchResult = browserSwitchResult;
     }
 
-    SEPADirectDebitBrowserSwitchResult(Exception error) {
+    SEPADirectDebitPaymentAuthResult(Exception error) {
         this.error = error;
     }
 

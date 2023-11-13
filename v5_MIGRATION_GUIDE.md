@@ -66,7 +66,7 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var venmoClient: VenmoClient
     
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       venmoLauncher = VenmoLauncher(this) { paymentAuthResult ->
@@ -122,7 +122,7 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var googlePayClient: GooglePayClient
     
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
@@ -180,7 +180,7 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var threeDSecureClient: VenmoClient
     
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { cardinalResult ->
@@ -241,7 +241,7 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var payPalClient: PayPalClient
     
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       payPalLauncher = PayPalLauncher() { paymentAuthResult ->
@@ -252,13 +252,13 @@ class MyActivity : FragmentActivity() {
     }
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
-    @override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent) {
         setIntent(intent)
 +       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
-    @override fun onResume() {
+    override fun onResume() {
 +       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().intent)
     }
     
@@ -321,12 +321,12 @@ class MyActivity : FragmentActivity() {
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
-    @override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent) {
 +       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
 
     // ALL OTHER ACTIVITY LAUNCH MODES 
-    @override fun onResume() {
+    override fun onResume() {
 +       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
 +           intent)
     }
@@ -378,11 +378,11 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { sepaDirectDebitBrowserSwitchResult ->
-+           sepaDirectDebitClient.onBrowserSwitchResult(sepaDirectDebitBrowserSwitchResult) { 
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
++           sepaDirectDebitClient.tokenize(paymentAuthResult) { 
 +               sepaDirectDebitNonce, error ->
 +                   // handle nonce or error
 +           }
@@ -390,12 +390,12 @@ class MyActivity : FragmentActivity() {
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
-    @override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent) {
 +       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
 
     // ALL OTHER ACTIVITY LAUNCH MODES 
-    @override fun onResume() {
+    override fun onResume() {
 +       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
 +           intent)
     }
@@ -409,13 +409,13 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       sepaDirectDebitClient.tokenize(activity, request)
-+       sepaDirectDebitClient.tokenize(activity, request) { sepaDirectDebitResponse, error ->
++       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest, error ->
 +           if (error != null) {
 +               // handle error
-+           } else if (sepaDirectDebitResponse.nonce != null) {      // web-flow mandate not required
++           } else if (paymentAuthRequest.nonce != null) {      // web-flow mandate not required
 +               // handle nonce
 +           } else {                                                 // web-flow mandate required
-+               sepaDirectDebitLauncher.launch(activity, sepaDirectDebitResponse)
++               sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
 +           }
 +       }
     }
