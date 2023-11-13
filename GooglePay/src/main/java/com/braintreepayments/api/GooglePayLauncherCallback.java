@@ -4,7 +4,7 @@ package com.braintreepayments.api;
  * Callback used to instantiate a {@link GooglePayLauncher} to handle Activity results from the
  * Google Pay payment flow
  */
-public interface GooglePayResultCallback {
+public interface GooglePayLauncherCallback {
 
-    void onGooglePayResult(GooglePayResult googlePayResult);
+    void onResult(GooglePayPaymentAuthResult googlePayPaymentAuthResult);
 }

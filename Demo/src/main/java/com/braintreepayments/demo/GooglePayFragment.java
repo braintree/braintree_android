@@ -41,7 +41,7 @@ public class GooglePayFragment extends BaseFragment {
         braintreeClient = getBraintreeClient();
         googlePayClient = new GooglePayClient(braintreeClient);
         googlePayLauncher = new GooglePayLauncher(this,
-                googlePayResult -> googlePayClient.tokenize(googlePayResult,
+                paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
                         (paymentMethodNonce, error) -> {
                             if (error != null) {
                                 handleError(error);
@@ -117,8 +117,8 @@ public class GooglePayFragment extends BaseFragment {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.requestPayment(googlePayRequest,
-                (googlePayIntentData, error) -> googlePayLauncher.launch(googlePayIntentData));
+        googlePayClient.createPaymentAuthRequest(googlePayRequest,
+                (paymentAuthRequest, error) -> googlePayLauncher.launch(paymentAuthRequest));
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {

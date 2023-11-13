@@ -6,14 +6,14 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 
 /**
  * Used to request Google Pay payment authorization via
- * {@link GooglePayLauncher#launch(GooglePayIntentData)}
+ * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
  */
-public class GooglePayIntentData {
+public class GooglePayPaymentAuthRequest {
 
     private final int googlePayEnvironment;
     private final PaymentDataRequest paymentDataRequest;
 
-    GooglePayIntentData(int googlePayEnvironment, @NonNull PaymentDataRequest paymentDataRequest) {
+    GooglePayPaymentAuthRequest(int googlePayEnvironment, @NonNull PaymentDataRequest paymentDataRequest) {
         this.googlePayEnvironment = googlePayEnvironment;
         this.paymentDataRequest = paymentDataRequest;
     }

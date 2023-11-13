@@ -26,9 +26,12 @@
     * Add `VenmoClient#createPaymentAuthRequest`
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
-    * Add `GooglePayLauncher`, `GooglePayIntentData`, `GooglePayIntentDataCallback`, `GooglePayResult`, and `GooglePayResultCallback`
+    * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
+      `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`, 
+      `GooglePayTokenizeCallback` and `GooglePayLauncherCallback`
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
-    * Change `GooglePayClient#requestPayment` parameters
+    * Change `GooglePayClient#requestPayment` parameters and rename to 
+      `GooglePayClient#createPaymentAuthRequest`
     * Add `GooglePayClient#tokenize` 
   * ThreeDSecure
     * Remove `ThreeDSecureListener`

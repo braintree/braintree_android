@@ -26,14 +26,14 @@ import org.robolectric.RobolectricTestRunner;
 public class GooglePayLauncherUnitTest {
 
     @Mock
-    ActivityResultLauncher<GooglePayIntentData> activityLauncher;
+    ActivityResultLauncher<GooglePayPaymentAuthRequest> activityLauncher;
 
-    private GooglePayResultCallback callback;
+    private GooglePayLauncherCallback callback;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
-        callback = mock(GooglePayResultCallback.class);
+        callback = mock(GooglePayLauncherCallback.class);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class GooglePayLauncherUnitTest {
                 callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<GooglePayIntentData, GooglePayResult>>any(),
+                Mockito.<ActivityResultContract<GooglePayPaymentAuthRequest, GooglePayPaymentAuthResult>>any(),
                 Mockito.any());
     }
 
@@ -61,7 +61,8 @@ public class GooglePayLauncherUnitTest {
 
         PaymentDataRequest paymentDataRequest =
                 PaymentDataRequest.fromJson(googlePayRequest.toJson());
-        GooglePayIntentData intentData = new GooglePayIntentData(1, paymentDataRequest);
+        GooglePayPaymentAuthRequest
+                intentData = new GooglePayPaymentAuthRequest(1, paymentDataRequest);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
 
