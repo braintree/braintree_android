@@ -378,7 +378,7 @@ class MyActivity : FragmentActivity() {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
