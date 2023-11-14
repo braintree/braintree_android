@@ -31,12 +31,12 @@ public class ThreeDSecureLauncherUnitTest {
 
     @Mock
     ActivityResultLauncher<ThreeDSecureResult> activityResultLauncher;
-    private CardinalResultCallback callback;
+    private ThreeDSecureLauncherCallback callback;
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        callback = mock(CardinalResultCallback.class);
+        callback = mock(ThreeDSecureLauncherCallback.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ThreeDSecureLauncherUnitTest {
                 callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<ThreeDSecureResult, CardinalResult>>any(),
+                Mockito.<ActivityResultContract<ThreeDSecureResult, ThreeDSecurePaymentAuthResult>>any(),
                 Mockito.any());
     }
 
@@ -89,9 +89,9 @@ public class ThreeDSecureLauncherUnitTest {
 
         sut.launch(threeDSecureResult);
 
-        ArgumentCaptor<CardinalResult> captor =
-                ArgumentCaptor.forClass(CardinalResult.class);
-        verify(callback).onCardinalResult(captor.capture());
+        ArgumentCaptor<ThreeDSecurePaymentAuthResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecurePaymentAuthResult.class);
+        verify(callback).onThreeDSecurePaymentAuthResult(captor.capture());
 
         Exception exception = captor.getValue().getError();
         assertTrue(exception instanceof BraintreeException);
