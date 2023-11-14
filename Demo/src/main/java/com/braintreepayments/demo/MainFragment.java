@@ -82,29 +82,41 @@ public class MainFragment extends BaseFragment {
         Bundle args = new Bundle();
         args.putBoolean(EXTRA_COLLECT_DEVICE_DATA, Settings.shouldCollectDeviceData(getActivity()));
 
-        MainFragmentDirections.ActionMainFragmentToCardFragment action =
-                MainFragmentDirections.actionMainFragmentToCardFragment();
-        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+        fetchAuthorization(authString -> {
+            MainFragmentDirections.ActionMainFragmentToCardFragment action =
+                    MainFragmentDirections.actionMainFragmentToCardFragment();
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+            action.setAuthString(authString);
 
-        Navigation.findNavController(v).navigate(action);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchPayPal(View v) {
-        MainFragmentDirections.ActionMainFragmentToPayPalFragment action =
-                MainFragmentDirections.actionMainFragmentToPayPalFragment();
-        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+        fetchAuthorization(authString -> {
+            MainFragmentDirections.ActionMainFragmentToPayPalFragment action =
+                    MainFragmentDirections.actionMainFragmentToPayPalFragment();
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+            action.setAuthString(authString);
 
-        Navigation.findNavController(v).navigate(action);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchVenmo(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToVenmoFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action = MainFragmentDirections.actionMainFragmentToVenmoFragment()
+                    .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchVisaCheckout(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment()
+                    .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchLocalPayment(View v) {
