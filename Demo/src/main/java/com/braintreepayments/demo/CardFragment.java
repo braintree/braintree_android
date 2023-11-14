@@ -21,6 +21,7 @@ import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
@@ -72,7 +73,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onCreate(onSaveInstanceState);
 
         BraintreeClient braintreeClient = getBraintreeClient();
-        americanExpressClient = new AmericanExpressClient(braintreeClient);
+        americanExpressClient = new AmericanExpressClient(new ClientParams(null, null));
         cardClient = new CardClient(braintreeClient);
         threeDSecureClient = new ThreeDSecureClient(braintreeClient);
 

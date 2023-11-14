@@ -67,6 +67,16 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(clientParams: ClientParams) : this(
+        context = clientParams.context,
+        authorization = clientParams.authorization,
+        returnUrlScheme = clientParams.returnUrlScheme
+    )
+
+    /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     /**
@@ -104,7 +114,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
-    constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
+    constructor (context: Context, authorization: String, returnUrlScheme: String?) : this(
         BraintreeOptions(
             context = context,
             initialAuthString = authorization,

@@ -71,9 +71,11 @@ public class MainFragment extends BaseFragment {
     }
 
     public void launchGooglePay(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToGooglePayFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToGooglePayFragment().setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchCards(View v) {

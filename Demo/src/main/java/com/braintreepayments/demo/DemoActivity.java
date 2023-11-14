@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
 
+    private DemoClientTokenProvider clientTokenProvider;
+
     private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
     @Override
@@ -37,6 +40,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_demo);
+        clientTokenProvider = new DemoClientTokenProvider(this);
 
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
@@ -46,16 +50,11 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     public BraintreeClient getBraintreeClient() {
         // lazily instantiate braintree client in case the demo has been reset
-        if (braintreeClient == null) {
-            if (Settings.useTokenizationKey(this)) {
-                String tokenizationKey = Settings.getTokenizationKey(this);
-                braintreeClient = new BraintreeClient(this, tokenizationKey);
-            } else {
-                braintreeClient =
-                    BraintreeClientFactory.createBraintreeClientWithAuthorizationProvider(this);
-            }
-        }
-        return braintreeClient;
+        return null;
+    }
+
+    public void fetchAuthorization(BraintreeAuthorizationCallback callback) {
+        clientTokenProvider.getClientToken(callback);
     }
 
     @Override

@@ -11,7 +11,7 @@ import com.braintreepayments.demo.Merchant;
 import com.braintreepayments.demo.R;
 import com.braintreepayments.demo.Settings;
 
-public class DemoClientTokenProvider implements ClientTokenProvider {
+public class DemoClientTokenProvider  {
 
     private final Merchant merchant;
     private final Context appContext;
@@ -21,15 +21,14 @@ public class DemoClientTokenProvider implements ClientTokenProvider {
         appContext = context.getApplicationContext();
     }
 
-    @Override
-    public void getClientToken(@NonNull ClientTokenCallback callback) {
+    public void getClientToken(@NonNull BraintreeAuthorizationCallback callback) {
         String authType = Settings.getAuthorizationType(appContext);
         if (authType.equals(getString(appContext, R.string.client_token))) {
             merchant.fetchClientToken(appContext, (clientToken, error) -> {
                 if (clientToken != null) {
-                    callback.onSuccess(clientToken);
+                    callback.onResult(clientToken);
                 } else if (error != null) {
-                    callback.onFailure(error);
+                    callback.onResult(null);
                 }
             });
         }

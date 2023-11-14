@@ -46,6 +46,10 @@
             android:name="shouldCollectDeviceData"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_cardFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -98,6 +102,10 @@
         android:id="@+id/localPaymentFragment"
         android:name="com.braintreepayments.demo.LocalPaymentFragment"
         tools:layout="@layout/fragment_local_payment">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_localPaymentFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -112,6 +120,10 @@
             android:name="shouldCollectDeviceData"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_payPalFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -122,6 +134,10 @@
         android:id="@+id/googlePayFragment"
         android:name="com.braintreepayments.demo.GooglePayFragment"
         tools:layout="@layout/fragment_google_pay">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_googlePayFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -132,6 +148,10 @@
         android:id="@+id/visaCheckoutFragment"
         android:name="com.braintreepayments.demo.VisaCheckoutFragment"
         tools:layout="@layout/fragment_visa_checkout">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_visaCheckoutFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -142,6 +162,10 @@
         android:id="@+id/venmoFragment"
         android:name="com.braintreepayments.demo.VenmoFragment"
         tools:layout="@layout/fragment_venmo">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_venmoFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -152,6 +176,10 @@
         android:id="@+id/samsungPayFragment"
         android:name="com.braintreepayments.demo.SamsungPayFragment"
         tools:layout="@layout/fragment_samsung_pay">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_samsungPayFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -163,6 +191,10 @@
         android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
         android:label="fragment_paypal_native_checkout"
         tools:layout="@layout/fragment_paypal_native_checkout">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_payPalNativeCheckoutFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
@@ -173,6 +205,10 @@
         android:id="@+id/SEPADirectDebitFragment"
         android:name="com.braintreepayments.demo.SEPADirectDebitFragment"
         tools:layout="@layout/fragment_sepa_direct_debit" >
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_sepaDirectDebitFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"

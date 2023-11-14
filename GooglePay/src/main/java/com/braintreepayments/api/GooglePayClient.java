@@ -46,6 +46,9 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
 
+    public GooglePayClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
     /**
      * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
      *

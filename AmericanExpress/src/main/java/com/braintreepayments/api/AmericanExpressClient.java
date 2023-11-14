@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 
@@ -16,7 +17,11 @@ public class AmericanExpressClient {
 
     private final BraintreeClient braintreeClient;
 
-    public AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
+    public AmericanExpressClient(@NonNull ClientParams clientParams) {
+        this.braintreeClient = new BraintreeClient(clientParams);
+    }
+
+    @VisibleForTesting AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PaymentMethodNonce;
 
+import java.util.Objects;
+
 public abstract class BaseFragment extends Fragment {
 
     @CallSuper
@@ -53,5 +55,16 @@ public abstract class BaseFragment extends Fragment {
             return demoActivity.getBraintreeClient();
         }
         return null;
+    }
+
+    protected void fetchAuthorization(BraintreeAuthorizationCallback callback) {
+        DemoActivity demoActivity = getDemoActivity();
+        if (demoActivity != null) {
+            demoActivity.fetchAuthorization(callback);
+        }
+    }
+
+    String getAuthStringArg() {
+        return Objects.requireNonNull(requireArguments().getString("authString"));
     }
 }
