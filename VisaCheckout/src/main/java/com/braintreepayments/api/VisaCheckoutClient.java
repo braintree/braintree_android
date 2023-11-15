@@ -22,6 +22,10 @@ public class VisaCheckoutClient {
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
 
+    public VisaCheckoutClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
     public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new ApiClient(braintreeClient));
     }

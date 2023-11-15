@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.VisaCheckoutClient;
 import com.visa.checkout.CheckoutButton;
@@ -31,8 +32,7 @@ public class VisaCheckoutFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_visa_checkout, container, false);
         checkoutButton = view.findViewById(R.id.visa_checkout_button);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        visaCheckoutClient = new VisaCheckoutClient(braintreeClient);
+        visaCheckoutClient = new VisaCheckoutClient(new ClientParams(requireContext(), super.getAuthStringArg()));
         visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
             if (profileBuilder != null) {
                 setupVisaCheckoutButton(profileBuilder);
