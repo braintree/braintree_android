@@ -72,12 +72,12 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        americanExpressClient = new AmericanExpressClient(new ClientParams(null, null));
-        cardClient = new CardClient(braintreeClient);
-        threeDSecureClient = new ThreeDSecureClient(braintreeClient);
+        ClientParams clientParams = new ClientParams(requireContext(), super.getAuthStringArg());
+        americanExpressClient = new AmericanExpressClient(clientParams);
+        cardClient = new CardClient(clientParams);
+        threeDSecureClient = new ThreeDSecureClient(clientParams);
 
-        dataCollector = new DataCollector(braintreeClient);
+        dataCollector = new DataCollector(clientParams);
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);

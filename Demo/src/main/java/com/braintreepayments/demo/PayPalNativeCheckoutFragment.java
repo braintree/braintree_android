@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PayPalNativeCheckoutListener;
@@ -26,7 +27,6 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
 
     private final String TAG = PayPalNativeCheckoutFragment.class.getName();
     private String deviceData;
-    private BraintreeClient braintreeClient;
     private PayPalNativeCheckoutClient payPalClient;
     private DataCollector dataCollector;
 
@@ -48,8 +48,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         launchPayPalNativeCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(false));
         launchPayPalNativeVaultCheckoutButton = view.findViewById(R.id.paypal_native_checkout_vault_launch);
         launchPayPalNativeVaultCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(true));
-        braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalNativeCheckoutClient(this, braintreeClient);
+        payPalClient = new PayPalNativeCheckoutClient(new ClientParams(requireContext(), super.getAuthStringArg()));
         payPalClient.setListener(this);
         return view;
     }
@@ -58,25 +57,13 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new DataCollector(braintreeClient);
+        dataCollector = new DataCollector(new ClientParams(requireContext(), super.getAuthStringArg()));
 
-        braintreeClient.getConfiguration((configuration, configError) -> {
-            if (Settings.shouldCollectDeviceData(requireActivity())) {
-                dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
-                    if (deviceDataResult != null) {
-                        deviceData = deviceDataResult;
-                    }
-                    try {
-                        if (isBillingAgreement) {
-                            payPalClient.launchNativeCheckout(activity, createPayPalVaultRequest(activity));
-                        } else {
-                            payPalClient.launchNativeCheckout(activity, createPayPalCheckoutRequest(activity, "1.00"));
-                        }
-                    } catch (Exception e) {
-                        Log.i(TAG, "Unsupported type");
-                    }
-                });
-            } else {
+        if (Settings.shouldCollectDeviceData(requireActivity())) {
+            dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
+                if (deviceDataResult != null) {
+                    deviceData = deviceDataResult;
+                }
                 try {
                     if (isBillingAgreement) {
                         payPalClient.launchNativeCheckout(activity, createPayPalVaultRequest(activity));
@@ -86,9 +73,19 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
                 } catch (Exception e) {
                     Log.i(TAG, "Unsupported type");
                 }
-
+            });
+        } else {
+            try {
+                if (isBillingAgreement) {
+                    payPalClient.launchNativeCheckout(activity, createPayPalVaultRequest(activity));
+                } else {
+                    payPalClient.launchNativeCheckout(activity, createPayPalCheckoutRequest(activity, "1.00"));
+                }
+            } catch (Exception e) {
+                Log.i(TAG, "Unsupported type");
             }
-        });
+
+        }
     }
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {

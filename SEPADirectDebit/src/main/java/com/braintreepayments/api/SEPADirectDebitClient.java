@@ -25,12 +25,13 @@ public class SEPADirectDebitClient {
     private final SEPADirectDebitApi sepaDirectDebitApi;
     private final BraintreeClient braintreeClient;
 
-    /**
-     * Create a new instance of {@link SEPADirectDebitClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
+
+    public SEPADirectDebitClient(@NonNull ClientParams clientParams) {
+       this(new BraintreeClient(clientParams));
+    }
+
+    @VisibleForTesting
+    SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
 

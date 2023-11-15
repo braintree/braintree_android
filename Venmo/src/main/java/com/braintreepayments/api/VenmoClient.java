@@ -27,12 +27,12 @@ public class VenmoClient {
                 new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
-    /**
-     * Create a new instance of {@link VenmoClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
+    public VenmoClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
+    @VisibleForTesting
+    VenmoClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new ApiClient(braintreeClient));
     }
 

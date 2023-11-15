@@ -13,6 +13,7 @@ import com.braintreepayments.api.IntegrationType.Integration
  * Core Braintree class that handles network requests.
  */
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 open class BraintreeClient @VisibleForTesting internal constructor(
 
     /**
@@ -86,6 +87,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization The tokenization key or client token to use. If an invalid authorization
      * is provided, a [BraintreeException] will be returned via callback.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(context: Context, authorization: String) :
             this(BraintreeOptions(context = context, initialAuthString = authorization))
 
@@ -96,6 +98,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
      * will use to fetch a client token on demand.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(context: Context, clientTokenProvider: ClientTokenProvider) :
             this(BraintreeOptions(context = context, clientTokenProvider = clientTokenProvider))
 
@@ -114,6 +117,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor (context: Context, authorization: String, returnUrlScheme: String?) : this(
         BraintreeOptions(
             context = context,
@@ -137,6 +141,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(
         context: Context,
         clientTokenProvider: ClientTokenProvider,

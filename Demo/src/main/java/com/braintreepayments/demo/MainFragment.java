@@ -15,8 +15,6 @@ import com.braintreepayments.api.PaymentMethodNonce;
 
 public class MainFragment extends BaseFragment {
 
-    static final String EXTRA_PAYMENT_RESULT = "payment_result";
-    static final String EXTRA_DEVICE_DATA = "device_data";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
 
     private static final String KEY_NONCE = "nonce";
@@ -120,24 +118,38 @@ public class MainFragment extends BaseFragment {
     }
 
     public void launchLocalPayment(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToLocalPaymentFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchSamsungPay(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToSamsungPayFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToSamsungPayFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchPayPalNativeCheckout(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToPayPalNativeCheckoutFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToPayPalNativeCheckoutFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchSEPADirectDebit(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 }

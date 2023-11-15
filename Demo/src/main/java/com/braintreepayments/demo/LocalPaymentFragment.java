@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
@@ -31,8 +32,7 @@ public class LocalPaymentFragment extends BaseFragment {
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        localPaymentClient = new LocalPaymentClient(braintreeClient);
+        localPaymentClient = new LocalPaymentClient(new ClientParams(requireContext(), super.getAuthStringArg()));
         localPaymentLauncher = new LocalPaymentLauncher(
                 localPaymentResult -> localPaymentClient.tokenize(requireContext(),
                         localPaymentResult,

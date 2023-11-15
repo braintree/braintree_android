@@ -23,12 +23,12 @@ public class LocalPaymentClient {
     private final DataCollector dataCollector;
     private final LocalPaymentApi localPaymentApi;
 
-    /**
-     * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
+    public LocalPaymentClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
+   @VisibleForTesting
+    LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new DataCollector(braintreeClient),
                 new LocalPaymentApi(braintreeClient));
     }

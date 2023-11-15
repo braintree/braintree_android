@@ -21,12 +21,12 @@ public class PayPalClient {
     private final BraintreeClient braintreeClient;
     private final PayPalInternalClient internalPayPalClient;
 
-    /**
-     * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalClient(@NonNull BraintreeClient braintreeClient) {
+    public PayPalClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
+    @VisibleForTesting
+    PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 

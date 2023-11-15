@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
@@ -30,8 +31,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         Button button = view.findViewById(R.id.sepa_direct_debit_button);
         button.setOnClickListener(this::launchSEPADirectDebit);
 
-        BraintreeClient braintreeClient = getBraintreeClient();
-        sepaDirectDebitClient = new SEPADirectDebitClient(braintreeClient);
+        sepaDirectDebitClient = new SEPADirectDebitClient(new ClientParams(requireContext(), super.getAuthStringArg()));
 
         sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
             sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {

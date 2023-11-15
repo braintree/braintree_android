@@ -22,7 +22,12 @@ public class DataCollector {
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
-    public DataCollector(@NonNull BraintreeClient braintreeClient) {
+    public DataCollector(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
+    @VisibleForTesting
+    DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 

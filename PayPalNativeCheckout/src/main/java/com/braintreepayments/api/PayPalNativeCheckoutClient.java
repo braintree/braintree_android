@@ -29,27 +29,13 @@ public class PayPalNativeCheckoutClient {
 
     private PayPalNativeCheckoutListener listener;
 
-    /**
-     * @param fragment        a {@link Fragment
-     * @param braintreeClient a {@link BraintreeClient}
-     * @deprecated see
-     * {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
-     * <p>
-     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a
-     * {@link BraintreeClient}.
-     */
-    @Deprecated
-    public PayPalNativeCheckoutClient(@NonNull Fragment fragment,
-                                      @NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
+
+    public PayPalNativeCheckoutClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
     }
 
-    /**
-     * Create a new instance of {@link PayPalNativeCheckoutClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
+    @VisibleForTesting
+     PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 

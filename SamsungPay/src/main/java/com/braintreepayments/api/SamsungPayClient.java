@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -24,7 +25,12 @@ public class SamsungPayClient {
     @VisibleForTesting
     SamsungPayInternalClient internalClient;
 
-    public SamsungPayClient(BraintreeClient braintreeClient) {
+    public SamsungPayClient(@NonNull ClientParams clientParams) {
+        this(new BraintreeClient(clientParams));
+    }
+
+    @VisibleForTesting
+    SamsungPayClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 
