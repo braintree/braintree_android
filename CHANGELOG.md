@@ -4,7 +4,7 @@
 
 * PayPalNativeCheckout
   * Bump native-checkout version to release `1.2.0`
-  * add `setUserAuthenticationEmail() to PayPalNativeRequest
+  * Add `setUserAuthenticationEmail()` to `PayPalNativeRequest`
 * GooglePay
   * Bump `play-services-wallet` version to `19.2.1`
   * Add `totalPriceLabel` to `GooglePayRequest`
