@@ -52,6 +52,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
     private String userAuthenticationEmail;
+
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
      */
