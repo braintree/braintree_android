@@ -19,6 +19,11 @@ basics for updating your Braintree integration from v4 to v5.
 
 The minimum supported Android API level for v5 of this SDK has increased to 23.
 
+## BraintreeClient
+
+You no longer need to instantiate a `BraintreeClient` in order to instantiate the payment method 
+clients. Instead, construct the payment method clients with a `ClientParams` object.
+
 ## Data Collector
 
 The `paypal-data-collector` module has been removed and replaced by the `data-collector` module.

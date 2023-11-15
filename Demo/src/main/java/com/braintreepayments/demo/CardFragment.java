@@ -127,26 +127,20 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
     private void configureCardForm() {
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        BraintreeClient braintreeClient = getBraintreeClient();
 
-        braintreeClient.getConfiguration((configuration, configError) -> {
-            if (configuration != null) {
-                cardForm.cardRequired(true)
-                        .expirationRequired(true)
-                        .cvvRequired(configuration.isCvvChallengePresent())
-                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                        .mobileNumberRequired(false)
-                        .actionLabel(cardFormActionLabel)
-                        .setup(activity);
+        // TODO: Configure card form via settings
+        cardForm.cardRequired(true)
+                .expirationRequired(true)
+                .cvvRequired(true)
+                .postalCodeRequired(true)
+                .mobileNumberRequired(false)
+                .actionLabel(cardFormActionLabel)
+                .setup(activity);
 
-                if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    dataCollector.collectDeviceData(activity,
-                            (deviceData, e) -> this.deviceData = deviceData);
-                }
-            } else {
-                handleError(configError);
-            }
-        });
+        if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
+            dataCollector.collectDeviceData(activity,
+                    (deviceData, e) -> this.deviceData = deviceData);
+        }
     }
 
     @Override
