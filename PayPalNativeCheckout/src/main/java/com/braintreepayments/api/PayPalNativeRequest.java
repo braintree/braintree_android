@@ -209,7 +209,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Optional: Sets the email of the user prior to launching authentication
+     * Optional: User email to initiate a quicker authentication flow in cases where the user has a PayPal Account with the same email.
      *
      * @param authEmail the users email address
      */
