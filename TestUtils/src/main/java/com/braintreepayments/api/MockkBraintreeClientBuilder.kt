@@ -11,7 +11,6 @@ class MockkBraintreeClientBuilder {
     private var sendGraphQLPOSTError: ErrorWithResponse? = null
 
     private var configurationSuccess: Configuration? = null
-    private var authorizationSuccess: Authorization = Authorization.fromString(Fixtures.CLIENT_TOKEN)
 
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
@@ -20,11 +19,6 @@ class MockkBraintreeClientBuilder {
 
     fun sessionId(sessionId: String): MockkBraintreeClientBuilder {
         this.sessionId = sessionId
-        return this
-    }
-
-    fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
-        this.authorizationSuccess = authorizationSuccess
         return this
     }
 

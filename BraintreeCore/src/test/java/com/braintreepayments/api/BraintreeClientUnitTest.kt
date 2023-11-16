@@ -50,8 +50,8 @@ class BraintreeClientUnitTest {
 
     @Test
     fun constructor_usesSessionIdFromParams() {
-        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization
-        = authorization)
+        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization =
+        authorization)
         val sut = BraintreeClient(params)
         assertEquals("session-id", sut.sessionId)
     }
@@ -80,7 +80,6 @@ class BraintreeClientUnitTest {
         verify { callback.onResult(configuration, null) }
     }
 
-
     @Test
     fun configuration_forwardsConfigurationLoaderError() {
         val configFetchError = Exception("config fetch error")
@@ -96,7 +95,6 @@ class BraintreeClientUnitTest {
 
         verify { callback.onResult(null, configFetchError) }
     }
-
 
     @Test
     fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
