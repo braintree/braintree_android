@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
+import com.paypal.checkout.config.AuthConfig;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.config.SettingsConfig;
@@ -157,6 +158,11 @@ public class PayPalNativeCheckoutClient {
                 } else {
                     environment = Environment.LIVE;
                 }
+                String email = payPalRequest.getUserAuthenticationEmail();
+                AuthConfig authConfig = null;
+                if (email != null) {
+                    authConfig = new AuthConfig(email);
+                }
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
@@ -169,9 +175,10 @@ public class PayPalNativeCheckoutClient {
                         null,
                         new SettingsConfig(),
                         new UIConfig(
-                                false
+                            false
                         ),
-                        payPalRequest.getReturnUrl()
+                        payPalRequest.getReturnUrl(),
+                        authConfig
                     )
                 );
 
