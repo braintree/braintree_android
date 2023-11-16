@@ -46,15 +46,16 @@ public class GooglePayClient {
     private final BraintreeClient braintreeClient;
     private final GooglePayInternalClient internalGooglePayClient;
 
+    /**
+     * Initializes a new {@link GooglePayClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public GooglePayClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }
-    /**
-     * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
+
+    @VisibleForTesting
+    GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new GooglePayInternalClient());
     }
 

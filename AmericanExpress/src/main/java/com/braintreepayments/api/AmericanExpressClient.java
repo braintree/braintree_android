@@ -17,6 +17,10 @@ public class AmericanExpressClient {
 
     private final BraintreeClient braintreeClient;
 
+    /**
+     * Initializes a new {@link AmericanExpressClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public AmericanExpressClient(@NonNull ClientParams clientParams) {
         this.braintreeClient = new BraintreeClient(clientParams);
     }

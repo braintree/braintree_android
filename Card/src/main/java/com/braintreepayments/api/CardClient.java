@@ -17,6 +17,10 @@ public class CardClient {
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
 
+    /**
+     * Initializes a new {@link CardClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public CardClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

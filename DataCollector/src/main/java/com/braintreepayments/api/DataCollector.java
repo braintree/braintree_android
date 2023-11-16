@@ -22,6 +22,10 @@ public class DataCollector {
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
+    /**
+     * Initializes a new {@link DataCollector} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public DataCollector(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

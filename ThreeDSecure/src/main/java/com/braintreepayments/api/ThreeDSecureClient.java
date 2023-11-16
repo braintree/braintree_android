@@ -26,6 +26,10 @@ public class ThreeDSecureClient {
     private final BraintreeClient braintreeClient;
     private final ThreeDSecureAPI api;
 
+    /**
+     * Initializes a new {@link ThreeDSecureClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public ThreeDSecureClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

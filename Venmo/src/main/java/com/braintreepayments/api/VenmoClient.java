@@ -27,6 +27,10 @@ public class VenmoClient {
                 new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
+    /**
+     * Initializes a new {@link VenmoClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public VenmoClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

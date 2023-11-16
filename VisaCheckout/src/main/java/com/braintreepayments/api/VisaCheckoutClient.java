@@ -22,11 +22,16 @@ public class VisaCheckoutClient {
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
 
+    /**
+     * Initializes a new {@link VisaCheckoutClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public VisaCheckoutClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }
 
-    public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
+    @VisibleForTesting
+    VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new ApiClient(braintreeClient));
     }
 

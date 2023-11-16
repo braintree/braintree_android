@@ -25,6 +25,10 @@ public class SamsungPayClient {
     @VisibleForTesting
     SamsungPayInternalClient internalClient;
 
+    /**
+     * Initializes a new {@link SamsungPayClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public SamsungPayClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

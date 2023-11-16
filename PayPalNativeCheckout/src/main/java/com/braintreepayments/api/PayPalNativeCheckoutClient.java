@@ -29,7 +29,10 @@ public class PayPalNativeCheckoutClient {
 
     private PayPalNativeCheckoutListener listener;
 
-
+    /**
+     * Initializes a new {@link PayPalNativeCheckoutClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public PayPalNativeCheckoutClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }

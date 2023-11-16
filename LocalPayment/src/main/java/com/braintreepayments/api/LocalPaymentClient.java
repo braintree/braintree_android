@@ -23,6 +23,10 @@ public class LocalPaymentClient {
     private final DataCollector dataCollector;
     private final LocalPaymentApi localPaymentApi;
 
+    /**
+     * Initializes a new {@link LocalPaymentClient} instance
+     * @param clientParams configurable {@link ClientParams}
+     */
     public LocalPaymentClient(@NonNull ClientParams clientParams) {
         this(new BraintreeClient(clientParams));
     }
