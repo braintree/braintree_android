@@ -142,58 +142,52 @@ public class ThreeDSecureClient {
     public void prepareLookup(@NonNull final Context context,
                               @NonNull final ThreeDSecureRequest request,
                               @NonNull final ThreeDSecurePrepareLookupCallback callback) {
-        braintreeClient.getAuthorization((authorization, authError) -> {
-            if (authorization != null) {
 
-                final JSONObject lookupJSON = new JSONObject();
-                try {
-                    lookupJSON
-                            .put("authorizationFingerprint", authorization.getBearer())
-                            .put("braintreeLibraryVersion",
-                                    "Android-" + BuildConfig.VERSION_NAME)
-                            .put("nonce", request.getNonce())
-                            .put("clientMetadata", new JSONObject()
-                                    .put("requestedThreeDSecureVersion", "2")
-                                    .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
-                } catch (JSONException ignored) {
-                }
+        final JSONObject lookupJSON = new JSONObject();
+        try {
+            lookupJSON
+                    .put("authorizationFingerprint", braintreeClient.getAuthorization().getBearer())
+                    .put("braintreeLibraryVersion",
+                            "Android-" + BuildConfig.VERSION_NAME)
+                    .put("nonce", request.getNonce())
+                    .put("clientMetadata", new JSONObject()
+                            .put("requestedThreeDSecureVersion", "2")
+                            .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
+        } catch (JSONException ignored) {
+        }
 
-                braintreeClient.getConfiguration((configuration, configError) -> {
-                    if (configuration == null) {
-                        callback.onResult(null, null, configError);
-                        return;
-                    }
-                    if (configuration.getCardinalAuthenticationJwt() == null) {
-                        Exception authError1 = new BraintreeException(
-                                "Merchant is not configured for 3DS 2.0. " +
-                                        "Please contact Braintree Support for assistance.");
-                        callback.onResult(null, null, authError1);
-                        return;
-                    }
+        braintreeClient.getConfiguration((configuration, configError) -> {
+            if (configuration == null) {
+                callback.onResult(null, null, configError);
+                return;
+            }
+            if (configuration.getCardinalAuthenticationJwt() == null) {
+                Exception authError1 = new BraintreeException(
+                        "Merchant is not configured for 3DS 2.0. " +
+                                "Please contact Braintree Support for assistance.");
+                callback.onResult(null, null, authError1);
+                return;
+            }
 
-                    CardinalInitializeCallback cardinalInitializeCallback =
-                            (consumerSessionId, error) -> {
-                                if (consumerSessionId != null) {
-                                    try {
-                                        lookupJSON.put("dfReferenceId",
-                                                consumerSessionId);
-                                    } catch (JSONException ignored) {
-                                    }
-                                }
-                                callback.onResult(request, lookupJSON.toString(), null);
-                            };
+            CardinalInitializeCallback cardinalInitializeCallback =
+                    (consumerSessionId, error) -> {
+                        if (consumerSessionId != null) {
+                            try {
+                                lookupJSON.put("dfReferenceId",
+                                        consumerSessionId);
+                            } catch (JSONException ignored) {
+                            }
+                        }
+                        callback.onResult(request, lookupJSON.toString(), null);
+                    };
 
-                    try {
-                        cardinalClient.initialize(context, configuration, request,
-                                cardinalInitializeCallback);
-                    } catch (BraintreeException initializeException) {
-                        braintreeClient.sendAnalyticsEvent(
-                                "three-d-secure.cardinal-sdk.init.failed");
-                        callback.onResult(null, null, initializeException);
-                    }
-                });
-            } else {
-                callback.onResult(null, null, authError);
+            try {
+                cardinalClient.initialize(context, configuration, request,
+                        cardinalInitializeCallback);
+            } catch (BraintreeException initializeException) {
+                braintreeClient.sendAnalyticsEvent(
+                        "three-d-secure.cardinal-sdk.init.failed");
+                callback.onResult(null, null, initializeException);
             }
         });
     }
