@@ -34,7 +34,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val sessionId: String,
 
-    private val authString: String,
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val authorization: Authorization,
+
     private val analyticsClient: AnalyticsClient,
     private val httpClient: BraintreeHttpClient,
     private val graphQLClient: BraintreeGraphQLClient,
@@ -53,7 +58,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
         sessionId = params.sessionId,
-        authString = params.authString,
+        authorization = params.authorization,
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
         graphQLClient = params.graphQLClient,
@@ -71,7 +76,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     constructor(clientParams: ClientParams) :
         this(BraintreeOptions(
             context = clientParams.context,
-            authString = clientParams.authorization,
+            authorization = Authorization.fromString(clientParams.authorization),
             returnUrlScheme = clientParams.returnUrlScheme))
 
     /**
@@ -82,13 +87,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
 
     internal constructor(
         context: Context,
-        authorization: String,
+        authorization: Authorization,
         sessionId: String?,
         @Integration integrationType: String
     ) : this(
         BraintreeOptions(
             context = context,
-            authString = authorization,
+            authorization = authorization,
             sessionId = sessionId,
             integrationType = integrationType,
         )
@@ -110,7 +115,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param callback [ConfigurationCallback]
      */
     open fun getConfiguration(callback: ConfigurationCallback) {
-        configurationLoader.loadConfiguration(getAuthorization()) { configuration, configError ->
+        configurationLoader.loadConfiguration(authorization) { configuration, configError ->
             if (configuration != null) {
                 callback.onResult(configuration, null)
             } else {
@@ -123,17 +128,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getAuthorization() : Authorization {
-        return Authorization.fromString(authString)
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(eventName: String) {
         getConfiguration { configuration, _ ->
-            sendAnalyticsEvent(eventName, configuration, getAuthorization())
+            sendAnalyticsEvent(eventName, configuration, authorization)
         }
     }
 
@@ -160,7 +157,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.get(url, configuration, getAuthorization(), responseCallback)
+                httpClient.get(url, configuration, authorization, responseCallback)
             } else {
                 responseCallback.onResult(null, configError)
             }
@@ -178,7 +175,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                     url,
                     data,
                     configuration,
-                    getAuthorization(),
+                    authorization,
                     responseCallback
                 )
             } else {
@@ -197,14 +194,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 graphQLClient.post(
                     payload,
                     configuration,
-                    getAuthorization(),
+                    authorization,
                     responseCallback
                 )
             } else {
                 responseCallback.onResult(null, configError)
             }
         }
-
     }
 
     /**
@@ -329,7 +325,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun reportCrash() =
-        analyticsClient.reportCrash(applicationContext, sessionId, integrationType, getAuthorization())
+        analyticsClient.reportCrash(applicationContext, sessionId, integrationType, authorization)
 
     // NEXT MAJOR VERSION: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {

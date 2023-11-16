@@ -9,7 +9,7 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class BraintreeOptions @JvmOverloads constructor(
     val context: Context,
-    val authString: String,
+    val authorization: Authorization,
     val sessionId: String? = null,
     val returnUrlScheme: String? = null,
     @IntegrationType.Integration val integrationType: String? = null,

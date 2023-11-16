@@ -52,7 +52,8 @@ class PayPalInternalClient {
                 String url = String.format("/v1/%s", endpoint);
 
                 String requestBody =
-                        payPalRequest.createRequestBody(configuration, braintreeClient.getAuthorization(),
+                        payPalRequest.createRequestBody(configuration,
+                                braintreeClient.getAuthorization(),
                                 successUrl, cancelUrl);
 
                 braintreeClient.sendPOST(url, requestBody,
