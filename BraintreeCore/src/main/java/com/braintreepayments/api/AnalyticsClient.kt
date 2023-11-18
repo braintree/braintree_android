@@ -126,6 +126,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 if (events.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
+                    // analyticsURL = https://origin-analytics-sand.sandbox.braintree-api.com/dcpspy2brwdjr3qn
                     configuration?.analyticsUrl?.let { analyticsUrl ->
                         httpClient.post(
                             analyticsUrl, analyticsRequest.toString(), configuration, authorization
@@ -180,13 +181,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         authorization: Authorization?, events: List<AnalyticsEvent>, metadata: DeviceMetadata
     ): JSONObject {
         val requestObject = JSONObject()
-        authorization?.let {
-            if (it is ClientToken) {
-                requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
-            } else {
-                requestObject.put(TOKENIZATION_KEY, it.bearer)
-            }
-        }
+//        authorization?.let {
+//            if (it is ClientToken) {
+//                requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
+//            } else {
+//                requestObject.put(TOKENIZATION_KEY, it.bearer)
+//            }
+//        }
 
         requestObject.put(META_KEY, metadata.toJSON())
         val eventObjects = JSONArray()
@@ -198,14 +199,19 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             eventObjects.put(eventObject)
         }
         requestObject.put(ANALYTICS_KEY, eventObjects)
-        return requestObject
+
+        val eventsArray = JSONArray()
+        val eventsJSON = JSONObject().put("events", requestObject)
+
+        eventsArray.put(eventsJSON)
+        return eventsArray as JSONObject
     }
 
     companion object {
-        private const val ANALYTICS_KEY = "analytics"
-        private const val KIND_KEY = "kind"
-        private const val TIMESTAMP_KEY = "timestamp"
-        private const val META_KEY = "_meta"
+        private const val ANALYTICS_KEY = "event_params"
+        private const val KIND_KEY = "event_name"
+        private const val TIMESTAMP_KEY = "t"
+        private const val META_KEY = "batch_params"
         private const val TOKENIZATION_KEY = "tokenization_key"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
         private const val INVALID_TIMESTAMP: Long = -1
