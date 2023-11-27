@@ -16,13 +16,11 @@ import androidx.annotation.VisibleForTesting
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class DeviceInspector @VisibleForTesting internal constructor(
     private val appHelper: AppHelper,
-    private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
 ) {
 
     constructor() : this(
         AppHelper(),
-        UUIDHelper(),
         SignatureVerifier(),
     )
 
@@ -88,13 +86,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
             null
         }
 
-    private fun getNetworkType(context: Context?): String =
-        context?.let {
-            val connectivityManager =
-                it.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.activeNetworkInfo?.typeName
-        } ?: "none"
-
     private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
 
     private fun getPackageInfo(context: Context?) =
@@ -109,13 +100,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
         val sdkInt = Build.VERSION.SDK_INT
         return "Android API $sdkInt"
     }
-
-    private fun getUserOrientation(context: Context?): String =
-        when (context?.resources?.configuration?.orientation ?: Configuration.ORIENTATION_UNDEFINED) {
-            Configuration.ORIENTATION_PORTRAIT -> "Portrait"
-            Configuration.ORIENTATION_LANDSCAPE -> "Landscape"
-            else -> "Unknown"
-        }
 
     /**
      * Gets the current Drop-in version or null.

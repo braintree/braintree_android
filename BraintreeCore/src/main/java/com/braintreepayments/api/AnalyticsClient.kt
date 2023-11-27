@@ -19,17 +19,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
     private val workManager: WorkManager,
-    private val deviceInspector: DeviceInspector,
-    private val context: Context?
+    private val deviceInspector: DeviceInspector
 ) {
-    private var lastKnownAnalyticsUrl: String? = null
+    private var fptiAnalyticsURL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
     constructor(context: Context) : this(
         BraintreeHttpClient(),
         getInstance(context.applicationContext),
         WorkManager.getInstance(context.applicationContext),
-        DeviceInspector(),
-        context
+        DeviceInspector()
     )
 
     fun sendEvent(
@@ -52,7 +50,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         timestamp: Long,
         authorization: Authorization
     ): UUID {
-        lastKnownAnalyticsUrl = configuration.analyticsUrl
         scheduleAnalyticsWrite("android.$eventName", timestamp, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
@@ -154,13 +151,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                         sessionId, integration
                     )
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
-                    // analyticsURL = https://origin-analytics-sand.sandbox.braintree-api.com/dcpspy2brwdjr3qn
-                    configuration?.analyticsUrl?.let { analyticsUrl ->
-                        httpClient.post(
-                            "https://api-m.paypal.com/v1/tracking/batch/events", analyticsRequest.toString(), configuration, authorization
-                        )
-                        analyticsEventDao.deleteEvents(events)
-                    }
+                    httpClient.post(
+                        fptiAnalyticsURL,
+                        analyticsRequest.toString(),
+                        configuration,
+                        authorization
+                    )
+                    analyticsEventDao.deleteEvents(events)
                 }
                 ListenableWorker.Result.success()
             } catch (e: Exception) {
@@ -170,14 +167,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-        context: Context?, sessionId: String?, integration: String?, authorization: Authorization?
+        context: Context?, configuration: Configuration?, sessionId: String?, integration: String?, authorization: Authorization?
     ) {
-        reportCrash(context, sessionId, integration, System.currentTimeMillis(), authorization)
+        reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
     }
 
     @VisibleForTesting
     fun reportCrash(
         context: Context?,
+        configuration: Configuration?,
         sessionId: String?,
         integration: String?,
         timestamp: Long,
@@ -186,21 +184,18 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        // TODO: - Can we not send null here
-        val metadata = deviceInspector.getDeviceMetadata(context, null, sessionId, integration)
+        val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent("android.crash", timestamp)
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
-            lastKnownAnalyticsUrl?.let { analyticsUrl ->
-                httpClient.post(
-                    analyticsUrl,
-                    analyticsRequest.toString(),
-                    null,
-                    authorization,
-                    HttpNoResponse()
-                )
-            }
+            httpClient.post(
+                fptiAnalyticsURL,
+                analyticsRequest.toString(),
+                null,
+                authorization,
+                HttpNoResponse()
+            )
         } catch (e: JSONException) { /* ignored */
         }
     }

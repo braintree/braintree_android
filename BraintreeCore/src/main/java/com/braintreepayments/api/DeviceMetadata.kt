@@ -41,27 +41,6 @@ internal class DeviceMetadata internal constructor(
             // TOKEN KEY TODO
     }
 
-//    enum CodingKeys: String, CodingKey {
-//        case appID = "app_id"
-//        case appName = "app_name"
-//        case authorizationFingerprint = "auth_fingerprint"
-//        case clientSDKVersion = "c_sdk_ver"
-//        case clientOS = "client_os"
-//        case component = "comp"
-//        case deviceManufacturer = "device_manufacturer"
-//        case deviceModel = "mobile_device_model"
-//        case eventSource = "event_source"
-//        case environment = "merchant_sdk_env"
-//        case packageManager = "ios_package_manager"
-//        case integrationType = "api_integration_type"
-//        case isSimulator = "is_simulator"
-//        case merchantAppVersion = "mapv"
-//        case merchantID = "merchant_id"
-//        case platform = "platform"
-//        case sessionID = "session_id"
-//        case tokenizationKey = "tokenization_key"
-//    }
-
     companion object {
         private const val APP_ID_KEY = "app_id"
         private const val APP_NAME_KEY = "app_name"
@@ -70,6 +49,7 @@ internal class DeviceMetadata internal constructor(
         private const val CLIENT_OS_KEY = "client_os"
         private const val COMPONENT_KEY = "comp"
         private const val DEVICE_MANUFACTURER_KEY = "device_manufacturer"
+        private const val DEVICE_MODEL_KEY = "deviceModel"
         private const val EVENT_SOURCE_KEY = "event_source"
         private const val ENVIRONMENT_KEY = "merchant_sdk_env"
         private const val INTEGRATION_TYPE_KEY = "api_integration_type"
@@ -79,9 +59,5 @@ internal class DeviceMetadata internal constructor(
         private const val PLATFORM_KEY = "platform"
         private const val SESSION_ID_KEY = "session_id"
         private const val TOKENIZATION_KEY = "tokenization_key"
-
-        // OLD Stuff
-        private const val DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType"
-        private const val DEVICE_MODEL_KEY = "deviceModel"
     }
 }
