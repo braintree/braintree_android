@@ -25,8 +25,8 @@ public class PayPalClient {
      * Initializes a new {@link PayPalClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public PayPalClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public PayPalClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting

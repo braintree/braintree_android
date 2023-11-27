@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -21,8 +23,8 @@ public class CardClient {
      * Initializes a new {@link CardClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public CardClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public CardClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting

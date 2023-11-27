@@ -68,13 +68,6 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(clientParams: ClientParams) :
-        this(clientParams.context, clientParams.authorization, clientParams.returnUrlScheme)
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     /**

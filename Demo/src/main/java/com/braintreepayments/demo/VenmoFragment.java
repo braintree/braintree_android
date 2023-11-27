@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
@@ -21,8 +20,8 @@ import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.VenmoResult;
 import com.braintreepayments.api.VenmoRequest;
+import com.braintreepayments.api.VenmoResult;
 
 import java.util.ArrayList;
 
@@ -65,7 +64,7 @@ public class VenmoFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (venmoClient == null) {
-            venmoClient = new VenmoClient(new ClientParams(requireContext(), super.getAuthStringArg()));
+            venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
         }
 
         FragmentActivity activity = getActivity();

@@ -27,8 +27,8 @@ public class LocalPaymentClient {
      * Initializes a new {@link LocalPaymentClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public LocalPaymentClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public LocalPaymentClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
    @VisibleForTesting

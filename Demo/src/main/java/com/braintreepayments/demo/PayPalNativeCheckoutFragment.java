@@ -4,23 +4,20 @@ import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.crea
 import static com.braintreepayments.demo.PayPalNativeCheckoutRequestFactory.createPayPalVaultRequest;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.ClientParams;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
-import com.braintreepayments.api.PayPalNativeCheckoutListener;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
+import com.braintreepayments.api.PayPalNativeCheckoutListener;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPalNativeCheckoutListener {
@@ -48,7 +45,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         launchPayPalNativeCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(false));
         launchPayPalNativeVaultCheckoutButton = view.findViewById(R.id.paypal_native_checkout_vault_launch);
         launchPayPalNativeVaultCheckoutButton.setOnClickListener(v -> launchPayPalNativeCheckout(true));
-        payPalClient = new PayPalNativeCheckoutClient(new ClientParams(requireContext(), super.getAuthStringArg()));
+        payPalClient = new PayPalNativeCheckoutClient(requireContext(), super.getAuthStringArg());
         payPalClient.setListener(this);
         return view;
     }
@@ -57,7 +54,7 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new DataCollector(new ClientParams(requireContext(), super.getAuthStringArg()));
+        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
         if (Settings.shouldCollectDeviceData(requireActivity())) {
             dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {

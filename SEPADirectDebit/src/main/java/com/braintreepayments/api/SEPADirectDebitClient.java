@@ -29,8 +29,8 @@ public class SEPADirectDebitClient {
      * Initializes a new {@link SEPADirectDebitClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public SEPADirectDebitClient(@NonNull ClientParams clientParams) {
-       this(new BraintreeClient(clientParams));
+    public SEPADirectDebitClient(@NonNull Context context, @NonNull String authorization) {
+       this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting

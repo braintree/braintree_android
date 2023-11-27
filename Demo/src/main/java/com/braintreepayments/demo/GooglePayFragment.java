@@ -12,9 +12,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.ClientParams;
-import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayLauncher;
 import com.braintreepayments.api.GooglePayRequest;
@@ -22,8 +19,6 @@ import com.braintreepayments.api.PaymentMethodNonce;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
-
-import java.util.Objects;
 
 public class GooglePayFragment extends BaseFragment {
 
@@ -40,7 +35,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
-        googlePayClient = new GooglePayClient(new ClientParams(requireContext(), super.getAuthStringArg()));
+        googlePayClient = new GooglePayClient(requireContext(), super.getAuthStringArg());
         googlePayLauncher = new GooglePayLauncher(this,
                 paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
                         (paymentMethodNonce, error) -> {

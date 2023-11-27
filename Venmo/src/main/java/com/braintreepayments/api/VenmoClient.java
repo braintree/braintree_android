@@ -31,8 +31,8 @@ public class VenmoClient {
      * Initializes a new {@link VenmoClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public VenmoClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public VenmoClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting

@@ -30,8 +30,8 @@ public class ThreeDSecureClient {
      * Initializes a new {@link ThreeDSecureClient} instance
      * @param clientParams configurable {@link ClientParams}
      */
-    public ThreeDSecureClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public ThreeDSecureClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting
