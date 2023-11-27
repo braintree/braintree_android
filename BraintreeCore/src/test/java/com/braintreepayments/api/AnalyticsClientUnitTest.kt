@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException
 class AnalyticsClientUnitTest {
 
     private lateinit var context: Context
+    private lateinit var configuration: Configuration
     private lateinit var authorization: Authorization
     private lateinit var httpClient: BraintreeHttpClient
     private lateinit var deviceInspector: DeviceInspector
@@ -33,7 +34,6 @@ class AnalyticsClientUnitTest {
     private lateinit var analyticsEventDao: AnalyticsEventDao
 
     private var timestamp: Long = 0
-    private val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
 
     @Before
     @Throws(InvalidArgumentException::class, GeneralSecurityException::class, IOException::class)
@@ -44,6 +44,7 @@ class AnalyticsClientUnitTest {
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
+        configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         httpClient = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
         analyticsDatabase = mockk(relaxed = true)
@@ -335,7 +336,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun reportCrash_whenLastKnownAnalyticsUrlExists_sendsCrashAnalyticsEvent() {
+    fun reportCrash_sendsCrashAnalyticsEvent() {
         val metadata = createSampleDeviceMetadata()
         every {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
@@ -344,9 +345,9 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "analytics_url",
+                "https://api-m.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
-                isNull(),
+                any(),
                 authorization,
                 any()
             )
@@ -358,6 +359,7 @@ class AnalyticsClientUnitTest {
         sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
         val analyticsJson = JSONObject(analyticsJSONSlot.captured)
+        // TODO - update test for new structure
         val meta = analyticsJson.getJSONObject("_meta")
         JSONAssert.assertEquals(metadata.toJSON(), meta, true)
 
@@ -367,21 +369,6 @@ class AnalyticsClientUnitTest {
         val eventOne = array.getJSONObject(0)
         assertEquals("android.crash", eventOne.getString("kind"))
         assertEquals(123, eventOne.getString("timestamp").toLong())
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() {
-        val metadata = createSampleDeviceMetadata()
-        every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        } returns metadata
-
-        val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
-
-        // or confirmVerified(httpClient)
-        verify { httpClient wasNot Called }
     }
 
     @Test

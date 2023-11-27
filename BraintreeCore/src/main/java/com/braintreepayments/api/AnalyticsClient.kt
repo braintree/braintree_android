@@ -145,17 +145,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(
-                        context,
-                        configuration,
-                        sessionId, integration
-                    )
-                    val analyticsRequest = serializeEvents(
-                        authorization,
-                        configuration,
-                        events,
-                        metadata
-                    )
+                    val metadata = deviceInspector.getDeviceMetadata(context, configuration,sessionId, integration)
+                    val analyticsRequest = serializeEvents(authorization, events, metadata)
                     httpClient.post(
                         fptiAnalyticsURL,
                         analyticsRequest.toString(),
@@ -193,7 +184,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val event = AnalyticsEvent("android.crash", timestamp)
         val events = listOf(event)
         try {
-            val analyticsRequest = serializeEvents(authorization, configuration, events, metadata)
+            val analyticsRequest = serializeEvents(authorization, events, metadata)
             httpClient.post(
                 fptiAnalyticsURL,
                 analyticsRequest.toString(),
@@ -208,34 +199,33 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     @Throws(JSONException::class)
     private fun serializeEvents(
         authorization: Authorization?,
-        configuration: Configuration?,
         events: List<AnalyticsEvent>, metadata: DeviceMetadata
     ): JSONObject {
-        val requestObject = JSONObject()
-//        authorization?.let {
-//            if (it is ClientToken) {
-//                requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
-//            } else {
-//                requestObject.put(TOKENIZATION_KEY, it.bearer)
-//            }
-//        }
+        val batchParamsJSON = metadata.toJSON()
+        authorization?.let {
+            if (it is ClientToken) {
+                batchParamsJSON.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
+            } else {
+                batchParamsJSON.put(TOKENIZATION_KEY, it.bearer)
+            }
+        }
 
-        requestObject.put(BATCH_PARAMS_KEY, metadata.toJSON())
-        val eventObjects = JSONArray()
-        var eventObject: JSONObject
+        val eventsContainerJSON = JSONObject()
+        eventsContainerJSON.put(BATCH_PARAMS_KEY, batchParamsJSON)
+
+        val eventParamsJSON = JSONArray()
         for (analyticsEvent in events) {
-            eventObject = JSONObject()
+            val singleEventJSON = JSONObject()
                 .put(KIND_KEY, "test-event-name")
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put("tenant_name", "Braintree")
-            eventObjects.put(eventObject)
+            eventParamsJSON.put(singleEventJSON)
         }
-        requestObject.put(EVENT_PARAMS_KEY, eventObjects)
+        eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
 
-        val eventsArray = JSONArray(arrayOf(requestObject));
-        val eventsJSON = JSONObject().put("events", eventsArray)
-
-        return eventsJSON
+        // Single-element "events" array required by FPTI formatting
+        val eventsArray = JSONArray(arrayOf(eventsContainerJSON));
+        return JSONObject().put("events", eventsArray)
     }
 
     companion object {
