@@ -48,6 +48,7 @@
     * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
+    * Remove `ThreeDSecureV2BaseCustomization`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 

@@ -10,8 +10,7 @@ import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
 /**
  * Button customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2ButtonCustomization extends ThreeDSecureV2BaseCustomization
-        implements Parcelable {
+public class ThreeDSecureV2ButtonCustomization implements Parcelable {
 
     private final ButtonCustomization cardinalButtonCustomization = new ButtonCustomization();
 
