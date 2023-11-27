@@ -413,7 +413,7 @@ class MyActivity : FragmentActivity() {
     }
 
     fun initializeClients() {
--        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-        braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient = SEPADirectDebitClient(this, braintreeClient)
 +       sepaDirectDebitClient = sepaDirectDebitClient(ClientParams(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient.setListener(this)
