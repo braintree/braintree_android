@@ -21,8 +21,8 @@ public class AmericanExpressClient {
     /**
      * Initializes a new {@link AmericanExpressClient} instance
      *
-     * @param context
-     * @param authorization
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
     public AmericanExpressClient(@NonNull Context context, @NonNull String authorization) {
         this.braintreeClient = new BraintreeClient(context, authorization);

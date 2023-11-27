@@ -23,7 +23,9 @@ public class PayPalClient {
 
     /**
      * Initializes a new {@link PayPalClient} instance
-     * @param clientParams configurable {@link ClientParams}
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
     public PayPalClient(@NonNull Context context, @NonNull String authorization) {
         this(new BraintreeClient(context, authorization));

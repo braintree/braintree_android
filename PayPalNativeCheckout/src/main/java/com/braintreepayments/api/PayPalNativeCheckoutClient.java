@@ -33,7 +33,9 @@ public class PayPalNativeCheckoutClient {
 
     /**
      * Initializes a new {@link PayPalNativeCheckoutClient} instance
-     * @param clientParams configurable {@link ClientParams}
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
     public PayPalNativeCheckoutClient(@NonNull Context context, @NonNull String authorization) {
         this(new BraintreeClient(context, authorization));

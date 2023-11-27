@@ -24,7 +24,9 @@ public class DataCollector {
 
     /**
      * Initializes a new {@link DataCollector} instance
-     * @param clientParams configurable {@link ClientParams}
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
     public DataCollector(@NonNull Context context, @NonNull String authorization) {
         this(new BraintreeClient(context, authorization));
