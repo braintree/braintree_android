@@ -19,6 +19,7 @@ import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PayPalResult;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment {
@@ -47,11 +48,11 @@ public class PayPalFragment extends BaseFragment {
         payPalClient = new PayPalClient(braintreeClient);
         payPalLauncher = new PayPalLauncher(
                 paymentAuthResult -> payPalClient.tokenize(
-                        paymentAuthResult, (payPalAccountNonce, error) -> {
-                            if (error != null) {
-                                handleError(error);
-                            } else if (payPalAccountNonce != null) {
-                                handlePayPalResult(payPalAccountNonce);
+                        paymentAuthResult, (payPalResult) -> {
+                            if (payPalResult instanceof PayPalResult.Failure) {
+                                handleError(((PayPalResult.Failure) payPalResult).getError());
+                            } else if (payPalResult instanceof PayPalResult.Success) {
+                                handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
                             }
                         }));
 
