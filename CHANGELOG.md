@@ -7,7 +7,8 @@
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
     * Remove `BraintreeClient` public constructors
-    * Add `ClientParams` for instantiating payment method clients
+    * Update payment method constructor parameters from `braintreeClient` to `context` and 
+      `authorization`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
