@@ -4,8 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
@@ -26,7 +24,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
 
     internal fun getDeviceMetadata(
         context: Context?,
-        configuration: com.braintreepayments.api.Configuration?,
+        configuration: Configuration?,
         sessionId: String?,
         integration: String?
     ): DeviceMetadata {
