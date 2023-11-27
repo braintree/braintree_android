@@ -112,7 +112,7 @@ class PayPalInternalClient {
         });
     }
 
-    void tokenize(PayPalAccount payPalAccount, final PayPalTokenizeCallback callback) {
+    void tokenize(PayPalAccount payPalAccount, final PayPalInternalTokenizeCallback callback) {
         apiClient.tokenizeREST(payPalAccount, (tokenizationResponse, exception) -> {
             if (tokenizationResponse != null) {
                 try {
