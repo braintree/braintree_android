@@ -14,11 +14,14 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
+import com.braintreepayments.api.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
+import com.braintreepayments.api.VenmoResult;
 import com.braintreepayments.api.VenmoRequest;
 
 import java.util.ArrayList;
@@ -43,11 +46,13 @@ public class VenmoFragment extends BaseFragment {
         return view;
     }
 
-    private void handleVenmoResult(VenmoAccountNonce nonce, Exception error) {
-        if (nonce != null) {
-            handleVenmoAccountNonce(nonce);
-        } else {
-            handleError(error);
+    private void handleVenmoResult(VenmoResult result) {
+        if (result instanceof VenmoResult.Success) {
+            handleVenmoAccountNonce(((VenmoResult.Success) result).getNonce());
+        } else if (result instanceof VenmoResult.Failure) {
+            handleError(((VenmoResult.Failure) result).getError());
+        } else if (result instanceof VenmoResult.Cancel) {
+            handleError(new UserCanceledException("User canceled Venmo"));
         }
     }
     private void handleVenmoAccountNonce(VenmoAccountNonce venmoAccountNonce) {
@@ -86,12 +91,12 @@ public class VenmoFragment extends BaseFragment {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
 
-                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (venmoAuthChallenge, authError) -> {
-                    if (authError != null) {
-                        handleError(authError);
-                        return;
+                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
+                    if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
+                        handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+                    } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
+                        venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
                     }
-                    venmoLauncher.launch(venmoAuthChallenge);
                 });
             } else if (configuration.isVenmoEnabled()) {
                 showDialog("Please install the Venmo app first.");
