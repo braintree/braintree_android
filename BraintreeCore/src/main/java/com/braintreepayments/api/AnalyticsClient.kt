@@ -150,7 +150,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                         configuration,
                         sessionId, integration
                     )
-                    val analyticsRequest = serializeEvents(authorization, events, metadata)
+                    val analyticsRequest = serializeEvents(
+                        authorization,
+                        configuration,
+                        events,
+                        metadata
+                    )
                     httpClient.post(
                         fptiAnalyticsURL,
                         analyticsRequest.toString(),
@@ -188,7 +193,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val event = AnalyticsEvent("android.crash", timestamp)
         val events = listOf(event)
         try {
-            val analyticsRequest = serializeEvents(authorization, events, metadata)
+            val analyticsRequest = serializeEvents(authorization, configuration, events, metadata)
             httpClient.post(
                 fptiAnalyticsURL,
                 analyticsRequest.toString(),
@@ -202,7 +207,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     @Throws(JSONException::class)
     private fun serializeEvents(
-        authorization: Authorization?, events: List<AnalyticsEvent>, metadata: DeviceMetadata
+        authorization: Authorization?,
+        configuration: Configuration?,
+        events: List<AnalyticsEvent>, metadata: DeviceMetadata
     ): JSONObject {
         val requestObject = JSONObject()
 //        authorization?.let {

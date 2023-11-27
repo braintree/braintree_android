@@ -33,6 +33,7 @@ class AnalyticsClientUnitTest {
     private lateinit var analyticsEventDao: AnalyticsEventDao
 
     private var timestamp: Long = 0
+    private val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
 
     @Before
     @Throws(InvalidArgumentException::class, GeneralSecurityException::class, IOException::class)
@@ -64,7 +65,6 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
 
@@ -87,7 +87,6 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
 
@@ -153,7 +152,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(Exception::class)
     fun uploadAnalytics_whenNoEventsExist_doesNothing() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -170,7 +168,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(Exception::class)
     fun uploadAnalytics_whenEventsExist_sendsAllEvents() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -180,7 +177,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every {
-            deviceInspector.getDeviceMetadata(context, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
@@ -229,7 +226,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun uploadAnalytics_whenAuthorizationIsNull_doesNothing() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
@@ -247,7 +243,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun uploadAnalytics_whenSessionIdIsNull_doesNothing() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -265,7 +260,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun uploadAnalytics_whenIntegrationIsNull_doesNothing() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -283,7 +277,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(Exception::class)
     fun uploadAnalytics_deletesDatabaseEventsOnSuccessResponse() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -295,6 +288,7 @@ class AnalyticsClientUnitTest {
         every {
             deviceInspector.getDeviceMetadata(
                 context,
+                configuration,
                 sessionId,
                 integration
             )
@@ -314,7 +308,6 @@ class AnalyticsClientUnitTest {
     @Test
     @Throws(Exception::class)
     fun uploadAnalytics_whenAnalyticsSendFails_returnsError() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -324,7 +317,7 @@ class AnalyticsClientUnitTest {
 
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
@@ -345,7 +338,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_whenLastKnownAnalyticsUrlExists_sendsCrashAnalyticsEvent() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
         val analyticsJSONSlot = slot<String>()
@@ -360,10 +353,9 @@ class AnalyticsClientUnitTest {
         } returns Unit
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
 
-        sut.reportCrash(context, sessionId, integration, 123, authorization)
+        sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
         val analyticsJson = JSONObject(analyticsJSONSlot.captured)
         val meta = analyticsJson.getJSONObject("_meta")
@@ -382,11 +374,11 @@ class AnalyticsClientUnitTest {
     fun reportCrash_whenLastKnownAnalyticsUrlMissing_doesNothing() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.reportCrash(context, sessionId, integration, 123, authorization)
+        sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
@@ -397,14 +389,13 @@ class AnalyticsClientUnitTest {
     fun reportCrash_whenAuthorizationIsNull_doesNothing() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
         sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
 
-        sut.reportCrash(context, sessionId, integration, 123, null)
+        sut.reportCrash(context, configuration, sessionId, integration, 123, null)
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
@@ -412,20 +403,19 @@ class AnalyticsClientUnitTest {
 
     companion object {
         private fun createSampleDeviceMetadata() = DeviceMetadata(
-                integration = "sample-integration",
-                sessionId = "sample-session-id",
-                platform = "platform",
-                sdkVersion = "sdk-version",
-                deviceManufacturer = "device-manufacturer",
-                deviceModel = "device-model",
-                platformVersion = "platform-version",
-                merchantAppName = "merchant-app-name",
-                devicePersistentUUID = "persistent-uuid",
-                merchantAppId = "merchant-app-name",
-                userOrientation = "user-orientation",
-                isPayPalInstalled = true,
-                isVenmoInstalled = true,
-                isSimulator = false
-            )
+            appId = "merchant-app-id",
+            appName = "merchant-app-name",
+            clientSDKVersion = "sdk-version",
+            clientOs = "sample-os",
+            deviceManufacturer = "device-manufacturer",
+            deviceModel = "device-model",
+            environment = "environment",
+            integrationType = "sample-integration",
+            isSimulator = false,
+            merchantAppVersion = "platform-version",
+            merchantId = "merchant-id",
+            platform = "platform",
+            sessionId = "session-id"
+        )
     }
 }
