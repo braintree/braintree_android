@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
-public class CardinalResult {
+public class ThreeDSecurePaymentAuthResult {
 
     private final String jwt;
     private final ValidateResponse validateResponse;
@@ -10,15 +10,15 @@ public class CardinalResult {
 
     private final Exception error;
 
-    CardinalResult(ThreeDSecureResult threeDSecureResult, String jwt,
-                   ValidateResponse validateResponse) {
+    ThreeDSecurePaymentAuthResult(ThreeDSecureResult threeDSecureResult, String jwt,
+                                  ValidateResponse validateResponse) {
         this.jwt = jwt;
         this.validateResponse = validateResponse;
         this.threeDSecureResult = threeDSecureResult;
         this.error = null;
     }
 
-    CardinalResult(Exception error) {
+    ThreeDSecurePaymentAuthResult(Exception error) {
         this.error = error;
         this.jwt = null;
         this.validateResponse = null;

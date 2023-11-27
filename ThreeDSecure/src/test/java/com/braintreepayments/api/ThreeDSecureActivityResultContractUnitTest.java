@@ -59,22 +59,23 @@ public class ThreeDSecureActivityResultContractUnitTest {
         String jwt = "sample-jwt";
         successIntent.putExtra(EXTRA_JWT, jwt);
 
-        CardinalResult cardinalResult = sut.parseResult(Activity.RESULT_OK, successIntent);
-        assertNotNull(cardinalResult);
+        ThreeDSecurePaymentAuthResult
+                paymentAuthResult = sut.parseResult(Activity.RESULT_OK, successIntent);
+        assertNotNull(paymentAuthResult);
 
-        assertSame(threeDSecureResult, cardinalResult.getThreeSecureResult());
-        assertSame(validateResponse, cardinalResult.getValidateResponse());
-        assertSame(jwt, cardinalResult.getJWT());
+        assertSame(threeDSecureResult, paymentAuthResult.getThreeSecureResult());
+        assertSame(validateResponse, paymentAuthResult.getValidateResponse());
+        assertSame(jwt, paymentAuthResult.getJWT());
     }
 
     @Test
     public void parseResult_whenResultIsOKAndIntentIsNull_returnsCardinalResultWithError() {
         sut = new ThreeDSecureActivityResultContract();
 
-        CardinalResult cardinalResult = sut.parseResult(Activity.RESULT_OK, null);
-        assertNotNull(cardinalResult);
+        ThreeDSecurePaymentAuthResult paymentAuthResult = sut.parseResult(Activity.RESULT_OK, null);
+        assertNotNull(paymentAuthResult);
 
-        BraintreeException error = (BraintreeException) cardinalResult.getError();
+        BraintreeException error = (BraintreeException) paymentAuthResult.getError();
         String expectedMessage = "An unknown Android error occurred with the activity result API.";
         assertNotNull(expectedMessage, error.getMessage());
     }
@@ -83,10 +84,11 @@ public class ThreeDSecureActivityResultContractUnitTest {
     public void parseResult_whenResultIsCANCELED_returnsCardinalResultWithError() {
         sut = new ThreeDSecureActivityResultContract();
 
-        CardinalResult cardinalResult = sut.parseResult(Activity.RESULT_CANCELED, new Intent());
-        assertNotNull(cardinalResult);
+        ThreeDSecurePaymentAuthResult
+                paymentAuthResult = sut.parseResult(Activity.RESULT_CANCELED, new Intent());
+        assertNotNull(paymentAuthResult);
 
-        UserCanceledException error = (UserCanceledException) cardinalResult.getError();
+        UserCanceledException error = (UserCanceledException) paymentAuthResult.getError();
         assertEquals("User canceled 3DS.", error.getMessage());
     }
 
@@ -97,11 +99,11 @@ public class ThreeDSecureActivityResultContractUnitTest {
         Intent intent = new Intent();
         intent.putExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE, "sample error message");
 
-        CardinalResult cardinalResult =
+        ThreeDSecurePaymentAuthResult paymentAuthResult =
             sut.parseResult(ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL, intent);
-        assertNotNull(cardinalResult);
+        assertNotNull(paymentAuthResult);
 
-        BraintreeException error = (BraintreeException) cardinalResult.getError();
+        BraintreeException error = (BraintreeException) paymentAuthResult.getError();
         assertEquals("sample error message", error.getMessage());
     }
 }

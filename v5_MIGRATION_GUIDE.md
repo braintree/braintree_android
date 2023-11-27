@@ -80,9 +80,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       venmoLauncher = VenmoLauncher(this) { paymentAuthResult ->
-+            venmoClient.tokenize(paymentAuthResult) { venmoAccountNonce, error ->
-+                error?.let { /* handle error */ }
-+                venmoAccountNonce?.let { /* handle Venmo account nonce */ }
++            venmoClient.tokenize(paymentAuthResult) { result ->
++               when(result) {
++                   is VenmoResult.Success -> { /* handle result.nonce */ }
++                   is VenmoResult.Failure -> { /* handle result.error */ }
++                   is VenmoResult.Cancel -> { /* handle user canceled */ }
++               }
 +            }
 +       }
     }
@@ -96,9 +99,13 @@ class MyActivity : FragmentActivity() {
     
     fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
-+       venmoClient.requestAuthChallenge(this, venmoRequest) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { venmoLauncher.launch(it) }
++       venmoClient.createPaymentAuthRequest(this, venmoRequest) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is VenmoPaymentAuthRequest.ReadyToLaunch -> {
++                   venmoLauncher.launch(paymentAuthRequet)
++               }
++               is VenmoPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++           }
 +       }
     }
     
@@ -193,8 +200,8 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       threeDSecureLauncher = ThreeDSecureLauncher(this) { cardinalResult ->
-+            threeDSecureClient.onCardinalResult(cardinalResult) { threeDSecureResult, error ->
++       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
++            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureResult, error ->
 +                error?.let { /* handle error */ }
 +                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
 +            }
@@ -210,7 +217,7 @@ class MyActivity : FragmentActivity() {
     
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
-+       threeDSecureClient.performVerification(requireContext(), threeDSecureRequest) { 
++       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
           threeDSecureResult, error ->
              error?.let { /* handle error */ }
              threeDSecureResult?.let {

@@ -1,17 +1,15 @@
 package com.braintreepayments.api;
 
-import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link ThreeDSecureClient#performVerification(android.content.Context, ThreeDSecureRequest, ThreeDSecureResultCallback)},
- * {@link ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult, ThreeDSecureResultCallback)},
- * {@link ThreeDSecureClient#onBrowserSwitchResult(BrowserSwitchResult,
- * ThreeDSecureResultCallback)}, and
- * {@link ThreeDSecureClient#onActivityResult(int, Intent, ThreeDSecureResultCallback)}.
+ * {@link ThreeDSecureClient#createPaymentAuthRequest(android.content.Context, ThreeDSecureRequest, ThreeDSecureResultCallback)},
+
  */
+// TODO: Split into separate callbacks for internal and public methods and for
+//  createPaymentAuthRequest and tokenize methods
 public interface ThreeDSecureResultCallback {
 
     /**

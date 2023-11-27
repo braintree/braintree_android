@@ -91,7 +91,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                paymentAuthResult -> threeDSecureClient.tokenize(paymentAuthResult,
                         this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);
@@ -223,7 +223,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
-            threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
+            threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
                     (threeDSecureResult, error) -> {
                         if (threeDSecureResult != null &&
                                 threeDSecureResult.getLookup().requiresUserAuthentication()) {
