@@ -49,7 +49,7 @@ internal class DeviceMetadata internal constructor(
         private const val CLIENT_OS_KEY = "client_os"
         private const val COMPONENT_KEY = "comp"
         private const val DEVICE_MANUFACTURER_KEY = "device_manufacturer"
-        private const val DEVICE_MODEL_KEY = "deviceModel"
+        private const val DEVICE_MODEL_KEY = "mobile_device_model"
         private const val EVENT_SOURCE_KEY = "event_source"
         private const val ENVIRONMENT_KEY = "merchant_sdk_env"
         private const val INTEGRATION_TYPE_KEY = "api_integration_type"
