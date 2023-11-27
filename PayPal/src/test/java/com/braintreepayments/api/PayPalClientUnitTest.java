@@ -372,7 +372,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalTokenizeCallback.class));
+                any(PayPalInternalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();
@@ -423,7 +423,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalTokenizeCallback.class));
+                any(PayPalInternalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();

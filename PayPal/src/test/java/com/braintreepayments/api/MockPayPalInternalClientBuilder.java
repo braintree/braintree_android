@@ -58,7 +58,7 @@ public class MockPayPalInternalClientBuilder {
                 return null;
             }
         }).when(payPalInternalClient)
-                .tokenize(any(PayPalAccount.class), any(PayPalTokenizeCallback.class));
+                .tokenize(any(PayPalAccount.class), any(PayPalInternalTokenizeCallback.class));
 
         return payPalInternalClient;
     }
