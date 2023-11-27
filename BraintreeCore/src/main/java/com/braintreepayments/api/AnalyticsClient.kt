@@ -148,7 +148,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+                    val metadata = deviceInspector.getDeviceMetadata(
+                        context,
+                        configuration,
+                        sessionId, integration
+                    )
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
                     // analyticsURL = https://origin-analytics-sand.sandbox.braintree-api.com/dcpspy2brwdjr3qn
                     configuration?.analyticsUrl?.let { analyticsUrl ->
@@ -182,7 +186,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+        // TODO: - Can we not send null here
+        val metadata = deviceInspector.getDeviceMetadata(context, null, sessionId, integration)
         val event = AnalyticsEvent("android.crash", timestamp)
         val events = listOf(event)
         try {

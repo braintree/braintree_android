@@ -4,67 +4,84 @@ import org.json.JSONException
 import org.json.JSONObject
 
 internal class DeviceMetadata internal constructor(
-    private var appVersion: String? = null,
+    private var appId: String? = null,
+    private var appName: String? = null,
+    private var clientSDKVersion: String? = null,
+    private var clientOs: String? = null,
     private var deviceManufacturer: String? = null,
     private var deviceModel: String? = null,
-    private var devicePersistentUUID: String? = null,
-    private var dropInVersion: String? = null,
-    private var integration: String? = null,
-    private var isPayPalInstalled: Boolean = false,
+    private var environment: String? = null,
+    private var integrationType: String? = null,
     private var isSimulator: Boolean = false,
-    private var isVenmoInstalled: Boolean = false,
-    private var merchantAppId: String? = null,
-    private var merchantAppName: String? = null,
-    private var networkType: String? = null,
+    private var merchantAppVersion: String? = null,
+    private var merchantId: String? = null,
     private var platform: String? = null,
-    private var platformVersion: String? = null,
-    private var sdkVersion: String? = null,
     private var sessionId: String? = null,
-    private var userOrientation: String? = null
 ) {
 
     @Throws(JSONException::class)
     fun toJSON(): JSONObject {
         return JSONObject()
-            .put(SESSION_ID_KEY, sessionId)
-            .put(INTEGRATION_TYPE_KEY, integration)
-            .put(DEVICE_NETWORK_TYPE_KEY, networkType)
-            .put(USER_INTERFACE_ORIENTATION_KEY, userOrientation)
-            .put(MERCHANT_APP_VERSION_KEY, appVersion)
-            .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled)
-            .put(VENMO_INSTALLED_KEY, isVenmoInstalled)
-            .put(DROP_IN_VERSION_KEY, dropInVersion)
-            .put(PLATFORM_KEY, platform)
-            .put(PLATFORM_VERSION_KEY, platformVersion)
-            .put(SDK_VERSION_KEY, sdkVersion)
-            .put(MERCHANT_APP_ID_KEY, merchantAppId)
-            .put(MERCHANT_APP_NAME_KEY, merchantAppName)
+            .put(APP_ID_KEY, appId)
+            .put(APP_NAME_KEY, appName)
+             // AUTH FING TODO
+            .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
+            .put(CLIENT_OS_KEY, clientOs)
+            .put(COMPONENT_KEY, "braintreeclientsdk")
             .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
             .put(DEVICE_MODEL_KEY, deviceModel)
-            .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, devicePersistentUUID)
-            .put(COMPONENT_KEY, "braintreeclientsdk")
+            .put(EVENT_SOURCE_KEY, "mobile-native")
+            .put(ENVIRONMENT_KEY, environment)
+            .put(INTEGRATION_TYPE_KEY, integrationType)
             .put(IS_SIMULATOR_KEY, isSimulator)
+            .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
+            .put(MERCHANT_ID_KEY, merchantId)
+            .put(PLATFORM_KEY, platform)
+            .put(SESSION_ID_KEY, sessionId)
+            // TOKEN KEY TODO
     }
 
+//    enum CodingKeys: String, CodingKey {
+//        case appID = "app_id"
+//        case appName = "app_name"
+//        case authorizationFingerprint = "auth_fingerprint"
+//        case clientSDKVersion = "c_sdk_ver"
+//        case clientOS = "client_os"
+//        case component = "comp"
+//        case deviceManufacturer = "device_manufacturer"
+//        case deviceModel = "mobile_device_model"
+//        case eventSource = "event_source"
+//        case environment = "merchant_sdk_env"
+//        case packageManager = "ios_package_manager"
+//        case integrationType = "api_integration_type"
+//        case isSimulator = "is_simulator"
+//        case merchantAppVersion = "mapv"
+//        case merchantID = "merchant_id"
+//        case platform = "platform"
+//        case sessionID = "session_id"
+//        case tokenizationKey = "tokenization_key"
+//    }
+
     companion object {
-        private const val SESSION_ID_KEY = "sessionId"
-        private const val DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType"
-        private const val USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation"
-        private const val MERCHANT_APP_VERSION_KEY = "merchantAppVersion"
-        private const val PAYPAL_INSTALLED_KEY = "paypalInstalled"
-        private const val VENMO_INSTALLED_KEY = "venmoInstalled"
-        private const val INTEGRATION_TYPE_KEY = "integrationType"
-        private const val DROP_IN_VERSION_KEY = "dropinVersion"
+        private const val APP_ID_KEY = "app_id"
+        private const val APP_NAME_KEY = "app_name"
+        private const val AUTHORIZATION_FINGERPRINT_KEY = "auth_fingerprint"
+        private const val CLIENT_SDK_VERSION_KEY = "c_sdk_ver"
+        private const val CLIENT_OS_KEY = "client_os"
+        private const val COMPONENT_KEY = "comp"
+        private const val DEVICE_MANUFACTURER_KEY = "device_manufacturer"
+        private const val EVENT_SOURCE_KEY = "event_source"
+        private const val ENVIRONMENT_KEY = "merchant_sdk_env"
+        private const val INTEGRATION_TYPE_KEY = "api_integration_type"
+        private const val IS_SIMULATOR_KEY = "is_simulator"
+        private const val MERCHANT_APP_VERSION_KEY = "mapv"
+        private const val MERCHANT_ID_KEY = "merchant_id"
         private const val PLATFORM_KEY = "platform"
-        private const val PLATFORM_VERSION_KEY = "platformVersion"
-        private const val SDK_VERSION_KEY = "sdkVersion"
-        private const val MERCHANT_APP_ID_KEY = "merchantAppId"
-        private const val MERCHANT_APP_NAME_KEY = "merchantAppName"
-        private const val DEVICE_MANUFACTURER_KEY = "deviceManufacturer"
-        private const val COMPONENT_KEY = "component"
+        private const val SESSION_ID_KEY = "session_id"
+        private const val TOKENIZATION_KEY = "tokenization_key"
+
+        // OLD Stuff
+        private const val DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType"
         private const val DEVICE_MODEL_KEY = "deviceModel"
-        private const val DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY =
-            "deviceAppGeneratedPersistentUuid"
-        private const val IS_SIMULATOR_KEY = "isSimulator"
     }
 }

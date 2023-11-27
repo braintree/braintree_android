@@ -19,6 +19,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
     private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
 ) {
+
     constructor() : this(
         AppHelper(),
         UUIDHelper(),
@@ -27,27 +28,24 @@ class DeviceInspector @VisibleForTesting internal constructor(
 
     internal fun getDeviceMetadata(
         context: Context?,
+        configuration: com.braintreepayments.api.Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: String?
     ): DeviceMetadata {
         return DeviceMetadata(
-            platform = "Android",
-            platformVersion = Build.VERSION.SDK_INT.toString(),
-            sdkVersion = BuildConfig.VERSION_NAME,
-            merchantAppId = context?.packageName,
-            merchantAppName = getAppName(context),
+            appId = context?.packageName,
+            appName = getAppName(context),
+            clientSDKVersion = BuildConfig.VERSION_NAME,
+            clientOs = getAPIVersion(),
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
-            devicePersistentUUID = uuidHelper.getPersistentUUID(context),
+            environment = configuration?.environment,
+            integrationType = integration,
             isSimulator = isDeviceEmulator,
-            sessionId = sessionId,
-            integration = integration,
-            networkType = getNetworkType(context),
-            userOrientation = getUserOrientation(context),
-            appVersion = getAppVersion(context),
-            dropInVersion = dropInVersion,
-            isPayPalInstalled = isPayPalInstalled(context),
-            isVenmoInstalled = isVenmoInstalled(context)
+            merchantAppVersion = getAppVersion(context),
+            merchantId = configuration?.merchantId,
+            platform = "Android",
+            sessionId = sessionId
         )
     }
 
@@ -106,6 +104,11 @@ class DeviceInspector @VisibleForTesting internal constructor(
                 packageInfo?.versionName
             } catch (ignored: PackageManager.NameNotFoundException) { null }
         }
+
+    private fun getAPIVersion(): String {
+        val sdkInt = Build.VERSION.SDK_INT
+        return "Android API $sdkInt"
+    }
 
     private fun getUserOrientation(context: Context?): String =
         when (context?.resources?.configuration?.orientation ?: Configuration.ORIENTATION_UNDEFINED) {
