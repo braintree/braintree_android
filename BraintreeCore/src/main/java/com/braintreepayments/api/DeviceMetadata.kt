@@ -42,6 +42,7 @@ internal class DeviceMetadata internal constructor(
             .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
             .put(DEVICE_MODEL_KEY, deviceModel)
             .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, devicePersistentUUID)
+            .put(COMPONENT_KEY, "braintreeclientsdk")
             .put(IS_SIMULATOR_KEY, isSimulator)
     }
 
@@ -60,6 +61,7 @@ internal class DeviceMetadata internal constructor(
         private const val MERCHANT_APP_ID_KEY = "merchantAppId"
         private const val MERCHANT_APP_NAME_KEY = "merchantAppName"
         private const val DEVICE_MANUFACTURER_KEY = "deviceManufacturer"
+        private const val COMPONENT_KEY = "component"
         private const val DEVICE_MODEL_KEY = "deviceModel"
         private const val DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY =
             "deviceAppGeneratedPersistentUuid"

@@ -19,7 +19,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
     private val workManager: WorkManager,
-    private val deviceInspector: DeviceInspector
+    private val deviceInspector: DeviceInspector,
+    private val context: Context?
 ) {
     private var lastKnownAnalyticsUrl: String? = null
 
@@ -27,7 +28,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         BraintreeHttpClient(),
         getInstance(context.applicationContext),
         WorkManager.getInstance(context.applicationContext),
-        DeviceInspector()
+        DeviceInspector(),
+        context
     )
 
     fun sendEvent(
@@ -107,6 +109,28 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         workManager.enqueueUniqueWork(
             WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
         )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+        workManager.enqueueUniqueWork(
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+        )
+
         return analyticsWorkRequest.id
     }
 
@@ -129,7 +153,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                     // analyticsURL = https://origin-analytics-sand.sandbox.braintree-api.com/dcpspy2brwdjr3qn
                     configuration?.analyticsUrl?.let { analyticsUrl ->
                         httpClient.post(
-                            analyticsUrl, analyticsRequest.toString(), configuration, authorization
+                            "https://api-m.paypal.com/v1/tracking/batch/events", analyticsRequest.toString(), configuration, authorization
                         )
                         analyticsEventDao.deleteEvents(events)
                     }
@@ -189,29 +213,29 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 //            }
 //        }
 
-        requestObject.put(META_KEY, metadata.toJSON())
+        requestObject.put(BATCH_PARAMS_KEY, metadata.toJSON())
         val eventObjects = JSONArray()
         var eventObject: JSONObject
         for (analyticsEvent in events) {
             eventObject = JSONObject()
-                .put(KIND_KEY, analyticsEvent.name)
+                .put(KIND_KEY, "test-event-name")
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
+                .put("tenant_name", "Braintree")
             eventObjects.put(eventObject)
         }
-        requestObject.put(ANALYTICS_KEY, eventObjects)
+        requestObject.put(EVENT_PARAMS_KEY, eventObjects)
 
-        val eventsArray = JSONArray()
-        val eventsJSON = JSONObject().put("events", requestObject)
+        val eventsArray = JSONArray(arrayOf(requestObject));
+        val eventsJSON = JSONObject().put("events", eventsArray)
 
-        eventsArray.put(eventsJSON)
-        return eventsArray as JSONObject
+        return eventsJSON
     }
 
     companion object {
-        private const val ANALYTICS_KEY = "event_params"
+        private const val EVENT_PARAMS_KEY = "event_params"
         private const val KIND_KEY = "event_name"
         private const val TIMESTAMP_KEY = "t"
-        private const val META_KEY = "batch_params"
+        private const val BATCH_PARAMS_KEY = "batch_params"
         private const val TOKENIZATION_KEY = "tokenization_key"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
         private const val INVALID_TIMESTAMP: Long = -1
